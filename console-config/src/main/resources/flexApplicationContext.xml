@@ -77,6 +77,7 @@
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
         <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />
         <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator" />
+        <property name="phpExecutionEnvironmentCreateMediator" ref="phpExecutionEnvironmentCreateMediator" />
         <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator" />
         <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator" />
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>
@@ -553,6 +554,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="phpExecutionEnvironmentCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="phpBBExecutionEnvironmentCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -798,6 +803,7 @@
                   ref="windowsIISExecutionEnvironmentCreateMediator"/>
         <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator"/>
         <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator"/>
+        <property name="phpExecutionEnvironmentCreateMediator" ref="phpExecutionEnvironmentCreateMediator"/>
         <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator"/>
         <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator"/>
         <property name="activationCreateMediator" ref="activationCreateMediator"/>

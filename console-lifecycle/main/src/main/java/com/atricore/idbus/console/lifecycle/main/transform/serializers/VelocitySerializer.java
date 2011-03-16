@@ -10,6 +10,8 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
 import java.io.*;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -124,6 +126,11 @@ public class  VelocitySerializer extends VfsIdProjectResourceSerializer {
             veCtx.put("applianceDef", ctx.getProject().getDefinition());
             veCtx.put("karafHome", System.getProperty("karaf.home"));
             veCtx.put("hasEmbeddedDependencies", ctx.getModule().getEmbeddedDependencies().size() > 0);
+            if (resource.getParams() != null) {
+                for (Map.Entry<String, Object> entry : (Set<Map.Entry<String, Object>>) resource.getParams().entrySet()) {
+                    veCtx.put(entry.getKey(), entry.getValue());
+                }
+            }
 
             // Load the template file because velocity is not handling OSGi classloader very well.
             is = getClass().getResourceAsStream(fqtn);

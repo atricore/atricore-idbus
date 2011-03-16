@@ -95,6 +95,10 @@ public class EmbeddedIcons {
     public static var liferayEnvironmentMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/apache_web_server_execution_environment.png")]
+    public static var phpEnvironmentMiniIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/22x22/phpbb_execution_environment.png")]
     public static var phpbbEnvironmentMiniIcon:Class;
 

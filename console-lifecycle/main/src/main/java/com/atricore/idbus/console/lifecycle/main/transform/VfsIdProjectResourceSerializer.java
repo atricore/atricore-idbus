@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
@@ -75,8 +76,11 @@ public abstract class VfsIdProjectResourceSerializer implements IdResourceSerial
     }
 
     protected String resolveOutputFileExtension(IdProjectResource resource) {
-        // TODO : Support other extensions
-        return ".xml";
+        String extension = ".xml";
+        if (StringUtils.isNotBlank(resource.getExtension())) {
+            extension = "." + resource.getExtension();
+        }
+        return extension;
     }
 
     protected String toFolderName(String nameSpace) {

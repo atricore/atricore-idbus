@@ -57,16 +57,5 @@
             <s:TextInput id="homeDirectory" width="300"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.architecture')}:"
-                direction="horizontal" required="true">
-            <s:DropDownList id="architecture" width="300" selectedIndex="0">
-                <s:dataProvider>
-                    <mx:ArrayCollection>
-                        <fx:Object label="32-bit" data="iis"/>
-                        <fx:Object label="64-bit" data="iis64"/>
-                    </mx:ArrayCollection>
-                </s:dataProvider>
-            </s:DropDownList>
-        </mx:FormItem>
     </mx:Form>
 </s:Group>

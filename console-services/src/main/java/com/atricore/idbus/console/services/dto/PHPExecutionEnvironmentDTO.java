@@ -6,14 +6,4 @@ package com.atricore.idbus.console.services.dto;
 public class PHPExecutionEnvironmentDTO extends ExecutionEnvironmentDTO {
 
     private static final long serialVersionUID = 475540852333867381L;
-
-    private String instance;
-
-    public String getInstance() {
-        return instance;
-    }
-
-    public void setInstance(String instance) {
-        this.instance = instance;
-    }
 }

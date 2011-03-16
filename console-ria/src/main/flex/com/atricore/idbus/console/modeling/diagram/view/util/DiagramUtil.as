@@ -117,6 +117,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.alfrescoEnvironmentMiniIcon;
             case DiagramElementTypes.JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.javaEnvironmentMiniIcon;
+            case DiagramElementTypes.PHP_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.phpEnvironmentMiniIcon;
             case DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.phpbbEnvironmentMiniIcon;
             case DiagramElementTypes.WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:

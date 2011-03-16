@@ -49,5 +49,6 @@ public class DiagramElementTypes {
     public static const EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int = 25;
     public static const SALESFORCE_ELEMENT_TYPE:int = 26;
     public static const GOOGLE_APPS_ELEMENT_TYPE:int = 27;
+    public static const PHP_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int = 28;
 }
 }

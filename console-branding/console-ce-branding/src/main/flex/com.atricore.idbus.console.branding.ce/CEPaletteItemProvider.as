@@ -87,6 +87,11 @@ public class CEPaletteItemProvider implements PaletteItemProvider {
                 );
 
         environmentsPaletteDrawer.add(
+                new PaletteEntry("PHP", EmbeddedIcons.phpEnvironmentMiniIcon, "PHP Environment Entry", DiagramElementTypes.PHP_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
                 new PaletteEntry("PhpBB", EmbeddedIcons.phpbbEnvironmentMiniIcon, "PhpBB Environment Entry", DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );

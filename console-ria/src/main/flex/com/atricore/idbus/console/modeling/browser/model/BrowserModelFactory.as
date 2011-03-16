@@ -45,6 +45,7 @@ import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
@@ -169,6 +170,8 @@ public class BrowserModelFactory {
             } else if (executionEnvironment is JEEExecutionEnvironment) {
                 execEnvironmentNode.icon = EmbeddedIcons.javaEnvironmentMiniIcon;
             } else if (executionEnvironment is PHPExecutionEnvironment) {
+                execEnvironmentNode.icon = EmbeddedIcons.phpEnvironmentMiniIcon;
+            } else if (executionEnvironment is PhpBBExecutionEnvironment) {
                 execEnvironmentNode.icon = EmbeddedIcons.phpbbEnvironmentMiniIcon;
             } else if (executionEnvironment is WebserverExecutionEnvironment) {
                 execEnvironmentNode.icon = EmbeddedIcons.webEnvironmentMiniIcon;

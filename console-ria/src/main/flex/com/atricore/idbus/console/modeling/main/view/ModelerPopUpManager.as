@@ -41,6 +41,8 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbo
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateForm;
@@ -91,9 +93,6 @@ import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProvi
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
 
-import mx.resources.IResourceManager;
-import mx.resources.ResourceManager;
-
 import org.puremvc.as3.interfaces.IFacade;
 import org.puremvc.as3.interfaces.INotification;
 
@@ -123,6 +122,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _windowsIISExecutionEnvironmentCreateMediator:WindowsIISExecutionEnvironmentCreateMediator;
 	private var _alfrescoExecutionEnvironmentCreateMediator:AlfrescoExecutionEnvironmentCreateMediator;
     private var _javaEEExecutionEnvironmentCreateMediator:JavaEEExecutionEnvironmentCreateMediator;
+    private var _phpExecutionEnvironmentCreateMediator:PHPExecutionEnvironmentCreateMediator;
     private var _phpBBExecutionEnvironmentCreateMediator:PhpBBExecutionEnvironmentCreateMediator;
     private var _webserverExecutionEnvironmentCreateMediator:WebserverExecutionEnvironmentCreateMediator;
     private var _uploadProgressMediator:UploadProgressMediator;
@@ -157,6 +157,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _windowsIISExecutionEnvironmentCreateForm:WindowsIISExecutionEnvironmentCreateForm;
     private var _alfrescoExecutionEnvironmentCreateForm:AlfrescoExecutionEnvironmentCreateForm;
     private var _javaEEExecutionEnvironmentCreateForm:JavaEEExecutionEnvironmentCreateForm;
+    private var _phpExecutionEnvironmentCreateForm:PHPExecutionEnvironmentCreateForm;
     private var _phpBBExecutionEnvironmentCreateForm:PhpBBExecutionEnvironmentCreateForm;
     private var _webserverExecutionEnvironmentCreateForm:WebserverExecutionEnvironmentCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
@@ -384,6 +385,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set javaEEExecutionEnvironmentCreateMediator(value:JavaEEExecutionEnvironmentCreateMediator):void {
         _javaEEExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get phpExecutionEnvironmentCreateMediator():PHPExecutionEnvironmentCreateMediator {
+        return _phpExecutionEnvironmentCreateMediator;
+    }
+
+    public function set phpExecutionEnvironmentCreateMediator(value:PHPExecutionEnvironmentCreateMediator):void {
+        _phpExecutionEnvironmentCreateMediator = value;
     }
 
     public function get phpBBExecutionEnvironmentCreateMediator():PhpBBExecutionEnvironmentCreateMediator {
@@ -816,8 +825,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createWindowsIISExecutionEnvironmentCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.iis");
-        _popup.width = 440;//500
-        _popup.height = 220; //260
+        _popup.width = 500;//500
+        _popup.height = 290; //260
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_windowsIISExecutionEnvironmentCreateForm);
@@ -873,6 +882,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleJavaEEExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
         javaEEExecutionEnvironmentCreateMediator.setViewComponent(_javaEEExecutionEnvironmentCreateForm);
         javaEEExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreatePHPExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createPHPExecutionEnvironmentCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.php");
+        _popup.width = 440;
+        _popup.height = 220;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_phpExecutionEnvironmentCreateForm);
+    }
+
+    private function createPHPExecutionEnvironmentCreateForm():void {
+        _phpExecutionEnvironmentCreateForm = new PHPExecutionEnvironmentCreateForm();
+        _phpExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handlePHPExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handlePHPExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        phpExecutionEnvironmentCreateMediator.setViewComponent(_phpExecutionEnvironmentCreateForm);
+        phpExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreatePhpBBExecutionEnvironmentWindow(notification:INotification):void {

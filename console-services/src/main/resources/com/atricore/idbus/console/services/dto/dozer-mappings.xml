@@ -98,6 +98,7 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIISExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.AlfrescoExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.PHPExecutionEnvironment,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.PhpBBExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JEEExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WebserverExecutionEnvironment
             </a-hint>
@@ -112,6 +113,7 @@
                 com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.PHPExecutionEnvironmentDTO,
+                com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.JEEExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.WebserverExecutionEnvironmentDTO
             </b-hint>
@@ -455,6 +457,11 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.PHPExecutionEnvironment</class-a>
         <class-b>com.atricore.idbus.console.services.dto.PHPExecutionEnvironmentDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.PhpBBExecutionEnvironment</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironmentDTO</class-b>
     </mapping>
 
     <mapping>
