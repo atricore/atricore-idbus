@@ -315,6 +315,69 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
             // TODO : Generate agent config files for non-java agentes : IIS, PHP, Apache, etc
 
+            IdProjectModule module = event.getContext().getCurrentModule();
+
+            if (execEnv.getPlatformId().equals("apache") ||
+                    execEnv.getPlatformId().equals("php") ||
+                    execEnv.getPlatformId().startsWith("iis")) {
+
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("execEnv", execEnv);
+                params.put("gatewayLoginUrl", location + "/JOSSO/SSO/REDIR");
+                params.put("gatewayLogoutUrl", location + "/JOSSO/SLO/REDIR");
+                params.put("endpointHost", applianceDef.getLocation().getHost());
+                params.put("endpointPort", applianceDef.getLocation().getPort());
+                params.put("sessionManagerServicePath",
+                        (locationPath.startsWith("/") ? locationPath.substring(1) : locationPath) + "/JOSSO/SSOSessionManager/SOAP");
+                params.put("identityManagerServicePath",
+                        (locationPath.startsWith("/") ? locationPath.substring(1) : locationPath) + "/JOSSO/SSOIdentityManager/SOAP");
+                params.put("identityProviderServicePath",
+                        (locationPath.startsWith("/") ? locationPath.substring(1) : locationPath) + "/JOSSO/SSOIdentityProvider/SOAP");
+
+                if (execEnv.getPlatformId().equals("apache")) {
+                    IdProjectResource<String> agentConfig = new IdProjectResource<String>(idGen.generateId(),
+                            "META-INF/spring/" + bpBean.getName() + "/josso", "josso-" + bpBean.getName(), "apache", "josso-conf");
+                    agentConfig.setClassifier("velocity");
+                    agentConfig.setExtension("conf");
+                    agentConfig.setParams(params);
+                    agentConfig.setScope(IdProjectResource.Scope.RESOURCE);
+                    module.addResource(agentConfig);
+                } else if (execEnv.getPlatformId().equals("php")) {
+                    IdProjectResource<String> agentConfig = new IdProjectResource<String>(idGen.generateId(),
+                            "META-INF/spring/" + bpBean.getName() + "/josso", "josso-cfg", "php", "josso-conf");
+                    agentConfig.setClassifier("velocity");
+                    agentConfig.setExtension("inc");
+                    agentConfig.setParams(params);
+                    agentConfig.setScope(IdProjectResource.Scope.RESOURCE);
+                    module.addResource(agentConfig);
+                } else if (execEnv.getPlatformId().startsWith("iis")) {
+                    IdProjectResource<String> agentConfig = new IdProjectResource<String>(idGen.generateId(),
+                            "META-INF/spring/" + bpBean.getName() + "/josso", "josso-agent-config", "iis", "josso-conf");
+                    agentConfig.setClassifier("velocity");
+                    agentConfig.setExtension("ini");
+                    agentConfig.setParams(params);
+                    agentConfig.setScope(IdProjectResource.Scope.RESOURCE);
+                    module.addResource(agentConfig);
+
+                    params.put("iisPath", toWindowsPath(execEnv.getInstallUri()));
+                    
+                    IdProjectResource<String> configReg = new IdProjectResource<String>(idGen.generateId(),
+                            "META-INF/spring/" + bpBean.getName() + "/josso", "JOSSO-ISAPI-Config", "iis", "config-reg");
+                    configReg.setClassifier("velocity");
+                    configReg.setExtension("reg");
+                    configReg.setParams(params);
+                    configReg.setScope(IdProjectResource.Scope.RESOURCE);
+                    module.addResource(configReg);
+
+                    IdProjectResource<String> eventLogReg = new IdProjectResource<String>(idGen.generateId(),
+                            "META-INF/spring/" + bpBean.getName() + "/josso", "JOSSO-ISAPI-EventLog", "iis", "eventlog-reg");
+                    eventLogReg.setClassifier("velocity");
+                    eventLogReg.setExtension("reg");
+                    eventLogReg.setParams(params);
+                    eventLogReg.setScope(IdProjectResource.Scope.RESOURCE);
+                    module.addResource(eventLogReg);
+                }
+            }
         }
     }
 
@@ -387,6 +450,12 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         return rBeans;
     }
 
+    private String toWindowsPath(String uri) {
+        String path = uri;
+        path = path.replace("file:///", "");
+        path = path.replaceAll("/", "\\\\\\\\");
+        return path;
+    }
 
     public Map<String, ExecutionEnvironmentProperties> getExecEnvProperties() {
         return execEnvProperties;

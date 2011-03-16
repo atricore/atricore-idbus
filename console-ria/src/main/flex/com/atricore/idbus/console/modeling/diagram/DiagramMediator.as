@@ -501,6 +501,14 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT, cjavaenv);
                         break;
+                    case DiagramElementTypes.PHP_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var cphpenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_PHP_EXECUTION_ENVIRONMENT_ELEMENT, cphpenv);
+                        break;
                     case DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                         var cphpbbenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                 );

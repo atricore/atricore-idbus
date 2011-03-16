@@ -19,38 +19,35 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis {
+package com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
-import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
 
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
-
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediator {
+public class PHPExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
-
-    private static var _environmentName:String = "WIN_IIS";
+    private static var _environmentName:String = "PHP";
 
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    private var _newExecutionEnvironment:WindowsIISExecutionEnvironment;
+    private var _newExecutionEnvironment:PHPExecutionEnvironment;
 
-    public function WindowsIISExecutionEnvironmentCreateMediator(name:String = null, viewComp:WindowsIISExecutionEnvironmentCreateForm = null) {
+    public function PHPExecutionEnvironmentCreateMediator(name:String = null, viewComp:PHPExecutionEnvironmentCreateForm = null) {
         super(name, viewComp);
     }
 
@@ -64,7 +61,7 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
     
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnOk.removeEventListener(MouseEvent.CLICK, handleWindowsIISExecutionEnvironmentSave);
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handlePHPExecutionEnvironmentSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
         }
 
@@ -74,11 +71,10 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
     }
 
     private function init():void {
-        view.btnOk.addEventListener(MouseEvent.CLICK, handleWindowsIISExecutionEnvironmentSave);
+        view.btnOk.addEventListener(MouseEvent.CLICK, handlePHPExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.selectedHost.enabled = false;
-        view.architecture.selectedIndex = 0;
         view.focusManager.setFocus(view.executionEnvironmentName);
     }
 
@@ -86,28 +82,24 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         view.executionEnvironmentName.text = "";
         view.executionEnvironmentDescription.text = "";
         view.selectedHost.selectedIndex = 0;
-        view.architecture.selectedIndex = 0;
         view.homeDirectory.text = "";
-//        view.replaceConfFiles.selected = false;
-//        view.installSamples.selected = false;
-
+        view.homeDirectory.errorString = "";
+        
         FormUtility.clearValidationErrors(_validators);
     }
 
     override public function bindModel():void {
 
-        var windowsIISExecutionEnvironment:WindowsIISExecutionEnvironment = new WindowsIISExecutionEnvironment();
+        var phpExecutionEnvironment:PHPExecutionEnvironment = new PHPExecutionEnvironment();
 
-        windowsIISExecutionEnvironment.name = view.executionEnvironmentName.text;
-        windowsIISExecutionEnvironment.description = view.executionEnvironmentDescription.text;
-        windowsIISExecutionEnvironment.installUri = view.homeDirectory.text;
-        windowsIISExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        windowsIISExecutionEnvironment.installDemoApps = view.installSamples.selected;
-        windowsIISExecutionEnvironment.platformId = view.architecture.selectedItem.data;
-        _newExecutionEnvironment = windowsIISExecutionEnvironment;
+        phpExecutionEnvironment.name = view.executionEnvironmentName.text;
+        phpExecutionEnvironment.description = view.executionEnvironmentDescription.text;
+        phpExecutionEnvironment.installUri = view.homeDirectory.text;
+        phpExecutionEnvironment.platformId = "php";
+        _newExecutionEnvironment = phpExecutionEnvironment;
     }
 
-    private function handleWindowsIISExecutionEnvironmentSave(event:MouseEvent):void {
+    private function handlePHPExecutionEnvironmentSave(event:MouseEvent):void {
         view.homeDirectory.errorString = "";
         if (validate(true)) {
             var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
@@ -130,6 +122,7 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         closeWindow();
     }
 
+
     private function handleCancel(event:MouseEvent):void {
         closeWindow();
     }
@@ -140,10 +133,11 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
-    protected function get view():WindowsIISExecutionEnvironmentCreateForm
+    protected function get view():PHPExecutionEnvironmentCreateForm
     {
-        return viewComponent as WindowsIISExecutionEnvironmentCreateForm;
+        return viewComponent as PHPExecutionEnvironmentCreateForm;
     }
+
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);

@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Eventlog\Application\JOSSO Isapi]
+"TypesSupported"=dword:00000007
+"EventMessageFile"="$iisPath\\bin\\JOSSOIsapiAgent.dll"
+"CategoryCount"=dword:00000007
+"CategoryMessageFile"="$iisPath\\bin\\JOSSOIsapiAgent.dll"

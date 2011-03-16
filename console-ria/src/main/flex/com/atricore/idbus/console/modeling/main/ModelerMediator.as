@@ -330,6 +330,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT,
+            ApplicationFacade.CREATE_PHP_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_PHPBB_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.REMOVE_ACTIVATION_ELEMENT,
@@ -501,6 +502,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.CREATE_JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateJavaEEExecutionEnvironmentWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_PHP_EXECUTION_ENVIRONMENT_ELEMENT:
+                popupManager.showCreatePHPExecutionEnvironmentWindow(notification);
                 break;
             case ApplicationFacade.CREATE_PHPBB_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreatePhpBBExecutionEnvironmentWindow(notification);

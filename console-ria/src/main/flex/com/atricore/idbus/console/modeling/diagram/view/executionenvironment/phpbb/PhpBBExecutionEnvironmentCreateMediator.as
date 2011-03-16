@@ -24,19 +24,15 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
-import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
-
-import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironment;
 
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
-
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
@@ -49,7 +45,7 @@ public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    private var _newExecutionEnvironment:PHPExecutionEnvironment;
+    private var _newExecutionEnvironment:PhpBBExecutionEnvironment;
 
     public function PhpBBExecutionEnvironmentCreateMediator(name:String = null, viewComp:PhpBBExecutionEnvironmentCreateForm = null) {
         super(name, viewComp);
@@ -96,17 +92,15 @@ public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     override public function bindModel():void {
 
-        var phpExecutionEnvironment:PHPExecutionEnvironment = new PHPExecutionEnvironment();
+        var phpBBExecutionEnvironment:PhpBBExecutionEnvironment = new PhpBBExecutionEnvironment();
 
-        phpExecutionEnvironment.name = view.executionEnvironmentName.text;
-        phpExecutionEnvironment.description = view.executionEnvironmentDescription.text;
-        phpExecutionEnvironment.installUri = view.homeDirectory.text;
-        phpExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        phpExecutionEnvironment.installDemoApps = view.installSamples.selected;
-//        apacheExecutionEnvironment.platformId = view.platform.selectedItem.data;
-        //TODO check platform ID
-        phpExecutionEnvironment.platformId = "phpbb";
-        _newExecutionEnvironment = phpExecutionEnvironment;
+        phpBBExecutionEnvironment.name = view.executionEnvironmentName.text;
+        phpBBExecutionEnvironment.description = view.executionEnvironmentDescription.text;
+        phpBBExecutionEnvironment.installUri = view.homeDirectory.text;
+        phpBBExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
+        phpBBExecutionEnvironment.installDemoApps = view.installSamples.selected;
+        phpBBExecutionEnvironment.platformId = "phpbb";
+        _newExecutionEnvironment = phpBBExecutionEnvironment;
     }
 
     private function handlePhpBBExecutionEnvironmentSave(event:MouseEvent):void {

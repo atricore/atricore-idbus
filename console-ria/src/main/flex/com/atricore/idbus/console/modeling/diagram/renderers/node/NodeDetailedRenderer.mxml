@@ -58,6 +58,7 @@
         import com.atricore.idbus.console.services.dto.LdapIdentitySource;
         import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
         import com.atricore.idbus.console.services.dto.ServiceProvider;
 
@@ -179,6 +180,8 @@
                 } else if (obj is JEEExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.javaEnvironmentIcon;
                 } else if (obj is PHPExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.phpEnvironmentIcon;
+                } else if (obj is PhpBBExecutionEnvironment){
                     _linkIcon = EmbeddedIcons.phpbbEnvironmentIcon;
                 } else if (obj is WebserverExecutionEnvironment){
                     _linkIcon = EmbeddedIcons.webEnvironmentIcon;

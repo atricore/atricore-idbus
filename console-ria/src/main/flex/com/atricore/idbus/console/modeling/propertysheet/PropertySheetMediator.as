@@ -44,6 +44,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironme
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jboss.JBossExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jbossportal.JBossPortalExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.liferayportal.LiferayPortalExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.php.PHPExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.phpbb.PhpBBExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.tomcat.TomcatExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.wasce.WASCEExecEnvCoreSection;
@@ -104,6 +105,7 @@ import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.Resource;
@@ -193,6 +195,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _windowsIISExecEnvCoreSection:WindowsIISExecEnvCoreSection;
     private var _alfrescoExecEnvCoreSection:AlfrescoExecEnvCoreSection;
     private var _javaEEExecEnvCoreSection:JavaEEExecEnvCoreSection;
+    private var _phpExecEnvCoreSection:PHPExecEnvCoreSection;
     private var _phpBBExecEnvCoreSection:PhpBBExecEnvCoreSection;
     private var _webserverExecEnvCoreSection:WebserverExecEnvCoreSection;
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
@@ -346,6 +349,8 @@ public class PropertySheetMediator extends IocMediator {
                     } else if (_currentIdentityApplianceElement is JEEExecutionEnvironment){
                         enableJavaEEExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is PHPExecutionEnvironment){
+                        enablePHPExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is PhpBBExecutionEnvironment){
                         enablePhpBBExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is WebserverExecutionEnvironment) {
                         enableWebserverExecEnvPropertyTabs();
@@ -3373,19 +3378,18 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleWindowsIISExecEnvCorePropertyTabRollOut);
 
         // Exec.Environment Activation Tab
-//        var execEnvActivationPropertyTab:Group = new Group();
-//        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
-//        execEnvActivationPropertyTab.name = "Activation";
-//        execEnvActivationPropertyTab.width = Number("100%");
-//        execEnvActivationPropertyTab.height = Number("100%");
-//        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
-//
-//        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
-//        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
-//        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-//        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
-//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+        var execEnvActivationPropertyTab:Group = new Group();
+        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+        execEnvActivationPropertyTab.name = "Activation";
+        execEnvActivationPropertyTab.width = Number("100%");
+        execEnvActivationPropertyTab.height = Number("100%");
+        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
 
+        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
     }
 
     private function handleWindowsIISExecEnvCorePropertyTabCreationComplete(event:Event):void {
@@ -3401,10 +3405,18 @@ public class PropertySheetMediator extends IocMediator {
             _windowsIISExecEnvCoreSection.selectedHost.selectedIndex = 0;
             _windowsIISExecEnvCoreSection.selectedHost.enabled = false;
 
+            for (var i:int=0; i < _windowsIISExecEnvCoreSection.architecture.dataProvider.length; i++) {
+                if (_windowsIISExecEnvCoreSection.architecture.dataProvider[i].data == windowsIISExecEnv.platformId) {
+                    _windowsIISExecEnvCoreSection.architecture.selectedIndex = i;
+                    break;
+                }
+            }
+
             _windowsIISExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIISExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIISExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIISExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIISExecEnvCoreSection.architecture.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
             _validators.push(_windowsIISExecEnvCoreSection.nameValidator);
@@ -3432,8 +3444,7 @@ public class PropertySheetMediator extends IocMediator {
         var windowsIISExecEnv:WindowsIISExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WindowsIISExecutionEnvironment;
         windowsIISExecEnv.name = _windowsIISExecEnvCoreSection.executionEnvironmentName.text;
         windowsIISExecEnv.description = _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text;
-        //TODO CHECK PLATFORM ID
-        windowsIISExecEnv.platformId = "iis";
+        windowsIISExecEnv.platformId = _windowsIISExecEnvCoreSection.architecture.selectedItem.data;
         windowsIISExecEnv.installUri = _windowsIISExecEnvCoreSection.homeDirectory.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -3624,6 +3635,79 @@ public class PropertySheetMediator extends IocMediator {
         _dirty = false;
     }
 
+    /*****PHP*****/
+    private function enablePHPExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _phpExecEnvCoreSection = new PHPExecEnvCoreSection();
+        corePropertyTab.addElement(_phpExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _phpExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handlePHPExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handlePHPExecEnvCorePropertyTabRollOut);
+    }
+
+    private function handlePHPExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var phpExecEnv:PHPExecutionEnvironment = projectProxy.currentIdentityApplianceElement as PHPExecutionEnvironment;
+
+        if (phpExecEnv != null) {
+            // bind view
+            _phpExecEnvCoreSection.executionEnvironmentName.text = phpExecEnv.name;
+            _phpExecEnvCoreSection.executionEnvironmentDescription.text = phpExecEnv.description;
+            _phpExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _phpExecEnvCoreSection.homeDirectory.text = phpExecEnv.installUri;
+
+            _phpExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _phpExecEnvCoreSection.selectedHost.enabled = false;
+
+            _phpExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _phpExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _phpExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _phpExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_phpExecEnvCoreSection.nameValidator);
+            _validators.push(_phpExecEnvCoreSection.homeDirValidator);
+        }
+    }
+
+    private function handlePHPExecEnvCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        _phpExecEnvCoreSection.homeDirectory.errorString = "";
+        if (_dirty && validate(true)) {
+            _execEnvSaveFunction = phpSave;
+            _execEnvHomeDir = _phpExecEnvCoreSection.homeDirectory;
+
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _phpExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+        }
+    }
+
+    private function phpSave(): void {
+         // bind model
+        var phpExecEnv:PHPExecutionEnvironment = projectProxy.currentIdentityApplianceElement as PHPExecutionEnvironment;
+        phpExecEnv.name = _phpExecEnvCoreSection.executionEnvironmentName.text;
+        phpExecEnv.description = _phpExecEnvCoreSection.executionEnvironmentDescription.text;
+        //TODO CHECK PLATFORM ID
+        phpExecEnv.platformId = "php";
+        phpExecEnv.installUri = _phpExecEnvCoreSection.homeDirectory.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
     /*****PHPBB*****/
     private function enablePhpBBExecEnvPropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();
@@ -3660,7 +3744,7 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handlePhpBBExecEnvCorePropertyTabCreationComplete(event:Event):void {
-        var phpBBExecEnv:PHPExecutionEnvironment = projectProxy.currentIdentityApplianceElement as PHPExecutionEnvironment;
+        var phpBBExecEnv:PhpBBExecutionEnvironment = projectProxy.currentIdentityApplianceElement as PhpBBExecutionEnvironment;
 
         if (phpBBExecEnv != null) {
             // bind view
@@ -3699,7 +3783,7 @@ public class PropertySheetMediator extends IocMediator {
 
     private function phpBBSave(): void {
          // bind model
-        var phpBBExecEnv:PHPExecutionEnvironment = projectProxy.currentIdentityApplianceElement as PHPExecutionEnvironment;
+        var phpBBExecEnv:PhpBBExecutionEnvironment = projectProxy.currentIdentityApplianceElement as PhpBBExecutionEnvironment;
         phpBBExecEnv.name = _phpBBExecEnvCoreSection.executionEnvironmentName.text;
         phpBBExecEnv.description = _phpBBExecEnvCoreSection.executionEnvironmentDescription.text;
         //TODO CHECK PLATFORM ID
@@ -3793,7 +3877,8 @@ public class PropertySheetMediator extends IocMediator {
         if (execEnv != null) {
             _executionEnvironmentActivateSection.replaceConfFiles.selected = execEnv.overwriteOriginalSetup;
             _executionEnvironmentActivateSection.installSamples.selected = execEnv.installDemoApps;
-            if (execEnv is LiferayExecutionEnvironment || execEnv is AlfrescoExecutionEnvironment) {
+            if (execEnv is LiferayExecutionEnvironment || execEnv is AlfrescoExecutionEnvironment ||
+                    execEnv is WindowsIISExecutionEnvironment) {
                 _executionEnvironmentActivateSection.installSamples.selected = false;
                 _executionEnvironmentActivateSection.installSamples.enabled = false;
             }

@@ -87,7 +87,8 @@ public class LicenseMediator extends IocMediator implements IDisposable {
 
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnUpdateLicense.removeEventListener(MouseEvent.CLICK, handleUpdateLicenseButton);
+//            Hidding update button for now [ATCON-342]
+//            view.btnUpdateLicense.removeEventListener(MouseEvent.CLICK, handleUpdateLicenseButton);
         }
 
         (viewComponent as LicenseView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
@@ -99,7 +100,8 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         _created = true;
         
         popupManager.init(iocFacade, view);
-        view.btnUpdateLicense.addEventListener(MouseEvent.CLICK, handleUpdateLicenseButton);
+//        Hidding update button for now [ATCON-342]
+//        view.btnUpdateLicense.addEventListener(MouseEvent.CLICK, handleUpdateLicenseButton);
         init();
     }
 
@@ -153,10 +155,11 @@ public class LicenseMediator extends IocMediator implements IDisposable {
                 break;
         }
     }
-
-    public function handleUpdateLicenseButton(event:Event):void {
-        sendNotification(ApplicationFacade.DISPLAY_UPDATE_LICENSE);
-    }
+    
+//    Hidding update button for now [ATCON-342]
+//    public function handleUpdateLicenseButton(event:Event):void {
+//        sendNotification(ApplicationFacade.DISPLAY_UPDATE_LICENSE);
+//    }
 
     public function handleActivationFailure(notification:INotification):void {
         var errMsg:String = notification.getBody() as String;
