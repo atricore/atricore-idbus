@@ -133,7 +133,7 @@ public class GroupPropertiesMediator extends IocMediator {
         trace(e);
     }
 
-    private function showGroupExtraAttributesTab() {
+    private function showGroupExtraAttributesTab():void {
         var extraAttrTab:spark.components.Group = new spark.components.Group();
         extraAttrTab.id = "extraAttributesSectionGroup";
         extraAttrTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.extraattributes');

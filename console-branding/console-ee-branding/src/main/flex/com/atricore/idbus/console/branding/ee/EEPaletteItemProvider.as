@@ -130,7 +130,7 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 );
 
         environmentsPaletteDrawer.add(
-                new PaletteEntry("Windows", EmbeddedIcons.windowsEnvironmentMiniIcon, "Windows Environment Entry", DiagramElementTypes.WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("Windows IIS", EmbeddedIcons.windowsEnvironmentMiniIcon, "Windows IIS Environment Entry", DiagramElementTypes.WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 

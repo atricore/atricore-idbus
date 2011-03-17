@@ -99,7 +99,7 @@ public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
         phpBBExecutionEnvironment.installUri = view.homeDirectory.text;
         phpBBExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
         phpBBExecutionEnvironment.installDemoApps = view.installSamples.selected;
-        phpBBExecutionEnvironment.platformId = "phpbb";
+        phpBBExecutionEnvironment.platformId = "phpBB";
         _newExecutionEnvironment = phpBBExecutionEnvironment;
     }
 
