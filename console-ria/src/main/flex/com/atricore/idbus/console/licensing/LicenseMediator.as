@@ -23,6 +23,7 @@ package com.atricore.idbus.console.licensing
 {
 import com.atricore.idbus.console.licensing.main.controller.GetLicenseCommand;
 import com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand;
+import com.atricore.idbus.console.licensing.main.event.DataGridButtonEvent;
 import com.atricore.idbus.console.licensing.main.model.LicenseProxy;
 import com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager;
 import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator;
@@ -35,6 +36,8 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
+import mx.controls.DataGrid;
+import mx.controls.dataGridClasses.MXDataGridItemRenderer;
 import mx.events.FlexEvent;
 
 import mx.resources.IResourceManager;
@@ -51,6 +54,8 @@ import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 import spark.components.Button;
 import spark.components.HGroup;
 import spark.components.Label;
+import spark.components.TextArea;
+import spark.components.VGroup;
 
 public class LicenseMediator extends IocMediator implements IDisposable {
 
@@ -117,7 +122,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
             view.titleDisplay.height = 0;
             sendNotification(ApplicationFacade.GET_LICENSE);
         }
-
+        view.addEventListener ( DataGridButtonEvent.BUTTON_CLICKED, handleViewLicenseButtonClick );
     }
 
     override public function listNotificationInterests():Array {
@@ -170,8 +175,8 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         sendNotification(ApplicationFacade.DISPLAY_EULA_TEXT, StringUtil.trim(_licenseProxy.license.eula));
     }
 
-    public function handleViewLicenseButton(event:Event):void {
-        var btnId:String = (event.currentTarget as Button).id;
+    public function handleViewLicenseButtonClick(event:DataGridButtonEvent):void {
+        var btnId:String = event.data as String;
         var tmpId:String;
         var tmpFeature:FeatureType;
         for each (var licFeature:LicensedFeatureType in _licenseProxy.license.licensedFeature) {
@@ -187,110 +192,59 @@ public class LicenseMediator extends IocMediator implements IDisposable {
     }
 
     public function displayLicenseInfo():void {
-        var paddingBottom:Number = 5;
         var lblWidth:Number = 150;
-        view.licenseInfo.removeAllElements();
-
-        //GENERAL EULA
-        if(_licenseProxy.license.eula != null) {
-            var hgroup:HGroup = new HGroup();
-            hgroup.paddingBottom = paddingBottom;
-            var textLbl:Label = new Label();
-            textLbl.width = lblWidth;
-            textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.generaleula') + ":";
-            hgroup.addElement(textLbl);
-            var btn:Button = new Button();
-            btn.label = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.vieweula');
-            btn.addEventListener(MouseEvent.CLICK, handleViewEulaButton);
-            hgroup.addElement(btn);
-//            textLbl = new Label();
-//            textLbl.text = StringUtil.trim(_licenseProxy.license.eula);
-//            hgroup.addElement(textLbl);
-            view.licenseInfo.addElement(hgroup);
-        }
+        var textAreaWidth:Number = 600;
+//        view.licenseInfo.removeAllElements();
 
         //LICENSE OWNER
         if(_licenseProxy.license.organization != null && _licenseProxy.license.organization.owner != null){
-            hgroup = new HGroup();
-            hgroup.paddingBottom = paddingBottom;
-            textLbl = new Label();
-            textLbl.width = lblWidth;
-            textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.owner') + ":";
-            hgroup.addElement(textLbl);
-            textLbl = new Label();
-            textLbl.text = _licenseProxy.license.organization.owner;
-            hgroup.addElement(textLbl);
-            view.licenseInfo.addElement(hgroup);
+            view.licenseOwner.text = _licenseProxy.license.organization.owner;
         }
 
         //ORGANIZATION
         if(_licenseProxy.license.organization != null){
-            hgroup = new HGroup();
-            hgroup.paddingBottom = paddingBottom;
-            textLbl = new Label();
-            textLbl.width = lblWidth;
-            textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.organization') + ":";
-            hgroup.addElement(textLbl);
-            textLbl = new Label();
-            textLbl.text = _licenseProxy.license.organization.organizationName;
-            hgroup.addElement(textLbl);
-            view.licenseInfo.addElement(hgroup);
+            view.licenseOrganization.text = _licenseProxy.license.organization.organizationName;
+        }
+
+        //GENERAL EULA
+        if(_licenseProxy.license.eula != null) {
+//            view.generalEula.width = textAreaWidth;
+//            view.generalEula.height = 100;
+            view.generalEula.text = StringUtil.trim(_licenseProxy.license.eula);
         }
 
         //FEATURES
+//        view.features.width = textAreaWidth;
+//        view.features.height = 200;
+
+        //copy all features to array, in case we have more than one licensedFeature
+        var featureArray:ArrayCollection = new ArrayCollection();
         for each (var licFeature:LicensedFeatureType in _licenseProxy.license.licensedFeature) {
             for each (var feature:FeatureType in licFeature.feature) {
-                //feature name
-                hgroup = new HGroup();
-                hgroup.paddingBottom = paddingBottom;
-                textLbl = new Label();
-                textLbl.width = lblWidth;
-                textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.feature') + ":";
-                hgroup.addElement(textLbl);
-                textLbl = new Label();
-                textLbl.text = feature.name;
-                hgroup.addElement(textLbl);
-                view.licenseInfo.addElement(hgroup);
-
-                //feature expire date
-                hgroup = new HGroup();
-                hgroup.paddingBottom = paddingBottom;
-                textLbl = new Label();
-                textLbl.width = lblWidth;
-                textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.expires') + ":";
-                hgroup.addElement(textLbl);
-                textLbl = new Label();
-                textLbl.text = licFeature.expirationDate.toDateString();
-                hgroup.addElement(textLbl);
-                view.licenseInfo.addElement(hgroup);
-
-                //feature license text
-                if(feature.licenseText != null){
-                    hgroup = new HGroup();
-                    hgroup.paddingBottom = paddingBottom;
-                    textLbl = new Label();
-                    textLbl.width = lblWidth;
-                    textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.licensetext') + ":";
-                    hgroup.addElement(textLbl);
-                    btn = new Button();
-                    btn.label = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.viewlicense');
-                    btn.id = feature.group + feature.name;
-                    btn.addEventListener(MouseEvent.CLICK, handleViewLicenseButton);
-                    hgroup.addElement(btn);
-//                    textLbl = new Label();
-//                    textLbl.text = StringUtil.trim(feature.licenseText);
-//                    hgroup.addElement(textLbl);
-                    view.licenseInfo.addElement(hgroup);
-                }
+                featureArray.addItem(feature);
             }
         }
-//        view.eula.text = _licenseProxy.license.eula;
-//        view.organization.text = _licenseProxy.license.organization.organizationName;
-//        view.ownerName.text = _licenseProxy.license.organization.owner;
 
-//        var licFeature:LicensedFeatureType = _licenseProxy.license.licensedFeature.getItemAt(0) as LicensedFeatureType;
-//        view.feature.text = licFeature.feature.getItemAt(0).name;
-//        view.expirationDate.text = licFeature.expirationDate.toDateString();
+        view.features.dataProvider = featureArray;
+
+        //name
+        //description
+        //version range
+        //license details button
+        var btnId:String = feature.group + feature.name;
+//        btn.addEventListener(MouseEvent.CLICK, handleViewLicenseButton);
+
+
+                //feature license text
+        if(feature.licenseText != null){
+//                    btn.label = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.viewlicense');
+//                    btn.id = feature.group + feature.name;
+//
+//                    hgroup.addElement(btn);
+//                    view.licenseInfo.addElement(hgroup);
+
+
+        }
     }
 
     protected function get view():LicenseView

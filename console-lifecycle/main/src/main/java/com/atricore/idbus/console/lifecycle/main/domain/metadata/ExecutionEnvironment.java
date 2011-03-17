@@ -1,5 +1,7 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+import com.atricore.idbus.console.lifecycle.main.spi.ExecEnvType;
+
 import java.io.Serializable;
 import java.util.Set;
 
@@ -15,7 +17,9 @@ public class ExecutionEnvironment implements Serializable {
     private String displayName;
     private String description;
     private String installUri;
+    private String location;
     private String platformId;
+    private ExecEnvType type;
     private boolean active;
     private boolean overwriteOriginalSetup;
     private boolean installDemoApps;
@@ -65,6 +69,22 @@ public class ExecutionEnvironment implements Serializable {
 
     public void setInstallUri(String installUri) {
         this.installUri = installUri;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public ExecEnvType getType() {
+        return type;
+    }
+
+    public void setType(ExecEnvType type) {
+        this.type = type;
     }
 
     public Set<Activation> getActivations() {

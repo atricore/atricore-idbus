@@ -159,7 +159,10 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
             view.accountManagementTabBar.selectedIndex = 0;
             view.vsAccountMng.selectedIndex = 0;
             view.accountManagementTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
-            sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"User");
+
+            // dispatch index change. (select Users tab)
+            view.accountManagementTabBar.dispatchEvent(
+                    new IndexChangeEvent( IndexChangeEvent.CHANGE, false, false, 0, 0 ) )
         }
     }
 
@@ -181,10 +184,8 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
     private function stackChanged(event:IndexChangeEvent):void {
         view.vsAccountMng.selectedIndex = view.accountManagementTabBar.selectedIndex;
         if (view.vsAccountMng.selectedIndex==0) {
-            sendNotification(ApplicationFacade.LIST_USERS);  // in case attributes were changed/deleted
             sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"User");
         } else if (view.vsAccountMng.selectedIndex==1) {
-            sendNotification(ApplicationFacade.LIST_GROUPS);  // in case attributes were changed/deleted
             sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"Group");
         } else if (view.vsAccountMng.selectedIndex==2)
             sendNotification(ApplicationFacade.DISPLAY_SCHEMA_ATTRIBUTES);
@@ -193,7 +194,8 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
     override public function listNotificationInterests():Array {
         return [BaseAppFacade.APP_SECTION_CHANGE_START,
             BaseAppFacade.APP_SECTION_CHANGE_END,
-            ApplicationFacade.LOGOUT
+            ApplicationFacade.LOGOUT,
+            ApplicationFacade.LIST_SCHEMA_ATTRIBUTES
         ];
     }
 
@@ -213,6 +215,13 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
                 break;
             case ApplicationFacade.LOGOUT:
                 this.dispose();
+                break;
+            case ApplicationFacade.LIST_SCHEMA_ATTRIBUTES:
+                // in case attributes were changed/deleted
+                if (view.vsAccountMng.selectedIndex==0)
+                    sendNotification(ApplicationFacade.LIST_USERS);
+                else if (view.vsAccountMng.selectedIndex==1)
+                    sendNotification(ApplicationFacade.LIST_GROUPS);
                 break;
             default:
                 super.handleNotification(notification);

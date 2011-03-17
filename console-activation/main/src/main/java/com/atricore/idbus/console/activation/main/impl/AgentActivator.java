@@ -5,9 +5,7 @@ import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentReque
 import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.*;
 import org.josso.tooling.gshell.core.support.MessagePrinter;
 import org.josso.tooling.gshell.install.JOSSOScope;
 import org.josso.tooling.gshell.install.installer.Installer;
@@ -31,6 +29,8 @@ public class AgentActivator extends ActivatorSupport {
     protected FileObject srcsDir;
     protected FileObject trdpartyDir;
     protected FileObject confDir;
+    protected FileObject iis32Dir;
+    protected FileObject iis64Dir;
 
     public AgentActivator(List<Installer> installers,
                           MessagePrinter printer,
@@ -67,6 +67,8 @@ public class AgentActivator extends ActivatorSupport {
         srcsDir = jossoDistDir.resolveFile("dist/agents/src");
         trdpartyDir = libsDir.resolveFile("3rdparty");
         confDir = jossoDistDir.resolveFile("dist/agents/config/" + request.getTargetPlatformId());
+        iis32Dir = libsDir.resolveFile("Win32");
+        iis64Dir = libsDir.resolveFile("Win64");
     }
 
     protected void verifyTarget() throws Exception {
@@ -74,16 +76,24 @@ public class AgentActivator extends ActivatorSupport {
             getInstaller(request).validatePlatform();
     }
 
-    protected void installJOSSOAgentJars() throws Exception {
-
-        FileObject[] agentBins = libsDir.getChildren();
-        for (int i = 0; i < agentBins.length; i++) {
-            FileObject agentBin = agentBins[i];
-            getInstaller(request).installComponent(createArtifact(libsDir.getURL().toString(), JOSSOScope.AGENT, agentBin.getName().getBaseName()), true);
+    protected void processDir(FileObject dir, boolean recursive) throws Exception {
+        FileObject[] children = dir.getChildren();
+        for (FileObject subfile : children) {
+            if (subfile.getType() == FileType.FOLDER) {
+                if (recursive)
+                    processDir(subfile, recursive);
+            } else {
+                getInstaller(request).installComponent(createArtifact(subfile.getParent().getURL().toString(), JOSSOScope.AGENT, subfile.getName().getBaseName()), true);
+            }
         }
-
     }
 
+    protected void installJOSSOAgentJars() throws Exception {
+        processDir(libsDir, false);
+        processDir(iis32Dir, true);
+        processDir(iis64Dir, true);
+    }
+    
     protected void installJOSSOAgentJarsFromSrc() throws Exception {
 
         if (!srcsDir.exists())

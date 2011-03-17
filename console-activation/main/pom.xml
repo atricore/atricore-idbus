@@ -225,12 +225,19 @@
         </dependency>
 
         <dependency>
+            <groupId>diff_match_patch</groupId>
+            <artifactId>diff_match_patch</artifactId>
+            <version>current</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>xmldb</groupId>
             <artifactId>xmldb-common</artifactId>
             <version>20030701</version>
             <scope>compile</scope>
         </dependency>
-
+        
         <dependency>
             <groupId>org.apache.maven.artifact</groupId>
             <artifactId>maven-artifact</artifactId>

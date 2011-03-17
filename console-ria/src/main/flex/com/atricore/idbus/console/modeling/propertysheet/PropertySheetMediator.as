@@ -3786,8 +3786,7 @@ public class PropertySheetMediator extends IocMediator {
         var phpBBExecEnv:PhpBBExecutionEnvironment = projectProxy.currentIdentityApplianceElement as PhpBBExecutionEnvironment;
         phpBBExecEnv.name = _phpBBExecEnvCoreSection.executionEnvironmentName.text;
         phpBBExecEnv.description = _phpBBExecEnvCoreSection.executionEnvironmentDescription.text;
-        //TODO CHECK PLATFORM ID
-        phpBBExecEnv.platformId = "phpbb";
+        phpBBExecEnv.platformId = "phpBB";
         phpBBExecEnv.installUri = _phpBBExecEnvCoreSection.homeDirectory.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -3878,7 +3877,7 @@ public class PropertySheetMediator extends IocMediator {
             _executionEnvironmentActivateSection.replaceConfFiles.selected = execEnv.overwriteOriginalSetup;
             _executionEnvironmentActivateSection.installSamples.selected = execEnv.installDemoApps;
             if (execEnv is LiferayExecutionEnvironment || execEnv is AlfrescoExecutionEnvironment ||
-                    execEnv is WindowsIISExecutionEnvironment) {
+                    execEnv is WindowsIISExecutionEnvironment || execEnv is PhpBBExecutionEnvironment) {
                 _executionEnvironmentActivateSection.installSamples.selected = false;
                 _executionEnvironmentActivateSection.installSamples.enabled = false;
             }

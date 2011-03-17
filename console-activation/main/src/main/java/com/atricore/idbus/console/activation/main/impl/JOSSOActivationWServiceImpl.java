@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 
+// TODO : Authenticate requests using JAAS!
 @javax.jws.WebService(
                       serviceName = "ActivationService",
                       portName = "soap",

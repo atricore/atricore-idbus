@@ -318,7 +318,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
             IdProjectModule module = event.getContext().getCurrentModule();
 
             if (execEnv.getPlatformId().equals("apache") ||
-                    execEnv.getPlatformId().equals("php") ||
+                    execEnv.getPlatformId().startsWith("php") ||
                     execEnv.getPlatformId().startsWith("iis")) {
 
                 Map<String, Object> params = new HashMap<String, Object>();
@@ -342,7 +342,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                     agentConfig.setParams(params);
                     agentConfig.setScope(IdProjectResource.Scope.RESOURCE);
                     module.addResource(agentConfig);
-                } else if (execEnv.getPlatformId().equals("php")) {
+                } else if (execEnv.getPlatformId().startsWith("php")) {
                     IdProjectResource<String> agentConfig = new IdProjectResource<String>(idGen.generateId(),
                             "META-INF/spring/" + bpBean.getName() + "/josso", "josso-cfg", "php", "josso-conf");
                     agentConfig.setClassifier("velocity");
