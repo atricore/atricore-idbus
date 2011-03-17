@@ -121,6 +121,11 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.atricore.idbus.console.activation</groupId>
+            <artifactId>com.atricore.idbus.console.activation.protocol</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>

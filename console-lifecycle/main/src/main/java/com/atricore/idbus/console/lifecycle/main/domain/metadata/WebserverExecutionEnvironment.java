@@ -7,13 +7,13 @@ public class WebserverExecutionEnvironment extends ExecutionEnvironment {
 
     private static final long serialVersionUID = 475740871223858432L;
 
-    private String type;
+    private String containerType;
 
-    public String getType() {
-        return type;
+    public String getContainerType() {
+        return containerType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setContainerType(String containerType) {
+        this.containerType = containerType;
     }
 }

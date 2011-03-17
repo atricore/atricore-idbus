@@ -46,6 +46,8 @@ public class AgentConfigActivator extends ActivatorSupport {
 
         try {
 
+            // TODO : Support activation resources provided in the request. To minimize security issues, try to validate names!
+
             init();
 
             validate();

@@ -21,6 +21,9 @@
 
 package com.atricore.idbus.console.lifecycle.main.impl;
 
+import com.atricore.idbus.console.activation._1_0.protocol.*;
+import com.atricore.idbus.console.activation.main.client.ActivationClient;
+import com.atricore.idbus.console.activation.main.client.ActivationClientFactory;
 import com.atricore.idbus.console.activation.main.exception.ActivationException;
 import com.atricore.idbus.console.activation.main.spi.ActivationService;
 import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
@@ -29,6 +32,7 @@ import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequ
 import com.atricore.idbus.console.activation.main.spi.request.PlatformSupportedRequest;
 import com.atricore.idbus.console.activation.main.spi.response.*;
 import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.JDBCDriverDescriptor;
@@ -74,7 +78,11 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private static final Log logger = LogFactory.getLog(IdentityApplianceManagementServiceImpl.class);
 
+    // For local activations (faster)
     private ActivationService activationService;
+
+    // For remote activations
+    private ActivationClientFactory activationClientFactory;
 
     private ApplianceBuilder builder;
 
@@ -170,7 +178,10 @@ public class IdentityApplianceManagementServiceImpl implements
         try {
             syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(req.getApplianceId()));
-            appliance = deployAppliance(appliance, req.getConfigureExecEnvs() != null ? req.getConfigureExecEnvs() : true);
+            appliance = deployAppliance(appliance,
+                    req.getUsername(),
+                    req.getPassword(),
+                    req.getConfigureExecEnvs() != null ? req.getConfigureExecEnvs() : true);
 
             if (req.getStartAppliance()) {
                 appliance = startAppliance(appliance);
@@ -479,7 +490,7 @@ public class IdentityApplianceManagementServiceImpl implements
             execEnv.setInstallDemoApps(request.isActivateSamples());
             execEnv.setOverwriteOriginalSetup(request.isReplace());
 
-            activateExecEnv(appliance, execEnv, request.isReactivate());
+            activateExecEnv(appliance, execEnv, request.isReactivate(), request.getUsername(), request.getPassword());
             debugAppliance(appliance, ApplianceValidator.Operation.ANY);
 
             return response;
@@ -1509,7 +1520,9 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     protected void configureExecEnv(IdentityAppliance appliance,
-                                    ExecutionEnvironment execEnv) throws IdentityServerException {
+                                    ExecutionEnvironment execEnv,
+                                    String username,
+                                    String password) throws IdentityServerException {
 
         try {
 
@@ -1537,11 +1550,42 @@ public class IdentityApplianceManagementServiceImpl implements
             if (logger.isDebugEnabled())
                 logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
 
-            ConfigureAgentRequest activationReq = doMakeConfigureAgentRequest(execEnv);
-            activationReq.setJossoAgentConfigUri(agentCfg);
-            activationReq.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
+            switch (execEnv.getType()) {
+                case LOCAL:
+                    ConfigureAgentRequest activationReq = doMakeConfigureAgentRequest(execEnv);
+                    activationReq.setJossoAgentConfigUri(agentCfg);
+                    activationReq.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
 
-            ConfigureAgentResponse actiationResponse = activationService.configureAgent(activationReq);
+                    ConfigureAgentResponse actiationResponse = activationService.configureAgent(activationReq);
+                    break;
+
+                case REMOTE:
+
+                    if (username != null && password != null) {
+                        ConfigureAgentRequestType wsActivationReq = doMakeWsConfigureAgentRequest(execEnv, username, password);
+                        ActivationClient wsClient = activationClientFactory.newActivationClient(execEnv.getLocation());
+
+
+                        // TODO : Ask local activation service for resources:
+                        // TODO : res = activationService.retrieveConfigurationResources(req);
+
+                        // TODO : Attach activation resources to request
+
+                        wsActivationReq.setJossoAgentConfigUri(agentCfg);
+                        wsActivationReq.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
+                        wsActivationReq.setUser(username);
+                        wsActivationReq.setPassword(password);
+
+                        ConfigureAgentResponseType wsActiationResponse = wsClient.configureAgent(wsActivationReq);
+                    } else {
+                        logger.warn("Cannot configure Agent for " + execEnv.getName() + ". No authentication information available");
+                    }
+
+                    break;
+                default:
+                    throw new IdentityServerException("Unknown Execution Environment type " + execEnv.getType().name());
+            }
+
         } catch (ActivationException e) {
             throw new IdentityServerException(e);
         }
@@ -1551,7 +1595,9 @@ public class IdentityApplianceManagementServiceImpl implements
 
     protected void activateExecEnv(IdentityAppliance appliance,
                                    ExecutionEnvironment execEnv,
-                                   boolean reactivate) throws IdentityServerException {
+                                   boolean reactivate,
+                                   String username,
+                                   String password) throws IdentityServerException {
 
 
 
@@ -1566,23 +1612,58 @@ public class IdentityApplianceManagementServiceImpl implements
 
         try {
 
-            ActivateAgentRequest activationRequest = doMakeAgentActivationRequest(execEnv);
-            ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
+            switch (execEnv.getType()) {
 
-            // Only configure the appliance if we have deployment information
-            if (execEnv.isOverwriteOriginalSetup() && appliance.getIdApplianceDeployment() != null)
-                configureExecEnv(appliance, execEnv);
+                case LOCAL:
+                    ActivateAgentRequest activationRequest = doMakeAgentActivationRequest(execEnv);
+                    ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
 
-            if (execEnv.isInstallDemoApps()) {
+                    // Only configure the appliance if we have deployment information
+                    if (execEnv.isOverwriteOriginalSetup() && appliance.getIdApplianceDeployment() != null)
+                        configureExecEnv(appliance, execEnv, username, password);
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Activating Samples in Execution Environment " + execEnv.getName());
+                    if (execEnv.isInstallDemoApps()) {
 
-                ActivateSamplesRequest samplesActivationRequest =
-                        doMakeAgentSamplesActivationRequest(execEnv);
+                        if (logger.isDebugEnabled())
+                            logger.debug("Activating Samples in Execution Environment " + execEnv.getName());
 
-                ActivateSamplesResponse samplesActivationResponse =
-                        activationService.activateSamples(samplesActivationRequest);
+                        ActivateSamplesRequest samplesActivationRequest =
+                                doMakeAgentSamplesActivationRequest(execEnv);
+
+                        ActivateSamplesResponse samplesActivationResponse =
+                                activationService.activateSamples(samplesActivationRequest);
+                    }
+                    break;
+                case REMOTE:
+
+                    if (username != null && password != null) {
+                        ActivationClient wsClient = activationClientFactory.newActivationClient(execEnv.getLocation());
+                        ActivateAgentRequestType wsActivationRequest = doMakeWsAgentActivationRequest(execEnv, username, password);
+                        ActivateAgentResponseType wsResponse = wsClient.activateAgent(wsActivationRequest);
+
+                        // Only configure the appliance if we have deployment information
+                        if (execEnv.isOverwriteOriginalSetup() && appliance.getIdApplianceDeployment() != null)
+                            configureExecEnv(appliance, execEnv, username, password);
+
+
+                        if (execEnv.isInstallDemoApps()) {
+
+                            if (logger.isDebugEnabled())
+                                logger.debug("Activating Samples in Execution Environment " + execEnv.getName());
+
+                            ActivateSamplesRequestType wsSamplesActivationRequest =
+                                    doMakeWsAgentSamplesActivationRequest(execEnv, username, password);
+
+                            ActivateSamplesResponseType wsSamplesActivationResponse =
+                                    wsClient.activateSamples(wsSamplesActivationRequest);
+                        }
+                    } else {
+                        logger.warn("Cannot activate Agent for " + execEnv.getName() + ". No authentication information available");
+                    }
+
+                    break;
+                default:
+                    throw new IdentityServerException("Unknown execution environment type :  " + execEnv.getType());
             }
 
             // Mark activation as activated and save appliance.
@@ -1741,7 +1822,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
     }
 
-    protected IdentityAppliance deployAppliance(IdentityAppliance appliance, boolean configureExecEnvs) throws IdentityServerException {
+    protected IdentityAppliance deployAppliance(IdentityAppliance appliance, String username, String password, boolean configureExecEnvs) throws IdentityServerException {
 
         if (logger.isDebugEnabled())
             logger.debug("Deploying Identity Appliance " + appliance.getId());
@@ -1764,7 +1845,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
                 if (execEnv.isActive()) {
                     logger.debug("Execution environment is active, configuring " + execEnv.getName());
-                    configureExecEnv(appliance, execEnv);
+                    configureExecEnv(appliance, execEnv, username, password);
                 } else {
                     logger.debug("Execution environment is not active, skip configuration " + execEnv.getName());
                 }
@@ -1808,7 +1889,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
         // Install it
         if (deploy)
-            appliance = deployAppliance(appliance, false);
+            appliance = deployAppliance(appliance, null, null, false);
 
         // Store it
         appliance = identityApplianceDAO.save(appliance);
@@ -1867,7 +1948,7 @@ public class IdentityApplianceManagementServiceImpl implements
                         appliance = identityApplianceDAO.save(appliance);
 
                         logger.debug("Automatically Starting appliance ... " + appliance.getId());
-                        this.deployAppliance(appliance, false);
+                        this.deployAppliance(appliance, null, null, false);
 
                     }
 
@@ -1907,6 +1988,37 @@ public class IdentityApplianceManagementServiceImpl implements
         return req;
     }
 
+    protected ActivateAgentRequestType doMakeWsAgentActivationRequest(ExecutionEnvironment execEnv,
+                                                                      String username, String password ) {
+
+        ActivateAgentRequestType req = new ActivateAgentRequestType();
+        req.setTarget(execEnv.getInstallUri());
+        req.setTargetPlatformId(execEnv.getPlatformId());
+        req.setUser(username);
+        req.setPassword(password);
+
+        if (execEnv instanceof JBossExecutionEnvironment) {
+            JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) execEnv;
+            req.setJbossInstance(jbExecEnv.getInstance());
+        } else if (execEnv instanceof WeblogicExecutionEnvironment) {
+            WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
+            req.setWeblogicDomain(wlExecEnv.getDomain());
+        } else if (execEnv instanceof AlfrescoExecutionEnvironment){
+            AlfrescoExecutionEnvironment alfExecEnv = (AlfrescoExecutionEnvironment)execEnv;
+            req.setTomcatInstallDir(alfExecEnv.getTomcatInstallDir());
+        } else if (execEnv instanceof LiferayExecutionEnvironment) {
+            LiferayExecutionEnvironment liferayExecEnv = (LiferayExecutionEnvironment) execEnv;
+            if ("tomcat".equals(liferayExecEnv.getContainerType())) {
+                req.setTomcatInstallDir(liferayExecEnv.getContainerPath());
+            } else if ("jboss".equals(liferayExecEnv.getContainerType())) {
+                req.setJbossInstallDir(liferayExecEnv.getContainerPath());
+            }
+        } // TODO : Add support for JBPortal, PHP, PHPBB, etc ...
+
+        return req;
+    }
+
+
     protected ConfigureAgentRequest doMakeConfigureAgentRequest(ExecutionEnvironment execEnv ) {
 
         ConfigureAgentRequest req = new ConfigureAgentRequest();
@@ -1932,6 +2044,36 @@ public class IdentityApplianceManagementServiceImpl implements
         return req;
     }
 
+    protected ConfigureAgentRequestType doMakeWsConfigureAgentRequest(ExecutionEnvironment execEnv,
+                                                                      String username,
+                                                                      String password ) {
+
+        ConfigureAgentRequestType req = new ConfigureAgentRequestType();
+        req.setTarget(execEnv.getInstallUri());
+        req.setTargetPlatformId(execEnv.getPlatformId());
+        req.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
+        req.setUser(username);
+        req.setPassword(password);
+
+        if (execEnv instanceof JBossExecutionEnvironment) {
+            JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) execEnv;
+            req.setJbossInstance(jbExecEnv.getInstance());
+        } else if (execEnv instanceof WeblogicExecutionEnvironment) {
+            WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
+            req.setWeblogicDomain(wlExecEnv.getDomain());
+        } else if (execEnv instanceof LiferayExecutionEnvironment) {
+            LiferayExecutionEnvironment liferayExecEnv = (LiferayExecutionEnvironment) execEnv;
+            if ("tomcat".equals(liferayExecEnv.getContainerType())) {
+                req.setTomcatInstallDir(liferayExecEnv.getContainerPath());
+            } else if ("jboss".equals(liferayExecEnv.getContainerType())) {
+                req.setJbossInstallDir(liferayExecEnv.getContainerPath());
+            }
+        } // TODO : Add support for JBPortal, Alfresco, PHP, PHPBB, etc ...
+
+        return req;
+    }
+
+
 
     protected ActivateSamplesRequest doMakeAgentSamplesActivationRequest(ExecutionEnvironment execEnv) {
 
@@ -1956,6 +2098,34 @@ public class IdentityApplianceManagementServiceImpl implements
 
         return req;
     }
+
+    protected ActivateSamplesRequestType doMakeWsAgentSamplesActivationRequest(ExecutionEnvironment execEnv,
+                                                                               String username, String password) {
+
+        ActivateSamplesRequestType req = new ActivateSamplesRequestType ();
+        req.setTarget(execEnv.getInstallUri());
+        req.setTargetPlatformId(execEnv.getPlatformId());
+        req.setUser(username);
+        req.setPassword(password);
+
+        if (execEnv instanceof JBossExecutionEnvironment) {
+            JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) execEnv;
+            req.setJbossInstance(jbExecEnv.getInstance());
+        } else if (execEnv instanceof WeblogicExecutionEnvironment) {
+            WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
+            req.setWeblogicDomain(wlExecEnv.getDomain());
+        } else if (execEnv instanceof LiferayExecutionEnvironment) {
+            LiferayExecutionEnvironment liferayExecEnv = (LiferayExecutionEnvironment) execEnv;
+            if ("tomcat".equals(liferayExecEnv.getContainerType())) {
+                req.setTomcatInstallDir(liferayExecEnv.getContainerPath());
+            } else if ("jboss".equals(liferayExecEnv.getContainerType())) {
+                req.setJbossInstallDir(liferayExecEnv.getContainerPath());
+            }
+        } // TODO : Add support for JBPortal, Alfresco, PHP, PHPBB, etc ...
+
+        return req;
+    }
+
 
     public class ServiceProviderComparator implements Comparator<Provider> {
         public int compare(Provider sp1, Provider sp2) {
