@@ -37,7 +37,7 @@
         ]]>
     </fx:Script>    
 
-    <s:VGroup id="updateLicenseBox" width="100%" height="100%" paddingRight="5" paddingTop="5">
+    <s:VGroup id="updateLicenseBox" width="100%" height="100%" paddingRight="5" paddingTop="20">
 
         <!--Hidding update button for now [ATCON-342]-->
 
@@ -48,9 +48,62 @@
         <!--</mx:Form>-->
 
         <!--  current license information  -->
-        <s:Label paddingLeft="25" paddingBottom="10" paddingTop="15" width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.currentLicense')}" styleName="h2"/>
+        <!--<s:Label paddingLeft="25" paddingBottom="10" paddingTop="15" width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.currentLicense')}" styleName="h2"/>-->
 
         <s:VGroup paddingLeft="25" id="licenseInfo">
+            <s:HGroup paddingBottom="5">
+                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.owner')}:" />
+                <s:Label id="licenseOwner"/>
+            </s:HGroup>
+
+            <s:HGroup paddingBottom="15">
+                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.organization')}:" />
+                <s:Label id="licenseOrganization"/>
+            </s:HGroup>
+
+            <s:VGroup paddingBottom="15">
+                <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.generaleula')}:" />
+                <s:TextArea id="generalEula" width="700" height="100"/>
+            </s:VGroup>
+
+            <s:VGroup>
+                <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.licensedFeatures')}:" />
+                <mx:DataGrid id="features" width="700" height="150">
+                    <mx:columns>
+                        <mx:DataGridColumn dataField="name" headerText="Name"/>
+                        <mx:DataGridColumn dataField="description" width="300" headerText="Description"/>
+                        <mx:DataGridColumn dataField="version" headerText="Version Range"/>
+                        <mx:DataGridColumn id="groupColumn" dataField="group" width="92" headerText="Details">
+                            <mx:itemRenderer>
+                                <fx:Component>
+                                    <s:MXDataGridItemRenderer click="clickHandler(event)">
+                                        <s:states>
+                                            <s:State name="normal" />
+                                            <s:State name="hovered" />
+                                            <s:State name="selected" />
+                                        </s:states>
+                                        <fx:Script>
+                                            <![CDATA[
+
+                                            import com.atricore.idbus.console.licensing.main.event.DataGridButtonEvent;
+
+                                            protected function clickHandler(event:Event):void {
+                                                dispatchEvent ( new DataGridButtonEvent ( DataGridButtonEvent.BUTTON_CLICKED, data.group + data.name ) );
+                                            }
+                                            ]]>
+                                        </fx:Script>
+                                        <s:HGroup horizontalAlign="center" textAlign="center">
+
+                                            <s:Button width="100%" click="clickHandler(event)" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.viewlicense')}" />
+
+                                        </s:HGroup>
+                                    </s:MXDataGridItemRenderer>
+                                </fx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                    </mx:columns>
+                </mx:DataGrid>
+            </s:VGroup>
 
         </s:VGroup>
     </s:VGroup>

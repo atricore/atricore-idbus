@@ -56,7 +56,7 @@ public class LicensingPopUpManager extends BasePopUpManager {
 
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
-        _popup.styleName = "accountManPopup";
+        _popup.styleName = "licensePopup";
     }
 
     public function get updateLicenseMediator():UpdateLicenseMediator {
@@ -137,7 +137,7 @@ public class LicensingPopUpManager extends BasePopUpManager {
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.vieweula.heading');
         _popup.width = 410;
         _popup.height =450;
-        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.x = (_popupParent.parentDocument.width / 2) - 205;
         _popup.y = 80;
         showPopup(_displayLicenseTextForm);
     }

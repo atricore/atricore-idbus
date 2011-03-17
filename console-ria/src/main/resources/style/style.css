@@ -414,6 +414,19 @@ mx|LinkButton.secondNav {
     borderSkin: Embed(source = "/images/panel-bg.png", scaleGridLeft = 44, scaleGridRight = 360, scaleGridTop = 54, scaleGridBottom = 219);
 }
 
+.licensePopup {
+    padding-top: 35;
+    padding-bottom: 10;
+    padding-left: 10;
+    padding-right: 10;
+    border-color: #3679b0;
+    title-style-name: whiteTitle;
+    border-style: outset;
+    borderThickness: 0;
+    corner-radius: 0;
+    borderSkin: Embed(source = "/images/panel-bg.png", scaleGridLeft = 44, scaleGridRight = 360, scaleGridTop = 54, scaleGridBottom = 219);
+}
+
 mx|TitleWindow {
     closeButtonSkin: Embed("/images/icons/close.png"); /* Set values from defaults.css to null. */
     closeButtonDisabledSkin: ClassReference(null);
