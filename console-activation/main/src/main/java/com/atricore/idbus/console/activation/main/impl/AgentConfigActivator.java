@@ -1,9 +1,8 @@
 package com.atricore.idbus.console.activation.main.impl;
 
 import com.atricore.idbus.console.activation.main.exception.ActivationException;
-import com.atricore.idbus.console.activation.main.spi.request.AbstractActivationRequest;
-import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
 import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequest;
+import com.atricore.idbus.console.activation.main.spi.request.AbstractActivationRequest;
 import com.atricore.idbus.console.activation.main.spi.response.AbstractActivationResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +31,10 @@ public class AgentConfigActivator extends ActivatorSupport {
     protected FileObject jossoDistDir;
     protected FileObject confDir;
 
-    protected AgentConfigActivator(List<Installer> installers, MessagePrinter printer, AbstractActivationRequest request, AbstractActivationResponse response) {
+    protected AgentConfigActivator(List<Installer> installers,
+                                   MessagePrinter printer,
+                                   AbstractActivationRequest request,
+                                   AbstractActivationResponse response) {
         super(installers, printer, request, response);
     }
 

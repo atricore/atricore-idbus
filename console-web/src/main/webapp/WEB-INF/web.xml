@@ -60,9 +60,25 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <!-- CXF Servlet -->
+    <servlet>
+        <servlet-name>CXFServlet</servlet-name>
+        <display-name>CXF Servlet</display-name>
+        <servlet-class>
+            org.apache.cxf.transport.servlet.CXFServlet
+        </servlet-class>
+    </servlet>
+
+
     <servlet-mapping>
         <servlet-name>MessageBrokerServlet</servlet-name>
         <url-pattern>/messagebroker/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CXFServlet</servlet-name>
+        <url-pattern>/services/*</url-pattern>
+        <load-on-startup>1</load-on-startup>
     </servlet-mapping>
 
     <!-- Uncomment DispatcherServlet if you want to use Spring Controllers -->

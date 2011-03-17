@@ -27,7 +27,10 @@ public class SamplesActivator extends ActivatorSupport {
     protected FileObject appDir;
 
 
-    protected SamplesActivator(List<Installer> installers, MessagePrinter printer, AbstractActivationRequest request, AbstractActivationResponse response) {
+    protected SamplesActivator(List<Installer> installers,
+                               MessagePrinter printer,
+                               AbstractActivationRequest request,
+                               AbstractActivationResponse response) {
         super(installers, printer, request, response);
     }
 

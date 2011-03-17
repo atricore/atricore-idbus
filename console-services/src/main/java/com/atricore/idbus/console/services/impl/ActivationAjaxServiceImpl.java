@@ -10,8 +10,6 @@ import com.atricore.idbus.console.activation.main.spi.ActivationService;
 
 import org.dozer.DozerBeanMapper;
 
-import java.rmi.activation.ActivationException;
-
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */

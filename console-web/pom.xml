@@ -205,6 +205,7 @@
                         </Bundle-ClassPath>
                         <Require-Bundle>
                             com.atricore.idbus.console.lifecycle.main,
+                            com.atricore.idbus.console.activation.protocol,
                             com.atricore.idbus.console.activation.main,
                             com.atricore.idbus.console.licensing.main,
                             org.apache.servicemix.bundles.javax.mail
@@ -217,6 +218,28 @@
                             org.apache.commons.beanutils,
                             org.apache.commons.beanutils.converters,
                             org.apache.xmlbeans,
+                            META-INF.cxf,
+                            org.apache.cxf,
+                            org.apache.cxf.binding,
+                            org.apache.cxf.binding.soap,
+                            org.apache.cxf.binding.soap.spring,
+                            org.apache.cxf.bus,
+                            org.apache.cxf.bus.spring,
+                            org.apache.cxf.bus.resource,
+                            org.apache.cxf.buslifecycle,
+                            org.apache.cxf.catalog,
+                            org.apache.cxf.configuration.spring,
+                            org.apache.cxf.endpoint,
+                            org.apache.cxf.headers,
+                            org.apache.cxf.jaxrs,
+                            org.apache.cxf.phase,
+                            org.apache.cxf.resource,
+                            org.apache.cxf.transport,
+                            org.apache.cxf.transport.http,
+                            org.apache.cxf.transport.http.policy,
+                            org.apache.cxf.workqueue,
+                            org.apache.cxf.wsdl11,
+                            org.apache.cxf.transport.servlet,
                             javax.xml.datatype,
                             javax.management,
                             javax.transaction;resolution:=optional,
@@ -354,6 +377,13 @@
             <artifactId>org.atricore.idbus.kernel.common.spml</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.activation</groupId>
+            <artifactId>com.atricore.idbus.console.activation.protocol</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>

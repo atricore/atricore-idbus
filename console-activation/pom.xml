@@ -48,6 +48,7 @@
     <modules>
         <module>main</module>
         <module>command</module>
+        <module>support/console-activation-protocol</module>
     </modules>
 
 </project>

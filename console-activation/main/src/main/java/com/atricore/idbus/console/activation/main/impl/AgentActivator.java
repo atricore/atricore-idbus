@@ -7,7 +7,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.FileUtil;
 import org.apache.commons.vfs.VFS;
 import org.josso.tooling.gshell.core.support.MessagePrinter;
 import org.josso.tooling.gshell.install.JOSSOScope;
@@ -103,10 +102,13 @@ public class AgentActivator extends ActivatorSupport {
         for (int i = 0 ; i < confDir.getChildren().length ; i ++) {
             FileObject cfgFile = cfgFiles[i];
             String fileName = cfgFile.getName().getBaseName();
+
             getInstaller(request).installConfiguration(createArtifact(confDir.getURL().toString(), JOSSOScope.AGENT, fileName), false);
         }
 
-        getInstaller(request).updateAgentConfiguration(request.getIdpHostName(), request.getIdpPort(), request.getIdpType());
+        getInstaller(request).updateAgentConfiguration(request.getIdpHostName(),
+                request.getIdpPort() + "",
+                request.getIdpType());
     }
 
     public void install3rdParty() throws Exception {

@@ -7,7 +7,7 @@ import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentReque
 import com.atricore.idbus.console.activation.main.spi.request.ActivateSamplesRequest;
 import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequest;
 import com.atricore.idbus.console.activation.main.spi.request.PlatformSupportedRequest;
-import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResponse;
+import com.atricore.idbus.console.activation.main.spi.response.*;
 import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesResponse;
 import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
 import com.atricore.idbus.console.activation.main.spi.response.PlatformSupportedResponse;
@@ -56,8 +56,6 @@ public class JOSSOActivationServiceImpl implements ActivationService, Initializi
             Activator activator = new AgentActivator(installers, printer, request, response);
 
             activator.doActivate();
-
-
 
             return response;
         } catch (Exception e) {

@@ -44,6 +44,14 @@
     <dependencies>
 
         <dependency>
+            <groupId>com.atricore.idbus.console.activation</groupId>
+            <artifactId>com.atricore.idbus.console.activation.protocol</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.josso</groupId>
             <artifactId>josso-gshell-core</artifactId>
             <version>${josso1.version}</version>
@@ -268,7 +276,10 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${artifactId}</Bundle-SymbolicName>
-                        <Export-Package>com.atricore.idbus.console.activation.main.*; version="${pom.version}",</Export-Package>
+                        <Export-Package>
+                            com.atricore.idbus.console.activation.main.*; version="${pom.version}",
+                            com.atricore.idbus.console.activation.protocol.*; version="${pom.version}",
+                        </Export-Package>
                         <Import-Package>
                             !${pom.artifactId}*,
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,

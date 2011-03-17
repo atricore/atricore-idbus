@@ -12,6 +12,24 @@
     <!-- Activation componentes                                                -->
     <!-- ===================================================================== -->
 
+    <bean name="activationClientFactory"
+          class="com.atricore.idbus.console.activation.main.client.impl.ActivationClientFactoryImpl"/>
+    <!-- Contribute Service using Spring DM -->
+    <osgi:service id="osgiActivationClientFactory"
+                  ref="activationClientFactory"
+            interface="com.atricore.idbus.console.activation.main.client.ActivationClientFactory"/>
+
+
+    <!-- WS Wrapper for Activation Service. Contributed through OSGi so that others can publish it as WS endpoint -->
+    <bean id="activationWService"
+          class="com.atricore.idbus.console.activation.main.impl.JOSSOActivationWServiceImpl">
+        <property name="activationService" ref="activationService"/>
+    </bean>
+    <!-- Contribute Service using Spring DM -->
+    <osgi:service id="osgiActivationWService"
+                  ref="activationWService"
+            interface="com.atricore.idbus.console.activation._1_0.wsdl.ActivationPortType"/>
+
     <!-- Define a DB Server for IDBus Server application                       -->
     <bean id="activationService"
           class="com.atricore.idbus.console.activation.main.impl.JOSSOActivationServiceImpl" >
@@ -42,10 +60,11 @@
         </property>
     </bean>
 
-    <!-- Contribute the DB Server Descriptor using Spring DM -->
+    <!-- Contribute Service using Spring DM -->
     <osgi:service id="osgiActivationService"
                   ref="activationService"
             interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
+
     
     <bean name="printerServiceBean" class="com.atricore.idbus.console.activation.main.impl.MessagePrinterService"/>
 
