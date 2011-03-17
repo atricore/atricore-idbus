@@ -1526,7 +1526,12 @@ public class IdentityApplianceManagementServiceImpl implements
 
             String agentCfgName = appliance.getNamespace() + "." +
                     appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
-                    appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase() + ".xml";
+                    appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase();
+
+            if (execEnv.getPlatformId().startsWith("iis"))
+                agentCfgName += ".ini";
+            else
+                agentCfgName += ".xml";
 
             String agentCfg = agentCfgLocation + "/" + agentCfgName;
             agentCfg = agentCfg.toLowerCase();

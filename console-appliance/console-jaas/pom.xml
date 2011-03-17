@@ -37,6 +37,18 @@
     <packaging>bundle</packaging>
     <name>Atricore Console :: JAAS Modules</name>
 
+    <properties>
+        <karaf.version>2.1.0</karaf.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.modules</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

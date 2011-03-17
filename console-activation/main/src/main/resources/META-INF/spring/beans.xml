@@ -35,6 +35,9 @@
                 <ref bean="wc21-installer"/>
                 <ref bean="liferay-installer"/>
                 <ref bean="alfresco-installer"/>
+                <ref bean="iis-installer-32"/>
+                <ref bean="iis-installer-64"/>
+                <ref bean="phpbb-installer"/>
                 
             </list>
         </property>
@@ -389,4 +392,49 @@
         <property name="JOSSOConfDir" value="${target}/WEB-INF/classes"/>
     </bean>
 
+    <!-- IIS installer  -->
+    <bean name="iis-installer-32" class="org.josso.tooling.gshell.install.installer.IISInstaller">
+        <constructor-arg index="0" ref="iis"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="iis" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="iis"/>
+        <property name="family" value="non-java"/>
+        <property name="platformName" value="IIS agent 32bit version"/>
+        <property name="version" value="5.x-7.x"/>
+        
+        <property name="binDir" value="${target}/bin"/>
+        <property name="configDir" value="${target}/config"/>
+        <property name="JOSSOSharedLibDir" value="${target}/log"/>
+    </bean>
+
+    <bean name="iis-installer-64" class="org.josso.tooling.gshell.install.installer.IISInstaller">
+        <constructor-arg index="0" ref="iis64"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="iis64" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="iis64"/>
+        <property name="family" value="non-java"/>
+        <property name="platformName" value="IIS agent 64bit version"/>
+        <property name="version" value="5.x-7.x"/>
+        
+        <property name="binDir" value="${target}/bin"/>
+        <property name="configDir" value="${target}/config"/>
+        <property name="JOSSOSharedLibDir" value="${target}/log"/>
+    </bean>
+
+    <!-- phpBB installer  -->
+    <bean name="phpbb-installer" class="org.josso.tooling.gshell.install.installer.PhpBBInstaller">
+        <constructor-arg index="0" ref="phpBB"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="phpBB" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="phpBB"/>
+        <property name="family" value="non-java"/>
+        <property name="platformName" value="PHP"/>
+        <property name="version" value="3.x"/>
+    </bean>
 </beans>

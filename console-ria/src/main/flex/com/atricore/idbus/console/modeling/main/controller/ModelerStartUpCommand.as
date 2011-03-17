@@ -38,6 +38,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _apacheExecutionEnvironmentCreateMediator:IIocMediator;
     private var _alfrescoExecutionEnvironmentCreateMediator:IIocMediator;
     private var _javaEEExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _phpExecutionEnvironmentCreateMediator:IIocMediator;
     private var _phpBBExecutionEnvironmentCreateMediator:IIocMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:IIocMediator;
     private var _webserverExecutionEnvironmentCreateMediator:IIocMediator;
@@ -116,6 +117,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(apacheExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(alfrescoExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(javaEEExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(phpExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(phpBBExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(windowsIISExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(webserverExecutionEnvironmentCreateMediator.getConfigName());
@@ -346,6 +348,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set javaEEExecutionEnvironmentCreateMediator(value:IIocMediator):void {
         _javaEEExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get phpExecutionEnvironmentCreateMediator():IIocMediator {
+        return _phpExecutionEnvironmentCreateMediator;
+    }
+
+    public function set phpExecutionEnvironmentCreateMediator(value:IIocMediator):void {
+        _phpExecutionEnvironmentCreateMediator = value;
     }
 
     public function get phpBBExecutionEnvironmentCreateMediator():IIocMediator {

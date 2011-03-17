@@ -78,6 +78,7 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.selectedHost.enabled = false;
+        view.architecture.selectedIndex = 0;
         view.focusManager.setFocus(view.executionEnvironmentName);
     }
 
@@ -85,6 +86,7 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         view.executionEnvironmentName.text = "";
         view.executionEnvironmentDescription.text = "";
         view.selectedHost.selectedIndex = 0;
+        view.architecture.selectedIndex = 0;
         view.homeDirectory.text = "";
 //        view.replaceConfFiles.selected = false;
 //        view.installSamples.selected = false;
@@ -99,11 +101,9 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         windowsIISExecutionEnvironment.name = view.executionEnvironmentName.text;
         windowsIISExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         windowsIISExecutionEnvironment.installUri = view.homeDirectory.text;
-//        windowsIISExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
-//        windowsIISExecutionEnvironment.installDemoApps = view.installSamples.selected;         
-
-        //TODO CHECK PLATFORM ID
-        windowsIISExecutionEnvironment.platformId = "iis";
+        windowsIISExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
+        windowsIISExecutionEnvironment.installDemoApps = view.installSamples.selected;
+        windowsIISExecutionEnvironment.platformId = view.architecture.selectedItem.data;
         _newExecutionEnvironment = windowsIISExecutionEnvironment;
     }
 

@@ -2,7 +2,6 @@ package com.atricore.idbus.console.activation.main.impl;
 
 import com.atricore.idbus.console.activation.main.exception.ActivationException;
 import com.atricore.idbus.console.activation.main.spi.request.AbstractActivationRequest;
-import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
 import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequest;
 import com.atricore.idbus.console.activation.main.spi.response.AbstractActivationResponse;
 import org.apache.commons.logging.Log;
@@ -141,9 +140,12 @@ public class AgentConfigActivator extends ActivatorSupport {
             FileObject agentCfg = appliancesDir.resolveFile(ar.getJossoAgentConfigUri());
             if (agentCfg.exists()) {
                 // Rename file
-                FileObject finalAgentCfg = tmpDir.resolveFile("josso-agent-config.xml");
+                String agentCfgFileName = "josso-agent-config.xml";
+                if (ar.getTargetPlatformId().startsWith("iis"))
+                    agentCfgFileName = "josso-agent-config.ini";
+                FileObject finalAgentCfg = tmpDir.resolveFile(agentCfgFileName);
                 FileUtil.copyContent(agentCfg, finalAgentCfg);
-                getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, "josso-agent-config.xml"), ar.isReplaceConfig());
+                getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, agentCfgFileName), ar.isReplaceConfig());
                 finalAgentCfg.delete();
             }
         }

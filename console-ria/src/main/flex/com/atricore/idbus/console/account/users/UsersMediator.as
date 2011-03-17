@@ -98,7 +98,6 @@ public class UsersMediator extends IocMediator implements IDisposable{
         view.userList.addEventListener(ListEvent.ITEM_CLICK , userListSelectHandler);
         view.btnClearSearch.addEventListener(MouseEvent.CLICK, handleClearSearch);
 
-        sendNotification(ApplicationFacade.LIST_USERS);
         _userPropertiesMediator.setViewComponent(view.properties);
         popupManager.init(iocFacade, view);
     }

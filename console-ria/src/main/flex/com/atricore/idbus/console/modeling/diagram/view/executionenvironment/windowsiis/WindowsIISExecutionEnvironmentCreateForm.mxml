@@ -57,13 +57,25 @@
         <s:TextInput id="homeDirectory" width="300"/>
     </mx:FormItem>
 
-    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.activation.replaceconffiles')}:">-->
-        <!--<s:CheckBox id="replaceConfFiles" />-->
-    <!--</mx:FormItem>-->
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.architecture')}:"
+            direction="horizontal" required="true">
+        <s:DropDownList id="architecture" width="300" selectedIndex="0">
+            <s:dataProvider>
+                <mx:ArrayCollection>
+                    <fx:Object label="32-bit" data="iis"/>
+                    <fx:Object label="64-bit" data="iis64"/>
+                </mx:ArrayCollection>
+            </s:dataProvider>
+        </s:DropDownList>
+    </mx:FormItem>
 
-    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.activation.installsamples')}:">-->
-        <!--<s:CheckBox id="installSamples" />-->
-    <!--</mx:FormItem>    -->
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.activation.replaceconffiles')}:">
+        <s:CheckBox id="replaceConfFiles" />
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.activation.installsamples')}:">
+        <s:CheckBox id="installSamples" />
+    </mx:FormItem>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
         <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}"/>

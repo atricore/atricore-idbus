@@ -167,6 +167,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWindowsIISExecutionEnvironmentElement";
     public static const CREATE_ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT:String = "createAlfrescoExecutionEnvironmentElement";
     public static const CREATE_JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJavaEEExecutionEnvironmentElement";
+    public static const CREATE_PHP_EXECUTION_ENVIRONMENT_ELEMENT:String = "createPHPExecutionEnvironmentElement";
     public static const CREATE_PHPBB_EXECUTION_ENVIRONMENT_ELEMENT:String = "createPhpBBExecutionEnvironmentElement";
     public static const CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWebcontainerExecutionEnvironmentElement";
     public static const REMOVE_ACTIVATION_ELEMENT:String = "removeActivationElement";

@@ -31,15 +31,16 @@
     </fx:Script>
 
     <s:layout>
-        <s:HorizontalLayout paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+        <s:HorizontalLayout gap="0" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
     </s:layout>
 
-    <s:TabBar id="userPropertiesTabBar" dataProvider="{new ArrayList(userPropertiesSheetsViewStack.content)}"
-              labelField="name" visible="false">
+    <s:ButtonBar id="userPropertiesTabBar" labelField="name" visible="false"
+                 dataProvider="{new ArrayList(userPropertiesSheetsViewStack.content)}"
+                 skinClass="com.atricore.idbus.console.skin.buttonbar.PropertiesButtonBarSkin">
         <s:layout>
-            <s:VerticalLayout/>
+            <s:VerticalLayout horizontalAlign="right" gap="-1" />
         </s:layout>
-    </s:TabBar>
+    </s:ButtonBar>
     <comp:CustomViewStack id="userPropertiesSheetsViewStack" width="100%" height="100%" visible="false" borderStyle="solid"
                           skinClass="com.atricore.idbus.console.components.CustomViewStackScrollableSkin">
     </comp:CustomViewStack>

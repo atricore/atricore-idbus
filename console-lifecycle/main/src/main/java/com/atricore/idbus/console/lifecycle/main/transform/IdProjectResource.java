@@ -1,5 +1,7 @@
 package com.atricore.idbus.console.lifecycle.main.transform;
 
+import java.util.Map;
+
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
@@ -19,6 +21,10 @@ public class IdProjectResource<T> {
     private Scope scope;
 
     private T value;
+
+    private String extension;
+
+    private Map<String, Object> params;
 
     public IdProjectResource(String id, String name, String type, T value) {
         this.id = id;
@@ -76,6 +82,22 @@ public class IdProjectResource<T> {
 
     public void setScope(Scope scope) {
         this.scope = scope;
+    }
+
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
     }
 
     @Override

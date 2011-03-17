@@ -154,7 +154,8 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
         } else if (execEnv instanceof WindowsIISExecutionEnvironment) {
             return baseLocation + "josso/JOSSOIsapiAgent.dll?josso_security_check";
 
-        } else if (execEnv instanceof PHPExecutionEnvironment) {
+        } else if (execEnv instanceof PHPExecutionEnvironment ||
+                execEnv instanceof PhpBBExecutionEnvironment) {
             return appLocation + "josso-security-check.php";
 
         } else if (execEnv instanceof WeblogicExecutionEnvironment) {

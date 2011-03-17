@@ -87,6 +87,11 @@ public class CEPaletteItemProvider implements PaletteItemProvider {
                 );
 
         environmentsPaletteDrawer.add(
+                new PaletteEntry("PHP", EmbeddedIcons.phpEnvironmentMiniIcon, "PHP Environment Entry", DiagramElementTypes.PHP_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
                 new PaletteEntry("PhpBB", EmbeddedIcons.phpbbEnvironmentMiniIcon, "PhpBB Environment Entry", DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
@@ -112,7 +117,7 @@ public class CEPaletteItemProvider implements PaletteItemProvider {
                 );
 
         environmentsPaletteDrawer.add(
-                new PaletteEntry("Windows", EmbeddedIcons.windowsEnvironmentMiniIcon, "Windows Environment Entry", DiagramElementTypes.WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("Windows IIS", EmbeddedIcons.windowsEnvironmentMiniIcon, "Windows IIS Environment Entry", DiagramElementTypes.WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 

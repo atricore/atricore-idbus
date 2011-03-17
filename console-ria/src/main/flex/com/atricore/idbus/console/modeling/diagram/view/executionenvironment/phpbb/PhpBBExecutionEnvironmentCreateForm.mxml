@@ -62,7 +62,7 @@
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.activation.installsamples')}:">
-        <s:CheckBox id="installSamples" />
+        <s:CheckBox id="installSamples" enabled="false"/>
     </mx:FormItem>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">

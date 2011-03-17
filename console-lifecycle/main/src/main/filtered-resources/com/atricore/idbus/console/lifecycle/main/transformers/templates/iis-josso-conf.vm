@@ -1,0 +1,54 @@
+[agent]
+gatewayEndpoint=http://$endpointHost:$endpointPort
+gatewayLoginUrl=$gatewayLoginUrl
+
+;;SSL setup
+secureTransport=false
+;;caFile=/location/of/the/ca_file
+;;sslSkipHostCheck=false
+;;sslAllowExpiredCerts=false
+
+;;HTTP Basic Authentication setup
+;;basicUserId=username
+;;basicPassword=password
+
+;; ---------------------------------------------------------
+;; SSO Partner Applications
+;;
+;; All sections starting with 'partnerapp' will be treated
+;; as partner app declarations.
+;; ---------------------------------------------------------
+#set ($i = 0)
+#set ($partnerapps = "")
+#foreach($activation in $execEnv.getActivations())
+#set ($i = $i + 1)
+#set ($partnerappID = $activation.getPartnerAppId())
+#set ($partnerapp = $activation.getPartnerAppLocation().getContext())
+#if ($partnerapps != "")
+#set ($partnerapps = $partnerapps + ", ")
+#end
+#set ($partnerapps = $partnerapps + "/" + $partnerapp)
+[partnerapp.$i]
+base-uri=/$partnerapp
+partnerAppId=$partnerappID
+
+#end
+;; ---------------------------------------------------------
+;; SSO Security Constraints for 'Applications'
+;;
+;; All sections starting with 'security-constraint' will be treated
+;; as security constraint declarations
+;; ---------------------------------------------------------
+
+[security-constraint.admin]
+
+;; Comma separated list of required roles (optional)
+;; Do not leave empty spaces between elements!
+roles=role1,admin
+
+;; Comma separated list of base uris for this constraint (required)
+;; Do not leave empty spaces between elements!
+base-uris=/public/.*\.pdf,/admin/[sS]ec_.*\.*,$partnerapps
+
+[security-constraint.public]
+base-uris=/public
