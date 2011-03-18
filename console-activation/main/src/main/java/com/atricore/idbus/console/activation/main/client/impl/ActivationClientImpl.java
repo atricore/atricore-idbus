@@ -6,7 +6,6 @@ import com.atricore.idbus.console.activation.main.client.ActivationClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.jws.WebParam;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
