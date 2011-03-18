@@ -359,8 +359,12 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                     agentConfig.setScope(IdProjectResource.Scope.RESOURCE);
                     module.addResource(agentConfig);
 
-                    params.put("iisPath", toWindowsPath(execEnv.getInstallUri()));
-                    
+                    String iisPath = toWindowsPath(execEnv.getInstallUri());
+                    while (iisPath.endsWith("\\")) {
+                        iisPath = iisPath.substring(0, iisPath.length() - 1);
+                    }
+                    params.put("iisPath", iisPath);
+
                     IdProjectResource<String> configReg = new IdProjectResource<String>(idGen.generateId(),
                             "META-INF/spring/" + bpBean.getName() + "/josso", "JOSSO-ISAPI-Config", "iis", "config-reg");
                     configReg.setClassifier("velocity");

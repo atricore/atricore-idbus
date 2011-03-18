@@ -1,6 +1,10 @@
 [agent]
-gatewayEndpoint=http://$endpointHost:$endpointPort
+gatewayEndpoint=$endpointHost:$endpointPort
 gatewayLoginUrl=$gatewayLoginUrl
+
+sessionManagerServicePath=$sessionManagerServicePath
+identityManagerServicePath=$identityManagerServicePath
+identityProviderServicePath=$identityProviderServicePath
 
 ;;SSL setup
 secureTransport=false
