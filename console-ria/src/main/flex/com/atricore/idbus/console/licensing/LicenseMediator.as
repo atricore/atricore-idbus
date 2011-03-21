@@ -171,9 +171,9 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         sendNotification(ApplicationFacade.SHOW_ERROR_MSG, errMsg);
     }
 
-    public function handleViewEulaButton(event:Event):void {        
-        sendNotification(ApplicationFacade.DISPLAY_EULA_TEXT, StringUtil.trim(_licenseProxy.license.eula));
-    }
+//    public function handleViewEulaButton(event:Event):void {
+//        sendNotification(ApplicationFacade.DISPLAY_EULA_TEXT, StringUtil.trim(_licenseProxy.license.eula));
+//    }
 
     public function handleViewLicenseButtonClick(event:DataGridButtonEvent):void {
         var btnId:String = event.data as String;
@@ -188,7 +188,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
                 }
             }
         }
-        sendNotification(ApplicationFacade.DISPLAY_EULA_TEXT, StringUtil.trim(tmpFeature.licenseText));
+        sendNotification(ApplicationFacade.DISPLAY_EULA_TEXT, tmpFeature);
     }
 
     public function displayLicenseInfo():void {

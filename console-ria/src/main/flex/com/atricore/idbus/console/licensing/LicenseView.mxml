@@ -63,7 +63,7 @@
 
             <s:VGroup paddingBottom="15">
                 <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.generaleula')}:" />
-                <s:TextArea id="generalEula" width="700" height="100"/>
+                <s:TextArea id="generalEula" width="700" height="100" editable="false"/>
             </s:VGroup>
 
             <s:VGroup>

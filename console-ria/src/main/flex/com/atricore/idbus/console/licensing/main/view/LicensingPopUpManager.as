@@ -29,6 +29,8 @@ import com.atricore.idbus.console.main.BasePopUpManager;
 import com.atricore.idbus.console.main.view.license.ActivateLicenseForm;
 import com.atricore.idbus.console.main.view.license.ActivateLicenseMediator;
 
+import com.atricore.idbus.console.services.dto.FeatureType;
+
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
 
@@ -134,7 +136,9 @@ public class LicensingPopUpManager extends BasePopUpManager {
         createViewLicenseTextForm();
         displayLicenseTextMediator.handleNotification(notification);
 
-        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.vieweula.heading');
+        var feature:FeatureType = notification.getBody() as FeatureType;
+
+        _popup.title = feature.name + " - "  + resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.viewlicense.heading');
         _popup.width = 410;
         _popup.height =450;
         _popup.x = (_popupParent.parentDocument.width / 2) - 205;

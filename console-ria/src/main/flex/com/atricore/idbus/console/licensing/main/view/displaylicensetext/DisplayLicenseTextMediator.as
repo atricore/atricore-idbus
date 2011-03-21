@@ -22,8 +22,12 @@
 package com.atricore.idbus.console.licensing.main.view.displaylicensetext {
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 
+import com.atricore.idbus.console.services.dto.FeatureType;
+
 import flash.events.MouseEvent;
 import mx.events.CloseEvent;
+
+import mx.utils.StringUtil;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -68,8 +72,8 @@ public class DisplayLicenseTextMediator extends IocFormMediator {
     }
 
     override public function handleNotification(notification:INotification):void {
-        var text:String = notification.getBody() as String;
-        licenseText = text;
+        var feature:FeatureType = notification.getBody() as FeatureType;
+        licenseText = StringUtil.trim(feature.licenseText);
         super.handleNotification(notification);
     }
 
