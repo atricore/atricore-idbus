@@ -20,7 +20,7 @@
   -->
 
 <wsdl:definitions
-        name="SSO Service"
+        name="SSO-Service"
         targetNamespace="urn:org:atricore:idbus:common:sso:1.0:wsdl"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:tns="urn:org:atricore:idbus:common:sso:1.0:wsdl"
