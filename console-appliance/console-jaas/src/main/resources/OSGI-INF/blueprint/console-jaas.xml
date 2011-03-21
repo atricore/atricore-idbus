@@ -35,6 +35,7 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <!-- Atricore admins JAAS configuration -->
     <jaas:config name="atricore">
         <jaas:module className="org.apache.karaf.jaas.modules.jdbc.JDBCLoginModule" flags="required">
             datasource = ${jdbc.datasourceUrl}

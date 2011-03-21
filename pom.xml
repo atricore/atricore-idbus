@@ -1531,6 +1531,7 @@
                 <module>console-branding/console-ee-branding</module>
                 <module>console-ria</module>
                 <module>console-web</module>
+                <module>console-docs</module>
 
                 <!-- IDAU for Console -->
                 <module>console-appliance/console-default-idau</module>
@@ -1563,6 +1564,7 @@
                 <module>console-branding/console-ce-branding</module>
                 <module>console-ria</module>
                 <module>console-web</module>
+                <module>console-docs</module>
 
                 <!-- IDAU for Console -->
                 <module>console-appliance/console-default-idau</module>
@@ -1588,6 +1590,7 @@
                 <module>console-branding/console-ee-branding</module>
                 <module>console-ria</module>
                 <module>console-web</module>
+                <module>console-docs</module>
 
             </modules>
 
@@ -1609,6 +1612,7 @@
                 <module>console-branding/console-ce-branding</module>
                 <module>console-ria</module>
                 <module>console-web</module>
+                <module>console-docs</module>
             </modules>
 
         </profile>
