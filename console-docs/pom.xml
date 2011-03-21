@@ -62,7 +62,7 @@
                         <!-- add the generated manifest to the war -->
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
-                    <classifier>${console.distribution}</classifier>
+
                 </configuration>
             </plugin>
 
