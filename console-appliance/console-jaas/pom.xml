@@ -68,7 +68,9 @@
                             javax.sql,
                             *
                         </Import-Package>                        
-                        <Export-Package>${project.artifactId}*;version=${project.version}</Export-Package>
+                        <Export-Package>
+                            com.atricore.idbus.console.appliance.jaas.*;version=${project.version},
+                            ${project.artifactId}*;version=${project.version}</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

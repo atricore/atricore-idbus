@@ -46,10 +46,18 @@
             encryption.encoding = hexadecimal
         </jaas:module>
 
-        <jaas:module className="org.atricore.idbus.console.appliance.jaas.RBACLoginModule" flags="required">
+        <jaas:module className="com.atricore.idbus.console.appliance.jaas.RBACLoginModule" flags="required">
             allowed.roles = Administrators
         </jaas:module>
 
     </jaas:config>
+
+    <bean id="jaasAuthenticator" class="com.atricore.idbus.console.appliance.jaas.JaasAuthenticator">
+        <property name="realm" value="atricore"/>
+    </bean>
+
+    <service id="osgiJaasAuthenticator"
+             ref="jaasAuthenticator"
+             interface="com.atricore.idbus.console.appliance.jaas.JaasAuthenticator"/>
 
 </blueprint>

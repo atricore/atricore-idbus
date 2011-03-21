@@ -1,4 +1,4 @@
-package org.atricore.idbus.console.appliance.jaas;
+package com.atricore.idbus.console.appliance.jaas;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -12,8 +12,12 @@
     <!-- Activation componentes                                                -->
     <!-- ===================================================================== -->
 
+    <osgi:reference id="jaasAuthenticator" cardinality="1..1" timeout="60"
+                    interface="com.atricore.idbus.console.appliance.jaas.JaasAuthenticator"/>
+
     <bean name="activationClientFactory"
           class="com.atricore.idbus.console.activation.main.client.impl.ActivationClientFactoryImpl"/>
+
     <!-- Contribute Service using Spring DM -->
     <osgi:service id="osgiActivationClientFactory"
                   ref="activationClientFactory"
@@ -24,6 +28,7 @@
     <bean id="activationWService"
           class="com.atricore.idbus.console.activation.main.impl.JOSSOActivationWServiceImpl">
         <property name="activationService" ref="activationService"/>
+        <property name="authenticator" ref="jaasAuthenticator"/>
     </bean>
     <!-- Contribute Service using Spring DM -->
     <osgi:service id="osgiActivationWService"

@@ -206,6 +206,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.atricore.idbus.console.appliance</groupId>
+            <artifactId>com.atricore.idbus.console.appliance.console-jaas</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
 
         <!-- XUPdate -->
 
