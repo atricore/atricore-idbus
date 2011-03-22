@@ -57,9 +57,25 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
     }
 
     public void afterPropertiesSet() throws Exception {
+
         if (defaultDriversUrls == null || defaultDriversUrls.size() == 0) {
             defaultDriversUrls = new ArrayList<String>();
-            defaultDriversUrls.add("file://" + System.getProperty("karaf.base") + "/lib/jdbc" );
+
+            // Build default URL according to platform ...
+
+            String karafBase = System.getProperty("karaf.base");
+
+            // Add starting slash if not present, required in Windows.
+            if (!karafBase.startsWith("/"))
+                karafBase = "/" + karafBase;
+
+            // Replace Windows file separator, if any
+            karafBase = karafBase.replaceAll("\\\\", "/");
+
+            // Add default drivers URL
+            String defaultUrl = "file://" + karafBase + "/lib/jdbc";
+
+            defaultDriversUrls.add(defaultUrl);
         }
 
         if (loadDefaultDrivers) {
