@@ -1167,10 +1167,16 @@
             <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
             <version>${idbus.bundle.datanucleus-v2_1_2.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
+            <version>${idbus.bundle.datanucleus-v2_1_2.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>datanucleus-v2_1_2</artifactId>
             <version>${idbus.bundle.datanucleus-v2_1_2.version}</version>
             <type>pom</type>
         </dependency>

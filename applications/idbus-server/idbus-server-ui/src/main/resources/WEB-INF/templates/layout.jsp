@@ -37,7 +37,7 @@
     <meta name="Author" content="Nicolas Calabrese"/>
     <meta name="Author" content="Sebastian Gonzalez Oyuela"/>
     <meta name="Keywords" content="Atricore, IDBUS, JOSSO, SSO, Single Sign On, SAML, SAML2"/>
-    <meta name="Description" content="Atricore IDBus,  SAML 2.0 Front End"/>
+    <meta name="Description" content="Atricore JOSSO 2 - User Dashboard"/>
 
     <meta name="Robots" content="index,follow"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
