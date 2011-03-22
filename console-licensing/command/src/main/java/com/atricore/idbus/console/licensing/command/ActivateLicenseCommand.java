@@ -9,8 +9,13 @@ import org.apache.felix.gogo.commands.Command;
 @Command(scope = "licensing", name = "activate", description = "Activate new product license")
 public class ActivateLicenseCommand extends LicenseCommandSupport {
 
+    String licsenseFile;
+
     @Override
     protected Object doExecute(LicenseManager svc) throws Exception {
+
+        // TODO : Impelement me
+
         return null;
     }
 }
