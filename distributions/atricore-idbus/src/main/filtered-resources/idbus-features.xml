@@ -94,7 +94,8 @@
 
 
     <feature name="atricore-idbus-ui" version="${version}">
-        <bundle>mvn:org.atricore.idbus.applications.server/org.atricore.idbus.applications.server.ui/${idbus.app.server.version}/war</bundle>
+        <bundle>mvn:org.atricore.idbus.applications.server/org.atricore.idbus.applications.server.ui/${idbus.app.server.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.applications.server/org.atricore.idbus.applications.server.web/${idbus.app.server.version}/war</bundle>
     </feature>
 
 

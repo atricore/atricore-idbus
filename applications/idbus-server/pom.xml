@@ -717,6 +717,7 @@
 
     <modules>
         <module>idbus-server-ui</module>
+        <module>idbus-server-web</module>
     </modules>
     
 
