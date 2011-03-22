@@ -48,6 +48,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _exportIdentityApplianceMediator:IIocMediator;
     private var _exportProviderCertificateMediator:IIocMediator;
     private var _exportMetadataMediator:IIocMediator;
+    private var _activationMediator:IIocMediator;
     
     // Commands
     private var _createSimpleSSOIdentityApplianceCommand:IIocCommand;
@@ -126,6 +127,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(exportIdentityApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(exportProviderCertificateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(exportMetadataMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(activationMediator.getConfigName());
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
@@ -428,6 +430,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set exportMetadataMediator(value:IIocMediator):void {
         _exportMetadataMediator = value;
+    }
+
+    public function get activationMediator():IIocMediator {
+        return _activationMediator;
+    }
+
+    public function set activationMediator(value:IIocMediator):void {
+        _activationMediator = value;
     }
 
     public function get createSimpleSSOIdentityApplianceCommand():IIocCommand {

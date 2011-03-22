@@ -20,23 +20,26 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat {
+import com.atricore.idbus.console.components.URLValidator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
+import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
-
+import mx.events.ValidationResultEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
+import mx.validators.StringValidator;
+import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -49,6 +52,9 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     private var _newExecutionEnvironment:TomcatExecutionEnvironment;
+
+    private var _homeDirValidator:Validator;
+    private var _locationValidator:Validator;
 
     public function TomcatExecutionEnvironmentCreateMediator(name:String = null, viewComp:TomcatExecutionEnvironmentCreateForm = null) {
         super(name, viewComp);
@@ -74,18 +80,24 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
     }
 
     private function init():void {
+        _homeDirValidator = new StringValidator();
+        _homeDirValidator.required = true;
+
+        _locationValidator = new URLValidator();
+        _locationValidator.required = true;
+        
         view.btnOk.addEventListener(MouseEvent.CLICK, handleTomcatExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
-        view.selectedHost.enabled = false;
         view.focusManager.setFocus(view.executionEnvironmentName);
     }
 
     private function resetForm():void {
         view.executionEnvironmentName.text = "";
         view.executionEnvironmentDescription.text = "";
-        view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
+        view.location.text = "";
+        view.selectedHost.selectedIndex = 0;
         view.replaceConfFiles.selected = false;
         view.installSamples.selected = false;         
 
@@ -98,7 +110,11 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
 
         tomcatExecutionEnvironment.name = view.executionEnvironmentName.text;
         tomcatExecutionEnvironment.description = view.executionEnvironmentDescription.text;
-        tomcatExecutionEnvironment.installUri = view.homeDirectory.text;
+        tomcatExecutionEnvironment.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
+        if (tomcatExecutionEnvironment.type.name == ExecEnvType.LOCAL.name)
+            tomcatExecutionEnvironment.installUri = view.homeDirectory.text;
+        else
+            tomcatExecutionEnvironment.location = view.location.text;
         tomcatExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
         tomcatExecutionEnvironment.installDemoApps = view.installSamples.selected;
         tomcatExecutionEnvironment.platformId = view.platform.selectedItem.data;
@@ -106,13 +122,27 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
     }
 
     private function handleTomcatExecutionEnvironmentSave(event:MouseEvent):void {
-        view.homeDirectory.errorString = "";
+        //view.homeDirectory.errorString = "";
         if (validate(true)) {
-            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-            cif.homeDir = view.homeDirectory.text;
-            cif.environmentName = _environmentName;
-            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-        }        
+            if (view.selectedHost.selectedItem.data == "LOCAL") {
+                var hvResult:ValidationResultEvent = _homeDirValidator.validate(view.homeDirectory.text);
+                if (hvResult.type == ValidationResultEvent.VALID) {
+                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                    cif.homeDir = view.homeDirectory.text;
+                    cif.environmentName = _environmentName;
+                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+                } else {
+                    view.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                }
+            } else {
+                var lvResult:ValidationResultEvent = _locationValidator.validate(view.location.text);
+                if (lvResult.type == ValidationResultEvent.VALID) {
+                    save();
+                } else {
+                    view.location.errorString = lvResult.results[0].errorMessage;
+                }
+            }
+        }
     }
 
     private function save():void {
@@ -146,7 +176,6 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
-        _validators.push(view.homeDirValidator);
     }
 
     override public function listNotificationInterests():Array {

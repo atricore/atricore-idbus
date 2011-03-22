@@ -89,6 +89,7 @@
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
         <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
         <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
+        <property name="activationMediator" ref="activationMediator"/>
 
         <!-- Commands -->
         <property name="identityApplianceUpdateCommand" ref="identityApplianceUpdateCommand"/>
@@ -750,6 +751,12 @@
         <property name="viewFactory" ref="helpViewFactory"/>
         <property name="viewPriority" value="50"/>
     </object>
+
+    <object id="activationMediator"
+            class="com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.activation.ExecEnvActivationMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
         <property name="popupManager" ref="consolePopUpManager"/>
 
@@ -813,6 +820,7 @@
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
         <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
         <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
+        <property name="activationMediator" ref="activationMediator"/>
     </object>
 
     <object id="accountManagementPopUpManager"

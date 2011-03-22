@@ -85,6 +85,8 @@ import com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplia
 import com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceView;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardView;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.activation.ExecEnvActivationMediator;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.activation.ExecEnvActivationView;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataMediator;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataView;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateMediator;
@@ -133,6 +135,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportIdentityApplianceMediator:ExportIdentityApplianceMediator;
     private var _exportProviderCertificateMediator:ExportProviderCertificateMediator;
     private var _exportMetadataMediator:ExportMetadataMediator;
+    private var _activationMediator:ExecEnvActivationMediator;
 
     // views
     private var _simpleSSOWizardView:SimpleSSOWizardView;
@@ -169,6 +172,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportIdentityApplianceView:ExportIdentityApplianceView;
     private var _exportProviderCertificateView:ExportProviderCertificateView;
     private var _exportMetadataView:ExportMetadataView;
+    private var _activationView:ExecEnvActivationView;
 
     public function ModelerPopUpManager() {
         super();
@@ -449,6 +453,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set exportMetadataMediator(value:ExportMetadataMediator):void {
         _exportMetadataMediator = value;
+    }
+
+    public function get activationMediator():ExecEnvActivationMediator {
+        return _activationMediator;
+    }
+
+    public function set activationMediator(value:ExecEnvActivationMediator):void {
+        _activationMediator = value;
     }
 
     public function showSimpleSSOWizardWindow(notification:INotification):void {
@@ -1154,6 +1166,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleExportMetadataViewCreated(event:FlexEvent):void {
         exportMetadataMediator.setViewComponent(_exportMetadataView);
         exportMetadataMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showActivationWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createActivationView();
+        _progress.title = resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.title");
+        _progress.width = 470;
+        _progress.height = 150;
+//        _popup.x = (_popupParent.width / 2) - 225;
+//        _popup.y = 80;
+        showProgress(_activationView);
+    }
+
+    private function createActivationView():void {
+        _activationView = new ExecEnvActivationView();
+        _activationView.addEventListener(FlexEvent.CREATION_COMPLETE, handleActivationViewCreated);
+    }
+
+    private function handleActivationViewCreated(event:FlexEvent):void {
+        activationMediator.setViewComponent(_activationView);
+        activationMediator.handleNotification(_lastWindowNotification);
     }
 }
 }

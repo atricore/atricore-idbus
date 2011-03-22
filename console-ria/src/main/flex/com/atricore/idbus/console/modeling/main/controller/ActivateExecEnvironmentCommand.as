@@ -64,6 +64,9 @@ public class ActivateExecEnvironmentCommand extends IocSimpleCommand implements 
         req.activateSamples = activateExecutionEnvRequest.installSamples;
         req.replace = activateExecutionEnvRequest.replaceConfFiles;
 
+        req.username = activateExecutionEnvRequest.username;
+        req.password = activateExecutionEnvRequest.password;
+
         sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "activating.exec.environment"));
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);

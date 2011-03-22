@@ -97,7 +97,7 @@ public class WebserverExecutionEnvironmentCreateMediator extends IocFormMediator
 
         webserverExecutionEnvironment.name = view.executionEnvironmentName.text;
         webserverExecutionEnvironment.description = view.executionEnvironmentDescription.text;
-        webserverExecutionEnvironment.type = view.executionEnvironmentType.text;
+        webserverExecutionEnvironment.containerType = view.executionEnvironmentType.text;
         webserverExecutionEnvironment.installUri = view.homeDirectory.text;
         //TODO check platform ID
         webserverExecutionEnvironment.platformId = "webserver";

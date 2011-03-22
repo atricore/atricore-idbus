@@ -21,10 +21,10 @@
 
 package com.atricore.idbus.console.modeling.propertysheet {
 import com.atricore.idbus.console.components.CustomViewStack;
+import com.atricore.idbus.console.components.URLValidator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
-import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecutionEnvironmentRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckFoldersRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
 import com.atricore.idbus.console.modeling.diagram.model.response.CheckFoldersResponse;
@@ -84,6 +84,7 @@ import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
@@ -126,20 +127,18 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.net.FileFilter;
 import flash.net.FileReference;
-import flash.text.TextFormat;
 import flash.utils.ByteArray;
 
 import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.controls.Alert;
-import mx.core.IUITextField;
-import mx.core.mx_internal;
-import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.events.ItemClickEvent;
+import mx.events.ValidationResultEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 import mx.utils.StringUtil;
+import mx.validators.StringValidator;
 import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -233,6 +232,9 @@ public class PropertySheetMediator extends IocMediator {
     [Bindable]
     public var _selectedMetadataFiles:ArrayCollection;
 
+    private var _execEnvHomeDirValidator:Validator;
+    private var _execEnvLocationValidator:Validator;
+    
     public function PropertySheetMediator(name : String = null, viewComp:PropertySheetView = null) {
         super(name, viewComp);
     }
@@ -276,6 +278,7 @@ public class PropertySheetMediator extends IocMediator {
             ApplicationFacade.DIAGRAM_ELEMENT_SELECTED,
             ApplicationFacade.APPLIANCE_SAVED,
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
+            ApplicationFacade.RESET_EXEC_ENV_ACTIVATION,
             FolderExistsCommand.FOLDER_EXISTS,
             FolderExistsCommand.FOLDER_DOESNT_EXISTS,
             FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED,
@@ -439,6 +442,9 @@ public class PropertySheetMediator extends IocMediator {
                     _applianceSaved = false;
                     disableExportButtons();
                 }
+                break;
+            case ApplicationFacade.RESET_EXEC_ENV_ACTIVATION:
+                _executionEnvironmentActivateSection.reactivate.selected = false;
                 break;
         }
 
@@ -2744,42 +2750,74 @@ public class PropertySheetMediator extends IocMediator {
             _tomcatExecEnvCoreSection.executionEnvironmentName.text = tomcatExecEnv.name;
             _tomcatExecEnvCoreSection.executionEnvironmentDescription.text = tomcatExecEnv.description;
 
-            _tomcatExecEnvCoreSection.selectedHost.selectedIndex = 0;
-            _tomcatExecEnvCoreSection.selectedHost.enabled = false;
-
             for(var i:int=0; i < _tomcatExecEnvCoreSection.platform.dataProvider.length; i++){
                 if(_tomcatExecEnvCoreSection.platform.dataProvider[i].data == tomcatExecEnv.platformId){
                     _tomcatExecEnvCoreSection.platform.selectedIndex = i;
                     break;
                 }
             }
-            _tomcatExecEnvCoreSection.selectedHost.selectedIndex = 0;
-            _tomcatExecEnvCoreSection.homeDirectory.text = tomcatExecEnv.installUri;
+
+            _tomcatExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleTomcatExecEnvSelectedHostChange);
+
+            for(var j:int=0; j < _tomcatExecEnvCoreSection.selectedHost.dataProvider.length; j++){
+                if(_tomcatExecEnvCoreSection.selectedHost.dataProvider[j].data == tomcatExecEnv.type.toString()){
+                    _tomcatExecEnvCoreSection.selectedHost.selectedIndex = j;
+                    break;
+                }
+            }
+
+            if (tomcatExecEnv.type.name == ExecEnvType.LOCAL.name)
+                _tomcatExecEnvCoreSection.homeDirectory.text = tomcatExecEnv.installUri;
+            else {
+                _tomcatExecEnvCoreSection.location.text = tomcatExecEnv.location;
+            }
+
+            _execEnvHomeDirValidator = new StringValidator();
+            _execEnvHomeDirValidator.required = true;
+
+            _execEnvLocationValidator = new URLValidator();
+            _execEnvLocationValidator.required = true;
 
             _tomcatExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _tomcatExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _tomcatExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
             _tomcatExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
             _tomcatExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _tomcatExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
             _validators.push(_tomcatExecEnvCoreSection.nameValidator);
-            _validators.push(_tomcatExecEnvCoreSection.homeDirValidator);
         }
+    }
+
+    private function handleTomcatExecEnvSelectedHostChange(e:Event):void {
+        
     }
 
     private function handleTomcatExecEnvCorePropertyTabRollOut(e:Event):void {
         trace(e);
-        _tomcatExecEnvCoreSection.homeDirectory.errorString = "";
+        //_tomcatExecEnvCoreSection.homeDirectory.errorString = "";
         if (_dirty && validate(true)) {
-            _execEnvSaveFunction = tomcatSave;
-            _execEnvHomeDir = _tomcatExecEnvCoreSection.homeDirectory;
-
-            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-            cif.homeDir = _tomcatExecEnvCoreSection.homeDirectory.text;
-            cif.environmentName = "n/a";
-            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _tomcatExecEnvCoreSection.homeDirectory.text);
+            if (_tomcatExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+                _execEnvSaveFunction = tomcatSave;
+                _execEnvHomeDir = _tomcatExecEnvCoreSection.homeDirectory;
+                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_tomcatExecEnvCoreSection.homeDirectory.text);
+                if (hvResult.type == ValidationResultEvent.VALID) {
+                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                    cif.homeDir = _tomcatExecEnvCoreSection.homeDirectory.text;
+                    cif.environmentName = "n/a";
+                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+                } else {
+                    _tomcatExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                }
+            } else {
+                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_tomcatExecEnvCoreSection.location.text);
+                if (lvResult.type == ValidationResultEvent.VALID) {
+                    tomcatSave();
+                } else {
+                    _tomcatExecEnvCoreSection.location.errorString = lvResult.results[0].errorMessage;
+                }
+            }
         }
     }
 
@@ -2788,7 +2826,14 @@ public class PropertySheetMediator extends IocMediator {
         tomcatExecEnv.name = _tomcatExecEnvCoreSection.executionEnvironmentName.text;
         tomcatExecEnv.description = _tomcatExecEnvCoreSection.executionEnvironmentDescription.text;
         tomcatExecEnv.platformId = _tomcatExecEnvCoreSection.platform.selectedItem.data;
-        tomcatExecEnv.installUri = _tomcatExecEnvCoreSection.homeDirectory.text;
+        tomcatExecEnv.type = ExecEnvType.valueOf(_tomcatExecEnvCoreSection.selectedHost.selectedItem.data);
+        if (tomcatExecEnv.type.name == ExecEnvType.LOCAL.name) {
+            tomcatExecEnv.installUri = _tomcatExecEnvCoreSection.homeDirectory.text;
+            tomcatExecEnv.location = null;
+        } else {
+            tomcatExecEnv.location = _tomcatExecEnvCoreSection.location.text;
+            tomcatExecEnv.installUri = null;
+        }
         
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -3824,7 +3869,7 @@ public class PropertySheetMediator extends IocMediator {
             _webserverExecEnvCoreSection.executionEnvironmentDescription.text = webserverExecEnv.description;
             _webserverExecEnvCoreSection.selectedHost.selectedIndex = 0;
             _webserverExecEnvCoreSection.homeDirectory.text = webserverExecEnv.installUri;
-            _webserverExecEnvCoreSection.executionEnvironmentType.text = webserverExecEnv.type;
+            _webserverExecEnvCoreSection.executionEnvironmentType.text = webserverExecEnv.containerType;
 
             _webserverExecEnvCoreSection.selectedHost.selectedIndex = 0;
             _webserverExecEnvCoreSection.selectedHost.enabled = false;
@@ -3860,7 +3905,7 @@ public class PropertySheetMediator extends IocMediator {
         var webserverExecEnv:WebserverExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WebserverExecutionEnvironment;
         webserverExecEnv.name = _webserverExecEnvCoreSection.executionEnvironmentName.text;
         webserverExecEnv.description = _webserverExecEnvCoreSection.executionEnvironmentDescription.text;
-        webserverExecEnv.type = _webserverExecEnvCoreSection.executionEnvironmentType.text;
+        webserverExecEnv.containerType = _webserverExecEnvCoreSection.executionEnvironmentType.text;
         //TODO CHECK PLATFORM ID
         webserverExecEnv.platformId = "web";
         webserverExecEnv.installUri = _webserverExecEnvCoreSection.homeDirectory.text;
@@ -3890,7 +3935,13 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleExecEnvActivationPropertyTabRollOut(event:Event):void {
         if (projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.toString()){
-            activateExecutionEnvironment(event);
+            //activateExecutionEnvironment(event);
+            if (_executionEnvironmentActivateSection.reactivate.selected && _applianceSaved) {
+                sendNotification(ApplicationFacade.DISPLAY_ACTIVATION_DIALOG,
+                        [_executionEnvironmentActivateSection.reactivate.selected,
+                         _executionEnvironmentActivateSection.replaceConfFiles.selected,
+                         _executionEnvironmentActivateSection.installSamples.selected]);
+            }
         }
         if (_dirty){
             var execEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
@@ -3912,6 +3963,7 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    /*
     private function activateExecutionEnvironment(event:Event):void {
         var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
         if(_executionEnvironmentActivateSection.reactivate.selected && _applianceSaved){
@@ -3950,6 +4002,7 @@ public class PropertySheetMediator extends IocMediator {
         }
         _executionEnvironmentActivateSection.reactivate.selected = false;
     }
+    */
 
     protected function enableIdentityLookupPropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();

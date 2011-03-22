@@ -349,6 +349,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.EXPORT_IDENTITY_APPLIANCE,
             ApplicationFacade.EXPORT_PROVIDER_CERTIFICATE,
             ApplicationFacade.EXPORT_METADATA,
+            ApplicationFacade.DISPLAY_ACTIVATION_DIALOG,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
@@ -675,6 +676,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.EXPORT_METADATA:
                 popupManager.showCreateExportMetadataWindow(notification);
+                break;
+            case ApplicationFacade.DISPLAY_ACTIVATION_DIALOG:
+                popupManager.showActivationWindow(notification);
                 break;
             default:
                 // Let super mediator handle notifications.

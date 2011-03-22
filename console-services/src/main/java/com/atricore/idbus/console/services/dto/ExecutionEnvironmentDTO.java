@@ -14,7 +14,9 @@ public class ExecutionEnvironmentDTO implements Serializable {
     private String displayName;
     private String description;
     private String installUri;
+    private String location;
     private String platformId;
+    private ExecEnvTypeDTO type;
     private boolean active;
     private boolean overwriteOriginalSetup;
     private boolean installDemoApps;    
@@ -56,6 +58,22 @@ public class ExecutionEnvironmentDTO implements Serializable {
 
     public void setInstallUri(String installUri) {
         this.installUri = installUri;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public ExecEnvTypeDTO getType() {
+        return type;
+    }
+
+    public void setType(ExecEnvTypeDTO type) {
+        this.type = type;
     }
 
     public Set<ActivationDTO> getActivations() {
