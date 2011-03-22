@@ -1085,7 +1085,6 @@
             <groupId>org.atricore.idbus.applications.server</groupId>
             <artifactId>org.atricore.idbus.applications.server.ui</artifactId>
             <version>${idbus.app.server.version}</version>
-            <type>war</type>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.applications.server</groupId>
