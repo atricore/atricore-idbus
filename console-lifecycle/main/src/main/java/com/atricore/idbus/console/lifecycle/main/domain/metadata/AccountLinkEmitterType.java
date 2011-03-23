@@ -7,6 +7,5 @@ public enum AccountLinkEmitterType {
     EMAIL,
     UID,
     ONE_TO_ONE,
-    DYNAMIC,
     CUSTOM;
 }

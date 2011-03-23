@@ -794,6 +794,9 @@ public class IdentityApplianceManagementServiceImpl implements
         try {
             syncAppliances();
             logger.debug("Listing all account linkage policies");
+
+            // TODO : (SG) Include OSGi contributed custom implementations !
+
             Collection result = accountLinkagePolicyDAO.findAll();
             res.getAccountLinkagePolicies().addAll(accountLinkagePolicyDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
@@ -866,6 +869,8 @@ public class IdentityApplianceManagementServiceImpl implements
     @Transactional
     public ListIdentityMappingPolicyResponse listIdentityMappingPolicy(ListIdentityMappingPolicyRequest req) throws IdentityServerException {
         // TODO : Implement me!
+
+        // TODO : (SG) Include OSGi contributed custom implementations !
         return null;
     }
 

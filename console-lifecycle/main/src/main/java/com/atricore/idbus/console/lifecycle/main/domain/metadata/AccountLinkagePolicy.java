@@ -37,6 +37,7 @@ public class AccountLinkagePolicy implements Serializable {
     
     private AccountLinkEmitterType linkEmitterType;
 
+    @Deprecated // TODO : Move to identity mapping policy
     private boolean useLocalId;
 
     // TODO : This is stored in IdentityMappingPolicy
