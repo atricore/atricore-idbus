@@ -29,6 +29,8 @@ public class IdentityProviderChannel extends FederatedChannel {
 
     private AccountLinkagePolicy accountLinkagePolicy;
 
+    private IdentityMappingPolicy identityMappingPolicy;
+
     // RFU
     private AuthenticationContract authenticationContract;
 
@@ -41,6 +43,14 @@ public class IdentityProviderChannel extends FederatedChannel {
 
     public void setAccountLinkagePolicy(AccountLinkagePolicy accountLinkagePolicy) {
         this.accountLinkagePolicy = accountLinkagePolicy;
+    }
+
+    public IdentityMappingPolicy getIdentityMappingPolicy() {
+        return identityMappingPolicy;
+    }
+
+    public void setIdentityMappingPolicy(IdentityMappingPolicy identityMappingPolicy) {
+        this.identityMappingPolicy = identityMappingPolicy;
     }
 
     public AuthenticationContract getAuthenticationContract() {

@@ -863,6 +863,12 @@ public class IdentityApplianceManagementServiceImpl implements
         return res;
     }
 
+    @Transactional
+    public ListIdentityMappingPolicyResponse listIdentityMappingPolicy(ListIdentityMappingPolicyRequest req) throws IdentityServerException {
+        // TODO : Implement me!
+        return null;
+    }
+
     /***************************************************************
      * Lookup methods
      ***************************************************************/
@@ -1011,6 +1017,14 @@ public class IdentityApplianceManagementServiceImpl implements
         }
         return res;
     }
+
+    @Transactional
+    public LookupIdentityMappingPolicyByIdResponse lookupIdentityMappingPolicyById(LookupIdentityMappingPolicyByIdRequest req) throws IdentityServerException {
+        // TODO : Implement me!
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    //
 
     public GetMetadataInfoResponse getMetadataInfo(GetMetadataInfoRequest req) throws IdentityServerException {
         GetMetadataInfoResponse res = null;

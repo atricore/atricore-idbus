@@ -31,11 +31,19 @@ public class AccountLinkagePolicy implements Serializable {
 	
 	private String name;
 
+    // TODO : This is stored in IdentityMappingPolicy
+    @Deprecated
     private IdentityMappingType mappingType;
+    
+    private AccountLinkEmitterType linkEmitterType;
 
     private boolean useLocalId;
 
+    // TODO : This is stored in IdentityMappingPolicy
+    @Deprecated
     private String customMapper;
+
+    private String customLinkEmitter;
 
     public long getId() {
         return id;
@@ -61,6 +69,14 @@ public class AccountLinkagePolicy implements Serializable {
         this.mappingType = mappingType;
     }
 
+    public AccountLinkEmitterType getLinkEmitterType() {
+        return linkEmitterType;
+    }
+
+    public void setLinkEmitterType(AccountLinkEmitterType linkEmitterType) {
+        this.linkEmitterType = linkEmitterType;
+    }
+
     public boolean isUseLocalId() {
         return useLocalId;
     }
@@ -75,6 +91,14 @@ public class AccountLinkagePolicy implements Serializable {
 
     public void setCustomMapper(String customMapper) {
         this.customMapper = customMapper;
+    }
+
+    public String getCustomLinkEmitter() {
+        return customLinkEmitter;
+    }
+
+    public void setCustomLinkEmitter(String customLinkEmitter) {
+        this.customLinkEmitter = customLinkEmitter;
     }
 
     @Override
