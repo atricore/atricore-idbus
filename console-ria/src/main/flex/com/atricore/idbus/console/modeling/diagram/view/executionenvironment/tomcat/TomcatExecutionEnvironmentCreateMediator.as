@@ -97,6 +97,8 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.executionEnvironmentDescription.text = "";
         view.homeDirectory.text = "";
         view.location.text = "";
+        view.homeDirectory.errorString = "";
+        view.location.errorString = "";
         view.selectedHost.selectedIndex = 0;
         view.replaceConfFiles.selected = false;
         view.installSamples.selected = false;         
@@ -122,7 +124,8 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
     }
 
     private function handleTomcatExecutionEnvironmentSave(event:MouseEvent):void {
-        //view.homeDirectory.errorString = "";
+        view.homeDirectory.errorString = "";
+        view.location.errorString = "";
         if (validate(true)) {
             if (view.selectedHost.selectedItem.data == "LOCAL") {
                 var hvResult:ValidationResultEvent = _homeDirValidator.validate(view.homeDirectory.text);

@@ -20,6 +20,7 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce {
+import com.atricore.idbus.console.components.URLValidator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
@@ -27,15 +28,18 @@ import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
+import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
-
+import mx.events.ValidationResultEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
+import mx.validators.StringValidator;
+import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -49,6 +53,9 @@ public class WASCEExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     private var _newExecutionEnvironment:WASCEExecutionEnvironment;
 
+    private var _homeDirValidator:Validator;
+    private var _locationValidator:Validator;
+    
     public function WASCEExecutionEnvironmentCreateMediator(name:String = null, viewComp:WASCEExecutionEnvironmentCreateForm = null) {
         super(name, viewComp);
     }
@@ -73,10 +80,15 @@ public class WASCEExecutionEnvironmentCreateMediator extends IocFormMediator {
     }
 
     private function init():void {
+        _homeDirValidator = new StringValidator();
+        _homeDirValidator.required = true;
+
+        _locationValidator = new URLValidator();
+        _locationValidator.required = true;
+
         view.btnOk.addEventListener(MouseEvent.CLICK, handleWASCEExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
-        view.selectedHost.enabled = false;
         view.focusManager.setFocus(view.executionEnvironmentName);
     }
 
@@ -85,6 +97,9 @@ public class WASCEExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.executionEnvironmentDescription.text = "";
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
+        view.location.text = "";
+        view.homeDirectory.errorString = "";
+        view.location.errorString = "";
         view.replaceConfFiles.selected = false;
         view.installSamples.selected = false;         
 
@@ -95,7 +110,11 @@ public class WASCEExecutionEnvironmentCreateMediator extends IocFormMediator {
         var executionEnvironment:WASCEExecutionEnvironment = new WASCEExecutionEnvironment();
         executionEnvironment.name = view.executionEnvironmentName.text;
         executionEnvironment.description = view.executionEnvironmentDescription.text;
-        executionEnvironment.installUri = view.homeDirectory.text;
+        executionEnvironment.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
+        if (executionEnvironment.type.name == ExecEnvType.LOCAL.name)
+            executionEnvironment.installUri = view.homeDirectory.text;
+        else
+            executionEnvironment.location = view.location.text;
         executionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
         executionEnvironment.installDemoApps = view.installSamples.selected;        
         executionEnvironment.platformId = "wc21";
@@ -104,11 +123,26 @@ public class WASCEExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     private function handleWASCEExecutionEnvironmentSave(event:MouseEvent):void {
         view.homeDirectory.errorString = "";
+        view.location.errorString = "";
         if (validate(true)) {
-            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-            cif.homeDir = view.homeDirectory.text;
-            cif.environmentName = _environmentName;
-            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+            if (view.selectedHost.selectedItem.data == "LOCAL") {
+                var hvResult:ValidationResultEvent = _homeDirValidator.validate(view.homeDirectory.text);
+                if (hvResult.type == ValidationResultEvent.VALID) {
+                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                    cif.homeDir = view.homeDirectory.text;
+                    cif.environmentName = _environmentName;
+                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+                } else {
+                    view.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                }
+            } else {
+                var lvResult:ValidationResultEvent = _locationValidator.validate(view.location.text);
+                if (lvResult.type == ValidationResultEvent.VALID) {
+                    save();
+                } else {
+                    view.location.errorString = lvResult.results[0].errorMessage;
+                }
+            }
         }
     }
 
@@ -141,7 +175,6 @@ public class WASCEExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
-        _validators.push(view.homeDirValidator);
     }
 
     override public function listNotificationInterests():Array {

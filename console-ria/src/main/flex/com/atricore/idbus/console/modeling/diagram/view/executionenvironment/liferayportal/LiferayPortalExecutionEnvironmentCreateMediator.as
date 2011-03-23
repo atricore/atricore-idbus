@@ -20,6 +20,7 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal {
+import com.atricore.idbus.console.components.URLValidator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
@@ -28,15 +29,18 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CheckFoldersReq
 import com.atricore.idbus.console.modeling.diagram.model.response.CheckFoldersResponse;
 import com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
+import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
-
+import mx.events.ValidationResultEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
+import mx.validators.StringValidator;
+import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -50,6 +54,9 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
 
     private var _newExecutionEnvironment:LiferayExecutionEnvironment;
 
+    private var _homeDirValidator:Validator;
+    private var _locationValidator:Validator;
+    
     public function LiferayPortalExecutionEnvironmentCreateMediator(name:String = null, viewComp:LiferayPortalExecutionEnvironmentCreateForm = null) {
         super(name, viewComp);
     }
@@ -74,10 +81,15 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
     }
 
     private function init():void {
+        _homeDirValidator = new StringValidator();
+        _homeDirValidator.required = true;
+
+        _locationValidator = new URLValidator();
+        _locationValidator.required = true;
+        
         view.btnOk.addEventListener(MouseEvent.CLICK, handleLiferayPortalExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
-        view.selectedHost.enabled = false;
         view.containerType.selectedIndex = 0;
         view.focusManager.setFocus(view.executionEnvironmentName);
     }
@@ -87,6 +99,9 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
         view.executionEnvironmentDescription.text = "";
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
+        view.location.text = "";
+        view.homeDirectory.errorString = "";
+        view.location.errorString = "";
         view.containerType.selectedIndex = 0;
         view.containerPath.text = "";
         view.replaceConfFiles.selected = false;
@@ -99,7 +114,11 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
         var executionEnvironment:LiferayExecutionEnvironment = new LiferayExecutionEnvironment();
         executionEnvironment.name = view.executionEnvironmentName.text;
         executionEnvironment.description = view.executionEnvironmentDescription.text;
-        executionEnvironment.installUri = view.homeDirectory.text;
+        executionEnvironment.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
+        if (executionEnvironment.type.name == ExecEnvType.LOCAL.name)
+            executionEnvironment.installUri = view.homeDirectory.text;
+        else
+            executionEnvironment.location = view.location.text;
         executionEnvironment.containerType = view.containerType.selectedItem.data;
         executionEnvironment.containerPath = view.containerPath.text;
         executionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
@@ -110,10 +129,28 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
 
     private function handleLiferayPortalExecutionEnvironmentSave(event:MouseEvent):void {
         view.homeDirectory.errorString = "";
+        view.location.errorString = "";
         view.containerPath.errorString = "";
         if (validate(true)) {
+            if (view.selectedHost.selectedItem.data == "REMOTE") {
+                var lvResult:ValidationResultEvent = _locationValidator.validate(view.location.text);
+                if (lvResult.type != ValidationResultEvent.VALID) {
+                    view.location.errorString = lvResult.results[0].errorMessage;
+                    return;
+                }
+            }
+            
             var folders:ArrayCollection = new ArrayCollection();
-            folders.addItem(view.homeDirectory.text);
+            if (view.selectedHost.selectedItem.data == "LOCAL") {
+                var hvResult:ValidationResultEvent = _homeDirValidator.validate(view.homeDirectory.text);
+                if (hvResult.type == ValidationResultEvent.VALID) {
+                    folders.addItem(view.homeDirectory.text);
+                } else {
+                    view.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                    return;
+                }
+            }
+
             folders.addItem(view.containerPath.text);
             var cf:CheckFoldersRequest = new CheckFoldersRequest();
             cf.folders = folders;
@@ -151,7 +188,6 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
-        _validators.push(view.homeDirValidator);
         _validators.push(view.containerPathValidator);
     }
 

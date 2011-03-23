@@ -36,6 +36,7 @@
 
             import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
             import com.atricore.idbus.console.modeling.main.view.sso.event.SsoEvent;
+            import com.atricore.idbus.console.services.dto.ExecEnvType;
             import com.atricore.idbus.console.services.dto.JOSSOActivation;
             import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
             import com.atricore.idbus.console.services.dto.Location;
@@ -166,6 +167,7 @@
                     sp.activation.executionEnv = new TomcatExecutionEnvironment();
                 }
                 sp.activation.executionEnv.name = jossoSPPlatform.selectedItem.@data + "-execenv";
+                sp.activation.executionEnv.type = ExecEnvType.LOCAL;
                 sp.activation.executionEnv.installUri = homeDir.text;
 
                 sp.activation.executionEnv.platformId = jossoSPPlatform.selectedItem.@data;
