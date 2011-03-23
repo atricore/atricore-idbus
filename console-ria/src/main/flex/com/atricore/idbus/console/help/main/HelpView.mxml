@@ -39,9 +39,11 @@
         ]]>
     </fx:Script>
 
+    <!--source="http://www.josso.org/confluence/display/JOSSO1/JOSSO2"-->
+
     <flexiframe:IFrame id="helpIFrame"
                        label="Help"
-                       source="http://www.josso.org/confluence/display/JOSSO1/JOSSO2"
+                       source="../atricore-docs"
                        width="100%"
                        height="100%"
                        visible="false"/>
