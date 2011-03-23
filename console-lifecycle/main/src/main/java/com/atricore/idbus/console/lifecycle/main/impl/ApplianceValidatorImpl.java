@@ -7,6 +7,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.spi.ApplianceValidator;
+import com.atricore.idbus.console.lifecycle.main.spi.ExecEnvType;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
 import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import org.apache.commons.lang.StringUtils;
@@ -348,8 +349,14 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.getPlatformId() == null)
             addError("Execution Environment platform ID cannot be null");
 
-        if (node.getInstallUri() == null)
+        if (node.getType() == null)
+            addError("Execution Environment type cannot be null");
+
+        if (node.getType() == ExecEnvType.LOCAL && node.getInstallUri() == null)
             addError("Execution Environment install URI cannot be null");
+
+        if (node.getType() == ExecEnvType.REMOTE && node.getLocation() == null)
+            addError("Execution Environment location cannot be null");
 
         if (node instanceof JBossExecutionEnvironment) {
             JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) node;

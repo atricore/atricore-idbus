@@ -6,13 +6,13 @@ package com.atricore.idbus.console.services.dto;
 public class WebserverExecutionEnvironmentDTO extends ExecutionEnvironmentDTO {
     private static final long serialVersionUID = 475740871323858432L;
 
-    private String type;
+    private String containerType;
 
-    public String getType() {
-        return type;
+    public String getContainerType() {
+        return containerType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setContainerType(String containerType) {
+        this.containerType = containerType;
     }
 }

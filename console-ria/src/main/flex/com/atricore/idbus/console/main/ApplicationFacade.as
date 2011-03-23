@@ -87,6 +87,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_FEDERATED_CONNECTION:String = "createFederatedConnection";
     public static const CREATE_IDENTITY_LOOKUP:String = "createIdentityLookup";
     public static const ACTIVATE_EXEC_ENVIRONMENT:String = "activateExecEnvironment";
+    public static const RESET_EXEC_ENV_ACTIVATION:String = "resetExecEnvActivation";
     public static const CHECK_INSTALL_FOLDER_EXISTENCE:String = "checkInstallFolderExistence";
     public static const CHECK_FOLDERS_EXISTENCE:String = "checkFoldersExistence";
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
@@ -201,6 +202,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const EXPORT_METADATA:String = "exportMetadata";
     public static const DISPLAY_UPDATE_NOTIFICATIONS:String = "displayUpdateNotifications";
     public static const SETTINGS_MENU_ELEMENT_SELECTED:String = "settingsMenuElementSelected";
+    public static const DISPLAY_ACTIVATION_DIALOG:String = "displayActivationDialog";
 
     // TODO: remove this?
     public static const LICENSE_VIEW_SELECTED:String = "licenseViewSelected";

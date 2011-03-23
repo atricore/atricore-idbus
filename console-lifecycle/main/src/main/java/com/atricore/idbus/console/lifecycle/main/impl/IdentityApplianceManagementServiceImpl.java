@@ -1468,6 +1468,14 @@ public class IdentityApplianceManagementServiceImpl implements
         this.activationService = activationService;
     }
 
+    public ActivationClientFactory getActivationClientFactory() {
+        return activationClientFactory;
+    }
+
+    public void setActivationClientFactory(ActivationClientFactory activationClientFactory) {
+        this.activationClientFactory = activationClientFactory;
+    }
+
     public JDBCDriverManager getJdbcDriverManager() {
         return jdbcDriverManager;
     }
