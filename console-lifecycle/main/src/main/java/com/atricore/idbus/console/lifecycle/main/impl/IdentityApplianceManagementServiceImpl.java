@@ -132,6 +132,10 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private Keystore sampleKeystore;
 
+    private List<AccountLinkagePolicy> customAccountLinkagePolicies;
+
+    private List<IdentityMappingPolicy> customIdentityMappingPolicies;
+
     public void afterPropertiesSet() throws Exception {
         if (sampleKeystore.getStore() != null &&
                 (sampleKeystore.getStore().getValue() == null ||
@@ -795,7 +799,7 @@ public class IdentityApplianceManagementServiceImpl implements
             syncAppliances();
             logger.debug("Listing all account linkage policies");
 
-            // TODO : (SG) Include OSGi contributed custom implementations !
+            // TODO : Include OSGi contributed custom implementations : this.customAccountLinkagePolicies
 
             Collection result = accountLinkagePolicyDAO.findAll();
             res.getAccountLinkagePolicies().addAll(accountLinkagePolicyDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
@@ -870,7 +874,8 @@ public class IdentityApplianceManagementServiceImpl implements
     public ListIdentityMappingPolicyResponse listIdentityMappingPolicy(ListIdentityMappingPolicyRequest req) throws IdentityServerException {
         // TODO : Implement me!
 
-        // TODO : (SG) Include OSGi contributed custom implementations !
+        // TODO : Include OSGi contributed custom implementations : this.customIdentityMappingPolicies
+
         return null;
     }
 
@@ -1295,6 +1300,24 @@ public class IdentityApplianceManagementServiceImpl implements
 
     }
 
+// -------------------------------------------------< Custom Policies registry >
+
+    public void registerCustomAccountLinkagePolicy(final AccountLinkagePolicy policy, final Map<String, ?> properties) {
+        this.customAccountLinkagePolicies.add(policy);
+    }
+
+    public void unregisterCustomAccountLinkagePolicy(final AccountLinkagePolicy policy, final Map<String, ?> properties) {
+        this.customAccountLinkagePolicies.remove(policy);
+    }
+
+    public void registerCustomIdentityMappingPolicy(final IdentityMappingPolicy policy, final Map<String, ?> properties) {
+        this.customIdentityMappingPolicies.add(policy);
+    }
+
+    public void unregisterCustomIdentityMappingPolicy(final IdentityMappingPolicy policy, final Map<String, ?> properties) {
+        this.customIdentityMappingPolicies.remove(policy);
+    }
+
 // -------------------------------------------------< Properties >
 
     public ApplianceBuilder getBuilder() {
@@ -1335,6 +1358,22 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setMarshaller(ApplianceMarshaller marshaller) {
         this.marshaller = marshaller;
+    }
+
+    public List<AccountLinkagePolicy> getCustomAccountLinkagePolicies() {
+        return customAccountLinkagePolicies;
+    }
+
+    public void setCustomAccountLinkagePolicies(List<AccountLinkagePolicy> customAccountLinkagePolicies) {
+        this.customAccountLinkagePolicies = customAccountLinkagePolicies;
+    }
+
+    public List<IdentityMappingPolicy> getCustomIdentityMappingPolicies() {
+        return customIdentityMappingPolicies;
+    }
+
+    public void setCustomIdentityMappingPolicies(List<IdentityMappingPolicy> customIdentityMappingPolicies) {
+        this.customIdentityMappingPolicies = customIdentityMappingPolicies;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {
@@ -1566,6 +1605,8 @@ public class IdentityApplianceManagementServiceImpl implements
                     appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
                     appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase();
 
+            // TODO : Attach all resources
+
             if (execEnv.getPlatformId().startsWith("iis"))
                 agentCfgName += ".ini";
             else
@@ -1594,7 +1635,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
 
                         // TODO : Ask local activation service for resources:
-                        // TODO : res = activationService.retrieveConfigurationResources(req);
+                        // res = activationService.retrieveConfigurationResources(req);
 
                         // TODO : Attach activation resources to request
 

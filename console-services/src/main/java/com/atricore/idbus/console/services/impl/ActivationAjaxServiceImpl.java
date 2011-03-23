@@ -23,6 +23,7 @@ public class ActivationAjaxServiceImpl implements ActivationAjaxService {
 
     private DozerBeanMapper dozerMapper;
 
+
     public ActivateAgentResponse activateAgent(ActivateAgentRequest request) throws com.atricore.idbus.console.activation.main.exception.ActivationException {
 
         // TODO : For remote activations, the client must be used, sending username and password in the request!

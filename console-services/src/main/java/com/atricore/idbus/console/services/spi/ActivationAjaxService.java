@@ -9,6 +9,7 @@ import com.atricore.idbus.console.services.spi.response.ActivateSamplesResponse;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
+@Deprecated
 public interface ActivationAjaxService {
 
     ActivateAgentResponse activateAgent(ActivateAgentRequest request) throws ActivationException;

@@ -145,8 +145,10 @@ public class AgentConfigActivator extends ActivatorSupport {
         if (ar.getJossoAgentConfigUri() != null) {
             FileObject agentCfg = appliancesDir.resolveFile(ar.getJossoAgentConfigUri());
             if (agentCfg.exists()) {
+
                 // Rename file
                 String agentCfgFileName = "josso-agent-config.xml";
+
                 if (ar.getTargetPlatformId().startsWith("iis"))
                     agentCfgFileName = "josso-agent-config.ini";
                 FileObject finalAgentCfg = tmpDir.resolveFile(agentCfgFileName);
