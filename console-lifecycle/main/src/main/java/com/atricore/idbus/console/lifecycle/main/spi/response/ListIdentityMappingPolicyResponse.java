@@ -9,17 +9,16 @@ import java.util.List;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class ListIdentityMappingPolicyResponse {
-    private List<IdentityMappingPolicy> accountLinkagePolicies;
+    private List<IdentityMappingPolicy> identityMappingPolicies;
 
-    public List<IdentityMappingPolicy> getAccountLinkagePolicies() {
-        if(accountLinkagePolicies == null){
-            accountLinkagePolicies = new ArrayList<IdentityMappingPolicy>();
+    public List<IdentityMappingPolicy> getIdentityMappingPolicies() {
+        if(identityMappingPolicies == null){
+            identityMappingPolicies = new ArrayList<IdentityMappingPolicy>();
         }
-        return accountLinkagePolicies;
+        return identityMappingPolicies;
     }
 
-    public void setAccountLinkagePolicies(List<IdentityMappingPolicy> accountLinkagePolicies) {
-        this.accountLinkagePolicies = accountLinkagePolicies;
+    public void setIdentityMappingPolicies(List<IdentityMappingPolicy> identityMappingPolicies) {
+        this.identityMappingPolicies = identityMappingPolicies;
     }
-    
 }

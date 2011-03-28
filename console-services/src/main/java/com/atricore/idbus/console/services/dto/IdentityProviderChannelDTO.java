@@ -29,6 +29,8 @@ public class IdentityProviderChannelDTO extends FederatedChannelDTO {
 
     private AccountLinkagePolicyDTO accountLinkagePolicy;
 
+    private IdentityMappingPolicyDTO identityMappingPolicy;
+
     // RFU
     private AuthenticationContractDTO authenticationContract;
 
@@ -41,6 +43,14 @@ public class IdentityProviderChannelDTO extends FederatedChannelDTO {
 
     public void setAccountLinkagePolicy(AccountLinkagePolicyDTO accountLinkagePolicy) {
         this.accountLinkagePolicy = accountLinkagePolicy;
+    }
+
+    public IdentityMappingPolicyDTO getIdentityMappingPolicy() {
+        return identityMappingPolicy;
+    }
+
+    public void setIdentityMappingPolicy(IdentityMappingPolicyDTO identityMappingPolicy) {
+        this.identityMappingPolicy = identityMappingPolicy;
     }
 
     public AuthenticationContractDTO getAuthenticationContract() {

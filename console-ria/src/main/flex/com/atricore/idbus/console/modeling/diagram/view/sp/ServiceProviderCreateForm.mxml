@@ -95,19 +95,15 @@
 
                 <!--s:HGroup width="100%"-->
                     <mx:FormItem labelWidth="155" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:">
-                        <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0">
-                            <s:dataProvider>
-                                <mx:ArrayCollection>
-                                    <fx:Object name="Use Theirs" data="theirs"/>
-                                    <fx:Object name="Use Ours" data="ours"/>
-                                    <fx:Object name="Aggregate" data="aggregate"/>
-                                </mx:ArrayCollection>
-                            </s:dataProvider>
-                        </s:DropDownList>
+                        <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
                     </mx:FormItem>
                     <!--s:Button id="configureAccLinkagePolicy"
                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/-->
                 <!--/s:HGroup-->
+
+                <mx:FormItem labelWidth="155" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.identity.mapping.policy')}:">
+                    <s:DropDownList id="identityMappingPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
+                </mx:FormItem>
 
                 <!--s:HGroup width="100%">
                     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.contract')}:" labelWidth="185">

@@ -1,11 +1,8 @@
-package com.atricore.idbus.console.lifecycle.main.domain.metadata;
+package com.atricore.idbus.console.services.dto;
 
 import java.io.Serializable;
 
-/**
- * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
- */
-public class IdentityMappingPolicy implements Serializable {
+public class IdentityMappingPolicyDTO implements Serializable {
 
     private static final long serialVersionUID = -2788040120282665989L;
 
@@ -13,7 +10,7 @@ public class IdentityMappingPolicy implements Serializable {
 
 	private String name;
 
-    private IdentityMappingType mappingType;
+    private IdentityMappingTypeDTO mappingType;
 
     private boolean useLocalId;
 
@@ -35,11 +32,11 @@ public class IdentityMappingPolicy implements Serializable {
 		this.name = name;
 	}
 
-    public IdentityMappingType getMappingType() {
+    public IdentityMappingTypeDTO getMappingType() {
         return mappingType;
     }
 
-    public void setMappingType(IdentityMappingType mappingType) {
+    public void setMappingType(IdentityMappingTypeDTO mappingType) {
         this.mappingType = mappingType;
     }
 
@@ -62,9 +59,9 @@ public class IdentityMappingPolicy implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdentityMappingPolicy)) return false;
+        if (!(o instanceof IdentityMappingPolicyDTO)) return false;
 
-        IdentityMappingPolicy that = (IdentityMappingPolicy) o;
+        IdentityMappingPolicyDTO that = (IdentityMappingPolicyDTO) o;
 
         if(id == 0) return false;
 

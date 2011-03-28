@@ -108,6 +108,9 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const PROVIDER_CERTIFICATE_EXPORT:String = "providerCertificateExport";
     public static const METADATA_EXPORT:String = "metadataExport";
 
+    public static const LIST_ACCOUNT_LINKAGE_POLICIES:String = "listAccountLinkagePolicies";
+    public static const LIST_IDENTITY_MAPPING_POLICIES:String = "listIdentityMappingPolicies";
+
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
 //    public static const SHOW_SUCCESS_MSG:String = "showSuccessMsg";

@@ -605,6 +605,18 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, ListAuthAssertionEmissionPoliciesResponse.class);
     }
 
+    public ListIdentityMappingPolicyResponse listIdentityMappingPolicies(ListIdentityMappingPolicyRequest req) throws IdentityServerException{
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityMappingPolicyRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityMappingPolicyRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListIdentityMappingPolicyResponse beRes;
+        try {
+            beRes = idApplianceManagementService.listIdentityMappingPolicies(beReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ListIdentityMappingPolicyResponse.class);
+    }
 
     /****************************
      * Lookup methods
@@ -789,9 +801,15 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
         // set account linkage policy
         AccountLinkagePolicyDTO accountLinkagePolicy = new AccountLinkagePolicyDTO();
-        accountLinkagePolicy.setName("Use Theirs");
-        accountLinkagePolicy.setMappingType(IdentityMappingTypeDTO.REMOTE);
+        accountLinkagePolicy.setName(AccountLinkEmitterTypeDTO.ONE_TO_ONE.getDisplayName());
+        accountLinkagePolicy.setLinkEmitterType(AccountLinkEmitterTypeDTO.ONE_TO_ONE);
         sp.setAccountLinkagePolicy(accountLinkagePolicy);
+
+        // set identity mapping policy
+        IdentityMappingPolicyDTO identityMappingPolicy = new IdentityMappingPolicyDTO();
+        identityMappingPolicy.setName(IdentityMappingTypeDTO.REMOTE.getDisplayName());
+        identityMappingPolicy.setMappingType(IdentityMappingTypeDTO.REMOTE);
+        sp.setIdentityMappingPolicy(identityMappingPolicy);
     }
 
     private void createFederatedConnection(IdentityProviderDTO idp, ServiceProviderDTO sp){

@@ -241,6 +241,12 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.getActivation() == null) {
             addError("Local Serivice Provider requires an activation connection " + node.getName());
         }
+
+        if (node.getAccountLinkagePolicy() == null)
+            addError("No account linkage policy for " + node.getName());
+
+        if (node.getIdentityMappingPolicy() == null)
+            addError("No identity mapping policy for " + node.getName());
     }
 
     @Override
@@ -416,7 +422,11 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.isOverrideProviderSetup())
             validateLocation("Identity Provider channel ", node.getLocation(), node, true);
 
+        if (node.getAccountLinkagePolicy() == null)
+            addError("No account linkage policy for " + node.getName());
 
+        if (node.getIdentityMappingPolicy() == null)
+            addError("No identity mapping policy for " + node.getName());
     }
 
     public void arrive(Keystore node) throws Exception {

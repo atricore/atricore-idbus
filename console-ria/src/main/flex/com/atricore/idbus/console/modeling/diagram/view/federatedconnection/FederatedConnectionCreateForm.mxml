@@ -101,20 +101,18 @@
                     <!--<s:CheckBox id="encryptAuthRequestCheck"/>-->
                 <!--</mx:FormItem>-->
 
-                <s:HGroup width="100%">
+                <!--s:HGroup width="100%"-->
                     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:" labelWidth="235">
-                        <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0">
-                            <mx:ArrayCollection>
-                                <fx:Object name="Use Theirs" data="theirs"/>
-                                <fx:Object name="Use Ours" data="ours"/>
-                                <fx:Object name="Aggregate" data="aggregate"/>
-                            </mx:ArrayCollection>
-                        </s:DropDownList>
+                        <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
                     </mx:FormItem>
-                    <s:Button id="configureAccLinkagePolicy"
-                       label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
-                </s:HGroup>
+                    <!--s:Button id="configureAccLinkagePolicy"
+                       label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/-->
+                <!--/s:HGroup-->
 
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.identity.mapping.policy')}:" labelWidth="235">
+                    <s:DropDownList id="identityMappingPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
+                </mx:FormItem>
+                
                 <!--<s:HGroup width="100%">-->
                     <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.contract')}:" labelWidth="235">-->
                         <!--<s:DropDownList id="authContractCombo" width="200" labelField="name" selectedIndex="0" enabled="false">-->
