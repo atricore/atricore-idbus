@@ -30,9 +30,10 @@ import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentReque
 import com.atricore.idbus.console.activation.main.spi.request.ActivateSamplesRequest;
 import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequest;
 import com.atricore.idbus.console.activation.main.spi.request.PlatformSupportedRequest;
-import com.atricore.idbus.console.activation.main.spi.response.*;
+import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResponse;
+import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesResponse;
 import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.activation.main.spi.response.PlatformSupportedResponse;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.JDBCDriverDescriptor;
@@ -791,18 +792,20 @@ public class IdentityApplianceManagementServiceImpl implements
     @Transactional
     public ListAccountLinkagePoliciesResponse listAccountLinkagePolicies(ListAccountLinkagePoliciesRequest req) throws IdentityServerException {
         ListAccountLinkagePoliciesResponse res = new ListAccountLinkagePoliciesResponse();
-        try {
-            syncAppliances();
-            logger.debug("Listing all account linkage policies");
 
-            // TODO : (SG) Include OSGi contributed custom implementations !
+        logger.debug("Listing all account linkage policies");
 
-            Collection result = accountLinkagePolicyDAO.findAll();
-            res.getAccountLinkagePolicies().addAll(accountLinkagePolicyDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
-        } catch (Exception e){
-            logger.error("Error retrieving account linkage policies!!!", e);
-            throw new IdentityServerException(e);
+        for (AccountLinkEmitterType type : AccountLinkEmitterType.values()) {
+            if (type != AccountLinkEmitterType.CUSTOM) {
+                AccountLinkagePolicy policy = new AccountLinkagePolicy();
+                policy.setName(type.getDisplayName());
+                policy.setLinkEmitterType(type);
+                res.getAccountLinkagePolicies().add(policy);
+            }
         }
+
+        // TODO : (SG) Include OSGi contributed custom implementations !
+
         return res;
     }
 
@@ -867,11 +870,23 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     @Transactional
-    public ListIdentityMappingPolicyResponse listIdentityMappingPolicy(ListIdentityMappingPolicyRequest req) throws IdentityServerException {
-        // TODO : Implement me!
+    public ListIdentityMappingPolicyResponse listIdentityMappingPolicies(ListIdentityMappingPolicyRequest req) throws IdentityServerException {
+        ListIdentityMappingPolicyResponse res = new ListIdentityMappingPolicyResponse();
+
+        logger.debug("Listing all identity mapping policies");
+        
+        for (IdentityMappingType type : IdentityMappingType.values()) {
+            if (type != IdentityMappingType.CUSTOM) {
+                IdentityMappingPolicy policy = new IdentityMappingPolicy();
+                policy.setName(type.getDisplayName());
+                policy.setMappingType(type);
+                res.getIdentityMappingPolicies().add(policy);
+            }
+        }
 
         // TODO : (SG) Include OSGi contributed custom implementations !
-        return null;
+        
+        return res;
     }
 
     /***************************************************************

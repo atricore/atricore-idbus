@@ -95,6 +95,8 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExportIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExportProviderCertificateCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExportMetadataCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicyListCommand</symbol>
 
         <symbol>com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator</symbol>
@@ -137,6 +139,7 @@
         <symbol>com.atricore.idbus.console.modeling.browser.BrowserMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.palette.PaletteMediator</symbol>
 
+        <symbol>com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.activation.ExecEnvActivationMediator</symbol>
 
         <!-- Account Management classes -->
         <symbol>com.atricore.idbus.console.account.main.AccountManagementMediator</symbol>

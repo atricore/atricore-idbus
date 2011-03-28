@@ -348,25 +348,43 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         // TODO RETROFIT  : }
 
         // accountLinkEmitter
-        Bean accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", OneToOneAccountLinkEmitter.class);
+        Bean accountLinkEmitter = null;
+
+        AccountLinkagePolicy ac = provider.getAccountLinkagePolicy();
+        AccountLinkEmitterType linkEmitterType = ac != null ? ac.getLinkEmitterType() : AccountLinkEmitterType.ONE_TO_ONE;
+        switch (linkEmitterType) {
+            case EMAIL:
+                accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", EmailAccountLinkEmitter.class);
+                break;
+            case UID:
+                accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", UidAccountLinkEmitter.class);
+                break;
+            case ONE_TO_ONE:
+                accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", OneToOneAccountLinkEmitter.class);
+                break;
+            case CUSTOM:
+                break;
+            default:
+                accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", OneToOneAccountLinkEmitter.class);
+        }
 
         // identityMapper
         Bean identityMapper = null;
-        
-        AccountLinkagePolicy ac = provider.getAccountLinkagePolicy();
-        IdentityMappingType mappingType = ac != null ? ac.getMappingType() : IdentityMappingType.REMOTE;
+                
+        IdentityMappingPolicy im = provider.getIdentityMappingPolicy();
+        IdentityMappingType mappingType = im != null ? im.getMappingType() : IdentityMappingType.REMOTE;
 
-        switch (ac.getMappingType()) {
+        switch (mappingType) {
             case REMOTE:
                 identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", RemoteSubjectIdentityMapper.class);
-                setPropertyValue(identityMapper, "useLocalId", ac.isUseLocalId());
+                setPropertyValue(identityMapper, "useLocalId", im.isUseLocalId());
                 break;
             case LOCAL:
                 identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", LocalSubjectIdentityMapper.class);
                 break;
             case MERGED:
                 identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", MergedSubjectIdentityMapper.class);
-                setPropertyValue(identityMapper, "useLocalId", ac.isUseLocalId());
+                setPropertyValue(identityMapper, "useLocalId", im.isUseLocalId());
                 break;
             case CUSTOM:
                 identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", MergedSubjectIdentityMapper.class);

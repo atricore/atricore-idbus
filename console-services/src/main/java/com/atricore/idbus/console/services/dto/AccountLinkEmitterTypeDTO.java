@@ -1,18 +1,15 @@
 package com.atricore.idbus.console.services.dto;
 
-/**
- * Author: Dejan Maric
- */
-public enum IdentityMappingTypeDTO {
+public enum AccountLinkEmitterTypeDTO {
 
-    LOCAL("Use Ours"),
-    REMOTE("Use Theirs"),
-    MERGED("Aggregate"),
+    EMAIL("Email"),
+    UID("UID"),
+    ONE_TO_ONE("One To One"),
     CUSTOM("Custom");
 
     private String displayName;
 
-    private IdentityMappingTypeDTO(String displayName) {
+    private AccountLinkEmitterTypeDTO(String displayName) {
         this.displayName = displayName;
     }
 

@@ -25,8 +25,10 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
+import com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicyListCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
-import com.atricore.idbus.console.services.dto.AccountLinkagePolicy;
+import com.atricore.idbus.console.services.dto.AccountLinkEmitterType;
 import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPolicy;
 import com.atricore.idbus.console.services.dto.AuthenticationContract;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
@@ -46,6 +48,7 @@ import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
@@ -64,6 +67,12 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
     private var _idpLocation:Location;
     private var _spName:String;
     private var _idpName:String;
+
+    [Bindable]
+    public var _accountLinkagePolicies:ArrayCollection;
+
+    [Bindable]
+    public var _identityMappingPolicies:ArrayCollection;
     
     public function FederatedConnectionCreateMediator(name:String = null, viewComp:FederatedConnectionCreateForm = null) {
         super(name, viewComp);
@@ -89,6 +98,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
     }
 
     private function init():void {
+        BindingUtils.bindProperty(view.accountLinkagePolicyCombo, "dataProvider", this, "_accountLinkagePolicies");
+        BindingUtils.bindProperty(view.identityMappingPolicyCombo, "dataProvider", this, "_identityMappingPolicies");
+
         view.btnOk.addEventListener(MouseEvent.CLICK, handleFederatedConnectionSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.focusManager.setFocus(view.federatedConnectionName);
@@ -142,16 +154,43 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
                 view.samlProfileSLOCheck.selected = true;
             }
         }
-        if(sp.accountLinkagePolicy != null) {
-            if(sp.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.LOCAL.toString()){
-                view.accountLinkagePolicyCombo.selectedIndex = 1;
-            } else if (sp.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
-                view.accountLinkagePolicyCombo.selectedIndex = 0;
-            } else if (sp.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.MERGED.toString()) {
-                view.accountLinkagePolicyCombo.selectedIndex = 2;
+
+        // set account linkage policy
+        if (view.accountLinkagePolicyCombo.dataProvider != null) {
+            if (sp.accountLinkagePolicy != null) {
+                for (var i:int=0; i < view.accountLinkagePolicyCombo.dataProvider.length; i++) {
+                    if(view.accountLinkagePolicyCombo.dataProvider[i].name == sp.accountLinkagePolicy.name){
+                        view.accountLinkagePolicyCombo.selectedIndex = i;
+                        break;
+                    }
+                }
+            } else {
+                for (var j:int=0; j < view.accountLinkagePolicyCombo.dataProvider.length; j++) {
+                    if (view.accountLinkagePolicyCombo.dataProvider[j].linkEmitterType.toString() == AccountLinkEmitterType.ONE_TO_ONE.toString()) {
+                        view.accountLinkagePolicyCombo.selectedIndex = j;
+                        break;
+                    }
+                }
             }
-        } else {
-            view.accountLinkagePolicyCombo.selectedIndex = 0;
+        }
+
+        // set identity mapping policy
+        if (view.identityMappingPolicyCombo.dataProvider != null) {
+            if (sp.identityMappingPolicy != null) {
+                for (var k:int=0; k < view.identityMappingPolicyCombo.dataProvider.length; k++) {
+                    if(view.identityMappingPolicyCombo.dataProvider[k].name == sp.identityMappingPolicy.name){
+                        view.identityMappingPolicyCombo.selectedIndex = k;
+                        break;
+                    }
+                }
+            } else {
+                for (var l:int=0; l < view.identityMappingPolicyCombo.dataProvider.length; l++) {
+                    if (view.identityMappingPolicyCombo.dataProvider[l].mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
+                        view.identityMappingPolicyCombo.selectedIndex = l;
+                        break;
+                    }
+                }
+            }
         }
 
         // set location
@@ -259,6 +298,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 //        view.encryptAuthRequestCheck.selected = false;
 
         view.accountLinkagePolicyCombo.selectedIndex = 0;
+        view.identityMappingPolicyCombo.selectedIndex = 0;
 
         // reset location
         view.idpChannelLocationProtocol.selectedIndex = 0;
@@ -355,17 +395,22 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
             if(view.useInheritedSPSettings.selected){
                 idpChannel.accountLinkagePolicy = sp.accountLinkagePolicy;
+                idpChannel.identityMappingPolicy = sp.identityMappingPolicy;
             } else {
+                idpChannel.accountLinkagePolicy = view.accountLinkagePolicyCombo.selectedItem;
+                idpChannel.identityMappingPolicy = view.identityMappingPolicyCombo.selectedItem;
+                /*
                 idpChannel.accountLinkagePolicy = new AccountLinkagePolicy();
-                idpChannel.accountLinkagePolicy.name = idpChannel.name + "-accLinkagePolicy";
-                if(view.accountLinkagePolicyCombo.selectedItem.data == "ours"){
-                    idpChannel.accountLinkagePolicy.mappingType = IdentityMappingType.LOCAL;
-                } else if(view.accountLinkagePolicyCombo.selectedItem.data == "theirs"){
-                    idpChannel.accountLinkagePolicy.mappingType = IdentityMappingType.REMOTE;
-                } else if (view.accountLinkagePolicyCombo.selectedItem.data == "aggregate"){
-                    idpChannel.accountLinkagePolicy.mappingType = IdentityMappingType.MERGED;
-                }
-                //TODO SET OTHER PROPERTIES FOR ACC.LINKAGE POLICY
+                idpChannel.accountLinkagePolicy.name = view.accountLinkagePolicyCombo.selectedItem.name;
+                idpChannel.accountLinkagePolicy.linkEmitterType = AccountLinkEmitterType.valueOf(view.accountLinkagePolicyCombo.selectedItem.linkEmitterType);
+                idpChannel.accountLinkagePolicy.customLinkEmitter = view.accountLinkagePolicyCombo.selectedItem.customLinkEmitter;
+
+                idpChannel.identityMappingPolicy = new IdentityMappingPolicy();
+                idpChannel.identityMappingPolicy.name = view.identityMappingPolicyCombo.selectedItem.name;
+                idpChannel.identityMappingPolicy.mappingType = IdentityMappingType.valueOf(view.identityMappingPolicyCombo.selectedItem.mappingType);
+                idpChannel.identityMappingPolicy.customMapper = view.identityMappingPolicyCombo.selectedItem.customMapper;
+                idpChannel.identityMappingPolicy.useLocalId = view.identityMappingPolicyCombo.selectedItem.useLocalId;
+                */
             }
 
             // set location
@@ -562,18 +607,80 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
 
     override public function listNotificationInterests():Array {
-        return super.listNotificationInterests();
+        return [AccountLinkagePolicyListCommand.SUCCESS,
+            IdentityMappingPolicyListCommand.SUCCESS];
     }
 
     override public function handleNotification(notification:INotification):void {
-        super.handleNotification(notification);
-        var cfc:CreateFederatedConnectionElementRequest = notification.getBody() as CreateFederatedConnectionElementRequest;
-        _roleA = cfc.roleA;
-        _roleB = cfc.roleB;
-        //init channels
-        reflectSPSettingsInIdpChannelTab();
-        reflectIdpSettingsInSpChannelTab();
-        bindForm();
+        switch (notification.getName()) {
+            case AccountLinkagePolicyListCommand.SUCCESS:
+                if (view != null) {
+                    _accountLinkagePolicies = projectProxy.accountLinkagePolicies;
+
+                    var sp:ServiceProvider;
+                    if (_roleA is ServiceProvider) {
+                        sp = _roleA as ServiceProvider;
+                    } else if (_roleB is ServiceProvider) {
+                        sp = _roleB as ServiceProvider;
+                    }
+
+                    if (sp.accountLinkagePolicy != null) {
+                        for (var i:int=0; i < view.accountLinkagePolicyCombo.dataProvider.length; i++) {
+                            if (view.accountLinkagePolicyCombo.dataProvider[i].name == sp.accountLinkagePolicy.name) {
+                                view.accountLinkagePolicyCombo.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    } else {
+                        for (var j:int=0; j < view.accountLinkagePolicyCombo.dataProvider.length; j++) {
+                            if (view.accountLinkagePolicyCombo.dataProvider[j].linkEmitterType.toString() == AccountLinkEmitterType.ONE_TO_ONE.toString()) {
+                                view.accountLinkagePolicyCombo.selectedIndex = j;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            case IdentityMappingPolicyListCommand.SUCCESS:
+                if (view != null) {
+                    _identityMappingPolicies = projectProxy.identityMappingPolicies;
+
+                    var sp2:ServiceProvider;
+                    if (_roleA is ServiceProvider) {
+                        sp2 = _roleA as ServiceProvider;
+                    } else if (_roleB is ServiceProvider) {
+                        sp2 = _roleB as ServiceProvider;
+                    }
+
+                    if (sp2.identityMappingPolicy != null) {
+                        for (var k:int=0; k < view.identityMappingPolicyCombo.dataProvider.length; k++) {
+                            if (view.identityMappingPolicyCombo.dataProvider[k].name == sp2.identityMappingPolicy.name) {
+                                view.identityMappingPolicyCombo.selectedIndex = k;
+                                break;
+                            }
+                        }
+                    } else {
+                        for (var l:int=0; l < view.identityMappingPolicyCombo.dataProvider.length; l++) {
+                            if (view.identityMappingPolicyCombo.dataProvider[l].mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
+                                view.identityMappingPolicyCombo.selectedIndex = l;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                var cfc:CreateFederatedConnectionElementRequest = notification.getBody() as CreateFederatedConnectionElementRequest;
+                _roleA = cfc.roleA;
+                _roleB = cfc.roleB;
+                //init channels
+                reflectSPSettingsInIdpChannelTab();
+                reflectIdpSettingsInSpChannelTab();
+                bindForm();
+                sendNotification(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES);
+                sendNotification(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES);
+                break;
+        }
     }
 
     override public function bindForm():void {
@@ -600,7 +707,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 //            view.authMechanism.enabled = false;
 //            view.configureAuthMechanism.enabled = false;
             view.accountLinkagePolicyCombo.enabled = false;
-            view.configureAccLinkagePolicy.enabled = false;
+            //view.configureAccLinkagePolicy.enabled = false;
+            view.identityMappingPolicyCombo.enabled = false;
 
             view.idpChannelLocationProtocol.enabled = false;
             view.idpChannelLocationDomain.enabled = false;
@@ -622,7 +730,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 //            view.authMechanism.enabled = true;
 //            view.configureAuthMechanism.enabled = true;
             view.accountLinkagePolicyCombo.enabled = true;
-            view.configureAccLinkagePolicy.enabled = true;
+            //view.configureAccLinkagePolicy.enabled = true;
+            view.identityMappingPolicyCombo.enabled = true;
 
             view.idpChannelLocationProtocol.enabled = true;
             view.idpChannelLocationDomain.enabled = true;

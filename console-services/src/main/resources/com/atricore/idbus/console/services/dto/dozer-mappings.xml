@@ -475,6 +475,11 @@
     </mapping>
 
     <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityMappingPolicy</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.IdentityMappingPolicyDTO</class-b>
+    </mapping>
+
+    <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Activation</class-a>
         <class-b>com.atricore.idbus.console.services.dto.ActivationDTO</class-b>
     </mapping>

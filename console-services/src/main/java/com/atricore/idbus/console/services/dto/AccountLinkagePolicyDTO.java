@@ -31,11 +31,9 @@ public class AccountLinkagePolicyDTO implements Serializable {
 	
 	private String name;
 
-    private IdentityMappingTypeDTO mappingType;
+    private AccountLinkEmitterTypeDTO linkEmitterType;
 
-    private boolean useLocalId;
-
-    private String customMapper;
+    private String customLinkEmitter;
 
     public long getId() {
         return id;
@@ -53,28 +51,20 @@ public class AccountLinkagePolicyDTO implements Serializable {
 		this.name = name;
 	}
 
-    public IdentityMappingTypeDTO getMappingType() {
-        return mappingType;
+    public String getCustomLinkEmitter() {
+        return customLinkEmitter;
     }
 
-    public void setMappingType(IdentityMappingTypeDTO mappingType) {
-        this.mappingType = mappingType;
+    public void setCustomLinkEmitter(String customLinkEmitter) {
+        this.customLinkEmitter = customLinkEmitter;
     }
 
-    public boolean isUseLocalId() {
-        return useLocalId;
+    public AccountLinkEmitterTypeDTO getLinkEmitterType() {
+        return linkEmitterType;
     }
 
-    public void setUseLocalId(boolean useLocalId) {
-        this.useLocalId = useLocalId;
-    }
-
-    public String getCustomMapper() {
-        return customMapper;
-    }
-
-    public void setCustomMapper(String customMapper) {
-        this.customMapper = customMapper;
+    public void setLinkEmitterType(AccountLinkEmitterTypeDTO linkEmitterType) {
+        this.linkEmitterType = linkEmitterType;
     }
 
     @Override

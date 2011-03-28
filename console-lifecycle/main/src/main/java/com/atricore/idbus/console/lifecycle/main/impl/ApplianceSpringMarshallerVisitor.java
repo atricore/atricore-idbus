@@ -709,9 +709,8 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
 
         setPropertyValue(policyBean, "id", policy.getId() + "");
         setPropertyValue(policyBean, "name", policy.getName());
-        setPropertyValue(policyBean, "useLocalId", policy.isUseLocalId());
-        setPropertyValue(policyBean, "name", policy.getCustomMapper());
-        setPropertyValue(policyBean, "mappingType", policy.getMappingType().toString());
+        //setPropertyValue(policyBean, "name", policy.getCustomMapper());
+        setPropertyValue(policyBean, "mappingType", policy.getLinkEmitterType().toString());
 
         setPropertyBean(bean, propertyName, policyBean);
 

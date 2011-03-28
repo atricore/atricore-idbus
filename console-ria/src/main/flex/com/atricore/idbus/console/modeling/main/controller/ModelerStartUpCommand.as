@@ -77,6 +77,8 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _exportIdentityApplianceCommand:IIocCommand;
     private var _exportProviderCertificateCommand:IIocCommand;
     private var _exportMetadataCommand:IIocCommand;
+    private var _accountLinkagePolicyListCommand:IIocCommand;
+    private var _identityMappingPolicyListCommand:IIocCommand;
     
     public function ModelerStartUpCommand() {
     }
@@ -158,6 +160,8 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_EXPORT, exportIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.PROVIDER_CERTIFICATE_EXPORT, exportProviderCertificateCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.METADATA_EXPORT, exportMetadataCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES, accountLinkagePolicyListCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES, identityMappingPolicyListCommand.getConfigName());
     }
 
     public function get browserMediator():IIocMediator {
@@ -646,6 +650,22 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set exportMetadataCommand(value:IIocCommand):void {
         _exportMetadataCommand = value;
+    }
+
+    public function get accountLinkagePolicyListCommand():IIocCommand {
+        return _accountLinkagePolicyListCommand;
+    }
+
+    public function set accountLinkagePolicyListCommand(value:IIocCommand):void {
+        _accountLinkagePolicyListCommand = value;
+    }
+
+    public function get identityMappingPolicyListCommand():IIocCommand {
+        return _identityMappingPolicyListCommand;
+    }
+
+    public function set identityMappingPolicyListCommand(value:IIocCommand):void {
+        _identityMappingPolicyListCommand = value;
     }
 }
 }
