@@ -158,6 +158,29 @@ public class IdentityApplianceManagementServiceImpl implements
     public void boot() throws IdentityServerException {
         logger.info("Initializing Identity Appliance Management serivce ....");
         syncAppliances();
+
+        // Register built-in policies
+        for (IdentityMappingType type : IdentityMappingType.values()) {
+            if (type != IdentityMappingType.CUSTOM) {
+                IdentityMappingPolicy policy = new IdentityMappingPolicy();
+                policy.setName(type.getDisplayName());
+                policy.setMappingType(type);
+
+                this.identityMappingPolicyRegistry.register(policy, null);
+            }
+        }
+
+        for (AccountLinkEmitterType type : AccountLinkEmitterType.values()) {
+            if (type != AccountLinkEmitterType.CUSTOM) {
+                AccountLinkagePolicy policy = new AccountLinkagePolicy();
+                policy.setName(type.getDisplayName());
+                policy.setLinkEmitterType(type);
+
+                this.accountLinkagePolicyRegistry.register(policy, null);
+            }
+        }
+
+
     }
 
     @Transactional
@@ -799,18 +822,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
         logger.debug("Listing all account linkage policies");
 
-        for (AccountLinkEmitterType type : AccountLinkEmitterType.values()) {
-            if (type != AccountLinkEmitterType.CUSTOM) {
-                AccountLinkagePolicy policy = new AccountLinkagePolicy();
-                policy.setName(type.getDisplayName());
-                policy.setLinkEmitterType(type);
-
-                res.getAccountLinkagePolicies().add(policy);
-            }
-
-        }
-
-        // Add custom policies
+        // Add policies to response
         for (AccountLinkagePolicy policy : accountLinkagePolicyRegistry.getPolicies()) {
             res.getAccountLinkagePolicies().add(policy);
         }
@@ -883,17 +895,8 @@ public class IdentityApplianceManagementServiceImpl implements
         ListIdentityMappingPolicyResponse res = new ListIdentityMappingPolicyResponse();
 
         logger.debug("Listing all identity mapping policies");
-        
-        for (IdentityMappingType type : IdentityMappingType.values()) {
-            if (type != IdentityMappingType.CUSTOM) {
-                IdentityMappingPolicy policy = new IdentityMappingPolicy();
-                policy.setName(type.getDisplayName());
-                policy.setMappingType(type);
-                res.getIdentityMappingPolicies().add(policy);
-            }
-        }
 
-        // Add custom policies
+        // Add policies to response
         for (IdentityMappingPolicy policy : identityMappingPolicyRegistry.getPolicies()) {
             res.getIdentityMappingPolicies().add(policy);
         }
