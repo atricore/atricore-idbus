@@ -34,6 +34,15 @@
     <packaging>war</packaging>
     <name>Atricore Console :: Documentation </name>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.atricore.docs.josso</groupId>
+            <artifactId>josso-reference-guide</artifactId>
+            <version>1.0.0</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
     <build>
         <resources>
             <resource>
