@@ -797,11 +797,7 @@ public class IdentityApplianceManagementServiceImpl implements
     public ListAccountLinkagePoliciesResponse listAccountLinkagePolicies(ListAccountLinkagePoliciesRequest req) throws IdentityServerException {
         ListAccountLinkagePoliciesResponse res = new ListAccountLinkagePoliciesResponse();
 
-<<<<<<< HEAD
-            // TODO : Include OSGi contributed custom implementations : this.customAccountLinkagePolicies
-=======
         logger.debug("Listing all account linkage policies");
->>>>>>> b3cb77f86a5b371742fcf8013b766ae7344f5a24
 
         for (AccountLinkEmitterType type : AccountLinkEmitterType.values()) {
             if (type != AccountLinkEmitterType.CUSTOM) {
@@ -811,8 +807,6 @@ public class IdentityApplianceManagementServiceImpl implements
                 res.getAccountLinkagePolicies().add(policy);
             }
         }
-
-        // TODO : (SG) Include OSGi contributed custom implementations !
 
         return res;
     }
@@ -892,15 +886,7 @@ public class IdentityApplianceManagementServiceImpl implements
             }
         }
 
-<<<<<<< HEAD
-        // TODO : Include OSGi contributed custom implementations : this.customIdentityMappingPolicies
-
-        return null;
-=======
-        // TODO : (SG) Include OSGi contributed custom implementations !
-        
         return res;
->>>>>>> b3cb77f86a5b371742fcf8013b766ae7344f5a24
     }
 
     /***************************************************************
