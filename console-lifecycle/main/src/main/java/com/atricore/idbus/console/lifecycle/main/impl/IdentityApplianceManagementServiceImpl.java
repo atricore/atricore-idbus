@@ -133,9 +133,9 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private Keystore sampleKeystore;
 
-    private List<AccountLinkagePolicy> customAccountLinkagePolicies;
+    private AccountLinkagePolicyRegistry accountLinkagePolicyRegistry;
 
-    private List<IdentityMappingPolicy> customIdentityMappingPolicies;
+    private IdentityMappingPolicyRegistry identityMappingPolicyRegistry;
 
     public void afterPropertiesSet() throws Exception {
         if (sampleKeystore.getStore() != null &&
@@ -804,8 +804,15 @@ public class IdentityApplianceManagementServiceImpl implements
                 AccountLinkagePolicy policy = new AccountLinkagePolicy();
                 policy.setName(type.getDisplayName());
                 policy.setLinkEmitterType(type);
+
                 res.getAccountLinkagePolicies().add(policy);
             }
+
+        }
+
+        // Add custom policies
+        for (AccountLinkagePolicy policy : accountLinkagePolicyRegistry.getPolicies()) {
+            res.getAccountLinkagePolicies().add(policy);
         }
 
         return res;
@@ -885,6 +892,12 @@ public class IdentityApplianceManagementServiceImpl implements
                 res.getIdentityMappingPolicies().add(policy);
             }
         }
+
+        // Add custom policies
+        for (IdentityMappingPolicy policy : identityMappingPolicyRegistry.getPolicies()) {
+            res.getIdentityMappingPolicies().add(policy);
+        }
+
 
         return res;
     }
@@ -1310,23 +1323,6 @@ public class IdentityApplianceManagementServiceImpl implements
 
     }
 
-// -------------------------------------------------< Custom Policies registry >
-
-    public void registerCustomAccountLinkagePolicy(final AccountLinkagePolicy policy, final Map<String, ?> properties) {
-        this.customAccountLinkagePolicies.add(policy);
-    }
-
-    public void unregisterCustomAccountLinkagePolicy(final AccountLinkagePolicy policy, final Map<String, ?> properties) {
-        this.customAccountLinkagePolicies.remove(policy);
-    }
-
-    public void registerCustomIdentityMappingPolicy(final IdentityMappingPolicy policy, final Map<String, ?> properties) {
-        this.customIdentityMappingPolicies.add(policy);
-    }
-
-    public void unregisterCustomIdentityMappingPolicy(final IdentityMappingPolicy policy, final Map<String, ?> properties) {
-        this.customIdentityMappingPolicies.remove(policy);
-    }
 
 // -------------------------------------------------< Properties >
 
@@ -1370,20 +1366,20 @@ public class IdentityApplianceManagementServiceImpl implements
         this.marshaller = marshaller;
     }
 
-    public List<AccountLinkagePolicy> getCustomAccountLinkagePolicies() {
-        return customAccountLinkagePolicies;
+    public AccountLinkagePolicyRegistry getAccountLinkagePolicyRegistry() {
+        return accountLinkagePolicyRegistry;
     }
 
-    public void setCustomAccountLinkagePolicies(List<AccountLinkagePolicy> customAccountLinkagePolicies) {
-        this.customAccountLinkagePolicies = customAccountLinkagePolicies;
+    public void setAccountLinkagePolicyRegistry(AccountLinkagePolicyRegistry accountLinkagePolicyRegistry) {
+        this.accountLinkagePolicyRegistry = accountLinkagePolicyRegistry;
     }
 
-    public List<IdentityMappingPolicy> getCustomIdentityMappingPolicies() {
-        return customIdentityMappingPolicies;
+    public IdentityMappingPolicyRegistry getIdentityMappingPolicyRegistry() {
+        return identityMappingPolicyRegistry;
     }
 
-    public void setCustomIdentityMappingPolicies(List<IdentityMappingPolicy> customIdentityMappingPolicies) {
-        this.customIdentityMappingPolicies = customIdentityMappingPolicies;
+    public void setIdentityMappingPolicyRegistry(IdentityMappingPolicyRegistry identityMappingPolicyRegistry) {
+        this.identityMappingPolicyRegistry = identityMappingPolicyRegistry;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {
