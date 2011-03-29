@@ -7,9 +7,11 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.federation.*;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
@@ -42,6 +44,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
 
         Beans spBeans = (Beans) ctx.get("spBeans");
         Beans beans = (Beans) ctx.get("beans");
+        Beans beansOsgi = (Beans) ctx.get("beansOsgi");
         
         if (logger.isTraceEnabled())
             logger.trace("Generating Beans for IdP Channel " + (idpChannel != null ? idpChannel.getName() : "default") + " of SP " + sp.getName());
@@ -130,10 +133,71 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
         setPropertyRef(idpChannelBean, "accountLinkLifecycle", spBean.getName() + "-account-link-lifecycle");
 
         // accountLinkEmitter
-        setPropertyRef(idpChannelBean, "accountLinkEmitter", spBean.getName() + "-account-link-emitter");
+        Bean accountLinkEmitter = null;
+        AccountLinkagePolicy ac = sp.getAccountLinkagePolicy();
+        String accountLinkEmitterName = spBean.getName() + "-account-link-emitter";
+        if (idpChannel != null) {
+            ac = idpChannel.getAccountLinkagePolicy();
+            accountLinkEmitterName = idpChannelBean.getName() + "-account-link-emitter";
+        }
+        AccountLinkEmitterType linkEmitterType = ac != null ? ac.getLinkEmitterType() : AccountLinkEmitterType.ONE_TO_ONE;
+        switch (linkEmitterType) {
+            case EMAIL:
+                accountLinkEmitter = newBean(spBeans, accountLinkEmitterName, EmailAccountLinkEmitter.class);
+                break;
+            case UID:
+                accountLinkEmitter = newBean(spBeans, accountLinkEmitterName, UidAccountLinkEmitter.class);
+                break;
+            case ONE_TO_ONE:
+                accountLinkEmitter = newBean(spBeans, accountLinkEmitterName, OneToOneAccountLinkEmitter.class);
+                break;
+            case CUSTOM:
+                Reference customAccountLinkEmitter = new Reference();
+                customAccountLinkEmitter.setId(accountLinkEmitterName);
+                customAccountLinkEmitter.setBeanName(ac.getCustomLinkEmitter());
+                customAccountLinkEmitter.setInterface("org.atricore.idbus.kernel.main.federation.AccountLinkEmitter");
+                beansOsgi.getImportsAndAliasAndBeen().add(customAccountLinkEmitter);
+                break;
+            default:
+                accountLinkEmitter = newBean(spBeans, accountLinkEmitterName, OneToOneAccountLinkEmitter.class);
+                break;
+        }
+        setPropertyRef(idpChannelBean, "accountLinkEmitter", accountLinkEmitterName);
 
         // identityMapper
-        setPropertyRef(idpChannelBean, "identityMapper", spBean.getName() + "-identity-mapper");
+        Bean identityMapper = null;
+        IdentityMappingPolicy im = sp.getIdentityMappingPolicy();
+        String identityMapperName = spBean.getName() + "-identity-mapper";
+        if (idpChannel != null) {
+            im = idpChannel.getIdentityMappingPolicy();
+            identityMapperName = idpChannelBean.getName() + "-identity-mapper";
+        }
+        IdentityMappingType mappingType = im != null ? im.getMappingType() : IdentityMappingType.REMOTE;
+        switch (mappingType) {
+            case REMOTE:
+                identityMapper = newBean(spBeans, identityMapperName, RemoteSubjectIdentityMapper.class);
+                setPropertyValue(identityMapper, "useLocalId", im.isUseLocalId());
+                break;
+            case LOCAL:
+                identityMapper = newBean(spBeans, identityMapperName, LocalSubjectIdentityMapper.class);
+                break;
+            case MERGED:
+                identityMapper = newBean(spBeans, identityMapperName, MergedSubjectIdentityMapper.class);
+                setPropertyValue(identityMapper, "useLocalId", im.isUseLocalId());
+                break;
+            case CUSTOM:
+                Reference customIdentityMapper = new Reference();
+                customIdentityMapper.setId(identityMapperName);
+                customIdentityMapper.setBeanName(im.getCustomMapper());
+                customIdentityMapper.setInterface("org.atricore.idbus.kernel.main.federation.IdentityMapper");
+                beansOsgi.getImportsAndAliasAndBeen().add(customIdentityMapper);
+                break;
+            default:
+                identityMapper = newBean(spBeans, identityMapperName, RemoteSubjectIdentityMapper.class);
+                setPropertyValue(identityMapper, "useLocalId", im.isUseLocalId());
+                break;
+        }
+        setPropertyRef(idpChannelBean, "identityMapper", identityMapperName);
 
         // endpoints
         List<Bean> endpoints = new ArrayList<Bean>();

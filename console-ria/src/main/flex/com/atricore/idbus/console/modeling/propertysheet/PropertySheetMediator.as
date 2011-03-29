@@ -518,7 +518,7 @@ public class PropertySheetMediator extends IocMediator {
                 if (_currentIdentityApplianceElement != null) {
                     if (_currentIdentityApplianceElement is ServiceProvider && _spCoreSection != null) {
                         _identityMappingPolicies = projectProxy.identityMappingPolicies;
-                        var sp2 = _currentIdentityApplianceElement as ServiceProvider;
+                        var sp2:ServiceProvider = _currentIdentityApplianceElement as ServiceProvider;
                         if (sp2.identityMappingPolicy != null) {
                             for (var n:int=0; n < _spCoreSection.identityMappingPolicyCombo.dataProvider.length; n++) {
                                 if (_spCoreSection.identityMappingPolicyCombo.dataProvider[n].name == sp2.identityMappingPolicy.name) {
@@ -880,6 +880,21 @@ public class PropertySheetMediator extends IocMediator {
             //authenticationContract
             //authenticationAssertionEmissionPolicy
 
+            // update default sp channels
+            for (var i:int = 0; i < identityProvider.federatedConnectionsA.length; i++) {
+                var spChannel:ServiceProviderChannel = identityProvider.federatedConnectionsA[i].channelA as ServiceProviderChannel;
+                if (!spChannel.overrideProviderSetup) {
+                    updateServiceProviderChannel(spChannel, identityProvider);
+                }
+            }
+
+            for (var j:int = 0; j < identityProvider.federatedConnectionsB.length; j++) {
+                var spChannel2:ServiceProviderChannel = identityProvider.federatedConnectionsB[j].channelB as ServiceProviderChannel;
+                if (!spChannel2.overrideProviderSetup) {
+                    updateServiceProviderChannel(spChannel2, identityProvider);
+                }
+            }
+
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
@@ -979,9 +994,54 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.signAuthenticationAssertions = _ipContractSection.signAuthAssertionCheck.selected;
             identityProvider.encryptAuthenticationAssertions = _ipContractSection.encryptAuthAssertionCheck.selected;
 
+            // update default sp channels
+            for (var i:int = 0; i < identityProvider.federatedConnectionsA.length; i++) {
+                var spChannel:ServiceProviderChannel = identityProvider.federatedConnectionsA[i].channelA as ServiceProviderChannel;
+                if (!spChannel.overrideProviderSetup) {
+                    updateServiceProviderChannel(spChannel, identityProvider);
+                }
+            }
+
+            for (var j:int = 0; j < identityProvider.federatedConnectionsB.length; j++) {
+                var spChannel2:ServiceProviderChannel = identityProvider.federatedConnectionsB[j].channelB as ServiceProviderChannel;
+                if (!spChannel2.overrideProviderSetup) {
+                    updateServiceProviderChannel(spChannel2, identityProvider);
+                }
+            }
+            
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
             _dirty = false;
+        }
+    }
+
+    private function updateServiceProviderChannel(spChannel:ServiceProviderChannel, identityProvider:IdentityProvider):void {
+        // set location
+        if (spChannel.location == null) {
+            spChannel.location = new Location();
+        }
+        spChannel.location.protocol = identityProvider.location.protocol;
+        spChannel.location.host = identityProvider.location.host;
+        spChannel.location.port = identityProvider.location.port;
+        spChannel.location.context = identityProvider.location.context;
+        spChannel.location.uri = identityProvider.location.uri;
+
+        // set active bindings
+        if (spChannel.activeBindings == null) {
+            spChannel.activeBindings = new ArrayCollection();
+        }
+        spChannel.activeBindings.removeAll();
+        for (var i:int = 0; i < identityProvider.activeBindings.length; i++) {
+            spChannel.activeBindings.addItem(identityProvider.activeBindings[i]);
+        }
+
+        // set active profiles
+        if (spChannel.activeProfiles == null) {
+            spChannel.activeProfiles = new ArrayCollection();
+        }
+        spChannel.activeProfiles.removeAll();
+        for (var j:int = 0; j < identityProvider.activeProfiles.length; j++) {
+            spChannel.activeProfiles.addItem(identityProvider.activeProfiles[j]);
         }
     }
 
@@ -1288,27 +1348,22 @@ public class PropertySheetMediator extends IocMediator {
 
             serviceProvider.accountLinkagePolicy = _spCoreSection.accountLinkagePolicyCombo.selectedItem;
             serviceProvider.identityMappingPolicy = _spCoreSection.identityMappingPolicyCombo.selectedItem;
-            /*
-            var accountLinkagePolicy:AccountLinkagePolicy = serviceProvider.accountLinkagePolicy;
-            if (accountLinkagePolicy == null) {
-                accountLinkagePolicy = new AccountLinkagePolicy();
-            }
-            accountLinkagePolicy.name = _spCoreSection.accountLinkagePolicyCombo.selectedItem.name;
-            accountLinkagePolicy.linkEmitterType = AccountLinkEmitterType.valueOf(_spCoreSection.accountLinkagePolicyCombo.selectedItem.linkEmitterType);
-            accountLinkagePolicy.customLinkEmitter = _spCoreSection.accountLinkagePolicyCombo.selectedItem.customLinkEmitter;
-            serviceProvider.accountLinkagePolicy = accountLinkagePolicy;
 
-            var identityMappingPolicy:IdentityMappingPolicy = serviceProvider.identityMappingPolicy;
-            if (identityMappingPolicy == null) {
-                identityMappingPolicy = new IdentityMappingPolicy();
+            // update default idp channels
+            for (var i:int = 0; i < serviceProvider.federatedConnectionsA.length; i++) {
+                var idpChannel:IdentityProviderChannel = serviceProvider.federatedConnectionsA[i].channelA as IdentityProviderChannel;
+                if (!idpChannel.overrideProviderSetup) {
+                    updateIdentityProviderChannel(idpChannel, serviceProvider);
+                }
             }
-            identityMappingPolicy.name = _spCoreSection.identityMappingPolicyCombo.selectedItem.name;
-            identityMappingPolicy.mappingType = IdentityMappingType.valueOf(_spCoreSection.identityMappingPolicyCombo.selectedItem.mappingType);
-            identityMappingPolicy.customMapper = _spCoreSection.identityMappingPolicyCombo.selectedItem.customMapper;
-            identityMappingPolicy.useLocalId = _spCoreSection.identityMappingPolicyCombo.selectedItem.useLocalId;
-            serviceProvider.identityMappingPolicy = identityMappingPolicy;
-            */
 
+            for (var j:int = 0; j < serviceProvider.federatedConnectionsB.length; j++) {
+                var idpChannel2:IdentityProviderChannel = serviceProvider.federatedConnectionsB[j].channelB as IdentityProviderChannel;
+                if (!idpChannel2.overrideProviderSetup) {
+                    updateIdentityProviderChannel(idpChannel, serviceProvider);
+                }
+            }
+            
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
@@ -1400,12 +1455,61 @@ public class PropertySheetMediator extends IocMediator {
                 serviceProvider.activeProfiles.addItem(Profile.SSO_SLO);
             }
 
+            // update default idp channels
+            for (var i:int = 0; i < serviceProvider.federatedConnectionsA.length; i++) {
+                var idpChannel:IdentityProviderChannel = serviceProvider.federatedConnectionsA[i].channelA as IdentityProviderChannel;
+                if (!idpChannel.overrideProviderSetup) {
+                    updateIdentityProviderChannel(idpChannel, serviceProvider);
+                }
+            }
+
+            for (var j:int = 0; j < serviceProvider.federatedConnectionsB.length; j++) {
+                var idpChannel2:IdentityProviderChannel = serviceProvider.federatedConnectionsB[j].channelB as IdentityProviderChannel;
+                if (!idpChannel2.overrideProviderSetup) {
+                    updateIdentityProviderChannel(idpChannel, serviceProvider);
+                }
+            }
+            
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
             _dirty = false;
         }
     }
 
+    private function updateIdentityProviderChannel(idpChannel:IdentityProviderChannel, serviceProvider:ServiceProvider):void {
+        // set location
+        if (idpChannel.location == null) {
+            idpChannel.location = new Location();
+        }
+        idpChannel.location.protocol = serviceProvider.location.protocol;
+        idpChannel.location.host = serviceProvider.location.host;
+        idpChannel.location.port = serviceProvider.location.port;
+        idpChannel.location.context = serviceProvider.location.context;
+        idpChannel.location.uri = serviceProvider.location.uri;
+
+        // set policies
+        idpChannel.accountLinkagePolicy = serviceProvider.accountLinkagePolicy;
+        idpChannel.identityMappingPolicy = serviceProvider.identityMappingPolicy;
+
+        // set active bindings
+        if (idpChannel.activeBindings == null) {
+            idpChannel.activeBindings = new ArrayCollection();
+        }
+        idpChannel.activeBindings.removeAll();
+        for (var i:int = 0; i < serviceProvider.activeBindings.length; i++) {
+            idpChannel.activeBindings.addItem(serviceProvider.activeBindings[i]);
+        }
+
+        // set active profiles
+        if (idpChannel.activeProfiles == null) {
+            idpChannel.activeProfiles = new ArrayCollection();
+        }
+        idpChannel.activeProfiles.removeAll();
+        for (var j:int = 0; j < serviceProvider.activeProfiles.length; j++) {
+            idpChannel.activeProfiles.addItem(serviceProvider.activeProfiles[j]);
+        }
+    }
+    
     private function handleProviderCertificatePropertyTabCreationComplete(event:Event):void {
         var provider:Provider = _currentIdentityApplianceElement as Provider;
 

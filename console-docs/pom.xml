@@ -35,12 +35,12 @@
     <name>Atricore Console :: Documentation </name>
 
     <dependencies>
-        <dependency>
+        <!--dependency>
             <groupId>com.atricore.docs.josso</groupId>
             <artifactId>josso-reference-guide</artifactId>
             <version>1.0.0</version>
             <type>war</type>
-        </dependency>
+        </dependency-->
     </dependencies>
 
     <build>

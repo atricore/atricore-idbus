@@ -399,18 +399,6 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             } else {
                 idpChannel.accountLinkagePolicy = view.accountLinkagePolicyCombo.selectedItem;
                 idpChannel.identityMappingPolicy = view.identityMappingPolicyCombo.selectedItem;
-                /*
-                idpChannel.accountLinkagePolicy = new AccountLinkagePolicy();
-                idpChannel.accountLinkagePolicy.name = view.accountLinkagePolicyCombo.selectedItem.name;
-                idpChannel.accountLinkagePolicy.linkEmitterType = AccountLinkEmitterType.valueOf(view.accountLinkagePolicyCombo.selectedItem.linkEmitterType);
-                idpChannel.accountLinkagePolicy.customLinkEmitter = view.accountLinkagePolicyCombo.selectedItem.customLinkEmitter;
-
-                idpChannel.identityMappingPolicy = new IdentityMappingPolicy();
-                idpChannel.identityMappingPolicy.name = view.identityMappingPolicyCombo.selectedItem.name;
-                idpChannel.identityMappingPolicy.mappingType = IdentityMappingType.valueOf(view.identityMappingPolicyCombo.selectedItem.mappingType);
-                idpChannel.identityMappingPolicy.customMapper = view.identityMappingPolicyCombo.selectedItem.customMapper;
-                idpChannel.identityMappingPolicy.useLocalId = view.identityMappingPolicyCombo.selectedItem.useLocalId;
-                */
             }
 
             // set location

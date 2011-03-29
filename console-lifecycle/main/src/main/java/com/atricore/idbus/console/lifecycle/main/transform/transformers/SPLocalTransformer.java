@@ -26,7 +26,6 @@ import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeystoreKeyResolver;
 import org.atricore.idbus.capabilities.samlr2.support.core.encryption.XmlSecurityEncrypterImpl;
 import org.atricore.idbus.capabilities.samlr2.support.core.signature.JSR105SamlR2SignerImpl;
-import org.atricore.idbus.capabilities.samlr2.support.federation.*;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.federation.AccountLinkLifecycleImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
@@ -346,52 +345,6 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         // TODO RETROFIT  : if (provider.getDefaultChannel() != null && ((IdentityProviderChannel)provider.getDefaultChannel()).getIdentityVault() != null) {
         // TODO RETROFIT  :     setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
         // TODO RETROFIT  : }
-
-        // accountLinkEmitter
-        Bean accountLinkEmitter = null;
-
-        AccountLinkagePolicy ac = provider.getAccountLinkagePolicy();
-        AccountLinkEmitterType linkEmitterType = ac != null ? ac.getLinkEmitterType() : AccountLinkEmitterType.ONE_TO_ONE;
-        switch (linkEmitterType) {
-            case EMAIL:
-                accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", EmailAccountLinkEmitter.class);
-                break;
-            case UID:
-                accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", UidAccountLinkEmitter.class);
-                break;
-            case ONE_TO_ONE:
-                accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", OneToOneAccountLinkEmitter.class);
-                break;
-            case CUSTOM:
-                break;
-            default:
-                accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", OneToOneAccountLinkEmitter.class);
-        }
-
-        // identityMapper
-        Bean identityMapper = null;
-                
-        IdentityMappingPolicy im = provider.getIdentityMappingPolicy();
-        IdentityMappingType mappingType = im != null ? im.getMappingType() : IdentityMappingType.REMOTE;
-
-        switch (mappingType) {
-            case REMOTE:
-                identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", RemoteSubjectIdentityMapper.class);
-                setPropertyValue(identityMapper, "useLocalId", im.isUseLocalId());
-                break;
-            case LOCAL:
-                identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", LocalSubjectIdentityMapper.class);
-                break;
-            case MERGED:
-                identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", MergedSubjectIdentityMapper.class);
-                setPropertyValue(identityMapper, "useLocalId", im.isUseLocalId());
-                break;
-            case CUSTOM:
-                identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", MergedSubjectIdentityMapper.class);
-                break;
-            default:
-                identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", OneToOneIdentityMapper.class);
-        }
 
         // idp channel plans
         Bean sloToSamlPlan = newBean(spBeans, sp.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);

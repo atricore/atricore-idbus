@@ -240,21 +240,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
 
         serviceProvider.accountLinkagePolicy = view.accountLinkagePolicyCombo.selectedItem;
         serviceProvider.identityMappingPolicy = view.identityMappingPolicyCombo.selectedItem;
-        /*
-        var accountLinkagePolicy:AccountLinkagePolicy = new AccountLinkagePolicy();
-        accountLinkagePolicy.name = view.accountLinkagePolicyCombo.selectedItem.name;
-        accountLinkagePolicy.linkEmitterType = AccountLinkEmitterType.valueOf(view.accountLinkagePolicyCombo.selectedItem.linkEmitterType);
-        accountLinkagePolicy.customLinkEmitter = view.accountLinkagePolicyCombo.selectedItem.customLinkEmitter;
-        serviceProvider.accountLinkagePolicy = accountLinkagePolicy;
-
-        var identityMappingPolicy:IdentityMappingPolicy = new IdentityMappingPolicy();
-        identityMappingPolicy.name = view.identityMappingPolicyCombo.selectedItem.name;
-        identityMappingPolicy.mappingType = IdentityMappingType.valueOf(view.identityMappingPolicyCombo.selectedItem.mappingType);
-        identityMappingPolicy.customMapper = view.identityMappingPolicyCombo.selectedItem.customMapper;
-        identityMappingPolicy.useLocalId = view.identityMappingPolicyCombo.selectedItem.useLocalId;
-        serviceProvider.identityMappingPolicy = identityMappingPolicy;
-        */
-
+        
         // set saml config
         var spSamlConfig:SamlR2SPConfig = new SamlR2SPConfig();
         spSamlConfig.name = serviceProvider.name.toLowerCase().replace(/\s+/g, "-") + "-samlr2-config";
