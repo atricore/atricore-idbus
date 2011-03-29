@@ -16,9 +16,11 @@ public class ActivationClientImpl implements ActivationClient {
 
     private static final Log logger = LogFactory.getLog(ActivationClientImpl.class);
     
-    static final QName SERVICE_NAME = new QName("urn:com:atricore:idbus:console:activation:1.0:wsdl", "ActivationService");
-    static final QName PORT_NAME = new QName("urn:com:atricore:idbus:console:activation:1.0:wsdl", "soap");
-    static final String SERVICE_PATH = "/services/activation";
+    public static final QName SERVICE_NAME = new QName("urn:com:atricore:idbus:console:activation:1.0:wsdl", "ActivationService");
+
+    public static final QName PORT_NAME = new QName("urn:com:atricore:idbus:console:activation:1.0:wsdl", "soap");
+
+    public static final String SERVICE_PATH = "/atricore-console/services/activation";
     
     private String endpoint;
 

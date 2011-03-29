@@ -49,6 +49,8 @@ import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
@@ -64,6 +66,7 @@ import sun.security.provider.X509Factory;
 import javax.jdo.FetchPlan;
 import javax.xml.bind.JAXBElement;
 import java.io.*;
+import java.io.ByteArrayOutputStream;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -1614,7 +1617,7 @@ public class IdentityApplianceManagementServiceImpl implements
                     appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
                     appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase();
 
-            // TODO : Attach all resources
+
 
             if (execEnv.getPlatformId().startsWith("iis"))
                 agentCfgName += ".ini";
@@ -1626,6 +1629,8 @@ public class IdentityApplianceManagementServiceImpl implements
 
             if (logger.isDebugEnabled())
                 logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
+
+
 
             switch (execEnv.getType()) {
                 case LOCAL:
@@ -1643,12 +1648,27 @@ public class IdentityApplianceManagementServiceImpl implements
                         ActivationClient wsClient = activationClientFactory.newActivationClient(execEnv.getLocation());
 
 
-                        // TODO : Ask local activation service for resources:
-                        // res = activationService.retrieveConfigurationResources(req);
+                        InputStream is = null;
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
 
-                        // TODO : Attach activation resources to request
+                        try {
+                            is = new FileInputStream(agentCfg);
+                            IOUtils.copy(is, baos);
 
-                        wsActivationReq.setJossoAgentConfigUri(agentCfg);
+                            //  Attach activation resources to request
+                            AgentConfigResourceType agentCfgResource = new AgentConfigResourceType ();
+
+                            agentCfgResource.setName(agentCfgName);
+                            agentCfgResource.setConfigResourceContent(baos.toString());
+                            agentCfgResource.setReplaceOriginal(execEnv.isOverwriteOriginalSetup());
+
+                            wsActivationReq.getAgentConfigResource().add(agentCfgResource);
+
+                        } catch (IOException e) {
+                            IOUtils.closeQuietly(is);
+                        }
+
+                        wsActivationReq.setJossoAgentConfigUri(null);
                         wsActivationReq.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
                         wsActivationReq.setUser(username);
                         wsActivationReq.setPassword(password);
@@ -1716,6 +1736,8 @@ public class IdentityApplianceManagementServiceImpl implements
                     if (username != null && password != null) {
                         ActivationClient wsClient = activationClientFactory.newActivationClient(execEnv.getLocation());
                         ActivateAgentRequestType wsActivationRequest = doMakeWsAgentActivationRequest(execEnv, username, password);
+
+
                         ActivateAgentResponseType wsResponse = wsClient.activateAgent(wsActivationRequest);
 
                         // Only configure the appliance if we have deployment information

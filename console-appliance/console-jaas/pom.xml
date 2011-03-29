@@ -64,6 +64,7 @@
                             org.apache.karaf.jaas.config,
                             org.apache.aries.blueprint.ext,
                             org.apache.karaf.jaas.modules.jdbc,
+                            org.apache.karaf.jaas.boot,
                             org.apache.derby.jdbc,
                             javax.sql,
                             *

@@ -325,6 +325,8 @@
                             junit.framework.*; resolution:=optional,
                             org.josso.auth.util; resolution:=optional,
                             sun.io; resolution:=optional,
+                            org.apache.karaf.jaas.boot,
+                            org.apache.karaf.jaas.modules,
                             *
                         </Import-Package>
                         <Require-Bundle>

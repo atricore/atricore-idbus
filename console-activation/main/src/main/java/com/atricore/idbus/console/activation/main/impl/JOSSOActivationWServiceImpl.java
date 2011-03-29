@@ -137,8 +137,6 @@ public class JOSSOActivationWServiceImpl implements ActivationPortType {
 
         Subject s = authenticator.authenticate(new String[] {username, password});
 
-        // TODO : Validate roles!
-
         if (logger.isTraceEnabled())
             logger.trace("Authenticated WS For " + s);
 
