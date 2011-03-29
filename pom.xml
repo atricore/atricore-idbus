@@ -1123,13 +1123,13 @@
         <repository>
             <id>atricore-m2-repo</id>
             <name>Atricore Release Distribution Repository</name>
-            <url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-release-repository</url>
+            <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-release-repository</url>
         </repository>
 
         <snapshotRepository>
             <id>atricore-m2-snapshot-repo</id>
             <name>Atricore Development Snapshot Repository</name>
-            <url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-snapshot-repository</url>
+            <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-snapshot-repository</url>
         </snapshotRepository>
 
     </distributionManagement>
@@ -1211,6 +1211,46 @@
             </snapshots>
 
         </repository>
+
+
+        <!-- Dependencies not on central repo -->
+        <repository>
+
+            <id>atricore-com-m2-repo</id>
+            <name>Atricore.com Maven2 Repository</name>
+            <url>http://repository.atricore.com/m2-release-repository</url>
+
+            <releases>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>true</enabled>
+            </releases>
+
+            <snapshots>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>false</enabled>
+            </snapshots>
+
+        </repository>
+
+        <!-- Dependencies not on central repo -->
+        <repository>
+
+            <id>atricore-com-m2-snapshot-repo</id>
+            <name>Atricore.com Maven2 SanpshotsRepository</name>
+            <url>http://repository.atricore.com/m2-snapshot-repository</url>
+
+            <releases>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>false</enabled>
+            </releases>
+
+            <snapshots>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>true</enabled>
+            </snapshots>
+
+        </repository>
+
 
         <!-- Apache -->
         <repository>
