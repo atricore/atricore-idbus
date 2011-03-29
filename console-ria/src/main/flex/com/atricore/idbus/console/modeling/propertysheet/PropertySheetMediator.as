@@ -140,7 +140,6 @@ import mx.events.ValidationResultEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 import mx.utils.StringUtil;
-import mx.validators.StringValidator;
 import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -234,7 +233,6 @@ public class PropertySheetMediator extends IocMediator {
     [Bindable]
     public var _selectedMetadataFiles:ArrayCollection;
 
-    private var _execEnvHomeDirValidator:Validator;
     private var _execEnvLocationValidator:Validator;
 
     [Bindable]
@@ -271,9 +269,6 @@ public class PropertySheetMediator extends IocMediator {
         _validators = [];
         _tabbedPropertiesTabBar.selectedIndex = 0;
         _tabbedPropertiesTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
-
-        _execEnvHomeDirValidator = new StringValidator();
-        _execEnvHomeDirValidator.required = true;
 
         _execEnvLocationValidator = new URLValidator();
         _execEnvLocationValidator.required = true;
@@ -2995,14 +2990,14 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (tomcatExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _tomcatExecEnvCoreSection.homeDirectory.text = tomcatExecEnv.installUri;
-            else {
-                _tomcatExecEnvCoreSection.location.text = tomcatExecEnv.location;
+            if (_tomcatExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _tomcatExecEnvCoreSection.locationItem.includeInLayout = true;
+                _tomcatExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
+            _tomcatExecEnvCoreSection.homeDirectory.text = tomcatExecEnv.installUri;
+            if (tomcatExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _tomcatExecEnvCoreSection.location.text = tomcatExecEnv.location;
 
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
@@ -3014,8 +3009,13 @@ public class PropertySheetMediator extends IocMediator {
             _tomcatExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _tomcatExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _tomcatExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_tomcatExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_tomcatExecEnvCoreSection.nameValidator);
+            _validators.push(_tomcatExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -3024,18 +3024,19 @@ public class PropertySheetMediator extends IocMediator {
         _tomcatExecEnvCoreSection.homeDirectory.errorString = "";
         _tomcatExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            if (_tomcatExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _tomcatExecEnvCoreSection.homeDirValidator.validate(_tomcatExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _tomcatExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_tomcatExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 _execEnvSaveFunction = tomcatSave;
                 _execEnvHomeDir = _tomcatExecEnvCoreSection.homeDirectory;
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_tomcatExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = _tomcatExecEnvCoreSection.homeDirectory.text;
-                    cif.environmentName = "n/a";
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    _tomcatExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _tomcatExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_tomcatExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -3053,12 +3054,11 @@ public class PropertySheetMediator extends IocMediator {
         tomcatExecEnv.description = _tomcatExecEnvCoreSection.executionEnvironmentDescription.text;
         tomcatExecEnv.platformId = _tomcatExecEnvCoreSection.platform.selectedItem.data;
         tomcatExecEnv.type = ExecEnvType.valueOf(_tomcatExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (tomcatExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            tomcatExecEnv.installUri = _tomcatExecEnvCoreSection.homeDirectory.text;
-            tomcatExecEnv.location = null;
-        } else {
+        tomcatExecEnv.installUri = _tomcatExecEnvCoreSection.homeDirectory.text;
+        if (tomcatExecEnv.type.name == ExecEnvType.REMOTE.name) {
             tomcatExecEnv.location = _tomcatExecEnvCoreSection.location.text;
-            tomcatExecEnv.installUri = null;
+        } else {
+            tomcatExecEnv.location = null;
         }
         
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -3128,14 +3128,14 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (weblogicExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _weblogicExecEnvCoreSection.homeDirectory.text = weblogicExecEnv.installUri;
-            else {
-                _weblogicExecEnvCoreSection.location.text = weblogicExecEnv.location;
+            if (_weblogicExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _weblogicExecEnvCoreSection.locationItem.includeInLayout = true;
+                _weblogicExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
+            _weblogicExecEnvCoreSection.homeDirectory.text = weblogicExecEnv.installUri;
+            if (weblogicExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _weblogicExecEnvCoreSection.location.text = weblogicExecEnv.location;
 
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
@@ -3148,9 +3148,14 @@ public class PropertySheetMediator extends IocMediator {
             _weblogicExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
             _weblogicExecEnvCoreSection.domain.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _weblogicExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_weblogicExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_weblogicExecEnvCoreSection.nameValidator);
             _validators.push(_weblogicExecEnvCoreSection.domainValidator);
+            _validators.push(_weblogicExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -3159,18 +3164,19 @@ public class PropertySheetMediator extends IocMediator {
         _weblogicExecEnvCoreSection.homeDirectory.errorString = "";
         _weblogicExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            if (_weblogicExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _weblogicExecEnvCoreSection.homeDirValidator.validate(_weblogicExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _weblogicExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_weblogicExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 _execEnvSaveFunction = weblogicSave;
                 _execEnvHomeDir = _weblogicExecEnvCoreSection.homeDirectory;
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_weblogicExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = _weblogicExecEnvCoreSection.homeDirectory.text;
-                    cif.environmentName = "n/a";
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    _weblogicExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _weblogicExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_weblogicExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -3191,12 +3197,11 @@ public class PropertySheetMediator extends IocMediator {
         weblogicExecEnv.domain = _weblogicExecEnvCoreSection.domain.text;
 
         weblogicExecEnv.type = ExecEnvType.valueOf(_weblogicExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (weblogicExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            weblogicExecEnv.installUri = _weblogicExecEnvCoreSection.homeDirectory.text;
-            weblogicExecEnv.location = null;
-        } else {
+        weblogicExecEnv.installUri = _weblogicExecEnvCoreSection.homeDirectory.text;
+        if (weblogicExecEnv.type.name == ExecEnvType.REMOTE.name) {
             weblogicExecEnv.location = _weblogicExecEnvCoreSection.location.text;
-            weblogicExecEnv.installUri = null;
+        } else {
+            weblogicExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -3254,15 +3259,15 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (jbossPortalExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _jbossPortalExecEnvCoreSection.homeDirectory.text = jbossPortalExecEnv.installUri;
-            else {
-                _jbossPortalExecEnvCoreSection.location.text = jbossPortalExecEnv.location;
+            if (_jbossPortalExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _jbossPortalExecEnvCoreSection.locationItem.includeInLayout = true;
+                _jbossPortalExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
-
+            _jbossPortalExecEnvCoreSection.homeDirectory.text = jbossPortalExecEnv.installUri;
+            if (jbossPortalExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _jbossPortalExecEnvCoreSection.location.text = jbossPortalExecEnv.location;
+            
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
 
@@ -3272,8 +3277,13 @@ public class PropertySheetMediator extends IocMediator {
             _jbossPortalExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _jbossPortalExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _jbossPortalExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_jbossPortalExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_jbossPortalExecEnvCoreSection.nameValidator);
+            _validators.push(_jbossPortalExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -3282,18 +3292,19 @@ public class PropertySheetMediator extends IocMediator {
         _jbossPortalExecEnvCoreSection.homeDirectory.errorString = "";
         _jbossPortalExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            if (_jbossPortalExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _jbossPortalExecEnvCoreSection.homeDirValidator.validate(_jbossPortalExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _jbossPortalExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_jbossPortalExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 _execEnvSaveFunction = jbossPortalSave;
                 _execEnvHomeDir = _jbossPortalExecEnvCoreSection.homeDirectory;
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_jbossPortalExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = _jbossPortalExecEnvCoreSection.homeDirectory.text;
-                    cif.environmentName = "n/a";
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    _jbossPortalExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _jbossPortalExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_jbossPortalExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -3313,12 +3324,11 @@ public class PropertySheetMediator extends IocMediator {
         jbossPortalExecEnv.platformId = "jbp";
 
         jbossPortalExecEnv.type = ExecEnvType.valueOf(_jbossPortalExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (jbossPortalExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            jbossPortalExecEnv.installUri = _jbossPortalExecEnvCoreSection.homeDirectory.text;
-            jbossPortalExecEnv.location = null;
-        } else {
+        jbossPortalExecEnv.installUri = _jbossPortalExecEnvCoreSection.homeDirectory.text;
+        if (jbossPortalExecEnv.type.name == ExecEnvType.REMOTE.name) {
             jbossPortalExecEnv.location = _jbossPortalExecEnvCoreSection.location.text;
-            jbossPortalExecEnv.installUri = null;
+        } else {
+            jbossPortalExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -3376,15 +3386,15 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (liferayExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _liferayExecEnvCoreSection.homeDirectory.text = liferayExecEnv.installUri;
-            else {
-                _liferayExecEnvCoreSection.location.text = liferayExecEnv.location;
+            if (_liferayExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _liferayExecEnvCoreSection.locationItem.includeInLayout = true;
+                _liferayExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
-
+            _liferayExecEnvCoreSection.homeDirectory.text = liferayExecEnv.installUri;
+            if (liferayExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _liferayExecEnvCoreSection.location.text = liferayExecEnv.location;
+            
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
 
@@ -3404,9 +3414,14 @@ public class PropertySheetMediator extends IocMediator {
             _liferayExecEnvCoreSection.containerType.addEventListener(Event.CHANGE, handleSectionChange);
             _liferayExecEnvCoreSection.containerPath.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _liferayExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_liferayExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_liferayExecEnvCoreSection.nameValidator);
             _validators.push(_liferayExecEnvCoreSection.containerPathValidator);
+            _validators.push(_liferayExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -3416,7 +3431,13 @@ public class PropertySheetMediator extends IocMediator {
         _liferayExecEnvCoreSection.location.errorString = "";
         _liferayExecEnvCoreSection.containerPath.errorString = "";
         if (_dirty && validate(true)) {
-            if (_liferayExecEnvCoreSection.selectedHost.selectedItem.data == "REMOTE") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _liferayExecEnvCoreSection.homeDirValidator.validate(_liferayExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _liferayExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+            
+            if (_liferayExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_liferayExecEnvCoreSection.location.text);
                 if (lvResult.type != ValidationResultEvent.VALID) {
                     _liferayExecEnvCoreSection.location.errorString = lvResult.results[0].errorMessage;
@@ -3429,14 +3450,8 @@ public class PropertySheetMediator extends IocMediator {
             var cf:CheckFoldersRequest = new CheckFoldersRequest();
             var folders:ArrayCollection = new ArrayCollection();
 
-            if (_liferayExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_liferayExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    folders.addItem(_liferayExecEnvCoreSection.homeDirectory.text);
-                } else {
-                    _liferayExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                    return;
-                }
+            if (_liferayExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
+                folders.addItem(_liferayExecEnvCoreSection.homeDirectory.text);
             }
             
             folders.addItem(_liferayExecEnvCoreSection.containerPath.text);
@@ -3454,12 +3469,11 @@ public class PropertySheetMediator extends IocMediator {
         liferayExecEnv.platformId = "liferay";
 
         liferayExecEnv.type = ExecEnvType.valueOf(_liferayExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (liferayExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            liferayExecEnv.installUri = _liferayExecEnvCoreSection.homeDirectory.text;
-            liferayExecEnv.location = null;
-        } else {
+        liferayExecEnv.installUri = _liferayExecEnvCoreSection.homeDirectory.text;
+        if (liferayExecEnv.type.name == ExecEnvType.REMOTE.name) {
             liferayExecEnv.location = _liferayExecEnvCoreSection.location.text;
-            liferayExecEnv.installUri = null;
+        } else {
+            liferayExecEnv.location = null;
         }
 
         liferayExecEnv.containerType = _liferayExecEnvCoreSection.containerType.selectedItem.data;
@@ -3520,14 +3534,14 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (wasceExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _wasceExecEnvCoreSection.homeDirectory.text = wasceExecEnv.installUri;
-            else {
-                _wasceExecEnvCoreSection.location.text = wasceExecEnv.location;
+            if (_wasceExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _wasceExecEnvCoreSection.locationItem.includeInLayout = true;
+                _wasceExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
+            _wasceExecEnvCoreSection.homeDirectory.text = wasceExecEnv.installUri;
+            if (wasceExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _wasceExecEnvCoreSection.location.text = wasceExecEnv.location;
 
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
@@ -3538,8 +3552,13 @@ public class PropertySheetMediator extends IocMediator {
             _wasceExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _wasceExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _wasceExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_wasceExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_wasceExecEnvCoreSection.nameValidator);
+            _validators.push(_wasceExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -3548,18 +3567,19 @@ public class PropertySheetMediator extends IocMediator {
         _wasceExecEnvCoreSection.homeDirectory.errorString = "";
         _wasceExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            if (_wasceExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _wasceExecEnvCoreSection.homeDirValidator.validate(_wasceExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _wasceExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_wasceExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 _execEnvSaveFunction = wasceSave;
                 _execEnvHomeDir = _wasceExecEnvCoreSection.homeDirectory;
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_wasceExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = _wasceExecEnvCoreSection.homeDirectory.text;
-                    cif.environmentName = "n/a";
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    _wasceExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _wasceExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_wasceExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -3579,12 +3599,11 @@ public class PropertySheetMediator extends IocMediator {
         wasceExecEnv.platformId = "wc21";
 
         wasceExecEnv.type = ExecEnvType.valueOf(_wasceExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (wasceExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            wasceExecEnv.installUri = _wasceExecEnvCoreSection.homeDirectory.text;
-            wasceExecEnv.location = null;
-        } else {
+        wasceExecEnv.installUri = _wasceExecEnvCoreSection.homeDirectory.text;
+        if (wasceExecEnv.type.name == ExecEnvType.REMOTE.name) {
             wasceExecEnv.location = _wasceExecEnvCoreSection.location.text;
-            wasceExecEnv.installUri = null;
+        } else {
+            wasceExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -3650,15 +3669,15 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (jbossExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _jbossExecEnvCoreSection.homeDirectory.text = jbossExecEnv.installUri;
-            else {
-                _jbossExecEnvCoreSection.location.text = jbossExecEnv.location;
+            if (_jbossExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _jbossExecEnvCoreSection.locationItem.includeInLayout = true;
+                _jbossExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
-
+            _jbossExecEnvCoreSection.homeDirectory.text = jbossExecEnv.installUri;
+            if (jbossExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _jbossExecEnvCoreSection.location.text = jbossExecEnv.location;
+            
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
 
@@ -3672,9 +3691,14 @@ public class PropertySheetMediator extends IocMediator {
             _jbossExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
             _jbossExecEnvCoreSection.instance.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _jbossExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_jbossExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_jbossExecEnvCoreSection.nameValidator);
             _validators.push(_jbossExecEnvCoreSection.instanceValidator);
+            _validators.push(_jbossExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -3683,18 +3707,19 @@ public class PropertySheetMediator extends IocMediator {
         _jbossExecEnvCoreSection.homeDirectory.errorString = "";
         _jbossExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            if (_jbossExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _jbossExecEnvCoreSection.homeDirValidator.validate(_jbossExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _jbossExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_jbossExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 _execEnvSaveFunction = jbossSave;
                 _execEnvHomeDir = _jbossExecEnvCoreSection.homeDirectory;
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_jbossExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = _jbossExecEnvCoreSection.homeDirectory.text;
-                    cif.environmentName = "n/a";
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    _jbossExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _jbossExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_jbossExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -3715,12 +3740,11 @@ public class PropertySheetMediator extends IocMediator {
         jbossExecEnv.instance = _jbossExecEnvCoreSection.instance.text;
 
         jbossExecEnv.type = ExecEnvType.valueOf(_jbossExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (jbossExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            jbossExecEnv.installUri = _jbossExecEnvCoreSection.homeDirectory.text;
-            jbossExecEnv.location = null;
-        } else {
+        jbossExecEnv.installUri = _jbossExecEnvCoreSection.homeDirectory.text;
+        if (jbossExecEnv.type.name == ExecEnvType.REMOTE.name) {
             jbossExecEnv.location = _jbossExecEnvCoreSection.location.text;
-            jbossExecEnv.installUri = null;
+        } else {
+            jbossExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -3779,14 +3803,14 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (apacheExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _apacheExecEnvCoreSection.homeDirectory.text = apacheExecEnv.installUri;
-            else {
-                _apacheExecEnvCoreSection.location.text = apacheExecEnv.location;
+            if (_apacheExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _apacheExecEnvCoreSection.locationItem.includeInLayout = true;
+                _apacheExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
+            _apacheExecEnvCoreSection.homeDirectory.text = apacheExecEnv.installUri;
+            if (apacheExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _apacheExecEnvCoreSection.location.text = apacheExecEnv.location;
 
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
@@ -3797,8 +3821,13 @@ public class PropertySheetMediator extends IocMediator {
             _apacheExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _apacheExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _apacheExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_apacheExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_apacheExecEnvCoreSection.nameValidator);
+            _validators.push(_apacheExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -3807,18 +3836,19 @@ public class PropertySheetMediator extends IocMediator {
         _apacheExecEnvCoreSection.homeDirectory.errorString = "";
         _apacheExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            if (_apacheExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _apacheExecEnvCoreSection.homeDirValidator.validate(_apacheExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _apacheExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_apacheExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 _execEnvSaveFunction = apacheSave;
                 _execEnvHomeDir = _apacheExecEnvCoreSection.homeDirectory;
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_apacheExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = _apacheExecEnvCoreSection.homeDirectory.text;
-                    cif.environmentName = "n/a";
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    _apacheExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _apacheExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_apacheExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -3839,12 +3869,11 @@ public class PropertySheetMediator extends IocMediator {
         apacheExecEnv.platformId = "apache";
 
         apacheExecEnv.type = ExecEnvType.valueOf(_apacheExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (apacheExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            apacheExecEnv.installUri = _apacheExecEnvCoreSection.homeDirectory.text;
-            apacheExecEnv.location = null;
-        } else {
+        apacheExecEnv.installUri = _apacheExecEnvCoreSection.homeDirectory.text;
+        if (apacheExecEnv.type.name == ExecEnvType.REMOTE.name) {
             apacheExecEnv.location = _apacheExecEnvCoreSection.location.text;
-            apacheExecEnv.installUri = null;
+        } else {
+            apacheExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -3902,15 +3931,15 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (windowsIISExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _windowsIISExecEnvCoreSection.homeDirectory.text = windowsIISExecEnv.installUri;
-            else {
-                _windowsIISExecEnvCoreSection.location.text = windowsIISExecEnv.location;
+            if (_windowsIISExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _windowsIISExecEnvCoreSection.locationItem.includeInLayout = true;
+                _windowsIISExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
-
+            _windowsIISExecEnvCoreSection.homeDirectory.text = windowsIISExecEnv.installUri;
+            if (windowsIISExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _windowsIISExecEnvCoreSection.location.text = windowsIISExecEnv.location;
+            
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
 
@@ -3928,8 +3957,13 @@ public class PropertySheetMediator extends IocMediator {
             _windowsIISExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIISExecEnvCoreSection.architecture.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _windowsIISExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_windowsIISExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_windowsIISExecEnvCoreSection.nameValidator);
+            _validators.push(_windowsIISExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -3938,18 +3972,19 @@ public class PropertySheetMediator extends IocMediator {
         _windowsIISExecEnvCoreSection.homeDirectory.errorString = "";
         _windowsIISExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            if (_windowsIISExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _windowsIISExecEnvCoreSection.homeDirValidator.validate(_windowsIISExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _windowsIISExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_windowsIISExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 _execEnvSaveFunction = windowsIISSave;
                 _execEnvHomeDir = _windowsIISExecEnvCoreSection.homeDirectory;
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_windowsIISExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = _windowsIISExecEnvCoreSection.homeDirectory.text;
-                    cif.environmentName = "n/a";
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    _windowsIISExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _windowsIISExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_windowsIISExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -3969,12 +4004,11 @@ public class PropertySheetMediator extends IocMediator {
         windowsIISExecEnv.platformId = _windowsIISExecEnvCoreSection.architecture.selectedItem.data;
 
         windowsIISExecEnv.type = ExecEnvType.valueOf(_windowsIISExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (windowsIISExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            windowsIISExecEnv.installUri = _windowsIISExecEnvCoreSection.homeDirectory.text;
-            windowsIISExecEnv.location = null;
-        } else {
+        windowsIISExecEnv.installUri = _windowsIISExecEnvCoreSection.homeDirectory.text;
+        if (windowsIISExecEnv.type.name == ExecEnvType.REMOTE.name) {
             windowsIISExecEnv.location = _windowsIISExecEnvCoreSection.location.text;
-            windowsIISExecEnv.installUri = null;
+        } else {
+            windowsIISExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -4034,14 +4068,14 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (alfrescoExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _alfrescoExecEnvCoreSection.homeDirectory.text = alfrescoExecEnv.installUri;
-            else {
-                _alfrescoExecEnvCoreSection.location.text = alfrescoExecEnv.location;
+            if (_alfrescoExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _alfrescoExecEnvCoreSection.locationItem.includeInLayout = true;
+                _alfrescoExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
+            _alfrescoExecEnvCoreSection.homeDirectory.text = alfrescoExecEnv.installUri;
+            if (alfrescoExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _alfrescoExecEnvCoreSection.location.text = alfrescoExecEnv.location;
 
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
@@ -4053,9 +4087,14 @@ public class PropertySheetMediator extends IocMediator {
             _alfrescoExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
             _alfrescoExecEnvCoreSection.tomcatInstallDir.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _alfrescoExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_alfrescoExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_alfrescoExecEnvCoreSection.nameValidator);
             _validators.push(_alfrescoExecEnvCoreSection.containerDirValidator);
+            _validators.push(_alfrescoExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -4065,7 +4104,13 @@ public class PropertySheetMediator extends IocMediator {
         _alfrescoExecEnvCoreSection.location.errorString = "";
         _alfrescoExecEnvCoreSection.tomcatInstallDir.errorString = "";        
         if (_dirty && validate(true)) {
-            if (_alfrescoExecEnvCoreSection.selectedHost.selectedItem.data == "REMOTE") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _alfrescoExecEnvCoreSection.homeDirValidator.validate(_alfrescoExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _alfrescoExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_alfrescoExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_alfrescoExecEnvCoreSection.location.text);
                 if (lvResult.type != ValidationResultEvent.VALID) {
                     _alfrescoExecEnvCoreSection.location.errorString = lvResult.results[0].errorMessage;
@@ -4078,14 +4123,8 @@ public class PropertySheetMediator extends IocMediator {
             var cf:CheckFoldersRequest = new CheckFoldersRequest();
             var folders:ArrayCollection = new ArrayCollection();
 
-            if (_alfrescoExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_alfrescoExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    folders.addItem(_alfrescoExecEnvCoreSection.homeDirectory.text);
-                } else {
-                    _alfrescoExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                    return;
-                }
+            if (_alfrescoExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
+                folders.addItem(_alfrescoExecEnvCoreSection.homeDirectory.text);
             }
 
             folders.addItem(_alfrescoExecEnvCoreSection.tomcatInstallDir.text);
@@ -4104,12 +4143,11 @@ public class PropertySheetMediator extends IocMediator {
         alfrescoExecEnv.tomcatInstallDir = _alfrescoExecEnvCoreSection.tomcatInstallDir.text;
 
         alfrescoExecEnv.type = ExecEnvType.valueOf(_alfrescoExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (alfrescoExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            alfrescoExecEnv.installUri = _alfrescoExecEnvCoreSection.homeDirectory.text;
-            alfrescoExecEnv.location = null;
-        } else {
+        alfrescoExecEnv.installUri = _alfrescoExecEnvCoreSection.homeDirectory.text;
+        if (alfrescoExecEnv.type.name == ExecEnvType.REMOTE.name) {
             alfrescoExecEnv.location = _alfrescoExecEnvCoreSection.location.text;
-            alfrescoExecEnv.installUri = null;
+        } else {
+            alfrescoExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -4168,14 +4206,14 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (javaEEExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _javaEEExecEnvCoreSection.homeDirectory.text = javaEEExecEnv.installUri;
-            else {
-                _javaEEExecEnvCoreSection.location.text = javaEEExecEnv.location;
+            if (_javaEEExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _javaEEExecEnvCoreSection.locationItem.includeInLayout = true;
+                _javaEEExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
+            _javaEEExecEnvCoreSection.homeDirectory.text = javaEEExecEnv.installUri;
+            if (javaEEExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _javaEEExecEnvCoreSection.location.text = javaEEExecEnv.location;
 
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
@@ -4186,8 +4224,13 @@ public class PropertySheetMediator extends IocMediator {
             _javaEEExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _javaEEExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _javaEEExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_javaEEExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_javaEEExecEnvCoreSection.nameValidator);
+            _validators.push(_javaEEExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -4196,18 +4239,19 @@ public class PropertySheetMediator extends IocMediator {
         _javaEEExecEnvCoreSection.homeDirectory.errorString = "";
         _javaEEExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            if (_javaEEExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _javaEEExecEnvCoreSection.homeDirValidator.validate(_javaEEExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _javaEEExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_javaEEExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 _execEnvSaveFunction = javaEESave;
                 _execEnvHomeDir = _javaEEExecEnvCoreSection.homeDirectory;
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_javaEEExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = _javaEEExecEnvCoreSection.homeDirectory.text;
-                    cif.environmentName = "n/a";
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    _javaEEExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _javaEEExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_javaEEExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -4228,12 +4272,11 @@ public class PropertySheetMediator extends IocMediator {
         javaEEExecEnv.platformId = "jee";
 
         javaEEExecEnv.type = ExecEnvType.valueOf(_javaEEExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (javaEEExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            javaEEExecEnv.installUri = _javaEEExecEnvCoreSection.homeDirectory.text;
-            javaEEExecEnv.location = null;
-        } else {
+        javaEEExecEnv.installUri = _javaEEExecEnvCoreSection.homeDirectory.text;
+        if (javaEEExecEnv.type.name == ExecEnvType.REMOTE.name) {
             javaEEExecEnv.location = _javaEEExecEnvCoreSection.location.text;
-            javaEEExecEnv.installUri = null;
+        } else {
+            javaEEExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -4277,14 +4320,14 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (phpExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _phpExecEnvCoreSection.homeDirectory.text = phpExecEnv.installUri;
-            else {
-                _phpExecEnvCoreSection.location.text = phpExecEnv.location;
+            if (_phpExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _phpExecEnvCoreSection.locationItem.includeInLayout = true;
+                _phpExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
+            _phpExecEnvCoreSection.homeDirectory.text = phpExecEnv.installUri;
+            if (phpExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _phpExecEnvCoreSection.location.text = phpExecEnv.location;
 
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
@@ -4295,8 +4338,13 @@ public class PropertySheetMediator extends IocMediator {
             _phpExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _phpExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _phpExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_phpExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_phpExecEnvCoreSection.nameValidator);
+            _validators.push(_phpExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -4305,18 +4353,19 @@ public class PropertySheetMediator extends IocMediator {
         _phpExecEnvCoreSection.homeDirectory.errorString = "";
         _phpExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            if (_phpExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _phpExecEnvCoreSection.homeDirValidator.validate(_phpExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _phpExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_phpExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 _execEnvSaveFunction = phpSave;
                 _execEnvHomeDir = _phpExecEnvCoreSection.homeDirectory;
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_phpExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = _phpExecEnvCoreSection.homeDirectory.text;
-                    cif.environmentName = "n/a";
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    _phpExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _phpExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_phpExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -4337,12 +4386,11 @@ public class PropertySheetMediator extends IocMediator {
         phpExecEnv.platformId = "php";
 
         phpExecEnv.type = ExecEnvType.valueOf(_phpExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (phpExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            phpExecEnv.installUri = _phpExecEnvCoreSection.homeDirectory.text;
-            phpExecEnv.location = null;
-        } else {
+        phpExecEnv.installUri = _phpExecEnvCoreSection.homeDirectory.text;
+        if (phpExecEnv.type.name == ExecEnvType.REMOTE.name) {
             phpExecEnv.location = _phpExecEnvCoreSection.location.text;
-            phpExecEnv.installUri = null;
+        } else {
+            phpExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -4401,15 +4449,15 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (phpBBExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _phpBBExecEnvCoreSection.homeDirectory.text = phpBBExecEnv.installUri;
-            else {
-                _phpBBExecEnvCoreSection.location.text = phpBBExecEnv.location;
+            if (_phpBBExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _phpBBExecEnvCoreSection.locationItem.includeInLayout = true;
+                _phpBBExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
-
+            _phpBBExecEnvCoreSection.homeDirectory.text = phpBBExecEnv.installUri;
+            if (phpBBExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _phpBBExecEnvCoreSection.location.text = phpBBExecEnv.location;
+            
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
 
@@ -4419,8 +4467,13 @@ public class PropertySheetMediator extends IocMediator {
             _phpBBExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _phpBBExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _phpBBExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_phpBBExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_phpBBExecEnvCoreSection.nameValidator);
+            _validators.push(_phpBBExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -4429,18 +4482,19 @@ public class PropertySheetMediator extends IocMediator {
         _phpBBExecEnvCoreSection.homeDirectory.errorString = "";
         _phpBBExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            if (_phpBBExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _phpBBExecEnvCoreSection.homeDirValidator.validate(_phpBBExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _phpBBExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_phpBBExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 _execEnvSaveFunction = phpBBSave;
                 _execEnvHomeDir = _phpBBExecEnvCoreSection.homeDirectory;
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_phpBBExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = _phpBBExecEnvCoreSection.homeDirectory.text;
-                    cif.environmentName = "n/a";
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    _phpBBExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _phpBBExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_phpBBExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -4460,12 +4514,11 @@ public class PropertySheetMediator extends IocMediator {
         phpBBExecEnv.platformId = "phpBB";
 
         phpBBExecEnv.type = ExecEnvType.valueOf(_phpBBExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (phpBBExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            phpBBExecEnv.installUri = _phpBBExecEnvCoreSection.homeDirectory.text;
-            phpBBExecEnv.location = null;
-        } else {
+        phpBBExecEnv.installUri = _phpBBExecEnvCoreSection.homeDirectory.text;
+        if (phpBBExecEnv.type.name == ExecEnvType.REMOTE.name) {
             phpBBExecEnv.location = _phpBBExecEnvCoreSection.location.text;
-            phpBBExecEnv.installUri = null;
+        } else {
+            phpBBExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -4510,15 +4563,15 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            if (webserverExecEnv.type.name == ExecEnvType.LOCAL.name)
-                _webserverExecEnvCoreSection.homeDirectory.text = webserverExecEnv.installUri;
-            else {
-                _webserverExecEnvCoreSection.location.text = webserverExecEnv.location;
+            if (_webserverExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _webserverExecEnvCoreSection.locationItem.includeInLayout = true;
+                _webserverExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _execEnvHomeDirValidator = new StringValidator();
-            _execEnvHomeDirValidator.required = true;
-
+            _webserverExecEnvCoreSection.homeDirectory.text = webserverExecEnv.installUri;
+            if (webserverExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _webserverExecEnvCoreSection.location.text = webserverExecEnv.location;
+            
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
 
@@ -4528,9 +4581,14 @@ public class PropertySheetMediator extends IocMediator {
             _webserverExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _webserverExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _webserverExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_webserverExecEnvCoreSection);
+            });
+
             _validators = [];
             _validators.push(_webserverExecEnvCoreSection.nameValidator);
             _validators.push(_webserverExecEnvCoreSection.typeValidator);
+            _validators.push(_webserverExecEnvCoreSection.homeDirValidator);
         }
     }
 
@@ -4539,18 +4597,19 @@ public class PropertySheetMediator extends IocMediator {
         _webserverExecEnvCoreSection.homeDirectory.errorString = "";
         _webserverExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            if (_webserverExecEnvCoreSection.selectedHost.selectedItem.data == "LOCAL") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _webserverExecEnvCoreSection.homeDirValidator.validate(_webserverExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _webserverExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_webserverExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 _execEnvSaveFunction = webserverSave;
                 _execEnvHomeDir = _webserverExecEnvCoreSection.homeDirectory;
-                var hvResult:ValidationResultEvent = _execEnvHomeDirValidator.validate(_webserverExecEnvCoreSection.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = _webserverExecEnvCoreSection.homeDirectory.text;
-                    cif.environmentName = "n/a";
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    _webserverExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _webserverExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_webserverExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -4572,12 +4631,11 @@ public class PropertySheetMediator extends IocMediator {
         webserverExecEnv.platformId = "webserver";
 
         webserverExecEnv.type = ExecEnvType.valueOf(_webserverExecEnvCoreSection.selectedHost.selectedItem.data);
-        if (webserverExecEnv.type.name == ExecEnvType.LOCAL.name) {
-            webserverExecEnv.installUri = _webserverExecEnvCoreSection.homeDirectory.text;
-            webserverExecEnv.location = null;
-        } else {
+        webserverExecEnv.installUri = _webserverExecEnvCoreSection.homeDirectory.text;
+        if (webserverExecEnv.type.name == ExecEnvType.REMOTE.name) {
             webserverExecEnv.location = _webserverExecEnvCoreSection.location.text;
-            webserverExecEnv.installUri = null;
+        } else {
+            webserverExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -5031,6 +5089,16 @@ public class PropertySheetMediator extends IocMediator {
             _salesforceContractSection.btnExportMetadata.enabled = false;
         if (_googleAppsContractSection != null)
             _googleAppsContractSection.btnExportMetadata.enabled = false;
+    }
+
+    private function handleHostChange(execEnvView:Object):void {
+        if (execEnvView.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+            execEnvView.locationItem.includeInLayout = true;
+            execEnvView.locationItem.visible = true;
+        } else {
+            execEnvView.locationItem.includeInLayout = false;
+            execEnvView.locationItem.visible = false;
+        }
     }
     
     protected function get view():PropertySheetView

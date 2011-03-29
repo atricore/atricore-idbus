@@ -816,7 +816,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createApacheExecutionEnvironmentCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.apache");
-        _popup.width = 440;//500
+        _popup.width = 495;//500
         _popup.height = 220; //260
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
@@ -879,7 +879,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createJavaEEExecutionEnvironmentCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.javaee");
-        _popup.width = 440;//500
+        _popup.width = 495;//500
         _popup.height = 220; //260
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
@@ -900,7 +900,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createPHPExecutionEnvironmentCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.php");
-        _popup.width = 440;
+        _popup.width = 495;
         _popup.height = 220;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
@@ -942,7 +942,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createWebserverExecutionEnvironmentCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.web");
-        _popup.width = 440;//500
+        _popup.width = 495;//500
         _popup.height = 240; //260
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;

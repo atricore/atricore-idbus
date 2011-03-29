@@ -32,6 +32,7 @@ import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 
+import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
@@ -39,7 +40,6 @@ import mx.events.CloseEvent;
 import mx.events.ValidationResultEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
-import mx.validators.StringValidator;
 import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -54,7 +54,6 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
 
     private var _newExecutionEnvironment:LiferayExecutionEnvironment;
 
-    private var _homeDirValidator:Validator;
     private var _locationValidator:Validator;
     
     public function LiferayPortalExecutionEnvironmentCreateMediator(name:String = null, viewComp:LiferayPortalExecutionEnvironmentCreateForm = null) {
@@ -81,11 +80,10 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
     }
 
     private function init():void {
-        _homeDirValidator = new StringValidator();
-        _homeDirValidator.required = true;
-
         _locationValidator = new URLValidator();
         _locationValidator.required = true;
+
+        view.selectedHost.addEventListener(Event.CHANGE, handleHostChange);
         
         view.btnOk.addEventListener(MouseEvent.CLICK, handleLiferayPortalExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
@@ -115,9 +113,8 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
         executionEnvironment.name = view.executionEnvironmentName.text;
         executionEnvironment.description = view.executionEnvironmentDescription.text;
         executionEnvironment.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
-        if (executionEnvironment.type.name == ExecEnvType.LOCAL.name)
-            executionEnvironment.installUri = view.homeDirectory.text;
-        else
+        executionEnvironment.installUri = view.homeDirectory.text;
+        if (executionEnvironment.type.name == ExecEnvType.REMOTE.name)
             executionEnvironment.location = view.location.text;
         executionEnvironment.containerType = view.containerType.selectedItem.data;
         executionEnvironment.containerPath = view.containerPath.text;
@@ -132,7 +129,13 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
         view.location.errorString = "";
         view.containerPath.errorString = "";
         if (validate(true)) {
-            if (view.selectedHost.selectedItem.data == "REMOTE") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = view.homeDirValidator.validate(view.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                view.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+            
+            if (view.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
                 var lvResult:ValidationResultEvent = _locationValidator.validate(view.location.text);
                 if (lvResult.type != ValidationResultEvent.VALID) {
                     view.location.errorString = lvResult.results[0].errorMessage;
@@ -141,14 +144,8 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
             }
             
             var folders:ArrayCollection = new ArrayCollection();
-            if (view.selectedHost.selectedItem.data == "LOCAL") {
-                var hvResult:ValidationResultEvent = _homeDirValidator.validate(view.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    folders.addItem(view.homeDirectory.text);
-                } else {
-                    view.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                    return;
-                }
+            if (view.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
+                folders.addItem(view.homeDirectory.text);
             }
 
             folders.addItem(view.containerPath.text);
@@ -176,6 +173,18 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
         closeWindow();
     }
 
+    private function handleHostChange(event:Event):void {
+        if (view.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+            view.locationItem.includeInLayout = true;
+            view.locationItem.visible = true;
+            view.parent.height += 20;
+        } else {
+            view.locationItem.includeInLayout = false;
+            view.locationItem.visible = false;
+            view.parent.height -= 20;
+        }
+    }
+    
     private function closeWindow():void {
         resetForm();
         sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
@@ -189,6 +198,7 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
         _validators.push(view.containerPathValidator);
+        _validators.push(view.homeDirValidator);
     }
 
     override public function listNotificationInterests():Array {

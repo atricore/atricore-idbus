@@ -31,6 +31,7 @@ import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 
+import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
@@ -38,7 +39,6 @@ import mx.events.CloseEvent;
 import mx.events.ValidationResultEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
-import mx.validators.StringValidator;
 import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -53,7 +53,6 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
 
     private var _newExecutionEnvironment:WindowsIISExecutionEnvironment;
 
-    private var _homeDirValidator:Validator;
     private var _locationValidator:Validator;
     
     public function WindowsIISExecutionEnvironmentCreateMediator(name:String = null, viewComp:WindowsIISExecutionEnvironmentCreateForm = null) {
@@ -80,12 +79,11 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
     }
 
     private function init():void {
-        _homeDirValidator = new StringValidator();
-        _homeDirValidator.required = true;
-
         _locationValidator = new URLValidator();
         _locationValidator.required = true;
-        
+
+        view.selectedHost.addEventListener(Event.CHANGE, handleHostChange);
+
         view.btnOk.addEventListener(MouseEvent.CLICK, handleWindowsIISExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
@@ -115,9 +113,8 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         windowsIISExecutionEnvironment.name = view.executionEnvironmentName.text;
         windowsIISExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         windowsIISExecutionEnvironment.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
-        if (windowsIISExecutionEnvironment.type.name == ExecEnvType.LOCAL.name)
-            windowsIISExecutionEnvironment.installUri = view.homeDirectory.text;
-        else
+        windowsIISExecutionEnvironment.installUri = view.homeDirectory.text;
+        if (windowsIISExecutionEnvironment.type.name == ExecEnvType.REMOTE.name)
             windowsIISExecutionEnvironment.location = view.location.text;
         windowsIISExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
         windowsIISExecutionEnvironment.installDemoApps = view.installSamples.selected;
@@ -129,16 +126,17 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         view.homeDirectory.errorString = "";
         view.location.errorString = "";
         if (validate(true)) {
-            if (view.selectedHost.selectedItem.data == "LOCAL") {
-                var hvResult:ValidationResultEvent = _homeDirValidator.validate(view.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = view.homeDirectory.text;
-                    cif.environmentName = _environmentName;
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    view.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = view.homeDirValidator.validate(view.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                view.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+            
+            if (view.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = view.homeDirectory.text;
+                cif.environmentName = _environmentName;
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _locationValidator.validate(view.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -167,6 +165,18 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         closeWindow();
     }
 
+    private function handleHostChange(event:Event):void {
+        if (view.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+            view.locationItem.includeInLayout = true;
+            view.locationItem.visible = true;
+            view.parent.height += 20;
+        } else {
+            view.locationItem.includeInLayout = false;
+            view.locationItem.visible = false;
+            view.parent.height -= 20;
+        }
+    }
+
     private function closeWindow():void {
         resetForm();
         sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
@@ -180,6 +190,7 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
+        _validators.push(view.homeDirValidator);
     }
 
 

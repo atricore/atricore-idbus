@@ -32,6 +32,7 @@ import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 
+import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
@@ -39,7 +40,6 @@ import mx.events.CloseEvent;
 import mx.events.ValidationResultEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
-import mx.validators.StringValidator;
 import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -54,7 +54,6 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
 
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    private var _homeDirValidator:Validator;
     private var _locationValidator:Validator;
     
     public function AlfrescoExecutionEnvironmentCreateMediator(name:String = null, viewComp:AlfrescoExecutionEnvironmentCreateForm = null) {
@@ -81,12 +80,11 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
     }
 
     private function init():void {
-        _homeDirValidator = new StringValidator();
-        _homeDirValidator.required = true;
-
         _locationValidator = new URLValidator();
         _locationValidator.required = true;
 
+        view.selectedHost.addEventListener(Event.CHANGE, handleHostChange);
+        
         view.btnOk.addEventListener(MouseEvent.CLICK, handleAlfrescoExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
@@ -114,9 +112,8 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
         alfrescoExecutionEnvironment.name = view.executionEnvironmentName.text;
         alfrescoExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         alfrescoExecutionEnvironment.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
-        if (alfrescoExecutionEnvironment.type.name == ExecEnvType.LOCAL.name)
-            alfrescoExecutionEnvironment.installUri = view.homeDirectory.text;
-        else
+        alfrescoExecutionEnvironment.installUri = view.homeDirectory.text;
+        if (alfrescoExecutionEnvironment.type.name == ExecEnvType.REMOTE.name)
             alfrescoExecutionEnvironment.location = view.location.text;
         alfrescoExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
         alfrescoExecutionEnvironment.installDemoApps = false;
@@ -130,7 +127,13 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
         view.location.errorString = "";
         view.tomcatInstallDir.errorString = "";
         if (validate(true)) {
-            if (view.selectedHost.selectedItem.data == "REMOTE") {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = view.homeDirValidator.validate(view.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                view.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (view.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
                 var lvResult:ValidationResultEvent = _locationValidator.validate(view.location.text);
                 if (lvResult.type != ValidationResultEvent.VALID) {
                     view.location.errorString = lvResult.results[0].errorMessage;
@@ -139,14 +142,8 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
             }
 
             var folders:ArrayCollection = new ArrayCollection();
-            if (view.selectedHost.selectedItem.data == "LOCAL") {
-                var hvResult:ValidationResultEvent = _homeDirValidator.validate(view.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    folders.addItem(view.homeDirectory.text);
-                } else {
-                    view.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                    return;
-                }
+            if (view.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
+                folders.addItem(view.homeDirectory.text);
             }
 
             folders.addItem(view.tomcatInstallDir.text);
@@ -174,6 +171,18 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
         closeWindow();
     }
 
+    private function handleHostChange(event:Event):void {
+        if (view.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+            view.locationItem.includeInLayout = true;
+            view.locationItem.visible = true;
+            view.parent.height += 20;
+        } else {
+            view.locationItem.includeInLayout = false;
+            view.locationItem.visible = false;
+            view.parent.height -= 20;
+        }
+    }
+    
     private function closeWindow():void {
         resetForm();
         sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
@@ -189,6 +198,7 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
         _validators.push(view.containerDirValidator);
+        _validators.push(view.homeDirValidator);
     }
 
     override public function listNotificationInterests():Array {

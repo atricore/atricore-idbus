@@ -31,6 +31,7 @@ import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironment;
 
+import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
@@ -38,7 +39,6 @@ import mx.events.CloseEvent;
 import mx.events.ValidationResultEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
-import mx.validators.StringValidator;
 import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -52,7 +52,6 @@ public class JBossPortalExecutionEnvironmentCreateMediator extends IocFormMediat
 
     private var _newExecutionEnvironment:JBossPortalExecutionEnvironment;
 
-    private var _homeDirValidator:Validator;
     private var _locationValidator:Validator;
     
     public function JBossPortalExecutionEnvironmentCreateMediator(name:String = null, viewComp:JBossPortalExecutionEnvironmentCreateForm = null) {
@@ -79,11 +78,10 @@ public class JBossPortalExecutionEnvironmentCreateMediator extends IocFormMediat
     }
 
     private function init():void {
-        _homeDirValidator = new StringValidator();
-        _homeDirValidator.required = true;
-
         _locationValidator = new URLValidator();
         _locationValidator.required = true;
+
+        view.selectedHost.addEventListener(Event.CHANGE, handleHostChange);
 
         view.btnOk.addEventListener(MouseEvent.CLICK, handleJBossPortalExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
@@ -110,9 +108,8 @@ public class JBossPortalExecutionEnvironmentCreateMediator extends IocFormMediat
         executionEnvironment.name = view.executionEnvironmentName.text;
         executionEnvironment.description = view.executionEnvironmentDescription.text;
         executionEnvironment.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
-        if (executionEnvironment.type.name == ExecEnvType.LOCAL.name)
-            executionEnvironment.installUri = view.homeDirectory.text;
-        else
+        executionEnvironment.installUri = view.homeDirectory.text;
+        if (executionEnvironment.type.name == ExecEnvType.REMOTE.name)
             executionEnvironment.location = view.location.text;
         executionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
         executionEnvironment.installDemoApps = view.installSamples.selected;              
@@ -124,16 +121,17 @@ public class JBossPortalExecutionEnvironmentCreateMediator extends IocFormMediat
         view.homeDirectory.errorString = "";
         view.location.errorString = "";
         if (validate(true)) {
-            if (view.selectedHost.selectedItem.data == "LOCAL") {
-                var hvResult:ValidationResultEvent = _homeDirValidator.validate(view.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = view.homeDirectory.text;
-                    cif.environmentName = _environmentName;
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    view.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = view.homeDirValidator.validate(view.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                view.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+            
+            if (view.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = view.homeDirectory.text;
+                cif.environmentName = _environmentName;
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _locationValidator.validate(view.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -162,6 +160,18 @@ public class JBossPortalExecutionEnvironmentCreateMediator extends IocFormMediat
         closeWindow();
     }
 
+    private function handleHostChange(event:Event):void {
+        if (view.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+            view.locationItem.includeInLayout = true;
+            view.locationItem.visible = true;
+            view.parent.height += 20;
+        } else {
+            view.locationItem.includeInLayout = false;
+            view.locationItem.visible = false;
+            view.parent.height -= 20;
+        }
+    }
+    
     private function closeWindow():void {
         resetForm();
         sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
@@ -174,6 +184,7 @@ public class JBossPortalExecutionEnvironmentCreateMediator extends IocFormMediat
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
+        _validators.push(view.homeDirValidator);
     }
 
     override public function listNotificationInterests():Array {

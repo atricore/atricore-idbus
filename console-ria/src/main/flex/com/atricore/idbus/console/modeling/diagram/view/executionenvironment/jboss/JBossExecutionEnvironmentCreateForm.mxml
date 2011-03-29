@@ -31,6 +31,8 @@
                         triggerEvent="click"/>
         <mx:StringValidator id="instanceValidator" source="{instance}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
+        <mx:StringValidator id="homeDirValidator" source="{homeDirectory}" required="true" property="text" trigger="{btnOk}"
+                        triggerEvent="click"/>
     </fx:Declarations>
     
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.name')}:" required="true">
@@ -66,17 +68,15 @@
         </s:DropDownList>
     </mx:FormItem>
 
-    <mx:ViewStack id="vs" selectedIndex="{selectedHost.selectedIndex}" creationPolicy="all">
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.homedir')}:"
-                     required="true">
-            <s:TextInput id="homeDirectory" width="300"/>
-        </mx:FormItem>
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.homedir')}:"
+                 required="true">
+        <s:TextInput id="homeDirectory" width="300"/>
+    </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.location')}:"
-                     required="true">
-            <s:TextInput id="location" width="300"/>
-        </mx:FormItem>
-    </mx:ViewStack>
+    <mx:FormItem id="locationItem" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.location')}:"
+                 required="true" visible="false" includeInLayout="false">
+        <s:TextInput id="location" width="300"/>
+    </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.instance')}:" required="true">
         <s:TextInput id="instance" width="300"/>

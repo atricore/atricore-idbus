@@ -31,6 +31,7 @@ import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 
+import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
@@ -38,7 +39,6 @@ import mx.events.CloseEvent;
 import mx.events.ValidationResultEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
-import mx.validators.StringValidator;
 import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -51,7 +51,6 @@ public class ApacheExecutionEnvironmentCreateMediator extends IocFormMediator {
     private var _newExecutionEnvironment:ApacheExecutionEnvironment;
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    private var _homeDirValidator:Validator;
     private var _locationValidator:Validator;
     
     public function ApacheExecutionEnvironmentCreateMediator(name:String = null, viewComp:ApacheExecutionEnvironmentCreateForm = null) {
@@ -78,11 +77,10 @@ public class ApacheExecutionEnvironmentCreateMediator extends IocFormMediator {
     }
 
     private function init():void {
-        _homeDirValidator = new StringValidator();
-        _homeDirValidator.required = true;
-
         _locationValidator = new URLValidator();
         _locationValidator.required = true;
+
+        view.selectedHost.addEventListener(Event.CHANGE, handleHostChange);
         
         view.btnOk.addEventListener(MouseEvent.CLICK, handleApacheExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
@@ -111,9 +109,8 @@ public class ApacheExecutionEnvironmentCreateMediator extends IocFormMediator {
         apacheExecutionEnvironment.name = view.executionEnvironmentName.text;
         apacheExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         apacheExecutionEnvironment.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
-        if (apacheExecutionEnvironment.type.name == ExecEnvType.LOCAL.name)
-            apacheExecutionEnvironment.installUri = view.homeDirectory.text;
-        else
+        apacheExecutionEnvironment.installUri = view.homeDirectory.text;
+        if (apacheExecutionEnvironment.type.name == ExecEnvType.REMOTE.name)
             apacheExecutionEnvironment.location = view.location.text;
 //        apacheExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
 //        apacheExecutionEnvironment.installDemoApps = view.installSamples.selected;
@@ -127,16 +124,17 @@ public class ApacheExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.homeDirectory.errorString = "";
         view.location.errorString = "";
         if (validate(true)) {
-            if (view.selectedHost.selectedItem.data == "LOCAL") {
-                var hvResult:ValidationResultEvent = _homeDirValidator.validate(view.homeDirectory.text);
-                if (hvResult.type == ValidationResultEvent.VALID) {
-                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                    cif.homeDir = view.homeDirectory.text;
-                    cif.environmentName = _environmentName;
-                    sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-                } else {
-                    view.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                }
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = view.homeDirValidator.validate(view.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                view.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+            
+            if (view.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = view.homeDirectory.text;
+                cif.environmentName = _environmentName;
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _locationValidator.validate(view.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
@@ -166,6 +164,18 @@ public class ApacheExecutionEnvironmentCreateMediator extends IocFormMediator {
         closeWindow();
     }
 
+    private function handleHostChange(event:Event):void {
+        if (view.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+            view.locationItem.includeInLayout = true;
+            view.locationItem.visible = true;
+            view.parent.height += 20;
+        } else {
+            view.locationItem.includeInLayout = false;
+            view.locationItem.visible = false;
+            view.parent.height -= 20;
+        }
+    }
+
     private function closeWindow():void {
         resetForm();
         sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
@@ -180,6 +190,7 @@ public class ApacheExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
+        _validators.push(view.homeDirValidator);
     }
 
 
