@@ -20,7 +20,7 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
 
                 );
         saml2PaletteDrawer.add(
-                new PaletteEntry("Identity Provider (external)", EmbeddedIcons.externalIdpMiniIcon, "External Identity Provider Entry", DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("External Identity Provider", EmbeddedIcons.externalIdpMiniIcon, "External Identity Provider Entry", DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE)
 
                 );
         saml2PaletteDrawer.add(
@@ -28,7 +28,7 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
 
                 );
         saml2PaletteDrawer.add(
-                new PaletteEntry("Service Provider (external)", EmbeddedIcons.externalSpMiniIcon, "External Service Provider Entry", DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("External Service Provider", EmbeddedIcons.externalSpMiniIcon, "External Service Provider Entry", DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE)
 
                 );
 
