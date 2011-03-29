@@ -175,7 +175,7 @@ public class AgentConfigActivator extends ActivatorSupport {
 
                     OutputStream out = null;
                     try {
-                        agentCfg.getContent().getOutputStream();
+                        out = agentCfg.getContent().getOutputStream(false);
                         IOUtils.copy(new ByteArrayInputStream(r.getResource().getBytes()), out);
 
                     } finally {

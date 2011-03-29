@@ -53,6 +53,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.VFS;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
@@ -1617,8 +1620,6 @@ public class IdentityApplianceManagementServiceImpl implements
                     appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
                     appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase();
 
-
-
             if (execEnv.getPlatformId().startsWith("iis"))
                 agentCfgName += ".ini";
             else
@@ -1629,8 +1630,6 @@ public class IdentityApplianceManagementServiceImpl implements
 
             if (logger.isDebugEnabled())
                 logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
-
-
 
             switch (execEnv.getType()) {
                 case LOCAL:
@@ -1647,24 +1646,31 @@ public class IdentityApplianceManagementServiceImpl implements
                         ConfigureAgentRequestType wsActivationReq = doMakeWsConfigureAgentRequest(execEnv, username, password);
                         ActivationClient wsClient = activationClientFactory.newActivationClient(execEnv.getLocation());
 
-
                         InputStream is = null;
                         ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
 
                         try {
-                            is = new FileInputStream(agentCfg);
+
+                            FileSystemManager fs = VFS.getManager();
+                            FileObject homeDir = fs.resolveFile(getHomeDir());
+                            FileObject appliancesDir = homeDir.resolveFile("appliances");
+                            FileObject agentCfgFile = appliancesDir.resolveFile(agentCfg);
+
+                            is = agentCfgFile.getContent().getInputStream();
                             IOUtils.copy(is, baos);
 
                             //  Attach activation resources to request
                             AgentConfigResourceType agentCfgResource = new AgentConfigResourceType ();
 
-                            agentCfgResource.setName(agentCfgName);
+                            // Force resource name to josso-agent-config.
+                            agentCfgResource.setName("josso-agent-config." + (execEnv.getPlatformId().startsWith("iis") ? "ini" : "xml"));
                             agentCfgResource.setConfigResourceContent(baos.toString());
                             agentCfgResource.setReplaceOriginal(execEnv.isOverwriteOriginalSetup());
 
                             wsActivationReq.getAgentConfigResource().add(agentCfgResource);
 
                         } catch (IOException e) {
+                            logger.error("Cannot configure JOSSO agent : " + e.getMessage(), e);
                             IOUtils.closeQuietly(is);
                         }
 
@@ -2239,5 +2245,9 @@ public class IdentityApplianceManagementServiceImpl implements
         }
     }
 
+
+    protected String getHomeDir() {
+        return System.getProperty("karaf.base");
+    }
 
 }

@@ -44,15 +44,14 @@ partnerAppId=$partnerappID
 ;; as security constraint declarations
 ;; ---------------------------------------------------------
 
-[security-constraint.admin]
-
+;; [security-constraint.admin]
 ;; Comma separated list of required roles (optional)
 ;; Do not leave empty spaces between elements!
-roles=role1,admin
+;; roles=role1,admin
 
 ;; Comma separated list of base uris for this constraint (required)
 ;; Do not leave empty spaces between elements!
-base-uris=/public/.*\.pdf,/admin/[sS]ec_.*\.*,$partnerapps
+;; base-uris=/public/.*\.pdf,/admin/[sS]ec_.*\.*,$partnerapps
 
-[security-constraint.public]
-base-uris=/public
+;; [security-constraint.public]
+;; base-uris=/public
