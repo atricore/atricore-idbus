@@ -1172,8 +1172,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createActivationView();
         _progress.title = resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.title");
-        _progress.width = 470;
-        _progress.height = 150;
+        _progress.width = 520;
+        _progress.height = 130;
 //        _popup.x = (_popupParent.width / 2) - 225;
 //        _popup.y = 80;
         showProgress(_activationView);

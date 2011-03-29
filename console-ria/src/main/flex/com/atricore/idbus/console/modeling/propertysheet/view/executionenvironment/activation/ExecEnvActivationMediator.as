@@ -51,10 +51,17 @@ public class ExecEnvActivationMediator extends IocFormMediator {
 
     private function init():void {
         var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
-        if (currentExecEnv.type.name == ExecEnvType.LOCAL.name) {
+
+        if (currentExecEnv.type.name == ExecEnvType.REMOTE.name) {
+            view.userPassGroup.includeInLayout = true;
+            view.userPassGroup.visible = true;
+            view.parent.height += 85;
+        }
+
+        /*if (currentExecEnv.type.name == ExecEnvType.LOCAL.name) {
             view.activationText.setStyle("paddingTop", 15);
             view.userPassGroup.height = 0;
-        }
+        }*/
         view.activationText.text = currentExecEnv.name + " " +
                 resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.line1") + "\n" +
                 resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.line2");
