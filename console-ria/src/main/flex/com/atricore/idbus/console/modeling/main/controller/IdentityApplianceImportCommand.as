@@ -70,7 +70,7 @@ public class IdentityApplianceImportCommand extends IocSimpleCommand implements 
         var fBytes:ByteArray = notification.getBody() as ByteArray;
 
         var req:ImportIdentityApplianceRequest = new ImportIdentityApplianceRequest();
-        req.bytes = fBytes;
+        req.binaryAppliance = fBytes;
         var call:Object = service.importIdentityApplianceProject(req);
         call.addResponder(this);
     }
