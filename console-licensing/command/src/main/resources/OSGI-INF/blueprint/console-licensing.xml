@@ -24,10 +24,15 @@
             <action class="com.atricore.idbus.console.licensing.command.ActivateLicenseCommand"/>
         </command>
         <command name="licensing/view">
-            <action class="com.atricore.idbus.console.licensing.command.ViewLicenseCommand"/>
+            <action class="com.atricore.idbus.console.licensing.command.ViewLicenseCommand">
+                <property name="cmdPrinter" ref="licensePrinter"/>
+                <property name="svc" ref="osgiLicenseManager" />
+            </action>
         </command>
 
     </command-bundle>
+
+    <bean id="licensePrinter" class="com.atricore.idbus.console.licensing.command.printers.LicenseCmdPrinter"/>
 
     <!-- Should be exported by Spring. Reference ID value must match the one used to export the service! -->
     <reference id="osgiLicenseManager"
