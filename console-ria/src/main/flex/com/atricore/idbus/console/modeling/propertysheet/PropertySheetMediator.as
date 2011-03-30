@@ -536,7 +536,7 @@ public class PropertySheetMediator extends IocMediator {
                         var fc2:FederatedConnection = _currentIdentityApplianceElement as FederatedConnection;
                         if (fc2.channelA is IdentityProviderChannel) {
                             idpChannel2 = fc2.channelA as IdentityProviderChannel;
-                        } else if (fc.channelB is IdentityProviderChannel) {
+                        } else if (fc2.channelB is IdentityProviderChannel) {
                             idpChannel2 = fc2.channelB as IdentityProviderChannel;
                         }
 
@@ -876,17 +876,21 @@ public class PropertySheetMediator extends IocMediator {
             //authenticationAssertionEmissionPolicy
 
             // update default sp channels
-            for (var i:int = 0; i < identityProvider.federatedConnectionsA.length; i++) {
-                var spChannel:ServiceProviderChannel = identityProvider.federatedConnectionsA[i].channelA as ServiceProviderChannel;
-                if (!spChannel.overrideProviderSetup) {
-                    updateServiceProviderChannel(spChannel, identityProvider);
+            if (identityProvider.federatedConnectionsA != null) {
+                for (var i:int = 0; i < identityProvider.federatedConnectionsA.length; i++) {
+                    var spChannel:ServiceProviderChannel = identityProvider.federatedConnectionsA[i].channelA as ServiceProviderChannel;
+                    if (!spChannel.overrideProviderSetup) {
+                        updateServiceProviderChannel(spChannel, identityProvider);
+                    }
                 }
             }
 
-            for (var j:int = 0; j < identityProvider.federatedConnectionsB.length; j++) {
-                var spChannel2:ServiceProviderChannel = identityProvider.federatedConnectionsB[j].channelB as ServiceProviderChannel;
-                if (!spChannel2.overrideProviderSetup) {
-                    updateServiceProviderChannel(spChannel2, identityProvider);
+            if (identityProvider.federatedConnectionsB != null) {
+                for (var j:int = 0; j < identityProvider.federatedConnectionsB.length; j++) {
+                    var spChannel2:ServiceProviderChannel = identityProvider.federatedConnectionsB[j].channelB as ServiceProviderChannel;
+                    if (!spChannel2.overrideProviderSetup) {
+                        updateServiceProviderChannel(spChannel2, identityProvider);
+                    }
                 }
             }
 
@@ -990,17 +994,21 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.encryptAuthenticationAssertions = _ipContractSection.encryptAuthAssertionCheck.selected;
 
             // update default sp channels
-            for (var i:int = 0; i < identityProvider.federatedConnectionsA.length; i++) {
-                var spChannel:ServiceProviderChannel = identityProvider.federatedConnectionsA[i].channelA as ServiceProviderChannel;
-                if (!spChannel.overrideProviderSetup) {
-                    updateServiceProviderChannel(spChannel, identityProvider);
+            if (identityProvider.federatedConnectionsA != null) {
+                for (var i:int = 0; i < identityProvider.federatedConnectionsA.length; i++) {
+                    var spChannel:ServiceProviderChannel = identityProvider.federatedConnectionsA[i].channelA as ServiceProviderChannel;
+                    if (!spChannel.overrideProviderSetup) {
+                        updateServiceProviderChannel(spChannel, identityProvider);
+                    }
                 }
             }
 
-            for (var j:int = 0; j < identityProvider.federatedConnectionsB.length; j++) {
-                var spChannel2:ServiceProviderChannel = identityProvider.federatedConnectionsB[j].channelB as ServiceProviderChannel;
-                if (!spChannel2.overrideProviderSetup) {
-                    updateServiceProviderChannel(spChannel2, identityProvider);
+            if (identityProvider.federatedConnectionsB != null) {
+                for (var j:int = 0; j < identityProvider.federatedConnectionsB.length; j++) {
+                    var spChannel2:ServiceProviderChannel = identityProvider.federatedConnectionsB[j].channelB as ServiceProviderChannel;
+                    if (!spChannel2.overrideProviderSetup) {
+                        updateServiceProviderChannel(spChannel2, identityProvider);
+                    }
                 }
             }
             
@@ -1345,17 +1353,21 @@ public class PropertySheetMediator extends IocMediator {
             serviceProvider.identityMappingPolicy = _spCoreSection.identityMappingPolicyCombo.selectedItem;
 
             // update default idp channels
-            for (var i:int = 0; i < serviceProvider.federatedConnectionsA.length; i++) {
-                var idpChannel:IdentityProviderChannel = serviceProvider.federatedConnectionsA[i].channelA as IdentityProviderChannel;
-                if (!idpChannel.overrideProviderSetup) {
-                    updateIdentityProviderChannel(idpChannel, serviceProvider);
+            if (serviceProvider.federatedConnectionsA != null) {
+                for (var i:int = 0; i < serviceProvider.federatedConnectionsA.length; i++) {
+                    var idpChannel:IdentityProviderChannel = serviceProvider.federatedConnectionsA[i].channelA as IdentityProviderChannel;
+                    if (!idpChannel.overrideProviderSetup) {
+                        updateIdentityProviderChannel(idpChannel, serviceProvider);
+                    }
                 }
             }
 
-            for (var j:int = 0; j < serviceProvider.federatedConnectionsB.length; j++) {
-                var idpChannel2:IdentityProviderChannel = serviceProvider.federatedConnectionsB[j].channelB as IdentityProviderChannel;
-                if (!idpChannel2.overrideProviderSetup) {
-                    updateIdentityProviderChannel(idpChannel, serviceProvider);
+            if (serviceProvider.federatedConnectionsB != null) {
+                for (var j:int = 0; j < serviceProvider.federatedConnectionsB.length; j++) {
+                    var idpChannel2:IdentityProviderChannel = serviceProvider.federatedConnectionsB[j].channelB as IdentityProviderChannel;
+                    if (!idpChannel2.overrideProviderSetup) {
+                        updateIdentityProviderChannel(idpChannel, serviceProvider);
+                    }
                 }
             }
             
@@ -1451,17 +1463,21 @@ public class PropertySheetMediator extends IocMediator {
             }
 
             // update default idp channels
-            for (var i:int = 0; i < serviceProvider.federatedConnectionsA.length; i++) {
-                var idpChannel:IdentityProviderChannel = serviceProvider.federatedConnectionsA[i].channelA as IdentityProviderChannel;
-                if (!idpChannel.overrideProviderSetup) {
-                    updateIdentityProviderChannel(idpChannel, serviceProvider);
+            if (serviceProvider.federatedConnectionsA != null) {
+                for (var i:int = 0; i < serviceProvider.federatedConnectionsA.length; i++) {
+                    var idpChannel:IdentityProviderChannel = serviceProvider.federatedConnectionsA[i].channelA as IdentityProviderChannel;
+                    if (!idpChannel.overrideProviderSetup) {
+                        updateIdentityProviderChannel(idpChannel, serviceProvider);
+                    }
                 }
             }
 
-            for (var j:int = 0; j < serviceProvider.federatedConnectionsB.length; j++) {
-                var idpChannel2:IdentityProviderChannel = serviceProvider.federatedConnectionsB[j].channelB as IdentityProviderChannel;
-                if (!idpChannel2.overrideProviderSetup) {
-                    updateIdentityProviderChannel(idpChannel, serviceProvider);
+            if (serviceProvider.federatedConnectionsB != null) {
+                for (var j:int = 0; j < serviceProvider.federatedConnectionsB.length; j++) {
+                    var idpChannel2:IdentityProviderChannel = serviceProvider.federatedConnectionsB[j].channelB as IdentityProviderChannel;
+                    if (!idpChannel2.overrideProviderSetup) {
+                        updateIdentityProviderChannel(idpChannel, serviceProvider);
+                    }
                 }
             }
             
