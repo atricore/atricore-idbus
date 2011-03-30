@@ -44,7 +44,7 @@
     <!-- TODO : Soruce attribue must be configured in resource bundle! -->
     <flexiframe:IFrame id="helpIFrame"
                        label="Help"
-                       source="../atricore-docs/html/index.html"
+                       source="{resourceManager.getString(AtricoreConsole.BUNDLE, 'docs.source.url')}"
                        width="100%"
                        height="100%"
                        visible="false"/>
