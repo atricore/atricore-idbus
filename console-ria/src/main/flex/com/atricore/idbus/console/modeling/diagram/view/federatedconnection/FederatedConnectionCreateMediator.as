@@ -602,7 +602,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case AccountLinkagePolicyListCommand.SUCCESS:
-                if (view != null) {
+                if (view != null && view.parent != null) {
                     _accountLinkagePolicies = projectProxy.accountLinkagePolicies;
 
                     var sp:ServiceProvider;
@@ -630,7 +630,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
                 }
                 break;
             case IdentityMappingPolicyListCommand.SUCCESS:
-                if (view != null) {
+                if (view != null && view.parent != null) {
                     _identityMappingPolicies = projectProxy.identityMappingPolicies;
 
                     var sp2:ServiceProvider;
@@ -665,8 +665,10 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
                 reflectSPSettingsInIdpChannelTab();
                 reflectIdpSettingsInSpChannelTab();
                 bindForm();
-                sendNotification(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES);
-                sendNotification(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES);
+                if (_roleA is ServiceProvider || _roleB is ServiceProvider) {
+                    sendNotification(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES);
+                    sendNotification(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES);
+                }
                 break;
         }
     }

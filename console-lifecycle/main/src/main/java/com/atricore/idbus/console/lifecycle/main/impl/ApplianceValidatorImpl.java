@@ -422,11 +422,15 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.isOverrideProviderSetup())
             validateLocation("Identity Provider channel ", node.getLocation(), node, true);
 
-        if (node.getAccountLinkagePolicy() == null)
-            addError("No account linkage policy for " + node.getName());
+        // validate policies only for ServiceProvider (not for ExternalServiceProvider)
+        if ((node.getConnectionA() != null && node.getConnectionA().getRoleA() instanceof ServiceProvider) ||
+                (node.getConnectionB() != null && node.getConnectionB().getRoleB() instanceof ServiceProvider)) {
+            if (node.getAccountLinkagePolicy() == null)
+                addError("No account linkage policy for " + node.getName());
 
-        if (node.getIdentityMappingPolicy() == null)
-            addError("No identity mapping policy for " + node.getName());
+            if (node.getIdentityMappingPolicy() == null)
+                addError("No identity mapping policy for " + node.getName());
+        }
     }
 
     public void arrive(Keystore node) throws Exception {

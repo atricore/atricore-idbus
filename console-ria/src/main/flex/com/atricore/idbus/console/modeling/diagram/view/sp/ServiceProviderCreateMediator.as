@@ -421,7 +421,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case AccountLinkagePolicyListCommand.SUCCESS:
-                if (view != null) {
+                if (view != null && view.parent != null) {
                     _accountLinkagePolicies = projectProxy.accountLinkagePolicies;
                     for (var i:int=0; i < view.accountLinkagePolicyCombo.dataProvider.length; i++) {
                         if (view.accountLinkagePolicyCombo.dataProvider[i].linkEmitterType.toString() == AccountLinkEmitterType.ONE_TO_ONE.toString()) {
@@ -432,7 +432,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
                 }
                 break;
             case IdentityMappingPolicyListCommand.SUCCESS:
-                if (view != null) {
+                if (view != null && view.parent != null) {
                     _identityMappingPolicies = projectProxy.identityMappingPolicies;
                     for (var j:int=0; j < view.identityMappingPolicyCombo.dataProvider.length; j++) {
                         if (view.identityMappingPolicyCombo.dataProvider[j].mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
