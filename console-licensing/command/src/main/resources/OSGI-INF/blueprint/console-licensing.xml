@@ -21,7 +21,10 @@
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
         <command name="licensing/activate">
-            <action class="com.atricore.idbus.console.licensing.command.ActivateLicenseCommand"/>
+            <action class="com.atricore.idbus.console.licensing.command.ActivateLicenseCommand">
+                <property name="cmdPrinter" ref="licensePrinter"/>
+                <property name="svc" ref="osgiLicenseManager" />
+            </action>
         </command>
         <command name="licensing/view">
             <action class="com.atricore.idbus.console.licensing.command.ViewLicenseCommand">

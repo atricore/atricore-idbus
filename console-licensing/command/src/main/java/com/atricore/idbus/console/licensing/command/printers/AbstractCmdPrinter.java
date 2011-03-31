@@ -43,7 +43,7 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
     }
 
     protected String getNameString(LicenseType license) {
-        return getNameString(license.getLicenseName());
+        return getNameString(license.getLicenseName(), 20);
     }
 
     protected String getNameString(FeatureType feature) {
