@@ -43,11 +43,11 @@ public abstract class AbstractSamlR2Mediator extends AbstractCamelMediator {
 
     private static final Log logger = LogFactory.getLog(AbstractSamlR2Mediator.class);
 
-    private boolean enableSignatureValidation;
+    private boolean validateRequestsSignature;
 
     private boolean enableEncryption;
 
-    private boolean enableSignature;
+    private boolean signRequests;
 
     private long requestTimeToLive = 6000000L; // Default to ten minutes
 
@@ -240,16 +240,16 @@ public abstract class AbstractSamlR2Mediator extends AbstractCamelMediator {
         this.encrypter = encrypter;
     }
 
-    public boolean isEnableSignatureValidation() {
-        return enableSignatureValidation;
+    public boolean isValidateRequestsSignature() {
+        return validateRequestsSignature;
     }
 
     /**
      * TODO : Signature validation setup should be moved to channel
      * @return
      */
-    public void setEnableSignatureValidation(boolean enableSignatureValidation) {
-        this.enableSignatureValidation = enableSignatureValidation;
+    public void setValidateRequestsSignature(boolean validateRequestsSignature) {
+        this.validateRequestsSignature = validateRequestsSignature;
     }
 
     /**
@@ -268,12 +268,12 @@ public abstract class AbstractSamlR2Mediator extends AbstractCamelMediator {
      * TODO : Signature setup should be moved to channel
      * @return
      */
-    public boolean isEnableSignature() {
-        return enableSignature;
+    public boolean isSignRequests() {
+        return signRequests;
     }
 
-    public void setEnableSignature(boolean enableSignature) {
-        this.enableSignature = enableSignature;
+    public void setSignRequests(boolean signRequests) {
+        this.signRequests = signRequests;
     }
 
     public long getRequestTimeToLive() {

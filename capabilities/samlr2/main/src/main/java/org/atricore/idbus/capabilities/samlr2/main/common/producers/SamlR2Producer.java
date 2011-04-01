@@ -22,9 +22,7 @@
 package org.atricore.idbus.capabilities.samlr2.main.common.producers;
 
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
-import oasis.names.tc.saml._2_0.metadata.EndpointType;
-import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
-import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
+import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
@@ -48,6 +46,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.planning.IdentityPlan;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchangeImpl;
+import org.hibernate.tuple.entity.EntityMetamodel;
 
 import javax.security.auth.Subject;
 import java.util.Collection;
@@ -293,6 +292,31 @@ public abstract class SamlR2Producer extends AbstractCamelProducer<CamelMediatio
 
     }
 
+    protected IDPSSODescriptorType getIDPSSODescriptor() {
+        CircleOfTrustMemberDescriptor cotDescr = this.getCotMemberDescriptor();
+
+        EntityDescriptorType samlMd = (EntityDescriptorType) cotDescr.getMetadata().getEntry();
+
+        for (RoleDescriptorType roleDescr : samlMd.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
+            if (roleDescr instanceof IDPSSODescriptorType)
+                return (IDPSSODescriptorType) roleDescr;
+        }
+        return null;
+
+    }
+
+    protected SPSSODescriptorType getSPSSODescriptor() {
+        CircleOfTrustMemberDescriptor cotDescr = this.getCotMemberDescriptor();
+
+        EntityDescriptorType samlMd = (EntityDescriptorType) cotDescr.getMetadata().getEntry();
+
+        for (RoleDescriptorType roleDescr : samlMd.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
+            if (roleDescr instanceof SPSSODescriptorType)
+                return (SPSSODescriptorType) roleDescr;
+        }
+        return null;
+
+    }
 
     protected boolean isStatusCodeValid(String statusCode) {
         try {

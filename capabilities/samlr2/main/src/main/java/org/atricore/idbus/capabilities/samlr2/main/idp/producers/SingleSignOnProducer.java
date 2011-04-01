@@ -247,7 +247,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         SSOSessionManager sessionMgr = ((SPChannel)channel).getSessionManager();
 
-        // TODO : Validate AuthnRequest
+        // Validate AuthnRequest
         validateRequest(authnRequest, in.getMessage().getRawContent());
 
         // -----------------------------------------------------------------------------
@@ -652,19 +652,21 @@ public class SingleSignOnProducer extends SamlR2Producer {
         SamlR2Encrypter encrypter = mediator.getEncrypter();
 
         // Metadata from the IDP
-        String spAlais = null;
-        SPSSODescriptorType spMd = null;
-        try {
-            spAlais = request.getIssuer().getValue();
-            MetadataEntry md = getCotManager().findEntityMetadata(spAlais);
-            EntityDescriptorType saml2Md = (EntityDescriptorType) md.getEntry();
-            boolean found = false;
-            for (RoleDescriptorType roleMd : saml2Md.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
 
-                if (roleMd instanceof SPSSODescriptorType) {
-                    spMd = (SPSSODescriptorType) roleMd;
-                }
-            }
+
+        SPSSODescriptorType saml2SpMd = null;
+        IDPSSODescriptorType saml2IdpMd = null;
+        try {
+            // Lookup SP SAML MD
+            String spAlias = request.getIssuer().getValue();
+            MetadataEntry spMd = getCotManager().findEntityRoleMetadata(spAlias,
+                    "urn:oasis:names:tc:SAML:2.0:metadata:SPSSODescriptor");
+            saml2SpMd  = (SPSSODescriptorType) spMd.getEntry();
+
+            // Lookup IDP SAML MD
+            MetadataEntry idpMd = getCotManager().findEntityRoleMetadata(getCotMemberDescriptor().getAlias(),
+                    "urn:oasis:names:tc:SAML:2.0:metadata:IDPSSODescriptor");
+            saml2IdpMd  = (IDPSSODescriptorType) idpMd.getEntry();
 
         } catch (CircleOfTrustManagerException e) {
             throw new SamlR2RequestException(request,
@@ -675,8 +677,13 @@ public class SingleSignOnProducer extends SamlR2Producer {
                     e);
         }
 
+        // SAML Want AuthnRequest signed has precedence over want requests signed
+        boolean validateSignature = mediator.isValidateRequestsSignature();
+        if (saml2IdpMd.isWantAuthnRequestsSigned() != null )
+            validateSignature = saml2IdpMd.isWantAuthnRequestsSigned();
+
 		// XML Signature, saml2 core, section 5
-        if (mediator.isEnableSignatureValidation()) {
+        if (validateSignature) {
 
             // If no signature is present, throw an exception!
             if (request.getSignature() == null)
@@ -687,9 +694,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
             try {
 
                 if (originalRequest != null)
-                    signer.validate(spMd, originalRequest);
+                    signer.validate(saml2SpMd, originalRequest);
                 else
-                    signer.validate(spMd, request);
+                    signer.validate(saml2SpMd, request);
 
             } catch (SamlR2SignatureValidationException e) {
                 throw new SamlR2RequestException(request,
@@ -705,6 +712,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
             }
 
         }
+
+        // TODO : Validate destination, etc!!!
 
     }
 

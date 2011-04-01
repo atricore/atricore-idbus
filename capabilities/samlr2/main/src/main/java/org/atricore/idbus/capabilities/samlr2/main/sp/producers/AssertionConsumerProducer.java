@@ -25,6 +25,7 @@ import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.lang.StringUtils;
@@ -841,36 +842,34 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                     StatusDetails.NO_STATUS);
     	}
     	
-		// XML Signature, saml2 core, section 5
-        if (mediator.isEnableSignatureValidation()) {
+		// XML Signature, saml2 core, section 5 (always validate response signatures)
 
-            if (response.getSignature() == null) {
-                throw new SamlR2ResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
-            }
+        if (response.getSignature() == null) {
+            throw new SamlR2ResponseException(response,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.INVALID_RESPONSE_SIGNATURE);
+        }
 
-            try {
-                // It's better to validate the original message, when available.
+        try {
+            // It's better to validate the original message, when available.
 
-                if (originalResponse != null)
-                    signer.validate(idpMd, originalResponse);
-                else
-                    signer.validate(idpMd, response);
+            if (originalResponse != null)
+                signer.validate(idpMd, originalResponse);
+            else
+                signer.validate(idpMd, response);
 
-            } catch (SamlR2SignatureValidationException e) {
-                throw new SamlR2ResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-            } catch (SamlR2SignatureException e) {
-                //other exceptions like JAXB, xml parser...
-                throw new SamlR2ResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-            }
+        } catch (SamlR2SignatureValidationException e) {
+            throw new SamlR2ResponseException(response,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+        } catch (SamlR2SignatureException e) {
+            //other exceptions like JAXB, xml parser...
+            throw new SamlR2ResponseException(response,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
         }
 
         // --------------------------------------------------------
@@ -898,7 +897,21 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 
 			// XML Signature, saml core, section 5
             /* NOT WORKING OK ... */
-			if(mediator.isEnableSignatureValidation()){
+
+            SPSSODescriptorType saml2SpMd = null;
+            try {
+                MetadataEntry spMd = getCotManager().findEntityRoleMetadata(getCotMemberDescriptor().getAlias(),
+                        "urn:oasis:names:tc:SAML:2.0:metadata:SPSSODescriptor");
+                saml2SpMd = (SPSSODescriptorType) spMd.getEntry();
+            } catch (CircleOfTrustManagerException e) {
+                //other exceptions like JAXB, xml parser...
+                throw new SamlR2ResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INTERNAL_ERROR, e);
+            }
+
+            if(saml2SpMd.isWantAssertionsSigned() != null && saml2SpMd.isWantAssertionsSigned()){
 
                 if (assertion.getSignature() == null) {
                     throw new SamlR2ResponseException(response,
@@ -906,7 +919,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_ASSERTION_SIGNATURE);
                 }
-                
+
 				try {
 
                     if (originalResponse != null)

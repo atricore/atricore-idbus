@@ -35,7 +35,6 @@ import org.atricore.idbus.capabilities.samlr2.main.common.producers.SamlR2Produc
 import org.atricore.idbus.capabilities.samlr2.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.samlr2.main.idp.IdentityProviderConstants;
 import org.atricore.idbus.capabilities.samlr2.main.idp.ProviderSecurityContext;
-import org.atricore.idbus.capabilities.samlr2.main.idp.SamlR2IDPMediator;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
 import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
@@ -233,35 +232,33 @@ public class SingleLogoutProducer extends SamlR2Producer {
         }
 
 		// XML Signature, saml2 core, section 5
-        if (mediator.isEnableSignatureValidation()) {
 
-            // If no signature is present, throw an exception!
-            if (spSloRequest.getSignature() == null)
-                throw new SamlR2ResponseException(spSloResponse,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
-            try {
+        // If no signature is present, throw an exception. We always require signed responses ...
+        if (spSloResponse.getSignature() == null)
+            throw new SamlR2ResponseException(spSloResponse,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.INVALID_RESPONSE_SIGNATURE);
+        try {
 
-                if (originalSloResponse != null)
-                    signer.validate(spMd, originalSloResponse);
-                else
-                    signer.validate(spMd, spSloResponse);
+            if (originalSloResponse != null)
+                signer.validate(spMd, originalSloResponse);
+            else
+                signer.validate(spMd, spSloResponse);
 
-            } catch (SamlR2SignatureValidationException e) {
-                throw new SamlR2ResponseException(spSloResponse,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-            } catch (SamlR2SignatureException e) {
-                //other exceptions like JAXB, xml parser...
-                throw new SamlR2ResponseException(spSloResponse,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-            }
-
+        } catch (SamlR2SignatureValidationException e) {
+            throw new SamlR2ResponseException(spSloResponse,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+        } catch (SamlR2SignatureException e) {
+            //other exceptions like JAXB, xml parser...
+            throw new SamlR2ResponseException(spSloResponse,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
         }
+
     }
 
     // TODO : Reuse basic SAML request validations ....
@@ -297,7 +294,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
         }
 
 		// XML Signature, saml2 core, section 5
-        if (mediator.isEnableSignatureValidation()) {
+        if (mediator.isValidateRequestsSignature()) {
 
             // If no signature is present, throw an exception!
             if (request.getSignature() == null)

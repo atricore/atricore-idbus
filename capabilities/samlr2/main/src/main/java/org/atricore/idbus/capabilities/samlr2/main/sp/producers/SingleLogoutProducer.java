@@ -284,7 +284,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
         }
 
 		// XML Signature, saml2 core, section 5
-        if (mediator.isEnableSignatureValidation()) {
+        if (mediator.isValidateRequestsSignature()) {
 
             // If no signature is present, throw an exception!
             if (request.getSignature() == null)
@@ -508,35 +508,31 @@ public class SingleLogoutProducer extends SamlR2Producer {
                     StatusDetails.NO_STATUS);
     	}
 
-		// XML Signature, saml2 core, section 5
-        if (mediator.isEnableSignatureValidation()) {
+		// XML Signature, saml2 core, section 5 (always validate response signature)
+        // If no signature is present, throw an exception!
+        if (response.getSignature() == null)
+            throw new SamlR2ResponseException(response,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.INVALID_RESPONSE_SIGNATURE);
+        try {
 
-            // If no signature is present, throw an exception!
-            if (response.getSignature() == null)
-                throw new SamlR2ResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
-            try {
+            if (originalResponse != null)
+                signer.validate(idpMd, originalResponse);
+            else
+                signer.validate(idpMd, response);
 
-                if (originalResponse != null)
-                    signer.validate(idpMd, originalResponse);
-                else
-                    signer.validate(idpMd, response);
-
-            } catch (SamlR2SignatureValidationException e) {
-                throw new SamlR2ResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-            } catch (SamlR2SignatureException e) {
-                //other exceptions like JAXB, xml parser...
-                throw new SamlR2ResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-            }
-
+        } catch (SamlR2SignatureValidationException e) {
+            throw new SamlR2ResponseException(response,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+        } catch (SamlR2SignatureException e) {
+            //other exceptions like JAXB, xml parser...
+            throw new SamlR2ResponseException(response,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
         }
 
         return response;

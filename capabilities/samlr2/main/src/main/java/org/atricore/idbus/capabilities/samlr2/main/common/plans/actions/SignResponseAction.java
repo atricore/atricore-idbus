@@ -23,7 +23,6 @@ package org.atricore.idbus.capabilities.samlr2.main.common.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
-import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
@@ -37,7 +36,6 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +59,7 @@ public class SignResponseAction extends AbstractSamlR2Action {
                 (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
 
         // Mediator configuration as default for assertions signature
-        boolean signAssertion = mediator.isEnableSignature();
+        boolean signAssertion = mediator.isSignRequests();
         if (dest != null) {
 
             EntityDescriptorType entity = (EntityDescriptorType) dest.getMetadata().getEntry();
@@ -110,7 +108,7 @@ public class SignResponseAction extends AbstractSamlR2Action {
 
         }
 
-        if (!mediator.isEnableSignature()) {
+        if (!mediator.isSignRequests()) {
             logger.debug("Signature is disabled for " + channel.getName());
             return ;
         }
