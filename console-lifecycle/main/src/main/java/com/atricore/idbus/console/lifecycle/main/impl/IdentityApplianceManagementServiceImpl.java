@@ -1096,8 +1096,14 @@ public class IdentityApplianceManagementServiceImpl implements
                     endpoints.addAll(((IDPSSODescriptorType)ssoDescriptor).getSingleSignOnService());
                     endpoints.addAll(((IDPSSODescriptorType)ssoDescriptor).getAssertionIDRequestService());
                     endpoints.addAll(((IDPSSODescriptorType)ssoDescriptor).getNameIDMappingService());
+                    if (((IDPSSODescriptorType)ssoDescriptor).isWantAuthnRequestsSigned() != null)
+                        res.setWantAuthnRequestsSigned(((IDPSSODescriptorType)ssoDescriptor).isWantAuthnRequestsSigned());
                 } else if (ssoDescriptor instanceof SPSSODescriptorType) {
                     endpoints.addAll(((SPSSODescriptorType)ssoDescriptor).getAssertionConsumerService());
+                    if (((SPSSODescriptorType)ssoDescriptor).isWantAssertionsSigned() != null)
+                        res.setWantAssertionSigned(((SPSSODescriptorType)ssoDescriptor).isWantAssertionsSigned());
+                    if (((SPSSODescriptorType)ssoDescriptor).isAuthnRequestsSigned() != null)
+                        res.setSignAuthnRequests(((SPSSODescriptorType)ssoDescriptor).isAuthnRequestsSigned());
                 }
                 for (EndpointType endpoint : endpoints) {
                     if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_POST.getValue())) {

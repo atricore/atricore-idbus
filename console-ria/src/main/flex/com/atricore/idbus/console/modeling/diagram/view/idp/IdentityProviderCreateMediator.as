@@ -125,8 +125,9 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.idpLocationPort.text = "";
         view.idpLocationContext.text = "";
         view.idpLocationPath.text = "";
-        view.signAuthAssertionCheck.selected = true;
-        view.encryptAuthAssertionCheck.selected = false;
+        view.wantAuthnRequestsSignedCheck.selected = true;
+        view.signRequestsCheck.selected = true;
+        view.wantSignedRequestsCheck.selected = true;
         view.samlBindingHttpPostCheck.selected = true;
         view.samlBindingArtifactCheck.selected = true;
         view.samlBindingHttpRedirectCheck.selected = false;
@@ -202,8 +203,9 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         loc.uri = view.idpLocationPath.text;
         identityProvider.location = loc;
 
-        identityProvider.signAuthenticationAssertions = view.signAuthAssertionCheck.selected;
-        identityProvider.encryptAuthenticationAssertions = view.encryptAuthAssertionCheck.selected;
+        identityProvider.wantAuthnRequestsSigned = view.wantAuthnRequestsSignedCheck.selected;
+        identityProvider.signRequests = view.signRequestsCheck.selected;
+        identityProvider.wantSignedRequests = view.wantSignedRequestsCheck.selected;
 
         identityProvider.activeBindings = new ArrayCollection();
         if (view.samlBindingHttpPostCheck.selected) {

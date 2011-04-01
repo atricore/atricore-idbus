@@ -136,8 +136,10 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.spLocationPort.text = "";
         view.spLocationContext.text = "";
         view.spLocationPath.text = "";
-//        view.signAuthRequestCheck.selected = true;
-//        view.encryptAuthRequestCheck.selected = false;
+        view.signAuthnRequestsCheck.selected = true;
+        view.wantAssertionSignedCheck.selected = true;
+        view.signRequestsCheck.selected = true;
+        view.wantSignedRequestsCheck.selected = true;
         view.samlBindingHttpPostCheck.selected = true;
         view.samlBindingArtifactCheck.selected = true;
         view.samlBindingHttpRedirectCheck.selected = false;
@@ -213,8 +215,10 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         loc.uri = view.spLocationPath.text;
         serviceProvider.location = loc;
 
-//        serviceProvider.signAuthenticationRequest = view.signAuthRequestCheck.selected;
-//        serviceProvider.encryptAuthenticationRequest = view.encryptAuthRequestCheck.selected;
+        serviceProvider.signAuthenticationRequests = view.signAuthnRequestsCheck.selected;
+        serviceProvider.wantAssertionSigned = view.wantAssertionSignedCheck.selected;
+        serviceProvider.signRequests = view.signRequestsCheck.selected;
+        serviceProvider.wantSignedRequests = view.wantSignedRequestsCheck.selected;
 
         serviceProvider.activeBindings = new ArrayCollection();
         if(view.samlBindingHttpPostCheck.selected){

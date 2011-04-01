@@ -120,6 +120,13 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
         // TODO : Take ID from provider entityId attribute (To be created)
         spSSODescriptor.setID(idGenerator.generateId());
         spSSODescriptor.getProtocolSupportEnumeration().add(SAMLR2Constants.SAML_PROTOCOL_NS);
+        if (idpChannel != null) {
+            spSSODescriptor.setAuthnRequestsSigned(idpChannel.isSignAuthenticationRequests());
+            spSSODescriptor.setWantAssertionsSigned(idpChannel.isWantAssertionSigned());
+        } else {
+            spSSODescriptor.setAuthnRequestsSigned(provider.isSignAuthenticationRequests());
+            spSSODescriptor.setWantAssertionsSigned(provider.isWantAssertionSigned());
+        }
 
         // signing key descriptor
         KeyDescriptorType signingKeyDescriptor = new KeyDescriptorType();

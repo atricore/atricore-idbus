@@ -52,6 +52,10 @@
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.encrypt.auth.assertion')}:">
             <s:CheckBox id="encryptAuthAssertionCheck" enabled="false"/>
         </mx:FormItem>
+        
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.wantAuthnRequestsSigned')}:">
+            <s:CheckBox id="wantAuthnRequestsSignedCheck" enabled="false"/>
+        </mx:FormItem>
 
         <s:Button id="btnExportMetadata" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'export.metadata')}" enabled="false"/>
     </mx:Form>

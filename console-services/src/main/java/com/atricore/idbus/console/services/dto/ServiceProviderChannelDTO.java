@@ -38,6 +38,8 @@ public class ServiceProviderChannelDTO extends FederatedChannelDTO {
     // RFU
     private AuthenticationAssertionEmissionPolicyDTO emissionPolicy;
 
+    private boolean wantAuthnRequestsSigned;
+
     public AttributeProfileDTO getAttributeProfile() {
         return attributeProfile;
     }
@@ -70,4 +72,11 @@ public class ServiceProviderChannelDTO extends FederatedChannelDTO {
         this.emissionPolicy = emissionPolicy;
     }
 
+    public boolean isWantAuthnRequestsSigned() {
+        return wantAuthnRequestsSigned;
+    }
+
+    public void setWantAuthnRequestsSigned(boolean wantAuthnRequestsSigned) {
+        this.wantAuthnRequestsSigned = wantAuthnRequestsSigned;
+    }
 }

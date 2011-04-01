@@ -39,6 +39,14 @@ public class ServiceProvider extends FederatedProvider {
     // RFU
     private Set<AuthenticationMechanism> authenticationMechanisms;
 
+    private boolean signAuthenticationRequests;
+
+    private boolean wantAssertionSigned;
+
+    private boolean signRequests;
+
+    private boolean wantSignedRequests;
+    
     @Override
     public ProviderRole getRole() {
         return ProviderRole.SSOServiceProvider;
@@ -87,5 +95,37 @@ public class ServiceProvider extends FederatedProvider {
 
     public void setAuthenticationMechanisms(Set<AuthenticationMechanism> authenticationMechanisms) {
         this.authenticationMechanisms = authenticationMechanisms;
+    }
+
+    public boolean isSignAuthenticationRequests() {
+        return signAuthenticationRequests;
+    }
+
+    public void setSignAuthenticationRequests(boolean signAuthenticationRequests) {
+        this.signAuthenticationRequests = signAuthenticationRequests;
+    }
+
+    public boolean isWantAssertionSigned() {
+        return wantAssertionSigned;
+    }
+
+    public void setWantAssertionSigned(boolean wantAssertionSigned) {
+        this.wantAssertionSigned = wantAssertionSigned;
+    }
+
+    public boolean isSignRequests() {
+        return signRequests;
+    }
+
+    public void setSignRequests(boolean signRequests) {
+        this.signRequests = signRequests;
+    }
+
+    public boolean isWantSignedRequests() {
+        return wantSignedRequests;
+    }
+
+    public void setWantSignedRequests(boolean wantSignedRequests) {
+        this.wantSignedRequests = wantSignedRequests;
     }
 }

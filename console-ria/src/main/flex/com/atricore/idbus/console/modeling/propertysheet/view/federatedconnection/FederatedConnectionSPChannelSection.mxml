@@ -62,12 +62,8 @@
                          label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
             </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:" labelWidth="235">
-                <s:CheckBox id="signAuthAssertionCheck"/>
-            </mx:FormItem>
-
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:" labelWidth="235">
-                <s:CheckBox id="encryptAuthAssertionCheck"/>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantAuthnRequestsSigned')}:" labelWidth="235">
+                <s:CheckBox id="wantAuthnRequestsSignedCheck"/>
             </mx:FormItem>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.location')}:"

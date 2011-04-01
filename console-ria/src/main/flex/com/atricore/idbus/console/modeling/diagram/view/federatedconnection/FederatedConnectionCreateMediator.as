@@ -123,8 +123,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         } else if (_roleB is ServiceProvider){
             sp = _roleB as ServiceProvider;
         }
-        //view.signAuthRequestCheck.selected = sp.signAuthenticationAssertions;
-        //view.encryptAuthRequestCheck.selected = sp.encryptAuthenticationAssertions;
+        view.signAuthnRequestsCheck.selected = sp.signAuthenticationRequests;
+        view.wantAssertionSignedCheck.selected = sp.wantAssertionSigned;
         view.samlBindingHttpPostCheck.selected = false;
         view.samlBindingHttpRedirectCheck.selected = false;
         view.samlBindingArtifactCheck.selected = false;
@@ -214,8 +214,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             idp = _roleB as IdentityProvider;
         }
 
-        view.signAuthAssertionCheck.selected = idp.signAuthenticationAssertions;
-        view.encryptAuthAssertionCheck.selected = idp.encryptAuthenticationAssertions;
+        view.wantAuthnRequestsSignedCheck.selected = idp.wantAuthnRequestsSigned;
 
         view.spChannelSamlBindingHttpPostCheck.selected = false;
         view.spChannelSamlBindingHttpRedirectCheck.selected = false;
@@ -294,8 +293,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         view.samlBindingArtifactCheck.selected = false;
         view.samlBindingSoapCheck.selected = false;
 
-//        view.signAuthRequestCheck.selected = false;
-//        view.encryptAuthRequestCheck.selected = false;
+        view.signAuthnRequestsCheck.selected = false;
+        view.wantAssertionSignedCheck.selected = false;
 
         view.accountLinkagePolicyCombo.selectedIndex = 0;
         view.identityMappingPolicyCombo.selectedIndex = 0;
@@ -322,8 +321,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.spChannelSamlBindingArtifactCheck.selected = false;
             view.spChannelSamlBindingSoapCheck.selected = false;
 
-            view.signAuthAssertionCheck.selected = false;
-            view.encryptAuthAssertionCheck.selected = false;
+            view.wantAuthnRequestsSignedCheck.selected = false;
             view.spChannelAuthContractCombo.selectedIndex = 0;
             view.spChannelAuthMechanism.selectedIndex = 0;
             view.spChannelAuthAssertionEmissionPolicyCombo.selectedIndex = 0;
@@ -401,6 +399,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
                 idpChannel.identityMappingPolicy = view.identityMappingPolicyCombo.selectedItem;
             }
 
+            idpChannel.signAuthenticationRequests = view.signAuthnRequestsCheck.selected;
+            idpChannel.wantAssertionSigned = view.wantAssertionSignedCheck.selected;
+
             // set location
             var loc:Location = new Location();
             loc.protocol = view.idpChannelLocationProtocol.labelDisplay.text;
@@ -463,6 +464,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
                 spChannel.emissionPolicy = authAssertionEmissionPolicy;
             }
 
+            spChannel.wantAuthnRequestsSigned = view.wantAuthnRequestsSignedCheck.selected;
+            
             // set location
             var newLoc:Location = new Location();
             newLoc.protocol = view.spChannelLocationProtocol.labelDisplay.text;
@@ -691,13 +694,10 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.samlBindingArtifactCheck.enabled = false;
             view.samlBindingSoapCheck.enabled = false;
 
-//            view.signAuthRequestCheck.enabled = false;
-//            view.encryptAuthRequestCheck.enabled = false;
+            view.signAuthnRequestsCheck.enabled = false;
+            view.wantAssertionSignedCheck.enabled = false;
 
-//            view.authMechanism.enabled = false;
-//            view.configureAuthMechanism.enabled = false;
             view.accountLinkagePolicyCombo.enabled = false;
-            //view.configureAccLinkagePolicy.enabled = false;
             view.identityMappingPolicyCombo.enabled = false;
 
             view.idpChannelLocationProtocol.enabled = false;
@@ -714,13 +714,10 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.samlBindingArtifactCheck.enabled = true;
             view.samlBindingSoapCheck.enabled = true;
 
-//            view.signAuthRequestCheck.enabled = true;
-//            view.encryptAuthRequestCheck.enabled = true;
+            view.signAuthnRequestsCheck.enabled = true;
+            view.wantAssertionSignedCheck.enabled = true;
 
-//            view.authMechanism.enabled = true;
-//            view.configureAuthMechanism.enabled = true;
             view.accountLinkagePolicyCombo.enabled = true;
-            //view.configureAccLinkagePolicy.enabled = true;
             view.identityMappingPolicyCombo.enabled = true;
 
             view.idpChannelLocationProtocol.enabled = true;
@@ -742,8 +739,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.spChannelSamlBindingArtifactCheck.enabled = false;
             view.spChannelSamlBindingSoapCheck.enabled = false;
 
-            view.signAuthAssertionCheck.enabled = false;
-            view.encryptAuthAssertionCheck.enabled = false;
+            view.wantAuthnRequestsSignedCheck.enabled = false;
+            
             view.spChannelAuthContractCombo.enabled = false;
             view.spChannelAuthMechanism.enabled = false;
             view.spChannelAuthAssertionEmissionPolicyCombo.enabled = false;
@@ -762,8 +759,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.spChannelSamlBindingArtifactCheck.enabled = true;
             view.spChannelSamlBindingSoapCheck.enabled = true;
 
-            view.signAuthAssertionCheck.enabled = true;
-            view.encryptAuthAssertionCheck.enabled = true;
+            view.wantAuthnRequestsSignedCheck.enabled = true;
+            
             view.spChannelAuthContractCombo.enabled = true;
             view.spChannelAuthMechanism.enabled = false; //dont enable auth mechanism
             view.spChannelAuthAssertionEmissionPolicyCombo.enabled = true;

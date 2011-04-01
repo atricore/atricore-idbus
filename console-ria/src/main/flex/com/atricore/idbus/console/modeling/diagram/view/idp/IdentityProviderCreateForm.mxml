@@ -145,12 +145,12 @@
         <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.tab.contract')}">
             <s:VGroup>
 
-                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal">
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal">
                     <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}" selected="true"/>
                     <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}" selected="true"/>
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal">
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal">
                     <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
                     <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
                     <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}" selected="true"/>
@@ -158,12 +158,16 @@
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}" selected="true"/>
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:">
-                    <s:CheckBox id="signAuthAssertionCheck" selected="true"/>
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantAuthnRequestsSigned')}:">
+                    <s:CheckBox id="wantAuthnRequestsSignedCheck" selected="true"/>
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:">
-                    <s:CheckBox id="encryptAuthAssertionCheck"/>
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.signRequests')}:">
+                    <s:CheckBox id="signRequestsCheck" selected="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantSignedRequests')}:">
+                    <s:CheckBox id="wantSignedRequestsCheck" selected="true"/>
                 </mx:FormItem>
 
             </s:VGroup>

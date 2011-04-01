@@ -219,9 +219,8 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
             setPropertyBean(signer, "keyResolver", keyResolver);
             setPropertyBean(idpMediator, "signer", signer);
 
-            // By default, we sign request/responses
-            setPropertyValue(idpMediator, "enableSignature", true);
-            setPropertyValue(idpMediator, "enableSignatureValidation", true);
+            setPropertyValue(idpMediator, "signRequests", provider.isSignRequests());
+            setPropertyValue(idpMediator, "validateRequestsSignature", provider.isWantSignedRequests());
 
             event.getContext().getCurrentModule().addResource(signerResource);
 

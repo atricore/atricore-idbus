@@ -35,6 +35,10 @@ public class GetMetadataInfoResponse extends GetCertificateInfoResponse {
     private boolean artifactEnabled;
     private boolean soapEnabled;
 
+    private boolean wantAuthnRequestsSigned;
+    private boolean signAuthnRequests;
+    private boolean wantAssertionSigned;
+
     public GetMetadataInfoResponse() {
         super();
         ssoEnabled = false;
@@ -43,6 +47,9 @@ public class GetMetadataInfoResponse extends GetCertificateInfoResponse {
         redirectEnabled = false;
         artifactEnabled = false;
         soapEnabled = false;
+        wantAuthnRequestsSigned = false;
+        signAuthnRequests = false;
+        wantAssertionSigned = false;
     }
 
     public String getEntityId() {
@@ -99,5 +106,29 @@ public class GetMetadataInfoResponse extends GetCertificateInfoResponse {
 
     public void setSoapEnabled(boolean soapEnabled) {
         this.soapEnabled = soapEnabled;
+    }
+
+    public boolean isSignAuthnRequests() {
+        return signAuthnRequests;
+    }
+
+    public void setSignAuthnRequests(boolean signAuthnRequests) {
+        this.signAuthnRequests = signAuthnRequests;
+    }
+
+    public boolean isWantAssertionSigned() {
+        return wantAssertionSigned;
+    }
+
+    public void setWantAssertionSigned(boolean wantAssertionSigned) {
+        this.wantAssertionSigned = wantAssertionSigned;
+    }
+
+    public boolean isWantAuthnRequestsSigned() {
+        return wantAuthnRequestsSigned;
+    }
+
+    public void setWantAuthnRequestsSigned(boolean wantAuthnRequestsSigned) {
+        this.wantAuthnRequestsSigned = wantAuthnRequestsSigned;
     }
 }

@@ -37,6 +37,8 @@ public class ServiceProviderChannel extends FederatedChannel {
     // RFU
     private AuthenticationAssertionEmissionPolicy emissionPolicy;
 
+    private boolean wantAuthnRequestsSigned;
+    
     public AttributeProfile getAttributeProfile() {
         return attributeProfile;
     }
@@ -67,5 +69,13 @@ public class ServiceProviderChannel extends FederatedChannel {
 
     public void setEmissionPolicy(AuthenticationAssertionEmissionPolicy emissionPolicy) {
         this.emissionPolicy = emissionPolicy;
+    }
+
+    public boolean isWantAuthnRequestsSigned() {
+        return wantAuthnRequestsSigned;
+    }
+
+    public void setWantAuthnRequestsSigned(boolean wantAuthnRequestsSigned) {
+        this.wantAuthnRequestsSigned = wantAuthnRequestsSigned;
     }
 }

@@ -38,6 +38,13 @@ public class ServiceProviderDTO extends FederatedProviderDTO {
     // RFU
     private AuthenticationMechanismDTO authenticationMechanism;
 
+    private boolean signAuthenticationRequests;
+
+    private boolean wantAssertionSigned;
+
+    private boolean signRequests;
+
+    private boolean wantSignedRequests;
 
     @Override
     public ProviderRoleDTO getRole() {
@@ -87,5 +94,37 @@ public class ServiceProviderDTO extends FederatedProviderDTO {
 
     public void setAuthenticationMechanism(AuthenticationMechanismDTO authenticationMechanism) {
         this.authenticationMechanism = authenticationMechanism;
+    }
+
+    public boolean isSignAuthenticationRequests() {
+        return signAuthenticationRequests;
+    }
+
+    public void setSignAuthenticationRequests(boolean signAuthenticationRequests) {
+        this.signAuthenticationRequests = signAuthenticationRequests;
+    }
+
+    public boolean isWantAssertionSigned() {
+        return wantAssertionSigned;
+    }
+
+    public void setWantAssertionSigned(boolean wantAssertionSigned) {
+        this.wantAssertionSigned = wantAssertionSigned;
+    }
+
+    public boolean isSignRequests() {
+        return signRequests;
+    }
+
+    public void setSignRequests(boolean signRequests) {
+        this.signRequests = signRequests;
+    }
+
+    public boolean isWantSignedRequests() {
+        return wantSignedRequests;
+    }
+
+    public void setWantSignedRequests(boolean wantSignedRequests) {
+        this.wantSignedRequests = wantSignedRequests;
     }
 }

@@ -909,9 +909,10 @@ public class PropertySheetMediator extends IocMediator {
 
         // if identityProvider is null that means some other element was selected before completing this
         if (identityProvider != null) {
-            _ipContractSection.signAuthAssertionCheck.selected = identityProvider.signAuthenticationAssertions;
-            _ipContractSection.encryptAuthAssertionCheck.selected = identityProvider.encryptAuthenticationAssertions;
-
+            _ipContractSection.wantAuthnRequestsSignedCheck.selected = identityProvider.wantAuthnRequestsSigned;
+            _ipContractSection.signRequestsCheck.selected = identityProvider.signRequests;
+            _ipContractSection.wantSignedRequestsCheck.selected = identityProvider.wantSignedRequests;
+            
             for (var j:int = 0; j < identityProvider.activeBindings.length; j ++) {
                 var tmpBinding:Binding = identityProvider.activeBindings.getItemAt(j) as Binding;
                 if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
@@ -942,14 +943,15 @@ public class PropertySheetMediator extends IocMediator {
                 _ipContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
             }
 
-            _ipContractSection.signAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipContractSection.encryptAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.wantAuthnRequestsSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.signRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.wantSignedRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
         }
     }
 
@@ -990,8 +992,9 @@ public class PropertySheetMediator extends IocMediator {
             }
 
 //            identityProvider.defaultChannel = spChannel;
-            identityProvider.signAuthenticationAssertions = _ipContractSection.signAuthAssertionCheck.selected;
-            identityProvider.encryptAuthenticationAssertions = _ipContractSection.encryptAuthAssertionCheck.selected;
+            identityProvider.wantAuthnRequestsSigned = _ipContractSection.wantAuthnRequestsSignedCheck.selected;
+            identityProvider.signRequests = _ipContractSection.signRequestsCheck.selected;
+            identityProvider.wantSignedRequests = _ipContractSection.wantSignedRequestsCheck.selected;
 
             // update default sp channels
             if (identityProvider.federatedConnectionsA != null) {
@@ -1046,6 +1049,8 @@ public class PropertySheetMediator extends IocMediator {
         for (var j:int = 0; j < identityProvider.activeProfiles.length; j++) {
             spChannel.activeProfiles.addItem(identityProvider.activeProfiles[j]);
         }
+
+        spChannel.wantAuthnRequestsSigned = identityProvider.wantAuthnRequestsSigned;
     }
 
     private function handleAuthenticationTabClick():void {
@@ -1386,8 +1391,10 @@ public class PropertySheetMediator extends IocMediator {
 
         // if serviceProvider is null that means some other element was selected before completing this
         if (serviceProvider != null) {
-            //_spContractSection.signAuthRequestCheck.selected = serviceProvider.signAuthenticationAssertions;
-            //_spContractSection.encryptAuthRequestCheck.selected = serviceProvider.encryptAuthenticationAssertions;
+            _spContractSection.signAuthnRequestsCheck.selected = serviceProvider.signAuthenticationRequests;
+            _spContractSection.wantAssertionSignedCheck.selected = serviceProvider.wantAssertionSigned;
+            _spContractSection.signRequestsCheck.selected = serviceProvider.signRequests;
+            _spContractSection.wantSignedRequestsCheck.selected = serviceProvider.wantSignedRequests;
 
             for (var j:int = 0; j < serviceProvider.activeBindings.length; j ++) {
                 var tmpBinding:Binding = serviceProvider.activeBindings.getItemAt(j) as Binding;
@@ -1425,6 +1432,10 @@ public class PropertySheetMediator extends IocMediator {
             _spContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _spContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _spContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spContractSection.signAuthnRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spContractSection.wantAssertionSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spContractSection.signRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spContractSection.wantSignedRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
         }
     }
 
@@ -1462,6 +1473,11 @@ public class PropertySheetMediator extends IocMediator {
                 serviceProvider.activeProfiles.addItem(Profile.SSO_SLO);
             }
 
+            serviceProvider.signAuthenticationRequests = _spContractSection.signAuthnRequestsCheck.selected;
+            serviceProvider.wantAssertionSigned = _spContractSection.wantAssertionSignedCheck.selected;
+            serviceProvider.signRequests = _spContractSection.signRequestsCheck.selected;
+            serviceProvider.wantSignedRequests = _spContractSection.wantSignedRequestsCheck.selected;
+            
             // update default idp channels
             if (serviceProvider.federatedConnectionsA != null) {
                 for (var i:int = 0; i < serviceProvider.federatedConnectionsA.length; i++) {
@@ -1519,6 +1535,8 @@ public class PropertySheetMediator extends IocMediator {
         for (var j:int = 0; j < serviceProvider.activeProfiles.length; j++) {
             idpChannel.activeProfiles.addItem(serviceProvider.activeProfiles[j]);
         }
+
+        idpChannel.signAuthenticationRequests = serviceProvider.signAuthenticationRequests;
     }
     
     private function handleProviderCertificatePropertyTabCreationComplete(event:Event):void {
@@ -2530,6 +2548,7 @@ public class PropertySheetMediator extends IocMediator {
                 _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.selected = false;
                 _federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.selected = false;
                 _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.selected = false;
+                _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.selected = false;
             }
             for each (var tmpBinding:Binding in spChannel.activeBindings) {
                 if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
@@ -2569,6 +2588,8 @@ public class PropertySheetMediator extends IocMediator {
                 _federatedConnectionSPChannelSection.spChannelLocationPath.text = spChannel.location.uri;
             }
 
+            _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.selected = spChannel.wantAuthnRequestsSigned;
+
             if (spChannel.overrideProviderSetup) {
                 _federatedConnectionSPChannelSection.useInheritedIDPSettings.selected = false;
             }
@@ -2578,15 +2599,14 @@ public class PropertySheetMediator extends IocMediator {
                 _federatedConnectionSPChannelSection.btnExportMetadata.enabled = true;
                 _federatedConnectionSPChannelSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportSPChannelMetadataClick);
             }
-            
+
             _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _federatedConnectionSPChannelSection.signAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
@@ -2656,6 +2676,8 @@ public class PropertySheetMediator extends IocMediator {
             spChannel.location.context = _federatedConnectionSPChannelSection.spChannelLocationContext.text;
             spChannel.location.uri = _federatedConnectionSPChannelSection.spChannelLocationPath.text;
 
+            spChannel.wantAuthnRequestsSigned = _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.selected;
+            
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
             _dirty = false;
@@ -2695,6 +2717,8 @@ public class PropertySheetMediator extends IocMediator {
                 _federatedConnectionIDPChannelSection.samlBindingSoapCheck.selected = false;
                 _federatedConnectionIDPChannelSection.samlProfileSSOCheck.selected = false;
                 _federatedConnectionIDPChannelSection.samlProfileSLOCheck.selected = false;
+                _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.selected = false;
+                _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.selected = false;
             }
             for each(var tmpBinding:Binding in idpChannel.activeBindings) {
                 if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
@@ -2734,6 +2758,9 @@ public class PropertySheetMediator extends IocMediator {
                 _federatedConnectionIDPChannelSection.idpChannelLocationPath.text = idpChannel.location.uri;
             }
 
+            _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.selected = idpChannel.signAuthenticationRequests;
+            _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.selected = idpChannel.wantAssertionSigned;
+            
             if (idpChannel.overrideProviderSetup) {
                 _federatedConnectionIDPChannelSection.useInheritedSPSettings.selected = false;
             }
@@ -2755,6 +2782,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.idpChannelLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.idpChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.idpChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
             
             //clear all existing validators and add idp channel section validators
             if (idpChannel.overrideProviderSetup) {
@@ -2836,6 +2865,9 @@ public class PropertySheetMediator extends IocMediator {
             idpChannel.location.port = parseInt(_federatedConnectionIDPChannelSection.idpChannelLocationPort.text);
             idpChannel.location.context = _federatedConnectionIDPChannelSection.idpChannelLocationContext.text;
             idpChannel.location.uri = _federatedConnectionIDPChannelSection.idpChannelLocationPath.text;
+
+            idpChannel.signAuthenticationRequests = _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.selected;
+            idpChannel.wantAssertionSigned = _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.selected;
 
             if (!idpChannel.overrideProviderSetup) {
                 idpChannel.accountLinkagePolicy = sp.accountLinkagePolicy;
@@ -4974,6 +5006,9 @@ public class PropertySheetMediator extends IocMediator {
             if (resp.soapEnabled)
                 _externalIdpContractSection.samlBindingSoapCheck.selected = true;
 
+            if (resp.wantAuthnRequestsSigned)
+                _externalIdpContractSection.wantAuthnRequestsSignedCheck.selected = true;
+            
             // signing certificate
             if (resp.signingCertIssuerDN != null) {
                 _externalIdpContractSection.signAuthAssertionCheck.selected = true;
@@ -4997,7 +5032,7 @@ public class PropertySheetMediator extends IocMediator {
                 _externalIdpCertificateSection.encryptionCertNotBefore.text = _externalIdpCertificateSection.dateFormatter.format(resp.encryptionCertNotBefore);
             if (resp.encryptionCertNotAfter != null)
                 _externalIdpCertificateSection.encryptionCertNotAfter.text = _externalIdpCertificateSection.dateFormatter.format(resp.encryptionCertNotAfter);
-            
+
         } else if (_currentIdentityApplianceElement is ExternalServiceProvider) {
             // entity id
             _externalSpContractSection.entityId.text = resp.entityId;
@@ -5017,6 +5052,11 @@ public class PropertySheetMediator extends IocMediator {
                 _externalSpContractSection.samlBindingArtifactCheck.selected = true;
             if (resp.soapEnabled)
                 _externalSpContractSection.samlBindingSoapCheck.selected = true;
+
+            if (resp.signAuthnRequests)
+                _externalSpContractSection.signAuthnRequestsCheck.selected = true;
+            if (resp.wantAssertionSigned)
+                _externalSpContractSection.wantAssertionSignedCheck.selected = true;
 
             // signing certificate
             if (resp.signingCertIssuerDN != null) {
@@ -5190,8 +5230,10 @@ public class PropertySheetMediator extends IocMediator {
         } else if (connection.roleB is ServiceProvider){
             sp = connection.roleB as ServiceProvider;
         }
-        //_federatedConnectionIDPChannelSection.signAuthRequestCheck.selected = sp.signAuthenticationAssertions;
-        //_federatedConnectionIDPChannelSection.encryptAuthRequestCheck.selected = sp.encryptAuthenticationAssertions;
+
+        _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.selected = sp.signAuthenticationRequests;
+        _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.selected = sp.wantAssertionSigned;
+
         _federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected = false;
         _federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected = false;
         _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.selected = false;
@@ -5284,9 +5326,8 @@ public class PropertySheetMediator extends IocMediator {
             idp = connection.roleB as IdentityProvider;
         }
 
-        _federatedConnectionSPChannelSection.signAuthAssertionCheck.selected = idp.signAuthenticationAssertions;
-        _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.selected = idp.encryptAuthenticationAssertions;
-
+        _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.selected = idp.wantAuthnRequestsSigned;
+        
         _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected = false;
         _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected = false;
         _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.selected = false;
@@ -5344,8 +5385,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.enabled = false;
             _federatedConnectionIDPChannelSection.samlBindingSoapCheck.enabled = false;
 
-//            view.signAuthRequestCheck.enabled = false;
-//            view.encryptAuthRequestCheck.enabled = false;
+            _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.enabled = false;
+            _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.enabled = false;
 
 //            view.authMechanism.enabled = false;
 //            view.configureAuthMechanism.enabled = false;
@@ -5367,8 +5408,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.enabled = true;
             _federatedConnectionIDPChannelSection.samlBindingSoapCheck.enabled = true;
 
-//            view.signAuthRequestCheck.enabled = true;
-//            view.encryptAuthRequestCheck.enabled = true;
+            _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.enabled = true;
+            _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.enabled = true;
 
 //            view.authMechanism.enabled = true;
 //            view.configureAuthMechanism.enabled = true;
@@ -5395,8 +5436,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.enabled = false;
             _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.enabled = false;
 
-            _federatedConnectionSPChannelSection.signAuthAssertionCheck.enabled = false;
-            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.enabled = false;
+            _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.enabled = false;
+
             _federatedConnectionSPChannelSection.spChannelAuthContractCombo.enabled = false;
             _federatedConnectionSPChannelSection.spChannelAuthMechanism.enabled = false;
             _federatedConnectionSPChannelSection.spChannelAuthAssertionEmissionPolicyCombo.enabled = false;
@@ -5415,8 +5456,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.enabled = true;
             _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.enabled = true;
 
-            _federatedConnectionSPChannelSection.signAuthAssertionCheck.enabled = true;
-            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.enabled = true;
+            _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.enabled = true;
+            
             _federatedConnectionSPChannelSection.spChannelAuthContractCombo.enabled = true;
             _federatedConnectionSPChannelSection.spChannelAuthMechanism.enabled = false; //dont enable auth mechanism
             _federatedConnectionSPChannelSection.spChannelAuthAssertionEmissionPolicyCombo.enabled = true;

@@ -248,6 +248,10 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         IDPSSODescriptorType idpSSODescriptor = new IDPSSODescriptorType();
         idpSSODescriptor.setID("idSy31Pds0meYpkaDLFG6-eWqL0WA");
         idpSSODescriptor.getProtocolSupportEnumeration().add(SAMLR2Constants.SAML_PROTOCOL_NS);
+        if (spChannel != null)
+            idpSSODescriptor.setWantAuthnRequestsSigned(spChannel.isWantAuthnRequestsSigned());
+        else
+            idpSSODescriptor.setWantAuthnRequestsSigned(provider.isWantAuthnRequestsSigned());
 
         // signing key descriptor
         KeyDescriptorType signingKeyDescriptor = new KeyDescriptorType();

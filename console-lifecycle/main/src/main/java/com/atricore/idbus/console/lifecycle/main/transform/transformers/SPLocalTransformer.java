@@ -290,9 +290,8 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
             // signer
             setPropertyRef(spMediator, "signer", signer.getName());
 
-            // By default, we sign request/responses
-            setPropertyValue(spMediator, "enableSignature", true);
-            setPropertyValue(spMediator, "enableSignatureValidation", true);
+            setPropertyValue(spMediator, "signRequests", provider.isSignRequests());
+            setPropertyValue(spMediator, "validateRequestsSignature", provider.isWantSignedRequests());
 
         } else {
             throw new TransformException("No Signer defined for " + sp.getName());

@@ -39,13 +39,21 @@
             <s:CheckBox id="samlBindingSoapCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
         </mx:FormItem>
 
-        <!--mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">
-            <s:CheckBox id="signAuthRequestCheck"/>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">
+            <s:CheckBox id="signAuthnRequestsCheck"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:">
-            <s:CheckBox id="encryptAuthRequestCheck"/>
-        </mx:FormItem-->
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantAssertionSigned')}:">
+            <s:CheckBox id="wantAssertionSignedCheck"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.signRequests')}:">
+            <s:CheckBox id="signRequestsCheck"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantSignedRequests')}:">
+            <s:CheckBox id="wantSignedRequestsCheck"/>
+        </mx:FormItem>
 
         <s:Button id="btnExportMetadata" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'export.metadata')}" enabled="false"/>
     </mx:Form>

@@ -27,10 +27,12 @@ public class IdentityProvider extends FederatedProvider {
 
 	private static final long serialVersionUID = 141137856095909986L;
 
-    private boolean signAuthenticationAssertions;
+    private boolean wantAuthnRequestsSigned;
 
-    private boolean encryptAuthenticationAssertions;
+    private boolean signRequests;
 
+    private boolean wantSignedRequests;
+    
     // RFU
     private AttributeProfile attributeProfile;
 
@@ -60,20 +62,28 @@ public class IdentityProvider extends FederatedProvider {
         throw new UnsupportedOperationException("Cannot change provider role");
     }
 
-    public boolean isSignAuthenticationAssertions() {
-        return signAuthenticationAssertions;
+    public boolean isWantAuthnRequestsSigned() {
+        return wantAuthnRequestsSigned;
     }
 
-    public void setSignAuthenticationAssertions(boolean signAuthenticationAssertions) {
-        this.signAuthenticationAssertions = signAuthenticationAssertions;
+    public void setWantAuthnRequestsSigned(boolean wantAuthnRequestsSigned) {
+        this.wantAuthnRequestsSigned = wantAuthnRequestsSigned;
     }
 
-    public boolean isEncryptAuthenticationAssertions() {
-        return encryptAuthenticationAssertions;
+    public boolean isSignRequests() {
+        return signRequests;
     }
 
-    public void setEncryptAuthenticationAssertions(boolean encryptAuthenticationAssertions) {
-        this.encryptAuthenticationAssertions = encryptAuthenticationAssertions;
+    public void setSignRequests(boolean signRequests) {
+        this.signRequests = signRequests;
+    }
+
+    public boolean isWantSignedRequests() {
+        return wantSignedRequests;
+    }
+
+    public void setWantSignedRequests(boolean wantSignedRequests) {
+        this.wantSignedRequests = wantSignedRequests;
     }
 
     public AttributeProfile getAttributeProfile() {

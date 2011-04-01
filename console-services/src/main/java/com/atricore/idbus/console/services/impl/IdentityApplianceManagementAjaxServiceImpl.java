@@ -810,6 +810,11 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         identityMappingPolicy.setName(IdentityMappingTypeDTO.REMOTE.getDisplayName());
         identityMappingPolicy.setMappingType(IdentityMappingTypeDTO.REMOTE);
         sp.setIdentityMappingPolicy(identityMappingPolicy);
+
+        sp.setSignAuthenticationRequests(true);
+        sp.setWantAssertionSigned(true);
+        sp.setSignRequests(true);
+        sp.setWantSignedRequests(true);
     }
 
     private void createFederatedConnection(IdentityProviderDTO idp, ServiceProviderDTO sp){
@@ -825,6 +830,8 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idpChannelLocation.setContext(sp.getLocation().getContext());
         idpChannelLocation.setUri(sp.getLocation().getUri());
         idpChannel.setLocation(idpChannelLocation);
+        idpChannel.setSignAuthenticationRequests(true);
+        idpChannel.setWantAssertionSigned(true);
 
         ServiceProviderChannelDTO spChannel = new ServiceProviderChannelDTO();
         spChannel.setName(idp.getName() + "-to-" + sp.getName() + "-default-channel");
@@ -837,7 +844,8 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         spChannelLocation.setContext(idp.getLocation().getContext());
         spChannelLocation.setUri(idp.getLocation().getUri());
         spChannel.setLocation(spChannelLocation);
-
+        spChannel.setWantAuthnRequestsSigned(true);
+        
         FederatedConnectionDTO fedConnection = new FederatedConnectionDTO();
         fedConnection.setName(idp.getName().toLowerCase() + "-" + sp.getName().toLowerCase());
         //SETTING ROLE A
@@ -878,7 +886,9 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idp.getActiveProfiles().add(ProfileDTO.SSO);
         idp.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
-        idp.setSignAuthenticationAssertions(true);
+        idp.setWantAuthnRequestsSigned(true);
+        idp.setSignRequests(true);
+        idp.setWantSignedRequests(true);
 
         LocationDTO idpLocation = new LocationDTO();
         idpLocation.setProtocol(iad.getLocation().getProtocol());
