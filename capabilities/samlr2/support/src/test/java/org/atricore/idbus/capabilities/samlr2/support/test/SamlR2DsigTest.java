@@ -3,7 +3,6 @@ package org.atricore.idbus.capabilities.samlr2.support.test;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
-import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.io.IOUtils;
@@ -18,13 +17,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils.*;
-import        org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
+
 import org.w3._2000._09.xmldsig_.ObjectType;
 import org.w3._2000._09.xmldsig_.SignatureType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -64,13 +62,13 @@ public class SamlR2DsigTest {
     @Test
     public void testSignResponse() throws Exception {
         String responseStr = loadResource("/response-001.xml");
-        StatusResponseType response = unmarshallSamlR2Response(responseStr, false);
+        StatusResponseType response = unmarshalSamlR2Response(responseStr, false);
         StatusResponseType signedResponse = signer.sign(response);
 
 
-        String signedResponseStr = marshallSamlR2Response(signedResponse, false);
+        String signedResponseStr = marshalSamlR2Response(signedResponse, false);
 
-        signedResponse = unmarshallSamlR2Response(signedResponseStr, false);
+        signedResponse = unmarshalSamlR2Response(signedResponseStr, false);
         RoleDescriptorType md = getRoleDescriptorType();
 
         signer.validate(md, signedResponse);
@@ -83,22 +81,22 @@ public class SamlR2DsigTest {
         String responseStr = loadResource("/response-001.xml");
 
         // Create valid signed response
-        ResponseType response = (ResponseType) unmarshallSamlR2Response(responseStr, false);
+        ResponseType response = (ResponseType) unmarshalSamlR2Response(responseStr, false);
         ResponseType signedResponse = (ResponseType) signer.sign(response);
 
         // Get signature
         SignatureType signature = signedResponse.getSignature();
 
         // Create fake response (with wrapped object)
-        ResponseType fakeResponse = (ResponseType) unmarshallSamlR2Response(responseStr, false);
+        ResponseType fakeResponse = (ResponseType) unmarshalSamlR2Response(responseStr, false);
         fakeResponse.setID("id666");
         fakeResponse.setDestination("New Destination!");
         fakeResponse.setSignature(signature);
 
-        logger.debug("FAKE RESPONSE (1):\n" + marshallSamlR2Response(fakeResponse, false));
+        logger.debug("FAKE RESPONSE (1):\n" + marshalSamlR2Response(fakeResponse, false));
 
         // Wrap valid response in signature object:
-        String signedResponseStr = marshallSamlR2Response(signedResponse, false);
+        String signedResponseStr = marshalSamlR2Response(signedResponse, false);
         JAXBElement e = new JAXBElement(
                 new QName(SAMLR2Constants.SAML_PROTOCOL_NS, "Response"),
                 ResponseType.class,
@@ -113,7 +111,7 @@ public class SamlR2DsigTest {
         // Add signature to fake response
         fakeResponse.setSignature(signature);
 
-        logger.debug("FAKE RESPONSE (2):\n" + marshallSamlR2Response(fakeResponse, false));
+        logger.debug("FAKE RESPONSE (2):\n" + marshalSamlR2Response(fakeResponse, false));
 
         // Validate FAKE Response
         RoleDescriptorType md = getRoleDescriptorType();

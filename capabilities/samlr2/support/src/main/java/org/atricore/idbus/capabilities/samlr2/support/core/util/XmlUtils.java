@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.capabilities.samlr2.support.core.util;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.codec.binary.Base64;
@@ -31,12 +33,16 @@ import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.SSOConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -46,6 +52,8 @@ import java.io.Writer;
  */
 public class XmlUtils {
 
+    // TODO : Convert this class into a component!
+
     private static final Log logger = LogFactory.getLog(XmlUtils.class);
 
     //  -----------------------------------------------------------
@@ -54,15 +62,51 @@ public class XmlUtils {
 
     // SAML 2.0 Request
 
-    public static String marshallSamlR2Request(RequestAbstractType request, boolean encode) throws Exception {
+    public static String marshalSamlR2Request(RequestAbstractType request, boolean encode) throws Exception {
         String type = request.getClass().getSimpleName();
         if (type.endsWith("Type"))
             type = type.substring(0, type.length() - 4);
 
-        return marshallSamlR2Request(request, type, encode);
+        return marshalSamlR2Request(request, type, encode);
     }
 
-    public static String marshallSamlR2Request(RequestAbstractType request, String requestType, boolean encode) throws Exception {
+    public static Document marshalSamlR2RequestAsDom(RequestAbstractType request) throws Exception {
+        String type = request.getClass().getSimpleName();
+        if (type.endsWith("Type"))
+            type = type.substring(0, type.length() - 4);
+
+        return marshalSamlR2RequestAsDom(request, type);
+    }
+
+
+    public static Document marshalSamlR2RequestAsDom(RequestAbstractType request, String requestType) throws Exception {
+
+        // Support IDBus SAMLR2 Extentions when marshalling
+        Document doc = null;
+        if (request.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
+
+            doc = marshalAsDom(
+                    request,
+                    SAMLR2Constants.SAML_IDBUS_NS,
+                    requestType,
+                    new String[]{SAMLR2Constants.SAML_IDBUS_PKG}
+            );
+
+        } else {
+
+            doc = marshalAsDom(
+                    request,
+                    SAMLR2Constants.SAML_PROTOCOL_NS,
+                    requestType,
+                    new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG}
+            );
+        }
+
+        return doc;
+
+    }
+
+    public static String marshalSamlR2Request(RequestAbstractType request, String requestType, boolean encode) throws Exception {
 
         String marshalledRequest ;
         // Support IDBus SAMLR2 Extentions when marshalling
@@ -88,7 +132,8 @@ public class XmlUtils {
         return encode ? new String(new Base64().encode( marshalledRequest.getBytes())) : marshalledRequest;
     }
 
-    public static RequestAbstractType unmarshallSamlR2Request(String request, boolean decode) throws Exception {
+
+    public static RequestAbstractType unmarshalSamlR2Request(String request, boolean decode) throws Exception {
         if (decode)
             request = decode(request);
 
@@ -101,42 +146,81 @@ public class XmlUtils {
     /**
      * This unmarshalls a Base64 SAML Request
      */
-    public static RequestAbstractType unmarshallSamlR2Request(String base64Request) throws Exception {
-        return unmarshallSamlR2Request(base64Request, true);
+    public static RequestAbstractType unmarshalSamlR2Request(String base64Request) throws Exception {
+        return unmarshalSamlR2Request(base64Request, true);
     }
+
+    public static RequestAbstractType unmarshalSamlR2Request(Document doc) throws Exception {
+        return (RequestAbstractType) unmarshal(doc, new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG,
+                SAMLR2Constants.SAML_IDBUS_PKG });
+
+    }
+
 
 
     // SAML 2.0 Response
 
-    public static String marshallSamlR2Response(StatusResponseType response,
-                                     boolean encode) throws Exception {
+    public static Document marshalSamlR2ResponseAsDom(StatusResponseType response) throws Exception {
+
         String type = response.getClass().getSimpleName();
         if (type.endsWith("Type"))
             type = type.substring(0, type.length() - 4);
 
-        return marshallSamlR2Response(response, type, encode);
+        return marshalSamlR2ResponseAsDom(response, type);
     }
 
-    public static String marshallSamlR2Response(StatusResponseType response,
-                                     String responseType, boolean encode) throws Exception {
+
+    public static String marshalSamlR2Response(StatusResponseType response,
+                                               boolean encode) throws Exception {
+        String type = response.getClass().getSimpleName();
+        if (type.endsWith("Type"))
+            type = type.substring(0, type.length() - 4);
+
+        return marshalSamlR2Response(response, type, encode);
+    }
+
+    public static Document marshalSamlR2ResponseAsDom(StatusResponseType response, String responseType) throws Exception {
+        // Support IDBus SAMLR2 Extentions when marshalling
+        if (response.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
+
+            return  XmlUtils.marshalAsDom(
+                    response,
+                    SAMLR2Constants.SAML_IDBUS_NS,
+                    responseType,
+                    new String[]{SAMLR2Constants.SAML_IDBUS_PKG}
+            );
+        } else {
+            return XmlUtils.marshalAsDom(
+                    response,
+                    SAMLR2Constants.SAML_PROTOCOL_NS,
+                    responseType,
+                    new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG}
+            );
+
+        }
+
+    }
+
+    public static String marshalSamlR2Response(StatusResponseType response,
+                                               String responseType, boolean encode) throws Exception {
 
         String marshalledResponse ;
         // Support IDBus SAMLR2 Extentions when marshalling
         if (response.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
 
-                marshalledResponse = XmlUtils.marshal(
+            marshalledResponse = XmlUtils.marshal(
                     response,
                     SAMLR2Constants.SAML_IDBUS_NS,
                     responseType,
-                    new String[]{ SAMLR2Constants.SAML_IDBUS_PKG }
+                    new String[]{SAMLR2Constants.SAML_IDBUS_PKG}
             );
         } else {
             marshalledResponse = XmlUtils.marshal(
-                response,
-                SAMLR2Constants.SAML_PROTOCOL_NS,
-                responseType,
-                new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG }
-        );
+                    response,
+                    SAMLR2Constants.SAML_PROTOCOL_NS,
+                    responseType,
+                    new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG}
+            );
 
         }
 
@@ -146,7 +230,7 @@ public class XmlUtils {
     /**
      * This unmarshalls a Base64 SAML Response
      */
-    public static StatusResponseType unmarshallSamlR2Response(String response, boolean decode) throws Exception {
+    public static StatusResponseType unmarshalSamlR2Response(String response, boolean decode) throws Exception {
         if (decode)
             response = decode(response);
         JAXBElement e = (JAXBElement) unmarshal(response,
@@ -155,22 +239,28 @@ public class XmlUtils {
 
     }
 
-    public static StatusResponseType unmarshallSamlR2Response(String base64Response) throws Exception {
-        return unmarshallSamlR2Response(base64Response, true);
+    public static StatusResponseType unmarshalSamlR2Response(String base64Response) throws Exception {
+        return unmarshalSamlR2Response(base64Response, true);
+    }
+
+    public static StatusResponseType unmarshalSamlR2Response(Document doc) throws Exception {
+        return (StatusResponseType ) unmarshal(doc,
+                new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG, SAMLR2Constants.SAML_IDBUS_PKG});
+
 
     }
 
     // SAML EX Request
 
-    public static String marshallSSORequest(SSORequestAbstractType request, boolean encode) throws Exception {
+    public static String marshalSSORequest(SSORequestAbstractType request, boolean encode) throws Exception {
         String type = request.getClass().getSimpleName();
         if (type.endsWith("Type"))
             type = type.substring(0, type.length() - 4);
 
-        return marshallSSORequest(request, type, encode);
+        return marshalSSORequest(request, type, encode);
     }
 
-    public static String marshallSSORequest(SSORequestAbstractType request, String requestType, boolean encode) throws Exception {
+    public static String marshalSSORequest(SSORequestAbstractType request, String requestType, boolean encode) throws Exception {
 
         String marshalledRequest = marshal(
                 request,
@@ -182,7 +272,7 @@ public class XmlUtils {
         return encode ? new String(new Base64().encode( marshalledRequest.getBytes())) : marshalledRequest;
     }
 
-    public static SSORequestAbstractType unmarshallSSORequest(String request, boolean decode) throws Exception {
+    public static SSORequestAbstractType unmarshalSSORequest(String request, boolean decode) throws Exception {
         if (decode)
             request = decode(request);
 
@@ -192,26 +282,26 @@ public class XmlUtils {
 
 
     /**
-     * This unmarshalls a Base64 SAML Request
+     * This unmarshals a Base64 SAML Request
      */
-    public static SSORequestAbstractType unmarshallSSORequest(String base64Request) throws Exception {
-        return unmarshallSSORequest(base64Request, true);
+    public static SSORequestAbstractType unmarshalSSORequest(String base64Request) throws Exception {
+        return unmarshalSSORequest(base64Request, true);
     }
 
 
-    // SAM EX Response
+    // SAML EX Response
 
-    public static String marshallSSOResponse(SSOResponseType response,
-                                     boolean encode) throws Exception {
+    public static String marshalSSOResponse(SSOResponseType response,
+                                            boolean encode) throws Exception {
         String type = response.getClass().getSimpleName();
         if (type.endsWith("Type"))
             type = type.substring(0, type.length() - 4);
 
-        return marshallSSOResponse(response, type, encode);
+        return marshalSSOResponse(response, type, encode);
     }
 
-    public static String marshallSSOResponse(SSOResponseType response,
-                                     String responseType, boolean encode) throws Exception {
+    public static String marshalSSOResponse(SSOResponseType response,
+                                            String responseType, boolean encode) throws Exception {
         String marshalledResponse = XmlUtils.marshal(
                 response,
                 SSOConstants.SSO_PROTOCOL_NS,
@@ -225,7 +315,7 @@ public class XmlUtils {
     /**
      * This unmarshalls a Base64 SAML Response
      */
-    public static SSOResponseType unmarshallSSOResponse(String response, boolean decode) throws Exception {
+    public static SSOResponseType unmarshalSSOResponse(String response, boolean decode) throws Exception {
         if (decode)
             response = decode(response);
         JAXBElement e = (JAXBElement) unmarshal(response, new String[]{ SSOConstants.SSO_PROTOCOL_PKG});
@@ -233,8 +323,8 @@ public class XmlUtils {
 
     }
 
-    public static StatusResponseType unmarshallSSOResponse(String base64Response) throws Exception {
-        return unmarshallSamlR2Response(base64Response, true);
+    public static StatusResponseType unmarshalSSOResponse(String base64Response) throws Exception {
+        return unmarshalSamlR2Response(base64Response, true);
 
     }
 
@@ -245,11 +335,11 @@ public class XmlUtils {
         if (type.endsWith("Type"))
             type = type.substring(0, type.length() - 4);
 
-        return marshallSamlR11Response(response, type, encode);
+        return marshalSamlR11Response(response, type, encode);
     }
 
-    public static String marshallSamlR11Response(oasis.names.tc.saml._1_0.protocol.ResponseType response,
-                                     String responseType, boolean encode) throws Exception {
+    public static String marshalSamlR11Response(oasis.names.tc.saml._1_0.protocol.ResponseType response,
+                                                String responseType, boolean encode) throws Exception {
 
         String marshalledResponse ;
         marshalledResponse = XmlUtils.marshal(
@@ -308,26 +398,112 @@ public class XmlUtils {
 
     // JAXB Generic
 
-    public static String marshal ( Object msg, String msgQName, String msgLocalName, String[] userPackages ) throws Exception {
+    public static String marshal ( Object msg,
+                                   String msgQName,
+                                   String msgLocalName,
+                                   String[] userPackages ) throws Exception {
 
         JAXBContext jaxbContext = createJAXBContext( userPackages );
         JAXBElement jaxbRequest = new JAXBElement( new QName( msgQName, msgLocalName ),
                 msg.getClass(),
                 msg
         );
+
         Writer writer = new StringWriter();
+        XMLStreamWriter xmlStreamWriter = new NamespaceFilterXMLStreamWriter(writer);
 
         // Support XMLDsig
-        jaxbContext.createMarshaller().marshal( jaxbRequest, new NamespaceFilterXMLStreamWriter(writer) );
+        Marshaller m = jaxbContext.createMarshaller();
+
+        // What about non-sun XML Bind stacks!
+        /*
+        m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
+            new NamespacePrefixMapper() {
+
+                @Override
+                public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
+                    if (nsUri.equals(SAMLR2Constants.SAML_PROTOCOL_NS))
+                            return "samlp";
+
+                    return suggestion;
+                }
+            });
+            */
+
+        m.marshal( jaxbRequest, xmlStreamWriter);
 
         return writer.toString();
     }
 
+    public static Document marshalAsDom(Object msg,
+                                        String msgQName,
+                                        String msgLocalName,
+                                        String[] userPackages) throws Exception {
+
+        // JAXB Element
+        JAXBElement jaxbMsg = new JAXBElement( new QName( msgQName, msgLocalName ), msg.getClass(),msg);
+
+        // JAXB Context
+        JAXBContext jaxbContext = createJAXBContext( userPackages );
+
+        // Marshal as string and then parse with DOM ...
+        Marshaller m = jaxbContext.createMarshaller();
+        StringWriter swas = new StringWriter();
+        XMLStreamWriter sw = new NamespaceFilterXMLStreamWriter(swas);
+        m.marshal(jaxbMsg, sw);
+
+        // What about non-sun XML Bind stacks!
+        /*
+        m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
+            new NamespacePrefixMapper() {
+
+                @Override
+                public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
+                    if (nsUri.equals(SAMLR2Constants.SAML_PROTOCOL_NS))
+                            return "samlp";
+
+                    return suggestion;
+                }
+            });
+            */
+
+        // Instantiate the document to be signed
+        javax.xml.parsers.DocumentBuilderFactory dbf =
+                javax.xml.parsers.DocumentBuilderFactory.newInstance();
+
+        // XML Signature needs to be namespace aware
+        dbf.setNamespaceAware(true);
+
+        Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(swas.toString().getBytes()));
+
+        return doc;
+
+
+    }
+
+
 
     public static Object unmarshal( String msg, String userPackages[] ) throws Exception {
         JAXBContext jaxbContext = createJAXBContext( userPackages );
-        return jaxbContext.createUnmarshaller().unmarshal( new StringSource( msg ) );
+        Object o = jaxbContext.createUnmarshaller().unmarshal( new StringSource( msg ) );
+
+        if (o instanceof JAXBElement)
+            return ((JAXBElement) o).getValue();
+
+        return o;
+
     }
+
+    public static Object unmarshal( Document doc, String userPackages[] ) throws Exception {
+        JAXBContext jaxbContext = createJAXBContext( userPackages );
+        Object o = jaxbContext.createUnmarshaller().unmarshal( doc );
+
+        if (o instanceof JAXBElement)
+            return ((JAXBElement) o).getValue();
+
+        return o;
+    }
+
 
     public static JAXBContext createJAXBContext ( String[] userPackages ) throws JAXBException {
         StringBuilder packages = new StringBuilder();
@@ -339,4 +515,7 @@ public class XmlUtils {
     }
 
 
+    public static Document marshalSamlR2AssertionAsDom(AssertionType assertion) throws Exception {
+        return marshalAsDom(assertion, SAMLR2Constants.SAML_ASSERTION_NS, "Assertion", new String[]{SAMLR2Constants.SAML_ASSERTION_PKG});
+    }
 }

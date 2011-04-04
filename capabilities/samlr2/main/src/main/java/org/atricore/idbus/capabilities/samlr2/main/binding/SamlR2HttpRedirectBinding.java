@@ -96,7 +96,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
                 base64SAMLRequest = inflate(base64SAMLRequest, true);
 
                 // SAML Request
-                RequestAbstractType samlRequest = XmlUtils.unmarshallSamlR2Request(base64SAMLRequest, false);
+                RequestAbstractType samlRequest = XmlUtils.unmarshalSamlR2Request(base64SAMLRequest, false);
                 logger.debug("Received SAML Request " + samlRequest.getID());
 
                 // Store relay state to send it back later
@@ -119,7 +119,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
                 // By default, we use inflate/deflate
                 base64SAMLResponse = inflate(base64SAMLResponse, false);
 
-                StatusResponseType samlResponse = XmlUtils.unmarshallSamlR2Response(base64SAMLResponse, true);
+                StatusResponseType samlResponse = XmlUtils.unmarshalSamlR2Response(base64SAMLResponse, true);
                 logger.debug("Received SAML Response " + samlResponse.getID());
                 return new MediationMessageImpl<StatusResponseType>(httpMsg.getMessageId(),
                         samlResponse,
@@ -172,7 +172,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
                 req.setSignature(null);
 
                 // Marshall
-                String s = XmlUtils.marshallSamlR2Request((RequestAbstractType) out.getContent(), element, false);
+                String s = XmlUtils.marshalSamlR2Request((RequestAbstractType) out.getContent(), element, false);
 
                 // Use default DEFLATE (rfc 1951)
                 msgValue = deflate(s, true);
@@ -185,7 +185,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
                 req.setSignature(null);
 
                 // Marshall
-                String s = XmlUtils.marshallSamlR2Response((StatusResponseType) out.getContent(), element, false);
+                String s = XmlUtils.marshalSamlR2Response((StatusResponseType) out.getContent(), element, false);
 
                 // Use default DEFLATE (rfc 1951)
                 msgValue = deflate(s, true);

@@ -86,7 +86,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             if (base64SAMLRequest != null) {
 
                 // SAML Request
-                RequestAbstractType samlRequest = XmlUtils.unmarshallSamlR2Request(base64SAMLRequest, true);
+                RequestAbstractType samlRequest = XmlUtils.unmarshalSamlR2Request(base64SAMLRequest, true);
                 logger.debug("Received SAML Request " + samlRequest.getID());
 
                 // Store relay state to send it back later
@@ -105,7 +105,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             } else {
 
                 // SAML Response
-                StatusResponseType samlResponse = XmlUtils.unmarshallSamlR2Response(base64SAMLResponse, true);
+                StatusResponseType samlResponse = XmlUtils.unmarshalSamlR2Response(base64SAMLResponse, true);
                 logger.debug("Received SAML Response " + samlResponse.getID());
                 return new MediationMessageImpl<StatusResponseType>(httpMsg.getMessageId(),
                         samlResponse,
@@ -153,10 +153,10 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
 
             if (out.getContent() instanceof RequestAbstractType) {
                 msgName = "SAMLRequest";
-                msgValue = XmlUtils.marshallSamlR2Request((RequestAbstractType) out.getContent(), element, true);
+                msgValue = XmlUtils.marshalSamlR2Request((RequestAbstractType) out.getContent(), element, true);
             } else if (out.getContent() instanceof StatusResponseType) {
                 msgName = "SAMLResponse";
-                msgValue = XmlUtils.marshallSamlR2Response((StatusResponseType) out.getContent(), element, true);
+                msgValue = XmlUtils.marshalSamlR2Response((StatusResponseType) out.getContent(), element, true);
 
                 StatusResponseType samlResponse = (StatusResponseType) out.getContent();
                 if (samlResponse.getInResponseTo() != null) {
@@ -171,7 +171,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             } else if (out.getContent() instanceof oasis.names.tc.saml._1_0.protocol.ResponseType) {
                 // Marshal SAML 1.1 Response
                 msgName = "SAMLResponse";
-                msgValue = XmlUtils.marshallSamlR11Response((oasis.names.tc.saml._1_0.protocol.ResponseType) out.getContent(), element, true);
+                msgValue = XmlUtils.marshalSamlR11Response((oasis.names.tc.saml._1_0.protocol.ResponseType) out.getContent(), element, true);
             }
 
             if (!(msgValue instanceof String)) {

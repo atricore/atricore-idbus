@@ -92,10 +92,10 @@ public class SamlR2LogMessageBuilder implements LogMessageBuilder {
             Object content = samlMsg.getMessage().getContent();
 
             if (content instanceof RequestAbstractType) {
-                logMsg.append(XmlUtils.marshallSamlR2Request((RequestAbstractType) content, false));
+                logMsg.append(XmlUtils.marshalSamlR2Request((RequestAbstractType) content, false));
 
             } else if (content instanceof StatusResponseType) {
-                logMsg.append(XmlUtils.marshallSamlR2Response((StatusResponseType) content, false));
+                logMsg.append(XmlUtils.marshalSamlR2Response((StatusResponseType) content, false));
 
             } else if (content instanceof SamlR2ClaimsRequest) {
 

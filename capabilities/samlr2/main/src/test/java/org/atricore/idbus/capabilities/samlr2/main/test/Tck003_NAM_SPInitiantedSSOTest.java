@@ -114,7 +114,7 @@ public class Tck003_NAM_SPInitiantedSSOTest extends SamlR2TestSupport {
         nameIdPolicy.setAllowCreate(true);
         req.setNameIDPolicy(nameIdPolicy);
 
-        String base64Req = XmlUtils.marshallSamlR2Request(req, true);
+        String base64Req = XmlUtils.marshalSamlR2Request(req, true);
 
         // POST 
         PostMethod post = new PostMethod("http://nam01.dev.atricore.com:8080/nidp/saml2/sso");

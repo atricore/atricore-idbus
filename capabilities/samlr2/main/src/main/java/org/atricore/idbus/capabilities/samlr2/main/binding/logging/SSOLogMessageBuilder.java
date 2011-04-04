@@ -61,10 +61,10 @@ public class SSOLogMessageBuilder implements LogMessageBuilder {
 
 
             if (content instanceof SSORequestAbstractType) {
-                logMsg.append(XmlUtils.marshallSSORequest((SSORequestAbstractType) content, false));
+                logMsg.append(XmlUtils.marshalSSORequest((SSORequestAbstractType) content, false));
 
             } else if (content instanceof SSOResponseType) {
-                logMsg.append(XmlUtils.marshallSSOResponse((SSOResponseType) content, false));
+                logMsg.append(XmlUtils.marshalSSOResponse((SSOResponseType) content, false));
 
             } else if (content == null) {
                 logger.debug("No Message content");

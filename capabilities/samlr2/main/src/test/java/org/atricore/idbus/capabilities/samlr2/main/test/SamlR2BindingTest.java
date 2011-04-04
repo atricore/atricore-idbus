@@ -198,7 +198,7 @@ public class SamlR2BindingTest extends SamlR2TestSupport {
         HttpClient client = new HttpClient();
 
         PostMethod post = new PostMethod ("http://localhost:8181/IDBUS/IDP-1/NMI/POST");
-        post.addParameter("SAMLRequest", XmlUtils.marshallSamlR2Request(req, true));
+        post.addParameter("SAMLRequest", XmlUtils.marshalSamlR2Request(req, true));
         post.addParameter("RelayState", "23058208054820&8");
 
         int status = client.executeMethod(post);

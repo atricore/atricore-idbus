@@ -21,7 +21,6 @@
 
 package org.atricore.idbus.capabilities.samlr2.support.core.signature;
 
-import oasis.names.tc.saml._1_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.metadata.KeyDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
@@ -157,37 +156,23 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             if (logger.isDebugEnabled())
                 logger.debug("Marshalling SAMLR2 Assertion to DOM Tree [" + assertion.getID() + "]");
 
-            // Instantiate the document to be signed
-            javax.xml.parsers.DocumentBuilderFactory dbf =
-                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
-
-            // XML Signature needs to be namespace aware
-            dbf.setNamespaceAware(true);
-
-            javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
-            org.w3c.dom.Document doc = db.newDocument();
-
-            JAXBContext context = JAXBContext.newInstance(SAMLR2Constants.SAML_ASSERTION_PKG,
-                    assertion.getClass().getClassLoader());
-
-            Marshaller m = context.createMarshaller();
-            JAXBElement<AssertionType> jaxbAssertion = new JAXBElement<AssertionType>(new QName(SAMLR2Constants.SAML_ASSERTION_NS, "Assertion"), AssertionType.class, assertion);
-            m.marshal(jaxbAssertion, doc);
+            Document doc = XmlUtils.marshalAsDom(assertion,
+                    SAMLR2Constants.SAML_ASSERTION_NS,
+                    "Assertion",
+                    new String[] {SAMLR2Constants.SAML_ASSERTION_PKG});
 
             doc = sign(doc, assertion.getID());
-
-            // Unmarshall the assertion
-            Unmarshaller u = context.createUnmarshaller();
-            jaxbAssertion = (JAXBElement<AssertionType>) u.unmarshal(doc);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Assertion from DOM Tree [" + assertion.getID() + "]");
 
-            return jaxbAssertion.getValue();
+            return (AssertionType) XmlUtils.unmarshal(doc, new String[] {SAMLR2Constants.SAML_ASSERTION_PKG});
 
         } catch (JAXBException e) {
             throw new SamlR2SignatureException("JAXB Error signing SAMLR2 Assertion " + assertion.getID(), e);
         } catch (ParserConfigurationException e) {
+            throw new SamlR2SignatureException("XML Parser Error signing SAMLR2 Assertion " + assertion.getID(), e);
+        } catch (Exception e) {
             throw new SamlR2SignatureException("XML Parser Error signing SAMLR2 Assertion " + assertion.getID(), e);
         }
 
@@ -196,43 +181,17 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     public void validate(RoleDescriptorType md, AssertionType assertion) throws SamlR2SignatureException, SamlR2SignatureValidationException {
 
+        if (logger.isDebugEnabled())
+            logger.debug("Marshalling SAMLR2 Assertion to DOM Tree [" + assertion.getID() + "]");
+
+
         try {
-            // Marshall the Assertion object as a DOM tree:
-            if (logger.isDebugEnabled())
-                logger.debug("Marshalling SAMLR2 Assertion to DOM Tree [" + assertion.getID() + "]");
-
-            // Instantiate the document to be signed
-            javax.xml.parsers.DocumentBuilderFactory dbf =
-                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
-
-            // XML Signature needs to be namespace aware
-            dbf.setNamespaceAware(true);
-
-            JAXBContext context = JAXBContext.newInstance(SAMLR2Constants.SAML_ASSERTION_PKG,
-                    assertion.getClass().getClassLoader());
-
-            Marshaller m = context.createMarshaller();
-            JAXBElement<AssertionType> jaxbAssertion = new JAXBElement<AssertionType>(new QName(SAMLR2Constants.SAML_ASSERTION_NS, "Assertion"), AssertionType.class, assertion);
-            StringWriter swas = new StringWriter();
-            XMLStreamWriter sw = new NamespaceFilterXMLStreamWriter(swas);
-            m.marshal(jaxbAssertion, sw);
-
-            Document doc =
-                    dbf.newDocumentBuilder().parse(new ByteArrayInputStream(swas.toString().getBytes()));
-
+            Document doc  = XmlUtils.marshalSamlR2AssertionAsDom(assertion);
             validate(md, doc);
-
-        } catch (JAXBException e) {
-            throw new SamlR2SignatureException("JAXB Error verifying SAMLR2 Assertion signature " + assertion.getID(), e);
-        } catch (ParserConfigurationException e) {
-            throw new SamlR2SignatureException("XML Parser Error verifying SAMLR2 Assertion signature " + assertion.getID(), e);
-        } catch (IOException e) {
-            throw new SamlR2SignatureException("I/O Error verifying SAMLR2 Assertion signature " + assertion.getID(), e);
-        } catch (SAXException e) {
-            throw new SamlR2SignatureException("XML Parser Error verifying SAMLR2 Assertion signature " + assertion.getID(), e);
-        } catch (XMLStreamException e) {
-            throw new SamlR2SignatureException("XML Parser Error verifying SAMLR2 Assertion signature " + assertion.getID(), e);
+        } catch (Exception e) {
+            throw new SamlR2SignatureValidationException(e);
         }
+
     }
 
     public RequestAbstractType sign(RequestAbstractType request) throws SamlR2SignatureException {
@@ -242,22 +201,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             if (logger.isDebugEnabled())
                 logger.debug("Marshalling SAMLR2 Status Request to DOM Tree [" + request.getID() + "]");
 
-            // Instantiate the document to be signed
-            javax.xml.parsers.DocumentBuilderFactory dbf =
-                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
-
-            // XML Signature needs to be namespace aware
-            dbf.setNamespaceAware(true);
-
-            javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
-            org.w3c.dom.Document doc = db.newDocument();
-
-            JAXBContext context = XmlUtils.createSamlR2JAXBContext(request);
-            Marshaller m = context.createMarshaller();
-
-            JAXBElement<RequestAbstractType> jaxbRequest = XmlUtils.createJAXBelement(request);
-
-            m.marshal(jaxbRequest, doc);
+            org.w3c.dom.Document doc = XmlUtils.marshalSamlR2RequestAsDom(request);
 
             doc = sign(doc, request.getID());
 
@@ -265,13 +209,14 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                 logger.debug("Unmarshalling SAMLR2 Status Response from DOM Tree [" + request.getID() + "]");
 
             // Unmarshall the assertion
-            Unmarshaller u = context.createUnmarshaller();
-            jaxbRequest = (JAXBElement<RequestAbstractType>) u.unmarshal(doc);
 
-            return jaxbRequest.getValue();
+            return XmlUtils.unmarshalSamlR2Request(doc);
+
         } catch (JAXBException e) {
             throw new SamlR2SignatureException("JAXB Error signing SAMLR2 Response " + request.getID(), e);
         } catch (ParserConfigurationException e) {
+            throw new SamlR2SignatureException("XML Parser Error signing SAMLR2 Response " + request.getID(), e);
+        } catch (Exception e) {
             throw new SamlR2SignatureException("XML Parser Error signing SAMLR2 Response " + request.getID(), e);
         }
     }
@@ -279,60 +224,34 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
     public StatusResponseType sign(StatusResponseType response) throws SamlR2SignatureException {
         try {
 
+            // TODO : Support other responses
+            if (!(response instanceof ResponseType))
+                throw new SamlR2SignatureException("Unsuported response type : " + response.getClass().getName());
+
+
             // Marshall the Assertion object as a DOM tree:
             if (logger.isDebugEnabled())
                 logger.debug("Marshalling SAMLR2 Status Response to DOM Tree [" + response.getID() + "]");
 
-            // Instantiate the document to be signed
-            javax.xml.parsers.DocumentBuilderFactory dbf =
-                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
+            Document doc = XmlUtils.marshalAsDom(response,
+                    SAMLR2Constants.SAML_PROTOCOL_NS,
+                    "Response",
+                    new String[]{
+                            SAMLR2Constants.SAML_PROTOCOL_PKG,
+                            SAMLR2Constants.SAML_ASSERTION_PKG});
 
-            // XML Signature needs to be namespace aware
-            dbf.setNamespaceAware(true);
-
-            javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
-
-            JAXBContext context = JAXBContext.newInstance(SAMLR2Constants.SAML_PROTOCOL_PKG,
-                    response.getClass().getClassLoader());
-
-            Marshaller m = context.createMarshaller();
-
-            Class<StatusResponseType> clazz = (Class<StatusResponseType>) response.getClass();
-
-            // Remove the 'Type' suffix from the xml type name and use it as XML element!
-            XmlType t = clazz.getAnnotation(XmlType.class);
-            String element = t.name().substring(0, t.name().length() - 4);
-
-            JAXBElement<StatusResponseType> jaxbResponse = new JAXBElement<StatusResponseType>(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, element), clazz, response);
-
-            // remove prefixes from signature elements of embedded signed assertion so that signature validation -
-            // which removes those prefixes - doesn't fail
-            StringWriter swrsp = new StringWriter();
-            XMLStreamWriter sw = new NamespaceFilterXMLStreamWriter(swrsp);
-            m.marshal(jaxbResponse, sw);
-
-            Document doc =
-                    dbf.newDocumentBuilder().parse(new ByteArrayInputStream(swrsp.toString().getBytes()));
 
             doc = sign(doc, response.getID());
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Status Response from DOM Tree [" + response.getID() + "]");
 
-            // Unmarshall the assertion
-            Unmarshaller u = context.createUnmarshaller();
-            jaxbResponse = (JAXBElement<StatusResponseType>) u.unmarshal(doc);
+            // Unmarshall the response
+            return XmlUtils.unmarshalSamlR2Response(doc);
 
-            return jaxbResponse.getValue();
-        } catch (JAXBException e) {
-            throw new SamlR2SignatureException("JAXB Error signing SAMLR2 Response " + response.getID(), e);
-        } catch (ParserConfigurationException e) {
-            throw new SamlR2SignatureException("XML Parser Error signing SAMLR2 Response " + response.getID(), e);
-        } catch (XMLStreamException e) {
-            throw new SamlR2SignatureException("XML Parser Error signing SAMLR2 Response " + response.getID(), e);
-        } catch (IOException e) {
-            throw new SamlR2SignatureException("I/O Error signing SAMLR2 Response " + response.getID(), e);
-        } catch (SAXException e) {
+
+
+        } catch (Exception e) {
             throw new SamlR2SignatureException("XML Parser Error signing SAMLR2 Response " + response.getID(), e);
         }
     }
@@ -344,14 +263,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             if (logger.isDebugEnabled())
                 logger.debug("Marshalling SAMLR2 Status Response to DOM Tree [" + response.getID() + "]");
 
-            // Instantiate the document to be signed
-            javax.xml.parsers.DocumentBuilderFactory dbf =
-                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
-
-            // XML Signature needs to be namespace aware
-            dbf.setNamespaceAware(true);
-            Document doc =
-                    dbf.newDocumentBuilder().parse(new ByteArrayInputStream(XmlUtils.marshallSamlR2Response(response, false).getBytes()));
+            Document doc = XmlUtils.marshalSamlR2ResponseAsDom(response);
 
             validate(md, doc);
 
@@ -366,19 +278,12 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             if (logger.isDebugEnabled())
                 logger.debug("Marshalling SAMLR2 Status Authn Request to DOM Tree [" + request.getID() + "]");
 
-            // Instantiate the document to be signed
-            javax.xml.parsers.DocumentBuilderFactory dbf =
-                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
-
-            // XML Signature needs to be namespace aware
-            dbf.setNamespaceAware(true);
-            Document doc =
-                    dbf.newDocumentBuilder().parse(new ByteArrayInputStream(XmlUtils.marshallSamlR2Request(request, false).getBytes()));
+            Document doc = XmlUtils.marshalSamlR2RequestAsDom(request);
 
             validate(md, doc);
 
         } catch (Exception e) {
-            throw new SamlR2SignatureException("Error verifying signature for SAMLR2 response" + request.getID(), e);
+            throw new SamlR2SignatureException("Error verifying signature for SAMLR2 authn request " + request.getID(), e);
         }
     }
 
@@ -388,14 +293,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             if (logger.isDebugEnabled())
                 logger.debug("Marshalling SAMLR2 Logout Request to DOM Tree [" + request.getID() + "]");
 
-            // Instantiate the document to be signed
-            javax.xml.parsers.DocumentBuilderFactory dbf =
-                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
-
-            // XML Signature needs to be namespace aware
-            dbf.setNamespaceAware(true);
-            Document doc =
-                    dbf.newDocumentBuilder().parse(new ByteArrayInputStream(XmlUtils.marshallSamlR2Request(request, false).getBytes()));
+            Document doc = XmlUtils.marshalSamlR2RequestAsDom(request);
 
             validate(md, doc);
 
@@ -411,44 +309,11 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             if (logger.isDebugEnabled())
                 logger.debug("Marshalling SAMLR2 ManageNameID to DOM Tree [" + manageNameIDRequest.getID() + "]");
 
-            // Instantiate the document to be signed
-            javax.xml.parsers.DocumentBuilderFactory dbf =
-                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
-
-            // XML Signature needs to be namespace aware
-            dbf.setNamespaceAware(true);
-
-
-            JAXBContext context = JAXBContext.newInstance(SAMLR2Constants.SAML_PROTOCOL_PKG,
-                    manageNameIDRequest.getClass().getClassLoader());
-
-            Marshaller m = context.createMarshaller();
-
-            Class<ManageNameIDRequestType> clazz = (Class<ManageNameIDRequestType>) manageNameIDRequest.getClass();
-
-            // Remove the 'Type' suffix from the xml type name and use it as XML element!
-            XmlType t = clazz.getAnnotation(XmlType.class);
-            String element = t.name().substring(0, t.name().length() - 4);
-
-            JAXBElement<ManageNameIDRequestType> jaxbResponse = new JAXBElement<ManageNameIDRequestType>(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, element), ManageNameIDRequestType.class, manageNameIDRequest);
-            StringWriter swrsp = new StringWriter();
-            XMLStreamWriter sw = new NamespaceFilterXMLStreamWriter(swrsp);
-            m.marshal(jaxbResponse, sw);
-
-            Document doc =
-                    dbf.newDocumentBuilder().parse(new ByteArrayInputStream(swrsp.toString().getBytes()));
+            Document doc = XmlUtils.marshalSamlR2RequestAsDom(manageNameIDRequest);
 
             validate(md, doc);
 
-        } catch (JAXBException e) {
-            throw new SamlR2SignatureException("JAXB Error verifying SAMLR2 Response signature " + manageNameIDRequest.getID(), e);
-        } catch (ParserConfigurationException e) {
-            throw new SamlR2SignatureException("XML Parser Error verifying SAMLR2 Response signature " + manageNameIDRequest.getID(), e);
-        } catch (IOException e) {
-            throw new SamlR2SignatureException("I/O Error verifying SAMLR2 Response signature " + manageNameIDRequest.getID(), e);
-        } catch (SAXException e) {
-            throw new SamlR2SignatureException("XML Parser Error verifying SAMLR2 Response signature " + manageNameIDRequest.getID(), e);
-        } catch (XMLStreamException e) {
+        } catch (Exception e) {
             throw new SamlR2SignatureException("XML Parser Error verifying SAMLR2 Response signature " + manageNameIDRequest.getID(), e);
         }
     }
@@ -460,44 +325,16 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             if (logger.isDebugEnabled())
                 logger.debug("Marshalling SAMLR2 ManageNameIDRequestType to DOM Tree [" + manageNameIDRequest.getID() + "]");
 
-            // Instantiate the document to be signed
-            javax.xml.parsers.DocumentBuilderFactory dbf =
-                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
-
-            // XML Signature needs to be namespace aware
-            dbf.setNamespaceAware(true);
-
-            javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
-            org.w3c.dom.Document doc = db.newDocument();
-
-            JAXBContext context = JAXBContext.newInstance(SAMLR2Constants.SAML_PROTOCOL_PKG,
-                    manageNameIDRequest.getClass().getClassLoader());
-
-            Class<ManageNameIDRequestType> clazz = (Class<ManageNameIDRequestType>) manageNameIDRequest.getClass();
-
-            Marshaller m = context.createMarshaller();
-
-            // Remove the 'Type' suffix from the xml type name and use it as XML element!
-            XmlType t = clazz.getAnnotation(XmlType.class);
-            String element = t.name().substring(0, t.name().length() - 4);
-
-            JAXBElement<ManageNameIDRequestType> jaxbMnidRequest = new JAXBElement<ManageNameIDRequestType>(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, element), clazz, manageNameIDRequest);
-            m.marshal(jaxbMnidRequest, doc);
+            org.w3c.dom.Document doc = XmlUtils.marshalSamlR2RequestAsDom(manageNameIDRequest);
 
             doc = sign(doc, manageNameIDRequest.getID());
-
-            // Unmarshall the assertion
-            Unmarshaller u = context.createUnmarshaller();
-            jaxbMnidRequest = (JAXBElement<ManageNameIDRequestType>) u.unmarshal(doc);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Assertion from DOM Tree [" + manageNameIDRequest.getID() + "]");
 
-            return jaxbMnidRequest.getValue();
+            return (ManageNameIDRequestType) XmlUtils.unmarshal(doc, new String[]{SAMLR2Constants.SAML_PROTOCOL_NS});
 
-        } catch (JAXBException e) {
-            throw new SamlR2SignatureException("JAXB Error signing SAMLR2 Assertion " + manageNameIDRequest.getID(), e);
-        } catch (ParserConfigurationException e) {
+        } catch (Exception e) {
             throw new SamlR2SignatureException("XML Parser Error signing SAMLR2 Assertion " + manageNameIDRequest.getID(), e);
         }
 
@@ -505,7 +342,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     // SAML 1.1
 
-    public ResponseType sign(ResponseType response) throws SamlR2SignatureException {
+    public oasis.names.tc.saml._1_0.protocol.ResponseType sign(oasis.names.tc.saml._1_0.protocol.ResponseType response) throws SamlR2SignatureException {
         try {
 
             // Marshall the Assertion object as a DOM tree:
@@ -526,18 +363,24 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             Marshaller m = context.createMarshaller();
 
-            Class<ResponseType> clazz = (Class<ResponseType>) response.getClass();
+            Class<oasis.names.tc.saml._1_0.protocol.ResponseType> clazz =
+                    (Class<oasis.names.tc.saml._1_0.protocol.ResponseType>) response.getClass();
 
             // Remove the 'Type' suffix from the xml type name and use it as XML element!
             XmlType t = clazz.getAnnotation(XmlType.class);
             String element = t.name().substring(0, t.name().length() - 4);
 
-            JAXBElement<ResponseType> jaxbResponse = new JAXBElement<ResponseType>(new QName(SAMLR11Constants.SAML_PROTOCOL_NS, element), clazz, response);
+            JAXBElement<oasis.names.tc.saml._1_0.protocol.ResponseType> jaxbResponse =
+                    new JAXBElement<oasis.names.tc.saml._1_0.protocol.ResponseType>(
+                            new QName(SAMLR11Constants.SAML_PROTOCOL_NS, element),
+                            clazz,
+                            response);
 
             // remove prefixes from signature elements of embedded signed assertion so that signature validation -
             // which removes those prefixes - doesn't fail
             StringWriter swrsp = new StringWriter();
             XMLStreamWriter sw = new NamespaceFilterXMLStreamWriter(swrsp);
+            // TODO : Use XML Utils!!!!
             m.marshal(jaxbResponse, sw);
 
             Document doc =
@@ -550,7 +393,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             // Unmarshall the assertion
             Unmarshaller u = context.createUnmarshaller();
-            jaxbResponse = (JAXBElement<ResponseType>) u.unmarshal(doc);
+            jaxbResponse = (JAXBElement<oasis.names.tc.saml._1_0.protocol.ResponseType>) u.unmarshal(doc);
 
             return jaxbResponse.getValue();
         } catch (JAXBException e) {

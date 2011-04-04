@@ -61,7 +61,7 @@ public class XmlUtilsTest {
 
         logger.debug("Unmarshalling : \n" + authnReq);
 
-        Object o = XmlUtils.unmarshallSamlR2Request(authnReq, false);
+        Object o = XmlUtils.unmarshalSamlR2Request(authnReq, false);
 
         assert o != null;
         assert o instanceof AuthnRequestType;

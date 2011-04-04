@@ -374,6 +374,7 @@
                             org.apache.cxf.transport.http.policy,
                             org.apache.cxf.workqueue,
                             org.apache.cxf.wsdl11,
+                            org.atricore.idbus.bundles.ehcache,
                             org.springframework.beans.factory.config,
                             org.springframework.jmx; version="${spring.version}",
                             org.springframework.jmx.access; version="${spring.version}",
@@ -384,9 +385,9 @@
                             org.springframework.jmx.export.naming; version="${spring.version}",
                             org.springframework.jmx.export.notification; version="${spring.version}",
                             org.springframework.jmx.support; version="${spring.version}",
+                            org.xml.sax,
                             net.sf.ehcache,
                             net.sf.ehcache.distribution,
-                            org.atricore.idbus.bundles.ehcache,
                             *
                         </Import-Package>
 
