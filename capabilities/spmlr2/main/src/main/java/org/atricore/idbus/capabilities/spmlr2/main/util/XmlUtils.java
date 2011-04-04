@@ -193,6 +193,7 @@ public class XmlUtils {
         for ( String userPackage : userPackages ) {
             packages.append( userPackage ).append( ":" );
         }
+
         // Use our classloader to build JAXBContext so it can find binding classes.
         return JAXBContext.newInstance( packages.toString(), XmlUtils.class.getClassLoader());
     }

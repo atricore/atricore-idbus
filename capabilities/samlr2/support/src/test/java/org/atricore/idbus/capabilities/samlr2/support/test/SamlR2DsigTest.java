@@ -131,8 +131,8 @@ public class SamlR2DsigTest {
 
     protected EntityDescriptorType loadSamlR2Metadata() throws Exception {
         String mdStr = loadResource("/idp1/idp1-samlr2-metadata.xml");
-        JAXBElement e = (JAXBElement) unmarshal(mdStr, new String[] {SAMLR2Constants.SAML_METADATA_PKG});
-        return (EntityDescriptorType) e.getValue();
+
+        return (EntityDescriptorType) unmarshal(mdStr, new String[] {SAMLR2Constants.SAML_METADATA_PKG});
     }
 
     protected String loadResource(String name) throws Exception {

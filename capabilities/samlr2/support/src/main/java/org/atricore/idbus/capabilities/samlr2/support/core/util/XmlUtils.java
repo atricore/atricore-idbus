@@ -137,9 +137,8 @@ public class XmlUtils {
         if (decode)
             request = decode(request);
 
-        JAXBElement e = (JAXBElement) unmarshal(request, new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG,
+        return (RequestAbstractType) unmarshal(request, new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG,
                 SAMLR2Constants.SAML_IDBUS_PKG });
-        return (RequestAbstractType) e.getValue();
     }
 
 
@@ -233,9 +232,9 @@ public class XmlUtils {
     public static StatusResponseType unmarshalSamlR2Response(String response, boolean decode) throws Exception {
         if (decode)
             response = decode(response);
-        JAXBElement e = (JAXBElement) unmarshal(response,
+
+        return (StatusResponseType) unmarshal(response,
                 new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG, SAMLR2Constants.SAML_IDBUS_PKG});
-        return (StatusResponseType) e.getValue();
 
     }
 
@@ -276,8 +275,7 @@ public class XmlUtils {
         if (decode)
             request = decode(request);
 
-        JAXBElement e = (JAXBElement) unmarshal(request, new String[]{ SSOConstants.SSO_PROTOCOL_PKG});
-        return (SSORequestAbstractType) e.getValue();
+        return (SSORequestAbstractType) unmarshal(request, new String[]{ SSOConstants.SSO_PROTOCOL_PKG});
     }
 
 
@@ -318,8 +316,8 @@ public class XmlUtils {
     public static SSOResponseType unmarshalSSOResponse(String response, boolean decode) throws Exception {
         if (decode)
             response = decode(response);
-        JAXBElement e = (JAXBElement) unmarshal(response, new String[]{ SSOConstants.SSO_PROTOCOL_PKG});
-        return (SSOResponseType) e.getValue();
+
+        return (SSOResponseType) unmarshal(response, new String[]{ SSOConstants.SSO_PROTOCOL_PKG});
 
     }
 
