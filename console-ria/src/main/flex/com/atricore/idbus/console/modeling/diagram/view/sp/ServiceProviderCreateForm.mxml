@@ -131,14 +131,14 @@
                     <s:CheckBox id="wantAssertionSignedCheck" selected="true"/>
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.signRequests')}:">
-                    <s:CheckBox id="signRequestsCheck" selected="true"/>
-                </mx:FormItem>
-
                 <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantSignedRequests')}:">
                     <s:CheckBox id="wantSignedRequestsCheck" selected="true"/>
                 </mx:FormItem>
 
+                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.signRequests')}:">
+                    <s:CheckBox id="signRequestsCheck" selected="true"/>
+                </mx:FormItem>
+                
             </s:VGroup>
         </s:NavigatorContent>
 

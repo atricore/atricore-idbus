@@ -162,12 +162,12 @@
                     <s:CheckBox id="wantAuthnRequestsSignedCheck" selected="true"/>
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.signRequests')}:">
-                    <s:CheckBox id="signRequestsCheck" selected="true"/>
-                </mx:FormItem>
-
                 <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantSignedRequests')}:">
                     <s:CheckBox id="wantSignedRequestsCheck" selected="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.signRequests')}:">
+                    <s:CheckBox id="signRequestsCheck" selected="true"/>
                 </mx:FormItem>
 
             </s:VGroup>

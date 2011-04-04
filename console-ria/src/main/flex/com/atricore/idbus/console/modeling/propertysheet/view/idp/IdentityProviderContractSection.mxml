@@ -51,14 +51,14 @@
             <s:CheckBox id="wantAuthnRequestsSignedCheck"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.signRequests')}:">
-            <s:CheckBox id="signRequestsCheck"/>
-        </mx:FormItem>
-
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantSignedRequests')}:">
             <s:CheckBox id="wantSignedRequestsCheck"/>
         </mx:FormItem>
 
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.signRequests')}:">
+            <s:CheckBox id="signRequestsCheck"/>
+        </mx:FormItem>
+        
         <s:Button id="btnExportMetadata" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'export.metadata')}" enabled="false"/>
     </mx:Form>
 </s:Group>
