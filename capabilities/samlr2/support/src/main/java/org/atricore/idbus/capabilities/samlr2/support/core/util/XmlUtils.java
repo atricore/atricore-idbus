@@ -415,20 +415,21 @@ public class XmlUtils {
         // Support XMLDsig
         Marshaller m = jaxbContext.createMarshaller();
 
-        // What about non-sun XML Bind stacks!
-        /*
+        // TODO : What about non-sun XML Bind stacks!
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
             new NamespacePrefixMapper() {
 
                 @Override
                 public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
+
                     if (nsUri.equals(SAMLR2Constants.SAML_PROTOCOL_NS))
                             return "samlp";
+                    else if (nsUri.equals(SAMLR2Constants.SAML_ASSERTION_NS))
+                        return "saml";
 
                     return suggestion;
                 }
             });
-            */
 
         m.marshal( jaxbRequest, xmlStreamWriter);
 
@@ -452,8 +453,7 @@ public class XmlUtils {
         XMLStreamWriter sw = new NamespaceFilterXMLStreamWriter(swas);
         m.marshal(jaxbMsg, sw);
 
-        // What about non-sun XML Bind stacks!
-        /*
+        // TODO : What about non-sun XML Bind stacks!
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
             new NamespacePrefixMapper() {
 
@@ -461,11 +461,13 @@ public class XmlUtils {
                 public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
                     if (nsUri.equals(SAMLR2Constants.SAML_PROTOCOL_NS))
                             return "samlp";
+                    else if (nsUri.equals(SAMLR2Constants.SAML_ASSERTION_NS))
+                        return "saml";
 
                     return suggestion;
                 }
             });
-            */
+
 
         // Instantiate the document to be signed
         javax.xml.parsers.DocumentBuilderFactory dbf =
