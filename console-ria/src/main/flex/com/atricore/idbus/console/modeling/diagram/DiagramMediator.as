@@ -50,6 +50,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityV
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
@@ -63,6 +64,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityP
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
@@ -85,6 +87,7 @@ import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import flash.display.DisplayObject;
@@ -377,6 +380,24 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
 
                         break;
+                    case DiagramElementTypes.SUGAR_CRM_ELEMENT_TYPE:
+                        // assert that source end is an Identity Appliance
+                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
+                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                        var sugarCRMOwnerAppliance:IdentityAppliance = _identityAppliance;
+
+                        var cscrm:CreateSugarCRMElementRequest = new CreateSugarCRMElementRequest(
+                                sugarCRMOwnerAppliance,
+                            //                                        _currentlySelectedNode.stringid
+                                null
+                                );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_SUGAR_CRM_ELEMENT, cscrm);
+                        //                            }
+
+                        break;
                     case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                         var idVaultOwnerAppliance:IdentityAppliance = _identityAppliance;
 
@@ -601,6 +622,15 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_GOOGLE_APPS_ELEMENT, rga);
+                            break;
+                        case DiagramElementTypes.SUGAR_CRM_ELEMENT_TYPE:
+                            var sugarCRMProvider:SugarCRMServiceProvider = _currentlySelectedNode.data as SugarCRMServiceProvider;
+
+                            var rscrm:RemoveSugarCRMElementRequest = new RemoveSugarCRMElementRequest(sugarCRMProvider);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_SUGAR_CRM_ELEMENT, rscrm);
                             break;
                         case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                             var identityVault:EmbeddedIdentitySource = _currentlySelectedNode.data as EmbeddedIdentitySource;
@@ -1036,6 +1066,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.SALESFORCE_ELEMENT_TYPE;
             } else if (node.data is GoogleAppsServiceProvider) {
                 elementType = DiagramElementTypes.GOOGLE_APPS_ELEMENT_TYPE;
+            } else if (node.data is SugarCRMServiceProvider) {
+                elementType = DiagramElementTypes.SUGAR_CRM_ELEMENT_TYPE;
             } else if (node.data is DbIdentitySource) {
                 elementType = DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE;
             } else if (node.data is EmbeddedIdentitySource) {

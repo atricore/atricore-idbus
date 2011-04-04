@@ -45,7 +45,7 @@ public class URLValidator extends Validator	{
 
             var patternResult:Object = pattern.exec(String(value));
 			// run the pattern, but don't error if there is no value and this is not required
-			if (!(!required && value != null) && patternResult == null) {
+			if ((required && value == null) || (value != null && value != "" && patternResult == null)) {
 				results.push(new ValidationResult(true, null, "notURL", resourceManager.getString(AtricoreConsole.BUNDLE, 'error.url.invalid')));
 				return results;
 

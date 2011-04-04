@@ -405,6 +405,53 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
+    public void arrive(SugarCRMServiceProvider node) throws Exception {
+
+        Bean providerBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(providerBean, node.toString());
+
+        setPropertyValue(providerBean, "id", node.getId() + "");
+        setPropertyValue(providerBean, "name", node.getName());
+        setPropertyValue(providerBean, "displayName", node.getDisplayName());
+        setPropertyValue(providerBean, "description", node.getDescription());
+        setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
+        setPropertyValue(providerBean, "remote", node.isRemote());
+
+
+        // Federated Connections
+        if (node.getFederatedConnectionsA() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsA()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsA", fc.getName() );
+            }
+        }
+
+        if (node.getFederatedConnectionsB() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsB()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsB", fc.getName() );
+            }
+        }
+
+        // Location
+        if (node.getLocation() != null)
+            setLocationPropertyValue(providerBean, "location", node.getLocation());
+
+        // Config (assume saml)
+        if (node.getConfig() != null)
+            setSamlR2ConfigurationPropertyValue(providerBean, "config", (SamlR2ProviderConfig) node.getConfig());
+
+        // TODO : node.getMetadata();
+
+        addPropertyBeansAsRefsToSet(applianceDefBean, "providers", providerBean);
+
+
+    }
+
+    @Override
+    public Object[] leave(SugarCRMServiceProvider node, Object[] results) throws Exception {
+        return null;
+    }
+
+    @Override
     public void arrive(JOSSOActivation node) throws Exception {
 
         Bean oldActivationBean = getBean(beans, node.getName());

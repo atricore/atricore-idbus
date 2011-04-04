@@ -76,6 +76,8 @@ import com.atricore.idbus.console.modeling.propertysheet.view.salesforce.Salesfo
 import com.atricore.idbus.console.modeling.propertysheet.view.salesforce.SalesforceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.sugarcrm.SugarCRMContractSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.sugarcrm.SugarCRMCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.xmlidentitysource.XmlIdentitySourceCoreSection;
 import com.atricore.idbus.console.services.dto.AccountLinkEmitterType;
 import com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironment;
@@ -116,6 +118,7 @@ import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
+import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
@@ -171,6 +174,8 @@ public class PropertySheetMediator extends IocMediator {
     private var _salesforceContractSection:SalesforceContractSection;
     private var _googleAppsCoreSection:GoogleAppsCoreSection;
     private var _googleAppsContractSection:GoogleAppsContractSection;
+    private var _sugarCRMCoreSection:SugarCRMCoreSection;
+    private var _sugarCRMContractSection:SugarCRMContractSection;
     private var _embeddedDbVaultCoreSection:EmbeddedDBIdentityVaultCoreSection;
     private var _externalDbVaultCoreSection:ExternalDBIdentityVaultCoreSection;
     private var _ldapIdentitySourceCoreSection:LdapIdentitySourceCoreSection;
@@ -323,6 +328,8 @@ public class PropertySheetMediator extends IocMediator {
                     enableSalesforcePropertyTabs();
                 } else if (_currentIdentityApplianceElement is GoogleAppsServiceProvider) {
                     enableGoogleAppsPropertyTabs();
+                } else if (_currentIdentityApplianceElement is SugarCRMServiceProvider) {
+                    enableSugarCRMPropertyTabs();
                 } else if (_currentIdentityApplianceElement is ExternalIdentityProvider) {
                     enableExternalIdentityProviderPropertyTabs();
                 } else if (_currentIdentityApplianceElement is ExternalServiceProvider) {
@@ -1985,6 +1992,88 @@ public class PropertySheetMediator extends IocMediator {
             if (_applianceSaved) {
                 _googleAppsContractSection.btnExportMetadata.enabled = true;
                 _googleAppsContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+            }
+        }
+    }
+
+    protected function enableSugarCRMPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        // Core Tab
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _sugarCRMCoreSection = new SugarCRMCoreSection();
+        corePropertyTab.addElement(_sugarCRMCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _sugarCRMCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSugarCRMCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSugarCRMCorePropertyTabRollOut);
+
+        // Contract Tab
+        var contractPropertyTab:Group = new Group();
+        contractPropertyTab.id = "propertySheetMetadataSection";
+        contractPropertyTab.name = "Contract";
+        contractPropertyTab.width = Number("100%");
+        contractPropertyTab.height = Number("100%");
+        contractPropertyTab.setStyle("borderStyle", "solid");
+
+        _sugarCRMContractSection = new SugarCRMContractSection();
+        contractPropertyTab.addElement(_sugarCRMContractSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
+        _sugarCRMContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSugarCRMContractPropertyTabCreationComplete);
+    }
+
+    private function handleSugarCRMCorePropertyTabCreationComplete(event:Event):void {
+        var sugarCRMProvider:SugarCRMServiceProvider = _currentIdentityApplianceElement as SugarCRMServiceProvider;
+
+        // if sugarCRMProvider is null that means some other element was selected before completing this
+        if (sugarCRMProvider != null) {
+            // bind view
+            _sugarCRMCoreSection.sugarCRMProviderName.text = sugarCRMProvider.name;
+            _sugarCRMCoreSection.sugarCRMProvDescription.text = sugarCRMProvider.description;
+            _sugarCRMCoreSection.sugarCRMProvUrl.text = sugarCRMProvider.url;
+
+            _sugarCRMCoreSection.sugarCRMProviderName.addEventListener(Event.CHANGE, handleSectionChange);
+            _sugarCRMCoreSection.sugarCRMProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _sugarCRMCoreSection.sugarCRMProvUrl.addEventListener(Event.CHANGE, handleSectionChange);
+
+            //clear all existing validators and add idp core section validators
+            _validators = [];
+            _validators.push(_sugarCRMCoreSection.nameValidator);
+            _validators.push(_sugarCRMCoreSection.urlValidator);
+        }
+    }
+
+    private function handleSugarCRMCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+
+            var sugarCRMProvider:SugarCRMServiceProvider = _currentIdentityApplianceElement as SugarCRMServiceProvider;
+
+            sugarCRMProvider.name = _sugarCRMCoreSection.sugarCRMProviderName.text;
+            sugarCRMProvider.description = _sugarCRMCoreSection.sugarCRMProvDescription.text;
+            sugarCRMProvider.url = _sugarCRMCoreSection.sugarCRMProvUrl.text;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }
+
+    private function handleSugarCRMContractPropertyTabCreationComplete(event:Event):void {
+        var sugarCRMProvider:SugarCRMServiceProvider = _currentIdentityApplianceElement as SugarCRMServiceProvider;
+
+        // if sugarCRMProvider is null that means some other element was selected before completing this
+        if (sugarCRMProvider != null) {
+            if (_applianceSaved) {
+                _sugarCRMContractSection.btnExportMetadata.enabled = true;
+                _sugarCRMContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
             }
         }
     }
@@ -5145,6 +5234,8 @@ public class PropertySheetMediator extends IocMediator {
             _salesforceContractSection.btnExportMetadata.enabled = false;
         if (_googleAppsContractSection != null)
             _googleAppsContractSection.btnExportMetadata.enabled = false;
+        if (_sugarCRMContractSection != null)
+            _sugarCRMContractSection.btnExportMetadata.enabled = false;
     }
 
     private function handleHostChange(execEnvView:Object):void {

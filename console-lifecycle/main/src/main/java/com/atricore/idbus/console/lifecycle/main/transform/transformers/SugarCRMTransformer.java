@@ -1,8 +1,5 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
@@ -12,11 +9,11 @@ import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Description;
+import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
-import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedRemoteProviderImpl;
 import org.atricore.idbus.kernel.main.util.HashGenerator;
@@ -28,25 +25,19 @@ import java.util.Date;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
-/**
- * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
- */
-public class SPExternalTransformer extends AbstractTransformer {
+public class SugarCRMTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(SPExternalTransformer.class);
+    private static final Log logger = LogFactory.getLog(SugarCRMTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof ExternalServiceProvider &&
-                !(event.getData() instanceof SalesforceServiceProvider ||
-                event.getData() instanceof GoogleAppsServiceProvider ||
-                event.getData() instanceof SugarCRMServiceProvider);
+        return event.getData() instanceof SugarCRMServiceProvider;
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
 
-        ExternalServiceProvider provider = (ExternalServiceProvider) event.getData();
+        SugarCRMServiceProvider provider = (SugarCRMServiceProvider) event.getData();
 
         Date now = new Date();
 
@@ -65,12 +56,12 @@ public class SPExternalTransformer extends AbstractTransformer {
         event.getContext().put("spBeans", spBeans);
 
         if (logger.isDebugEnabled())
-            logger.debug("Generating SP " + provider.getName() + " configuration model");
+            logger.debug("Generating SugarCRM " + provider.getName() + " configuration model");
 
         // Define all required beans! (We can break down this in the future ...)
 
         // ----------------------------------------
-        // Service Provider
+        // SugarCRM Provider
         // ----------------------------------------
 
         Bean sp = newBean(spBeans, normalizeBeanName(provider.getName()),
@@ -89,15 +80,23 @@ public class SPExternalTransformer extends AbstractTransformer {
             setPropertyRef(sp, "circleOfTrust", cot.getName());
         }
 
+        // metadata file
+        EntityDescriptorType ed;
+        try {
+            ed = MetadataUtil.createSugarCRMDescriptor(provider);
+
+            IdProjectResource<EntityDescriptorType> spMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
+                idauPath + sp.getName(), sp.getName(), "saml2", ed);
+            spMetadata.setClassifier("jaxb");
+            event.getContext().getCurrentModule().addResource(spMetadata);
+
+        } catch (Exception e) {
+            throw new TransformException("Error creating SugarCRM entity descriptor for '" + provider.getName() + "'", e);
+        }
+
         // ResourceCircleOfTrustMemberDescriptor
         Bean spMd = newBean(spBeans, sp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
-        String alias;
-        try {
-            MetadataDefinition md = MetadataUtil.loadMetadataDefinition(provider.getMetadata().getValue());
-            alias = MetadataUtil.findEntityId(md);
-        } catch (Exception e) {
-            throw new TransformException("Error loading metadata definition for " + provider.getName());
-        }
+        String alias = ed.getEntityID();
         try {
             setPropertyValue(spMd, "id", HashGenerator.sha1(alias));
         } catch (UnsupportedEncodingException e) {
@@ -110,23 +109,16 @@ public class SPExternalTransformer extends AbstractTransformer {
 
         // members
         addPropertyBeansAsRefs(sp, "members", spMd);
-
-        // metadata file
-        IdProjectResource<byte[]> metadataResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                idauPath + sp.getName() + "/", sp.getName() + "-samlr2-metadata.xml",
-                "binary", provider.getMetadata().getValue());
-        metadataResource.setClassifier("byte");
-        event.getContext().getCurrentModule().addResource(metadataResource);
     }
 
     @Override
     public Object after(TransformEvent event) throws TransformException {
 
-        ExternalServiceProvider provider = (ExternalServiceProvider) event.getData();
+        SugarCRMServiceProvider provider = (SugarCRMServiceProvider) event.getData();
         IdProjectModule module = event.getContext().getCurrentModule();
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans spBeans = (Beans) event.getContext().get("spBeans");
-        
+
         Bean spBean = getBeansOfType(spBeans, FederatedRemoteProviderImpl.class.getName()).iterator().next();
 
         // Wire provider to COT

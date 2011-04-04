@@ -44,6 +44,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 new PaletteEntry("Google Apps", EmbeddedIcons.googleAppsMiniIcon, "Google Apps Entry", DiagramElementTypes.GOOGLE_APPS_ELEMENT_TYPE)
 
                 );
+        cloudPaletteDrawer.add(
+                new PaletteEntry("SugarCRM", EmbeddedIcons.sugarCRMMiniIcon, "SugarCRM Entry", DiagramElementTypes.SUGAR_CRM_ELEMENT_TYPE)
+
+                );
 
         pr.add(cloudPaletteDrawer);
 

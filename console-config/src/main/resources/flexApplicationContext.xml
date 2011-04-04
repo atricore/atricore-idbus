@@ -63,6 +63,7 @@
         <property name="externalIdentityProviderCreateMediator" ref="externalIdentityProviderCreateMediator"/>
         <property name="salesforceCreateMediator" ref="salesforceCreateMediator"/>
         <property name="googleAppsCreateMediator" ref="googleAppsCreateMediator"/>
+        <property name="sugarCRMCreateMediator" ref="sugarCRMCreateMediator"/>
         <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator"/>
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator"/>
@@ -605,6 +606,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.googleapps.GoogleAppsCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="sugarCRMCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.sugarcrm.SugarCRMCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="activationCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -803,6 +808,7 @@
         <property name="externalServiceProviderMediator" ref="externalServiceProviderCreateMediator"/>
         <property name="salesforceMediator" ref="salesforceCreateMediator"/>
         <property name="googleAppsMediator" ref="googleAppsCreateMediator"/>
+        <property name="sugarCRMMediator" ref="sugarCRMCreateMediator"/>
         <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
         <!--<property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>-->
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>

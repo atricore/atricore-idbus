@@ -73,6 +73,8 @@ import com.atricore.idbus.console.modeling.diagram.view.salesforce.SalesforceCre
 import com.atricore.idbus.console.modeling.diagram.view.salesforce.SalesforceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.sugarcrm.SugarCRMCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.sugarcrm.SugarCRMCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateMediator;
 import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardView;
@@ -110,6 +112,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _externalServiceProviderMediator:ExternalServiceProviderCreateMediator;
     private var _salesforceMediator:SalesforceCreateMediator;
     private var _googleAppsMediator:GoogleAppsCreateMediator;
+    private var _sugarCRMMediator:SugarCRMCreateMediator;
     private var _identityVaultCreateMediator:IdentityVaultCreateMediator;
     private var _dbIdentitySourceCreateMediator:DbIdentitySourceCreateMediator;
     private var _ldapIdentitySourceCreateMediator:LdapIdentitySourceCreateMediator;
@@ -146,6 +149,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _externalServiceProviderCreateForm:ExternalServiceProviderCreateForm;
     private var _salesforceCreateForm:SalesforceCreateForm;
     private var _googleAppsCreateForm:GoogleAppsCreateForm;
+    private var _sugarCRMCreateForm:SugarCRMCreateForm;
     private var _identityVaultCreateForm:IdentityVaultCreateForm;
     private var _dbIdentitySourceCreateForm:DbIdentitySourceCreateForm;
     private var _ldapIdentitySourceCreateForm:LdapIdentitySourceCreateForm;
@@ -253,6 +257,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set googleAppsMediator(value:GoogleAppsCreateMediator):void {
         _googleAppsMediator = value;
+    }
+
+    public function get sugarCRMMediator():SugarCRMCreateMediator {
+        return _sugarCRMMediator;
+    }
+
+    public function set sugarCRMMediator(value:SugarCRMCreateMediator):void {
+        _sugarCRMMediator = value;
     }
 
     public function get identityVaultCreateMediator():IdentityVaultCreateMediator {
@@ -621,6 +633,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleGoogleAppsCreateFormCreated(event:FlexEvent):void {
         googleAppsMediator.setViewComponent(_googleAppsCreateForm);
         googleAppsMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateSugarCRMWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createSugarCRMCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.sugarcrm");
+        _popup.width = 410;
+        _popup.height = 170;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_sugarCRMCreateForm);
+    }
+
+    private function createSugarCRMCreateForm():void {
+        _sugarCRMCreateForm = new SugarCRMCreateForm();
+        _sugarCRMCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleSugarCRMCreateFormCreated);
+    }
+
+    private function handleSugarCRMCreateFormCreated(event:FlexEvent):void {
+        sugarCRMMediator.setViewComponent(_sugarCRMCreateForm);
+        sugarCRMMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateIdentityVaultWindow(notification:INotification):void {

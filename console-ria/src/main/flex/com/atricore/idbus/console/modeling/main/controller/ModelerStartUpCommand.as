@@ -25,6 +25,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _externalServiceProviderCreateMediator:IIocMediator;
     private var _salesforceCreateMediator:IIocMediator;
     private var _googleAppsCreateMediator:IIocMediator;
+    private var _sugarCRMCreateMediator:IIocMediator;
     private var _identityVaultCreateMediator:IIocMediator;
     private var _dbIdentitySourceCreateMediator:IIocMediator;
     private var _ldapIdentitySourceCreateMediator:IIocMediator;
@@ -107,6 +108,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(externalServiceProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(salesforceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(googleAppsCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(sugarCRMCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(identityVaultCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(dbIdentitySourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(ldapIdentitySourceCreateMediator.getConfigName());
@@ -250,6 +252,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set googleAppsCreateMediator(value:IIocMediator):void {
         _googleAppsCreateMediator = value;
+    }
+
+    public function get sugarCRMCreateMediator():IIocMediator {
+        return _sugarCRMCreateMediator;
+    }
+
+    public function set sugarCRMCreateMediator(value:IIocMediator):void {
+        _sugarCRMCreateMediator = value;
     }
 
     public function get identityVaultCreateMediator():IIocMediator {

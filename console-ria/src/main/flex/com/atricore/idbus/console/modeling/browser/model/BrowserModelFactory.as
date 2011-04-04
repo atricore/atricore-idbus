@@ -49,6 +49,7 @@ import com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
@@ -121,6 +122,8 @@ public class BrowserModelFactory {
                 providerNode.icon = EmbeddedIcons.salesforceMiniIcon;
             } else if (provider is GoogleAppsServiceProvider) {
                 providerNode.icon = EmbeddedIcons.googleAppsMiniIcon;
+            } else if (provider is SugarCRMServiceProvider) {
+                providerNode.icon = EmbeddedIcons.sugarCRMMiniIcon;
             } else if (provider is BindingProvider) {
                 providerNode.icon = EmbeddedIcons.bpMiniIcon;
             }

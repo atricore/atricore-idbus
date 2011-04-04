@@ -71,6 +71,9 @@
     <bean name="googleAppsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.GoogleAppsTransformer"/>
 
+    <bean name="sugarCRMTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SugarCRMTransformer"/>
+
     <bean name="spDefaultIdPChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPDefaultIdPChannelTransformer"/>
     
@@ -329,6 +332,7 @@
                                         <ref bean="spLocalTransformer"/>
                                         <ref bean="salesforceTransformer"/>
                                         <ref bean="googleAppsTransformer"/>
+                                        <ref bean="sugarCRMTransformer"/>
                                         <ref bean="spExternalTransformer"/>
                                         <ref bean="spDefaultIdPChannelTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>

@@ -92,6 +92,18 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;
     }
 
+    public void arrive(SugarCRMServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(SugarCRMServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(SugarCRMServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
     public void arrive(IdentityProviderChannel node) throws Exception {
         
     }

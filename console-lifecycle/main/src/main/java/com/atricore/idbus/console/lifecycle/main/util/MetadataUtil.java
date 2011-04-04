@@ -23,10 +23,12 @@ package com.atricore.idbus.console.lifecycle.main.util;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IndexedEndpointType;
 import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.SSODescriptorType;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
@@ -154,6 +156,42 @@ public class MetadataUtil {
         IndexedEndpointType assertionConsumerService = new IndexedEndpointType();
         assertionConsumerService.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
         assertionConsumerService.setLocation("https://www.google.com/a/" + googleAppsProvider.getDomain() + "/acs");
+        assertionConsumerService.setIndex(0);
+        assertionConsumerService.setIsDefault(true);
+        spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService);
+
+        ed.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor().add(spSSODescriptor);
+
+        return ed;
+    }
+
+    public static EntityDescriptorType createSugarCRMDescriptor(SugarCRMServiceProvider sugarCRMServiceProvider) throws Exception {
+        // EntityDescriptorType
+        EntityDescriptorType ed = new EntityDescriptorType();
+        ed.setEntityID("php-saml");
+        Date date = DateUtils.toDate("2021-01-10T13:24:45Z");
+        XMLGregorianCalendar validUntilDate = DateUtils.toXMLGregorianCalendar(date);
+        validUntilDate.setMillisecond(47);
+        ed.setValidUntil(validUntilDate);
+
+        // SPSSODescriptor
+        SPSSODescriptorType spSSODescriptor = new SPSSODescriptorType();
+        spSSODescriptor.setWantAssertionsSigned(true);
+        spSSODescriptor.getProtocolSupportEnumeration().add(SAMLR2Constants.SAML_PROTOCOL_NS);
+        spSSODescriptor.getNameIDFormat().add(NameIDFormat.EMAIL.getValue());
+
+        // AssertionConsumerService
+        IndexedEndpointType assertionConsumerService = new IndexedEndpointType();
+        assertionConsumerService.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
+        // TODO: default location?
+        String sugarCRMUrl = "http://localhost/sugarcrm";
+        if (StringUtils.isNotBlank(sugarCRMServiceProvider.getUrl())) {
+            sugarCRMUrl = sugarCRMServiceProvider.getUrl();
+            while (sugarCRMUrl.endsWith("/")) {
+                sugarCRMUrl = sugarCRMUrl.substring(0, sugarCRMUrl.length() - 1);
+            }
+        }
+        assertionConsumerService.setLocation(sugarCRMUrl + "/index.php?module=Users&action=Authenticate");
         assertionConsumerService.setIndex(0);
         assertionConsumerService.setIsDefault(true);
         spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService);

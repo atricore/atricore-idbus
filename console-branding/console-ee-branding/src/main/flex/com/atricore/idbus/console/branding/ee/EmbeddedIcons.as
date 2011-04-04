@@ -52,6 +52,10 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
     public static var googleAppsMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    public static var sugarCRMMiniIcon:Class;
+
     // Identity sources
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/identity_vault.png")]

@@ -280,6 +280,13 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
+    public void arrive(SugarCRMServiceProvider node) throws Exception {
+        validateName("SugarCRM provider name", node.getName(), node);
+        validateDisplayName("SugarCRM provider display name", node.getDisplayName());
+        validateIDPChannels(node);
+    }
+
+    @Override
     public void arrive(FederatedConnection node) throws Exception {
         validateName("Federated Connection name", node.getName(), node);
 

@@ -62,6 +62,7 @@
         import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
         import com.atricore.idbus.console.services.dto.ServiceProvider;
 
+        import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
         import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
@@ -129,6 +130,10 @@
                 var ga:GoogleAppsServiceProvider = obj as GoogleAppsServiceProvider;
                 _linkLabel = ga.name;
                 _linkIcon = EmbeddedIcons.googleAppsIcon;
+            } else if (obj is SugarCRMServiceProvider) {
+                var scrm:SugarCRMServiceProvider = obj as SugarCRMServiceProvider;
+                _linkLabel = scrm.name;
+                _linkIcon = EmbeddedIcons.sugarCRMIcon;
             } else if (obj is BindingProvider) {
                 var bp:BindingProvider = obj as BindingProvider;
                 _linkLabel = bp.name;

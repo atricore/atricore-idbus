@@ -89,6 +89,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.salesforceMiniIcon;
             case DiagramElementTypes.GOOGLE_APPS_ELEMENT_TYPE:
                 return EmbeddedIcons.googleAppsMiniIcon;
+            case DiagramElementTypes.SUGAR_CRM_ELEMENT_TYPE:
+                return EmbeddedIcons.sugarCRMMiniIcon;
             case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                 return EmbeddedIcons.vaultMiniIcon;
             case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:

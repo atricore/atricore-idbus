@@ -39,6 +39,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityP
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceImportCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
@@ -313,8 +314,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_SALESFORCE_ELEMENT,
             ApplicationFacade.REMOVE_GOOGLE_APPS_ELEMENT,
+            ApplicationFacade.REMOVE_SUGAR_CRM_ELEMENT,
             ApplicationFacade.CREATE_SALESFORCE_ELEMENT,
             ApplicationFacade.CREATE_GOOGLE_APPS_ELEMENT,
+            ApplicationFacade.CREATE_SUGAR_CRM_ELEMENT,
             ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT,
             ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT,
@@ -456,6 +459,13 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case ApplicationFacade.REMOVE_GOOGLE_APPS_ELEMENT:
                 var rga:RemoveGoogleAppsElementRequest = RemoveGoogleAppsElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, rga.googleAppsProvider);
+                break;
+            case ApplicationFacade.CREATE_SUGAR_CRM_ELEMENT:
+                popupManager.showCreateSugarCRMWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_SUGAR_CRM_ELEMENT:
+                var rscrm:RemoveSugarCRMElementRequest = RemoveSugarCRMElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, rscrm.sugarCRMProvider);
                 break;
             case ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT:
                 popupManager.showCreateIdentityVaultWindow(notification);
