@@ -413,6 +413,7 @@ public class XmlUtils {
         Marshaller m = jaxbContext.createMarshaller();
 
         // TODO : What about non-sun XML Bind stacks!
+        /*
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
                 new NamespacePrefixMapper() {
 
@@ -429,7 +430,7 @@ public class XmlUtils {
                         return suggestion;
                     }
                 });
-
+          */
         m.marshal(jaxbRequest, xmlStreamWriter);
 
         return writer.toString();
@@ -453,6 +454,7 @@ public class XmlUtils {
         m.marshal(jaxbMsg, sw);
 
         // TODO : What about non-sun XML Bind stacks!
+        /*
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
                 new NamespacePrefixMapper() {
 
@@ -470,7 +472,7 @@ public class XmlUtils {
                     }
                 });
 
-
+        */
         // Instantiate the document to be signed
         javax.xml.parsers.DocumentBuilderFactory dbf =
                 javax.xml.parsers.DocumentBuilderFactory.newInstance();

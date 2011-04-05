@@ -94,8 +94,6 @@ public class SignResponseAction extends AbstractSamlR2Action {
 
                     // If the response has an assertion, remove the signature and re-sign it ... (we're discarding STS signature!)
                     if (signAssertion) {
-                        //
-                        // logger.error("Assertion Signature support NOT available !!!");
                         AssertionType signedAssertion =  signer.sign(assertion);
                         assertions.add(signedAssertion);
                     } else {
