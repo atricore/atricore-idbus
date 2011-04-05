@@ -108,28 +108,28 @@ public class XmlUtils {
 
     public static String marshalSamlR2Request(RequestAbstractType request, String requestType, boolean encode) throws Exception {
 
-        String marshalledRequest ;
+        String marshalledRequest;
         // Support IDBus SAMLR2 Extentions when marshalling
         if (request.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
 
             marshalledRequest = marshal(
-                request,
-                SAMLR2Constants.SAML_IDBUS_NS,
-                requestType,
-                new String[]{ SAMLR2Constants.SAML_IDBUS_PKG }
+                    request,
+                    SAMLR2Constants.SAML_IDBUS_NS,
+                    requestType,
+                    new String[]{SAMLR2Constants.SAML_IDBUS_PKG}
             );
 
         } else {
 
             marshalledRequest = marshal(
-                request,
-                SAMLR2Constants.SAML_PROTOCOL_NS,
-                requestType,
-                new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG }
+                    request,
+                    SAMLR2Constants.SAML_PROTOCOL_NS,
+                    requestType,
+                    new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG}
             );
         }
 
-        return encode ? new String(new Base64().encode( marshalledRequest.getBytes())) : marshalledRequest;
+        return encode ? new String(new Base64().encode(marshalledRequest.getBytes())) : marshalledRequest;
     }
 
 
@@ -137,8 +137,8 @@ public class XmlUtils {
         if (decode)
             request = decode(request);
 
-        return (RequestAbstractType) unmarshal(request, new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG,
-                SAMLR2Constants.SAML_IDBUS_PKG });
+        return (RequestAbstractType) unmarshal(request, new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG,
+                SAMLR2Constants.SAML_IDBUS_PKG});
     }
 
 
@@ -150,11 +150,10 @@ public class XmlUtils {
     }
 
     public static RequestAbstractType unmarshalSamlR2Request(Document doc) throws Exception {
-        return (RequestAbstractType) unmarshal(doc, new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG,
-                SAMLR2Constants.SAML_IDBUS_PKG });
+        return (RequestAbstractType) unmarshal(doc, new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG,
+                SAMLR2Constants.SAML_IDBUS_PKG});
 
     }
-
 
 
     // SAML 2.0 Response
@@ -182,7 +181,7 @@ public class XmlUtils {
         // Support IDBus SAMLR2 Extentions when marshalling
         if (response.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
 
-            return  XmlUtils.marshalAsDom(
+            return XmlUtils.marshalAsDom(
                     response,
                     SAMLR2Constants.SAML_IDBUS_NS,
                     responseType,
@@ -203,7 +202,7 @@ public class XmlUtils {
     public static String marshalSamlR2Response(StatusResponseType response,
                                                String responseType, boolean encode) throws Exception {
 
-        String marshalledResponse ;
+        String marshalledResponse;
         // Support IDBus SAMLR2 Extentions when marshalling
         if (response.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
 
@@ -223,7 +222,7 @@ public class XmlUtils {
 
         }
 
-        return encode ? new String( new Base64().encode( marshalledResponse.getBytes() ) ) : marshalledResponse;
+        return encode ? new String(new Base64().encode(marshalledResponse.getBytes())) : marshalledResponse;
     }
 
     /**
@@ -234,7 +233,7 @@ public class XmlUtils {
             response = decode(response);
 
         return (StatusResponseType) unmarshal(response,
-                new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG, SAMLR2Constants.SAML_IDBUS_PKG});
+                new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG, SAMLR2Constants.SAML_IDBUS_PKG});
 
     }
 
@@ -243,8 +242,8 @@ public class XmlUtils {
     }
 
     public static StatusResponseType unmarshalSamlR2Response(Document doc) throws Exception {
-        return (StatusResponseType ) unmarshal(doc,
-                new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG, SAMLR2Constants.SAML_IDBUS_PKG});
+        return (StatusResponseType) unmarshal(doc,
+                new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG, SAMLR2Constants.SAML_IDBUS_PKG});
 
 
     }
@@ -265,17 +264,17 @@ public class XmlUtils {
                 request,
                 SSOConstants.SSO_PROTOCOL_NS,
                 requestType,
-                new String[]{ SSOConstants.SSO_PROTOCOL_PKG}
+                new String[]{SSOConstants.SSO_PROTOCOL_PKG}
         );
 
-        return encode ? new String(new Base64().encode( marshalledRequest.getBytes())) : marshalledRequest;
+        return encode ? new String(new Base64().encode(marshalledRequest.getBytes())) : marshalledRequest;
     }
 
     public static SSORequestAbstractType unmarshalSSORequest(String request, boolean decode) throws Exception {
         if (decode)
             request = decode(request);
 
-        return (SSORequestAbstractType) unmarshal(request, new String[]{ SSOConstants.SSO_PROTOCOL_PKG});
+        return (SSORequestAbstractType) unmarshal(request, new String[]{SSOConstants.SSO_PROTOCOL_PKG});
     }
 
 
@@ -304,10 +303,10 @@ public class XmlUtils {
                 response,
                 SSOConstants.SSO_PROTOCOL_NS,
                 responseType,
-                new String[]{ SSOConstants.SSO_PROTOCOL_PKG}
+                new String[]{SSOConstants.SSO_PROTOCOL_PKG}
         );
 
-        return encode ? new String( new Base64().encode( marshalledResponse.getBytes() ) ) : marshalledResponse;
+        return encode ? new String(new Base64().encode(marshalledResponse.getBytes())) : marshalledResponse;
     }
 
     /**
@@ -317,7 +316,7 @@ public class XmlUtils {
         if (decode)
             response = decode(response);
 
-        return (SSOResponseType) unmarshal(response, new String[]{ SSOConstants.SSO_PROTOCOL_PKG});
+        return (SSOResponseType) unmarshal(response, new String[]{SSOConstants.SSO_PROTOCOL_PKG});
 
     }
 
@@ -328,7 +327,7 @@ public class XmlUtils {
 
     // SAML 1.1 Response
     public static String marshallSamlR11Response(oasis.names.tc.saml._1_0.protocol.ResponseType response,
-                                     boolean encode) throws Exception {
+                                                 boolean encode) throws Exception {
         String type = response.getClass().getSimpleName();
         if (type.endsWith("Type"))
             type = type.substring(0, type.length() - 4);
@@ -339,16 +338,16 @@ public class XmlUtils {
     public static String marshalSamlR11Response(oasis.names.tc.saml._1_0.protocol.ResponseType response,
                                                 String responseType, boolean encode) throws Exception {
 
-        String marshalledResponse ;
+        String marshalledResponse;
         marshalledResponse = XmlUtils.marshal(
                 response,
                 SAMLR11Constants.SAML_PROTOCOL_NS,
                 responseType,
-                new String[]{ SAMLR11Constants.SAML_PROTOCOL_PKG }
+                new String[]{SAMLR11Constants.SAML_PROTOCOL_PKG}
         );
 
 
-        return encode ? new String( new Base64().encode( marshalledResponse.getBytes() ) ) : marshalledResponse;
+        return encode ? new String(new Base64().encode(marshalledResponse.getBytes())) : marshalledResponse;
     }
 
     public static String decode(String content) {
@@ -373,7 +372,7 @@ public class XmlUtils {
     }
 
     public static JAXBContext createSamlR2JAXBContext(RequestAbstractType request) throws JAXBException {
-        return createJAXBContext(new String[] {request.getClass().getPackage().getName()});
+        return createJAXBContext(new String[]{request.getClass().getPackage().getName()});
         /*
         return createJAXBContext(new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG,
                 SAMLR2Constants.SAML_IDBUS_PKG,
@@ -383,7 +382,7 @@ public class XmlUtils {
     }
 
     public static JAXBContext createSamlR2JAXBContext() throws JAXBException {
-        return createJAXBContext(new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG,
+        return createJAXBContext(new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG,
                 SAMLR2Constants.SAML_IDBUS_PKG,
                 SAMLR2Constants.SAML_ASSERTION_PKG,
                 SAMLR2Constants.SAML_METADATA_PKG});
@@ -391,18 +390,18 @@ public class XmlUtils {
 
 
     public static JAXBContext createSSOJAXBContext() throws JAXBException {
-        return createJAXBContext(new String[]{ SSOConstants.SSO_PROTOCOL_PKG});
+        return createJAXBContext(new String[]{SSOConstants.SSO_PROTOCOL_PKG});
     }
 
     // JAXB Generic
 
-    public static String marshal ( Object msg,
-                                   String msgQName,
-                                   String msgLocalName,
-                                   String[] userPackages ) throws Exception {
+    public static String marshal(Object msg,
+                                 String msgQName,
+                                 String msgLocalName,
+                                 String[] userPackages) throws Exception {
 
-        JAXBContext jaxbContext = createJAXBContext( userPackages );
-        JAXBElement jaxbRequest = new JAXBElement( new QName( msgQName, msgLocalName ),
+        JAXBContext jaxbContext = createJAXBContext(userPackages);
+        JAXBElement jaxbRequest = new JAXBElement(new QName(msgQName, msgLocalName),
                 msg.getClass(),
                 msg
         );
@@ -415,21 +414,23 @@ public class XmlUtils {
 
         // TODO : What about non-sun XML Bind stacks!
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
-            new NamespacePrefixMapper() {
+                new NamespacePrefixMapper() {
 
-                @Override
-                public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
+                    @Override
+                    public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
 
-                    if (nsUri.equals(SAMLR2Constants.SAML_PROTOCOL_NS))
+                        if (nsUri.equals(SAMLR2Constants.SAML_PROTOCOL_NS))
                             return "samlp";
-                    else if (nsUri.equals(SAMLR2Constants.SAML_ASSERTION_NS))
-                        return "saml";
+                        else if (nsUri.equals(SAMLR2Constants.SAML_ASSERTION_NS))
+                            return "saml";
+                        else if (nsUri.equals("http://www.w3.org/2000/09/xmldsig#"))
+                            return "ds";
 
-                    return suggestion;
-                }
-            });
+                        return suggestion;
+                    }
+                });
 
-        m.marshal( jaxbRequest, xmlStreamWriter);
+        m.marshal(jaxbRequest, xmlStreamWriter);
 
         return writer.toString();
     }
@@ -440,10 +441,10 @@ public class XmlUtils {
                                         String[] userPackages) throws Exception {
 
         // JAXB Element
-        JAXBElement jaxbMsg = new JAXBElement( new QName( msgQName, msgLocalName ), msg.getClass(),msg);
+        JAXBElement jaxbMsg = new JAXBElement(new QName(msgQName, msgLocalName), msg.getClass(), msg);
 
         // JAXB Context
-        JAXBContext jaxbContext = createJAXBContext( userPackages );
+        JAXBContext jaxbContext = createJAXBContext(userPackages);
 
         // Marshal as string and then parse with DOM ...
         Marshaller m = jaxbContext.createMarshaller();
@@ -453,18 +454,21 @@ public class XmlUtils {
 
         // TODO : What about non-sun XML Bind stacks!
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
-            new NamespacePrefixMapper() {
+                new NamespacePrefixMapper() {
 
-                @Override
-                public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
-                    if (nsUri.equals(SAMLR2Constants.SAML_PROTOCOL_NS))
+                    @Override
+                    public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
+
+                        if (nsUri.equals(SAMLR2Constants.SAML_PROTOCOL_NS))
                             return "samlp";
-                    else if (nsUri.equals(SAMLR2Constants.SAML_ASSERTION_NS))
-                        return "saml";
+                        else if (nsUri.equals(SAMLR2Constants.SAML_ASSERTION_NS))
+                            return "saml";
+                        else if (nsUri.equals("http://www.w3.org/2000/09/xmldsig#"))
+                            return "ds";
 
-                    return suggestion;
-                }
-            });
+                        return suggestion;
+                    }
+                });
 
 
         // Instantiate the document to be signed
@@ -482,10 +486,9 @@ public class XmlUtils {
     }
 
 
-
-    public static Object unmarshal( String msg, String userPackages[] ) throws Exception {
-        JAXBContext jaxbContext = createJAXBContext( userPackages );
-        Object o = jaxbContext.createUnmarshaller().unmarshal( new StringSource( msg ) );
+    public static Object unmarshal(String msg, String userPackages[]) throws Exception {
+        JAXBContext jaxbContext = createJAXBContext(userPackages);
+        Object o = jaxbContext.createUnmarshaller().unmarshal(new StringSource(msg));
 
         if (o instanceof JAXBElement)
             return ((JAXBElement) o).getValue();
@@ -494,9 +497,9 @@ public class XmlUtils {
 
     }
 
-    public static Object unmarshal( Document doc, String userPackages[] ) throws Exception {
-        JAXBContext jaxbContext = createJAXBContext( userPackages );
-        Object o = jaxbContext.createUnmarshaller().unmarshal( doc );
+    public static Object unmarshal(Document doc, String userPackages[]) throws Exception {
+        JAXBContext jaxbContext = createJAXBContext(userPackages);
+        Object o = jaxbContext.createUnmarshaller().unmarshal(doc);
 
         if (o instanceof JAXBElement)
             return ((JAXBElement) o).getValue();
@@ -505,13 +508,13 @@ public class XmlUtils {
     }
 
 
-    public static JAXBContext createJAXBContext ( String[] userPackages ) throws JAXBException {
+    public static JAXBContext createJAXBContext(String[] userPackages) throws JAXBException {
         StringBuilder packages = new StringBuilder();
-        for ( String userPackage : userPackages ) {
-            packages.append( userPackage ).append( ":" );
+        for (String userPackage : userPackages) {
+            packages.append(userPackage).append(":");
         }
         // Use our classloader to build JAXBContext so it can find binding classes.
-        return JAXBContext.newInstance( packages.toString(), XmlUtils.class.getClassLoader());
+        return JAXBContext.newInstance(packages.toString(), XmlUtils.class.getClassLoader());
     }
 
 

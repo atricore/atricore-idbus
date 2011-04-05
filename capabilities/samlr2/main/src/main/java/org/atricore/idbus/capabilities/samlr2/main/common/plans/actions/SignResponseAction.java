@@ -59,7 +59,7 @@ public class SignResponseAction extends AbstractSamlR2Action {
                 (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
 
         // Mediator configuration as default for assertions signature
-        boolean signAssertion = mediator.isSignRequests();
+        boolean signAssertion = true;
         if (dest != null) {
 
             EntityDescriptorType entity = (EntityDescriptorType) dest.getMetadata().getEntry();
@@ -98,6 +98,8 @@ public class SignResponseAction extends AbstractSamlR2Action {
                         // logger.error("Assertion Signature support NOT available !!!");
                         AssertionType signedAssertion =  signer.sign(assertion);
                         assertions.add(signedAssertion);
+                    } else {
+                        assertions.add(assertion);
                     }
                 }
             }
@@ -108,15 +110,13 @@ public class SignResponseAction extends AbstractSamlR2Action {
 
         }
 
-        if (!mediator.isSignRequests()) {
-            logger.debug("Signature is disabled for " + channel.getName());
-            return ;
-        }
-
+        // Always Sign responses
         if (logger.isDebugEnabled())
             logger.debug("Signing SAMLR2 Response: " + response.getID() + " in channel " + channel.getName());
 
-        out.replaceContent(signer.sign(response));
+        ResponseType signedResponse = (ResponseType) signer.sign(response);
+
+        out.replaceContent(signedResponse);
 
     }
 }

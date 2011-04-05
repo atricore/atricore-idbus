@@ -67,8 +67,16 @@
         <process-fragment lifecycle="generate-authnresponse" phase="provide-content"/>
         <transition to="provideResponseStatus"/>
 
-        <variable name="urn:oasis:names:tc:SAML:2.0:assertion:Assertion"
-                  access="read" />
+        <variable name="urn:org:atricore:idbus:cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:cot" access="read"/>
+        <variable name="urn:org:atricore:idbus:channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:request" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-mode" access="read"/>
+        <variable name="urn:oasis:names:tc:SAML:2.0:assertion:Assertion" access="read"/>
 
     </process-fragment-state>
 
@@ -79,6 +87,15 @@
         <process-fragment lifecycle="generate-authnresponse" phase="provide-status"/>
         <transition to="ensureContentConfidentiality"/>
         
+        <variable name="urn:org:atricore:idbus:cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:cot" access="read"/>
+        <variable name="urn:org:atricore:idbus:channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:request" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-mode" access="read"/>
         <variable name="urn:oasis:names:tc:SAML:2.0:assertion:Assertion" access="read"/>
 
     </process-fragment-state>
@@ -89,6 +106,18 @@
     <process-fragment-state name="ensureContentConfidentiality">
         <process-fragment lifecycle="generate-authnresponse" phase="ensure-content-confidentiality"/>
         <transition to="ensureAuthenticity"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:cot" access="read"/>
+        <variable name="urn:org:atricore:idbus:channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:request" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-mode" access="read"/>
+        <variable name="urn:oasis:names:tc:SAML:2.0:assertion:Assertion" access="read"/>
+
     </process-fragment-state>
 
     <!--
@@ -97,7 +126,16 @@
     <process-fragment-state name="ensureAuthenticity">
         <process-fragment lifecycle="generate-authnresponse" phase="ensure-authenticity"/>
         <transition to="validateResponse"/>
+        <variable name="urn:org:atricore:idbus:cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:cot" access="read"/>
         <variable name="urn:org:atricore:idbus:channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:request" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-mode" access="read"/>
+        <variable name="urn:oasis:names:tc:SAML:2.0:assertion:Assertion" access="read"/>
     </process-fragment-state>
 
     <!--
@@ -106,6 +144,17 @@
     <process-fragment-state name="validateResponse">
         <process-fragment lifecycle="generate-authnresponse" phase="validate"/>
         <transition to="ensureConfidentiality"/>
+        <variable name="urn:org:atricore:idbus:cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:cot" access="read"/>
+        <variable name="urn:org:atricore:idbus:channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:request" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-mode" access="read"/>
+        <variable name="urn:oasis:names:tc:SAML:2.0:assertion:Assertion" access="read"/>
+
     </process-fragment-state>
 
     <!--
@@ -114,6 +163,17 @@
     <process-fragment-state name="ensureConfidentiality">
         <process-fragment lifecycle="generate-authnresponse" phase="ensure-confidentiality"/>
         <transition to="end"/>
+        <variable name="urn:org:atricore:idbus:cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:cot" access="read"/>
+        <variable name="urn:org:atricore:idbus:channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:request" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-mode" access="read"/>
+        <variable name="urn:oasis:names:tc:SAML:2.0:assertion:Assertion" access="read"/>
+
     </process-fragment-state>
 
     <end-state name="end"/>
