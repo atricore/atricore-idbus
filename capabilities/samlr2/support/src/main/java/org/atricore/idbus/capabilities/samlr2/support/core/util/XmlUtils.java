@@ -413,9 +413,25 @@ public class XmlUtils {
         Marshaller m = jaxbContext.createMarshaller();
 
         // TODO : What about non-sun XML Bind stacks!
-        /*
+        //xmlStreamWriter.setPrefix("samlp", SAMLR2Constants.SAML_PROTOCOL_NS);
+        //xmlStreamWriter.setPrefix("saml", SAMLR2Constants.SAML_ASSERTION_NS);
+        //xmlStreamWriter.setPrefix("ds", "http://www.w3.org/2000/09/xmldsig#");
+        //xmlStreamWriter.setPrefix("enc", "http://www.w3.org/2001/04/xmlenc#");
+        //xmlStreamWriter.setPrefix("xsd", "http://www.w3.org/2001/XMLSchema");
+
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
                 new NamespacePrefixMapper() {
+
+                    @Override
+                    public String[] getPreDeclaredNamespaceUris() {
+                        return new String[] {
+                                SAMLR2Constants.SAML_PROTOCOL_NS,
+                                SAMLR2Constants.SAML_ASSERTION_NS,
+                                "http://www.w3.org/2000/09/xmldsig#",
+                                "http://www.w3.org/2001/04/xmlenc#",
+                                "http://www.w3.org/2001/XMLSchema"
+                        };
+                    }
 
                     @Override
                     public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
@@ -426,11 +442,16 @@ public class XmlUtils {
                             return "saml";
                         else if (nsUri.equals("http://www.w3.org/2000/09/xmldsig#"))
                             return "ds";
+                        else if (nsUri.equals("http://www.w3.org/2001/04/xmlenc#"))
+                            return "enc";
+                        else if (nsUri.equals("http://www.w3.org/2001/XMLSchema"))
+                            return "xsd";
+
 
                         return suggestion;
                     }
                 });
-          */
+
         m.marshal(jaxbRequest, xmlStreamWriter);
 
         return writer.toString();
@@ -449,14 +470,31 @@ public class XmlUtils {
 
         // Marshal as string and then parse with DOM ...
         Marshaller m = jaxbContext.createMarshaller();
-        StringWriter swas = new StringWriter();
-        XMLStreamWriter sw = new NamespaceFilterXMLStreamWriter(swas);
-        m.marshal(jaxbMsg, sw);
+        StringWriter writer = new StringWriter();
+        XMLStreamWriter xmlStreamWriter = new NamespaceFilterXMLStreamWriter(writer);
 
         // TODO : What about non-sun XML Bind stacks!
-        /*
+
+
+        //xmlStreamWriter.setPrefix("samlp", SAMLR2Constants.SAML_PROTOCOL_NS);
+        //xmlStreamWriter.setPrefix("saml", SAMLR2Constants.SAML_ASSERTION_NS);
+        //xmlStreamWriter.setPrefix("ds", "http://www.w3.org/2000/09/xmldsig#");
+        //xmlStreamWriter.setPrefix("enc", "http://www.w3.org/2001/04/xmlenc#");
+        //xmlStreamWriter.setPrefix("xsd", "http://www.w3.org/2001/XMLSchema");
+
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
                 new NamespacePrefixMapper() {
+
+                    @Override
+                    public String[] getPreDeclaredNamespaceUris() {
+                        return new String[] {
+                                SAMLR2Constants.SAML_PROTOCOL_NS,
+                                SAMLR2Constants.SAML_ASSERTION_NS,
+                                "http://www.w3.org/2000/09/xmldsig#",
+                                "http://www.w3.org/2001/04/xmlenc#",
+                                "http://www.w3.org/2001/XMLSchema"
+                        };
+                    }
 
                     @Override
                     public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
@@ -467,12 +505,18 @@ public class XmlUtils {
                             return "saml";
                         else if (nsUri.equals("http://www.w3.org/2000/09/xmldsig#"))
                             return "ds";
+                        else if (nsUri.equals("http://www.w3.org/2001/04/xmlenc#"))
+                            return "enc";
+                        else if (nsUri.equals("http://www.w3.org/2001/XMLSchema"))
+                            return "xsd";
+
 
                         return suggestion;
                     }
                 });
 
-        */
+        m.marshal(jaxbMsg, xmlStreamWriter);
+
         // Instantiate the document to be signed
         javax.xml.parsers.DocumentBuilderFactory dbf =
                 javax.xml.parsers.DocumentBuilderFactory.newInstance();
@@ -480,7 +524,7 @@ public class XmlUtils {
         // XML Signature needs to be namespace aware
         dbf.setNamespaceAware(true);
 
-        Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(swas.toString().getBytes()));
+        Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(writer.toString().getBytes()));
 
         return doc;
 
