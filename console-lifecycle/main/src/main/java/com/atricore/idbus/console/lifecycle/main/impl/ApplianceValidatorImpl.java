@@ -283,6 +283,9 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     public void arrive(SugarCRMServiceProvider node) throws Exception {
         validateName("SugarCRM provider name", node.getName(), node);
         validateDisplayName("SugarCRM provider display name", node.getDisplayName());
+        if (StringUtils.isBlank(node.getUrl())) {
+            addError("No SugarCRM unique instance URL for " + node.getName());
+        }
         validateIDPChannels(node);
     }
 

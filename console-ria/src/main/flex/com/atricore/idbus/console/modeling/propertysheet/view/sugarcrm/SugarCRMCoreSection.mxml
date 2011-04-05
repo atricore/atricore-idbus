@@ -29,13 +29,13 @@
 
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{sugarCRMProviderName}" required="true" property="text"/>
-        <utils:URLValidator id="urlValidator" source="{sugarCRMProvUrl}" required="false" property="text"/>
+        <utils:URLValidator id="urlValidator" source="{sugarCRMProvUrl}" required="true" property="text"/>
 
         <s:Fade id="fadeFx" alphaFrom="1" alphaTo="0" duration="2000" startDelay="2000"/>
     </fx:Declarations>
 
     <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
-             verticalGap="8" labelWidth="100">
+             verticalGap="8" labelWidth="130">
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'sugarcrm.name')}:"
                      required="true">
@@ -46,7 +46,7 @@
             <s:TextInput id="sugarCRMProvDescription" width="200"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'sugarcrm.url')}:">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'sugarcrm.url')}:" required="true">
             <s:TextInput id="sugarCRMProvUrl" width="200"/>
         </mx:FormItem>
 

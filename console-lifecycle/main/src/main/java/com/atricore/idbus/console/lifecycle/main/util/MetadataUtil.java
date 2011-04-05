@@ -28,7 +28,6 @@ import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IndexedEndpointType;
 import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.SSODescriptorType;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
@@ -166,9 +165,14 @@ public class MetadataUtil {
     }
 
     public static EntityDescriptorType createSugarCRMDescriptor(SugarCRMServiceProvider sugarCRMServiceProvider) throws Exception {
+        String sugarCRMUrl = sugarCRMServiceProvider.getUrl();
+        while (sugarCRMUrl.endsWith("/")) {
+            sugarCRMUrl = sugarCRMUrl.substring(0, sugarCRMUrl.length() - 1);
+        }
+
         // EntityDescriptorType
         EntityDescriptorType ed = new EntityDescriptorType();
-        ed.setEntityID("php-saml");
+        ed.setEntityID(sugarCRMUrl);
         Date date = DateUtils.toDate("2021-01-10T13:24:45Z");
         XMLGregorianCalendar validUntilDate = DateUtils.toXMLGregorianCalendar(date);
         validUntilDate.setMillisecond(47);
@@ -183,14 +187,6 @@ public class MetadataUtil {
         // AssertionConsumerService
         IndexedEndpointType assertionConsumerService = new IndexedEndpointType();
         assertionConsumerService.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
-        // TODO: default location?
-        String sugarCRMUrl = "http://localhost/sugarcrm";
-        if (StringUtils.isNotBlank(sugarCRMServiceProvider.getUrl())) {
-            sugarCRMUrl = sugarCRMServiceProvider.getUrl();
-            while (sugarCRMUrl.endsWith("/")) {
-                sugarCRMUrl = sugarCRMUrl.substring(0, sugarCRMUrl.length() - 1);
-            }
-        }
         assertionConsumerService.setLocation(sugarCRMUrl + "/index.php?module=Users&action=Authenticate");
         assertionConsumerService.setIndex(0);
         assertionConsumerService.setIsDefault(true);

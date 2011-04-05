@@ -24,25 +24,25 @@
          xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:utils="com.atricore.idbus.console.components.*"
-         defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8" labelWidth="100">
+         defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8" labelWidth="130">
 
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{sugarCRMProvName}" required="true" property="text" trigger="{btnOk}"
                              triggerEvent="click"/>
-        <utils:URLValidator id="urlValidator" source="{sugarCRMProvUrl}" required="false" property="text" trigger="{btnOk}"
+        <utils:URLValidator id="urlValidator" source="{sugarCRMProvUrl}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
     </fx:Declarations>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'sugarcrm.name')}:" required="true">
-        <s:TextInput id="sugarCRMProvName" width="280" text="sugarcrm"/>
+        <s:TextInput id="sugarCRMProvName" width="250" text="sugarcrm"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'sugarcrm.description')}:">
-        <s:TextInput id="sugarCRMProvDescription" width="280"/>
+        <s:TextInput id="sugarCRMProvDescription" width="250"/>
     </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'sugarcrm.url')}:">
-        <s:TextInput id="sugarCRMProvUrl" width="280"/>
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'sugarcrm.url')}:" required="true">
+        <s:TextInput id="sugarCRMProvUrl" width="250"/>
     </mx:FormItem>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
