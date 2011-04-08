@@ -117,10 +117,6 @@
                 var eidp:ExternalIdentityProvider = obj as ExternalIdentityProvider;
                 _linkLabel = eidp.name;
                 _linkIcon = EmbeddedIcons.externalIdpIcon;
-            } else if (obj is ExternalServiceProvider) {
-                var esp:ExternalServiceProvider = obj as ExternalServiceProvider;
-                _linkLabel = esp.name;
-                _linkIcon = EmbeddedIcons.externalSpIcon;
             } else if (obj is SalesforceServiceProvider) {
                 var sf:SalesforceServiceProvider = obj as SalesforceServiceProvider;
                 _linkLabel = sf.name;
@@ -129,6 +125,10 @@
                 var ga:GoogleAppsServiceProvider = obj as GoogleAppsServiceProvider;
                 _linkLabel = ga.name;
                 _linkIcon = EmbeddedIcons.googleAppsIcon;
+            } else if (obj is ExternalServiceProvider) {
+                var esp:ExternalServiceProvider = obj as ExternalServiceProvider;
+                _linkLabel = esp.name;
+                _linkIcon = EmbeddedIcons.externalSpIcon;
             } else if (obj is BindingProvider) {
                 var bp:BindingProvider = obj as BindingProvider;
                 _linkLabel = bp.name;

@@ -17,9 +17,7 @@
                                     <s:State name="hovered" />
                                     <s:State name="selected" />
                                 </s:states>
-                                <!--mx:Image source="{data.icon}" width="22" height="22" left="4" top="2"
-                                        click="dispatchEvent(new SettingsMenuEvent(true, true, data, SettingsMenuEvent.ACTION_MENU_ITEM_CLICKED));"
-                                        mouseOver="Mouse.cursor = MouseCursor.BUTTON;" mouseOut="Mouse.cursor = MouseCursor.AUTO;"/-->
+                                <mx:Image source="{data.icon}" width="22" height="22" left="4" top="2"/>
                                 <mx:Text paddingLeft="30" paddingTop="2" click="dispatchEvent(new SettingsMenuEvent(true, true, data, SettingsMenuEvent.ACTION_MENU_ITEM_CLICKED));"
                                          text="{data.label}" width="100%" height="25" fontSize="14"
                                          mouseOver="Mouse.cursor = MouseCursor.BUTTON;" mouseOut="Mouse.cursor = MouseCursor.AUTO;">

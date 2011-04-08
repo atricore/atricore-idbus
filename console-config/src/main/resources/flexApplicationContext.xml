@@ -881,6 +881,7 @@
     <object id="licenseManagementMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
         <property name="label" value="License Management"/>
         <property name="shortDescription" value="License Management Entry"/>
+        <property name="iconName" value="license"/>
         <property name="mediatorName" value="licenseMediator"/>
         <property name="viewName" value="licenseView"/>
     </object>

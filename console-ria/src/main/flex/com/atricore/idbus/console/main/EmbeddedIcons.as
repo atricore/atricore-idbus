@@ -124,6 +124,18 @@ public class EmbeddedIcons {
     static public var searchUserIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/account/add_attribute.png")]
+    static public var addAttributeIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/account/edit_attribute.png")]
+    static public var editAttributeIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/account/remove_attribute.png")]
+    static public var removeAttributeIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/ui/arrow-left-double.png")]
     static public var backIcon:Class;
 
@@ -184,7 +196,7 @@ public class EmbeddedIcons {
     static public var groupsIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/account/search_group.png")]
+    [Embed(source="/assets/icons/account/manage_schema.png")]
     static public var schemasIcon:Class;
 
     [Bindable]
@@ -200,19 +212,19 @@ public class EmbeddedIcons {
     public static var spIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/identity_provider.png")]
+    [Embed(source="/assets/icons/notation/48x48/external_identity_provider.png")]
     public static var externalIdpIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
+    [Embed(source="/assets/icons/notation/48x48/external_service_provider.png")]
     public static var externalSpIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
+    [Embed(source="/assets/icons/notation/48x48/salesforce.png")]
     public static var salesforceIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
+    [Embed(source="/assets/icons/notation/48x48/google_apps.png")]
     public static var googleAppsIcon:Class;
 
     //TODO add BP icon
@@ -258,19 +270,19 @@ public class EmbeddedIcons {
     public static var spMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/identity_provider.png")]
+    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
     public static var externalIdpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
     public static var externalSpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    [Embed(source="/assets/icons/notation/22x22/salesforce.png")]
     public static var salesforceMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    [Embed(source="/assets/icons/notation/22x22/google_apps.png")]
     public static var googleAppsMiniIcon:Class;
 
     //TODO add BP icon
@@ -451,7 +463,7 @@ public class EmbeddedIcons {
     public static var setupMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/ui/question_mark_22x22.png")]
+    [Embed(source="/assets/icons/main/help_22.png")]
     public static var helpMiniIcon:Class;
 
     [Bindable]
@@ -517,5 +529,25 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/style/yflexskin.swf",symbol="Tree_folderClosedIcon")]
     public static var folderClosedIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/license.png")]
+    public static var licenseIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/system_upgrade.png")]
+    public static var liveUpdateIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/security_update.png")]
+    public static var securityUpdateIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/software_package.png")]
+    public static var softwarePackageIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/system_update.png")]
+    public static var systemUpdateIcon:Class;
 }
 }
