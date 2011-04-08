@@ -216,7 +216,7 @@ public class EmbeddedIcons {
     public static var googleAppsIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
+    [Embed(source="/assets/icons/notation/48x48/sugarcrm.png")]
     public static var sugarCRMIcon:Class;
 
     //TODO add BP icon
@@ -278,7 +278,7 @@ public class EmbeddedIcons {
     public static var googleAppsMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    [Embed(source="/assets/icons/notation/22x22/sugarcrm.png")]
     public static var sugarCRMMiniIcon:Class;
 
     //TODO add BP icon
