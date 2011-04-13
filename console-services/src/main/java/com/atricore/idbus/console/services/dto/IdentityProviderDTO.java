@@ -54,6 +54,8 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
     //TODO check whether LocalProvider will have profiles or IdentityProvider
 //    private Set<ProfileDTO> activeProfiles;
 
+    private DelegatedAuthenticationDTO delegatedAuthentication;
+
     @Override
     public ProviderRoleDTO getRole() {
         return ProviderRoleDTO.SSOIdentityProvider;
@@ -121,5 +123,13 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     public void setEmissionPolicy(AuthenticationAssertionEmissionPolicyDTO emissionPolicy) {
         this.emissionPolicy = emissionPolicy;
+    }
+
+    public DelegatedAuthenticationDTO getDelegatedAuthentication() {
+        return delegatedAuthentication;
+    }
+
+    public void setDelegatedAuthentication(DelegatedAuthenticationDTO delegatedAuthentication) {
+        this.delegatedAuthentication = delegatedAuthentication;
     }
 }

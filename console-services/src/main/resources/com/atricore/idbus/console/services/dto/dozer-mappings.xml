@@ -123,6 +123,16 @@
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
+            <a>authenticationServices</a>
+            <b>authenticationServices</b>
+            <a-hint>
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WikidAuthenticationService
+            </a-hint>
+            <b-hint>
+                com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO
+            </b-hint>
+        </field>
+        <field relationship-type="non-cumulative" remove-orphans="true">
             <a>activeFeatures</a>
             <b>activeFeatures</b>
         </field>
@@ -220,6 +230,57 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.AuthenticationService</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.AuthenticationServiceDTO</class-b>
+        <field relationship-type="non-cumulative" remove-orphans="true">
+            <a>delegatedAuthentications</a>
+            <b>delegatedAuthentications</b>
+        </field>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.WikidAuthenticationService</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO</class-b>
+        <field>
+            <a>caStore</a>
+            <b>caStore</b>
+            <a-hint>com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore</a-hint>
+            <b-hint>com.atricore.idbus.console.services.dto.KeystoreDTO</b-hint>
+        </field>
+        <field>
+            <a>wcStore</a>
+            <b>wcStore</b>
+            <a-hint>com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore</a-hint>
+            <b-hint>com.atricore.idbus.console.services.dto.KeystoreDTO</b-hint>
+        </field>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DelegatedAuthentication</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.DelegatedAuthenticationDTO</class-b>
+        <field>
+            <a>idp</a>
+            <b>idp</b>
+            <a-hint>
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider
+            </a-hint>
+            <b-hint>
+                com.atricore.idbus.console.services.dto.IdentityProviderDTO
+            </b-hint>
+        </field>
+        <field>
+            <a>authnService</a>
+            <b>authnService</b>
+            <a-hint>
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WikidAuthenticationService
+            </a-hint>
+            <b-hint>
+                com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO
+            </b-hint>
+        </field>
     </mapping>
 
     <!--<mapping>-->

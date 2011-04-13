@@ -28,6 +28,7 @@ import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.browser.BrowserMediator;
 import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalServiceProviderElementRequest;
@@ -40,6 +41,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityV
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWikidElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceImportCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
@@ -339,6 +341,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.REMOVE_ACTIVATION_ELEMENT,
             ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_LOOKUP_ELEMENT,
+            ApplicationFacade.REMOVE_DELEGATED_AUTHENTICATION_ELEMENT,
             ApplicationFacade.REMOVE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_FEDERATED_CONNECTION,
             ApplicationFacade.MANAGE_CERTIFICATE,
@@ -353,6 +356,8 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.EXPORT_PROVIDER_CERTIFICATE,
             ApplicationFacade.EXPORT_METADATA,
             ApplicationFacade.DISPLAY_ACTIVATION_DIALOG,
+            ApplicationFacade.CREATE_WIKID_ELEMENT,
+            ApplicationFacade.REMOVE_WIKID_ELEMENT,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
@@ -541,6 +546,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 var ril:RemoveIdentityLookupElementRequest = RemoveIdentityLookupElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.IDENTITY_LOOKUP_REMOVE, ril.identityLookup);
                 break;
+            case ApplicationFacade.REMOVE_DELEGATED_AUTHENTICATION_ELEMENT:
+                var rda:RemoveDelegatedAuthnElementRequest = RemoveDelegatedAuthnElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.DELEGATED_AUTHENTICATION_REMOVE, rda.delegatedAuthentication);
+                break;
             case ApplicationFacade.REMOVE_EXECUTION_ENVIRONMENT_ELEMENT:
                 var rev:RemoveExecutionEnvironmentElementRequest = RemoveExecutionEnvironmentElementRequest(notification.getBody());
                 //                 TODO: Perform UI handling for confirming removal action
@@ -689,6 +698,13 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.DISPLAY_ACTIVATION_DIALOG:
                 popupManager.showActivationWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_WIKID_ELEMENT:
+                popupManager.showCreateWikidWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_WIKID_ELEMENT:
+                var rwikid:RemoveWikidElementRequest = RemoveWikidElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rwikid.wikidAuthnService);
                 break;
             default:
                 // Let super mediator handle notifications.

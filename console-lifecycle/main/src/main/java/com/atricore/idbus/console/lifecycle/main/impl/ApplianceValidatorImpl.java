@@ -24,6 +24,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -321,7 +323,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
             addError("Identity Lookup " + node.getName() + " Provider cannot be null");
         else {
             if (node.getProvider().getIdentityLookup() != node) {
-                addError("Provider Identity Lookup is not this Identity Lookup" +
+                addError("Provider Identity Lookup is not this Identity Lookup " +
                         node.getName() +
                         " ["+node.getProvider().getIdentityLookup()+"]");
             }
@@ -356,6 +358,22 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
     }
 
+    public void arrive(DelegatedAuthentication node) throws Exception {
+        validateName("Delegated Authentication name", node.getName(), node);
+        validateDisplayName("Delegated Authentication display name", node.getDisplayName());
+
+        if (node.getIdp() == null)
+            addError("Delegated Authentication " + node.getName() + " IDP cannot be null");
+        else if (node.getIdp().getDelegatedAuthentication() != node) {
+            addError("IDP Delegated Authentication is not this Delegated Authentication " +
+                    node.getName() +
+                    " [" +node.getIdp().getDelegatedAuthentication() + "]");
+        }
+
+        if (node.getAuthnService() == null)
+            addError("Delegated Authentication " + node.getName() + " Authentication Service cannot be null");
+    }
+
     @Override
     public void arrive(ExecutionEnvironment node) throws Exception {
 
@@ -384,6 +402,43 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 addError("Weblogic Execution Environment domain name cannot be null");
         }
 
+    }
+
+    @Override
+    public void arrive(AuthenticationService node) throws Exception {
+        validateName("Authentication Service name", node.getName(), node);
+        validateDisplayName("Authentication Service display name", node.getDisplayName());
+
+        if (node instanceof WikidAuthenticationService) {
+            WikidAuthenticationService wikidAuthnService = (WikidAuthenticationService) node;
+            if (StringUtils.isBlank(wikidAuthnService.getServerHost()))
+                addError("WiKID Authentication Service [" + node.getName() + "] server host cannot be null");
+            if (wikidAuthnService.getServerPort() < 0 || wikidAuthnService.getServerPort() > 65535)
+                addError("WiKID Authentication Service [" + node.getName() + "] server port must be between 1 and 65535");
+
+            if (StringUtils.isBlank(wikidAuthnService.getServerCode()))
+                addError("WiKID Authentication Service [" + node.getName() + "] server code cannot be null");
+            else {
+                Pattern serverCodePattern = Pattern.compile("\\d{12}");
+                Matcher serverCodeMatcher = serverCodePattern.matcher(wikidAuthnService.getServerCode());
+                if (!serverCodeMatcher.matches())
+                    addError("WiKID Authentication Service [" + node.getName() + "] server code must be a 12 digit string");
+            }
+
+            if (wikidAuthnService.getCaStore() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] CA Store cannot be null");
+            else if (wikidAuthnService.getCaStore().getPassword() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] CA Store Password cannot be null");
+            else if (wikidAuthnService.getCaStore().getStore() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] CA Store Resource cannot be null");
+            
+            if (wikidAuthnService.getWcStore() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] Client Store cannot be null");
+            else if (wikidAuthnService.getWcStore().getPassword() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] Client Store Password cannot be null");
+            else if (wikidAuthnService.getWcStore().getStore() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] Client Store Resource cannot be null");
+        }
     }
 
     @Override
@@ -458,14 +513,16 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (StringUtils.isBlank(node.getPassword()))
             addError("Keystore password cannot be null or empty");
 
-        if (StringUtils.isBlank(node.getPrivateKeyName()))
-            addError("Keystore private key name cannot be null or empty");
+        if (!node.isKeystorePassOnly()) {
+            if (StringUtils.isBlank(node.getPrivateKeyName()))
+                addError("Keystore private key name cannot be null or empty");
 
-        if (StringUtils.isBlank(node.getPrivateKeyPassword()))
-            addError("Keystore private key password cannot be null or empty");
+            if (StringUtils.isBlank(node.getPrivateKeyPassword()))
+                addError("Keystore private key password cannot be null or empty");
 
-        if (StringUtils.isBlank(node.getCertificateAlias()))
-            addError("Keystore certificate alias cannot be null or empty");
+            if (StringUtils.isBlank(node.getCertificateAlias()))
+                addError("Keystore certificate alias cannot be null or empty");
+        }
 
         Resource ks = node.getStore();
 
@@ -482,13 +539,15 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
             if (ks.getValue() == null) {
                 addError("Keystore file value cannot be null");
-            } else if (node.getType() != null && node.getPassword() != null && node.getCertificateAlias() != null) {
+            } else if (node.getType() != null && node.getPassword() != null) {
                 try {
                     KeyStore keyStore = KeyStore.getInstance("PKCS#12".equals(node.getType()) ? "PKCS12" : "JKS");
                     keyStore.load(new ByteArrayInputStream(ks.getValue()), node.getPassword().toCharArray());
-                    Certificate certificate = keyStore.getCertificate(node.getCertificateAlias());
-                    if (certificate == null)
-                        addError("No certificate associated with alias '" + node.getCertificateAlias() + "'");
+                    if (node.getCertificateAlias() != null) {
+                        Certificate certificate = keyStore.getCertificate(node.getCertificateAlias());
+                        if (certificate == null)
+                            addError("No certificate associated with alias '" + node.getCertificateAlias() + "'");
+                    }
                 } catch (KeyStoreException e) {
                     addError("Keystore type is not available");
                 } catch (NoSuchAlgorithmException e) {

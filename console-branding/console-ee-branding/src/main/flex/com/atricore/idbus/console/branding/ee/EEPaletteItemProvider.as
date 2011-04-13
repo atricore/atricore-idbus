@@ -51,6 +51,14 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
 
         pr.add(cloudPaletteDrawer);
 
+        var authenticationPaletteDrawer:PaletteDrawer = new PaletteDrawer("Authentication", null, null);
+        authenticationPaletteDrawer.add(
+                new PaletteEntry("WiKID", EmbeddedIcons.wikidMiniIcon, "WiKID Entry", DiagramElementTypes.WIKID_ELEMENT_TYPE)
+
+                );
+
+        pr.add(authenticationPaletteDrawer);
+
         var identitySourcesPaletteDrawer:PaletteDrawer = new PaletteDrawer("Identity Sources", null, null);
         identitySourcesPaletteDrawer.add(
                 new PaletteEntry("Identity Vault", EmbeddedIcons.vaultMiniIcon, "Identity Vault Entry", DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE)
@@ -155,6 +163,12 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 new PaletteEntry("Identity Lookup", EmbeddedIcons.connectionIdentityLookupMiniIcon , "Identity Lookup Entry", DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE)
 
                 );
+
+        connectionPaletteDrawer.add(
+                new PaletteEntry("Delegated Authentication", EmbeddedIcons.connectionDelegatedAuthnMiniIcon , "Delegated Authentication Entry", DiagramElementTypes.DELEGATED_AUTHENTICATION_ELEMENT_TYPE)
+
+                );
+
         pr.add(connectionPaletteDrawer);
 
         return pr;

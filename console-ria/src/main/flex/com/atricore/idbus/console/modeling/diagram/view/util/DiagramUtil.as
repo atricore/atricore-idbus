@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.modeling.diagram.view.util {
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.base.diagram.DiagramElementTypes;
+import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
@@ -68,6 +69,24 @@ public class DiagramUtil {
         return canBeLinked;
     }
 
+    public static function nodesCanBeLinkedWithDelegatedAuthentication(node1:IVisualNode, node2:IVisualNode):Boolean {
+        var canBeLinked:Boolean = false;
+        if (node1 != null && node2 != null && node1.id != node2.id) {
+            if (node1.data is IdentityProvider && node2.data is AuthenticationService) {
+                var idp1:IdentityProvider = node1.data as IdentityProvider;
+                if (idp1.delegatedAuthentication == null) {
+                    canBeLinked = true;
+                }
+            } else if (node1.data is AuthenticationService && node2.data is IdentityProvider) {
+                var idp2:IdentityProvider = node2.data as IdentityProvider;
+                if (idp2.delegatedAuthentication == null) {
+                    canBeLinked = true;
+                }
+            }
+        }
+        return canBeLinked;
+    }
+
     public static function nodeLinkExists(node1:INode, node2:INode):Boolean {
         if (node1 != null && node2 != null && node1.successors.indexOf(node2) != -1) {
             return true;
@@ -125,6 +144,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.phpbbEnvironmentMiniIcon;
             case DiagramElementTypes.WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.webEnvironmentMiniIcon;
+            case DiagramElementTypes.WIKID_ELEMENT_TYPE:
+                return EmbeddedIcons.wikidMiniIcon;
         }
         return null;
     }

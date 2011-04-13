@@ -27,6 +27,8 @@ import com.atricore.idbus.console.main.view.upload.UploadProgress;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateForm;
@@ -139,6 +141,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportProviderCertificateMediator:ExportProviderCertificateMediator;
     private var _exportMetadataMediator:ExportMetadataMediator;
     private var _activationMediator:ExecEnvActivationMediator;
+    private var _wikidCreateMediator:WikidCreateMediator;
 
     // views
     private var _simpleSSOWizardView:SimpleSSOWizardView;
@@ -177,6 +180,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportProviderCertificateView:ExportProviderCertificateView;
     private var _exportMetadataView:ExportMetadataView;
     private var _activationView:ExecEnvActivationView;
+    private var _wikidCreateForm:WikidCreateForm;
 
     public function ModelerPopUpManager() {
         super();
@@ -473,6 +477,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set activationMediator(value:ExecEnvActivationMediator):void {
         _activationMediator = value;
+    }
+
+    public function get wikidCreateMediator():WikidCreateMediator {
+        return _wikidCreateMediator;
+    }
+
+    public function set wikidCreateMediator(value:WikidCreateMediator):void {
+        _wikidCreateMediator = value;
     }
 
     public function showSimpleSSOWizardWindow(notification:INotification):void {
@@ -1220,6 +1232,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleActivationViewCreated(event:FlexEvent):void {
         activationMediator.setViewComponent(_activationView);
         activationMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateWikidWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createWikidCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.wikid");
+        _popup.width = 510;
+        _popup.height = 375;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_wikidCreateForm);
+    }
+
+    private function createWikidCreateForm():void {
+        _wikidCreateForm = new WikidCreateForm();
+        _wikidCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleWikidCreateFormCreated);
+    }
+
+    private function handleWikidCreateFormCreated(event:FlexEvent):void {
+        wikidCreateMediator.setViewComponent(_wikidCreateForm);
+        wikidCreateMediator.handleNotification(_lastWindowNotification);
     }
 }
 }

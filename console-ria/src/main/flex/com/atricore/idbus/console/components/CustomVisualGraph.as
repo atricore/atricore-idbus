@@ -29,6 +29,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     private static var FEDERATED_CONNECTION_MODE:uint = 1;
     private static var ACTIVATION_MODE:uint = 2;
     private static var IDENTITY_LOOKUP_MODE:uint = 3;
+    private static var DELEGATED_AUTHENTICATION_MODE:uint = 4;
     
     private var _isConnectionMode:Boolean;
     private var _connectionMode:uint;
@@ -100,6 +101,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
                         dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.ACTIVATION_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
                     } else if(_connectionMode == IDENTITY_LOOKUP_MODE){
                         dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.IDENTITY_LOOKUP_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
+                    } else if(_connectionMode == DELEGATED_AUTHENTICATION_MODE){
+                        dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.DELEGATED_AUTHENTICATION_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
                     }
                     exitConnectionMode();
                     CursorManager.removeAllCursors();
@@ -179,6 +182,12 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     public function enterIdentityLookupMode():void {
         exitNodeCreationMode();
         _connectionMode = IDENTITY_LOOKUP_MODE;
+        enterConnectionMode();
+    }
+
+    public function enterDelegatedAuthenticationMode():void {
+        exitNodeCreationMode();
+        _connectionMode = DELEGATED_AUTHENTICATION_MODE;
         enterConnectionMode();
     }
 
@@ -385,6 +394,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         } else if (_connectionMode == ACTIVATION_MODE && DiagramUtil.nodesCanBeLinkedWithActivation(sourceNode, targetNode)){
             canConnect = true;
         } else if (_connectionMode == IDENTITY_LOOKUP_MODE && DiagramUtil.nodesCanBeLinkedWithIdentityLookup(sourceNode, targetNode)){
+            canConnect = true;
+        } else if (_connectionMode == DELEGATED_AUTHENTICATION_MODE && DiagramUtil.nodesCanBeLinkedWithDelegatedAuthentication(sourceNode, targetNode)){
             canConnect = true;
         }
         return canConnect;

@@ -39,6 +39,7 @@ import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDbIdentitySourceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalServiceProviderElementRequest;
@@ -51,8 +52,10 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdent
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSugarCRMElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateWikidElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalServiceProviderElementRequest;
@@ -65,11 +68,14 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityV
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWikidElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.Activation;
+import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
@@ -88,6 +94,7 @@ import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
+import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import flash.display.DisplayObject;
@@ -168,6 +175,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.FEDERATED_CONNECTION_CREATED, federatedConnectionCreatedEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.ACTIVATION_CREATED, activationCreatedEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.IDENTITY_LOOKUP_CREATED, identityLookupCreatedEventHandler);
+            _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.DELEGATED_AUTHENTICATION_CREATED, delegatedAuthenticationCreatedEventHandler);
             _identityApplianceDiagram.removeEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
             _identityApplianceDiagram.removeEventListener(VEdgeRemoveEvent.VEDGE_REMOVE, edgeRemoveEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.LINKING_CANCELED, linkingCanceledEventHandler);
@@ -188,6 +196,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.FEDERATED_CONNECTION_CREATED, federatedConnectionCreatedEventHandler);
         _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.ACTIVATION_CREATED, activationCreatedEventHandler);
         _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.IDENTITY_LOOKUP_CREATED, identityLookupCreatedEventHandler);
+        _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.DELEGATED_AUTHENTICATION_CREATED, delegatedAuthenticationCreatedEventHandler);
         _identityApplianceDiagram.addEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
         _identityApplianceDiagram.addEventListener(VEdgeRemoveEvent.VEDGE_REMOVE, edgeRemoveEventHandler);
         _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.LINKING_CANCELED, linkingCanceledEventHandler);
@@ -257,6 +266,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         _identityApplianceDiagram.enterActivationMode();
                     } else if (paletteElementType == DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE) {
                         _identityApplianceDiagram.enterIdentityLookupMode();
+                    } else if (paletteElementType == DiagramElementTypes.DELEGATED_AUTHENTICATION_ELEMENT_TYPE) {
+                        _identityApplianceDiagram.enterDelegatedAuthenticationMode();
                     } else {
                         _identityApplianceDiagram.enterNodeCreationMode(paletteElementType);
                     }
@@ -546,6 +557,24 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT, cwebcontenv);
                         break;
+                    case DiagramElementTypes.WIKID_ELEMENT_TYPE:
+                        // assert that source end is an Identity Appliance
+                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
+                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                        var wikidOwnerAppliance:IdentityAppliance = _identityAppliance;
+
+                        var cwikid:CreateWikidElementRequest = new CreateWikidElementRequest(
+                                wikidOwnerAppliance,
+                            //                                        _currentlySelectedNode.stringid
+                                null
+                                );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_WIKID_ELEMENT, cwikid);
+                        //                            }
+
+                        break;
                 }
 
                 break;
@@ -677,6 +706,15 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_EXECUTION_ENVIRONMENT_ELEMENT, rev);
                             break;
+                        case DiagramElementTypes.WIKID_ELEMENT_TYPE:
+                            var wikidService:WikidAuthenticationService = _currentlySelectedNode.data as WikidAuthenticationService;
+
+                            var rwikid:RemoveWikidElementRequest = new RemoveWikidElementRequest(wikidService);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_WIKID_ELEMENT, rwikid);
+                            break;
                     }
                 }
 
@@ -713,6 +751,14 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             activation1, EmbeddedIcons.connectionActivationIcon,
                             resourceManager.getString(AtricoreConsole.BUNDLE, "activation.connection"));
                     _identityApplianceDiagram.exitConnectionMode();
+                } else if (element is DelegatedAuthentication) {
+                    var delegatedAuthentication1:DelegatedAuthentication = element as DelegatedAuthentication;
+                    var idpNode:IVisualNode = findNodeElementBySemanticElement(delegatedAuthentication1.idp);
+                    var authnServiceNode:IVisualNode = findNodeElementBySemanticElement(delegatedAuthentication1.authnService);
+                    GraphDataManager.linkVNodes(_identityApplianceDiagram, authnServiceNode, idpNode,
+                            delegatedAuthentication1,EmbeddedIcons.connectionDelegatedAuthnMiniIcon,
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "delegated.authentication.connection"));
+                    _identityApplianceDiagram.exitConnectionMode();
                 } else {
                     GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), element, null, null, null, null, true, Constants.IDENTITY_BUS_DEEP);
                 }
@@ -736,6 +782,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     var activation2:JOSSOActivation = element1 as JOSSOActivation;
                     var edge3:IVisualEdge = findEdgeElementBySemanticElement(activation2);
                     GraphDataManager.removeVEdge(_identityApplianceDiagram, edge3, true);
+                } else if (element1 is DelegatedAuthentication) {
+                    var delegatedAuthentication2:DelegatedAuthentication = element1 as DelegatedAuthentication;
+                    var edge4:IVisualEdge = findEdgeElementBySemanticElement(delegatedAuthentication2);
+                    GraphDataManager.removeVEdge(_identityApplianceDiagram, edge4, true);
                 } else {
                     var node:IVisualNode = findNodeElementBySemanticElement(element1);
                     GraphDataManager.removeNode(_identityApplianceDiagram, node, true);
@@ -795,6 +845,14 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 }
             }
 
+            var authnServiceNodes:ArrayCollection = new ArrayCollection();
+            if (identityApplianceDefinition.authenticationServices != null) {
+                for(var m:int=0; m < identityApplianceDefinition.authenticationServices.length; m++){
+                    var authnServiceGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.authenticationServices[m], null, null, null, null, true, Constants.PROVIDER_DEEP);
+                    authnServiceNodes.addItem(authnServiceGraphNode);
+                }
+            }
+
             if (identityApplianceDefinition.providers != null) {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
                     var provider:Provider = identityApplianceDefinition.providers[i];
@@ -846,6 +904,30 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                                             true, Constants.IDENTITY_VAULT_DEEP);
                                     //if vault doesn't exist in the vaults array, add it so other providers can find it
                                     environmentNodes.addItem(newExecEnvNode);
+                                }
+
+                            }
+                        }
+                        if (locProv is IdentityProvider) {
+                            var idp:IdentityProvider = locProv as IdentityProvider;
+                            if (idp.delegatedAuthentication != null && idp.delegatedAuthentication.authnService != null){  //check for authn. service
+                                var authnServiceExists:Boolean = false;
+                                for each (var tmpAuthnServiceGraphNode:IVisualNode in authnServiceNodes) {
+                                    if (tmpAuthnServiceGraphNode.data as AuthenticationService == idp.delegatedAuthentication.authnService) {
+                                        GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpAuthnServiceGraphNode, providerGraphNode,
+                                                idp.delegatedAuthentication, EmbeddedIcons.connectionDelegatedAuthnIcon,
+                                                resourceManager.getString(AtricoreConsole.BUNDLE, "delegated.authentication.connection"));
+                                        authnServiceExists = true;
+                                    }
+                                }
+                                if (!authnServiceExists) {
+                                    var newAuthnServiceNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram,
+                                            UIDUtil.createUID(), idp.delegatedAuthentication.authnService, providerGraphNode,
+                                            idp.delegatedAuthentication, EmbeddedIcons.connectionDelegatedAuthnIcon,
+                                            resourceManager.getString(AtricoreConsole.BUNDLE, "delegated.authentication.connection"),
+                                            true, Constants.AUTHENTICATION_SERVICE_DEEP);
+                                    //if authn. service doesn't exist in the authn. service array, add it so other providers can find it
+                                    authnServiceNodes.addItem(newAuthnServiceNode);
                                 }
 
                             }
@@ -914,6 +996,12 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 }
             }
 
+            if (identityApplianceDefinition.authenticationServices != null) {
+                for each (var authenticationService:AuthenticationService in identityApplianceDefinition.authenticationServices) {
+                    updateGraphNodeData(authenticationService);
+                }
+            }
+
             if (identityApplianceDefinition.providers != null) {
                 for each (var provider:Provider in identityApplianceDefinition.providers) {
                     updateGraphNodeData(provider);
@@ -926,6 +1014,12 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             var sp:ServiceProvider = locProv as ServiceProvider;
                             if (sp.activation != null) {
                                 updateGraphEdgeData(sp.activation);
+                            }
+                        }
+                        if (locProv is IdentityProvider) {
+                            var idp:IdentityProvider = locProv as IdentityProvider;
+                            if (idp.delegatedAuthentication != null) {
+                                updateGraphEdgeData(idp.delegatedAuthentication);
                             }
                         }
                         for each (var fedConnA:FederatedConnection in locProv.federatedConnectionsA) {
@@ -1078,6 +1172,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE;
             } else if (node.data is ExecutionEnvironment) {
                 elementType = DiagramElementTypes.EXECUTION_ENVIRONMENT_ELEMENT_TYPE;
+            } else if (node.data is WikidAuthenticationService) {
+                elementType = DiagramElementTypes.WIKID_ELEMENT_TYPE;
             }
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE, elementType);
@@ -1124,6 +1220,21 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         sendNotification(ApplicationFacade.CREATE_ACTIVATION, car);
     }
 
+    private function delegatedAuthenticationCreatedEventHandler(event:VNodesLinkedEvent):void {
+        var node1:IVisualNode = event.vnode1;
+        var node2:IVisualNode = event.vnode2;
+
+        var cdar:CreateDelegatedAuthnElementRequest = new CreateDelegatedAuthnElementRequest();
+        if (node1.data is IdentityProvider && node2.data is AuthenticationService) {
+            cdar.idp = node1.data as IdentityProvider;
+            cdar.authnService = node2.data as AuthenticationService;
+        } else if (node1.data is AuthenticationService && node2.data is IdentityProvider){
+            cdar.idp = node2.data as IdentityProvider;
+            cdar.authnService = node1.data as AuthenticationService;
+        }
+        sendNotification(ApplicationFacade.CREATE_DELEGATED_AUTHENTICATION, cdar);
+    }
+
     private function edgeSelectedEventHandler(event:VEdgeSelectedEvent):void {
         var edge:IEdge = event.edge;
 
@@ -1152,6 +1263,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             var identityLookup:IdentityLookup = edgeData as IdentityLookup;
             var ril:RemoveIdentityLookupElementRequest = new RemoveIdentityLookupElementRequest(identityLookup);
             sendNotification(ApplicationFacade.REMOVE_IDENTITY_LOOKUP_ELEMENT, ril);
+        } else if (edgeData is DelegatedAuthentication){
+            var delegatedAuthentication:DelegatedAuthentication = edgeData as DelegatedAuthentication;
+            var rda:RemoveDelegatedAuthnElementRequest = new RemoveDelegatedAuthnElementRequest(delegatedAuthentication);
+            sendNotification(ApplicationFacade.REMOVE_DELEGATED_AUTHENTICATION_ELEMENT, rda);
         }
     }
 

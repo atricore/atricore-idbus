@@ -47,6 +47,9 @@ public class KeystoreDTO implements Serializable {
     private String certificateAlias;
 
     private ResourceDTO store;
+
+    private boolean keystorePassOnly;
+    
     private static final long serialVersionUID = 1478335390561931105L;
 
     public long getId() {
@@ -121,6 +124,13 @@ public class KeystoreDTO implements Serializable {
         this.store = store;
     }
 
+    public boolean isKeystorePassOnly() {
+        return keystorePassOnly;
+    }
+
+    public void setKeystorePassOnly(boolean keystorePassOnly) {
+        this.keystorePassOnly = keystorePassOnly;
+    }
 
     @Override
     public boolean equals(Object o) {

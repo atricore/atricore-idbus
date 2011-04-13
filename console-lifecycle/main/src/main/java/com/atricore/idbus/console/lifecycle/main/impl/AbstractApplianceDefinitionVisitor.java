@@ -237,6 +237,18 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;  
     }
 
+    public void arrive(DelegatedAuthentication node) throws Exception {
+
+    }
+
+    public Object[] leave(DelegatedAuthentication node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(DelegatedAuthentication node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
     public void arrive(ExecutionEnvironment node) throws Exception {
         
     }
@@ -247,6 +259,18 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
 
     public boolean walkNextChild(ExecutionEnvironment node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;  
+    }
+
+    public void arrive(AuthenticationService node) throws Exception {
+
+    }
+
+    public Object[] leave(AuthenticationService node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(AuthenticationService node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
     }
 
     public void arrive(Activation node) throws Exception {

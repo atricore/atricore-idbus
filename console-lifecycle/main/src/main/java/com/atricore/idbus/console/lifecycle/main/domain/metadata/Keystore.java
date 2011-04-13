@@ -26,6 +26,9 @@ public class Keystore implements Serializable {
     private String certificateAlias;
 
     private Resource store;
+
+    private boolean keystorePassOnly;
+    
     private static final long serialVersionUID = 1478335390561931105L;
 
     public long getId() {
@@ -98,6 +101,14 @@ public class Keystore implements Serializable {
 
     public void setStore(Resource store) {
         this.store = store;
+    }
+
+    public boolean isKeystorePassOnly() {
+        return keystorePassOnly;
+    }
+
+    public void setKeystorePassOnly(boolean keystorePassOnly) {
+        this.keystorePassOnly = keystorePassOnly;
     }
 
     @Override

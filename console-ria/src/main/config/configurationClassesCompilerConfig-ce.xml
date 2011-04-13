@@ -63,6 +63,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityVaultRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExecutionEnvironmentRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.AuthenticationServiceRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceRemoveCommand</symbol>
@@ -85,7 +86,9 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.ActivationRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityLookupRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.FederatedConnectionRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.DelegatedAuthenticationRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateIdentityLookupCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.CreateDelegatedAuthenticationCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ActivateExecEnvironmentCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand</symbol>
@@ -136,6 +139,7 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.salesforce.SalesforceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.googleapps.GoogleAppsCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.sugarcrm.SugarCRMCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateMediator</symbol>
 
         <symbol>com.atricore.idbus.console.modeling.browser.BrowserMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.palette.PaletteMediator</symbol>

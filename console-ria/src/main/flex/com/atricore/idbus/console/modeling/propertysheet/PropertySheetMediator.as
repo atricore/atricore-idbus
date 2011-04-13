@@ -36,9 +36,11 @@ import com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoComman
 import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicyListCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.wikid.WikidAuthnServiceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultLookupSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.delegatedauthentication.DelegatedAuthenticationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.alfresco.AlfrescoExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
@@ -87,6 +89,7 @@ import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
@@ -123,6 +126,7 @@ import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
 import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 import com.atricore.idbus.console.services.spi.response.GetCertificateInfoResponse;
@@ -190,6 +194,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _federatedConnectionIDPChannelSection:FederatedConnectionIDPChannelSection;
     private var _jossoActivationCoreSection:JOSSOActivationCoreSection;
     private var _identityLookupCoreSection:IdentityLookupCoreSection;
+    private var _delegatedAuthenticationCoreSection:DelegatedAuthenticationCoreSection;
     private var _tomcatExecEnvCoreSection:TomcatExecEnvCoreSection;
     private var _weblogicExecEnvCoreSection:WeblogicExecEnvCoreSection;
     private var _jbossPortalExecEnvCoreSection:JBossPortalExecEnvCoreSection;
@@ -207,6 +212,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _authenticationPropertyTab:Group;
     private var _basicAuthenticationSection:BasicAuthenticationSection;
     private var _certificateSection:CertificateSection;
+    private var _wikidAuthnServiceCoreSection:WikidAuthnServiceCoreSection;
     private var _dirty:Boolean;
     private var _applianceSaved:Boolean;
 
@@ -245,7 +251,26 @@ public class PropertySheetMediator extends IocMediator {
 
     [Bindable]
     public var _identityMappingPolicies:ArrayCollection;
-    
+
+    // WiKID
+    [Bindable]
+    private var _wikidCAStoreFileRef:FileReference;
+
+    [Bindable]
+    public var _selectedWikidCAStores:ArrayCollection;
+
+    private var _uploadedWikidCAStoreFile:ByteArray;
+    private var _uploadedWikidCAStoreFileName:String;
+
+    [Bindable]
+    private var _wikidClientStoreFileRef:FileReference;
+
+    [Bindable]
+    public var _selectedWCStores:ArrayCollection;
+
+    private var _uploadedWCStoreFile:ByteArray;
+    private var _uploadedWCStoreFileName:String;
+
     public function PropertySheetMediator(name : String = null, viewComp:PropertySheetView = null) {
         super(name, viewComp);
     }
@@ -334,6 +359,8 @@ public class PropertySheetMediator extends IocMediator {
                     enableExternalIdentityProviderPropertyTabs();
                 } else if (_currentIdentityApplianceElement is ExternalServiceProvider) {
                     enableExternalServiceProviderPropertyTabs();
+                } else if (_currentIdentityApplianceElement is WikidAuthenticationService) {
+                    enableWikidAuthnServicePropertyTabs();
                 } else if (_currentIdentityApplianceElement is IdentitySource) {
                     if (_currentIdentityApplianceElement is EmbeddedIdentitySource) {
                         enableIdentityVaultPropertyTabs();
@@ -350,6 +377,8 @@ public class PropertySheetMediator extends IocMediator {
                     enableJOSSOActivationPropertyTabs();
                 } else if (_currentIdentityApplianceElement is IdentityLookup) {
                     enableIdentityLookupPropertyTabs();
+                } else if (_currentIdentityApplianceElement is DelegatedAuthentication) {
+                    enableDelegatedAuthenticationPropertyTabs();
                 } else if (_currentIdentityApplianceElement is ExecutionEnvironment) {
                     if (_currentIdentityApplianceElement is TomcatExecutionEnvironment) {
                         enableTomcatExecEnvPropertyTabs();
@@ -2075,6 +2104,165 @@ public class PropertySheetMediator extends IocMediator {
                 _sugarCRMContractSection.btnExportMetadata.enabled = true;
                 _sugarCRMContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
             }
+        }
+    }
+
+    protected function enableWikidAuthnServicePropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _wikidAuthnServiceCoreSection = new WikidAuthnServiceCoreSection();
+        corePropertyTab.addElement(_wikidAuthnServiceCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _wikidAuthnServiceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleWikidAuthnServiceCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleWikidAuthnServiceCorePropertyTabRollOut);
+    }
+
+    private function handleWikidAuthnServiceCorePropertyTabCreationComplete(event:Event):void {
+        var wikidAuthnService:WikidAuthenticationService = _currentIdentityApplianceElement as WikidAuthenticationService;
+
+        // if wikidAuthnService is null that means some other element was selected before completing this
+        if (wikidAuthnService != null) {
+            // bind view
+            _wikidAuthnServiceCoreSection.wikidName.text = wikidAuthnService.name;
+            _wikidAuthnServiceCoreSection.wikidDescription.text = wikidAuthnService.description;
+            _wikidAuthnServiceCoreSection.serverHost.text = wikidAuthnService.serverHost;
+            _wikidAuthnServiceCoreSection.serverPort.text = wikidAuthnService.serverPort.toString();
+            _wikidAuthnServiceCoreSection.serverCode.text = wikidAuthnService.serverCode;
+            _wikidAuthnServiceCoreSection.caStorePass.text = wikidAuthnService.caStore.password;
+            _wikidAuthnServiceCoreSection.wcStorePass.text = wikidAuthnService.wcStore.password;
+
+            _wikidAuthnServiceCoreSection.caStore.addEventListener(MouseEvent.CLICK, wikidCAStoreBrowseHandler);
+            BindingUtils.bindProperty(_wikidAuthnServiceCoreSection.caStore, "dataProvider", this, "_selectedWikidCAStores");
+
+            _wikidAuthnServiceCoreSection.wcStore.addEventListener(MouseEvent.CLICK, wikidClientStoreBrowseHandler);
+            BindingUtils.bindProperty(_wikidAuthnServiceCoreSection.wcStore, "dataProvider", this, "_selectedWCStores");
+
+            _wikidAuthnServiceCoreSection.wikidName.addEventListener(Event.CHANGE, handleSectionChange);
+            _wikidAuthnServiceCoreSection.wikidDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _wikidAuthnServiceCoreSection.serverHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _wikidAuthnServiceCoreSection.serverPort.addEventListener(Event.CHANGE, handleSectionChange);
+            _wikidAuthnServiceCoreSection.serverCode.addEventListener(Event.CHANGE, handleSectionChange);
+            _wikidAuthnServiceCoreSection.caStore.addEventListener(Event.CHANGE, handleSectionChange);
+            _wikidAuthnServiceCoreSection.caStorePass.addEventListener(Event.CHANGE, handleSectionChange);
+            _wikidAuthnServiceCoreSection.wcStore.addEventListener(Event.CHANGE, handleSectionChange);
+            _wikidAuthnServiceCoreSection.wcStorePass.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_wikidAuthnServiceCoreSection.nameValidator);
+            _validators.push(_wikidAuthnServiceCoreSection.serverHostValidator);
+            _validators.push(_wikidAuthnServiceCoreSection.serverPortValidator);
+            _validators.push(_wikidAuthnServiceCoreSection.serverCodeValidator);
+            _validators.push(_wikidAuthnServiceCoreSection.caStorePassValidator);
+            _validators.push(_wikidAuthnServiceCoreSection.wcStorePassValidator);
+
+        }
+    }
+
+    private function handleWikidAuthnServiceCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+            var wikidAuthnService:WikidAuthenticationService = _currentIdentityApplianceElement as WikidAuthenticationService;
+
+            if (wikidAuthnService.caStore == null && (_selectedWikidCAStores == null || _selectedWikidCAStores.length == 0)) {
+                _wikidAuthnServiceCoreSection.lblCAStoreMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "wikid.ca.store.upload.error");
+                _wikidAuthnServiceCoreSection.lblCAStoreMsg.setStyle("color", "Red");
+                _wikidAuthnServiceCoreSection.lblCAStoreMsg.visible = true;
+                return;
+            }
+            if (wikidAuthnService.wcStore == null && (_selectedWCStores == null || _selectedWCStores.length == 0)) {
+                _wikidAuthnServiceCoreSection.lblWCStoreMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "wikid.wc.store.upload.error");
+                _wikidAuthnServiceCoreSection.lblWCStoreMsg.setStyle("color", "Red");
+                _wikidAuthnServiceCoreSection.lblWCStoreMsg.visible = true;
+                return;
+            }
+
+            _wikidAuthnServiceCoreSection.lblCAStoreMsg.text = "";
+            _wikidAuthnServiceCoreSection.lblCAStoreMsg.setStyle("color", "Green");
+            _wikidAuthnServiceCoreSection.lblCAStoreMsg.visible = false;
+
+            _wikidAuthnServiceCoreSection.lblWCStoreMsg.text = "";
+            _wikidAuthnServiceCoreSection.lblWCStoreMsg.setStyle("color", "Green");
+            _wikidAuthnServiceCoreSection.lblWCStoreMsg.visible = false;
+            
+            if (_selectedWikidCAStores != null && _selectedWikidCAStores.length > 0) {
+                _wikidCAStoreFileRef.load();
+            } else if (_selectedWCStores != null && _selectedWCStores.length > 0) {
+                _wikidClientStoreFileRef.load();
+            } else {
+                saveWikidAuthnService();
+            }
+        }
+    }
+
+    private function saveWikidAuthnService():void {
+        var wikidAuthnService:WikidAuthenticationService = _currentIdentityApplianceElement as WikidAuthenticationService;
+        
+        if (wikidAuthnService != null) {
+            
+            wikidAuthnService.name = _wikidAuthnServiceCoreSection.wikidName.text;
+            wikidAuthnService.description = _wikidAuthnServiceCoreSection.wikidDescription.text;
+            wikidAuthnService.serverHost = _wikidAuthnServiceCoreSection.serverHost.text;
+            wikidAuthnService.serverPort = parseInt(_wikidAuthnServiceCoreSection.serverPort.text);
+            wikidAuthnService.serverCode = _wikidAuthnServiceCoreSection.serverCode.text;
+
+            // CA Store
+            var caKeystore:Keystore = wikidAuthnService.caStore;
+            if (caKeystore == null) {
+                caKeystore = new Keystore();
+                caKeystore.name = wikidAuthnService.name.toLowerCase().replace(/\s+/g, "-") + "-ca-store";
+                caKeystore.displayName = wikidAuthnService.name + " Certificate Authority Store";
+                caKeystore.type = "JKS";
+            }
+            caKeystore.keystorePassOnly = true;
+            caKeystore.password = _wikidAuthnServiceCoreSection.caStorePass.text;
+            if (_uploadedWikidCAStoreFile != null && _uploadedWikidCAStoreFileName != null) {
+                var caResource:Resource = caKeystore.store;
+                if (caResource == null) {
+                    caResource = new Resource();
+                }
+                caResource.name = _uploadedWikidCAStoreFileName.substring(0, _uploadedWikidCAStoreFileName.lastIndexOf("."));
+                caResource.displayName = _uploadedWikidCAStoreFileName;
+                caResource.uri = _uploadedWikidCAStoreFileName;
+                caResource.value = _uploadedWikidCAStoreFile;
+                caKeystore.store = caResource;
+            }
+            wikidAuthnService.caStore = caKeystore;
+
+            // WC Store
+            var wcKeystore:Keystore = wikidAuthnService.wcStore;
+            if (wcKeystore == null) {
+                wcKeystore = new Keystore();
+                wcKeystore.name = wikidAuthnService.name.toLowerCase().replace(/\s+/g, "-") + "-wc-store";
+                wcKeystore.displayName = wikidAuthnService.name + " WiKID Client Store";
+                wcKeystore.type = "PKCS#12";
+            }
+            wcKeystore.keystorePassOnly = true;
+            wcKeystore.password = _wikidAuthnServiceCoreSection.wcStorePass.text;
+            if (_uploadedWCStoreFile != null && _uploadedWCStoreFileName != null) {
+                var wcResource:Resource = wcKeystore.store;
+                if (wcResource == null) {
+                    wcResource = new Resource();
+                }
+                wcResource.name = _uploadedWCStoreFileName.substring(0, _uploadedWCStoreFileName.lastIndexOf("."));
+                wcResource.displayName = _uploadedWCStoreFileName;
+                wcResource.uri = _uploadedWCStoreFileName;
+                wcResource.value = _uploadedWCStoreFile;
+                wcKeystore.store = wcResource;
+            }
+            wikidAuthnService.wcStore = wcKeystore;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
         }
     }
 
@@ -4919,6 +5107,55 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    protected function enableDelegatedAuthenticationPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _delegatedAuthenticationCoreSection = new DelegatedAuthenticationCoreSection();
+        corePropertyTab.addElement(_delegatedAuthenticationCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _delegatedAuthenticationCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleDelegatedAuthenticationCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleDelegatedAuthenticationCorePropertyTabRollOut);
+    }
+
+    private function handleDelegatedAuthenticationCorePropertyTabCreationComplete(event:Event):void {
+        var delegatedAuthentication:DelegatedAuthentication = projectProxy.currentIdentityApplianceElement as DelegatedAuthentication;
+
+        if (delegatedAuthentication != null) {
+            // bind view
+            _delegatedAuthenticationCoreSection.connectionName.text = delegatedAuthentication.name;
+            _delegatedAuthenticationCoreSection.connectionDescription.text = delegatedAuthentication.description;
+
+            _delegatedAuthenticationCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
+            _delegatedAuthenticationCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_delegatedAuthenticationCoreSection.nameValidator);
+        }
+    }
+
+    private function handleDelegatedAuthenticationCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+             // bind model
+            var delegatedAuthentication:DelegatedAuthentication = projectProxy.currentIdentityApplianceElement as DelegatedAuthentication;
+
+            delegatedAuthentication.name = _delegatedAuthenticationCoreSection.connectionName.text;
+            delegatedAuthentication.description = _delegatedAuthenticationCoreSection.connectionDescription.text;
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }
+
     // keystore functions
     private function browseHandler(event:MouseEvent):void {
         if (_fileRef == null) {
@@ -5197,6 +5434,90 @@ public class PropertySheetMediator extends IocMediator {
             if (resp.encryptionCertNotAfter != null)
                 _certificateSection.encryptionCertNotAfter.text = _certificateSection.dateFormatter.format(resp.encryptionCertNotAfter);
         }
+    }
+
+    // WiKID upload functions
+    private function wikidCAStoreBrowseHandler(event:MouseEvent):void {
+        if (_wikidCAStoreFileRef == null) {
+            _wikidCAStoreFileRef = new FileReference();
+            _wikidCAStoreFileRef.addEventListener(Event.SELECT, wikidCAStoreFileSelectHandler);
+            _wikidCAStoreFileRef.addEventListener(Event.COMPLETE, wikidCAStoreUploadCompleteHandler);
+        }
+        //var fileFilter:FileFilter = new FileFilter("JKS(*.jks)", "*.jks");
+        //var fileTypes:Array = new Array(fileFilter);
+        //_wikidCAStoreFileRef.browse(fileTypes);
+        _wikidCAStoreFileRef.browse();
+    }
+
+    private function wikidCAStoreFileSelectHandler(event:Event):void {
+        _wikidAuthnServiceCoreSection.caStore.prompt = null;
+        _selectedWikidCAStores = new ArrayCollection();
+        _selectedWikidCAStores.addItem(_wikidCAStoreFileRef.name);
+        _wikidAuthnServiceCoreSection.caStore.selectedIndex = 0;
+
+        _wikidAuthnServiceCoreSection.lblCAStoreMsg.text = "";
+        _wikidAuthnServiceCoreSection.lblCAStoreMsg.visible = false;
+
+        _dirty = true;
+    }
+
+    private function wikidCAStoreUploadCompleteHandler(event:Event):void {
+        _uploadedWikidCAStoreFile = _wikidCAStoreFileRef.data;
+        _uploadedWikidCAStoreFileName = _wikidCAStoreFileRef.name;
+
+        _wikidAuthnServiceCoreSection.lblCAStoreMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "wikid.ca.store.upload.success");
+        _wikidAuthnServiceCoreSection.lblCAStoreMsg.setStyle("color", "Green");
+        _wikidAuthnServiceCoreSection.lblCAStoreMsg.visible = true;
+        _wikidAuthnServiceCoreSection.caFadeFx.play([_wikidAuthnServiceCoreSection.lblCAStoreMsg]);
+
+        _uploadedWikidCAStoreFile = null;
+        _selectedWikidCAStores = new ArrayCollection();0
+        _wikidAuthnServiceCoreSection.caStore.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "wikid.ca.store.browse");
+
+        if (_selectedWCStores != null && _selectedWCStores.length > 0) {
+            _wikidClientStoreFileRef.load();
+        } else {
+            saveWikidAuthnService();
+        }
+    }
+
+    private function wikidClientStoreBrowseHandler(event:MouseEvent):void {
+        if (_wikidClientStoreFileRef == null) {
+            _wikidClientStoreFileRef = new FileReference();
+            _wikidClientStoreFileRef.addEventListener(Event.SELECT, wikidClientStoreFileSelectHandler);
+            _wikidClientStoreFileRef.addEventListener(Event.COMPLETE, wikidClientStoreUploadCompleteHandler);
+        }
+        var fileFilter:FileFilter = new FileFilter("PKCS#12(*.p12)", "*.p12");
+        var fileTypes:Array = new Array(fileFilter);
+        _wikidClientStoreFileRef.browse(fileTypes);
+    }
+
+    private function wikidClientStoreFileSelectHandler(event:Event):void {
+        _wikidAuthnServiceCoreSection.wcStore.prompt = null;
+        _selectedWCStores = new ArrayCollection();
+        _selectedWCStores.addItem(_wikidClientStoreFileRef.name);
+        _wikidAuthnServiceCoreSection.wcStore.selectedIndex = 0;
+
+        _wikidAuthnServiceCoreSection.lblWCStoreMsg.text = "";
+        _wikidAuthnServiceCoreSection.lblWCStoreMsg.visible = false;
+
+        _dirty = true;
+    }
+
+    private function wikidClientStoreUploadCompleteHandler(event:Event):void {
+        _uploadedWCStoreFile = _wikidClientStoreFileRef.data;
+        _uploadedWCStoreFileName = _wikidClientStoreFileRef.name;
+
+        _wikidAuthnServiceCoreSection.lblWCStoreMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "wikid.wc.store.upload.success");
+        _wikidAuthnServiceCoreSection.lblWCStoreMsg.setStyle("color", "Green");
+        _wikidAuthnServiceCoreSection.lblWCStoreMsg.visible = true;
+        _wikidAuthnServiceCoreSection.wcFadeFx.play([_wikidAuthnServiceCoreSection.lblWCStoreMsg]);
+
+        _uploadedWCStoreFile = null;
+        _selectedWCStores = new ArrayCollection();
+        _wikidAuthnServiceCoreSection.wcStore.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "wikid.wc.store.browse");
+
+        saveWikidAuthnService();
     }
 
     protected function clearPropertyTabs():void {

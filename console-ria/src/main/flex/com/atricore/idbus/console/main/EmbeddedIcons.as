@@ -219,6 +219,10 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/48x48/sugarcrm.png")]
     public static var sugarCRMIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/wikid.png")]
+    public static var wikidIcon:Class;
+
     //TODO add BP icon
     [Bindable]
     [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
@@ -281,6 +285,10 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/sugarcrm.png")]
     public static var sugarCRMMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/wikid.png")]
+    public static var wikidMiniIcon:Class;
+
     //TODO add BP icon
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
@@ -324,6 +332,10 @@ public class EmbeddedIcons {
     public static var connectionIdentityLookupMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/identity_lookup.png")]
+    public static var connectionDelegatedAuthnMiniIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/48x48/connection.png")]
     public static var connectionFederatedIcon:Class;
 
@@ -334,6 +346,10 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/48x48/identity_lookup.png")]
     public static var connectionIdentityLookupIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/identity_lookup.png")]
+    public static var connectionDelegatedAuthnIcon:Class;
 
     //Execution environments
     [Bindable]

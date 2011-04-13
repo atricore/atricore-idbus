@@ -56,6 +56,11 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/sugarcrm.png")]
     public static var sugarCRMMiniIcon:Class;
 
+    // Authentication
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/wikid.png")]
+    public static var wikidMiniIcon:Class;
+
     // Identity sources
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/identity_vault.png")]
@@ -85,6 +90,10 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/identity_lookup.png")]
     public static var connectionIdentityLookupMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/identity_lookup.png")]
+    public static var connectionDelegatedAuthnMiniIcon:Class;
 
     // Execution environments
     [Bindable]

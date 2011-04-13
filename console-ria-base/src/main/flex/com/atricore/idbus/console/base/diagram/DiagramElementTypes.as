@@ -51,5 +51,7 @@ public class DiagramElementTypes {
     public static const GOOGLE_APPS_ELEMENT_TYPE:int = 27;
     public static const PHP_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int = 28;
     public static const SUGAR_CRM_ELEMENT_TYPE:int = 29;
+    public static const WIKID_ELEMENT_TYPE:int = 30;
+    public static const DELEGATED_AUTHENTICATION_ELEMENT_TYPE:int = 31;
 }
 }

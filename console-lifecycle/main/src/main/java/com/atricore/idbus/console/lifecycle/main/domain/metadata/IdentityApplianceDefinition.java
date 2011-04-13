@@ -58,6 +58,8 @@ public class IdentityApplianceDefinition implements Serializable {
 
     private Set<ExecutionEnvironment> executionEnvironments;
 
+    private Set<AuthenticationService> authenticationServices;
+    
     private Keystore keystore;
 
     public long getId() {
@@ -186,6 +188,17 @@ public class IdentityApplianceDefinition implements Serializable {
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
+    }
+
+    public Set<AuthenticationService> getAuthenticationServices() {
+        if (authenticationServices == null) {
+            authenticationServices = new HashSet<AuthenticationService>();
+        }
+        return authenticationServices;
+    }
+
+    public void setAuthenticationServices(Set<AuthenticationService> authenticationServices) {
+        this.authenticationServices = authenticationServices;
     }
 
     @Override

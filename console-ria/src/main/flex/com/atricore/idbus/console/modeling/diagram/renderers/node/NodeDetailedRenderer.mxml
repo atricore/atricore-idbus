@@ -68,6 +68,7 @@
         import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
         import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
         import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
@@ -138,6 +139,10 @@
                 var bp:BindingProvider = obj as BindingProvider;
                 _linkLabel = bp.name;
                 _linkIcon = EmbeddedIcons.bpIcon;
+            } else if (obj is WikidAuthenticationService) {
+                var wikid:WikidAuthenticationService = obj as WikidAuthenticationService;
+                _linkLabel = wikid.name;
+                _linkIcon = EmbeddedIcons.wikidIcon;
             } else if (obj is Channel) {
                  _linkLabel = (obj as Channel).name;
             } else if (obj is IdentitySource) {

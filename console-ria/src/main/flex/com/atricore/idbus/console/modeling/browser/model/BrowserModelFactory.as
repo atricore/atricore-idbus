@@ -26,9 +26,11 @@ import com.atricore.idbus.console.main.view.util.Constants;
 import com.atricore.idbus.console.services.dto.Activation;
 import com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.BindingProvider;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
@@ -53,6 +55,7 @@ import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
 import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
@@ -128,6 +131,20 @@ public class BrowserModelFactory {
                 providerNode.icon = EmbeddedIcons.bpMiniIcon;
             }
             return providerNode;
+        }
+
+        public static function createAuthenticationServiceNode(authnService:AuthenticationService, selectable:Boolean, parentNode:BrowserNode):BrowserNode {
+            var authnServiceNode:BrowserNode = new BrowserNode();
+            authnServiceNode.id = Number(authnService.id);
+            authnServiceNode.label = authnService.name;
+            authnServiceNode.type = Constants.IDENTITY_VAULT_DEEP;
+            authnServiceNode.data = authnService;
+            authnServiceNode.selectable = selectable;
+            authnServiceNode.parentNode = parentNode;
+            if (authnService is WikidAuthenticationService) {
+                authnServiceNode.icon = EmbeddedIcons.wikidMiniIcon;
+            }
+            return authnServiceNode;
         }
 
         public static function createIdentityVaultNode(identityVault:IdentitySource, selectable:Boolean, parentNode:BrowserNode):BrowserNode {
@@ -209,6 +226,8 @@ public class BrowserModelFactory {
                 connectionNode.icon = EmbeddedIcons.connectionActivationMiniIcon;
             } else if (connection is IdentityLookup) {
                 connectionNode.icon = EmbeddedIcons.connectionIdentityLookupMiniIcon;
+            } else if (connection is DelegatedAuthentication) {
+                connectionNode.icon = EmbeddedIcons.connectionDelegatedAuthnMiniIcon;
             }
             return connectionNode;
         }

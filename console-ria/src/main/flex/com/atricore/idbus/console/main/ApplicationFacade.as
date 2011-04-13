@@ -59,7 +59,9 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const ACTIVATION_REMOVE:String = "activationRemove";
     public static const FEDERATED_CONNECTION_REMOVE:String = "federatedConnectionRemove";
     public static const IDENTITY_LOOKUP_REMOVE:String = "identityLookupRemove";
+    public static const DELEGATED_AUTHENTICATION_REMOVE:String = "delegatedAuthenticationRemove";
     public static const EXECUTION_ENVIRONMENT_REMOVE:String = "executionEnvironmentRemove";
+    public static const AUTHENTICATION_SERVICE_REMOVE:String = "authenticationServiceRemove";
     public static const IDENTITY_APPLIANCE_UPDATE:String = "identityApplianceUpdate";
     public static const UPLOAD:String = "upload";
     public static const BUILD_IDENTITY_APPLIANCE:String = "buildIdentityAppliance";
@@ -86,6 +88,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_ACTIVATION:String = "createActivation";
     public static const CREATE_FEDERATED_CONNECTION:String = "createFederatedConnection";
     public static const CREATE_IDENTITY_LOOKUP:String = "createIdentityLookup";
+    public static const CREATE_DELEGATED_AUTHENTICATION:String = "createDelegatedAuthentication";
     public static const ACTIVATE_EXEC_ENVIRONMENT:String = "activateExecEnvironment";
     public static const RESET_EXEC_ENV_ACTIVATION:String = "resetExecEnvActivation";
     public static const CHECK_INSTALL_FOLDER_EXISTENCE:String = "checkInstallFolderExistence";
@@ -142,6 +145,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_SALESFORCE_ELEMENT:String = "createSalesforceElement";
     public static const CREATE_GOOGLE_APPS_ELEMENT:String = "createGoogleAppsElement";
     public static const CREATE_SUGAR_CRM_ELEMENT:String = "createSugarCRMElement";
+    public static const CREATE_WIKID_ELEMENT:String = "createWikidElement";
     public static const DIAGRAM_ELEMENT_CREATION_COMPLETE:String = "diagramElementCreationComplete";
     public static const DIAGRAM_ELEMENT_SELECTED:String = "diagramElementSelected";
     public static const DIAGRAM_ELEMENT_UPDATED:String = "diagramElementUpdated";
@@ -163,6 +167,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const REMOVE_SALESFORCE_ELEMENT:String = "removeSalesforceElement";
     public static const REMOVE_GOOGLE_APPS_ELEMENT:String = "removeGoogleAppsElement";
     public static const REMOVE_SUGAR_CRM_ELEMENT:String = "removeSugarCRMElement";
+    public static const REMOVE_WIKID_ELEMENT:String = "removeWikidElement";
     public static const CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJbossExecutionEnvironmentElement";
     public static const CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWeblogicExecutionEnvironmentElement";
     public static const CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT:String = "createTomcatExecutionEnvironmentElement";
@@ -179,6 +184,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const REMOVE_ACTIVATION_ELEMENT:String = "removeActivationElement";
     public static const REMOVE_FEDERATED_CONNECTION_ELEMENT:String = "removeFederatedConnectionElement";
     public static const REMOVE_IDENTITY_LOOKUP_ELEMENT:String = "removeIdentityLookupElement";
+    public static const REMOVE_DELEGATED_AUTHENTICATION_ELEMENT:String = "removeDelegatedAuthenticationElement";
     public static const REMOVE_EXECUTION_ENVIRONMENT_ELEMENT:String = "removeExecutionEnvironmentElement";
     public static const MANAGE_CERTIFICATE:String = "manageCertificate";
     public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";

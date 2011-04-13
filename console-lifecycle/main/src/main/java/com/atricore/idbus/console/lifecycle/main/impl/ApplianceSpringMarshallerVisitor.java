@@ -75,6 +75,9 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
         setPropertyValue(providerBean, "remote", node.isRemote());
 
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
+
         // Active bindings
         if (node.getActiveBindings() != null) {
             Set<String> abs = new HashSet<String>(node.getActiveBindings().size());
@@ -151,6 +154,9 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
         setPropertyValue(providerBean, "remote", node.isRemote());
 
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
+        
         // Active bindings
         if (node.getActiveBindings() != null) {
             Set<String> abs = new HashSet<String>(node.getActiveBindings().size());
@@ -228,7 +234,9 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
         setPropertyValue(providerBean, "remote", node.isRemote());
 
-
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
+        
         // Federated Connections
         if (node.getFederatedConnectionsA() != null) {
             for (FederatedConnection fc : node.getFederatedConnectionsA()) {
@@ -275,7 +283,9 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
         setPropertyValue(providerBean, "remote", node.isRemote());
 
-
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
+        
         // Federated Connections
         if (node.getFederatedConnectionsA() != null) {
             for (FederatedConnection fc : node.getFederatedConnectionsA()) {
@@ -322,6 +332,8 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
         setPropertyValue(providerBean, "remote", node.isRemote());
 
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
 
         // Federated Connections
         if (node.getFederatedConnectionsA() != null) {
@@ -370,6 +382,8 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(providerBean, "remote", node.isRemote());
         setPropertyValue(providerBean, "domain", node.getDomain());
 
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
 
         // Federated Connections
         if (node.getFederatedConnectionsA() != null) {
@@ -417,7 +431,9 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
         setPropertyValue(providerBean, "remote", node.isRemote());
 
-
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
+        
         // Federated Connections
         if (node.getFederatedConnectionsA() != null) {
             for (FederatedConnection fc : node.getFederatedConnectionsA()) {
@@ -540,6 +556,28 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
+    public void arrive(DelegatedAuthentication node) throws Exception {
+        Bean oldDelegatedAuthnBean = getBean(beans, node.getName());
+        // Is it the exact same bean !?
+        if (oldDelegatedAuthnBean != null && getBeanDescription(oldDelegatedAuthnBean).equals(node.toString()))
+            return;
+
+        Bean delegatedAuthnBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(delegatedAuthnBean, node.toString());
+
+        setPropertyValue(delegatedAuthnBean, "id", node.getId() + "");
+        setPropertyValue(delegatedAuthnBean, "name", node.getName());
+        setPropertyValue(delegatedAuthnBean, "displayName", node.getDisplayName());
+        setPropertyValue(delegatedAuthnBean, "description", node.getDescription());
+
+        if (node.getIdp() != null)
+            setPropertyRef(delegatedAuthnBean, "idp", node.getIdp().getName());
+
+        if (node.getAuthnService() != null)
+            setPropertyRef(delegatedAuthnBean, "authnService", node.getAuthnService().getName());
+    }
+
+    @Override
     public void arrive(EmbeddedIdentitySource node) throws Exception {
         Bean idSourceBean = newBean(beans, node.getName(), node.getClass());
         setBeanDescription(idSourceBean, node.toString());
@@ -553,7 +591,8 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(idSourceBean, "psp", node.getPsp());
         setPropertyValue(idSourceBean, "pspTarget", node.getPspTarget());
 
-
+        setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));
     }
 
     @Override
@@ -581,6 +620,8 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(idSourceBean, "credentialQueryString", node.getCredentialQueryString());
         setPropertyValue(idSourceBean, "updateableCredentialAttribute", node.getUpdateableCredentialAttribute());
         setPropertyValue(idSourceBean, "userPropertiesQueryString", node.getUserPropertiesQueryString());
+        setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));
     }
 
     @Override
@@ -606,6 +647,9 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(idSourceBean, "resetCredentialDml", node.getResetCredentialDml());
         setPropertyValue(idSourceBean, "relayCredentialQueryString", node.getRelayCredentialQueryString());
 
+        setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));
+
         // Resource driver;
 
     }
@@ -621,7 +665,9 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(idSourceBean, "description", node.getDescription());
 
         setPropertyRef(idSourceBean, "xmlUrl", node.getXmlUrl());
-        
+
+        setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));
     }
 
     @Override
@@ -638,6 +684,8 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(execEnvBean, "platformId", node.getPlatformId());
         setPropertyValue(execEnvBean, "active", node.isActive());
 
+        setPropertyValue(execEnvBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(execEnvBean, "y", String.valueOf(node.getY()));
 
         if (node instanceof JBossExecutionEnvironment) {
             JBossExecutionEnvironment jbNode = (JBossExecutionEnvironment) node;
@@ -655,6 +703,39 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
             }
         }
 
+    }
+
+    @Override
+    public void arrive(AuthenticationService node) throws Exception {
+        Bean authnServiceBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(authnServiceBean, node.toString());
+
+        setPropertyValue(authnServiceBean, "id", node.getId() + "");
+        setPropertyValue(authnServiceBean, "name", node.getName());
+        setPropertyValue(authnServiceBean, "displayName", node.getDisplayName());
+        setPropertyValue(authnServiceBean, "description", node.getDescription());
+
+        setPropertyValue(authnServiceBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(authnServiceBean, "y", String.valueOf(node.getY()));
+
+        if (node instanceof WikidAuthenticationService) {
+            WikidAuthenticationService wikidAuthnService = (WikidAuthenticationService) node;
+            setPropertyValue(authnServiceBean, "serverHost", wikidAuthnService.getServerHost());
+            setPropertyValue(authnServiceBean, "serverPort", String.valueOf(wikidAuthnService.getServerPort()));
+            setPropertyValue(authnServiceBean, "serverCode", wikidAuthnService.getServerCode());
+
+            if (wikidAuthnService.getCaStore() != null)
+                setKeystorePropertyValue(authnServiceBean, "caStore", wikidAuthnService.getCaStore());
+
+            if (wikidAuthnService.getWcStore() != null)
+                setKeystorePropertyValue(authnServiceBean, "wcStore", wikidAuthnService.getWcStore());
+        }
+
+        if (node.getDelegatedAuthentications() != null) {
+            for (DelegatedAuthentication da : node.getDelegatedAuthentications()) {
+                addPropertyRefsToSet(authnServiceBean, "delegatedAuthentications", da.getName());
+            }
+        }
     }
 
     /**

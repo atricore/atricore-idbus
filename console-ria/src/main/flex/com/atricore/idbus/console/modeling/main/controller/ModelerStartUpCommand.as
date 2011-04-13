@@ -50,6 +50,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _exportProviderCertificateMediator:IIocMediator;
     private var _exportMetadataMediator:IIocMediator;
     private var _activationMediator:IIocMediator;
+    private var _wikidCreateMediator:IIocMediator;
     
     // Commands
     private var _createSimpleSSOIdentityApplianceCommand:IIocCommand;
@@ -67,9 +68,12 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _activationRemoveCommand:IIocCommand;
     private var _identityLookupRemoveCommand:IIocCommand;
     private var _federatedConnectionRemoveCommand:IIocCommand;
+    private var _delegatedAuthenticationRemoveCommand:IIocCommand;
     private var _executionEnvironmentRemoveCommand:IIocCommand;
+    private var _authenticationServiceRemoveCommand:IIocCommand;
     private var _activateExecEnvironmentCommand:IIocCommand;
     private var _createIdentityLookupCommand:IIocCommand;
+    private var _createDelegatedAuthenticationCommand:IIocCommand;
     private var _folderExistsCommand:IIocCommand;
     private var _foldersExistsCommand:IIocCommand;
     private var _jdbcDriversListCommand:IIocCommand;
@@ -132,6 +136,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(exportProviderCertificateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(exportMetadataMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(activationMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(wikidCreateMediator.getConfigName());
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
@@ -148,12 +153,15 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATION_REMOVE, activationRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_LOOKUP_REMOVE, identityLookupRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.FEDERATED_CONNECTION_REMOVE, federatedConnectionRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.DELEGATED_AUTHENTICATION_REMOVE, delegatedAuthenticationRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.EXECUTION_ENVIRONMENT_REMOVE, executionEnvironmentRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, authenticationServiceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, lookupIdentityApplianceByIdCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD, identityApplianceListLoadCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE, identityApplianceUpdateCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvironmentCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_LOOKUP, createIdentityLookupCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_DELEGATED_AUTHENTICATION, createDelegatedAuthenticationCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, folderExistsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, foldersExistsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_JDBC_DRIVERS, jdbcDriversListCommand.getConfigName());
@@ -454,6 +462,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _activationMediator = value;
     }
 
+    public function get wikidCreateMediator():IIocMediator {
+        return _wikidCreateMediator;
+    }
+
+    public function set wikidCreateMediator(value:IIocMediator):void {
+        _wikidCreateMediator = value;
+    }
+
     public function get createSimpleSSOIdentityApplianceCommand():IIocCommand {
         return _createSimpleSSOIdentityApplianceCommand;
     }
@@ -574,12 +590,28 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _federatedConnectionRemoveCommand = value;
     }
 
+    public function get delegatedAuthenticationRemoveCommand():IIocCommand {
+        return _delegatedAuthenticationRemoveCommand;
+    }
+
+    public function set delegatedAuthenticationRemoveCommand(value:IIocCommand):void {
+        _delegatedAuthenticationRemoveCommand = value;
+    }
+
     public function get executionEnvironmentRemoveCommand():IIocCommand {
         return _executionEnvironmentRemoveCommand;
     }
 
     public function set executionEnvironmentRemoveCommand(value:IIocCommand):void {
         _executionEnvironmentRemoveCommand = value;
+    }
+
+    public function get authenticationServiceRemoveCommand():IIocCommand {
+        return _authenticationServiceRemoveCommand;
+    }
+
+    public function set authenticationServiceRemoveCommand(value:IIocCommand):void {
+        _authenticationServiceRemoveCommand = value;
     }
 
     public function get activateExecEnvironmentCommand():IIocCommand {
@@ -596,6 +628,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set createIdentityLookupCommand(value:IIocCommand):void {
         _createIdentityLookupCommand = value;
+    }
+
+    public function get createDelegatedAuthenticationCommand():IIocCommand {
+        return _createDelegatedAuthenticationCommand;
+    }
+
+    public function set createDelegatedAuthenticationCommand(value:IIocCommand):void {
+        _createDelegatedAuthenticationCommand = value;
     }
 
     public function get folderExistsCommand():IIocCommand {

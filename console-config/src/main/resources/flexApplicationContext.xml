@@ -91,11 +91,13 @@
         <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
         <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
         <property name="activationMediator" ref="activationMediator"/>
+        <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
 
         <!-- Commands -->
         <property name="identityApplianceUpdateCommand" ref="identityApplianceUpdateCommand"/>
         <property name="identityVaultRemoveCommand" ref="identityVaultRemoveCommand"/>
         <property name="executionEnvironmentRemoveCommand" ref="executionEnvironmentRemoveCommand"/>
+        <property name="authenticationServiceRemoveCommand" ref="authenticationServiceRemoveCommand"/>
         <property name="createSimpleSSOIdentityApplianceCommand" ref="createSimpleSSOIdentityApplianceCommand"/>
         <property name="identityApplianceListLoadCommand" ref="identityApplianceListLoadCommand"/>
         <property name="identityApplianceRemoveCommand" ref="identityApplianceRemoveCommand"/>
@@ -108,8 +110,10 @@
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
         <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
         <property name="federatedConnectionRemoveCommand" ref="federatedConnectionRemoveCommand"/>
+        <property name="delegatedAuthenticationRemoveCommand" ref="delegatedAuthenticationRemoveCommand"/>
         <property name="lookupIdentityApplianceByIdCommand" ref="lookupIdentityApplianceByIdCommand"/>
         <property name="createIdentityLookupCommand" ref="createIdentityLookupCommand" />
+        <property name="createDelegatedAuthenticationCommand" ref="createDelegatedAuthenticationCommand" />
         <property name="activateExecEnvironmentCommand" ref="activateExecEnvironmentCommand" />
         <property name="folderExistsCommand" ref="folderExistsCommand" />
         <property name="foldersExistsCommand" ref="foldersExistsCommand" />
@@ -223,6 +227,10 @@
             class="com.atricore.idbus.console.modeling.main.controller.ExecutionEnvironmentRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="authenticationServiceRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.AuthenticationServiceRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="createSimpleSSOIdentityApplianceCommand"
             class="com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -307,6 +315,10 @@
     </object>
     <object id="federatedConnectionRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.FederatedConnectionRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="delegatedAuthenticationRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.DelegatedAuthenticationRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="createSimpleSSOSetupCommand"
@@ -397,6 +409,11 @@
 
     <object id="createIdentityLookupCommand"
             class="com.atricore.idbus.console.modeling.main.controller.CreateIdentityLookupCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
+    <object id="createDelegatedAuthenticationCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.CreateDelegatedAuthenticationCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
@@ -608,6 +625,10 @@
     </object>
     <object id="sugarCRMCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.sugarcrm.SugarCRMCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="wikidCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="activationCreateMediator"
@@ -841,6 +862,7 @@
         <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
         <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
         <property name="activationMediator" ref="activationMediator"/>
+        <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
     </object>
 
     <object id="accountManagementPopUpManager"
