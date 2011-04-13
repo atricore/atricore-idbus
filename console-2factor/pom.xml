@@ -43,7 +43,6 @@
     </prerequisites>
 
     <modules>
-        <module>main</module>
         <module>idojos/wikid-2factor-authscheme</module>
         <module>example/ida1-1.0.2</module>
     </modules>
