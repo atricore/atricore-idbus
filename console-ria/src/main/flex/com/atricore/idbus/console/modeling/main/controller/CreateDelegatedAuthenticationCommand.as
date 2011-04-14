@@ -6,6 +6,7 @@ import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
+import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
 
 import mx.collections.ArrayCollection;
 import mx.rpc.Fault;
@@ -46,6 +47,13 @@ public class CreateDelegatedAuthenticationCommand extends IocSimpleCommand imple
             delegatedAuthentication.idp = idp;
             delegatedAuthentication.authnService = _projectProxy.currentIdentityAppliance.idApplianceDefinition.authenticationServices[index];
             idp.delegatedAuthentication = delegatedAuthentication;
+
+            // set authentication mechanism
+            var twoFactorAuthn:TwoFactorAuthentication = new TwoFactorAuthentication();
+            twoFactorAuthn.name = idp.name.replace(/\s+/g, "-").toLowerCase() + "-2factor-authn";
+            idp.authenticationMechanisms.removeAll();
+            idp.authenticationMechanisms.addItem(twoFactorAuthn);
+
             if (authnService.delegatedAuthentications == null){
                 authnService.delegatedAuthentications = new ArrayCollection();
             }

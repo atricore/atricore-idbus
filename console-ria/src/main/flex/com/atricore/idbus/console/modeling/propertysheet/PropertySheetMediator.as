@@ -71,6 +71,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.identityvault.Embe
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.BasicAuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.idp.TwoFactorAuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.jossoactivation.JOSSOActivationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceLookupSection;
@@ -123,6 +124,7 @@ import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
 import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
@@ -211,6 +213,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     private var _authenticationPropertyTab:Group;
     private var _basicAuthenticationSection:BasicAuthenticationSection;
+    private var _twoFactorAuthenticationSection:TwoFactorAuthenticationSection;
     private var _certificateSection:CertificateSection;
     private var _wikidAuthnServiceCoreSection:WikidAuthnServiceCoreSection;
     private var _dirty:Boolean;
@@ -819,6 +822,22 @@ public class PropertySheetMediator extends IocMediator {
             _ipCoreSection.idpLocationContext.text = identityProvider.location.context;
             _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
 
+            // select authentication mechanism (currently there is always only one selected authn. mechanism)
+            var selectedAuthnMechanism:String = "basic";
+            if (identityProvider.authenticationMechanisms != null && identityProvider.authenticationMechanisms.length > 0) {
+                var authnMechanism:AuthenticationMechanism  = identityProvider.authenticationMechanisms.getItemAt(0) as AuthenticationMechanism;
+                if (authnMechanism is BasicAuthentication)
+                    selectedAuthnMechanism = "basic"
+                else if (authnMechanism is TwoFactorAuthentication)
+                    selectedAuthnMechanism = "2factor";
+            }
+            for (var j:int = 0; j < _ipCoreSection.authMechanismCombo.dataProvider.length; j++) {
+                if (_ipCoreSection.authMechanismCombo.dataProvider[j].data == selectedAuthnMechanism) {
+                    _ipCoreSection.authMechanismCombo.selectedIndex = j;
+                    break;
+                }
+            }
+
             /*
             for each(var authMech:AuthenticationMechanism in identityProvider.authenticationMechanisms){
                 if(authMech is BasicAuthentication){
@@ -827,28 +846,8 @@ public class PropertySheetMediator extends IocMediator {
                 }
                 //TODO ADD OTHER AUTH MECHANISMS
             }
-
-//            for each(var liv:ListItemValueObject in  _ipCoreSection.authMechanismCombo.dataProvider){
-//                if(liv.isSelected){
-//                    if(identityProvider.authenticationMechanisms == null){
-//                        identityProvider.authenticationMechanisms = new ArrayCollection();
-//                    }
-//                    switch(liv.name){
-//                        case "basic":
-//                            var basicAuth:BasicAuthentication = new BasicAuthentication();
-//                            basicAuth.name = identityProvider.name + "-basic-authn";
-//                            //TODO MAKE CONFIGURABLE
-//                            basicAuth.hashAlgorithm = "MD5";
-//                            basicAuth.hashEncoding = "HEX";
-//                            basicAuth.ignoreUsernameCase = false;
-//                            identityProvider.authenticationMechanisms.addItem(basicAuth);
-//                            break;
-//                        case "strong":
-//                            break;
-//                    }
-//                }
-//            }
             */
+
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1096,6 +1095,12 @@ public class PropertySheetMediator extends IocMediator {
 
             _basicAuthenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleBasicAuthenticationPropertyTabCreationComplete);
             _authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleBasicAuthenticationPropertyTabRollOut);
+        } else if (_ipCoreSection.authMechanismCombo.selectedItem.data == "2factor") {
+            _twoFactorAuthenticationSection = new TwoFactorAuthenticationSection();
+            _authenticationPropertyTab.addElement(_twoFactorAuthenticationSection);
+
+            _twoFactorAuthenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleTwoFactorAuthenticationPropertyTabCreationComplete);
+            _authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleTwoFactorAuthenticationPropertyTabRollOut);
         }
     }
 
@@ -1160,6 +1165,57 @@ public class PropertySheetMediator extends IocMediator {
                 basicAuthentication.hashAlgorithm = _basicAuthenticationSection.hashAlgorithm.selectedItem.data;
                 basicAuthentication.hashEncoding = _basicAuthenticationSection.hashEncoding.selectedItem.data;
                 basicAuthentication.ignoreUsernameCase = _basicAuthenticationSection.ignoreUsernameCase.selected;
+
+                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+                _applianceSaved = false;
+                _dirty = false;
+            }
+        }
+    }
+
+    private function handleTwoFactorAuthenticationPropertyTabCreationComplete(event:Event):void {
+        var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            // bind view
+
+            // find two-factor authentication
+            var twoFactorAuthentication:TwoFactorAuthentication = null;
+            for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                if (authMechanism is TwoFactorAuthentication) {
+                    twoFactorAuthentication = authMechanism as TwoFactorAuthentication;
+                }
+            }
+
+            if (twoFactorAuthentication != null) {
+                _twoFactorAuthenticationSection.authName.text = twoFactorAuthentication.name;
+                
+                _twoFactorAuthenticationSection.authName.addEventListener(Event.CHANGE, handleSectionChange);
+
+                //clear all existing validators and add basic auth. section validators
+                //_validators = [];
+                _validators.push(_twoFactorAuthenticationSection.nameValidator);
+            }
+        }
+    }
+
+    private function handleTwoFactorAuthenticationPropertyTabRollOut(event:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+            // find two-factor authentication
+            var twoFactorAuthentication:TwoFactorAuthentication = null;
+            for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                if (authMechanism is TwoFactorAuthentication) {
+                    twoFactorAuthentication = authMechanism as TwoFactorAuthentication;
+                }
+            }
+
+            if (twoFactorAuthentication != null) {
+                twoFactorAuthentication.name = _twoFactorAuthenticationSection.authName.text;
 
                 sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -1267,6 +1323,9 @@ public class PropertySheetMediator extends IocMediator {
                 _validators.push(_ipCoreSection.pathValidator);
                 if (_basicAuthenticationSection != null) {
                     _validators.push(_basicAuthenticationSection.nameValidator);
+                }
+                if (_twoFactorAuthenticationSection != null) {
+                    _validators.push(_twoFactorAuthenticationSection.nameValidator);
                 }
             } else if (provider is ServiceProvider) {
                 _validators.push(_spCoreSection.nameValidator);
@@ -5218,6 +5277,9 @@ public class PropertySheetMediator extends IocMediator {
                 _validators.push(_ipCoreSection.pathValidator);
                 if (_basicAuthenticationSection != null) {
                     _validators.push(_basicAuthenticationSection.nameValidator);
+                }
+                if (_twoFactorAuthenticationSection != null) {
+                    _validators.push(_twoFactorAuthenticationSection.nameValidator);
                 }
             } else if (provider is ServiceProvider) {
                 _validators.push(_spCoreSection.nameValidator);

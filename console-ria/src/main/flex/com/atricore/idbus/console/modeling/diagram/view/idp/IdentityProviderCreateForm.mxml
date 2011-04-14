@@ -34,10 +34,11 @@
             <utils:ListItemValueObject label="Remember Me" name="rememberme" isSelected="false" />
         </mx:ArrayCollection-->
         <mx:ArrayCollection id="authMechanismColl">
-            <fx:Object label="Simple Authentication" data="basic"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.simple')}" data="basic"/>
+            <!--fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.2factor')}" data="2factor"/>
             <fx:Object label="Strong (Digital Sertificate)" data="strong"/>
             <fx:Object label="Windows (NTLM)" data="ntlm"/>
-            <fx:Object label="Remember Me" data="rememberme"/>
+            <fx:Object label="Remember Me" data="rememberme"/-->
         </mx:ArrayCollection>
         <utils:NameValidator id="nameValidator" source="{identityProviderName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>

@@ -184,10 +184,12 @@
             <a>authenticationMechanisms</a>
             <b>authenticationMechanisms</b>
             <a-hint>
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.TwoFactorAuthentication
             </a-hint>
             <b-hint>
-                com.atricore.idbus.console.services.dto.BasicAuthenticationDTO
+                com.atricore.idbus.console.services.dto.BasicAuthenticationDTO,
+                com.atricore.idbus.console.services.dto.TwoFactorAuthenticationDTO
             </b-hint>
         </field>
     </mapping>
@@ -743,6 +745,11 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication</class-a>
         <class-b>com.atricore.idbus.console.services.dto.BasicAuthenticationDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.TwoFactorAuthentication</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.TwoFactorAuthenticationDTO</class-b>
     </mapping>
 
     <mapping>
