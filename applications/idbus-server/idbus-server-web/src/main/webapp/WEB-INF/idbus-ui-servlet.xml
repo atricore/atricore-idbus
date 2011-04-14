@@ -83,6 +83,20 @@
 
     </bean>
 
+    <bean name="/claims/username-passcode.do"
+          class="org.atricore.idbus.applications.server.ui.claims.UsernamePasscodeClaimsController">
+
+        <property name="artifactQueueManager" ref="artifactQueueManager"/>
+        <property name="idauRegistry" ref="idsuRegistry"/>
+        <property name="sessionForm" value="true"/>
+        <property name="commandName" value="collectUsernamePasscode"/>
+        <property name="commandClass" value="org.atricore.idbus.applications.server.ui.claims.CollectUsernamePasscodeClaims"/>
+        <!-- Refer to tiles -->
+        <property name="formView" value="username-passcode"/>
+
+    </bean>
+
+
     <bean name="/error.do"
           class="org.atricore.idbus.applications.server.ui.error.DisplayErrorController">
         <property name="artifactQueueManager" ref="artifactQueueManager"/>

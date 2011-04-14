@@ -85,7 +85,27 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
         try {
 
             // Username/password (basic) authentication scheme
-            if (requestToken instanceof UsernameTokenType) {
+            if (isRememberMeToken( requestToken )) {
+                scheme = "rememberme-authentication";
+
+                BinarySecurityTokenType rememberMeToken = (BinarySecurityTokenType) requestToken;
+
+                Credential rememberMeCredential = getAuthenticator().newCredential( scheme, "remembermeToken", rememberMeToken.getValue() );
+                credentials = new Credential[] { rememberMeCredential };
+                
+            } else if (is2FactorAuthnToken(requestToken)) {
+                scheme = "2factor-authentication";
+
+                UsernameTokenType usernameToken = (UsernameTokenType) requestToken;
+
+                String username = usernameToken.getUsername().getValue();
+                String passcode = usernameToken.getOtherAttributes().get( new QName( Constants.PASSCODE_NS) );
+
+                Credential usernameCredential = getAuthenticator().newCredential(scheme, "username", username);
+                Credential passcodeCredential = getAuthenticator().newCredential(scheme, "passcode", passcode);
+
+
+            } else if (requestToken instanceof UsernameTokenType) {
 
                 scheme = "basic-authentication";
 
@@ -99,15 +119,10 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
 
                 credentials = new Credential[] {usernameCredential, passwordCredential};
 
-            } else if (isRememberMeToken( requestToken )) {
-                scheme = "rememberme-authentication";
+            }
 
-                BinarySecurityTokenType rememberMeToken = (BinarySecurityTokenType) requestToken;
 
-                Credential rememberMeCredential = getAuthenticator().newCredential( scheme, "remembermeToken", rememberMeToken.getValue() );
-                credentials = new Credential[] { rememberMeCredential };
-                
-            } // TODO : Add X509, SAML2 and other token types!
+            // TODO : Add X509, SAML2 and other token types!
 
             // Authenticate
             if (scheme ==  null)
@@ -143,4 +158,12 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
         }
         return false;
     }
+
+    private Boolean is2FactorAuthnToken(Object requestToken){
+        if (requestToken instanceof UsernameTokenType ){
+            return ((UsernameTokenType)requestToken).getOtherAttributes().containsKey( new QName( Constants.TWOFACTOR_NS) );
+        }
+        return false;
+    }
+
 }

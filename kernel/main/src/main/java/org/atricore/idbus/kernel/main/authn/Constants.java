@@ -36,7 +36,11 @@ public interface Constants  {
      */
     public static final String PASSWORD_NS = "urn:org:atricore:idbus:kernel:main:authn:pwd";
 
+    public static final String PASSCODE_NS = "urn:org:atricore:idbus:kernel:main:authn:passcode";
+
     public static final String REMEMBERME_NS = "urn:org:atricore:idbus:kernel:main:authn:remember-me";
+
+    public static final String TWOFACTOR_NS = "urn:org:atricore:idbus:kernel:main:authn:2factor";
 
 
 
