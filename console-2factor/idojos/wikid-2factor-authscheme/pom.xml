@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.atricore.idbus.console.twofactor</groupId>
+        <artifactId>console-2factor</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.atricore.idbus.console.twofactor</groupId>
+    <artifactId>com.atricore.idbus.console.twofactor.wikid.authscheme</artifactId>
+    <version>1.1.0-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <name>Atricore IDBus :: IDOJO : WiKID 2 Factor Authentication Scheme</name>
+
+    <properties>
+        <commons.logging.version>1.1.1</commons.logging.version>
+        <spring.version>3.0.3.RELEASE</spring.version>
+        <xbean.version>3.7</xbean.version>
+        <juni.version>4.4</juni.version>
+        <log4j.version>1.2.16</log4j.version>
+        <felix.plugin.version>2.1.0</felix.plugin.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${felix.plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>${pom.artifactId}.*;version=${pom.version}</Export-Package>
+                        <Private-Package>!*</Private-Package>
+                        <Import-Package>
+                            org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
+                            org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                            com.mchange.v2.c3p0; resolution:=optional,
+                            com.protomatter.jdbc.pool; resolution:=optional,
+                            com.sampullara.db; resolution:=optional,
+                            com.theorem.misc; resolution:=optional,
+                            com.theorem.radserver3; resolution:=optional,
+                            com.theorem.radserver3.eap; resolution:=optional,
+                            com.theorem.radserver3.radutil; resolution:=optional,
+                            com.theorem.radserver3.*; resolution:=optional,
+                            nu.xom; resolution:=optional,
+                            org.apache.bsf; resolution:=optional,
+                            org.apache.commons.discovery; resolution:=optional,
+                            org.apache.commons.discovery.resource; resolution:=optional,
+                            org.apache.commons.discovery.resource.classes; resolution:=optional,
+                            org.apache.commons.discovery.resource.names; resolution:=optional,
+                            org.apache.commons.discovery.tools; resolution:=optional,
+                            org.apache.commons.net.pop3; resolution:=optional,
+                            org.apache.commons.net.smtp; resolution:=optional,
+                            org.apache.directory.server.core; resolution:=optional,
+                            org.apache.directory.server.core.authn; resolution:=optional,
+                            org.apache.directory.server.core.configuration; resolution:=optional,
+                            org.apache.directory.server.core.interceptor; resolution:=optional,
+                            org.apache.directory.server.core.invocation; resolution:=optional,
+                            org.apache.directory.server.core.jndi; resolution:=optional,
+                            org.apache.directory.server.core.partition; resolution:=optional,
+                            org.apache.directory.shared; resolution:=optional,
+                            org.apache.directory.shared.ldap; resolution:=optional,
+                            org.apache.directory.shared.ldap.aci; resolution:=optional,
+                            org.apache.directory.shared.ldap.exception; resolution:=optional,
+                            org.apache.directory.shared.ldap.filter; resolution:=optional,
+                            org.apache.directory.shared.ldap.message; resolution:=optional,
+                            org.apache.directory.shared.ldap.name; resolution:=optional,
+                            org.apache.directory.shared.ldap.util; resolution:=optional,
+                            org.apache.log4j.net; resolution:=optional,
+                            org.dom4j; resolution:=optional,
+                            org.dom4j.io; resolution:=optional,
+                            org.dom4j.bean; resolution:=optional,
+                            org.dom4j.datatype; resolution:=optional,
+                            org.dom4j.dom; resolution:=optional,
+                            org.dom4j.dtd; resolution:=optional,
+                            org.dom4j.tree; resolution:=optional,
+                            org.dom4j.util; resolution:=optional,
+                            org.dom4j.xpath; resolution:=optional,
+                            org.dom4j.jaxb; resolution:=optional,
+                            org.exolab.castor.xml; resolution:=optional,
+                            org.joda.time; resolution:=optional,
+                            org.joda.time.format; resolution:=optional,
+                            org.mortbay.http; resolution:=optional,
+                            org.mortbay.http.handler; resolution:=optional,
+                            org.openid4java.message; resolution:=optional,
+                            org.openid4java.server; resolution:=optional,
+                            org.opensaml; resolution:=optional,
+                            org.opensaml.artifact; resolution:=optional,
+                            org.xmlsoap.schemas.wsdl; resolution:=optional,
+                            sun.awt.image.codec; resolution:=optional,
+                            sun.misc; resolution:=optional,
+                            sun.net.smtp; resolution:=optional,
+                            sun.reflect; resolution:=optional,
+                            test.wsdl.import2.types; resolution:=optional,
+                            *
+                        </Import-Package>
+                        <Embed-Dependency>*; scope=compile; type=!pom; inline=false</Embed-Dependency>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel</groupId>
+            <artifactId>org.atricore.idbus.kernel.main</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons.logging.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${juni.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.wikidsystems</groupId>
+            <artifactId>wikid-server-enterprise-lib</artifactId>
+            <version>3.4.56</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ntru</groupId>
+            <artifactId>com.ntru.jNeo</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.2</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.axis</groupId>
+            <artifactId>axis</artifactId>
+            <version>1.3</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcprov-jdk15</artifactId>
+            <version>136</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>xpp3</groupId>
+            <artifactId>xpp3</artifactId>
+            <version>1.1.3.4.O</version>
+            <scope>compile</scope>
+        </dependency>
+
+
+    </dependencies>
+</project>
