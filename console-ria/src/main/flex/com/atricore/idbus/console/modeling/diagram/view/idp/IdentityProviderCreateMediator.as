@@ -46,7 +46,6 @@ import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 import mx.events.ItemClickEvent;
-
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
@@ -136,6 +135,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.samlProfileSLOCheck.selected = true;
         view.authContract.selectedIndex = 0;
         view.authAssertionEmissionPolicy.selectedIndex = 0;
+        view.authMechanism.selectedIndex = 0;
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
@@ -156,10 +156,6 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.keyPassword.enabled = false;
         view.lblUploadMsg.visible = false;
         //view.btnUpload.enabled = false;
-
-        /*for each(var liv:ListItemValueObject in  view.authMechanism.dataProvider){
-            liv.isSelected = false;
-        }*/
 
         _idaURI = "";
         _uploadedFile = null;
@@ -241,28 +237,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             basicAuth.ignoreUsernameCase = false;
             identityProvider.authenticationMechanisms.addItem(basicAuth);
         }
-/*
-        for each(var liv:ListItemValueObject in  view.authMechanism.dataProvider){
-            if(liv.isSelected){
-                if(identityProvider.authenticationMechanisms == null){
-                    identityProvider.authenticationMechanisms = new ArrayCollection();
-                }
-                switch(liv.name){
-                    case "basic":
-                        var basicAuth:BasicAuthentication = new BasicAuthentication();
-                        basicAuth.name = identityProvider.name + "-basic-authn";
-                        //TODO MAKE CONFIGURABLE
-                        basicAuth.hashAlgorithm = "MD5";
-                        basicAuth.hashEncoding = "HEX";
-                        basicAuth.ignoreUsernameCase = false;
-                        identityProvider.authenticationMechanisms.addItem(basicAuth);
-                        break;
-                    case "strong":
-                        break;
-                }
-            }
-        }
-*/
+
         if (view.authContract.selectedItem.data == "default") {
             var authContract:AuthenticationContract = new AuthenticationContract();
             authContract.name = "Default";

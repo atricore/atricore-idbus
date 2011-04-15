@@ -2,6 +2,7 @@ package com.atricore.idbus.console.modeling.main.controller {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
+import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 
@@ -36,6 +37,15 @@ public class AuthenticationServiceRemoveCommand extends IocSimpleCommand {
                 if (authnService.delegatedAuthentications != null) {
                     for each (var da:DelegatedAuthentication in authnService.delegatedAuthentications) {
                         da.idp.delegatedAuthentication = null;
+
+                        // set authentication mechanism
+                        var basicAuthn:BasicAuthentication = new BasicAuthentication();
+                        basicAuthn.name = da.idp.name.replace(/\s+/g, "-").toLowerCase() + "-basic-authn";
+                        basicAuthn.hashAlgorithm = "MD5";
+                        basicAuthn.hashEncoding = "HEX";
+                        basicAuthn.ignoreUsernameCase = false;
+                        da.idp.authenticationMechanisms.removeAll();
+                        da.idp.authenticationMechanisms.addItem(basicAuthn);
                     }
                 }
                 sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, authnService);
