@@ -57,6 +57,12 @@
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.STSTransformer"/>
 
+    <bean name="basicAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationTransformer"/>
+
+    <bean name="twoFactorAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.TwoFactorAuthenticationTransformer"/>
+
     <bean name="spLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPLocalTransformer">
         <property name="sampleKeystore" ref="sampleKeystore"/>
@@ -327,6 +333,8 @@
 
                                         <ref bean="claimsChannelTransformer"/>
                                         <ref bean="stsTransformer"/>
+                                        <ref bean="basicAuthenticationTransformer"/>
+                                        <ref bean="twoFactorAuthenticationTransformer"/>
 
                                         <!-- SP Transformers -->
                                         <ref bean="spLocalTransformer"/>

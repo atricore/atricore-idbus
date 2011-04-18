@@ -308,4 +308,28 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
     public boolean walkNextChild(Keystore node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
+
+    public void arrive(BasicAuthentication node) throws Exception {
+
+    }
+
+    public Object[] leave(BasicAuthentication node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(BasicAuthentication node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(TwoFactorAuthentication node) throws Exception {
+
+    }
+
+    public Object[] leave(TwoFactorAuthentication node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(TwoFactorAuthentication node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
 }

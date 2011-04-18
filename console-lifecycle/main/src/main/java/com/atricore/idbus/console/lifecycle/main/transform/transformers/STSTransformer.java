@@ -1,7 +1,5 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.AuthenticationMechanism;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
@@ -10,9 +8,7 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.authn.scheme.UsernamePasswordAuthScheme;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
-import org.atricore.idbus.kernel.main.store.identity.SimpleIdentityStoreKeyAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,9 +97,10 @@ public class STSTransformer extends AbstractTransformer {
         // ----------------------------------------
         // JOSSO Legacy authenticator
         // ----------------------------------------
-        Bean legacyAuthenticator = newAnonymousBean("org.atricore.idbus.kernel.main.authn.AuthenticatorImpl");
+        //Bean legacyAuthenticator = newAnonymousBean("org.atricore.idbus.kernel.main.authn.AuthenticatorImpl");
+        Bean legacyAuthenticator = newBean(idpBeans, "authenticator", "org.atricore.idbus.kernel.main.authn.AuthenticatorImpl");
         List<Ref> authnSchemes = new ArrayList<Ref>();
-
+/*
         for (AuthenticationMechanism authn : provider.getAuthenticationMechanisms()) {
 
             if (authn instanceof BasicAuthentication) {
@@ -132,8 +129,8 @@ public class STSTransformer extends AbstractTransformer {
             }
 
         }
-
-        if (authnSchemes.size() < 1)
+*/
+        if (provider.getAuthenticationMechanisms().size() < 1)
             throw new TransformException("No Authentication Mechanism defined for " + provider.getName());
 
         setPropertyRefs(legacyAuthenticator, "authenticationSchemes", authnSchemes);
@@ -144,7 +141,8 @@ public class STSTransformer extends AbstractTransformer {
 
         // Default Authenticator
         Bean stsAuthn = newAnonymousBean("org.atricore.idbus.capabilities.sts.main.DefaultSecurityTokenAuthenticator");
-        setPropertyBean(stsAuthn, "authenticator", legacyAuthenticator);
+        //setPropertyBean(stsAuthn, "authenticator", legacyAuthenticator);
+        setPropertyRef(stsAuthn, "authenticator", legacyAuthenticator.getName());
 
         List<Bean> authenticators = new ArrayList<Bean>();
         authenticators.add(stsAuthn);

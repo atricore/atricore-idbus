@@ -162,17 +162,17 @@
 
         <dependency>
             <groupId>com.wikidsystems</groupId>
-            <artifactId>wikid-server-enterprise-lib</artifactId>
-            <version>3.4.56</version>
+            <artifactId>wClient</artifactId>
+            <version>3.4.85</version>
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
+        <!--dependency>
             <groupId>com.ntru</groupId>
             <artifactId>com.ntru.jNeo</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency-->
 
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
@@ -182,7 +182,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.axis</groupId>
+            <groupId>axis</groupId>
             <artifactId>axis</artifactId>
             <version>1.3</version>
             <scope>compile</scope>

@@ -31,6 +31,7 @@ import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AccountLinkEmitterType;
 import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPolicy;
 import com.atricore.idbus.console.services.dto.AuthenticationContract;
+import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
@@ -44,6 +45,8 @@ import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
+
+import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -251,6 +254,22 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         _idpName = idp.name;
         updateSpChannelLocation();
 
+        // select authentication mechanism (currently there is always only one selected authn. mechanism)
+        var selectedAuthnMechanism:String = "basic";
+        if (idp.authenticationMechanisms != null && idp.authenticationMechanisms.length > 0) {
+            var authnMechanism:AuthenticationMechanism  = idp.authenticationMechanisms.getItemAt(0) as AuthenticationMechanism;
+            if (authnMechanism is BasicAuthentication)
+                selectedAuthnMechanism = "basic"
+            else if (authnMechanism is TwoFactorAuthentication)
+                selectedAuthnMechanism = "2factor";
+        }
+        for (var j:int = 0; j < view.spChannelAuthMechanism.dataProvider.length; j++) {
+            if (view.spChannelAuthMechanism.dataProvider[j].data == selectedAuthnMechanism) {
+                view.spChannelAuthMechanism.selectedIndex = j;
+                break;
+            }
+        }
+        
         view.useInheritedIDPSettings.selected = true;
         setSpChannelFields();
     }
@@ -443,14 +462,14 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
                 spChannel.activeProfiles.addItem(Profile.SSO_SLO);
             }
 
-            if (view.spChannelAuthMechanism.selectedItem.data == "basic") {
+            /*if (view.spChannelAuthMechanism.selectedItem.data == "basic") {
                 var basicAuth:BasicAuthentication = new BasicAuthentication();
                 basicAuth.name = federatedConnection.name.replace(/\s+/g, "-").toLowerCase() + "-basic-authn";
                 basicAuth.hashAlgorithm = "MD5";
                 basicAuth.hashEncoding = "HEX";
                 basicAuth.ignoreUsernameCase = false;
                 spChannel.authenticationMechanism = basicAuth;
-            }
+            }*/
 
             if (view.spChannelAuthContractCombo.selectedItem.data == "default") {
                 var authContract:AuthenticationContract = new AuthenticationContract();

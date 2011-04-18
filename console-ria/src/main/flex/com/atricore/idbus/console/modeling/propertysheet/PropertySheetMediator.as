@@ -5843,7 +5843,23 @@ public class PropertySheetMediator extends IocMediator {
         _federatedConnectionSPChannelSection.spChannelLocationPort.text = idp.location.port.toString() != "0" ? idp.location.port.toString() : "";
         _federatedConnectionSPChannelSection.spChannelLocationContext.text = idp.location.context;
         _federatedConnectionSPChannelSection.spChannelLocationPath.text = idp.location.uri;
-        
+
+        // select authentication mechanism (currently there is always only one selected authn. mechanism)
+        var selectedAuthnMechanism:String = "basic";
+        if (idp.authenticationMechanisms != null && idp.authenticationMechanisms.length > 0) {
+            var authnMechanism:AuthenticationMechanism  = idp.authenticationMechanisms.getItemAt(0) as AuthenticationMechanism;
+            if (authnMechanism is BasicAuthentication)
+                selectedAuthnMechanism = "basic"
+            else if (authnMechanism is TwoFactorAuthentication)
+                selectedAuthnMechanism = "2factor";
+        }
+        for (var j:int = 0; j < _federatedConnectionSPChannelSection.spChannelAuthMechanism.dataProvider.length; j++) {
+            if (_federatedConnectionSPChannelSection.spChannelAuthMechanism.dataProvider[j].data == selectedAuthnMechanism) {
+                _federatedConnectionSPChannelSection.spChannelAuthMechanism.selectedIndex = j;
+                break;
+            }
+        }
+
         _federatedConnectionSPChannelSection.useInheritedIDPSettings.selected = true;
         setSpChannelFields();
     }

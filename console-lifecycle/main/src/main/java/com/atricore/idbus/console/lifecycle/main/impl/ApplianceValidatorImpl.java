@@ -442,6 +442,17 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
+    public void arrive(BasicAuthentication node) throws Exception {
+        validateName("Basic Authentication name", node.getName(), node);
+
+        if (StringUtils.isBlank(node.getHashAlgorithm()))
+            addError("Basic Authentication hash algorithm cannot be null or empty");
+
+        if (StringUtils.isBlank(node.getHashEncoding()))
+            addError("Basic Authentication hash encoding cannot be null or empty");
+    }
+
+    @Override
     public void arrive(DbIdentitySource node) throws Exception {
         validateName("DB Identity Source name" , node.getName(), node);
         validateDisplayName("DB Identity Source display name" , node.getDisplayName());
