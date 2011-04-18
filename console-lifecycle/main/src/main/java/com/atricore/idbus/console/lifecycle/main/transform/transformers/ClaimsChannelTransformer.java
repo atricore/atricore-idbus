@@ -1,7 +1,10 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.AuthenticationMechanism;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.TwoFactorAuthentication;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
@@ -77,22 +80,43 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         // endpoints
         List<Bean> ccEndpoints = new ArrayList<Bean>();
 
-        Bean ccPwdArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ccPwdArtifact.setName(idpBean.getName() + "-cc-pwd-artifact");
-        setPropertyValue(ccPwdArtifact, "name", ccPwdArtifact.getName());
-        setPropertyValue(ccPwdArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
-        setPropertyValue(ccPwdArtifact, "location", "/PWD/ARTIFACT");
-        setPropertyValue(ccPwdArtifact, "responseLocation", "/PWD/POST-RESP");
-        setPropertyValue(ccPwdArtifact, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Password");
-        ccEndpoints.add(ccPwdArtifact);
+        for (AuthenticationMechanism authnMechanism : provider.getAuthenticationMechanisms()) {
+            if (authnMechanism instanceof BasicAuthentication) {
+                Bean ccPwdArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                ccPwdArtifact.setName(idpBean.getName() + "-cc-pwd-artifact");
+                setPropertyValue(ccPwdArtifact, "name", ccPwdArtifact.getName());
+                setPropertyValue(ccPwdArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
+                setPropertyValue(ccPwdArtifact, "location", "/PWD/ARTIFACT");
+                setPropertyValue(ccPwdArtifact, "responseLocation", "/PWD/POST-RESP");
+                setPropertyValue(ccPwdArtifact, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Password");
+                ccEndpoints.add(ccPwdArtifact);
 
-        Bean ccPwdPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ccPwdPost.setName(idpBean.getName() + "-cc-pwd-post");
-        setPropertyValue(ccPwdPost, "name", ccPwdPost.getName());
-        setPropertyValue(ccPwdPost, "binding", SamlR2Binding.SSO_POST.getValue());
-        setPropertyValue(ccPwdPost, "location", "/PWD/POST");
-        setPropertyValue(ccPwdPost, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Password");
-        ccEndpoints.add(ccPwdPost);
+                Bean ccPwdPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                ccPwdPost.setName(idpBean.getName() + "-cc-pwd-post");
+                setPropertyValue(ccPwdPost, "name", ccPwdPost.getName());
+                setPropertyValue(ccPwdPost, "binding", SamlR2Binding.SSO_POST.getValue());
+                setPropertyValue(ccPwdPost, "location", "/PWD/POST");
+                setPropertyValue(ccPwdPost, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Password");
+                ccEndpoints.add(ccPwdPost);
+            } else if (authnMechanism instanceof TwoFactorAuthentication) {
+                Bean cc2faArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                cc2faArtifact.setName(idpBean.getName() + "-cc-2fa-artifact");
+                setPropertyValue(cc2faArtifact, "name", cc2faArtifact.getName());
+                setPropertyValue(cc2faArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
+                setPropertyValue(cc2faArtifact, "location", "/2FA/ARTIFACT");
+                setPropertyValue(cc2faArtifact, "responseLocation", "/2FA/POST-RESP");
+                setPropertyValue(cc2faArtifact, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken");
+                ccEndpoints.add(cc2faArtifact);
+
+                Bean cc2faPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                cc2faPost.setName(idpBean.getName() + "-cc-2fa-post");
+                setPropertyValue(cc2faPost, "name", cc2faPost.getName());
+                setPropertyValue(cc2faPost, "binding", SamlR2Binding.SSO_POST.getValue());
+                setPropertyValue(cc2faPost, "location", "/2FA/POST");
+                setPropertyValue(cc2faPost, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken");
+                ccEndpoints.add(cc2faPost);
+            }
+        }
 
         setPropertyAsBeans(claimsChannelBean, "endpoints", ccEndpoints);
 
