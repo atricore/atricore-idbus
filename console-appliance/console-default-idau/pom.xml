@@ -284,6 +284,8 @@
                             org.springframework.context; version="${spring.version}",
                             org.springframework.context.support; version="${spring.version}",
                             org.springframework.beans; version="${spring.version}",
+                            org.springframework.beans.factory; version="${spring.version}",
+                            org.springframework.beans.factory.config; version="${spring.version}",
                             org.springframework.util; version="${spring.version}",
                             org.springframework.orm; version="${spring.version}",
                             org.springframework.orm.jdo; version="${spring.version}",
@@ -320,7 +322,6 @@
                             org.apache.camel.osgi,
                             org.apache.camel.impl,
                             org.osgi.framework,
-                            org.apache.derby.jdbc,
                             org.apache.commons.dbcp,
                             javax.sql,
                         </Import-Package>

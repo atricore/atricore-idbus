@@ -55,17 +55,28 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- Configuration beans                                                    -->
     <!-- ====================================================================== -->
 
+    <!-- Use spring bean setup, to allow multiple config sources -->
+    <!--ctx:property-placeholder properties-ref="idau-default-jdo-properties" /-->
+    <bean id="myBundleConfigurer"
+                class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+
+        <property name="propertiesArray">
+            <list>
+                <ref bean="idau-default-jdo-properties"/>
+                <ref bean="idau-default-properties"/>
+            </list>
+        </property>
+    </bean>
+
     <osgix:cm-properties id="idau-default-jdo-properties"
-                         persistent-id="com.atricore.idbus.console.appliance.default.idau.jdo">
+                         persistent-id="com.atricore.idbus.console.db">
 
         <prop key="javax.jdo.option.Mapping">default</prop>
         <prop key="javax.jdo.PersistenceManagerFactoryClass">org.datanucleus.jdo.JDOPersistenceManagerFactory</prop>
 
-        <prop key="derby.serverName">localhost</prop>
-        <prop key="derby.port">1527</prop>
-        <prop key="derby.db">atricore-console</prop>
         <prop key="javax.jdo.option.ConnectionURL">jdbc:derby://localhost:1527/atricore-console;create=true</prop>
-        
+
         <prop key="javax.jdo.option.ConnectionUserName">atricore</prop>
         <prop key="javax.jdo.option.ConnectionPassword">admin</prop>
         <prop key="javax.jdo.option.ConnectionDriverName">org.apache.derby.jdbc.ClientDriver</prop>
@@ -86,7 +97,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
 
     </osgix:cm-properties>
+    <osgix:cm-properties id="idau-default-properties" persistent-id="com.atricore.idbus.console.appliance.default.idau"/>
 
-    <ctx:property-placeholder properties-ref="idau-default-jdo-properties" />
+
 
 </beans>

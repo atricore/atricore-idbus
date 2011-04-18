@@ -180,33 +180,4 @@
         <!--property name="allowCreate" value="false"/-->
     </bean>
 
-    <bean id="default-ds" class="org.apache.derby.jdbc.ClientDataSource">
-        <property name="portNumber" value="${derby.port}"/>
-        <property name="serverName" value="${derby.serverName}"/>
-        <property name="databaseName" value="${derby.db}"/>
-        <property name="password" value="${javax.jdo.option.ConnectionPassword}"/>
-        <property name="user" value="${javax.jdo.option.ConnectionUserName}"/>
-    </bean>
-    
-    <!--bean id="default-ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName">
-            <value>${javax.jdo.option.ConnectionDriverName}</value>
-        </property>
-        <property name="url">
-            <value>${javax.jdo.option.ConnectionURL}</value>
-        </property>
-        <property name="username">
-            <value>${javax.jdo.option.ConnectionUserName}</value>
-        </property>
-		<property name="password">
-            <value>${javax.jdo.option.ConnectionPassword}</value>
-        </property>
-
-		<property name="defaultAutoCommit">
-            <value>false</value>
-        </property>
-
-    </bean-->
-
-
 </s:beans>
