@@ -3,6 +3,7 @@
  */
 package com.atricore.idbus.console.settings.main.menu {
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.settings.main.menu.event.SettingsMenuEvent;
 import com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer;
@@ -60,6 +61,10 @@ public class MenuMediator extends IocMediator {
             for each (var settingsMenuEntry:SettingsMenuEntry in settingsMenuDrawer.children) {
                 var settingsMenuEntryMediator:IIocMediator = iocFacade.container.getObject(settingsMenuEntry.mediatorName) as IIocMediator;
                 iocFacade.registerMediatorByConfigName(settingsMenuEntryMediator.getConfigName());
+                if (settingsMenuEntry.iconName == "license")
+                    settingsMenuEntry.icon = EmbeddedIcons.licenseIcon;
+                else if (settingsMenuEntry.iconName == "liveUpdate")
+                    settingsMenuEntry.icon = EmbeddedIcons.liveUpdateIcon;
             }
 
             smr.add(settingsMenuDrawer);

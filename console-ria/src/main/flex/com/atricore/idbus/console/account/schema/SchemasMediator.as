@@ -152,7 +152,8 @@ public class SchemasMediator extends IocMediator implements IDisposable{
 
     private function handleEditAttributeClick(event:MouseEvent):void {
         trace("Edit Group Button Click: " + event);
-        sendNotification(ApplicationFacade.DISPLAY_EDIT_ATTRIBUTE);
+        if (view.schemaAttrList.selectedIndex > -1 && schemasManagementProxy.currentSchemaAttribute != null)
+            sendNotification(ApplicationFacade.DISPLAY_EDIT_ATTRIBUTE);
     }
 
     private function handleDeleteAttributeClick(event:MouseEvent):void {

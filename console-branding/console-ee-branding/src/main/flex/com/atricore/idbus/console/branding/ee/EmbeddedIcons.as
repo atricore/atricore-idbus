@@ -36,20 +36,20 @@ public class EmbeddedIcons {
     public static var spMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/identity_provider.png")]
+    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
     public static var externalIdpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
     public static var externalSpMiniIcon:Class;
 
     // Cloud entities
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    [Embed(source="/assets/icons/notation/22x22/salesforce.png")]
     public static var salesforceMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    [Embed(source="/assets/icons/notation/22x22/google_apps.png")]
     public static var googleAppsMiniIcon:Class;
 
     [Bindable]

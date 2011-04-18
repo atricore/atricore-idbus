@@ -85,6 +85,7 @@
     <object id="liveUpdateMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
         <property name="label" value="LiveUpdate"/>
         <property name="shortDescription" value="LiveUpdate Entry"/>
+        <property name="iconName" value="liveUpdate"/>
         <property name="mediatorName" value="liveUpdateMediator"/>
         <property name="viewName" value="liveUpdateView"/>
     </object>

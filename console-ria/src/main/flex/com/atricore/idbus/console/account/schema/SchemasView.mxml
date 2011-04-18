@@ -59,21 +59,21 @@
         </s:DropDownList>
 
         <components:IconLabelButton id="btnCreateAttribute"
-                                    iconUp="{EmbeddedIcons.addGroupIcon}"
+                                    iconUp="{EmbeddedIcons.addAttributeIcon}"
                                     iconWidth="22" iconHeight="22"
                                     paddingTop="3" paddingLeft="3" isLinkButton="false"
                                     skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
                                     toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.create.attribute.label')}"
                                     label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.create.attribute.label')}"/>
         <components:IconLabelButton id="btnEditAttribute" enabled="false"
-                                    iconUp="{EmbeddedIcons.editGroupIcon}"
+                                    iconUp="{EmbeddedIcons.editAttributeIcon}"
                                     iconWidth="22" iconHeight="22"
                                     paddingTop="3" paddingLeft="3" isLinkButton="false"
                                     skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
                                     toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.edit.attribute.label')}"
                                     label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.edit.attribute.label')}"/>
         <components:IconLabelButton id="btnDeleteAttribute" enabled="false"
-                                    iconUp="{EmbeddedIcons.deleteGroupIcon}"
+                                    iconUp="{EmbeddedIcons.removeAttributeIcon}"
                                     iconWidth="22" iconHeight="22"
                                     paddingTop="3" paddingLeft="3" isLinkButton="false"
                                     skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"

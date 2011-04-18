@@ -7,6 +7,7 @@ public class SettingsMenuEntry {
 
     private var _label:String;
     private var _icon:Class;
+    private var _iconName:String;
     private var _shortDescription:String;
     private var _mediatorName:String;
     private var _viewName:String;
@@ -29,6 +30,14 @@ public class SettingsMenuEntry {
 
     public function set icon(value:Class):void {
         _icon = value;
+    }
+
+    public function get iconName():String {
+        return _iconName;
+    }
+
+    public function set iconName(value:String):void {
+        _iconName = value;
     }
 
     public function get shortDescription():String {

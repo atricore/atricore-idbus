@@ -17,9 +17,9 @@
     </fx:Metadata>
 
     <!-- fill -->
-    <s:Rect x="400" width="100%" height="100%">
+    <s:Rect x="800" width="100%" height="100%">
         <s:fill>
-            <s:BitmapFill source="@Embed('/assets/icons/ui/atricore_console_ce_tile.png')" fillMode="{BitmapFillMode.REPEAT}" />
+            <s:BitmapFill source="@Embed('/assets/icons/ui/atricore_console_ce_tile.png')" fillMode="{BitmapFillMode.SCALE}" smooth="true" />
         </s:fill>
     </s:Rect>
 
@@ -29,7 +29,7 @@
             <s:HorizontalLayout gap="0" />
         </s:layout>
 
-        <s:BitmapImage x="0" width="400" height="100%" source="@Embed('/assets/icons/ui/atricore_console_ce_heading.png')"/>
+        <s:BitmapImage x="0" width="800" height="100%" source="@Embed('/assets/icons/ui/atricore_console_ce_heading.png')"/>
 
         <s:Group id="contentGroup" width="100%" height="100%" minWidth="0" minHeight="0" />
     </s:Group>

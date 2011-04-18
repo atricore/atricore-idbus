@@ -760,7 +760,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             sp.setActiveBindings(new HashSet<BindingDTO>());
         }
         sp.getActiveBindings().add(BindingDTO.SAMLR2_ARTIFACT);
-        sp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
+        sp.getActiveBindings().add(BindingDTO.SAMLR2_SOAP);
         sp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_POST);
 
         // set active profiles
@@ -879,7 +879,6 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idp.setIdentityAppliance(iad);
 
         idp.getActiveBindings().add(BindingDTO.SAMLR2_ARTIFACT);
-        idp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
         idp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_POST);
         idp.getActiveBindings().add(BindingDTO.SAMLR2_SOAP);
 
