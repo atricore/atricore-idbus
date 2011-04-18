@@ -27,13 +27,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
                   ref="idstore-default"
                   interface="org.atricore.idbus.kernel.main.store.AbstractStore"/>
 
-    <osgi:service id="osgi-default-pst-ds" ref="default-ds"
-                  interface="javax.sql.DataSource" >
-        <service-properties>
-            <entry key="jdbcDS" value="default-pst"/>
-        </service-properties>
-    </osgi:service>
-
     <!-- OSGi services import -->
 
     <osgi:reference id="cxf" cardinality="1..1" timeout="60" interface="org.apache.cxf.Bus"/>

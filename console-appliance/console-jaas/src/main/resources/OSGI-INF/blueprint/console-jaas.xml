@@ -28,23 +28,28 @@
     <!-- AdminConfig property place holder for the org.apache.karaf.jaas  -->
     <cm:property-placeholder persistent-id="com.atricore.idbus.console.jaas">
         <cm:default-properties>
-            <cm:property name="jdbc.datasourceUrl" value="osgi:javax.sql.DataSource/(&amp;(jdbcDS=default-pst))
-" />
-            <cm:property name="jdbc.passwordQuery" value="SELECT  USERPASSWORD FROM ATC_USER WHERE USERNAME = ?" />
-            <cm:property name="jdbc.roleQuery" value="SELECT G.NAME FROM ATC_GROUP G JOIN ATC_USER_GROUP GU ON G.ID = GU.GROUP_ID JOIN ATC_USER U ON GU.USER_ID = U.ID  WHERE U.USERNAME = ?" />
+            <cm:property name="jdbc.datasourceUrl" value="osgi:javax.sql.DataSource/(&amp;(jdbcDS=default-ds))"/>
+            <cm:property name="jdbc.passwordQuery" value="SELECT  USERPASSWORD FROM ATC_USER WHERE USERNAME = ?"/>
+            <cm:property name="jdbc.roleQuery"
+                         value="SELECT G.NAME FROM ATC_GROUP G JOIN ATC_USER_GROUP GU ON G.ID = GU.GROUP_ID JOIN ATC_USER U ON GU.USER_ID = U.ID  WHERE U.USERNAME = ?"/>
+            <cm:property name="encryption.enabled" value="true"/>
+            <cm:property name="encryption.name" value="basic"/>
+            <cm:property name="encryption.algorithm" value="MD5"/>
+            <cm:property name="encryption.encoding" value="hexadecimal"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <!-- TODO : Implement PSP/SMPL Based (or ... STS/ Authenticator based ?! ) JAAS Login Module -->
     <!-- Atricore admins JAAS configuration -->
     <jaas:config name="atricore">
         <jaas:module className="org.apache.karaf.jaas.modules.jdbc.JDBCLoginModule" flags="required">
             datasource = ${jdbc.datasourceUrl}
             query.password = ${jdbc.passwordQuery}
             query.role = ${jdbc.roleQuery}
-            encryption.enabled = true
-            encryption.name = basic
-            encryption.algorithm = MD5
-            encryption.encoding = hexadecimal
+            encryption.enabled = ${encryption.enabled}
+            encryption.name = ${encryption.name}
+            encryption.algorithm = ${encryption.algorithm}
+            encryption.encoding = ${encryption.encoding}
         </jaas:module>
 
         <jaas:module className="com.atricore.idbus.console.appliance.jaas.RBACLoginModule" flags="required">
