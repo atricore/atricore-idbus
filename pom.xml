@@ -1119,22 +1119,6 @@
 
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>atricore-m2-repo</id>
-            <name>Atricore Release Distribution Repository</name>
-            <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-release-repository</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>atricore-m2-snapshot-repo</id>
-            <name>Atricore Development Snapshot Repository</name>
-            <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-snapshot-repository</url>
-        </snapshotRepository>
-
-    </distributionManagement>
-
-
     <repositories>
         <!-- JOSSO Releases Repository -->
         <repository>
@@ -1550,10 +1534,27 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+
             <properties>
                 <console.distribution>ee</console.distribution>
                 <console.distribution.descr>EE</console.distribution.descr>
             </properties>
+
+            <distributionManagement>
+
+                <repository>
+                    <id>atricore-m2-commercial-repo</id>
+                    <name>Atricore Release Distribution Repository</name>
+                    <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-release-repository</url>
+                </repository>
+
+                <snapshotRepository>
+                    <id>atricore-m2-snapshot-commercial-repo</id>
+                    <name>Atricore Development Snapshot Repository</name>
+                    <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-snapshot-repository</url>
+                </snapshotRepository>
+
+            </distributionManagement>
 
             <modules>
                 <!-- TODO : Move this to other project -->
@@ -1588,6 +1589,21 @@
                 <console.distribution>ce</console.distribution>
                 <console.distribution.descr>CE</console.distribution.descr>
             </properties>
+
+            <distributionManagement>
+                <repository>
+                    <id>atricore-m2-repo</id>
+                    <name>Atricore Release Distribution Repository</name>
+                    <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-release-repository</url>
+                </repository>
+
+                <snapshotRepository>
+                    <id>atricore-m2-snapshot-repo</id>
+                    <name>Atricore Development Snapshot Repository</name>
+                    <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-snapshot-repository</url>
+                </snapshotRepository>
+
+            </distributionManagement>
 
             <modules>
                 <!-- TODO : Move this to other project -->
