@@ -34,9 +34,9 @@
 
     <groupId>com.atricore.idbus.console.twofactor</groupId>
     <artifactId>com.atricore.idbus.console.twofactor.wikid.authscheme</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Atricore IDBus :: IDOJO : WiKID 2 Factor Authentication Scheme</name>
+    <name>Atricore Console :: IDOJO : WiKID 2 Factor Authentication Scheme</name>
 
     <properties>
         <commons.logging.version>1.1.1</commons.logging.version>
@@ -45,6 +45,7 @@
         <juni.version>4.4</juni.version>
         <log4j.version>1.2.16</log4j.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
+        <wikid.version>3.4.85</wikid.version>
     </properties>
 
     <build>
@@ -70,6 +71,7 @@
                             com.theorem.radserver3.eap; resolution:=optional,
                             com.theorem.radserver3.radutil; resolution:=optional,
                             com.theorem.radserver3.*; resolution:=optional,
+                            com.wikidsystems.util; resolution:=optional,
                             nu.xom; resolution:=optional,
                             org.apache.bsf; resolution:=optional,
                             org.apache.commons.discovery; resolution:=optional,
@@ -135,7 +137,7 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
-            <version>${pom.version}</version>
+            <version>${idbus.kernel.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -163,7 +165,7 @@
         <dependency>
             <groupId>com.wikidsystems</groupId>
             <artifactId>wClient</artifactId>
-            <version>3.4.85</version>
+            <version>${wikid.version}</version>
             <scope>compile</scope>
         </dependency>
 

@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder;
 import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsMediator;
+import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
@@ -88,7 +89,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
                 setPropertyValue(ccPwdArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
                 setPropertyValue(ccPwdArtifact, "location", "/PWD/ARTIFACT");
                 setPropertyValue(ccPwdArtifact, "responseLocation", "/PWD/POST-RESP");
-                setPropertyValue(ccPwdArtifact, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Password");
+                setPropertyValue(ccPwdArtifact, "type", AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue());
                 ccEndpoints.add(ccPwdArtifact);
 
                 Bean ccPwdPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
@@ -96,7 +97,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
                 setPropertyValue(ccPwdPost, "name", ccPwdPost.getName());
                 setPropertyValue(ccPwdPost, "binding", SamlR2Binding.SSO_POST.getValue());
                 setPropertyValue(ccPwdPost, "location", "/PWD/POST");
-                setPropertyValue(ccPwdPost, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Password");
+                setPropertyValue(ccPwdPost, "type", AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue());
                 ccEndpoints.add(ccPwdPost);
             } else if (authnMechanism instanceof TwoFactorAuthentication) {
                 Bean cc2faArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
@@ -105,7 +106,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
                 setPropertyValue(cc2faArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
                 setPropertyValue(cc2faArtifact, "location", "/2FA/ARTIFACT");
                 setPropertyValue(cc2faArtifact, "responseLocation", "/2FA/POST-RESP");
-                setPropertyValue(cc2faArtifact, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken");
+                setPropertyValue(cc2faArtifact, "type", AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue());
                 ccEndpoints.add(cc2faArtifact);
 
                 Bean cc2faPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
@@ -113,7 +114,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
                 setPropertyValue(cc2faPost, "name", cc2faPost.getName());
                 setPropertyValue(cc2faPost, "binding", SamlR2Binding.SSO_POST.getValue());
                 setPropertyValue(cc2faPost, "location", "/2FA/POST");
-                setPropertyValue(cc2faPost, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken");
+                setPropertyValue(cc2faPost, "type", AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue());
                 ccEndpoints.add(cc2faPost);
             }
         }
