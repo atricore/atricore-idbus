@@ -91,6 +91,7 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
                 BinarySecurityTokenType rememberMeToken = (BinarySecurityTokenType) requestToken;
 
                 Credential rememberMeCredential = getAuthenticator().newCredential( scheme, "remembermeToken", rememberMeToken.getValue() );
+
                 credentials = new Credential[] { rememberMeCredential };
                 
             } else if (is2FactorAuthnToken(requestToken)) {
@@ -103,6 +104,8 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
 
                 Credential usernameCredential = getAuthenticator().newCredential(scheme, "username", username);
                 Credential passcodeCredential = getAuthenticator().newCredential(scheme, "passcode", passcode);
+
+                credentials = new Credential[] {usernameCredential, passcodeCredential};
 
 
             } else if (requestToken instanceof UsernameTokenType) {
@@ -161,7 +164,7 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
 
     private Boolean is2FactorAuthnToken(Object requestToken){
         if (requestToken instanceof UsernameTokenType ){
-            return ((UsernameTokenType)requestToken).getOtherAttributes().containsKey( new QName( Constants.TWOFACTOR_NS) );
+            return ((UsernameTokenType)requestToken).getOtherAttributes().containsKey( new QName( Constants.PASSCODE_NS) );
         }
         return false;
     }

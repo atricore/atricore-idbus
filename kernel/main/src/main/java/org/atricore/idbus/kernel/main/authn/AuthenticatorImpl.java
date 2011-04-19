@@ -152,17 +152,18 @@ public class AuthenticatorImpl implements Authenticator {
      * @return the cloned AuthenticationScheme
      */
     protected AuthenticationScheme getScheme(String schemeName) {
-        for (int i = 0; i < _as.size(); i++) {
-            AuthenticationScheme a = _as.get(i);
 
+        for (AuthenticationScheme a : _as) {
             if (logger.isDebugEnabled())
                 logger.debug("getScheme() : checking " + a.getName());
 
+            // Important to clone it, to make it thread-safe.
             if (a.getName().equals(schemeName))
                 return (AuthenticationScheme) a.clone();
         }
 
-        logger.warn("Authentication scheme ["+schemeName+"] not registered!");
+        logger.error("Authentication scheme ["+schemeName+"] not registered!");
+
         return null;
     }
 
