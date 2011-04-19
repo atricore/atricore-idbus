@@ -132,6 +132,9 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         // basicAuthnUILocation
         setPropertyValue(ccMediator, "basicAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-password.do");
 
+        // 2faAuthnUILocation
+        setPropertyValue(ccMediator, "twoFactorAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-passcode.do");
+
         // artifactQueueManager
         setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
         

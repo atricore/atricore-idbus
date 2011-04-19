@@ -105,7 +105,7 @@ public class TwoFactorAuthenticationTransformer extends AbstractTransformer {
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         Bean twoFactorAuthnBean = getBean(idpBeans, normalizeBeanName(twoFactorAuthn.getName()));
         
-        // Wire basic authentication scheme to Authenticator
+        // Wire two factor authentication scheme to Authenticator
         Collection<Bean> authenticators = getBeansOfType(idpBeans, AuthenticatorImpl.class.getName());
         if (authenticators.size() == 1) {
             Bean authenticator = authenticators.iterator().next();

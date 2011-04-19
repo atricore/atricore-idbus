@@ -119,9 +119,9 @@ public class WiKIDAuthenticationScheme extends AbstractAuthenticationScheme {
      */
     protected WiKIDUsernameCredential getUsernameCredential(Credential[] credentials) {
 
-        for (int i = 0; i < credentials.length; i++) {
-            if (credentials[i] instanceof WiKIDUsernameCredential) {
-                return (WiKIDUsernameCredential) credentials[i];
+        for (Credential credential : credentials) {
+            if (credential instanceof WiKIDUsernameCredential) {
+                return (WiKIDUsernameCredential) credential;
             }
         }
         return null;
