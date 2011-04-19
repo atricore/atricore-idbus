@@ -1,11 +1,32 @@
 package org.atricore.idbus.applications.server.ui.claims;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.binding.SsoHttpArtifactBinding;
+import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
+import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
+import org.atricore.idbus.kernel.main.mediation.*;
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
+import org.atricore.idbus.kernel.main.mediation.claim.*;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.springframework.validation.BindException;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class UsernamePasscodeClaimsController extends SimpleFormController {
 
-    private static final Log logger = LogFactory.getLog(UsernamePasswordClaimsController.class);
+    private static final Log logger = LogFactory.getLog(UsernamePasscodeClaimsController.class);
 
     private UUIDGenerator idGenerator = new UUIDGenerator();
 
@@ -18,7 +39,7 @@ public class UsernamePasscodeClaimsController extends SimpleFormController {
 
         String artifactId = hreq.getParameter(SsoHttpArtifactBinding.SSO_ARTIFACT_ID);
 
-        CollectUsernamePasswordClaims collectClaims = new CollectUsernamePasswordClaims();
+        CollectUsernamePasscodeClaims collectClaims = new CollectUsernamePasscodeClaims();
         if (logger.isDebugEnabled())
             logger.debug("Creating form backing object for artifact " + artifactId);
 
@@ -148,7 +169,7 @@ public class UsernamePasscodeClaimsController extends SimpleFormController {
 
         for (IdentityMediationEndpoint endpoint : request.getClaimsChannel().getEndpoints()) {
             // Look for PWD endpoint using Artifacct binding
-            if (AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue().equals(endpoint.getType()) &&
+            if (AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue().equals(endpoint.getType()) &&
                     SamlR2Binding.SSO_ARTIFACT.getValue().equals(endpoint.getBinding())) {
 
                 if (logger.isDebugEnabled())

@@ -1,19 +1,26 @@
 package org.atricore.idbus.applications.server.ui.claims;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
+
+import javax.servlet.http.HttpServletRequest;
+
+
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class CollectUsernamePasscodeClaims implements java.io.Serializable {
 
-    private static final Log logger = LogFactory.getLog(CollectUsernamePasswordClaims.class);
+    private static final Log logger = LogFactory.getLog(CollectUsernamePasscodeClaims.class);
 
     private ClaimsRequest claimsRequest;
     private String username;
     private String passcode;
     private boolean rememberMe;
 
-    public CollectUsernamePasswordClaims() {
-        logger.debug("Creating new CollectUsernamePasswordClaims instance");
+    public CollectUsernamePasscodeClaims() {
+        logger.debug("Creating new CollectUsernamePasscodeClaims instance");
     }
 
     public String getUsername() {
@@ -28,8 +35,8 @@ public class CollectUsernamePasscodeClaims implements java.io.Serializable {
         return passcode;
     }
 
-    public void setPasscode(String password) {
-        this.passcode = password;
+    public void setPasscode(String passcode) {
+        this.passcode = passcode;
     }
 
     public boolean isRememberMe() {
@@ -51,7 +58,7 @@ public class CollectUsernamePasscodeClaims implements java.io.Serializable {
     @Override
     public String toString() {
         return super.toString() + "[username=" + username +
-                ",password=" + (password != null ? password : "********" ) +
+                ",passcode=" + (passcode != null ? passcode : "********" ) +
                 ",rememberMe=" + rememberMe + "]";
     }
 }

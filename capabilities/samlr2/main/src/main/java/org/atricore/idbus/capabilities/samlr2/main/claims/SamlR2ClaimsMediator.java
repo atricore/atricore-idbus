@@ -44,17 +44,27 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
 
     private static final Log logger = LogFactory.getLog( SamlR2ClaimsMediator.class );
 
-    private String loginFormLocation;
+    private String basicAuthnUILocation;
+
+    private String twoFactorAuthnUILocation;
 
     /**
      * @org.apache.xnean.Property alias="login-form-location"
      */
     public String getBasicAuthnUILocation() {
-        return loginFormLocation;
+        return basicAuthnUILocation;
     }
 
-    public void setBasicAuthnUILocation( String loginFormLocation ) {
-        this.loginFormLocation = loginFormLocation;
+    public void setBasicAuthnUILocation( String basicAuthnUILocation ) {
+        this.basicAuthnUILocation = basicAuthnUILocation;
+    }
+
+    public String getTwoFactorAuthnUILocation() {
+        return twoFactorAuthnUILocation;
+    }
+
+    public void setTwoFactorAuthnUILocation(String twoFactorAuthnUILocation) {
+        this.twoFactorAuthnUILocation = twoFactorAuthnUILocation;
     }
 
     @Override

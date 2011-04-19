@@ -93,7 +93,7 @@ public class UsernamePasscodeClaimsProducer extends SamlR2Producer
                 "BasicAuthnLoginForm",
                 "BasicAuthnLoginForm",
                 SamlR2Binding.SSO_ARTIFACT.getValue(),
-                mediator.getBasicAuthnUILocation(),
+                mediator.getTwoFactorAuthnUILocation(),
                 null);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
