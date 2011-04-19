@@ -92,7 +92,7 @@ public class EmbeddedIcons {
     public static var connectionIdentityLookupMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/identity_lookup.png")]
+    [Embed(source="/assets/icons/notation/22x22/identity_verification.png")]
     public static var connectionDelegatedAuthnMiniIcon:Class;
 
     // Execution environments

@@ -165,7 +165,7 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 );
 
         connectionPaletteDrawer.add(
-                new PaletteEntry("Delegated Authentication", EmbeddedIcons.connectionDelegatedAuthnMiniIcon , "Delegated Authentication Entry", DiagramElementTypes.DELEGATED_AUTHENTICATION_ELEMENT_TYPE)
+                new PaletteEntry("Identity Verification", EmbeddedIcons.connectionDelegatedAuthnMiniIcon , "Identity Verification Entry", DiagramElementTypes.DELEGATED_AUTHENTICATION_ELEMENT_TYPE)
 
                 );
 
