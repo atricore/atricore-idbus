@@ -409,6 +409,9 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         validateName("Authentication Service name", node.getName(), node);
         validateDisplayName("Authentication Service display name", node.getDisplayName());
 
+        if (node.getDelegatedAuthentications() == null || node.getDelegatedAuthentications().size() == 0)
+            addError("Authentication Service [" + node.getName() + "] should have at least one connection to an IDP");
+
         if (node instanceof WikidAuthenticationService) {
             WikidAuthenticationService wikidAuthnService = (WikidAuthenticationService) node;
             if (StringUtils.isBlank(wikidAuthnService.getServerHost()))

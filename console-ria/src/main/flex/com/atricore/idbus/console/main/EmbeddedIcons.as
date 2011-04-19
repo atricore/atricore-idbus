@@ -344,7 +344,7 @@ public class EmbeddedIcons {
     public static var connectionIdentityLookupMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/identity_lookup.png")]
+    [Embed(source="/assets/icons/notation/22x22/identity_verification.png")]
     public static var connectionDelegatedAuthnMiniIcon:Class;
 
     [Bindable]
@@ -360,7 +360,7 @@ public class EmbeddedIcons {
     public static var connectionIdentityLookupIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/identity_lookup.png")]
+    [Embed(source="/assets/icons/notation/48x48/identity_verification.png")]
     public static var connectionDelegatedAuthnIcon:Class;
 
     //Execution environments
