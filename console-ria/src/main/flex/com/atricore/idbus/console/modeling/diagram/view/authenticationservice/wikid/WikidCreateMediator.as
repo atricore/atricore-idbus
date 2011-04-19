@@ -132,7 +132,7 @@ public class WikidCreateMediator extends IocFormMediator {
         caKeystore.type = "JKS";
         caKeystore.keystorePassOnly = true;
         var caResource:Resource = new Resource();
-        caResource.name = _uploadedCAStoreFileName.substring(0, _uploadedCAStoreFileName.lastIndexOf("."));
+        caResource.name = _uploadedCAStoreFileName;
         caResource.displayName = _uploadedCAStoreFileName;
         caResource.uri = _uploadedCAStoreFileName;
         caResource.value = _uploadedCAStoreFile;
@@ -147,7 +147,11 @@ public class WikidCreateMediator extends IocFormMediator {
         wcKeystore.type = "PKCS#12";
         wcKeystore.keystorePassOnly = true;
         var wcResource:Resource = new Resource();
-        wcResource.name = _uploadedWCStoreFileName.substring(0, _uploadedWCStoreFileName.lastIndexOf("."));
+        if (_uploadedWCStoreFileName.lastIndexOf(".") > 0) {
+            wcResource.name = _uploadedWCStoreFileName.substring(0, _uploadedWCStoreFileName.lastIndexOf("."));
+        } else {
+            wcResource.name = _uploadedWCStoreFileName;
+        }
         wcResource.displayName = _uploadedWCStoreFileName;
         wcResource.uri = _uploadedWCStoreFileName;
         wcResource.value = _uploadedWCStoreFile;

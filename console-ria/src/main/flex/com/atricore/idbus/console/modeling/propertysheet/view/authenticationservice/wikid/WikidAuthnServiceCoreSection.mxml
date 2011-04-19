@@ -87,7 +87,7 @@
             </s:HGroup>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.ca.store.pass')}:" required="true">
-                <s:TextInput id="caStorePass" width="250"/>
+                <s:TextInput id="caStorePass" width="250" displayAsPassword="true"/>
             </mx:FormItem>
 
             <s:HGroup width="100%">
@@ -104,7 +104,7 @@
             </s:HGroup>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.wc.store.pass')}:" required="true">
-                <s:TextInput id="wcStorePass" width="250"/>
+                <s:TextInput id="wcStorePass" width="250" displayAsPassword="true"/>
             </mx:FormItem>
 
         </mx:Form>

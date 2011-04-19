@@ -2287,7 +2287,7 @@ public class PropertySheetMediator extends IocMediator {
                 if (caResource == null) {
                     caResource = new Resource();
                 }
-                caResource.name = _uploadedWikidCAStoreFileName.substring(0, _uploadedWikidCAStoreFileName.lastIndexOf("."));
+                caResource.name = _uploadedWikidCAStoreFileName;
                 caResource.displayName = _uploadedWikidCAStoreFileName;
                 caResource.uri = _uploadedWikidCAStoreFileName;
                 caResource.value = _uploadedWikidCAStoreFile;
@@ -2310,7 +2310,11 @@ public class PropertySheetMediator extends IocMediator {
                 if (wcResource == null) {
                     wcResource = new Resource();
                 }
-                wcResource.name = _uploadedWCStoreFileName.substring(0, _uploadedWCStoreFileName.lastIndexOf("."));
+                if (_uploadedWCStoreFileName.lastIndexOf(".") > 0) {
+                    wcResource.name = _uploadedWCStoreFileName.substring(0, _uploadedWCStoreFileName.lastIndexOf("."));
+                } else {
+                    wcResource.name = _uploadedWCStoreFileName;
+                }
                 wcResource.displayName = _uploadedWCStoreFileName;
                 wcResource.uri = _uploadedWCStoreFileName;
                 wcResource.value = _uploadedWCStoreFile;

@@ -71,7 +71,7 @@
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.ca.store.pass')}:" required="true">
-        <s:TextInput id="caStorePass" width="300"/>
+        <s:TextInput id="caStorePass" width="300" displayAsPassword="true"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.wc.store')}:" required="true">
@@ -83,7 +83,7 @@
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.wc.store.pass')}:" required="true">
-        <s:TextInput id="wcStorePass" width="300"/>
+        <s:TextInput id="wcStorePass" width="300" displayAsPassword="true"/>
     </mx:FormItem>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
