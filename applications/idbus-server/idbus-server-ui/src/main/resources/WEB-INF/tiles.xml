@@ -36,6 +36,10 @@
 		<put-attribute name="content" value="/WEB-INF/templates/claims/username-password.jsp" type="template"/>
 	</definition>
 
+    <definition name="username-passcode" extends="layout-default">
+        <put-attribute name="content" value="/WEB-INF/templates/claims/username-passcode.jsp" type="template"/>
+    </definition>
+
     <definition name="error" extends="layout-default">
         <put-attribute name="content" value="/WEB-INF/templates/errors/error.jsp" type="template"/>
     </definition>

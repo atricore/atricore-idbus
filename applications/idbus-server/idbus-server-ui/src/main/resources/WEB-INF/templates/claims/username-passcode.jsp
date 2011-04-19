@@ -46,7 +46,7 @@
                     <div class="main">
                         <h2><fmt:message key="claims.title.userLogin"/></h2>
                         <p><fmt:message key="claims.text.userLogin"/></p>
-                        <form:form method="post" commandName="collectUsernamePassword" >
+                        <form:form method="post" commandName="collectUsernamePasscode" >
                             <fieldset>
                                 <div><label for="username"><fmt:message key="claims.label.username"/> </label> <form:input cssClass="text" path="username" tabindex="10"/>
                                 </div>

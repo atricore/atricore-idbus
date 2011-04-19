@@ -99,10 +99,6 @@
     </feature>
 
 
-    <feature name="atricore-idbus-server-web" version="${version}">
-        <bundle>mvn:org.atricore.idbus.applications.server/org.atricore.idbus.applications.server.web/${idbus.app.server.version}/war</bundle>
-    </feature>
-
     <feature name="atricore-examples" version="${version}">
         <feature version="${version}">atricore-federation-examples</feature>
         <feature version="${version}">atricore-provisioning-examples</feature>
