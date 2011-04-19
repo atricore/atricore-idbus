@@ -99,7 +99,7 @@ public enum AuthnCtxClass {
     TLS_CLIENT_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient", true),
 
     /** URI for Time Synchornized Token authentication context. */
-    TIME_SYNC_TOKEN_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken", true),
+    TIME_SYNC_TOKEN_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken", false),
 
     /** URI for unspecified authentication context. */
     UNSPECIFIED_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified", true);

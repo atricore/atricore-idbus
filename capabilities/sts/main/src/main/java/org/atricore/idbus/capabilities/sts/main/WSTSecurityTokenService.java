@@ -125,7 +125,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             throw e;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new RuntimeException(e); // TODO : Send fault
+            throw new SecurityTokenAuthenticationFailure(e.getMessage(), e);
         }
 
 

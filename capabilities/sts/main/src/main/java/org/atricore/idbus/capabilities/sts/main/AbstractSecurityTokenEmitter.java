@@ -24,6 +24,7 @@ package org.atricore.idbus.capabilities.sts.main;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
+import org.atricore.idbus.kernel.main.authn.exceptions.AuthenticationFailureException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.planning.*;

@@ -740,7 +740,11 @@ public class SingleSignOnProducer extends SamlR2Producer {
             if (authnCtxClass.isPassive() || status.getCurrentClaimsEndpointTryCount() >= 5) {
                 status.getUsedClaimsEndpoints().add(status.getCurrentClaimsEndpoint().getName());
                 status.setCurrentClaimsEndpoint(null);
+                status.setCurrentClaimsEndpointTryCount(0);
+            } else {
+                status.setCurrentClaimsEndpointTryCount(status.getCurrentClaimsEndpointTryCount() + 1);
             }
+
         }
 
         if (status.getCurrentClaimsEndpoint() == null) {
@@ -749,6 +753,10 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
                 // Ignore used endpoints
                 if (status.getUsedClaimsEndpoints().contains(endpoint.getName()))
+                    continue;
+
+                // As a work around, ignore endpoints not using artifact binding
+                if (!endpoint.getBinding().equals(SamlR2Binding.SSO_ARTIFACT.getValue()))
                     continue;
 
                 // Only use endpoints that are 'passive' when 'passive' was requested.

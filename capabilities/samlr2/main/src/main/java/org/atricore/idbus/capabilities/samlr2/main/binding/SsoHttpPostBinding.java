@@ -101,7 +101,7 @@ public class SsoHttpPostBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
             assert ed != null : "Mediation Response MUST Provide a destination";
             if (out.getContent() != null)
-                throw new IllegalStateException("Content not supported for IDBUS HTTP Redirect bidning");
+                throw new IllegalStateException("Content not supported for IDBUS HTTP POST bidning");
 
             // ------------------------------------------------------------
             // Create HTML Form for response body
