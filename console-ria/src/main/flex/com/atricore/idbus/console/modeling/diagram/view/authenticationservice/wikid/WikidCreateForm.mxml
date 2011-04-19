@@ -29,7 +29,7 @@
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{wikidName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
-        <utils:URLValidator id="serverHostValidator" source="{serverHost}" required="true" property="text" trigger="{btnOk}"
+        <mx:StringValidator id="serverHostValidator" source="{serverHost}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
         <mx:NumberValidator id="serverPortValidator" source="{serverPort}" required="true" property="text"
                         minValue="1" maxValue="65535" trigger="{btnOk}" triggerEvent="click"
@@ -55,7 +55,7 @@
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.server.port')}:" required="true">
-        <s:TextInput id="serverPort" width="300" text="8838"/>
+        <s:TextInput id="serverPort" width="300" text="8388"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.server.code')}:" required="true">
