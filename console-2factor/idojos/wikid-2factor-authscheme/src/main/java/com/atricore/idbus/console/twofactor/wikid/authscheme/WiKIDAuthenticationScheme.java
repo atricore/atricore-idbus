@@ -57,7 +57,9 @@ public class WiKIDAuthenticationScheme extends AbstractAuthenticationScheme {
             if (logger.isTraceEnabled())
                 logger.trace("check credentials : " + username + "/" + passcode + " for server " + serverCode);
 
-            return wc.CheckCredentials(username, passcode, serverCode);
+            setAuthenticated(wc.CheckCredentials(username, passcode, serverCode));
+
+            return isAuthenticated();
 
         } catch (Exception e) {
             throw new SSOAuthenticationException(e);
