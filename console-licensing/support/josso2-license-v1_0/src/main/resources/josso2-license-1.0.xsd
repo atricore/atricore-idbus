@@ -59,6 +59,7 @@
         <attribute name="Version" type="string" use="required"/>
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="IssueInstant" type="dateTime" use="required"/>
+        <attribute name="ExpirationDate" type="dateTime" use="required"/>
     </complexType>
 
     <element name="licensedFeature" type="lic:LicensedFeatureType"/>
