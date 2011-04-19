@@ -100,6 +100,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
     private var _propertySheetMediator:IIocMediator;
 
     private var _appSectionChangeInProgress:Boolean;
+    private var _exportInProgress:Boolean;
 
     private var _fileRef:FileReference;
 
@@ -168,6 +169,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
     private function creationCompleteHandler(event:Event):void {
         _created = true;
         _appSectionChangeInProgress = false;
+        _exportInProgress = false;
 
         event.target.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
@@ -233,6 +235,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             _created = false;
             _identityAppliance = null;
             _appSectionChangeInProgress = false;
+            _exportInProgress = false;
 
             view.btnSave.enabled = false;
             view.btnExport.enabled = false;
@@ -297,7 +300,13 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
 
     private function handleExportClick(event:MouseEvent):void {
         trace("Export Button Click: " + event);
-        sendNotification(ApplicationFacade.EXPORT_IDENTITY_APPLIANCE);
+        if (view.btnSave.enabled) {
+            _exportInProgress = true;
+            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.autosaving.appliance"));
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
+        } else {
+            sendNotification(ApplicationFacade.EXPORT_IDENTITY_APPLIANCE);
+        }
     }
 
     override public function listNotificationInterests():Array {
@@ -645,6 +654,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                         sendNotification(BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED);
                         _appSectionChangeInProgress = false;
                     }
+                    if (_exportInProgress) {
+                        sendNotification(ApplicationFacade.EXPORT_IDENTITY_APPLIANCE);
+                        _exportInProgress = false;
+                    }
                 } else {
                     // TODO: refactor this
                     // this will cause a diagram refresh (everything will be redrawn)
@@ -660,6 +673,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 if (_appSectionChangeInProgress) {
                     sendNotification(BaseAppFacade.APP_SECTION_CHANGE_REJECTED, viewName);
                     _appSectionChangeInProgress = false;
+                }
+                if (_exportInProgress) {
+                    _exportInProgress = false;
                 }
                 break;
             case ApplicationFacade.APPLIANCE_VALIDATION_ERRORS:
@@ -679,6 +695,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 if (_appSectionChangeInProgress) {
                     sendNotification(BaseAppFacade.APP_SECTION_CHANGE_REJECTED, viewName);
                     _appSectionChangeInProgress = false;
+                }
+                if (_exportInProgress) {
+                    _exportInProgress = false;
                 }
                 break;
             case JDBCDriversListCommand.FAILURE:

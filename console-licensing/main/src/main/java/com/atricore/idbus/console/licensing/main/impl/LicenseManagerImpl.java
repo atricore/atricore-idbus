@@ -126,7 +126,7 @@ public class LicenseManagerImpl implements LicenseManager {
                             ft.getName().equals(name)) {
 
                         // TODO : Check version range !
-                        if (now.after(feature.getExpirationDate())) {
+                        if (feature.getExpirationDate() != null && now.after(feature.getExpirationDate())) {
                             throw new InvalidFeatureException("Feature expired on " +
                                     feature.getExpirationDate().toString());
                         }
@@ -147,7 +147,9 @@ public class LicenseManagerImpl implements LicenseManager {
 
     public LicenseType getCurrentLicense() throws InvalidLicenseException {
         try {
-            return loadLicense();
+            LicenseType consoleLicense = loadLicense();
+            validateLicense(consoleLicense);
+            return consoleLicense;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new InvalidLicenseException(e);
@@ -220,6 +222,14 @@ public class LicenseManagerImpl implements LicenseManager {
     protected void validateLicenseInformation(LicenseType license) throws InvalidLicenseException {
 
         boolean valid = true;
+
+        Calendar now = Calendar.getInstance();
+        
+        if (license.getExpirationDate() != null && now.after(license.getExpirationDate())) {
+            throw new InvalidLicenseException("Product License expired on " +
+                    license.getExpirationDate().toString());
+        }
+
         for (ProductFeature pf : productFeatures.values()) {
             try {
                 validateFeature(pf.getGroup(), pf.getName(), pf.getVersion(), license);
