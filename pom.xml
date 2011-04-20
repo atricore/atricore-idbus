@@ -1200,7 +1200,7 @@
         <!-- Dependencies not on central repo -->
         <repository>
 
-            <id>atricore-com-m2-repo</id>
+            <id>atricore-m2-commercial-repo</id>
             <name>Atricore.com Maven2 Repository</name>
             <url>http://repository.atricore.com/m2-release-repository</url>
 
@@ -1539,6 +1539,26 @@
                 <console.distribution>ee</console.distribution>
                 <console.distribution.descr>EE</console.distribution.descr>
             </properties>
+
+            <repositories>
+                <!-- Dependencies not on central repo -->
+                <repository>
+
+                    <id>atricore-m2-commercialrepo</id>
+                    <name>Atricore Maven2 Repository</name>
+                    <url>http://repository.atricore.com/m2-release-repository</url>
+
+                    <releases>
+                        <checksumPolicy>fail</checksumPolicy>
+                        <enabled>true</enabled>
+                    </releases>
+
+                    <snapshots>
+                        <checksumPolicy>fail</checksumPolicy>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
 
             <distributionManagement>
 
