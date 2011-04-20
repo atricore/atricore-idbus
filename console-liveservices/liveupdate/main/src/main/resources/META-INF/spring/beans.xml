@@ -223,6 +223,20 @@
     <osgi:service id="liveUpdateMgrOsgi" ref="liveUpdateMgr"
                   interface="com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager"/>
 
+
+    <!-- License Manger -->
+    <osgi:reference id="osgiLicenseManager"
+                  interface="com.atricore.idbus.console.licensing.main.LicenseManager"/>
+
+    <bean name="liveUpdateFeature" class="com.atricore.idbus.console.licensing.main.ProductFeature">
+        <property name="id" value="atricore-liveupdate"/>
+        <property name="group" value="com.atricore.idbus.console"/>
+        <property name="name" value="liveupdate"/>
+        <property name="version" value="1.0.0-SNAPSHOT"/>
+    </bean>
+    <osgi:service id="osgiConsoleEEFeature" ref="liveUpdateFeature"
+                    interface="com.atricore.idbus.console.licensing.main.ProductFeature"/>
+
     <!-- Expose LiveUpdate configuration properties -->
     <osgix:cm-properties id="liveUpdateProps" persistent-id="com.atricore.idbus.console.liveservices.liveupdate">
 
@@ -230,15 +244,26 @@
         <prop key="repo.md.primary.name">LiveUpdate MD Primary Repository</prop>
         <prop key="repo.md.primary.enabled">true</prop>
         <prop key="repo.md.primary.validateSignature">false</prop>
+
+        <prop key="repo.md.primary.location">http://liveupdate.atricore.com/md-primary/liveupdate-1.0.xml</prop>
+        <prop key="repo.md.primary.certificate">http://liveupdate.atricore.com/md-primary/md-primary-cert</prop>
+
+        <!--
         <prop key="repo.md.primary.location">file:${karaf.data}/liveservices/liveupdate/repos/md-primary/liveupdate-1.0.xml</prop>
         <prop key="repo.md.primary.certificate">file:${karaf.data}/liveservices/liveupdate/repos/md-primary/md-primary-cert</prop>
+        -->
 
         <prop key="repo.art.primary.id">art-primary</prop>
         <prop key="repo.art.primary.name">LiveUpdate Artifacts Primary Repository</prop>
         <prop key="repo.art.primary.enabled">true</prop>
         <prop key="repo.art.primary.validateSignature">false</prop>
+        <prop key="repo.art.primary.location">http://liveupdate.atricore.com/art-primary/</prop>
+        <prop key="repo.art.primary.certificate">http://liveupdate.atricore.com/art-primary/art-primary-cert</prop>
+
+        <!--
         <prop key="repo.art.primary.location">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/</prop>
-        <prop key="repo.md.primary.certificate">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/art-primary-cert</prop>
+        <prop key="repo.art.primary.certificate">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/art-primary-cert</prop>
+        -->
 
         <!-- In Seconds, default : daily -->
         <prop key="updatesCheckInterval">86400</prop>

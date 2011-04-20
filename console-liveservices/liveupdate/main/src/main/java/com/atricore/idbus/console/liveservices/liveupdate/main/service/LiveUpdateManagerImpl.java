@@ -17,6 +17,7 @@ import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
+import com.atricore.idbus.console.licensing.main.LicenseManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
@@ -78,6 +79,8 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
     private List<NotificationHandler> notificationHandlers;
 
     private List<NotificationSchemeStore> notificationStores;
+
+    private LicenseManager licenseManager;
 
     public void init() throws LiveUpdateException {
 
@@ -536,5 +539,13 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
 
     public void setNotificationStores(List<NotificationSchemeStore> notificationStores) {
         this.notificationStores = notificationStores;
+    }
+
+    public LicenseManager getLicenseManager() {
+        return licenseManager;
+    }
+
+    public void setLicenseManager(LicenseManager licenseManager) {
+        this.licenseManager = licenseManager;
     }
 }

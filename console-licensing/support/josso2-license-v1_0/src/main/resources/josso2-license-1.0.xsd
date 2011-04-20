@@ -74,7 +74,7 @@
     <element name="feature" type="lic:FeatureType"/>
     <complexType name="FeatureType">
         <sequence>
-            <element ref="lic:featureProperty"/>
+            <element ref="lic:featureProperty"  minOccurs="0" maxOccurs="unbounded"/>
             <element ref="lic:licenseText" minOccurs="0"/>
             <element ref="lic:EULA" minOccurs="0"/>
         </sequence>

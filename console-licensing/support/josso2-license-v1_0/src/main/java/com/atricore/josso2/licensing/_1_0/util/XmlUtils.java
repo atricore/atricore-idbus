@@ -1,6 +1,7 @@
 package com.atricore.josso2.licensing._1_0.util;
 
 import com.atricore.josso2.licensing._1_0.license.LicenseType;
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
@@ -8,11 +9,12 @@ import org.w3c.dom.Document;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.io.Writer;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -22,11 +24,11 @@ public class XmlUtils {
     public static final String ATRICORE_LICENSE_PKG = "com.atricore.josso2.licensing._1_0.license";
     public static final String ATRICORE_LICENSE_NS = "urn:com:atricore:josso2:licensing:1.0:license";
 
-    public static LicenseType unmarshallLicense(InputStream is, boolean decode) throws Exception {
-        return unmarshallLicense(new String(getByteArray(is)), decode);
+    public static LicenseType unmarshalLicense(InputStream is, boolean decode) throws Exception {
+        return unmarshalLicense(new String(getByteArray(is)), decode);
     }
 
-    public static LicenseType unmarshallLicense(String udIdxStr, boolean decode) throws Exception {
+    public static LicenseType unmarshalLicense(String udIdxStr, boolean decode) throws Exception {
         if (decode)
             udIdxStr = new String(new Base64().decode(udIdxStr.getBytes()));
 
@@ -34,13 +36,15 @@ public class XmlUtils {
         return (LicenseType) e.getValue();
     }
 
-    public static LicenseType unmarshallLicense(Document udIdx) throws Exception {
+    public static LicenseType unmarshalLicense(Document udIdx) throws Exception {
         JAXBElement e = (JAXBElement) unmarshal(udIdx, new String[]{ ATRICORE_LICENSE_PKG });
         return (LicenseType) e.getValue();
     }
 
     public static String marshalLicense(LicenseType udIdx, boolean encode) throws Exception {
+
         String type = udIdx.getClass().getSimpleName();
+
         if (type.endsWith("Type"))
             type = Character.toLowerCase(type.charAt(0)) + type.substring(1, type.length() - 4);
 
@@ -63,14 +67,14 @@ public class XmlUtils {
     }
 
     public static Document marshalLicenseToDOM(LicenseType udIdx) throws Exception {
-        String marshalled = marshalLicense(udIdx, false);
+        String marshaled = marshalLicense(udIdx, false);
 
         javax.xml.parsers.DocumentBuilderFactory dbf =
                 javax.xml.parsers.DocumentBuilderFactory.newInstance();
 
         dbf.setNamespaceAware(true);
 
-        return dbf.newDocumentBuilder().parse(new ByteArrayInputStream(marshalled.getBytes()));
+        return dbf.newDocumentBuilder().parse(new ByteArrayInputStream(marshaled.getBytes()));
     }
 
     // JAXB Generic
@@ -78,14 +82,45 @@ public class XmlUtils {
     public static String marshal ( Object msg, String msgQName, String msgLocalName, String[] userPackages ) throws Exception {
 
         JAXBContext jaxbContext = createJAXBContext( userPackages );
-        JAXBElement jaxbRequest = new JAXBElement( new QName( msgQName, msgLocalName ),
+
+        JAXBElement jaxbElement = new JAXBElement( new QName( msgQName, msgLocalName ),
                 msg.getClass(),
                 msg
         );
-        Writer writer = new StringWriter();
+
+        Marshaller m = jaxbContext.createMarshaller();
+        StringWriter writer = new StringWriter();
+        XMLStreamWriter xmlStreamWriter = new NamespaceFilterXMLStreamWriter(writer);
+
+        m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
+                new NamespacePrefixMapper() {
+
+                    @Override
+                    public String[] getPreDeclaredNamespaceUris() {
+                        return new String[] {
+                                "http://www.w3.org/2000/09/xmldsig#",
+                                "http://www.w3.org/2001/04/xmlenc#",
+                                "http://www.w3.org/2001/XMLSchema"
+                        };
+                    }
+
+                    @Override
+                    public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
+
+                        if (nsUri.equals("http://www.w3.org/2000/09/xmldsig#"))
+                            return "ds";
+                        else if (nsUri.equals("http://www.w3.org/2001/04/xmlenc#"))
+                            return "enc";
+                        else if (nsUri.equals("http://www.w3.org/2001/XMLSchema"))
+                            return "xsd";
+
+
+                        return suggestion;
+                    }
+                });
 
         // Support XMLDsig
-        jaxbContext.createMarshaller().marshal( jaxbRequest, new NamespaceFilterXMLStreamWriter(writer) );
+        m.marshal(jaxbElement, xmlStreamWriter);
 
         return writer.toString();
     }

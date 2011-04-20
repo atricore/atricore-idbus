@@ -45,7 +45,7 @@ public class LicenseGenerator {
             fis.read(b);
             keyResolver.setKeystoreFile(b);
 
-            LicenseType unsigned = XmlUtils.unmarshallLicense(new FileInputStream(inLicense), false);
+            LicenseType unsigned = XmlUtils.unmarshalLicense(new FileInputStream(inLicense), false);
             LicenseType signed = signer.sign(unsigned, keyResolver);
 
             String licenseString = XmlUtils.marshalLicense(signed, false);

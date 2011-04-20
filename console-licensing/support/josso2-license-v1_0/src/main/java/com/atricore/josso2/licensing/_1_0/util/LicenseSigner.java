@@ -16,10 +16,11 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 import java.security.*;
-import java.security.cert.X509CRL;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Author: Dejan Maric
@@ -65,36 +66,43 @@ public class LicenseSigner {
 
     public LicenseType sign(LicenseType unsigned, LicenseKeyResolver keyResolver) throws LicenseSignatureException {
         try{
+
             Document doc = XmlUtils.marshalLicenseToDOM(unsigned);
-            doc = sign(doc, unsigned.getID(), keyResolver);
+            doc = sign(doc, keyResolver);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling LicenseType from DOM Tree");
 
-            return XmlUtils.unmarshallLicense(doc);            
+            return XmlUtils.unmarshalLicense(doc);
         }catch (Exception e){
             throw new LicenseSignatureException("Error signing license", e);
         }
     }
 
-    public Document sign(Document doc, String id, LicenseKeyResolver keyResolver) throws LicenseSignatureException {
+    public Document sign(Document doc, LicenseKeyResolver keyResolver) throws LicenseSignatureException {
         try {
+            java.security.cert.Certificate cert = keyResolver.getCertificate();
+
             // Create a DOM XMLSignatureFactory that will be used to generate the
             // enveloped signature
-            XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM", new org.jcp.xml.dsig.internal.dom.XMLDSigRI());
+            XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM", provider);
 
             if (logger.isDebugEnabled())
-                logger.debug("Creating XML DOM Digital Signature (not signing yet!)");
+                logger.debug("Creating XML DOM Digital Siganture (not signing yet!)");
 
             // Create a Reference to the enveloped document and
             // also specify the SHA1 digest algorithm and the ENVELOPED Transform.
             // The URI must be the assertion ID
+
+            List<Transform> transforms = new ArrayList<Transform>();
+            transforms.add(fac.newTransform(Transform.ENVELOPED, (TransformParameterSpec) null));
+            // Magically, this solves assertion DS validation when embedded in a signed response :)
+            transforms.add(fac.newTransform(CanonicalizationMethod.EXCLUSIVE, (TransformParameterSpec) null));
+
             Reference ref = fac.newReference
-                    ("#" + id, fac.newDigestMethod(DigestMethod.SHA1, null),
-                            Collections.singletonList
-                                    (fac.newTransform
-                                            (Transform.ENVELOPED, (TransformParameterSpec) null)),
-                            null, null);
+                    ("", fac.newDigestMethod(DigestMethod.SHA1, null),
+                         transforms,
+                         null, null);
 
             // Use signature method based on key algorithm.
             String signatureMethod = SignatureMethod.DSA_SHA1;
@@ -104,9 +112,17 @@ public class LicenseSigner {
             logger.debug("Using signature method " + signatureMethod);
 
             // Create the SignedInfo, with the X509 Certificate
+            /*
             SignedInfo si = fac.newSignedInfo
                     (fac.newCanonicalizationMethod
                             (CanonicalizationMethod.INCLUSIVE_WITH_COMMENTS,
+                                    (C14NMethodParameterSpec) null),
+                            fac.newSignatureMethod(signatureMethod, null),
+                            Collections.singletonList(ref));
+             */
+            SignedInfo si = fac.newSignedInfo
+                    (fac.newCanonicalizationMethod
+                            (CanonicalizationMethod.EXCLUSIVE,
                                     (C14NMethodParameterSpec) null),
                             fac.newSignatureMethod(signatureMethod, null),
                             Collections.singletonList(ref));
@@ -114,14 +130,14 @@ public class LicenseSigner {
             // Create a KeyInfo and add the Certificate to it
             KeyInfoFactory kif = fac.getKeyInfoFactory();
 
-            X509Data kv = kif.newX509Data(Collections.singletonList(keyResolver.getCertificate()));
+            X509Data kv = kif.newX509Data(Collections.singletonList(cert));
             //KeyValue kv = kif.newKeyValue(keyResolver.getCertificate().getPublicKey());
 
             KeyInfo ki = kif.newKeyInfo(Collections.singletonList(kv));
             javax.xml.crypto.dsig.XMLSignature signature = fac.newXMLSignature(si, ki);
 
             if (logger.isDebugEnabled())
-                logger.debug("Signing...");
+                logger.debug("Signing SAMLR2 Identity Artifact ...");
 
             // Create a DOMSignContext and specify the DSA PrivateKey and
             // location of the resulting XMLSignature's parent element
@@ -132,10 +148,9 @@ public class LicenseSigner {
             signature.sign(dsc);
 
             if (logger.isDebugEnabled())
-                logger.debug("Signing... DONE!");
+                logger.debug("Signing SAMLR2 Identity Artifact ... DONE!");
 
             return doc;
-
 
         } catch (NoSuchAlgorithmException e) {
             throw new LicenseSignatureException(e.getMessage(), e);

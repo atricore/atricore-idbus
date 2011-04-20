@@ -59,7 +59,7 @@ public class LicenseManagerImpl implements LicenseManager {
         try {            
             byte[] decoded = unzipAndDecodeLicense(license);
             //unmarshal
-            licenseType = XmlUtils.unmarshallLicense(new ByteArrayInputStream(decoded), false);
+            licenseType = XmlUtils.unmarshalLicense(new ByteArrayInputStream(decoded), false);
             //and call validate
             validateLicense(licenseType);
             //store license
@@ -82,7 +82,7 @@ public class LicenseManagerImpl implements LicenseManager {
         try {
             byte[] decoded = unzipAndDecodeLicense(license);
             //unmarshal
-            licenseType = XmlUtils.unmarshallLicense(new ByteArrayInputStream(decoded), false);
+            licenseType = XmlUtils.unmarshalLicense(new ByteArrayInputStream(decoded), false);
             //and call validate
             validateLicense(licenseType);
 
@@ -251,7 +251,7 @@ public class LicenseManagerImpl implements LicenseManager {
         byte[] encodedContent = readLicenseFile();
         try {
             byte[] licenseContent = unzipAndDecodeLicense(encodedContent);
-            consoleLicense = XmlUtils.unmarshallLicense(new ByteArrayInputStream(licenseContent), false);
+            consoleLicense = XmlUtils.unmarshalLicense(new ByteArrayInputStream(licenseContent), false);
 
         } catch (JAXBException e) {
             logger.error("Problem unmarshalling consoleLicense file : " + e.getMessage(), e);
