@@ -1543,13 +1543,13 @@
             <distributionManagement>
 
                 <repository>
-                    <id>atricore-m2-commercial-repo</id>
+                    <id>atricore-m2-deploy-commercial-repo</id>
                     <name>Atricore Release Distribution Repository</name>
                     <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-release-repository</url>
                 </repository>
 
                 <snapshotRepository>
-                    <id>atricore-m2-snapshot-commercial-repo</id>
+                    <id>atricore-m2-snapshot-deploy-commercial-repo</id>
                     <name>Atricore Development Snapshot Repository</name>
                     <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-snapshot-repository</url>
                 </snapshotRepository>
@@ -1592,13 +1592,13 @@
 
             <distributionManagement>
                 <repository>
-                    <id>atricore-m2-repo</id>
+                    <id>atricore-m2-deploy-community-repo</id>
                     <name>Atricore Release Distribution Repository</name>
                     <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-release-repository</url>
                 </repository>
 
                 <snapshotRepository>
-                    <id>atricore-m2-snapshot-repo</id>
+                    <id>atricore-m2-snapshot-deploy-community-repo</id>
                     <name>Atricore Development Snapshot Repository</name>
                     <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-snapshot-repository</url>
                 </snapshotRepository>
