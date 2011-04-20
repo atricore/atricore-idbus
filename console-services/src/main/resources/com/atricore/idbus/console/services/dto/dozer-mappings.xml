@@ -770,6 +770,10 @@
             <b>issueInstant</b>
         </field>
         <field>
+            <a>expirationDate</a>
+            <b>expirationDate</b>
+        </field>
+        <field>
             <a>eula</a>
             <b>eula</b>
         </field>

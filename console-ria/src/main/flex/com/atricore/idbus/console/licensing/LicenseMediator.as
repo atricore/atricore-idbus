@@ -28,34 +28,21 @@ import com.atricore.idbus.console.licensing.main.model.LicenseProxy;
 import com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager;
 import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
-
 import com.atricore.idbus.console.services.dto.FeatureType;
 import com.atricore.idbus.console.services.dto.LicensedFeatureType;
 
 import flash.events.Event;
-import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
-import mx.controls.DataGrid;
-import mx.controls.dataGridClasses.MXDataGridItemRenderer;
 import mx.events.FlexEvent;
-
 import mx.resources.IResourceManager;
-
 import mx.resources.ResourceManager;
-
 import mx.utils.StringUtil;
 
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
-
-import spark.components.Button;
-import spark.components.HGroup;
-import spark.components.Label;
-import spark.components.TextArea;
-import spark.components.VGroup;
 
 public class LicenseMediator extends IocMediator implements IDisposable {
 
@@ -206,6 +193,18 @@ public class LicenseMediator extends IocMediator implements IDisposable {
             view.licenseOrganization.text = _licenseProxy.license.organization.organizationName;
         }
 
+        //ISSUE DATE
+        if (_licenseProxy.license.issueInstant != null) {
+            view.licenseIssueDate.text = view.dateFormatter.format(_licenseProxy.license.issueInstant);
+        }
+
+        //EXPIRATION DATE
+        if (_licenseProxy.license.expirationDate != null) {
+            view.licenseExpirationDate.text = view.dateFormatter.format(_licenseProxy.license.expirationDate);
+        } else {
+            view.licenseExpirationDate.text = "Perpetual";
+        }
+
         //GENERAL EULA
         if(_licenseProxy.license.eula != null) {
 //            view.generalEula.width = textAreaWidth;
@@ -221,6 +220,8 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         var featureArray:ArrayCollection = new ArrayCollection();
         for each (var licFeature:LicensedFeatureType in _licenseProxy.license.licensedFeature) {
             for each (var feature:FeatureType in licFeature.feature) {
+                feature.issueDate = licFeature.issueDate;
+                feature.expirationDate = licFeature.expirationDate;
                 featureArray.addItem(feature);
             }
         }

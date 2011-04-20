@@ -10,6 +10,7 @@ import com.atricore.idbus.console.services.spi.request.ValidateLicenseRequest;
 import com.atricore.idbus.console.services.spi.response.ActivateLicenseResponse;
 import com.atricore.idbus.console.services.spi.response.GetLicenseResponse;
 import com.atricore.idbus.console.services.spi.response.ValidateLicenseResponse;
+import com.atricore.josso2.licensing._1_0.license.LicenseType;
 import org.dozer.DozerBeanMapper;
 
 /**
@@ -44,8 +45,8 @@ public class LicenseManagementAjaxServiceImpl implements LicenseManagementAjaxSe
     public GetLicenseResponse getLicense(GetLicenseRequest req) {
         GetLicenseResponse res = new GetLicenseResponse();
         try {
-            licenseManager.getCurrentLicense();
-            res.setLicense(dozerMapper.map(licenseManager.getCurrentLicense(), LicenseTypeDTO.class));
+            LicenseType license = licenseManager.getCurrentLicense();
+            res.setLicense(dozerMapper.map(license, LicenseTypeDTO.class));
         } catch (InvalidLicenseException e) {
             res.setError("Error loading license.");
         }

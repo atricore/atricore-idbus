@@ -31,6 +31,10 @@
         [ResourceBundle("console")]
     </fx:Metadata>
 
+    <fx:Declarations>
+        <mx:DateFormatter id="dateFormatter" formatString="J:NN A MM/DD/YYYY"/>
+    </fx:Declarations>
+
     <fx:Script>
         <![CDATA[
         public var icon:Class = null;
@@ -56,9 +60,19 @@
                 <s:Label id="licenseOwner"/>
             </s:HGroup>
 
-            <s:HGroup paddingBottom="15">
+            <s:HGroup paddingBottom="5">
                 <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.organization')}:" />
                 <s:Label id="licenseOrganization"/>
+            </s:HGroup>
+
+            <s:HGroup paddingBottom="5">
+                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.issueDate')}:" />
+                <s:Label id="licenseIssueDate"/>
+            </s:HGroup>
+
+            <s:HGroup paddingBottom="15">
+                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.expirationDate')}:" />
+                <s:Label id="licenseExpirationDate"/>
             </s:HGroup>
 
             <s:VGroup paddingBottom="15">
@@ -68,12 +82,56 @@
 
             <s:VGroup>
                 <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.licensedFeatures')}:" />
-                <mx:DataGrid id="features" width="700" height="150">
+                <mx:DataGrid id="features" width="880" height="150">
                     <mx:columns>
-                        <mx:DataGridColumn dataField="name" headerText="Name"/>
-                        <mx:DataGridColumn dataField="description" width="300" headerText="Description"/>
-                        <mx:DataGridColumn dataField="version" headerText="Version Range"/>
-                        <mx:DataGridColumn id="groupColumn" dataField="group" width="92" headerText="Details">
+                        <mx:DataGridColumn dataField="name" width="120" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.name')}"/>
+                        <mx:DataGridColumn dataField="description" width="300" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.description')}"/>
+                        <mx:DataGridColumn dataField="version" width="100" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.version')}"/>
+                        <mx:DataGridColumn dataField="issueDate" width="135" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.issueDate')}">
+                            <mx:itemRenderer>
+                                <fx:Component>
+                                    <mx:HBox paddingLeft="5" paddingTop="5" horizontalScrollPolicy="off">
+                                        <fx:Script>
+                                        <![CDATA[
+                                            import mx.formatters.DateFormatter;
+
+                                            private function formatFieldDate(date:Date):String {
+                                                var formatter:DateFormatter = new DateFormatter();
+                                                formatter.formatString = "J:NN A MM/DD/YYYY";
+                                                return formatter.format(date);
+                                            }
+                                            ]]>
+                                        </fx:Script>
+                                        <s:Label text="{formatFieldDate(data.issueDate)}" />
+                                    </mx:HBox>
+                                </fx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn dataField="expirationDate" width="135" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.expirationDate')}">
+                            <mx:itemRenderer>
+                                <fx:Component>
+                                    <mx:HBox paddingLeft="5" paddingTop="5" horizontalScrollPolicy="off">
+                                        <fx:Script>
+                                        <![CDATA[
+                                            import mx.formatters.DateFormatter;
+
+                                            private function formatFieldDate(date:Date):String {
+                                                if (date != null) {
+                                                    var formatter:DateFormatter = new DateFormatter();
+                                                    formatter.formatString = "J:NN A MM/DD/YYYY";
+                                                    return formatter.format(date);
+                                                } else {
+                                                    return "Perpetual";
+                                                }
+                                            }
+                                            ]]>
+                                        </fx:Script>
+                                        <s:Label text="{formatFieldDate(data.expirationDate)}" />
+                                    </mx:HBox>
+                                </fx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn id="groupColumn" dataField="group" width="92" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.details')}">
                             <mx:itemRenderer>
                                 <fx:Component>
                                     <s:MXDataGridItemRenderer click="clickHandler(event)">
