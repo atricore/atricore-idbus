@@ -865,7 +865,7 @@
         <dependency>
             <groupId>org.atricore.idbus</groupId>
             <artifactId>all</artifactId>
-            <version>${version}</version>
+            <version>${idbus.kernel.version}</version>
             <type>pom</type>
         </dependency>
 
@@ -2032,6 +2032,68 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>maven-bundle-plugin</artifactId>
             <version>${felix.plugin.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-parent</artifactId>
+            <version>1.0.0.GA</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.genesis.config</groupId>
+            <artifactId>config</artifactId>
+            <groupId>1.4</groupId>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.genesis</groupId>
+            <artifactId>genesis</artifactId>
+            <groupId>1.4</groupId>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.genesis.config</groupId>
+            <artifactId>config</artifactId>
+            <groupId>1.2</groupId>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.genesis</groupId>
+            <artifactId>genesis</artifactId>
+            <groupId>1.2</groupId>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.genesis.config</groupId>
+            <artifactId>config</artifactId>
+            <groupId>1.1</groupId>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.genesis</groupId>
+            <artifactId>genesis</artifactId>
+            <groupId>1.1</groupId>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-parent</artifactId>
+            <groupId>${camel.version}</groupId>
+            <type>pom</type>
         </dependency>
 
     </dependencies>
