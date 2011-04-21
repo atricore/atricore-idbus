@@ -199,8 +199,8 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         }
 
         //EXPIRATION DATE
-        if (_licenseProxy.license.expirationDate != null) {
-            view.licenseExpirationDate.text = view.dateFormatter.format(_licenseProxy.license.expirationDate);
+        if (_licenseProxy.license.expiresOn != null) {
+            view.licenseExpirationDate.text = view.dateFormatter.format(_licenseProxy.license.expiresOn);
         } else {
             view.licenseExpirationDate.text = "Perpetual";
         }
@@ -220,8 +220,6 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         var featureArray:ArrayCollection = new ArrayCollection();
         for each (var licFeature:LicensedFeatureType in _licenseProxy.license.licensedFeature) {
             for each (var feature:FeatureType in licFeature.feature) {
-                feature.issueDate = licFeature.issueDate;
-                feature.expirationDate = licFeature.expirationDate;
                 featureArray.addItem(feature);
             }
         }
