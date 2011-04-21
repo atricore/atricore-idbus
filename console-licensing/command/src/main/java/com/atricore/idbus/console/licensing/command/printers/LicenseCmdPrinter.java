@@ -97,7 +97,7 @@ public class LicenseCmdPrinter extends AbstractCmdPrinter<LicenseType> {
 
         if (feature.getFeatureProperty() != null && feature.getFeatureProperty().size() > 0) {
 
-            sb.append("[");
+            sb.append(" Properties : [");
             for (FeaturePropertyType prop : feature.getFeatureProperty()) {
                 sb.append(prop.getName());
                 sb.append("=");
