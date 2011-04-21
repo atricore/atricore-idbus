@@ -69,7 +69,7 @@ public class LicenseSigner {
         try{
 
             Document doc = XmlUtils.marshalLicenseToDOM(unsigned);
-            doc = sign(doc, keyResolver);
+            doc = sign(doc, unsigned.getID(), keyResolver);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling LicenseType from DOM Tree");
@@ -80,7 +80,7 @@ public class LicenseSigner {
         }
     }
 
-    public Document sign(Document doc, LicenseKeyResolver keyResolver) throws LicenseSignatureException {
+    public Document sign(Document doc, String id, LicenseKeyResolver keyResolver) throws LicenseSignatureException {
         try {
             java.security.cert.Certificate cert = keyResolver.getCertificate();
 
@@ -101,7 +101,7 @@ public class LicenseSigner {
             transforms.add(fac.newTransform(CanonicalizationMethod.EXCLUSIVE, (TransformParameterSpec) null));
 
             Reference ref = fac.newReference
-                    ("", fac.newDigestMethod(DigestMethod.SHA1, null),
+                    ("#" + id, fac.newDigestMethod(DigestMethod.SHA1, null),
                          transforms,
                          null, null);
 

@@ -73,24 +73,39 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
 
     protected String getIdString(LicenseType license) {
         String id = license.getID();
-        while (id.length() < 4) {
+        while (id.length() < 10) {
             id = " " + id;
         }
         return id;
     }
 
-    protected String getDateString(LicenseType license){
+    protected String getIssueInstantDateString(LicenseType license){
         String dateString = "";
         if(license.getIssueInstant() != null){
             dateString = getDateString(license.getIssueInstant().getTime());
+        } else {
+            dateString = "Unknown";
         }
         return dateString;
     }
 
-    protected String getExpirationDateString(FeatureType licFeature){
+    protected String getExpiresOnDateString(LicenseType licFeature){
         String dateString = "";
         if(licFeature.getExpiresOn() != null){
             dateString = getDateString(licFeature.getExpiresOn().getTime());
+        } else {
+            dateString = "Perpetual";
+        }
+        return dateString;
+    }
+
+
+    protected String getExpiresOnDateString(FeatureType licFeature){
+        String dateString = "";
+        if(licFeature.getExpiresOn() != null){
+            dateString = getDateString(licFeature.getExpiresOn().getTime());
+        } else {
+            dateString = "Perpetual";
         }
         return dateString;
     }

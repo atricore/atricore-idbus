@@ -162,6 +162,9 @@
                             org.jcp.xml.dsig.internal.dom,
                             *
                         </Import-Package>
+                        <Require-Bundle>
+                            org.apache.servicemix.bundles.xmlsec
+                        </Require-Bundle>
                     </instructions>
                 </configuration>
             </plugin>         

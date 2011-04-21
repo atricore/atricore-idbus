@@ -17,7 +17,7 @@ public class LicenseCmdPrinter extends AbstractCmdPrinter<LicenseType> {
 
     public void print(LicenseType licenseType, boolean verbose) {
         StringBuilder sb = new StringBuilder();
-        sb.append("\u001B[1m  ID     Name                    Version   Issue Instant    Expires On     License Owner                  Organization Name\u001B[0m\n");
+        sb.append("\u001B[1m  ID               Name                Version   Issue Instant    Expires On        License Owner                  Organization Name\u001B[0m\n");
 //        sb.append("\n");
 
         printDetails(licenseType, sb, verbose);
@@ -40,7 +40,9 @@ public class LicenseCmdPrinter extends AbstractCmdPrinter<LicenseType> {
         sb.append("]  [");
         sb.append(getVersionString(license));
         sb.append("]   [");
-        sb.append(getDateString(license));
+        sb.append(getIssueInstantDateString(license));
+        sb.append("]    [");
+        sb.append(getExpiresOnDateString(license));
         sb.append("]  [");
         sb.append(getLicenseOwnerString(license));
         sb.append("]  [");
@@ -55,7 +57,7 @@ public class LicenseCmdPrinter extends AbstractCmdPrinter<LicenseType> {
 
         //show features
         sb.append("\n\n");
-        sb.append("\u001B[1m  Name           Description                                          Version Range\u001B[0m");
+        sb.append("\u001B[1m  Name           Description                                          Version Range   Issue Instant   Expires On\u001B[0m");
         if(license.getLicensedFeature() != null){
             for(LicensedFeatureType licFeature : license.getLicensedFeature()){
                 for(FeatureType feature : licFeature.getFeature()){
@@ -84,11 +86,11 @@ public class LicenseCmdPrinter extends AbstractCmdPrinter<LicenseType> {
             sb.append(getLicenseTextString(feature));
         }
 
-        sb.append(" ");
+        sb.append("   ");
         sb.append(getIssueInstantString(feature));
-        sb.append(" ");
+        sb.append("       ");
 
-        sb.append(getExpirationDateString(feature));
+        sb.append(getExpiresOnDateString(feature));
 
 
 

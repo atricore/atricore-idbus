@@ -52,14 +52,14 @@ public class XmlUtils {
 
     }
 
-    public static String marshalLicense(LicenseType udIdx, String requestType, boolean encode) throws Exception {
+    public static String marshalLicense(LicenseType udIdx, String license, boolean encode) throws Exception {
 
         String marshalled ;
         // Support IDBus SAMLR2 Extentions when marshalling
         marshalled = marshal(
             udIdx,
             ATRICORE_LICENSE_NS,
-            requestType,
+            license,
             new String[]{ ATRICORE_LICENSE_PKG }
         );
 
@@ -79,13 +79,13 @@ public class XmlUtils {
 
     // JAXB Generic
 
-    public static String marshal ( Object msg, String msgQName, String msgLocalName, String[] userPackages ) throws Exception {
+    public static String marshal ( Object lic, String licQName, String licLocalName, String[] userPackages ) throws Exception {
 
         JAXBContext jaxbContext = createJAXBContext( userPackages );
 
-        JAXBElement jaxbElement = new JAXBElement( new QName( msgQName, msgLocalName ),
-                msg.getClass(),
-                msg
+        JAXBElement jaxbElement = new JAXBElement( new QName( licQName, licLocalName ),
+                lic.getClass(),
+                lic
         );
 
         Marshaller m = jaxbContext.createMarshaller();
@@ -98,6 +98,7 @@ public class XmlUtils {
                     @Override
                     public String[] getPreDeclaredNamespaceUris() {
                         return new String[] {
+                                "urn:com:atricore:josso2:licensing:1.0:license",
                                 "http://www.w3.org/2000/09/xmldsig#",
                                 "http://www.w3.org/2001/04/xmlenc#",
                                 "http://www.w3.org/2001/XMLSchema"
@@ -107,6 +108,8 @@ public class XmlUtils {
                     @Override
                     public String getPreferredPrefix(String nsUri, String suggestion, boolean requirePrefix) {
 
+                        if (nsUri.equals("urn:com:atricore:josso2:licensing:1.0:license"))
+                            return "lic";
                         if (nsUri.equals("http://www.w3.org/2000/09/xmldsig#"))
                             return "ds";
                         else if (nsUri.equals("http://www.w3.org/2001/04/xmlenc#"))

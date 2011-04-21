@@ -123,7 +123,9 @@
                             !javax.xml.bind.annotation.adapters,                            
                             *
                         </Import-Package>
-                        <Require-Bundle>com.atricore.idbus.console.licensing.main</Require-Bundle>
+                        <Require-Bundle>
+                            com.atricore.idbus.console.licensing.main
+                        </Require-Bundle>
                         <Private-Package>!*</Private-Package>
                         <_versionpolicy>${bnd.version.policy}</_versionpolicy>
                     </instructions>
