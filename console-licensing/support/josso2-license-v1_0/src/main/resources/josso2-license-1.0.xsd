@@ -89,7 +89,7 @@
     <element name="featureProperty" type="lic:FeaturePropertyType"/>
     <complexType name="FeaturePropertyType">
         <sequence>
-            <element name="Value" type="string" />
+            <element ref="lic:value" />
         </sequence>
         <attribute name="Name" type="string" use="required"/>
         <attribute name="Description" type="string" use="optional"/>
@@ -104,6 +104,12 @@
     <simpleType name="LicenseTextType">
         <restriction base="string"/>
     </simpleType>
+
+    <element name="value" type="lic:ValueType"/>
+    <simpleType name="ValueType">
+        <restriction base="string"/>
+    </simpleType>
+
 
     <!-- -->
 

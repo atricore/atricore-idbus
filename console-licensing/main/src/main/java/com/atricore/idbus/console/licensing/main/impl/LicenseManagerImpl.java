@@ -52,6 +52,7 @@ public class LicenseManagerImpl implements LicenseManager {
 
     private LicenseSigner signer;
 
+    // Installed product features descriptors, contributed as OSGi services.
     private Map<String, ProductFeature> productFeatures = new HashMap<String, ProductFeature>();
 
     public LicenseType activateLicense(byte[] license) throws InvalidLicenseException {
@@ -118,18 +119,13 @@ public class LicenseManagerImpl implements LicenseManager {
 
             boolean valid = false;
 
+            logger.info("Validatig License for Feature " +
+                    group + "/" +
+                    name + "/" +
+                    version + "...." );
+
             for (LicensedFeatureType feature : lic.getLicensedFeature()) {
-
                 for(FeatureType ft : feature.getFeature()) {
-
-                    logger.info("Validatig License for Feature " +
-                            ft.getGroup() + "/" +
-                            ft.getName() + "/" +
-                            ft.getVersion() + "[" +
-                            (ft.getIssueInstant() != null ? ft.getIssueInstant().toString() : "<no-issue-instant>") +
-                            ":" +
-                            (ft.getExpiresOn() != null ? ft.getExpiresOn().toString() : "<perpetual>") +
-                            "]");
 
                     if (ft.getGroup().equals(group) &&
                             ft.getName().equals(name)) {
@@ -139,10 +135,13 @@ public class LicenseManagerImpl implements LicenseManager {
 
                             // TODO : Expired features do not fail the entired license (improve!)
 
-                            String warn = "***************** FEATURE LICENE HAS " +
+                            String warn =
+                                    "***************** FEATURE " +
                                     ft.getGroup() + "/" +
-                            ft.getName() + "/" +
-                            ft.getVersion() + " HAS EXPIRED !!!";
+                                    ft.getName() + "/" +
+                                    ft.getVersion() +
+                                    " LICENSE HAS EXPIRED !!!";
+
 
                             logger.warn(warn);
                             logger.warn(warn);
@@ -156,13 +155,29 @@ public class LicenseManagerImpl implements LicenseManager {
                         break;
                     }
                 }
-
             }
 
-            if (!valid)
+
+            if (!valid) {
+                logger.error("Validatig License for Feature " +
+                        group + "/" +
+                        name + "/" +
+                        version + ".... INVALID" );
+
                 throw new InvalidFeatureException(group + "/" + name + "/" + version);
+            }
+
+            logger.info("Validatig License for Feature " +
+                    group + "/" +
+                    name + "/" +
+                    version + ".... VALID" );
 
         } catch (Exception e) {
+            logger.error("Validatig License for Feature " +
+                    group + "/" +
+                    name + "/" +
+                    version + ".... INVALID (Error occured : " + e.getMessage(), e);
+
             throw new InvalidFeatureException(e);
         }
     }

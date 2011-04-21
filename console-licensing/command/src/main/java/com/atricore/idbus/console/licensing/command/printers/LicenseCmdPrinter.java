@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.licensing.command.printers;
 
+import com.atricore.josso2.licensing._1_0.license.FeaturePropertyType;
 import com.atricore.josso2.licensing._1_0.license.FeatureType;
 import com.atricore.josso2.licensing._1_0.license.LicenseType;
 import com.atricore.josso2.licensing._1_0.license.LicensedFeatureType;
@@ -91,6 +92,20 @@ public class LicenseCmdPrinter extends AbstractCmdPrinter<LicenseType> {
         sb.append("       ");
 
         sb.append(getExpiresOnDateString(feature));
+
+        // Print out properties
+
+        if (feature.getFeatureProperty() != null && feature.getFeatureProperty().size() > 0) {
+
+            sb.append("[");
+            for (FeaturePropertyType prop : feature.getFeatureProperty()) {
+                sb.append(prop.getName());
+                sb.append("=");
+                sb.append(prop.getValue());
+                sb.append(",");
+            }
+            sb.append("]");
+        }
 
 
 
