@@ -59,7 +59,7 @@
         <attribute name="Version" type="string" use="required"/>
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="IssueInstant" type="dateTime" use="required"/>
-        <attribute name="ExpirationDate" type="dateTime" use="required"/>
+        <attribute name="ExpiresOn" type="dateTime" use="required"/>
     </complexType>
 
     <element name="licensedFeature" type="lic:LicensedFeatureType"/>
@@ -67,8 +67,6 @@
         <sequence>
             <element ref="lic:feature" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
-        <attribute name="IssueDate" type="dateTime" use="optional"/>
-        <attribute name="ExpirationDate" type="dateTime" use="required"/>
     </complexType>
 
     <element name="feature" type="lic:FeatureType"/>
@@ -82,6 +80,10 @@
         <attribute name="Name" type="string" use="required"/>
         <attribute name="Description" type="string" use="optional"/>
         <attribute name="Version" type="string" use="required"/>
+        <attribute name="IssueInstant" type="dateTime" use="optional"/>
+        <attribute name="ExpiresOn" type="dateTime" use="required"/>
+
+
     </complexType>
 
     <element name="featureProperty" type="lic:FeaturePropertyType"/>

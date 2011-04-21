@@ -17,7 +17,7 @@ public class LicenseCmdPrinter extends AbstractCmdPrinter<LicenseType> {
 
     public void print(LicenseType licenseType, boolean verbose) {
         StringBuilder sb = new StringBuilder();
-        sb.append("\u001B[1m  ID     Name                    Version   Issue Instant     License Owner                  Organization Name\u001B[0m\n");
+        sb.append("\u001B[1m  ID     Name                    Version   Issue Instant    Expires On     License Owner                  Organization Name\u001B[0m\n");
 //        sb.append("\n");
 
         printDetails(licenseType, sb, verbose);
@@ -83,6 +83,14 @@ public class LicenseCmdPrinter extends AbstractCmdPrinter<LicenseType> {
             sb.append("\n");
             sb.append(getLicenseTextString(feature));
         }
+
+        sb.append(" ");
+        sb.append(getIssueInstantString(feature));
+        sb.append(" ");
+
+        sb.append(getExpirationDateString(feature));
+
+
 
     }
 

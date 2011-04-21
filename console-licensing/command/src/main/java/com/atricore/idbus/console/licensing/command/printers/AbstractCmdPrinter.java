@@ -87,13 +87,22 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
         return dateString;
     }
 
-    protected String getDateString(LicensedFeatureType licFeature){
+    protected String getExpirationDateString(FeatureType licFeature){
         String dateString = "";
-        if(licFeature.getExpirationDate() != null){
-            dateString = getDateString(licFeature.getExpirationDate().getTime());
+        if(licFeature.getExpiresOn() != null){
+            dateString = getDateString(licFeature.getExpiresOn().getTime());
         }
         return dateString;
     }
+
+    protected String getIssueInstantString(FeatureType licFeature){
+        String dateString = "";
+        if(licFeature.getExpiresOn() != null){
+            dateString = getDateString(licFeature.getExpiresOn().getTime());
+        }
+        return dateString;
+    }
+
 
     protected String getDateString(Date date){
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yy", Locale.US);

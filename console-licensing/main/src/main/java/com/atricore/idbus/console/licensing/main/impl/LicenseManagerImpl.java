@@ -122,16 +122,37 @@ public class LicenseManagerImpl implements LicenseManager {
 
                 for(FeatureType ft : feature.getFeature()) {
 
+                    logger.info("Validatig License for Feature " +
+                            ft.getGroup() + "/" +
+                            ft.getName() + "/" +
+                            ft.getVersion() + "[" +
+                            (ft.getIssueInstant() != null ? ft.getIssueInstant().toString() : "<no-issue-instant>") +
+                            ":" +
+                            (ft.getExpiresOn() != null ? ft.getExpiresOn().toString() : "<perpetual>") +
+                            "]");
+
                     if (ft.getGroup().equals(group) &&
                             ft.getName().equals(name)) {
 
                         // TODO : Check version range !
-                        if (feature.getExpirationDate() != null && now.after(feature.getExpirationDate())) {
-                            throw new InvalidFeatureException("Feature expired on " +
-                                    feature.getExpirationDate().toString());
+                        if (ft.getExpiresOn() != null && now.after(ft.getExpiresOn())) {
+
+                            // TODO : Expired features do not fail the entired license (improve!)
+                            logger.warn("***************** FEATURE LICENE HAS " +
+                                    ft.getGroup() + "/" +
+                            ft.getName() + "/" +
+                            ft.getVersion() + " HAS EXPIRED !!!");
+
+                            logger.warn("***************** FEATURE LICENE HAS " +
+                                    ft.getGroup() + "/" +
+                            ft.getName() + "/" +
+                            ft.getVersion() + " HAS EXPIRED !!!");
+
+
                         }
 
                         valid = true;
+                        break;
                     }
                 }
 
@@ -224,10 +245,19 @@ public class LicenseManagerImpl implements LicenseManager {
         boolean valid = true;
 
         Calendar now = Calendar.getInstance();
+
+        logger.info("Validatig License " +
+                license.getLicenseName() + "/" +
+                license.getVersion() + "[" +
+                (license.getIssueInstant() != null ? license.getIssueInstant().toString() : "<no-issue-instant>") +
+                ":" +
+                (license.getExpiresOn() != null ? license.getExpiresOn().toString() : "<perpetual>") +
+                "]");
+
         
-        if (license.getExpirationDate() != null && now.after(license.getExpirationDate())) {
+        if (license.getExpiresOn() != null && now.after(license.getExpiresOn())) {
             throw new InvalidLicenseException("Product License expired on " +
-                    license.getExpirationDate().toString());
+                    license.getExpiresOn().toString());
         }
 
         for (ProductFeature pf : productFeatures.values()) {
