@@ -230,6 +230,7 @@ public class LicenseManagerImpl implements LicenseManager {
 
             LicenseKeyResolver keyResolver = new LicenseKeyResolverImpl(cert, null); //we don't need private key in resolver to validate license
             signer.validate(license, keyResolver);
+
         } catch(CertificateException e){
             if (logger.isDebugEnabled())
                 logger.debug("Invalid License : " + e.getMessage(), e);
@@ -248,7 +249,7 @@ public class LicenseManagerImpl implements LicenseManager {
         Calendar now = Calendar.getInstance();
 
         logger.info("Validatig License " +
-                license.getLicenseName() + "/" +
+                license.getID() + "/" +
                 license.getVersion() + "[" +
                 (license.getIssueInstant() != null ? license.getIssueInstant().toString() : "<no-issue-instant>") +
                 ":" +
