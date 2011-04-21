@@ -97,8 +97,8 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
 
     protected String getIssueInstantString(FeatureType licFeature){
         String dateString = "";
-        if(licFeature.getExpiresOn() != null){
-            dateString = getDateString(licFeature.getExpiresOn().getTime());
+        if(licFeature.getIssueInstant() != null){
+            dateString = getDateString(licFeature.getIssueInstant().getTime());
         }
         return dateString;
     }
