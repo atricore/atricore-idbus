@@ -199,8 +199,8 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         }
 
         //EXPIRATION DATE
-        if (_licenseProxy.license.expirationDate != null) {
-            view.licenseExpirationDate.text = view.dateFormatter.format(_licenseProxy.license.expirationDate);
+        if (_licenseProxy.license.exipresOn != null) {
+            view.licenseExpirationDate.text = view.dateFormatter.format(_licenseProxy.license.exipresOn);
         } else {
             view.licenseExpirationDate.text = "Perpetual";
         }
