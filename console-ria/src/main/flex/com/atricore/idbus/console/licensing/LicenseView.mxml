@@ -66,12 +66,12 @@
             </s:HGroup>
 
             <s:HGroup paddingBottom="5">
-                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.issueDate')}:" />
+                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.issueInstant')}:" />
                 <s:Label id="licenseIssueDate"/>
             </s:HGroup>
 
             <s:HGroup paddingBottom="15">
-                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.expirationDate')}:" />
+                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.expiresOn')}:" />
                 <s:Label id="licenseExpirationDate"/>
             </s:HGroup>
 
@@ -87,7 +87,7 @@
                         <mx:DataGridColumn dataField="name" width="120" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.name')}"/>
                         <mx:DataGridColumn dataField="description" width="300" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.description')}"/>
                         <mx:DataGridColumn dataField="version" width="100" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.version')}"/>
-                        <mx:DataGridColumn dataField="issueDate" width="135" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.issueDate')}">
+                        <mx:DataGridColumn dataField="issueInstant" width="135" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.issueInstant')}">
                             <mx:itemRenderer>
                                 <fx:Component>
                                     <mx:HBox paddingLeft="5" paddingTop="5" horizontalScrollPolicy="off">
@@ -102,12 +102,12 @@
                                             }
                                             ]]>
                                         </fx:Script>
-                                        <s:Label text="{formatFieldDate(data.issueDate)}" />
+                                        <s:Label text="{formatFieldDate(data.issueInstant)}" />
                                     </mx:HBox>
                                 </fx:Component>
                             </mx:itemRenderer>
                         </mx:DataGridColumn>
-                        <mx:DataGridColumn dataField="expirationDate" width="135" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.expirationDate')}">
+                        <mx:DataGridColumn dataField="expiresOn" width="135" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.expiresOn')}">
                             <mx:itemRenderer>
                                 <fx:Component>
                                     <mx:HBox paddingLeft="5" paddingTop="5" horizontalScrollPolicy="off">
@@ -126,7 +126,7 @@
                                             }
                                             ]]>
                                         </fx:Script>
-                                        <s:Label text="{formatFieldDate(data.expirationDate)}" />
+                                        <s:Label text="{formatFieldDate(data.expiresOn)}" />
                                     </mx:HBox>
                                 </fx:Component>
                             </mx:itemRenderer>

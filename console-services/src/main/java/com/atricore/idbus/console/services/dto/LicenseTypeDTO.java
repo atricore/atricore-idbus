@@ -12,7 +12,7 @@ public class LicenseTypeDTO implements Serializable {
     private static final long serialVersionUID = 475540870033858942L;
     private OrganizationTypeDTO organization;
     private Date issueInstant;
-    private Date expirationDate;
+    private Date expiresOn;
 
     private List<LicensedFeatureTypeDTO> licensedFeature;
 
@@ -45,12 +45,12 @@ public class LicenseTypeDTO implements Serializable {
         this.issueInstant = issueInstant;
     }
 
-    public Date getExpirationDate() {
-        return expirationDate;
+    public Date getExpiresOn() {
+        return expiresOn;
     }
 
-    public void setExpirationDate(Date expirationDate) {
-        this.expirationDate = expirationDate;
+    public void setExpiresOn(Date expiresOn) {
+        this.expiresOn = expiresOn;
     }
 
     public String getEula() {

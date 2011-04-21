@@ -11,8 +11,8 @@ public class FeatureTypeDTO {
     private String name;
     private String version;
     private String licenseText;
-    private Date issueDate;
-    private Date expirationDate;
+    private Date issueInstant;
+    private Date expiresOn;
 
     public String getGroup() {
         return group;
@@ -46,19 +46,19 @@ public class FeatureTypeDTO {
         this.licenseText = licenseText;
     }
 
-    public Date getExpirationDate() {
-        return expirationDate;
+    public Date getExpiresOn() {
+        return expiresOn;
     }
 
-    public void setExpirationDate(Date expirationDate) {
-        this.expirationDate = expirationDate;
+    public void setExpiresOn(Date expiresOn) {
+        this.expiresOn = expiresOn;
     }
 
-    public Date getIssueDate() {
-        return issueDate;
+    public Date getIssueInstant() {
+        return issueInstant;
     }
 
-    public void setIssueDate(Date issueDate) {
-        this.issueDate = issueDate;
+    public void setIssueInstant(Date issueInstant) {
+        this.issueInstant = issueInstant;
     }
 }

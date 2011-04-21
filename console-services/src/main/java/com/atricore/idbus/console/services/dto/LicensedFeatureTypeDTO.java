@@ -15,8 +15,6 @@ public class LicensedFeatureTypeDTO implements Serializable {
     private static final long serialVersionUID = 475541230033855542L;
 
     protected List<FeatureTypeDTO> feature;
-    protected Date issueDate;
-    protected Date expirationDate;
 
     public List<FeatureTypeDTO> getFeature() {
         if (feature == null) {
@@ -29,19 +27,4 @@ public class LicensedFeatureTypeDTO implements Serializable {
         this.feature = feature;
     }
 
-    public Date getIssueDate() {
-        return issueDate;
-    }
-
-    public void setIssueDate(Date issueDate) {
-        this.issueDate = issueDate;
-    }
-
-    public Date getExpirationDate() {
-        return expirationDate;
-    }
-
-    public void setExpirationDate(Date expirationDate) {
-        this.expirationDate = expirationDate;
-    }
 }

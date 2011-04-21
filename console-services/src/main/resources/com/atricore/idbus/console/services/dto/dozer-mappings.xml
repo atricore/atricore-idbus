@@ -770,8 +770,8 @@
             <b>issueInstant</b>
         </field>
         <field>
-            <a>expirationDate</a>
-            <b>expirationDate</b>
+            <a>expiresOn</a>
+            <b>expiresOn</b>
         </field>
         <field>
             <a>eula</a>
@@ -788,12 +788,12 @@
         <class-a>com.atricore.josso2.licensing._1_0.license.LicensedFeatureType</class-a>
         <class-b>com.atricore.idbus.console.services.dto.LicensedFeatureTypeDTO</class-b>
         <field>
-            <a>issueDate</a>
-            <b>issueDate</b>
+            <a>issueInstant</a>
+            <b>issueInstant</b>
         </field>
         <field>
-            <a>expirationDate</a>
-            <b>expirationDate</b>
+            <a>expiresOn</a>
+            <b>expiresOn</b>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
             <a>feature</a>

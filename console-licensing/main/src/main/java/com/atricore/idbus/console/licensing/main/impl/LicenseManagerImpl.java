@@ -138,16 +138,17 @@ public class LicenseManagerImpl implements LicenseManager {
                         if (ft.getExpiresOn() != null && now.after(ft.getExpiresOn())) {
 
                             // TODO : Expired features do not fail the entired license (improve!)
-                            logger.warn("***************** FEATURE LICENE HAS " +
+
+                            String warn = "***************** FEATURE LICENE HAS " +
                                     ft.getGroup() + "/" +
                             ft.getName() + "/" +
-                            ft.getVersion() + " HAS EXPIRED !!!");
+                            ft.getVersion() + " HAS EXPIRED !!!";
 
-                            logger.warn("***************** FEATURE LICENE HAS " +
-                                    ft.getGroup() + "/" +
-                            ft.getName() + "/" +
-                            ft.getVersion() + " HAS EXPIRED !!!");
+                            logger.warn(warn);
+                            logger.warn(warn);
 
+                            System.out.println(warn);
+                            System.out.println(warn);
 
                         }
 
