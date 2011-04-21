@@ -55,6 +55,7 @@ public class LicenseSigner {
 
                 provider = (Provider) Class.forName(getProviderFQCN()).newInstance();
             }
+
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Error creating default provider: " + getProviderFQCN(), e);
         } catch (InstantiationException e) {
