@@ -33,6 +33,7 @@ public class LicenseGenerator {
     public LicenseGenerator() {
         // use a default signer
         signer = new LicenseSigner();
+        signer.init();
     }
 
     public LicenseType generate(String inLicensePath, String outLicensePath, String keystoreFile, String keystorePass,
