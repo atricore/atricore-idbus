@@ -30,7 +30,33 @@ public class LicenseGenerator {
 
     private LicenseSigner signer;
 
-    public LicenseType generate(String inLicense, String outLicense, String keystoreFile, String keystorePass, String keyName, String keyPass, String certAlias) throws LicenseGenerationException {
+    public LicenseGenerator() {
+        // use a default signer
+        signer = new LicenseSigner();
+    }
+
+    public LicenseType generate(String inLicensePath, String outLicensePath, String keystoreFile, String keystorePass,
+                                String keyName, String keyPass, String certAlias) throws LicenseGenerationException {
+            final File inLicenseFile = new File(inLicensePath);
+            final File outLicenseFile = new File(outLicensePath);
+
+        try {
+            return generate(new FileInputStream(inLicenseFile),
+                            new FileOutputStream(outLicenseFile),
+                            keystoreFile,
+                            keystorePass,
+                            keyName,
+                            keyPass,
+                            certAlias
+                            );
+        } catch (FileNotFoundException e) {
+            logger.error("License file not found", e);
+            throw new LicenseGenerationException(e);
+        }
+
+    }
+
+    public LicenseType generate(InputStream inLicense, OutputStream outLicense, String keystoreFile, String keystorePass, String keyName, String keyPass, String certAlias) throws LicenseGenerationException {
         ZipArchiveOutputStream zipOut = null;
         try {
             LicenseKeystoreKeyResolver keyResolver = new LicenseKeystoreKeyResolver();
@@ -45,7 +71,7 @@ public class LicenseGenerator {
             fis.read(b);
             keyResolver.setKeystoreFile(b);
 
-            LicenseType unsigned = XmlUtils.unmarshalLicense(new FileInputStream(inLicense), false);
+            LicenseType unsigned = XmlUtils.unmarshalLicense(inLicense, false);
             LicenseType signed = signer.sign(unsigned, keyResolver);
 
             String licenseString = XmlUtils.marshalLicense(signed, false);
@@ -54,21 +80,16 @@ public class LicenseGenerator {
             byte[] licenseEncoded = Base64.encodeBase64(licenseString.getBytes());
 
             //save license as zipped file
-            FileOutputStream myOutputStream = new FileOutputStream(outLicense);
             ZipArchiveEntry entry = new ZipArchiveEntry("license");
             entry.setSize(licenseEncoded.length);
             
-            zipOut = new ZipArchiveOutputStream(myOutputStream);
+            zipOut = new ZipArchiveOutputStream(outLicense);
 
             zipOut.putArchiveEntry(entry);
             zipOut.write(licenseEncoded);
             zipOut.closeArchiveEntry();
             zipOut.finish();
             return signed;
-
-        } catch (FileNotFoundException e) {
-            logger.error("License file not found", e);
-            throw new LicenseGenerationException(e);
         } catch (CertificateException e) {
             throw new LicenseGenerationException(e);
         } catch (NoSuchAlgorithmException e) {
