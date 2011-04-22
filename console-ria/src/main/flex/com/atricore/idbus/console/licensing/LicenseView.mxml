@@ -23,6 +23,7 @@
 <s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:comp="com.atricore.idbus.console.components.*"
          width="100%" height="100%"
          skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
         >
@@ -41,20 +42,23 @@
         ]]>
     </fx:Script>    
 
-    <s:VGroup id="updateLicenseBox" width="100%" height="100%" paddingRight="5" paddingTop="20">
+    <s:VGroup width="100%" height="100%" paddingRight="5">
 
-        <!--Hidding update button for now [ATCON-342]-->
+        <s:HGroup id="updateLicenseBox" paddingBottom="10" width="100%" height="10%" visible="false" includeInLayout="false">
+            <mx:Form defaultButton="{btnUpdateLicense}">
+                <mx:FormItem>
+                    <mx:Button id="btnUpdateLicense" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.update')}"/>
+                </mx:FormItem>
+            </mx:Form>
+        </s:HGroup>
+        
+        <s:VGroup paddingLeft="25" paddingTop="15" id="licenseInfo" width="100%" height="90%">
 
-        <!--<mx:Form width="100%" height="15%" verticalGap="4" defaultButton="{btnUpdateLicense}">-->
-            <!--<mx:FormItem>-->
-                <!--<mx:Button id="btnUpdateLicense" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.update')}"/>-->
-            <!--</mx:FormItem>-->
-        <!--</mx:Form>-->
+            <!--  current license information  -->
+            <s:HGroup paddingBottom="5">
+                <s:Label paddingBottom="10" width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.currentLicense')}" styleName="h2"/>
+            </s:HGroup>
 
-        <!--  current license information  -->
-        <!--<s:Label paddingLeft="25" paddingBottom="10" paddingTop="15" width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.currentLicense')}" styleName="h2"/>-->
-
-        <s:VGroup paddingLeft="25" id="licenseInfo">
             <s:HGroup paddingBottom="5">
                 <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.owner')}:" />
                 <s:Label id="licenseOwner"/>
@@ -75,19 +79,19 @@
                 <s:Label id="licenseExpirationDate"/>
             </s:HGroup>
 
-            <s:VGroup paddingBottom="15">
+            <s:VGroup paddingBottom="15" width="80%">
                 <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.generaleula')}:" />
-                <s:TextArea id="generalEula" width="700" height="100" editable="false"/>
+                <s:TextArea id="generalEula" width="100%" height="100" editable="false"/>
             </s:VGroup>
 
-            <s:VGroup>
+            <s:VGroup width="80%" height="35%">
                 <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.licensedFeatures')}:" />
-                <mx:DataGrid id="features" width="880" height="150">
-                    <mx:columns>
-                        <mx:DataGridColumn dataField="name" width="120" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.name')}"/>
-                        <mx:DataGridColumn dataField="description" width="300" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.description')}"/>
-                        <mx:DataGridColumn dataField="version" width="100" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.version')}"/>
-                        <mx:DataGridColumn dataField="issueInstant" width="135" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.issueInstant')}">
+                <comp:ScalableDataGrid id="features" width="100%" height="100%" columnWidths="{['30%', '45%', '25%', '135', '135', '105']}">
+                    <comp:columns>
+                        <mx:DataGridColumn dataField="name" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.name')}"/>
+                        <mx:DataGridColumn dataField="description" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.description')}"/>
+                        <mx:DataGridColumn dataField="version" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.version')}"/>
+                        <mx:DataGridColumn dataField="issueInstant" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.issueInstant')}">
                             <mx:itemRenderer>
                                 <fx:Component>
                                     <mx:HBox paddingLeft="5" paddingTop="5" horizontalScrollPolicy="off">
@@ -107,7 +111,7 @@
                                 </fx:Component>
                             </mx:itemRenderer>
                         </mx:DataGridColumn>
-                        <mx:DataGridColumn dataField="expiresOn" width="135" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.expiresOn')}">
+                        <mx:DataGridColumn dataField="expiresOn" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.expiresOn')}">
                             <mx:itemRenderer>
                                 <fx:Component>
                                     <mx:HBox paddingLeft="5" paddingTop="5" horizontalScrollPolicy="off">
@@ -131,7 +135,7 @@
                                 </fx:Component>
                             </mx:itemRenderer>
                         </mx:DataGridColumn>
-                        <mx:DataGridColumn id="groupColumn" dataField="group" width="92" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.details')}">
+                        <mx:DataGridColumn id="groupColumn" dataField="group" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.details')}">
                             <mx:itemRenderer>
                                 <fx:Component>
                                     <s:MXDataGridItemRenderer click="clickHandler(event)">
@@ -150,7 +154,7 @@
                                             }
                                             ]]>
                                         </fx:Script>
-                                        <s:HGroup horizontalAlign="center" textAlign="center">
+                                        <s:HGroup horizontalAlign="center" textAlign="center" paddingLeft="3">
 
                                             <s:Button width="100%" click="clickHandler(event)" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.viewlicense')}" />
 
@@ -159,8 +163,8 @@
                                 </fx:Component>
                             </mx:itemRenderer>
                         </mx:DataGridColumn>
-                    </mx:columns>
-                </mx:DataGrid>
+                    </comp:columns>
+                </comp:ScalableDataGrid>
             </s:VGroup>
 
         </s:VGroup>

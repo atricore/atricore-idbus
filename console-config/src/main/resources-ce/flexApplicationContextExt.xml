@@ -8,6 +8,10 @@
 
     <!-- CE Console Extensions -->
 
+    <object id="distributionContext" class="com.atricore.idbus.console.main.DistributionContext">
+        <property name="distribution" value="josso-ce"/>
+    </object>
+
     <!-- Branding Factory -->
     <object id="brandingFactory" class="com.atricore.idbus.console.branding.ce.AtricoreCEBrandingFactory"/>
 

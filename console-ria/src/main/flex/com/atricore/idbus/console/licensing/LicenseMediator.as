@@ -28,10 +28,12 @@ import com.atricore.idbus.console.licensing.main.model.LicenseProxy;
 import com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager;
 import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.DistributionContext;
 import com.atricore.idbus.console.services.dto.FeatureType;
 import com.atricore.idbus.console.services.dto.LicensedFeatureType;
 
 import flash.events.Event;
+import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.events.FlexEvent;
@@ -79,8 +81,9 @@ public class LicenseMediator extends IocMediator implements IDisposable {
 
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-//            Hidding update button for now [ATCON-342]
-//            view.btnUpdateLicense.removeEventListener(MouseEvent.CLICK, handleUpdateLicenseButton);
+            var distributionContext:DistributionContext = iocFacade.container.getObject("distributionContext") as DistributionContext;
+            if (distributionContext.distribution == "josso-ee")
+                view.btnUpdateLicense.removeEventListener(MouseEvent.CLICK, handleUpdateLicenseButton);
         }
 
         (viewComponent as LicenseView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
@@ -92,8 +95,15 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         _created = true;
         
         popupManager.init(iocFacade, view);
-//        Hidding update button for now [ATCON-342]
-//        view.btnUpdateLicense.addEventListener(MouseEvent.CLICK, handleUpdateLicenseButton);
+
+        var distributionContext:DistributionContext = iocFacade.container.getObject("distributionContext") as DistributionContext;
+        if (distributionContext.distribution == "josso-ee") {
+            view.licenseInfo.paddingTop = 0;
+            view.updateLicenseBox.includeInLayout = true;
+            view.updateLicenseBox.visible = true;
+            view.btnUpdateLicense.addEventListener(MouseEvent.CLICK, handleUpdateLicenseButton);
+        }
+
         init();
     }
 
@@ -125,7 +135,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case UpdateLicenseCommand.SUCCESS :
-                // do nothing AppMediator is taking care of it
+                sendNotification(ApplicationFacade.GET_LICENSE);
                 break;
             case UpdateLicenseCommand.FAILURE :
                 handleActivationFailure(notification);
@@ -147,11 +157,10 @@ public class LicenseMediator extends IocMediator implements IDisposable {
                 break;
         }
     }
-    
-//    Hidding update button for now [ATCON-342]
-//    public function handleUpdateLicenseButton(event:Event):void {
-//        sendNotification(ApplicationFacade.DISPLAY_UPDATE_LICENSE);
-//    }
+
+    public function handleUpdateLicenseButton(event:Event):void {
+        sendNotification(ApplicationFacade.DISPLAY_UPDATE_LICENSE);
+    }
 
     public function handleActivationFailure(notification:INotification):void {
         var errMsg:String = notification.getBody() as String;

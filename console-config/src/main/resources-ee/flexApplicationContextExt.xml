@@ -8,6 +8,10 @@
 
     <!-- EE Console Extensions -->
 
+    <object id="distributionContext" class="com.atricore.idbus.console.main.DistributionContext">
+        <property name="distribution" value="josso-ee"/>
+    </object>
+    
     <!-- LiveUpdate -->
     <object id="liveUpdateProxy" class="com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy"/>
 

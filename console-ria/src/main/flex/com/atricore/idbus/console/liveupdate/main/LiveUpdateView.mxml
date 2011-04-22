@@ -24,6 +24,7 @@
 <s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:comp="com.atricore.idbus.console.components.*"
          width="100%" height="100%"
          skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
         >
@@ -41,9 +42,10 @@
     </fx:Script>
 
     <s:VGroup id="updatesVBox" width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
-        <mx:DataGrid id="updatesList" width="100%" rowCount="10" resizeEffect="Resize" verticalAlign="middle">
-            <mx:columns>
-                <mx:DataGridColumn dataField="updateNature" width="0.05" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.updateNature')}">
+        <comp:ScalableDataGrid id="updatesList" width="100%" rowCount="10" resizeEffect="Resize" verticalAlign="middle"
+                columnWidths="{['5%', '40%', '15%', '10%', '15%', '15%']}">
+            <comp:columns>
+                <mx:DataGridColumn dataField="updateNature" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.updateNature')}">
                     <mx:itemRenderer>
                         <fx:Component>
                             <mx:VBox paddingLeft="5">
@@ -67,11 +69,11 @@
                         </fx:Component>
                     </mx:itemRenderer>
                 </mx:DataGridColumn>
-                <mx:DataGridColumn dataField="group" width="0.4" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.group')}"/>
-                <mx:DataGridColumn dataField="name" width="0.15" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.name')}"/>
-                <mx:DataGridColumn dataField="version" width="0.1" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.version')}"/>
-                <mx:DataGridColumn dataField="description" width="0.15" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.description')}"/>
-                <mx:DataGridColumn dataField="issueInstant" width="0.15" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.releaseDate')}">
+                <mx:DataGridColumn dataField="group" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.group')}"/>
+                <mx:DataGridColumn dataField="name" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.name')}"/>
+                <mx:DataGridColumn dataField="version" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.version')}"/>
+                <mx:DataGridColumn dataField="description" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.description')}"/>
+                <mx:DataGridColumn dataField="issueInstant" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.releaseDate')}">
                     <mx:itemRenderer>
                         <fx:Component>
                             <mx:VBox paddingLeft="5">
@@ -91,8 +93,8 @@
                         </fx:Component>
                     </mx:itemRenderer>
                 </mx:DataGridColumn>
-            </mx:columns>
-        </mx:DataGrid>
+            </comp:columns>
+        </comp:ScalableDataGrid>
 
         <s:HGroup paddingLeft="10" paddingRight="10">
             <s:Button id="btnInstallUpdate" enabled="false"
