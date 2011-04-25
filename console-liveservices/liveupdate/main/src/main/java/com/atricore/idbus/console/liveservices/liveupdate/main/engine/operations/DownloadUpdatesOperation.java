@@ -38,6 +38,7 @@ public class DownloadUpdatesOperation extends AbstractInstallOperation {
 
                     try {
 
+                        // We just want the artifact locally stored, so we ignore the stream.
                         in = artMgr.getArtifactStream(art);
 
                         if (logger.isDebugEnabled())
@@ -45,7 +46,8 @@ public class DownloadUpdatesOperation extends AbstractInstallOperation {
 
                     } catch (Exception e) {
                         logger.error("Can't download artifact " + ArtifactsUtil.getArtifactFileName(art) + " : " + e.getMessage(), e);
-                        return OperationStatus.STOP;
+                        //return OperationStatus.ABORT;
+                        throw new LiveUpdateException("Can't download artifact " + ArtifactsUtil.getArtifactFileName(art) + " : " + e.getMessage(), e);
 
                     } finally {
                         IOUtils.closeQuietly(in);

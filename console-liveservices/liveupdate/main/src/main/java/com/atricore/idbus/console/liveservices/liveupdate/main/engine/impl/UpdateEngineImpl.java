@@ -112,6 +112,11 @@ public class UpdateEngineImpl implements UpdateEngine {
         }
 
         switch (sts) {
+            case ABORT:
+                logger.error("Process aborted " + proc.getId());
+
+                abortProcess(proc);
+                throw new LiveUpdateException("Process Aborted");
             case STOP:
                 if (logger.isDebugEnabled())
                     logger.debug("Process completed " + proc.getId());
@@ -178,6 +183,13 @@ public class UpdateEngineImpl implements UpdateEngine {
         store.remove(proc.getId());
         return proc;
     }
+
+    protected UpdateProcess abortProcess(UpdateProcess proc) throws LiveUpdateException {
+        proc.getState().setStatus(ProcessStatus.STOPPED);
+        store.remove(proc.getId());
+        return proc;
+    }
+
 
     protected UpdateProcess pauseProcess(UpdateProcess proc) throws LiveUpdateException {
         proc.getState().setStatus(ProcessStatus.PAUSED);

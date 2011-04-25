@@ -7,5 +7,6 @@ public enum OperationStatus {
 
     NEXT,
     STOP,
-    PAUSE
+    PAUSE,
+    ABORT
 }

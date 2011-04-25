@@ -9,6 +9,7 @@ import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.util.*;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -193,8 +194,9 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                 if (logger.isTraceEnabled())
                     logger.trace("Loading repository content using transport " + t.getClass().getSimpleName());
 
+                InputStream idxStream = null;
                 try {
-                    InputStream idxStream = t.getContentStream(location);
+                    idxStream = t.getContentStream(location);
 
                     UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(idxStream, false);
 
@@ -240,6 +242,8 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                     if (logger.isTraceEnabled())
                         logger.error("Cannot load updates list from repository " + repo.getName() +
                                 " [" + repo.getId() + "] " + e.getMessage(), e);
+                } finally {
+                    IOUtils.closeQuietly(idxStream);
                 }
 
             }

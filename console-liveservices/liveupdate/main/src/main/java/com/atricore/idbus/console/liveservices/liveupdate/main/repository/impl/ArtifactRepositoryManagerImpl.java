@@ -6,6 +6,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.repository.*;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 import com.atricore.liveservices.liveupdate._1_0.util.*;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,6 +53,8 @@ public class ArtifactRepositoryManagerImpl extends AbstractRepositoryManager<Art
                             InputStream artifactDescriptorStream = t.getContentStream(new URI(location + "/" + ArtifactsUtil.getArtifactDescriptorPath(artifact)));
 
                             ArtifactDescriptorType artifactDescriptor = XmlUtils1.unmarshallArtifactDescriptor(artifactDescriptorStream, false);
+
+                            IOUtils.closeQuietly(artifactDescriptorStream);
 
                             if (logger.isTraceEnabled())
                                 logger.trace("Found Artifact descriptor for artifact [" + artifact.getID() + "]");
