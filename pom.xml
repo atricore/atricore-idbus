@@ -1544,7 +1544,7 @@
                 <!-- Dependencies not on central repo -->
                 <repository>
 
-                    <id>atricore-m2-commercialrepo</id>
+                    <id>atricore-m2-commercial-repo</id>
                     <name>Atricore Maven2 Repository</name>
                     <url>http://repository.atricore.com/m2-release-repository</url>
 
@@ -1614,13 +1614,13 @@
                 <repository>
                     <id>atricore-m2-deploy-community-repo</id>
                     <name>Atricore Release Distribution Repository</name>
-                    <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-release-repository</url>
+                    <url>scp://repository.atricore.org/var/www/repository.atricore.com/m2-release-repository</url>
                 </repository>
 
                 <snapshotRepository>
                     <id>atricore-m2-snapshot-deploy-community-repo</id>
                     <name>Atricore Development Snapshot Repository</name>
-                    <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-snapshot-repository</url>
+                    <url>scp://repository.atricore.org/var/www/repository.atricore.com/m2-snapshot-repository</url>
                 </snapshotRepository>
 
             </distributionManagement>
