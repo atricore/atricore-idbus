@@ -29,7 +29,7 @@
     <parent>
         <groupId>com.atricore.idbus.console.activation</groupId>
         <artifactId>console-activation</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <groupId>com.atricore.idbus.console.activation</groupId>

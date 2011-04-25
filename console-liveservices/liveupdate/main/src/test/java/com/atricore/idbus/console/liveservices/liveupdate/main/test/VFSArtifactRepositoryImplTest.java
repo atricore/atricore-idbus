@@ -85,7 +85,7 @@ public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
         for (ArtifactDescriptorType artifactDescriptor : artifacts) {
             ArtifactKeyType artifact = artifactDescriptor.getArtifact();
             Assert.assertEquals(artifact.getGroup(), "com.atricore.idbus.console");
-            Assert.assertEquals(artifact.getVersion(), "1.0.0-SNAPSHOT");
+            Assert.assertEquals(artifact.getVersion(), "1.0.0");
             if (artifact.getName().equals("console-config")) {
                 configArtifactFound = true;
                 Assert.assertEquals(artifact.getType(), "zip");
@@ -107,7 +107,7 @@ public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
         artifactKey1.setID("id0000000112");
         artifactKey1.setGroup("com.atricore.idbus.console");
         artifactKey1.setName("console-tooling");
-        artifactKey1.setVersion("1.0.0-SNAPSHOT");
+        artifactKey1.setVersion("1.0.0");
         boolean containsArtifact1 = vfsArtifactRepository.containsArtifact(artifactKey1);
         Assert.assertTrue(containsArtifact1);
 
@@ -126,7 +126,7 @@ public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
         artifactKey1.setID("id0000000111");
         artifactKey1.setGroup("com.atricore.idbus.console");
         artifactKey1.setName("console-config");
-        artifactKey1.setVersion("1.0.0-SNAPSHOT");
+        artifactKey1.setVersion("1.0.0");
         artifactKey1.setType("zip");
         artifactKey1.setClassifier("resources");
         InputStream artifact1Stream = vfsArtifactRepository.getArtifact(artifactKey1);
@@ -136,7 +136,7 @@ public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
         artifactKey2.setID("id0000000112");
         artifactKey2.setGroup("com.atricore.idbus.console");
         artifactKey2.setName("console-tooling");
-        artifactKey2.setVersion("1.0.0-SNAPSHOT");
+        artifactKey2.setVersion("1.0.0");
         InputStream artifact2Stream = vfsArtifactRepository.getArtifact(artifactKey2);
         Assert.assertNotNull(artifact2Stream);
     }
@@ -147,7 +147,7 @@ public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
         artifactKey1.setID("id0000000111");
         artifactKey1.setGroup("com.atricore.idbus.console");
         artifactKey1.setName("console-config");
-        artifactKey1.setVersion("1.0.0-SNAPSHOT");
+        artifactKey1.setVersion("1.0.0");
         artifactKey1.setType("zip");
         artifactKey1.setClassifier("resources");
         InputStream artifactDescriptor1Stream = vfsArtifactRepository.getArtifactDescriptor(artifactKey1);
@@ -157,7 +157,7 @@ public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
         artifactKey2.setID("id0000000112");
         artifactKey2.setGroup("com.atricore.idbus.console");
         artifactKey2.setName("console-tooling");
-        artifactKey2.setVersion("1.0.0-SNAPSHOT");
+        artifactKey2.setVersion("1.0.0");
         InputStream artifactDescriptor2Stream = vfsArtifactRepository.getArtifactDescriptor(artifactKey2);
         Assert.assertNotNull(artifactDescriptor2Stream);
     }
@@ -194,7 +194,7 @@ public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
         artifactKey.setID("id0000000111");
         artifactKey.setGroup("com.atricore.idbus.console");
         artifactKey.setName("console-config");
-        artifactKey.setVersion("1.0.0-SNAPSHOT");
+        artifactKey.setVersion("1.0.0");
         artifactKey.setType("zip");
         artifactKey.setClassifier("resources");
 
