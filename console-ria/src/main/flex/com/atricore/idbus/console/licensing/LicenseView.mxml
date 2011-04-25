@@ -59,12 +59,12 @@
                 <s:Label paddingBottom="10" width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.currentLicense')}" styleName="h2"/>
             </s:HGroup>
 
-            <s:HGroup paddingBottom="5">
+            <s:HGroup id="licenseOwnerBox" paddingBottom="5" visible="false" includeInLayout="false">
                 <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.owner')}:" />
                 <s:Label id="licenseOwner"/>
             </s:HGroup>
 
-            <s:HGroup paddingBottom="5">
+            <s:HGroup id="licenseOrganizationBox" paddingBottom="5" visible="false" includeInLayout="false">
                 <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.organization')}:" />
                 <s:Label id="licenseOrganization"/>
             </s:HGroup>

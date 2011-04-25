@@ -195,11 +195,23 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         //LICENSE OWNER
         if(_licenseProxy.license.organization != null && _licenseProxy.license.organization.owner != null){
             view.licenseOwner.text = _licenseProxy.license.organization.owner;
+            view.licenseOwnerBox.includeInLayout = true;
+            view.licenseOwnerBox.visible = true;
+        } else {
+            view.licenseOwner.text = "";
+            view.licenseOwnerBox.includeInLayout = false;
+            view.licenseOwnerBox.visible = false;
         }
 
         //ORGANIZATION
-        if(_licenseProxy.license.organization != null){
+        if(_licenseProxy.license.organization != null && _licenseProxy.license.organization.organizationName != null){
             view.licenseOrganization.text = _licenseProxy.license.organization.organizationName;
+            view.licenseOrganizationBox.includeInLayout = true;
+            view.licenseOrganizationBox.visible = true;
+        } else {
+            view.licenseOrganization.text = "";
+            view.licenseOrganizationBox.includeInLayout = false;
+            view.licenseOrganizationBox.visible = false;
         }
 
         //ISSUE DATE
