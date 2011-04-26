@@ -73,7 +73,9 @@ public class DisplayLicenseTextMediator extends IocFormMediator {
 
     override public function handleNotification(notification:INotification):void {
         var feature:FeatureType = notification.getBody() as FeatureType;
-        licenseText = StringUtil.trim(feature.licenseText);
+        licenseText = StringUtil.trimArrayElements(feature.licenseText, "\n");
+        if (_licenseText.indexOf('\n') == 0)
+            licenseText = _licenseText.substring(1, _licenseText.length);
         super.handleNotification(notification);
     }
 

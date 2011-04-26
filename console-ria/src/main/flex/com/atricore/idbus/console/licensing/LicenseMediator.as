@@ -230,7 +230,10 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         if(_licenseProxy.license.eula != null) {
 //            view.generalEula.width = textAreaWidth;
 //            view.generalEula.height = 100;
-            view.generalEula.text = StringUtil.trim(_licenseProxy.license.eula);
+            var eula:String = StringUtil.trimArrayElements(_licenseProxy.license.eula, "\n");
+            if (eula.indexOf('\n') == 0)
+                eula = eula.substring(1, eula.length);
+            view.generalEula.text = eula;
         }
 
         //FEATURES

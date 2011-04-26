@@ -27,7 +27,7 @@
          defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
 
         <!--<mx:FormItem labelWidth="80" paddingTop="10" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.licensetext')}:">-->
-            <s:TextArea id="licenseText" width="400" height="360" editable="false"/>
+            <s:TextArea id="licenseText" width="680" height="360" editable="false"/>
         <!--</mx:FormItem>-->
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
