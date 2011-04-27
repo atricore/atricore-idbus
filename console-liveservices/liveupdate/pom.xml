@@ -28,13 +28,13 @@
     <parent>
         <groupId>com.atricore.idbus.console</groupId>
         <artifactId>console</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
 
     <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
     <artifactId>console-liveupdate</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Atricore Console :: Live Services POM</name>
 

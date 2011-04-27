@@ -27,7 +27,7 @@
         <property name="id" value="atricore-console-ee"/>
         <property name="group" value="com.atricore.idbus.console"/>
         <property name="name" value="console-ee"/>
-        <property name="version" value="1.0.0-SNAPSHOT"/>
+        <property name="version" value="1.0.1-SNAPSHOT"/>
     </bean>
     <osgi:service id="osgiConsoleEEFeature" ref="consoleEEFeature"
                     interface="com.atricore.idbus.console.licensing.main.ProductFeature"/>
@@ -36,7 +36,7 @@
         <property name="id" value="atricore-idbus"/>
         <property name="group" value="org.atricore.idbus"/>
         <property name="name" value="idbus"/>
-        <property name="version" value="1.1.0-SNAPSHOT"/>
+        <property name="version" value="1.1.1-SNAPSHOT"/>
     </bean>
     <osgi:service id="osgiIdbusFeature" ref="idbusFeature"
                     interface="com.atricore.idbus.console.licensing.main.ProductFeature"/>
