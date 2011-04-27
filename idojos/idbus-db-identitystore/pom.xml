@@ -29,17 +29,17 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.1.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.idojos</groupId>
     <artifactId>org.atricore.idbus.idojos.dbidentitystore</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: IDOJO : RDBMS Identity Store</name>
 
     <properties>
-        <idbus.kernel.version>1.1.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.kernel.version>1.1.1-SNAPSHOT</idbus.kernel.version>
 
         <commons.logging.version>1.1.1</commons.logging.version>
         <hsqldb.version>1.8.0.7</hsqldb.version>
