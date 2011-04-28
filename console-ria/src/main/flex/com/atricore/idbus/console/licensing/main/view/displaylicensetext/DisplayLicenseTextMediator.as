@@ -21,12 +21,11 @@
 
 package com.atricore.idbus.console.licensing.main.view.displaylicensetext {
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-
 import com.atricore.idbus.console.services.dto.FeatureType;
 
 import flash.events.MouseEvent;
-import mx.events.CloseEvent;
 
+import mx.events.CloseEvent;
 import mx.utils.StringUtil;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -52,7 +51,9 @@ public class DisplayLicenseTextMediator extends IocFormMediator {
 
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleOk);
-        view.licenseText.text = _licenseText;
+        view.licenseText.text = _licenseText
+        view.licenseText.validateNow();
+        view.parent.width = view.licenseText.textWidth + 40;
     }
 
     private function handleOk(event:MouseEvent):void {

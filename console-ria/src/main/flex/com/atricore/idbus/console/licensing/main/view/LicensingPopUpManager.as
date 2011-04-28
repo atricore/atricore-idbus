@@ -139,8 +139,8 @@ public class LicensingPopUpManager extends BasePopUpManager {
         var feature:FeatureType = notification.getBody() as FeatureType;
 
         _popup.title = feature.name + " - "  + resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.viewlicense.heading');
-        _popup.width = 690;
-        _popup.height =450;
+        _popup.width = 623;
+        _popup.height = 450;
         _popup.x = (_popupParent.parentDocument.width / 2) - 205;
         _popup.y = 80;
         showPopup(_displayLicenseTextForm);
