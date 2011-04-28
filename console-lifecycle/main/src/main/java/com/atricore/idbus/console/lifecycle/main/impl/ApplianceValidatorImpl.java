@@ -441,6 +441,19 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 addError("WiKID Authentication Service [" + node.getName() + "] Client Store Password cannot be null");
             else if (wikidAuthnService.getWcStore().getStore() == null)
                 addError("WiKID Authentication Service [" + node.getName() + "] Client Store Resource cannot be null");
+        } else if (node instanceof DirectoryAuthenticationService) {
+            DirectoryAuthenticationService directoryAuthnService = (DirectoryAuthenticationService) node;
+
+            if (StringUtils.isBlank(directoryAuthnService.getInitialContextFactory()))
+                addError("Directory Authentication Service [" + node.getName() + "] Initial Context Factory cannot be null or empty");
+            if (StringUtils.isBlank(directoryAuthnService.getProviderUrl()))
+                addError("Directory Authentication Service [" + node.getName() + "] Provider URL cannot be null or empty");
+            if (StringUtils.isBlank(directoryAuthnService.getSecurityPrincipal()))
+                addError("Directory Authentication Service [" + node.getName() + "] Security Principal cannot be null or empty");
+            if (StringUtils.isBlank(directoryAuthnService.getSecurityCredential()))
+                addError("Directory Authentication Service [" + node.getName() + "] Security Credential cannot be null or empty");
+            if (StringUtils.isBlank(directoryAuthnService.getSecurityAuthentication()))
+                addError("Directory Authentication Service [" + node.getName() + "] Security Authentication cannot be null or empty");
         }
     }
 
@@ -476,6 +489,35 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         validateDisplayName("LDAP Identity Source display name" , node.getDisplayName());
 
         // TODO !
+
+        if (StringUtils.isBlank(node.getInitialContextFactory()))
+            addError("Directory Authentication Service [" + node.getName() + "] Initial Context Factory cannot be null or empty");
+        if (StringUtils.isBlank(node.getProviderUrl()))
+            addError("Directory Authentication Service [" + node.getName() + "] Provider URL cannot be null or empty");
+        if (StringUtils.isBlank(node.getSecurityPrincipal()))
+            addError("Directory Authentication Service [" + node.getName() + "] Security Principal cannot be null or empty");
+        if (StringUtils.isBlank(node.getSecurityCredential()))
+            addError("Directory Authentication Service [" + node.getName() + "] Security Credential cannot be null or empty");
+        if (StringUtils.isBlank(node.getSecurityAuthentication()))
+            addError("Directory Authentication Service [" + node.getName() + "] Security Authentication cannot be null or empty");
+        if (StringUtils.isBlank(node.getLdapSearchScope()))
+            addError("Directory Authentication Service [" + node.getName() + "] LDAP search scope cannot be null or empty");
+        if (StringUtils.isBlank(node.getUsersCtxDN()))
+            addError("Directory Authentication Service [" + node.getName() + "] User DN cannot be null or empty");
+        if (StringUtils.isBlank(node.getPrincipalUidAttributeID()))
+            addError("Directory Authentication Service [" + node.getName() + "] Principal UID attribute ID cannot be null or empty");
+        if (StringUtils.isBlank(node.getRoleMatchingMode()))
+            addError("Directory Authentication Service [" + node.getName() + "] Role Matching Mode cannot be null or empty");
+        if (StringUtils.isBlank(node.getUidAttributeID()))
+            addError("Directory Authentication Service [" + node.getName() + "] UID Attribute ID cannot be null or empty");
+        if (StringUtils.isBlank(node.getRolesCtxDN()))
+            addError("Directory Authentication Service [" + node.getName() + "] Roles DN cannot be null or empty");
+        if (StringUtils.isBlank(node.getRoleAttributeID()))
+            addError("Directory Authentication Service [" + node.getName() + "] Role Attribute ID cannot be null or empty");
+        if (StringUtils.isBlank(node.getCredentialQueryString()))
+            addError("Directory Authentication Service [" + node.getName() + "] Credential Query cannot be null or empty");
+        if (StringUtils.isBlank(node.getUserPropertiesQueryString()))
+            addError("Directory Authentication Service [" + node.getName() + "] User Properties Query cannot be null or empty");
     }
 
     @Override

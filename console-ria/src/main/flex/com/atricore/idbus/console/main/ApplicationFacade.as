@@ -146,6 +146,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_GOOGLE_APPS_ELEMENT:String = "createGoogleAppsElement";
     public static const CREATE_SUGAR_CRM_ELEMENT:String = "createSugarCRMElement";
     public static const CREATE_WIKID_ELEMENT:String = "createWikidElement";
+    public static const CREATE_DIRECTORY_SERVICE_ELEMENT:String = "createDirectoryServiceElement";
     public static const DIAGRAM_ELEMENT_CREATION_COMPLETE:String = "diagramElementCreationComplete";
     public static const DIAGRAM_ELEMENT_SELECTED:String = "diagramElementSelected";
     public static const DIAGRAM_ELEMENT_UPDATED:String = "diagramElementUpdated";
@@ -168,6 +169,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const REMOVE_GOOGLE_APPS_ELEMENT:String = "removeGoogleAppsElement";
     public static const REMOVE_SUGAR_CRM_ELEMENT:String = "removeSugarCRMElement";
     public static const REMOVE_WIKID_ELEMENT:String = "removeWikidElement";
+    public static const REMOVE_DIRECTORY_SERVICE_ELEMENT:String = "removeDirectoryServiceElement";
     public static const CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJbossExecutionEnvironmentElement";
     public static const CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWeblogicExecutionEnvironmentElement";
     public static const CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT:String = "createTomcatExecutionEnvironmentElement";

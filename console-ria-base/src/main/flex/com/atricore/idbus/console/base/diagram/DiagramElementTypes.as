@@ -53,5 +53,6 @@ public class DiagramElementTypes {
     public static const SUGAR_CRM_ELEMENT_TYPE:int = 29;
     public static const WIKID_ELEMENT_TYPE:int = 30;
     public static const DELEGATED_AUTHENTICATION_ELEMENT_TYPE:int = 31;
+    public static const DIRECTORY_SERVICE_ELEMENT_TYPE:int = 32;
 }
 }

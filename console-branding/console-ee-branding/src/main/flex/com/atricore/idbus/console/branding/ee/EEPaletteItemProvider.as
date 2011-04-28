@@ -56,6 +56,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 new PaletteEntry("WiKID", EmbeddedIcons.wikidMiniIcon, "WiKID Entry", DiagramElementTypes.WIKID_ELEMENT_TYPE)
 
                 );
+        authenticationPaletteDrawer.add(
+                new PaletteEntry("Directory Service", EmbeddedIcons.directoryServiceMiniIcon, "Directory Service Entry", DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE)
+
+                );
 
         pr.add(authenticationPaletteDrawer);
 

@@ -43,6 +43,7 @@
         import com.atricore.idbus.console.services.dto.BindingProvider;
         import com.atricore.idbus.console.services.dto.Channel;
         import com.atricore.idbus.console.services.dto.DbIdentitySource;
+        import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
         import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
         import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
@@ -143,6 +144,10 @@
                 var wikid:WikidAuthenticationService = obj as WikidAuthenticationService;
                 _linkLabel = wikid.name;
                 _linkIcon = EmbeddedIcons.wikidIcon;
+            } else if (obj is DirectoryAuthenticationService) {
+                var directoryService:DirectoryAuthenticationService = obj as DirectoryAuthenticationService;
+                _linkLabel = directoryService.name;
+                _linkIcon = EmbeddedIcons.directoryServiceIcon;
             } else if (obj is Channel) {
                  _linkLabel = (obj as Channel).name;
             } else if (obj is IdentitySource) {

@@ -43,6 +43,11 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
     public static var externalSpMiniIcon:Class;
 
+    // Authentication
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/directory_service.png")]
+    public static var directoryServiceMiniIcon:Class;
+
     // Identity sources
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/identity_vault.png")]
@@ -73,6 +78,10 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/identity_lookup.png")]
     public static var connectionIdentityLookupMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/identity_verification.png")]
+    public static var connectionDelegatedAuthnMiniIcon:Class;
+    
     // Execution environments
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/alfresco_execution_environment.png")]

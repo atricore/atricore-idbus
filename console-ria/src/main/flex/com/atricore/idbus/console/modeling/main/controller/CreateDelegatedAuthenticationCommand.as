@@ -4,9 +4,12 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
+import com.atricore.idbus.console.services.dto.BindAuthentication;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
+import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
+import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
 
 import mx.collections.ArrayCollection;
 import mx.rpc.Fault;
@@ -49,10 +52,17 @@ public class CreateDelegatedAuthenticationCommand extends IocSimpleCommand imple
             idp.delegatedAuthentication = delegatedAuthentication;
 
             // set authentication mechanism
-            var twoFactorAuthn:TwoFactorAuthentication = new TwoFactorAuthentication();
-            twoFactorAuthn.name = idp.name.replace(/\s+/g, "-").toLowerCase() + "-2factor-authn";
-            idp.authenticationMechanisms.removeAll();
-            idp.authenticationMechanisms.addItem(twoFactorAuthn);
+            if (authnService is WikidAuthenticationService) {
+                var twoFactorAuthn:TwoFactorAuthentication = new TwoFactorAuthentication();
+                twoFactorAuthn.name = idp.name.replace(/\s+/g, "-").toLowerCase() + "-2factor-authn";
+                idp.authenticationMechanisms.removeAll();
+                idp.authenticationMechanisms.addItem(twoFactorAuthn);
+            } else if (authnService is DirectoryAuthenticationService) {
+                var bindAuthn:BindAuthentication = new BindAuthentication();
+                bindAuthn.name = idp.name.replace(/\s+/g, "-").toLowerCase() + "-bind-authn";
+                idp.authenticationMechanisms.removeAll();
+                idp.authenticationMechanisms.addItem(bindAuthn);
+            }
 
             if (authnService.delegatedAuthentications == null){
                 authnService.delegatedAuthentications = new ArrayCollection();

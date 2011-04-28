@@ -27,6 +27,8 @@ import com.atricore.idbus.console.main.view.upload.UploadProgress;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateForm;
@@ -142,6 +144,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportMetadataMediator:ExportMetadataMediator;
     private var _activationMediator:ExecEnvActivationMediator;
     private var _wikidCreateMediator:WikidCreateMediator;
+    private var _directoryServiceCreateMediator:DirectoryServiceCreateMediator;
 
     // views
     private var _simpleSSOWizardView:SimpleSSOWizardView;
@@ -181,6 +184,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportMetadataView:ExportMetadataView;
     private var _activationView:ExecEnvActivationView;
     private var _wikidCreateForm:WikidCreateForm;
+    private var _directoryServiceCreateForm:DirectoryServiceCreateForm;
 
     public function ModelerPopUpManager() {
         super();
@@ -485,6 +489,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set wikidCreateMediator(value:WikidCreateMediator):void {
         _wikidCreateMediator = value;
+    }
+
+    public function get directoryServiceCreateMediator():DirectoryServiceCreateMediator {
+        return _directoryServiceCreateMediator;
+    }
+
+    public function set directoryServiceCreateMediator(value:DirectoryServiceCreateMediator):void {
+        _directoryServiceCreateMediator = value;
     }
 
     public function showSimpleSSOWizardWindow(notification:INotification):void {
@@ -1253,6 +1265,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleWikidCreateFormCreated(event:FlexEvent):void {
         wikidCreateMediator.setViewComponent(_wikidCreateForm);
         wikidCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateDirectoryServiceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createDirectoryServiceCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.directoryService");
+        _popup.width = 510;
+        _popup.height = 325;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_directoryServiceCreateForm);
+    }
+
+    private function createDirectoryServiceCreateForm():void {
+        _directoryServiceCreateForm = new DirectoryServiceCreateForm();
+        _directoryServiceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleDirectoryServiceCreateFormCreated);
+    }
+
+    private function handleDirectoryServiceCreateFormCreated(event:FlexEvent):void {
+        directoryServiceCreateMediator.setViewComponent(_directoryServiceCreateForm);
+        directoryServiceCreateMediator.handleNotification(_lastWindowNotification);
     }
 }
 }

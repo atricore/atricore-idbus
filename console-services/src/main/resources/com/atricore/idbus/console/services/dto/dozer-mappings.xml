@@ -126,10 +126,12 @@
             <a>authenticationServices</a>
             <b>authenticationServices</b>
             <a-hint>
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.WikidAuthenticationService
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WikidAuthenticationService,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService
             </a-hint>
             <b-hint>
-                com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO
+                com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO,
+                com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -185,11 +187,13 @@
             <b>authenticationMechanisms</b>
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.TwoFactorAuthentication
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.TwoFactorAuthentication,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.BindAuthentication
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.BasicAuthenticationDTO,
-                com.atricore.idbus.console.services.dto.TwoFactorAuthenticationDTO
+                com.atricore.idbus.console.services.dto.TwoFactorAuthenticationDTO,
+                com.atricore.idbus.console.services.dto.BindAuthenticationDTO
             </b-hint>
         </field>
     </mapping>
@@ -261,6 +265,11 @@
     </mapping>
 
     <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO</class-b>
+    </mapping>
+
+    <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DelegatedAuthentication</class-a>
         <class-b>com.atricore.idbus.console.services.dto.DelegatedAuthenticationDTO</class-b>
         <field>
@@ -277,10 +286,12 @@
             <a>authnService</a>
             <b>authnService</b>
             <a-hint>
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.WikidAuthenticationService
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WikidAuthenticationService,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService
             </a-hint>
             <b-hint>
-                com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO
+                com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO,
+                com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO
             </b-hint>
         </field>
     </mapping>
@@ -750,6 +761,11 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.TwoFactorAuthentication</class-a>
         <class-b>com.atricore.idbus.console.services.dto.TwoFactorAuthenticationDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.BindAuthentication</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.BindAuthenticationDTO</class-b>
     </mapping>
 
     <mapping>

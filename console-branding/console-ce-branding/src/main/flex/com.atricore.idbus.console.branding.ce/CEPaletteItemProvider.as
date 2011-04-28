@@ -34,6 +34,14 @@ public class CEPaletteItemProvider implements PaletteItemProvider {
 
         pr.add(saml2PaletteDrawer);
 
+        var authenticationPaletteDrawer:PaletteDrawer = new PaletteDrawer("Authentication", null, null);
+        authenticationPaletteDrawer.add(
+                new PaletteEntry("Directory Service", EmbeddedIcons.directoryServiceMiniIcon, "Directory Service Entry", DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE)
+
+                );
+
+        pr.add(authenticationPaletteDrawer);
+
         var identitySourcesPaletteDrawer:PaletteDrawer = new PaletteDrawer("Identity Sources", null, null);
         identitySourcesPaletteDrawer.add(
                 new PaletteEntry("Identity Vault", EmbeddedIcons.vaultMiniIcon, "Identity Vault Entry", DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE)
@@ -138,6 +146,12 @@ public class CEPaletteItemProvider implements PaletteItemProvider {
                 new PaletteEntry("Identity Lookup", EmbeddedIcons.connectionIdentityLookupMiniIcon , "Identity Lookup Entry", DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE)
 
                 );
+
+        connectionPaletteDrawer.add(
+                new PaletteEntry("Identity Verification", EmbeddedIcons.connectionDelegatedAuthnMiniIcon , "Identity Verification Entry", DiagramElementTypes.DELEGATED_AUTHENTICATION_ELEMENT_TYPE)
+
+                );
+        
         pr.add(connectionPaletteDrawer);
 
         return pr;

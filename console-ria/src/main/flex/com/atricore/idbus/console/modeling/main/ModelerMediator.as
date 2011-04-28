@@ -29,6 +29,7 @@ import com.atricore.idbus.console.modeling.browser.BrowserMediator;
 import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDelegatedAuthnElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDirectoryServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalServiceProviderElementRequest;
@@ -64,7 +65,6 @@ import mx.collections.ArrayCollection;
 import mx.controls.Alert;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
-
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
@@ -367,6 +367,8 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.DISPLAY_ACTIVATION_DIALOG,
             ApplicationFacade.CREATE_WIKID_ELEMENT,
             ApplicationFacade.REMOVE_WIKID_ELEMENT,
+            ApplicationFacade.CREATE_DIRECTORY_SERVICE_ELEMENT,
+            ApplicationFacade.REMOVE_DIRECTORY_SERVICE_ELEMENT,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
@@ -724,6 +726,13 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case ApplicationFacade.REMOVE_WIKID_ELEMENT:
                 var rwikid:RemoveWikidElementRequest = RemoveWikidElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rwikid.wikidAuthnService);
+                break;
+            case ApplicationFacade.CREATE_DIRECTORY_SERVICE_ELEMENT:
+                popupManager.showCreateDirectoryServiceWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_DIRECTORY_SERVICE_ELEMENT:
+                var rdirservice:RemoveDirectoryServiceElementRequest = RemoveDirectoryServiceElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rdirservice.directoryAuthnService);
                 break;
             default:
                 // Let super mediator handle notifications.

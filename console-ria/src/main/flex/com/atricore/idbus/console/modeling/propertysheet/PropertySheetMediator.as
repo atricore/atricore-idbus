@@ -36,6 +36,7 @@ import com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoComman
 import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicyListCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.directory.DirectoryAuthnServiceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.wikid.WikidAuthnServiceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
@@ -69,6 +70,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.googleapps.GoogleA
 import com.atricore.idbus.console.modeling.propertysheet.view.identitylookup.IdentityLookupCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.identityvault.EmbeddedDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.BasicAuthenticationSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.idp.BindAuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.TwoFactorAuthenticationSection;
@@ -87,10 +89,12 @@ import com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
+import com.atricore.idbus.console.services.dto.BindAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
+import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
@@ -214,8 +218,10 @@ public class PropertySheetMediator extends IocMediator {
     private var _authenticationPropertyTab:Group;
     private var _basicAuthenticationSection:BasicAuthenticationSection;
     private var _twoFactorAuthenticationSection:TwoFactorAuthenticationSection;
+    private var _bindAuthenticationSection:BindAuthenticationSection;
     private var _certificateSection:CertificateSection;
     private var _wikidAuthnServiceCoreSection:WikidAuthnServiceCoreSection;
+    private var _directoryAuthnServiceCoreSection:DirectoryAuthnServiceCoreSection;
     private var _dirty:Boolean;
     private var _applianceSaved:Boolean;
 
@@ -364,6 +370,8 @@ public class PropertySheetMediator extends IocMediator {
                     enableExternalServiceProviderPropertyTabs();
                 } else if (_currentIdentityApplianceElement is WikidAuthenticationService) {
                     enableWikidAuthnServicePropertyTabs();
+                } else if (_currentIdentityApplianceElement is DirectoryAuthenticationService) {
+                    enableDirectoryAuthnServicePropertyTabs();
                 } else if (_currentIdentityApplianceElement is IdentitySource) {
                     if (_currentIdentityApplianceElement is EmbeddedIdentitySource) {
                         enableIdentityVaultPropertyTabs();
@@ -830,6 +838,8 @@ public class PropertySheetMediator extends IocMediator {
                     selectedAuthnMechanism = "basic"
                 else if (authnMechanism is TwoFactorAuthentication)
                     selectedAuthnMechanism = "2factor";
+                else if (authnMechanism is BindAuthentication)
+                    selectedAuthnMechanism = "bind";
             }
             for (var j:int = 0; j < _ipCoreSection.authMechanismCombo.dataProvider.length; j++) {
                 if (_ipCoreSection.authMechanismCombo.dataProvider[j].data == selectedAuthnMechanism) {
@@ -1101,6 +1111,12 @@ public class PropertySheetMediator extends IocMediator {
 
             _twoFactorAuthenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleTwoFactorAuthenticationPropertyTabCreationComplete);
             _authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleTwoFactorAuthenticationPropertyTabRollOut);
+        } else if (_ipCoreSection.authMechanismCombo.selectedItem.data == "bind") {
+            _bindAuthenticationSection = new BindAuthenticationSection();
+            _authenticationPropertyTab.addElement(_bindAuthenticationSection);
+
+            _bindAuthenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleBindAuthenticationPropertyTabCreationComplete);
+            _authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleBindAuthenticationPropertyTabRollOut);
         }
     }
 
@@ -1225,6 +1241,57 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    private function handleBindAuthenticationPropertyTabCreationComplete(event:Event):void {
+        var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            // bind view
+
+            // find bind authentication
+            var bindAuthentication:BindAuthentication = null;
+            for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                if (authMechanism is BindAuthentication) {
+                    bindAuthentication = authMechanism as BindAuthentication;
+                }
+            }
+
+            if (bindAuthentication != null) {
+                _bindAuthenticationSection.authName.text = bindAuthentication.name;
+
+                _bindAuthenticationSection.authName.addEventListener(Event.CHANGE, handleSectionChange);
+
+                //clear all existing validators and add basic auth. section validators
+                //_validators = [];
+                _validators.push(_bindAuthenticationSection.nameValidator);
+            }
+        }
+    }
+
+    private function handleBindAuthenticationPropertyTabRollOut(event:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+            // find bind authentication
+            var bindAuthentication:BindAuthentication = null;
+            for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                if (authMechanism is BindAuthentication) {
+                    bindAuthentication = authMechanism as BindAuthentication;
+                }
+            }
+
+            if (bindAuthentication != null) {
+                bindAuthentication.name = _bindAuthenticationSection.authName.text;
+
+                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+                _applianceSaved = false;
+                _dirty = false;
+            }
+        }
+    }
+
     private function handleExportMetadataClick(event:MouseEvent):void {
         if (_currentIdentityApplianceElement is Provider) {
             var applianceId:String = projectProxy.currentIdentityAppliance.id.toString();
@@ -1326,6 +1393,9 @@ public class PropertySheetMediator extends IocMediator {
                 }
                 if (_twoFactorAuthenticationSection != null) {
                     _validators.push(_twoFactorAuthenticationSection.nameValidator);
+                }
+                if (_bindAuthenticationSection != null) {
+                    _validators.push(_bindAuthenticationSection.nameValidator);
                 }
             } else if (provider is ServiceProvider) {
                 _validators.push(_spCoreSection.nameValidator);
@@ -2322,6 +2392,81 @@ public class PropertySheetMediator extends IocMediator {
             }
             wikidAuthnService.wcStore = wcKeystore;
 
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }
+
+    protected function enableDirectoryAuthnServicePropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _directoryAuthnServiceCoreSection = new DirectoryAuthnServiceCoreSection();
+        corePropertyTab.addElement(_directoryAuthnServiceCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _directoryAuthnServiceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleDirectoryAuthnServiceCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleDirectoryAuthnServiceCorePropertyTabRollOut);
+    }
+
+    private function handleDirectoryAuthnServiceCorePropertyTabCreationComplete(event:Event):void {
+        var directoryAuthnService:DirectoryAuthenticationService = _currentIdentityApplianceElement as DirectoryAuthenticationService;
+
+        // if directoryAuthnService is null that means some other element was selected before completing this
+        if (directoryAuthnService != null) {
+            // bind view
+            _directoryAuthnServiceCoreSection.directoryName.text = directoryAuthnService.name;
+            _directoryAuthnServiceCoreSection.description.text = directoryAuthnService.description;
+
+            _directoryAuthnServiceCoreSection.initialContextFactory.text = directoryAuthnService.initialContextFactory;
+            _directoryAuthnServiceCoreSection.providerUrl.text = directoryAuthnService.providerUrl;
+            _directoryAuthnServiceCoreSection.securityPrincipal.text = directoryAuthnService.securityPrincipal;
+            _directoryAuthnServiceCoreSection.securityCredential.text = directoryAuthnService.securityCredential;
+            for (var i:int = 0; i < _directoryAuthnServiceCoreSection.securityAuthentication.dataProvider.length; i++) {
+                if (_directoryAuthnServiceCoreSection.securityAuthentication.dataProvider[i].data == directoryAuthnService.securityAuthentication) {
+                    _directoryAuthnServiceCoreSection.securityAuthentication.selectedIndex = i;
+                    break;
+                }
+            }
+
+            _directoryAuthnServiceCoreSection.directoryName.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceCoreSection.description.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceCoreSection.initialContextFactory.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceCoreSection.providerUrl.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceCoreSection.securityPrincipal.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceCoreSection.securityCredential.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceCoreSection.securityAuthentication.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_directoryAuthnServiceCoreSection.nameValidator);
+            _validators.push(_directoryAuthnServiceCoreSection.initialContextFactoryValidator);
+            _validators.push(_directoryAuthnServiceCoreSection.providerUrlValidator);
+            _validators.push(_directoryAuthnServiceCoreSection.securityPrincipalValidator);
+            _validators.push(_directoryAuthnServiceCoreSection.securityCredentialValidator);
+        }
+    }
+
+    private function handleDirectoryAuthnServiceCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var directoryAuthnService:DirectoryAuthenticationService = _currentIdentityApplianceElement as DirectoryAuthenticationService;
+            directoryAuthnService.name = _directoryAuthnServiceCoreSection.directoryName.text;
+            directoryAuthnService.description = _directoryAuthnServiceCoreSection.description.text;
+            directoryAuthnService.initialContextFactory = _directoryAuthnServiceCoreSection.initialContextFactory.text;
+            directoryAuthnService.providerUrl = _directoryAuthnServiceCoreSection.providerUrl.text;
+            directoryAuthnService.securityPrincipal = _directoryAuthnServiceCoreSection.securityPrincipal.text;
+            directoryAuthnService.securityCredential = _directoryAuthnServiceCoreSection.securityCredential.text;
+            directoryAuthnService.securityAuthentication = _directoryAuthnServiceCoreSection.securityAuthentication.selectedItem.data;
+            
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
@@ -5285,6 +5430,9 @@ public class PropertySheetMediator extends IocMediator {
                 if (_twoFactorAuthenticationSection != null) {
                     _validators.push(_twoFactorAuthenticationSection.nameValidator);
                 }
+                if (_bindAuthenticationSection != null) {
+                    _validators.push(_bindAuthenticationSection.nameValidator);
+                }
             } else if (provider is ServiceProvider) {
                 _validators.push(_spCoreSection.nameValidator);
                 _validators.push(_spCoreSection.portValidator);
@@ -5856,6 +6004,8 @@ public class PropertySheetMediator extends IocMediator {
                 selectedAuthnMechanism = "basic"
             else if (authnMechanism is TwoFactorAuthentication)
                 selectedAuthnMechanism = "2factor";
+            else if (authnMechanism is BindAuthentication)
+                selectedAuthnMechanism = "bind";
         }
         for (var j:int = 0; j < _federatedConnectionSPChannelSection.spChannelAuthMechanism.dataProvider.length; j++) {
             if (_federatedConnectionSPChannelSection.spChannelAuthMechanism.dataProvider[j].data == selectedAuthnMechanism) {

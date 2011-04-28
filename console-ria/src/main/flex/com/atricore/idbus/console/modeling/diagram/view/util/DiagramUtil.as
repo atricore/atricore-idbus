@@ -146,6 +146,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.webEnvironmentMiniIcon;
             case DiagramElementTypes.WIKID_ELEMENT_TYPE:
                 return EmbeddedIcons.wikidMiniIcon;
+            case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
+                return EmbeddedIcons.directoryServiceMiniIcon;
         }
         return null;
     }

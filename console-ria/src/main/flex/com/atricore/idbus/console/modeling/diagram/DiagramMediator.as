@@ -40,6 +40,7 @@ import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDbIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDelegatedAuthnElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateDirectoryServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalServiceProviderElementRequest;
@@ -56,6 +57,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateWikidElem
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDelegatedAuthnElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDirectoryServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalServiceProviderElementRequest;
@@ -76,6 +78,7 @@ import com.atricore.idbus.console.services.dto.Activation;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
+import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
@@ -575,6 +578,24 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         //                            }
 
                         break;
+                    case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
+                        // assert that source end is an Identity Appliance
+                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
+                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                        var directoryServiceOwnerAppliance:IdentityAppliance = _identityAppliance;
+
+                        var cdirservice:CreateDirectoryServiceElementRequest = new CreateDirectoryServiceElementRequest(
+                                directoryServiceOwnerAppliance,
+                            //                                        _currentlySelectedNode.stringid
+                                null
+                                );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_DIRECTORY_SERVICE_ELEMENT, cdirservice);
+                        //                            }
+
+                        break;
                 }
 
                 break;
@@ -714,6 +735,15 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_WIKID_ELEMENT, rwikid);
+                            break;
+                        case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
+                            var directoryService:DirectoryAuthenticationService = _currentlySelectedNode.data as DirectoryAuthenticationService;
+
+                            var rdirservice:RemoveDirectoryServiceElementRequest = new RemoveDirectoryServiceElementRequest(directoryService);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_DIRECTORY_SERVICE_ELEMENT, rdirservice);
                             break;
                     }
                 }
@@ -1174,6 +1204,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.EXECUTION_ENVIRONMENT_ELEMENT_TYPE;
             } else if (node.data is WikidAuthenticationService) {
                 elementType = DiagramElementTypes.WIKID_ELEMENT_TYPE;
+            } else if (node.data is DirectoryAuthenticationService) {
+                elementType = DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE;
             }
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE, elementType);

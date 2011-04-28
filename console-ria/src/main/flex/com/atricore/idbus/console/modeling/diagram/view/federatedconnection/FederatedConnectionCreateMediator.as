@@ -33,6 +33,7 @@ import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPo
 import com.atricore.idbus.console.services.dto.AuthenticationContract;
 import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
+import com.atricore.idbus.console.services.dto.BindAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
@@ -45,7 +46,6 @@ import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
-
 import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
 
 import flash.events.Event;
@@ -262,6 +262,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
                 selectedAuthnMechanism = "basic"
             else if (authnMechanism is TwoFactorAuthentication)
                 selectedAuthnMechanism = "2factor";
+            else if (authnMechanism is BindAuthentication)
+                selectedAuthnMechanism = "bind";
         }
         for (var j:int = 0; j < view.spChannelAuthMechanism.dataProvider.length; j++) {
             if (view.spChannelAuthMechanism.dataProvider[j].data == selectedAuthnMechanism) {

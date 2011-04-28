@@ -61,6 +61,10 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/wikid.png")]
     public static var wikidMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/directory_service.png")]
+    public static var directoryServiceMiniIcon:Class;
+
     // Identity sources
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/identity_vault.png")]

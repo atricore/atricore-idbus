@@ -235,6 +235,10 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/48x48/wikid.png")]
     public static var wikidIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/directory_service.png")]
+    public static var directoryServiceIcon:Class;
+
     //TODO add BP icon
     [Bindable]
     [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
@@ -300,6 +304,10 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/wikid.png")]
     public static var wikidMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/directory_service.png")]
+    public static var directoryServiceMiniIcon:Class;
 
     //TODO add BP icon
     [Bindable]

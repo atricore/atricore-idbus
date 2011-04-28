@@ -20,7 +20,6 @@
  */
 
 package com.atricore.idbus.console.modeling.browser.model {
-
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.main.view.util.Constants;
 import com.atricore.idbus.console.services.dto.Activation;
@@ -31,6 +30,7 @@ import com.atricore.idbus.console.services.dto.BindingProvider;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
+import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
@@ -143,6 +143,8 @@ public class BrowserModelFactory {
             authnServiceNode.parentNode = parentNode;
             if (authnService is WikidAuthenticationService) {
                 authnServiceNode.icon = EmbeddedIcons.wikidMiniIcon;
+            } else if (authnService is DirectoryAuthenticationService) {
+                authnServiceNode.icon = EmbeddedIcons.directoryServiceMiniIcon;
             }
             return authnServiceNode;
         }

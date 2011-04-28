@@ -51,6 +51,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _exportMetadataMediator:IIocMediator;
     private var _activationMediator:IIocMediator;
     private var _wikidCreateMediator:IIocMediator;
+    private var _directoryServiceCreateMediator:IIocMediator;
     
     // Commands
     private var _createSimpleSSOIdentityApplianceCommand:IIocCommand;
@@ -137,6 +138,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(exportMetadataMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(activationMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(wikidCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(directoryServiceCreateMediator.getConfigName());
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
@@ -468,6 +470,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set wikidCreateMediator(value:IIocMediator):void {
         _wikidCreateMediator = value;
+    }
+
+    public function get directoryServiceCreateMediator():IIocMediator {
+        return _directoryServiceCreateMediator;
+    }
+
+    public function set directoryServiceCreateMediator(value:IIocMediator):void {
+        _directoryServiceCreateMediator = value;
     }
 
     public function get createSimpleSSOIdentityApplianceCommand():IIocCommand {

@@ -62,7 +62,7 @@ public class WikidCreateMediator extends IocFormMediator {
 
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnOk.removeEventListener(MouseEvent.CLICK, handleIdentityVaultSave);
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleWikidSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
 
             if (_caStoreFileRef != null) {
@@ -89,7 +89,7 @@ public class WikidCreateMediator extends IocFormMediator {
         view.wcStore.addEventListener(MouseEvent.CLICK, wcStoreBrowseHandler);
         BindingUtils.bindProperty(view.wcStore, "dataProvider", this, "_selectedWCStores");
 
-        view.btnOk.addEventListener(MouseEvent.CLICK, handleIdentityVaultSave);
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleWikidSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.focusManager.setFocus(view.wikidName);
     }
@@ -161,7 +161,7 @@ public class WikidCreateMediator extends IocFormMediator {
         _newWikidAuthnService = wikidAuthnService;
     }
 
-    private function handleIdentityVaultSave(event:MouseEvent):void {
+    private function handleWikidSave(event:MouseEvent):void {
         if (validate(true)) {
             if (_selectedCAStores == null || _selectedCAStores.length == 0) {
                 view.lblCAStoreMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "wikid.ca.store.upload.error");

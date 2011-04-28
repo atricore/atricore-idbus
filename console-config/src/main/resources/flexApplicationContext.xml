@@ -92,6 +92,7 @@
         <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
         <property name="activationMediator" ref="activationMediator"/>
         <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
+        <property name="directoryServiceCreateMediator" ref="directoryServiceCreateMediator"/>
 
         <!-- Commands -->
         <property name="identityApplianceUpdateCommand" ref="identityApplianceUpdateCommand"/>
@@ -631,6 +632,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="directoryServiceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="activationCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -863,6 +868,7 @@
         <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
         <property name="activationMediator" ref="activationMediator"/>
         <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
+        <property name="directoryServiceCreateMediator" ref="directoryServiceCreateMediator"/>
     </object>
 
     <object id="accountManagementPopUpManager"
