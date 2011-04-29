@@ -29,6 +29,26 @@
         http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
         >
 
+    <osgi:reference id="updateManagerService" cardinality="1..1" timeout="60"
+                    interface="com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager"/>
+
     <!-- LiveUpdate Service MBean -->
+
+    <bean name="mBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean" scope="singleton">
+        <property name="locateExistingServerIfPossible" value="true"/>
+    </bean>
+
+    <bean name="liveupdate-mbean" class="com.atricore.idbus.console.liveservices.liveupdate.management.internal.LiveUpdateMBeanImpl">
+        <property name="updateManager" ref="updateManagerService"/>
+    </bean>
+    
+    <bean name="liveupdate-mbean-exporter" class="org.springframework.jmx.export.MBeanExporter">
+        <property name="server" ref="mBeanServer"/>
+        <property name="beans">
+            <map>
+                <entry key="com.atricore.idbus.console:type=LiveUpdate,name=liveupdate" value-ref="liveupdate-mbean"/>
+            </map>
+        </property>
+    </bean>
 
 </s:beans>
