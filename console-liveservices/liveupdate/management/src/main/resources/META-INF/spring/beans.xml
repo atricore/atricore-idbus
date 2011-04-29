@@ -49,6 +49,12 @@
                 <entry key="com.atricore.idbus.console:type=LiveUpdate,name=liveupdate" value-ref="liveupdate-mbean"/>
             </map>
         </property>
+        <property name="assembler" ref="assembler"/>
+    </bean>
+
+    <bean id="assembler"
+          class="org.springframework.jmx.export.assembler.MethodNameBasedMBeanInfoAssembler">
+        <property name="managedMethods" value="getAvailableUpdates"/>
     </bean>
 
 </s:beans>
