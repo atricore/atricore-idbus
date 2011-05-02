@@ -33,67 +33,104 @@
                             trigger="{btnOk}" triggerEvent="click"/>
         <mx:StringValidator id="providerUrlValidator" source="{providerUrl}" required="true" property="text"
                             trigger="{btnOk}" triggerEvent="click"/>
-        <!--
         <mx:StringValidator id="securityPrincipalValidator" source="{securityPrincipal}" required="true" property="text"
                             trigger="{btnOk}" triggerEvent="click"/>
         <utils:PasswordValidator id="securityCredentialValidator" source="{securityCredential}" property="text" required="true"
                                  matchSource="{securityCredentialRetype}" matchProperty="text" defaultLength="-1"
                                  noMatchError="Passwords do not match"/>
-        -->
     </fx:Declarations>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.name')}:" required="true">
-        <s:TextInput id="directoryName" width="300"/>
-    </mx:FormItem>
+    <mx:TabNavigator borderStyle="solid" width="100%" height="285" creationPolicy="all">
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.description')}:">
-        <s:TextInput id="description" width="300"/>
-    </mx:FormItem>
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.tab.base')}">
+            <s:VGroup>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.initialContextFactory')}:"
-                 required="true">
-        <s:TextInput id="initialContextFactory" width="300"/>
-    </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.providerUrl')}:"
-                 required="true">
-        <s:TextInput id="providerUrl" width="300"/>
-    </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.name')}:" required="true">
+                    <s:TextInput id="directoryName" width="300"/>
+                </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.performDnSearch')}:"
-                 required="true">
-        <s:CheckBox id="performDnSearch" />
-    </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.description')}:">
+                    <s:TextInput id="description" width="300"/>
+                </mx:FormItem>
 
-    <!--
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityPrincipal')}:"
-                 required="false">
-        <s:TextInput id="securityPrincipal" width="300"/>
-    </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.initialContextFactory')}:"
+                             required="true">
+                    <s:TextInput id="initialContextFactory" width="300"/>
+                </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityCredential')}:"
-                 required="false">
-        <s:TextInput id="securityCredential" width="300" displayAsPassword="true"/>
-    </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.providerUrl')}:"
+                             required="true">
+                    <s:TextInput id="providerUrl" width="300"/>
+                </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityCredentialRetype')}:"
-                 required="false">
-        <s:TextInput id="securityCredentialRetype" width="300" displayAsPassword="true"/>
-    </mx:FormItem>
-    -->
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.performDnSearch')}:"
+                             required="true">
+                    <s:CheckBox id="performDnSearch" />
+                </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.securityAuthentication')}:"
-                 required="true">
-        <s:DropDownList id="securityAuthentication" selectedIndex="0" width="180">
-            <s:dataProvider>
-                <mx:ArrayCollection>
-                    <fx:Object label="None" data="none"/>
-                    <fx:Object label="Simple" data="simple"/>
-                    <fx:Object label="Strong" data="strong"/>
-                </mx:ArrayCollection>
-            </s:dataProvider>
-        </s:DropDownList>
-    </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityPrincipal')}:"
+                             required="true">
+                    <s:TextInput id="securityPrincipal" width="300"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityCredential')}:"
+                             required="true">
+                    <s:TextInput id="securityCredential" width="300" displayAsPassword="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityCredentialRetype')}:"
+                             required="true">
+                    <s:TextInput id="securityCredentialRetype" width="300" displayAsPassword="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityAuthentication')}:"
+                             required="true">
+                    <s:DropDownList id="securityAuthentication" selectedIndex="0" width="180">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object label="None" data="none"/>
+                                <fx:Object label="Simple" data="simple"/>
+                                <fx:Object label="Strong" data="strong"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
+                </mx:FormItem>
+            </s:VGroup>
+        </s:NavigatorContent>
+
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.tab.lookup')}">
+            <s:VGroup>
+
+                <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.usersCtxDN')}:"
+                             required="true">
+                    <s:TextInput id="usersCtxDN" width="300"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.principalUidAttributeID')}:"
+                             required="true">
+                    <s:TextInput id="principalUidAttributeID" width="300"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.ldapSearchScope')}:"
+                             required="true">
+                    <s:DropDownList id="ldapSearchScope" selectedIndex="0" width="180">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object label="Base" data="base"/>
+                                <fx:Object label="One" data="one"/>
+                                <fx:Object label="Subtree" data="subtree"/>
+                                <fx:Object label="Children" data="children"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
+                </mx:FormItem>
+
+            </s:VGroup>
+        </s:NavigatorContent>
+
+
+    </mx:TabNavigator>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
         <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}"/>

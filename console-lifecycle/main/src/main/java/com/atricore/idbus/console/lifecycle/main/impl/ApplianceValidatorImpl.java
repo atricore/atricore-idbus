@@ -405,6 +405,21 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
+    public void arrive(AuthenticationMechanism node) throws Exception {
+        if (node instanceof BasicAuthentication) {
+
+            BasicAuthentication basicAuthn = (BasicAuthentication) node;
+            validateName("Basic Authentication name", node.getName(), node);
+
+            if (StringUtils.isBlank(basicAuthn.getHashAlgorithm()))
+                addError("Basic Authentication hash algorithm cannot be null or empty");
+
+            if (StringUtils.isBlank(basicAuthn.getHashEncoding()))
+                addError("Basic Authentication hash encoding cannot be null or empty");
+        }
+    }
+
+    @Override
     public void arrive(AuthenticationService node) throws Exception {
         validateName("Authentication Service name", node.getName(), node);
         validateDisplayName("Authentication Service display name", node.getDisplayName());
@@ -459,17 +474,6 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 addError("Directory Authentication Service [" + node.getName() + "] Security Authentication cannot be null or empty");
 
         }
-    }
-
-    @Override
-    public void arrive(BasicAuthentication node) throws Exception {
-        validateName("Basic Authentication name", node.getName(), node);
-
-        if (StringUtils.isBlank(node.getHashAlgorithm()))
-            addError("Basic Authentication hash algorithm cannot be null or empty");
-
-        if (StringUtils.isBlank(node.getHashEncoding()))
-            addError("Basic Authentication hash encoding cannot be null or empty");
     }
 
     @Override

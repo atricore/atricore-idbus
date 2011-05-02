@@ -19,14 +19,19 @@ import java.util.Collection;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
-public class TwoFactorAuthenticationTransformer extends AbstractTransformer {
+public class WiKIDAuthenticationTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(TwoFactorAuthenticationTransformer.class);
+    private static final Log logger = LogFactory.getLog(WiKIDAuthenticationTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof TwoFactorAuthentication &&
-                event.getContext().getParentNode() instanceof IdentityProvider;
+        if (!(event.getData() instanceof TwoFactorAuthentication))
+            return false;
+
+        IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
+        AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+
+        return authnService != null && authnService instanceof WikidAuthenticationService;
     }
 
     @Override

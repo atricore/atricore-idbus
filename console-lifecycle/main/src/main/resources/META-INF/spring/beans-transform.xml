@@ -61,7 +61,11 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationTransformer"/>
 
     <bean name="twoFactorAuthenticationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.TwoFactorAuthenticationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WiKIDAuthenticationTransformer"/>
+
+    <bean name="directoryServiceAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.DirectoryServiceAuthenticationTransformer"/>
+
 
     <bean name="spLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPLocalTransformer">
@@ -335,6 +339,7 @@
                                         <ref bean="stsTransformer"/>
                                         <ref bean="basicAuthenticationTransformer"/>
                                         <ref bean="twoFactorAuthenticationTransformer"/>
+                                        <ref bean="directoryServiceAuthenticationTransformer"/>
 
                                         <!-- SP Transformers -->
                                         <ref bean="spLocalTransformer"/>

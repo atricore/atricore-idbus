@@ -177,6 +177,15 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
                         sb.append("\n");
                         sb.append("            ");
                         sb.append(getNameString(idl.getIdentitySource().getName(), 10));
+
+                        if (idp.getAuthenticationMechanisms() != null) {
+                            for (AuthenticationMechanism authn : idp.getAuthenticationMechanisms()) {
+                                sb.append("\n");
+                                sb.append("            ");
+                                sb.append(getNameString(authn.getName()));
+                                sb.append(" [").append(authn.getClass().getSimpleName()).append("]");
+                            }
+                        }
                     }
                 }
                 sb.append("\n");

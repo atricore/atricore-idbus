@@ -9,10 +9,12 @@ public class DirectoryAuthenticationServiceDTO extends AuthenticationServiceDTO 
     private boolean performDnSearch;
     private String securityAuthentication;
 
-    /*
+    private String usersCtxDN;
+    private String principalUidAttributeID;
     private String securityPrincipal;
     private String securityCredential;
-    */
+    private String ldapSearchScope;
+
 
     public String getInitialContextFactory() {
         return initialContextFactory;
@@ -46,13 +48,20 @@ public class DirectoryAuthenticationServiceDTO extends AuthenticationServiceDTO 
         this.securityAuthentication = securityAuthentication;
     }
 
-    /*
-    public String getSecurityCredential() {
-        return securityCredential;
+    public String getPrincipalUidAttributeID() {
+        return principalUidAttributeID;
     }
 
-    public void setSecurityCredential(String securityCredential) {
-        this.securityCredential = securityCredential;
+    public void setPrincipalUidAttributeID(String principalUidAttributeID) {
+        this.principalUidAttributeID = principalUidAttributeID;
+    }
+
+    public String getUsersCtxDN() {
+        return usersCtxDN;
+    }
+
+    public void setUsersCtxDN(String usersCtxDN) {
+        this.usersCtxDN = usersCtxDN;
     }
 
     public String getSecurityPrincipal() {
@@ -62,6 +71,20 @@ public class DirectoryAuthenticationServiceDTO extends AuthenticationServiceDTO 
     public void setSecurityPrincipal(String securityPrincipal) {
         this.securityPrincipal = securityPrincipal;
     }
-    */
 
+    public String getSecurityCredential() {
+        return securityCredential;
+    }
+
+    public void setSecurityCredential(String securityCredential) {
+        this.securityCredential = securityCredential;
+    }
+
+    public String getLdapSearchScope() {
+        return ldapSearchScope;
+    }
+
+    public void setLdapSearchScope(String ldapSearchScope) {
+        this.ldapSearchScope = ldapSearchScope;
+    }
 }

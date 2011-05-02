@@ -37,6 +37,7 @@ import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicy
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.directory.DirectoryAuthnServiceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.directory.DirectoryAuthnServiceLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.wikid.WikidAuthnServiceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
@@ -222,6 +223,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _certificateSection:CertificateSection;
     private var _wikidAuthnServiceCoreSection:WikidAuthnServiceCoreSection;
     private var _directoryAuthnServiceCoreSection:DirectoryAuthnServiceCoreSection;
+    private var _directoryAuthnServiceLookupSection:DirectoryAuthnServiceLookupSection;
     private var _dirty:Boolean;
     private var _applianceSaved:Boolean;
 
@@ -2416,6 +2418,22 @@ public class PropertySheetMediator extends IocMediator {
 
         _directoryAuthnServiceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleDirectoryAuthnServiceCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleDirectoryAuthnServiceCorePropertyTabRollOut);
+
+        var lookupPropertyTab:Group = new Group();
+        lookupPropertyTab.id = "propertySheetLookuptSection";
+        lookupPropertyTab.name = "Lookup";
+        lookupPropertyTab.width = Number("100%");
+        lookupPropertyTab.height = Number("100%");
+        lookupPropertyTab.setStyle("borderStyle", "solid");
+
+        _directoryAuthnServiceLookupSection = new DirectoryAuthnServiceLookupSection();
+        lookupPropertyTab.addElement(_directoryAuthnServiceLookupSection);
+        _propertySheetsViewStack.addNewChild(lookupPropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _directoryAuthnServiceLookupSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleDirectoryAuthnServiceLookupPropertyTabCreationComplete);
+        lookupPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleDirectoryAuthnServiceLookupPropertyTabRollOut);
+
     }
 
     private function handleDirectoryAuthnServiceCorePropertyTabCreationComplete(event:Event):void {
@@ -2430,8 +2448,8 @@ public class PropertySheetMediator extends IocMediator {
             _directoryAuthnServiceCoreSection.initialContextFactory.text = directoryAuthnService.initialContextFactory;
             _directoryAuthnServiceCoreSection.providerUrl.text = directoryAuthnService.providerUrl;
             _directoryAuthnServiceCoreSection.performDnSearch.selected = directoryAuthnService.performDnSearch;
-//            _directoryAuthnServiceCoreSection.securityPrincipal.text = directoryAuthnService.securityPrincipal;
-//            _directoryAuthnServiceCoreSection.securityCredential.text = directoryAuthnService.securityCredential;
+            _directoryAuthnServiceCoreSection.securityPrincipal.text = directoryAuthnService.securityPrincipal;
+            _directoryAuthnServiceCoreSection.securityCredential.text = directoryAuthnService.securityCredential;
             for (var i:int = 0; i < _directoryAuthnServiceCoreSection.securityAuthentication.dataProvider.length; i++) {
                 if (_directoryAuthnServiceCoreSection.securityAuthentication.dataProvider[i].data == directoryAuthnService.securityAuthentication) {
                     _directoryAuthnServiceCoreSection.securityAuthentication.selectedIndex = i;
@@ -2444,16 +2462,16 @@ public class PropertySheetMediator extends IocMediator {
             _directoryAuthnServiceCoreSection.initialContextFactory.addEventListener(Event.CHANGE, handleSectionChange);
             _directoryAuthnServiceCoreSection.providerUrl.addEventListener(Event.CHANGE, handleSectionChange);
             _directoryAuthnServiceCoreSection.performDnSearch.addEventListener(Event.CHANGE, handleSectionChange);
-//            _directoryAuthnServiceCoreSection.securityPrincipal.addEventListener(Event.CHANGE, handleSectionChange);
-//            _directoryAuthnServiceCoreSection.securityCredential.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceCoreSection.securityPrincipal.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceCoreSection.securityCredential.addEventListener(Event.CHANGE, handleSectionChange);
             _directoryAuthnServiceCoreSection.securityAuthentication.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
             _validators.push(_directoryAuthnServiceCoreSection.nameValidator);
             _validators.push(_directoryAuthnServiceCoreSection.initialContextFactoryValidator);
             _validators.push(_directoryAuthnServiceCoreSection.providerUrlValidator);
-//            _validators.push(_directoryAuthnServiceCoreSection.securityPrincipalValidator);
-//            _validators.push(_directoryAuthnServiceCoreSection.securityCredentialValidator);
+            _validators.push(_directoryAuthnServiceCoreSection.securityPrincipalValidator);
+            _validators.push(_directoryAuthnServiceCoreSection.securityCredentialValidator);
         }
     }
 
@@ -2466,10 +2484,50 @@ public class PropertySheetMediator extends IocMediator {
             directoryAuthnService.initialContextFactory = _directoryAuthnServiceCoreSection.initialContextFactory.text;
             directoryAuthnService.providerUrl = _directoryAuthnServiceCoreSection.providerUrl.text;
             directoryAuthnService.performDnSearch = _directoryAuthnServiceCoreSection.performDnSearch.selected;
-//            directoryAuthnService.securityPrincipal = _directoryAuthnServiceCoreSection.securityPrincipal.text;
-//            directoryAuthnService.securityCredential = _directoryAuthnServiceCoreSection.securityCredential.text;
+            directoryAuthnService.securityPrincipal = _directoryAuthnServiceCoreSection.securityPrincipal.text;
+            directoryAuthnService.securityCredential = _directoryAuthnServiceCoreSection.securityCredential.text;
             directoryAuthnService.securityAuthentication = _directoryAuthnServiceCoreSection.securityAuthentication.selectedItem.data;
             
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }
+
+    private function handleDirectoryAuthnServiceLookupPropertyTabCreationComplete(event:Event):void {
+
+        var directoryAuthnService:DirectoryAuthenticationService = _currentIdentityApplianceElement as DirectoryAuthenticationService;
+
+        // if directoryAuthnService is null that means some other element was selected before completing this
+        if (directoryAuthnService != null) {
+            _directoryAuthnServiceLookupSection.usersCtxDN.text = directoryAuthnService.usersCtxDN;
+            _directoryAuthnServiceLookupSection.principalUidAttributeID.text = directoryAuthnService.principalUidAttributeID;
+            for (var j:int = 0; j < _ldapIdentitySourceCoreSection.ldapSearchScope.dataProvider.length; j++) {
+                if (_ldapIdentitySourceCoreSection.ldapSearchScope.dataProvider[j].data == directoryAuthnService.ldapSearchScope) {
+                    _ldapIdentitySourceCoreSection.ldapSearchScope.selectedIndex = j;
+                    break;
+                }
+            }
+
+            _directoryAuthnServiceLookupSection.usersCtxDN.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceLookupSection.principalUidAttributeID.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceLookupSection.ldapSearchScope.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_directoryAuthnServiceLookupSection.usersCtxDNValidator);
+            _validators.push(_directoryAuthnServiceLookupSection.principalUidAttributeIDValidator);
+        }
+    }
+
+    private function handleDirectoryAuthnServiceLookupPropertyTabRollOut(event:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var directoryAuthnService:DirectoryAuthenticationService = _currentIdentityApplianceElement as DirectoryAuthenticationService;
+            directoryAuthnService.usersCtxDN = _directoryAuthnServiceLookupSection.usersCtxDN.text;
+            directoryAuthnService.principalUidAttributeID = _directoryAuthnServiceLookupSection.principalUidAttributeID.text;
+            directoryAuthnService.ldapSearchScope= _directoryAuthnServiceLookupSection.ldapSearchScope.selectedItem.data;
+
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;

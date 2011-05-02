@@ -6,12 +6,12 @@ public class DirectoryAuthenticationService extends AuthenticationService {
 
     private String initialContextFactory;
     private String providerUrl;
-
     private boolean performDnSearch;
-    /*
+    private String principalUidAttributeID;
+    private String usersCtxDN;
     private String securityPrincipal;
     private String securityCredential;
-    */
+    private String ldapSearchScope;
     private String securityAuthentication;
 
 
@@ -48,7 +48,22 @@ public class DirectoryAuthenticationService extends AuthenticationService {
         this.securityAuthentication = securityAuthentication;
     }
 
-    /*
+    public String getPrincipalUidAttributeID() {
+        return principalUidAttributeID;
+    }
+
+    public void setPrincipalUidAttributeID(String principalUidAttributeID) {
+        this.principalUidAttributeID = principalUidAttributeID;
+    }
+
+    public String getUsersCtxDN() {
+        return usersCtxDN;
+    }
+
+    public void setUsersCtxDN(String usersCtxDN) {
+        this.usersCtxDN = usersCtxDN;
+    }
+
     public String getSecurityCredential() {
         return securityCredential;
     }
@@ -64,6 +79,12 @@ public class DirectoryAuthenticationService extends AuthenticationService {
     public void setSecurityPrincipal(String securityPrincipal) {
         this.securityPrincipal = securityPrincipal;
     }
-    */
 
+    public String getLdapSearchScope() {
+        return ldapSearchScope;
+    }
+
+    public void setLdapSearchScope(String ldapSearchScope) {
+        this.ldapSearchScope = ldapSearchScope;
+    }
 }
