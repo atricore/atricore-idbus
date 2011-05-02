@@ -2503,9 +2503,10 @@ public class PropertySheetMediator extends IocMediator {
         if (directoryAuthnService != null) {
             _directoryAuthnServiceLookupSection.usersCtxDN.text = directoryAuthnService.usersCtxDN;
             _directoryAuthnServiceLookupSection.principalUidAttributeID.text = directoryAuthnService.principalUidAttributeID;
-            for (var j:int = 0; j < _ldapIdentitySourceCoreSection.ldapSearchScope.dataProvider.length; j++) {
-                if (_ldapIdentitySourceCoreSection.ldapSearchScope.dataProvider[j].data == directoryAuthnService.ldapSearchScope) {
-                    _ldapIdentitySourceCoreSection.ldapSearchScope.selectedIndex = j;
+
+            for (var j:int = 0; j < _directoryAuthnServiceLookupSection.ldapSearchScope.dataProvider.length; j++) {
+                if (_directoryAuthnServiceLookupSection.ldapSearchScope.dataProvider[j].data == directoryAuthnService.ldapSearchScope) {
+                    _directoryAuthnServiceLookupSection.ldapSearchScope.selectedIndex = j;
                     break;
                 }
             }
