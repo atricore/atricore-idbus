@@ -2429,8 +2429,9 @@ public class PropertySheetMediator extends IocMediator {
 
             _directoryAuthnServiceCoreSection.initialContextFactory.text = directoryAuthnService.initialContextFactory;
             _directoryAuthnServiceCoreSection.providerUrl.text = directoryAuthnService.providerUrl;
-            _directoryAuthnServiceCoreSection.securityPrincipal.text = directoryAuthnService.securityPrincipal;
-            _directoryAuthnServiceCoreSection.securityCredential.text = directoryAuthnService.securityCredential;
+            _directoryAuthnServiceCoreSection.performDnSearch.selected = directoryAuthnService.performDnSearch;
+//            _directoryAuthnServiceCoreSection.securityPrincipal.text = directoryAuthnService.securityPrincipal;
+//            _directoryAuthnServiceCoreSection.securityCredential.text = directoryAuthnService.securityCredential;
             for (var i:int = 0; i < _directoryAuthnServiceCoreSection.securityAuthentication.dataProvider.length; i++) {
                 if (_directoryAuthnServiceCoreSection.securityAuthentication.dataProvider[i].data == directoryAuthnService.securityAuthentication) {
                     _directoryAuthnServiceCoreSection.securityAuthentication.selectedIndex = i;
@@ -2442,16 +2443,17 @@ public class PropertySheetMediator extends IocMediator {
             _directoryAuthnServiceCoreSection.description.addEventListener(Event.CHANGE, handleSectionChange);
             _directoryAuthnServiceCoreSection.initialContextFactory.addEventListener(Event.CHANGE, handleSectionChange);
             _directoryAuthnServiceCoreSection.providerUrl.addEventListener(Event.CHANGE, handleSectionChange);
-            _directoryAuthnServiceCoreSection.securityPrincipal.addEventListener(Event.CHANGE, handleSectionChange);
-            _directoryAuthnServiceCoreSection.securityCredential.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceCoreSection.performDnSearch.addEventListener(Event.CHANGE, handleSectionChange);
+//            _directoryAuthnServiceCoreSection.securityPrincipal.addEventListener(Event.CHANGE, handleSectionChange);
+//            _directoryAuthnServiceCoreSection.securityCredential.addEventListener(Event.CHANGE, handleSectionChange);
             _directoryAuthnServiceCoreSection.securityAuthentication.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
             _validators.push(_directoryAuthnServiceCoreSection.nameValidator);
             _validators.push(_directoryAuthnServiceCoreSection.initialContextFactoryValidator);
             _validators.push(_directoryAuthnServiceCoreSection.providerUrlValidator);
-            _validators.push(_directoryAuthnServiceCoreSection.securityPrincipalValidator);
-            _validators.push(_directoryAuthnServiceCoreSection.securityCredentialValidator);
+//            _validators.push(_directoryAuthnServiceCoreSection.securityPrincipalValidator);
+//            _validators.push(_directoryAuthnServiceCoreSection.securityCredentialValidator);
         }
     }
 
@@ -2463,8 +2465,9 @@ public class PropertySheetMediator extends IocMediator {
             directoryAuthnService.description = _directoryAuthnServiceCoreSection.description.text;
             directoryAuthnService.initialContextFactory = _directoryAuthnServiceCoreSection.initialContextFactory.text;
             directoryAuthnService.providerUrl = _directoryAuthnServiceCoreSection.providerUrl.text;
-            directoryAuthnService.securityPrincipal = _directoryAuthnServiceCoreSection.securityPrincipal.text;
-            directoryAuthnService.securityCredential = _directoryAuthnServiceCoreSection.securityCredential.text;
+            directoryAuthnService.performDnSearch = _directoryAuthnServiceCoreSection.performDnSearch.selected;
+//            directoryAuthnService.securityPrincipal = _directoryAuthnServiceCoreSection.securityPrincipal.text;
+//            directoryAuthnService.securityCredential = _directoryAuthnServiceCoreSection.securityCredential.text;
             directoryAuthnService.securityAuthentication = _directoryAuthnServiceCoreSection.securityAuthentication.selectedItem.data;
             
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);

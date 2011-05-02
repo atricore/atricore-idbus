@@ -1272,7 +1272,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createDirectoryServiceCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.directoryService");
         _popup.width = 510;
-        _popup.height = 325;
+        _popup.height = 260;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_directoryServiceCreateForm);

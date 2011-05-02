@@ -30,8 +30,10 @@
         <utils:NameValidator id="nameValidator" source="{directoryName}" required="true" property="text"/>
         <mx:StringValidator id="initialContextFactoryValidator" source="{initialContextFactory}" required="true" property="text"/>
         <mx:StringValidator id="providerUrlValidator" source="{providerUrl}" required="true" property="text"/>
+        <!--
         <mx:StringValidator id="securityPrincipalValidator" source="{securityPrincipal}" required="true" property="text"/>
         <mx:StringValidator id="securityCredentialValidator" source="{securityCredential}" required="true" property="text"/>
+        -->
     </fx:Declarations>
 
     <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
@@ -55,15 +57,22 @@
             <s:TextInput id="providerUrl" width="300"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityPrincipal')}:"
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.performDnSearch')}:"
                      required="true">
+            <s:CheckBox id="performDnSearch" />
+        </mx:FormItem>
+        <!--
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityPrincipal')}:"
+                     required="false">
             <s:TextInput id="securityPrincipal" width="300"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityCredential')}:"
-                     required="true">
+                     required="false">
             <s:TextInput id="securityCredential" width="300" displayAsPassword="true"/>
         </mx:FormItem>
+        -->
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.securityAuthentication')}:"
                      required="true">

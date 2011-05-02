@@ -6,9 +6,13 @@ public class DirectoryAuthenticationServiceDTO extends AuthenticationServiceDTO 
 
     private String initialContextFactory;
     private String providerUrl;
+    private boolean performDnSearch;
+    private String securityAuthentication;
+
+    /*
     private String securityPrincipal;
     private String securityCredential;
-    private String securityAuthentication;
+    */
 
     public String getInitialContextFactory() {
         return initialContextFactory;
@@ -26,6 +30,14 @@ public class DirectoryAuthenticationServiceDTO extends AuthenticationServiceDTO 
         this.providerUrl = providerUrl;
     }
 
+    public boolean isPerformDnSearch() {
+        return performDnSearch;
+    }
+
+    public void setPerformDnSearch(boolean performDnSearch) {
+        this.performDnSearch = performDnSearch;
+    }
+
     public String getSecurityAuthentication() {
         return securityAuthentication;
     }
@@ -34,6 +46,7 @@ public class DirectoryAuthenticationServiceDTO extends AuthenticationServiceDTO 
         this.securityAuthentication = securityAuthentication;
     }
 
+    /*
     public String getSecurityCredential() {
         return securityCredential;
     }
@@ -49,4 +62,6 @@ public class DirectoryAuthenticationServiceDTO extends AuthenticationServiceDTO 
     public void setSecurityPrincipal(String securityPrincipal) {
         this.securityPrincipal = securityPrincipal;
     }
+    */
+
 }

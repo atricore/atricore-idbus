@@ -51,12 +51,28 @@ public class DirectoryServiceCreateMediator extends IocFormMediator {
         view.description.text = "";
         view.initialContextFactory.text = "com.sun.jndi.ldap.LdapCtxFactory";
         view.providerUrl.text = "ldap://localhost:389";
-        view.securityPrincipal.text = "uid=admin,ou=system";
-        view.securityCredential.text = "";
-        view.securityCredentialRetype.text = "";
+        view.performDnSearch.selected = false;
+//        view.securityPrincipal.text = "uid=admin,ou=system";
+//        view.securityCredential.text = "";
+//        view.securityCredentialRetype.text = "";
         view.securityAuthentication.selectedIndex = 1;
 
         FormUtility.clearValidationErrors(_validators);
+    }
+
+    override public function bindForm():void {
+        view.directoryName.text = "";
+        view.description.text = "";
+        view.initialContextFactory.text = "com.sun.jndi.ldap.LdapCtxFactory";
+        view.providerUrl.text = "ldap://localhost:389";
+        view.performDnSearch.selected = false;
+//        view.securityPrincipal.text = "uid=admin,ou=system";
+//        view.securityCredential.text = "";
+//        view.securityCredentialRetype.text = "";
+        view.securityAuthentication.selectedIndex = 1;
+
+        FormUtility.clearValidationErrors(_validators);
+
     }
 
     override public function bindModel():void {
@@ -67,8 +83,9 @@ public class DirectoryServiceCreateMediator extends IocFormMediator {
         
         directoryAuthnService.initialContextFactory = view.initialContextFactory.text;
         directoryAuthnService.providerUrl = view.providerUrl.text;
-        directoryAuthnService.securityPrincipal = view.securityPrincipal.text;
-        directoryAuthnService.securityCredential = view.securityCredential.text;
+        directoryAuthnService.performDnSearch = view.performDnSearch.selected;
+//        directoryAuthnService.securityPrincipal = view.securityPrincipal.text;
+//        directoryAuthnService.securityCredential = view.securityCredential.text;
         directoryAuthnService.securityAuthentication = view.securityAuthentication.selectedItem.data;
 
         _newDirectoryAuthnService = directoryAuthnService;
@@ -106,16 +123,17 @@ public class DirectoryServiceCreateMediator extends IocFormMediator {
         _validators.push(view.nameValidator);
         _validators.push(view.initialContextFactoryValidator);
         _validators.push(view.providerUrlValidator);
-        _validators.push(view.securityPrincipalValidator);
-        _validators.push(view.securityCredentialValidator);
+//        _validators.push(view.securityPrincipalValidator);
+//        _validators.push(view.securityCredentialValidator);
     }
 
     override public function listNotificationInterests():Array {
         return super.listNotificationInterests();
     }
 
-    override public function handleNotification(notification:INotification):void {
+     override public function handleNotification(notification:INotification):void {
         super.handleNotification(notification);
+        bindForm();
     }
 }
 }

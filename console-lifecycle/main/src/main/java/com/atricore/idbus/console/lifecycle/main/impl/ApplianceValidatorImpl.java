@@ -448,12 +448,16 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 addError("Directory Authentication Service [" + node.getName() + "] Initial Context Factory cannot be null or empty");
             if (StringUtils.isBlank(directoryAuthnService.getProviderUrl()))
                 addError("Directory Authentication Service [" + node.getName() + "] Provider URL cannot be null or empty");
+            /*
             if (StringUtils.isBlank(directoryAuthnService.getSecurityPrincipal()))
                 addError("Directory Authentication Service [" + node.getName() + "] Security Principal cannot be null or empty");
             if (StringUtils.isBlank(directoryAuthnService.getSecurityCredential()))
                 addError("Directory Authentication Service [" + node.getName() + "] Security Credential cannot be null or empty");
+            */
+
             if (StringUtils.isBlank(directoryAuthnService.getSecurityAuthentication()))
                 addError("Directory Authentication Service [" + node.getName() + "] Security Authentication cannot be null or empty");
+
         }
     }
 

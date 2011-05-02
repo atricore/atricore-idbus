@@ -33,11 +33,13 @@
                             trigger="{btnOk}" triggerEvent="click"/>
         <mx:StringValidator id="providerUrlValidator" source="{providerUrl}" required="true" property="text"
                             trigger="{btnOk}" triggerEvent="click"/>
+        <!--
         <mx:StringValidator id="securityPrincipalValidator" source="{securityPrincipal}" required="true" property="text"
                             trigger="{btnOk}" triggerEvent="click"/>
         <utils:PasswordValidator id="securityCredentialValidator" source="{securityCredential}" property="text" required="true"
                                  matchSource="{securityCredentialRetype}" matchProperty="text" defaultLength="-1"
                                  noMatchError="Passwords do not match"/>
+        -->
     </fx:Declarations>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.name')}:" required="true">
@@ -58,20 +60,27 @@
         <s:TextInput id="providerUrl" width="300"/>
     </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityPrincipal')}:"
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.performDnSearch')}:"
                  required="true">
+        <s:CheckBox id="performDnSearch" />
+    </mx:FormItem>
+
+    <!--
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityPrincipal')}:"
+                 required="false">
         <s:TextInput id="securityPrincipal" width="300"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityCredential')}:"
-                 required="true">
+                 required="false">
         <s:TextInput id="securityCredential" width="300" displayAsPassword="true"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityCredentialRetype')}:"
-                 required="true">
+                 required="false">
         <s:TextInput id="securityCredentialRetype" width="300" displayAsPassword="true"/>
     </mx:FormItem>
+    -->
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.securityAuthentication')}:"
                  required="true">
