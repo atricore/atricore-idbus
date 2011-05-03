@@ -1659,7 +1659,7 @@ public class PropertySheetMediator extends IocMediator {
                 for (var j:int = 0; j < serviceProvider.federatedConnectionsB.length; j++) {
                     var idpChannel2:IdentityProviderChannel = serviceProvider.federatedConnectionsB[j].channelB as IdentityProviderChannel;
                     if (!idpChannel2.overrideProviderSetup) {
-                        updateIdentityProviderChannel(idpChannel, serviceProvider);
+                        updateIdentityProviderChannel(idpChannel2, serviceProvider);
                     }
                 }
             }
