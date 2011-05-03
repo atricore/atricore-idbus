@@ -22,6 +22,7 @@
 package org.atricore.idbus.capabilities.samlr2.main.binding;
 
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
+import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -39,6 +40,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.Abstract
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
 import java.io.*;
+import java.net.URLEncoder;
+import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -78,7 +81,8 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             String base64SAMLResponse = state.getTransientVariable("SAMLResponse");
             String relayState = state.getTransientVariable("RelayState");
 
-            String sigAlg = state.getTransientVariable("SigAlg");    // TODO : Use HTTP Redirect binding Signature Algorithm
+            // TODO : Follow SAML 2.0 Binding, section 3.4.4.1 DEFLATE Encoding , regarding Digital Siganture usage.
+            String sigAlg = state.getTransientVariable("SigAlg");       // TODO : Use HTTP Redirect binding Signature Algorithm
             String signature = state.getTransientVariable("Signature"); // TODO : Validate HTTP Redirect binding Signature
 
             if (base64SAMLRequest != null && base64SAMLResponse != null) {
@@ -116,10 +120,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
                 // SAML Response
                 base64SAMLResponse = inflate(base64SAMLResponse, true);
 
-                // By default, we use inflate/deflate
-                base64SAMLResponse = inflate(base64SAMLResponse, false);
-
-                StatusResponseType samlResponse = XmlUtils.unmarshalSamlR2Response(base64SAMLResponse, true);
+                StatusResponseType samlResponse = XmlUtils.unmarshalSamlR2Response(base64SAMLResponse, false);
                 logger.debug("Received SAML Response " + samlResponse.getID());
                 return new MediationMessageImpl<StatusResponseType>(httpMsg.getMessageId(),
                         samlResponse,
@@ -162,33 +163,45 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             boolean isResponse = false;
             String relayState = out.getRelayState();
 
+            boolean signMsg = false;
+
             if (out.getContent() instanceof RequestAbstractType) {
 
 
                 msgName = "SAMLRequest";
 
-                // Strip DS information from request/response!
+
                 RequestAbstractType req = (RequestAbstractType) out.getContent();
-                req.setSignature(null);
+
+                if (req.getSignature() != null) {
+                    // Strip DS information from request/response!
+                    req.setSignature(null);
+                    signMsg = true;
+                }
 
                 // Marshall
                 String s = XmlUtils.marshalSamlR2Request((RequestAbstractType) out.getContent(), element, false);
 
                 // Use default DEFLATE (rfc 1951)
                 msgValue = deflate(s, true);
+                msgValue = URLEncoder.encode((String) msgValue, "UTF-8");
 
             } else if (out.getContent() instanceof StatusResponseType) {
                 msgName = "SAMLResponse";
 
                 // Strip DS information from request/response!
-                RequestAbstractType req = (RequestAbstractType) out.getContent();
-                req.setSignature(null);
+                StatusResponseType res = (StatusResponseType) out.getContent();
+                if (res.getSignature() != null) {
+                    res.setSignature(null);
+                    signMsg = true;
+                }
 
                 // Marshall
                 String s = XmlUtils.marshalSamlR2Response((StatusResponseType) out.getContent(), element, false);
 
                 // Use default DEFLATE (rfc 1951)
                 msgValue = deflate(s, true);
+                msgValue = URLEncoder.encode((String) msgValue, "UTF-8");
 
                 StatusResponseType samlResponse = (StatusResponseType) out.getContent();
                 if (samlResponse.getInResponseTo() != null) {
@@ -212,8 +225,11 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
 
             String qryString = "?" + msgName + "=" + (String) msgValue;
             if (out.getRelayState() != null) {
-                qryString += "&relayState=" + relayState;
+                qryString += "&RelayState=" + relayState;
             }
+
+            // TODO : Follow SAML 2.0 Binding, section 3.4.4.1 DEFLATE Encoding , regarding Digital Siganture usage.
+            // TODO : Generate HTTP Redirect binding SigAlg and Signature parameters (this requires access to Provider signer!)
 
             Message httpOut = exchange.getOut();
             Message httpIn = exchange.getIn();
@@ -238,24 +254,28 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
     protected String deflate(String in, boolean encode) throws Exception {
 
         ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-        DeflaterOutputStream deflater = new DeflaterOutputStream(bytesOut);
-
+        DeflaterOutputStream deflated = new DeflaterOutputStream(bytesOut, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
         ByteArrayInputStream inflated = new ByteArrayInputStream(in.getBytes());
 
 
         byte[] buf = new byte[1024];
         int read = inflated.read(buf);
         while (read > 0) {
-            deflater.write (buf, 0, read);
+            deflated.write(buf, 0, read);
             read = inflated.read(buf);
         }
 
-        deflater.flush();
+
+        deflated.flush();
+        deflated.finish();
+
 
         byte[] encodedbytes = bytesOut.toByteArray();
         if (encode) {
-            byte[] b64 = new Base64().encodeBase64(encodedbytes);
+            encodedbytes = new Base64().encode(encodedbytes);
         }
+
+        deflated.close();
 
         return new String(encodedbytes);
 
