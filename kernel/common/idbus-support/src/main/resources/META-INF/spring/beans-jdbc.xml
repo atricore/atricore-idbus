@@ -101,6 +101,7 @@
                     <property name="webSiteUrl" value="http://www.hxtt.com/access.html"/>
                 </bean>
 
+
                 <bean class="org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor">
                     <property name="driverclassName" value="com.hxtt.sql.access.AccessDriver"/>
                     <!--
