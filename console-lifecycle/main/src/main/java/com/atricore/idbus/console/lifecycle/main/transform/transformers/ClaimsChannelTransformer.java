@@ -1,10 +1,7 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.AuthenticationMechanism;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.TwoFactorAuthentication;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
@@ -82,7 +79,9 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         List<Bean> ccEndpoints = new ArrayList<Bean>();
 
         for (AuthenticationMechanism authnMechanism : provider.getAuthenticationMechanisms()) {
-            if (authnMechanism instanceof BasicAuthentication) {
+            // Bind authn is a variant of basic authn
+            if (authnMechanism instanceof BasicAuthentication ||
+                authnMechanism instanceof BindAuthentication) {
                 Bean ccPwdArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 ccPwdArtifact.setName(idpBean.getName() + "-cc-pwd-artifact");
                 setPropertyValue(ccPwdArtifact, "name", ccPwdArtifact.getName());
