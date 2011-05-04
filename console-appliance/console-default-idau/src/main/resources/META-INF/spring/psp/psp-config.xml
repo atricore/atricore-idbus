@@ -173,6 +173,8 @@
         <property name="targetPersistenceManagerFactory" >
             <bean name="idvault1-pmf-jdo"
                 class="org.atricore.idbus.bundles.datanucleus.core.OsgiJDOPersistenceManagerFactoryBean" >
+
+                <property name="dataSource" ref="josso-ds"/>
                 <property name="jdoProperties" ref="idau-default-jdo-properties"/>
             </bean>
 

@@ -27,6 +27,14 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
                   ref="idstore-default"
                   interface="org.atricore.idbus.kernel.main.store.AbstractStore"/>
 
+    <!-- Export Default JDBC DS as OSGi service -->
+    <osgi:service id="osgi-default-ds" ref="josso-ds"
+                  interface="javax.sql.DataSource" >
+        <service-properties>
+            <entry key="jdbcDS" value="default-ds"/>
+        </service-properties>
+    </osgi:service>
+
     <!-- OSGi services import -->
 
     <osgi:reference id="cxf" cardinality="1..1" timeout="60" interface="org.apache.cxf.Bus"/>
@@ -41,5 +49,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
                   interface="org.atricore.idbus.bundles.ehcache.CacheManagerFactory"/>
 
     <osgi:reference id="idbus-config" interface="org.atricore.idbus.kernel.main.util.ConfigurationContext"/>
+
+    <osgi:reference id="jdbcDriverManager" timeout="60" cardinality="1..1"
+                    interface="org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager"/>
 
 </beans>
