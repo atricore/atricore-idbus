@@ -779,8 +779,12 @@ public class LDAPIdentityStore extends AbstractStore  {
             providerURL = "ldap://localhost:" + ((protocol != null && protocol.equals("ssl")) ? "636" : "389");
 
         env.setProperty(Context.PROVIDER_URL, providerURL);
-        env.setProperty(Context.SECURITY_PRINCIPAL, securityPrincipal);
-        env.put(Context.SECURITY_CREDENTIALS, securityCredential);
+
+        if (securityPrincipal != null)
+            env.setProperty(Context.SECURITY_PRINCIPAL, securityPrincipal);
+
+        if (securityCredential != null)
+            env.put(Context.SECURITY_CREDENTIALS, securityCredential);
 
         // Logon into LDAP server
         if (logger.isDebugEnabled())

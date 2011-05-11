@@ -22,10 +22,13 @@ package org.atricore.idbus.idojos.ldapidentitystore;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.idojos.ldapidentitystore.ppolicy.*;
 import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 
 import javax.naming.AuthenticationException;
+import javax.naming.Context;
+import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 
 
@@ -130,6 +133,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
     private boolean validateBindWithSearch = false;
 
+    private boolean passwordPolicySupport = false;
 
     public boolean isValidateBindWithSearch() {
         return this.validateBindWithSearch;
@@ -137,6 +141,14 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
     public void setValidateBindWithSearch(boolean validateBindWithSearch) {
         this.validateBindWithSearch = validateBindWithSearch;
+    }
+
+    public boolean isPasswordPolicySupport() {
+        return passwordPolicySupport;
+    }
+
+    public void setPasswordPolicySupport(boolean passwordPolicySupport) {
+        this.passwordPolicySupport = passwordPolicySupport;
     }
 
     // ----------------------------------------------------- CredentialStore Methods
@@ -153,7 +165,6 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
             // first try to retrieve the user using an known user
             String dn = selectUserDN(username);
-
             if (dn == null) {
                 // user not found
                 throw new SSOAuthenticationException("No DN found for user : " + username);
@@ -161,19 +172,58 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                 logger.debug("user dn = " + dn);
             }
 
+            // Create context without bining!
+            InitialLdapContext ctx = this.createLdapInitialContext(null, null);
 
             try {
+
+                ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, username);
+                ctx.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
+
                 // Try to bind to LDAP an check for authentication problems.
-                InitialLdapContext ctx = this.createLdapInitialContext(dn, password);
+
                 if (validateBindWithSearch)
                     selectUserDN(ctx, username);
-                
+
+                if (isPasswordPolicySupport()) {
+                    // Check password policy LDAP Control
+                    PasswordPolicyResponseControl ppolicyCtrl = PasswordPolicyResponseControl.decode(ctx.getResponseControls());
+                    if (ppolicyCtrl != null && ppolicyCtrl.getWarningType() != null) {
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("PasswordPolicy Warning : " + ppolicyCtrl.getWarningType().name() + ":" + ppolicyCtrl.getWarningValue());
+                        // TODO : Propagate warning!
+
+                    }
+                }
+
                 if (logger.isTraceEnabled())
                     logger.trace("LDAP Bind with user credentials succeeded");
+
                 ctx.close();
             } catch (AuthenticationException e) {
+
                 if (logger.isDebugEnabled())
                     logger.debug("LDAP Bind Authentication error : " + e.getMessage(), e);
+
+                if (isPasswordPolicySupport()) {
+                    // Check password policy LDAP Control
+                    PasswordPolicyResponseControl ppolicyCtrl = PasswordPolicyResponseControl.decode(ctx.getResponseControls());
+                    if (ppolicyCtrl != null && ppolicyCtrl.getWarningType() != null) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("PasswordPolicy Warning : " + ppolicyCtrl.getWarningType().name() + ":" + ppolicyCtrl.getWarningValue());
+
+                        // TODO : Propagate warning!
+                    }
+
+                    if (ppolicyCtrl != null && ppolicyCtrl.getErrorType() != null) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("PasswordPolicy Error : " + ppolicyCtrl.getErrorType().name());
+
+                        // TODO : Propagate error!
+                    }
+
+                }
 
                 return false;
             }
@@ -182,6 +232,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
 
         } catch (Exception e) {
+
             throw new SSOAuthenticationException("Cannot bind as user : " + username + " " + e.getMessage(), e);
         }
 
