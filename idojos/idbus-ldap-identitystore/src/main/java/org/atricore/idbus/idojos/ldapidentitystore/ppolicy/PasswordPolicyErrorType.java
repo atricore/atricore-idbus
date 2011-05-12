@@ -64,8 +64,6 @@ public enum PasswordPolicyErrorType {
       this.name = name;
     }
 
-
-
     /**
      * {@inheritDoc}
      */
@@ -82,9 +80,17 @@ public enum PasswordPolicyErrorType {
      *
      * @return The integer value for this password policy error type.
      */
-    int intValue()
+    public int intValue()
     {
       return intValue;
     }
 
+    public static PasswordPolicyErrorType getErrorType(int errorTypeInt) {
+        for (PasswordPolicyErrorType errorType : PasswordPolicyErrorType .values()) {
+            if (errorType.intValue() == errorTypeInt)
+                return errorType;
+        }
+        throw new RuntimeException("Invalid error type : " + errorTypeInt);
+
+    }
 }

@@ -3,12 +3,16 @@ package org.atricore.idbus.idojos.ldapidentitystore.test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.directory.shared.asn1.ber.Asn1Decoder;
-import org.apache.directory.shared.asn1.ber.IAsn1Container;
+import org.apache.directory.shared.ldap.codec.controls.ControlDecoder;
+import org.apache.directory.shared.ldap.util.StringTools;
+import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyControlContainer;
+import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyControlDecoder;
+import org.atricore.idbus.idojos.ldapidentitystore.ppolicy.PasswordPolicyErrorType;
+import org.atricore.idbus.idojos.ldapidentitystore.ppolicy.PasswordPolicyResponseControl;
 import org.bouncycastle.asn1.*;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
-import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -20,6 +24,7 @@ import javax.naming.ldap.BasicControl;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -28,13 +33,25 @@ import java.util.Properties;
  */
 public class LDAPExtensionsTest {
 
+    // 0x30 0x00
+
+    // 0X30 0X03 0X81 0X01 0X00
+
+    // 0X30 0X05 0XA0 0X03 0X81 0X01 0X01
+
+    // 0X30 0X05 0XA0 0X03 0X81 0X01 0X02
+
+    // 0X30 0X05 0XA0 0X03 0X80 0X01 0X32
+
+    // 0X30 0X05 0XA0 0X03 0X80 0X01 0X2A
+
     private static final Log logger = LogFactory.getLog(LDAPExtensionsTest.class);
 
     private String ppolicyControlType = "1.3.6.1.4.1.42.2.27.8.5.1";
 
     private String securityPrincipal = "uid=user1,ou=people,dc=localhost";
 
-    private String securityCredential = "goforit";
+    private String securityCredential = "user4pwd";
 
     private String initialContextFactory = "com.sun.jndi.ldap.LdapCtxFactory";
 
@@ -50,7 +67,141 @@ public class LDAPExtensionsTest {
 
 
     @Test
-    public void testPWDPolicy() throws Exception {
+    public void testPasswordExpiredErrorControl() throws Exception {
+
+        byte[] control = new byte[] {0x30 ,0x03,  (byte) 0x81, 0x01 ,0x00};
+
+        PasswordPolicyControlContainer container = new PasswordPolicyControlContainer();
+        container.setPasswordPolicyResponseControl(new PasswordPolicyResponseControl());
+        ControlDecoder decoder = container.getPasswordPolicyControl().getDecoder();
+        decoder.decode(control, container.getPasswordPolicyControl());
+
+        PasswordPolicyResponseControl ctrl = container.getPasswordPolicyControl();
+
+        assert ctrl.getWarningType() == null;
+
+        assert ctrl.getErrorType() != null;
+        assert ctrl.getErrorType() == PasswordPolicyErrorType.PASSWORD_EXPIRED;
+
+    }
+
+    @Test
+    public void testAccountLockedErrorControl() throws Exception {
+
+        byte[] control = new byte[] {0x30 ,0x03,  (byte) 0x81, 0x01 ,0x01};
+
+        PasswordPolicyControlContainer container = new PasswordPolicyControlContainer();
+        container.setPasswordPolicyResponseControl(new PasswordPolicyResponseControl());
+        ControlDecoder decoder = container.getPasswordPolicyControl().getDecoder();
+        decoder.decode(control, container.getPasswordPolicyControl());
+
+        PasswordPolicyResponseControl ctrl = container.getPasswordPolicyControl();
+
+        assert ctrl.getWarningType() == null;
+
+        assert ctrl.getErrorType() != null;
+        assert ctrl.getErrorType() == PasswordPolicyErrorType.ACCOUNT_LOCKED;
+
+    }
+
+    @Test
+    public void testChangeAfterResetErrorControl() throws Exception {
+
+        byte[] control = new byte[] {0x30 ,0x03,  (byte) 0x81, 0x01 ,0x02};
+
+        PasswordPolicyControlContainer container = new PasswordPolicyControlContainer();
+        container.setPasswordPolicyResponseControl(new PasswordPolicyResponseControl());
+        ControlDecoder decoder = container.getPasswordPolicyControl().getDecoder();
+        decoder.decode(control, container.getPasswordPolicyControl());
+
+        PasswordPolicyResponseControl ctrl = container.getPasswordPolicyControl();
+
+        assert ctrl.getWarningType() == null;
+
+        assert ctrl.getErrorType() != null;
+        assert ctrl.getErrorType() == PasswordPolicyErrorType.CHANGE_AFTER_RESET;
+
+    }
+
+    @Test
+    public void testTimeBeforeExpirationWarningControl() throws Exception {
+
+        byte[] control = new byte[] {0X30, 0X05, (byte)0XA0, 0X03, (byte)0X80, 0X01, 0X32};
+
+        PasswordPolicyControlContainer container = new PasswordPolicyControlContainer();
+        container.setPasswordPolicyResponseControl(new PasswordPolicyResponseControl());
+        ControlDecoder decoder = container.getPasswordPolicyControl().getDecoder();
+        decoder.decode(control, container.getPasswordPolicyControl());
+
+        PasswordPolicyResponseControl ctrl = container.getPasswordPolicyControl();
+
+        assert ctrl.getErrorType() == null;
+        assert ctrl.getWarningType() != null;
+        assert ctrl.getWarningValue() == 50;
+
+    }
+
+    @Test
+    public void testGraceAuthNsRemaining() throws Exception {
+
+        byte[] control = new byte[] {0X30, 0X05, (byte)0XA0, 0X03, (byte)0X81, 0X01, 0X05};
+
+        PasswordPolicyControlContainer container = new PasswordPolicyControlContainer();
+        container.setPasswordPolicyResponseControl(new PasswordPolicyResponseControl());
+        ControlDecoder decoder = container.getPasswordPolicyControl().getDecoder();
+        decoder.decode(control, container.getPasswordPolicyControl());
+
+        PasswordPolicyResponseControl ctrl = container.getPasswordPolicyControl();
+
+        assert ctrl.getErrorType() == null;
+        assert ctrl.getWarningType() != null;
+        assert ctrl.getWarningValue() == 5;
+
+    }
+
+
+    public void testApacheDSPPolicyDecode() throws Exception {
+
+        try {
+            InitialLdapContext ctx = createLdapInitialContext(securityPrincipal, securityCredential);
+
+            assert ctx.getRequestControls() != null;
+            assert ctx.getRequestControls().length > 0;
+
+            for (Control ctrl : ctx.getResponseControls()) {
+
+                assert ctrl != null;
+
+                byte[] encValue = ctrl.getEncodedValue();
+
+                ByteBuffer bb = ByteBuffer.allocate(encValue.length);
+                bb.put(encValue);
+                // bb.flip(); // ?!
+
+                byte[] v = bb.array();
+
+                logger.debug(ctrl.getID() +
+                        " (critical:" + ctrl.isCritical() + ")" +
+                        byteArrayToHexString(v));
+
+                logger.debug("DUMP:" + StringTools.dumpBytes(v));
+
+                PasswordPolicyControlContainer container = new PasswordPolicyControlContainer();
+                container.setPasswordPolicyResponseControl(new PasswordPolicyResponseControl());
+                ControlDecoder decoder = container.getPasswordPolicyControl().getDecoder();
+                decoder.decode(v, container.getPasswordPolicyControl());
+
+            }
+
+        } catch (Exception e) {
+            logger.error(e);
+            throw e;
+        }
+
+
+    }
+/*
+    public void testBouncyCastlePPolicyDecode() throws Exception {
 
         try {
             InitialLdapContext ctx = createLdapInitialContext();
@@ -71,7 +222,7 @@ public class LDAPExtensionsTest {
         }
 
 
-    }
+    }*/
 
 
     /**
@@ -116,7 +267,7 @@ public class LDAPExtensionsTest {
         if (authType == null)
             env.setProperty(Context.SECURITY_AUTHENTICATION, "DIGEST-MD5");
 
-            //env.setProperty(Context.SECURITY_AUTHENTICATION, "simple");
+        //env.setProperty(Context.SECURITY_AUTHENTICATION, "simple");
 
         String protocol = env.getProperty(Context.SECURITY_PROTOCOL);
         String providerURL = getProviderUrl();
@@ -129,38 +280,28 @@ public class LDAPExtensionsTest {
 //        env.put(Context.SECURITY_CREDENTIALS, securityCredential);
 
 
-
         // Logon into LDAP server
         if (logger.isDebugEnabled())
             logger.debug("Logging into LDAP server, env=" + env);
 
 
         Control ppolicyControl = new BasicControl(ppolicyControlType);
-        //InitialLdapContext ctx = new InitialLdapContext(env, new Control[] {ppolicyControl});
+        InitialLdapContext ctx = new InitialLdapContext(env, new Control[]{ppolicyControl});
 
-
-        InitialLdapContext ctx = new InitialLdapContext(env, new Control[] {ppolicyControl});
-
-        ctx.setRequestControls(new Control[] {ppolicyControl});
+        ctx.setRequestControls(new Control[]{ppolicyControl});
 
         ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, securityPrincipal);
         ctx.addToEnvironment(Context.SECURITY_CREDENTIALS, securityCredential);
 
-
-
         try {
-            ctx.reconnect(new Control[] {ppolicyControl});
-            //ctx = (InitialLdapContext) ctx.newInstance(new Control[] {ppolicyControl});
+            ctx.reconnect(new Control[]{ppolicyControl});
 
             if (logger.isDebugEnabled())
                 logger.debug("Logged into LDAP server, " + ctx);
 
-            dumpCtrls(ctx);
         } catch (Exception e) {
 
-            dumpCtrls(ctx);
-
-            logger.error(e.getMessage(), e);
+            logger.error("Error Logging into LDAP server " + e.getMessage(), e);
 
         }
 
@@ -272,7 +413,7 @@ public class LDAPExtensionsTest {
         logger.debug("Response Controls :  ");
         if (ctx.getResponseControls() != null) {
 
-            for (Control ctrl :  ctx.getResponseControls()) {
+            for (Control ctrl : ctx.getResponseControls()) {
 
                 logger.debug(ctrl.getID() +
                         " (critical:" + ctrl.isCritical() + ") : ");
@@ -283,7 +424,6 @@ public class LDAPExtensionsTest {
                             " (encoded value length :" + ctrl.getEncodedValue().length + ")");
 
 
-
                     try {
                         ASN1InputStream is = new ASN1InputStream(ctrl.getEncodedValue());
 
@@ -291,29 +431,6 @@ public class LDAPExtensionsTest {
 
                         logger.debug(seq);
 
-                        //ASN1Sequence seq = (ASN1Sequence) obj.getObjectParser(DERTags.SEQUENCE, false);
-
-                        logger.debug("Sequence Size : " + seq.size());
-
-                        ASN1Choice warnings = null;
-                        ASN1TaggedObject errors = null;
-                        Enumeration objs = seq.getObjects();
-                        while (objs.hasMoreElements()) {
-                            DERObject derObject = (DERObject) objs.nextElement();
-
-                            if (derObject instanceof ASN1Choice) {
-                                warnings = (ASN1Choice) derObject;
-                            } else {
-                                errors = (ASN1TaggedObject) derObject;
-
-                                ASN1OctetString asn1o = (ASN1OctetString) errors.getObject();
-
-                                byte[] str = asn1o.getOctets();
-
-                                logger.debug(new String(Hex.encode(str)));
-                            }
-
-                        }
 
 
                     } catch (IOException e) {
@@ -327,5 +444,19 @@ public class LDAPExtensionsTest {
 
         }
 
+    }
+
+    public static String byteArrayToHexString(byte[] b) {
+        StringBuffer sb = new StringBuffer(b.length * 2);
+        for (int i = 0; i < b.length; i++) {
+            int v = b[i] & 0xff;
+
+            sb.append(" 0x");
+            if (v < 16) {
+                sb.append('0');
+            }
+            sb.append(Integer.toHexString(v));
+        }
+        return sb.toString().toUpperCase();
     }
 }

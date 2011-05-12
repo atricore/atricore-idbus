@@ -40,6 +40,7 @@
 
     <properties>
         <apacheds.version>1.5.4</apacheds.version>
+        <apacheds.shared.version>0.9.19</apacheds.shared.version>
         <commons.logging.version>1.1.1</commons.logging.version>
         <hsqldb.version>1.8.0.7</hsqldb.version>
         <spring.version>3.0.3.RELEASE</spring.version>
@@ -135,6 +136,20 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.directory.shared</groupId>
+            <artifactId>shared-asn1</artifactId>
+            <version>${apacheds.shared.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.directory.shared</groupId>
+            <artifactId>shared-ldap</artifactId>
+            <version>${apacheds.shared.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
@@ -145,6 +160,13 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.8</version>
             <scope>test</scope>
         </dependency>
 
@@ -183,6 +205,7 @@
             <version>${apacheds.version}</version>
             <scope>test</scope>
         </dependency>
+
 
         <dependency>
             <groupId>org.apache.directory.server</groupId>

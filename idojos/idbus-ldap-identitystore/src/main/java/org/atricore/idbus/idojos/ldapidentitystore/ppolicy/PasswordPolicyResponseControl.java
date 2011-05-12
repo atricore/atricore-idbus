@@ -1,18 +1,23 @@
 package org.atricore.idbus.idojos.ldapidentitystore.ppolicy;
 
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.naming.ldap.Control;
+import org.apache.directory.shared.ldap.codec.controls.AbstractControl;
+
+import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyControlDecoder;
+
 
 /**
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class PasswordPolicyResponseControl {
+public class PasswordPolicyResponseControl extends AbstractControl  {
 
     private static final Log logger = LogFactory.getLog(PasswordPolicyResponseControl.class);
 
-    public static final String OID = "1.3.6.1.4.1.42.2.27.8.5.1";
+    public static final String CONTROL_OID = "1.3.6.1.4.1.42.2.27.8.5.1";
 
     private PasswordPolicyErrorType errorType;
 
@@ -20,41 +25,51 @@ public class PasswordPolicyResponseControl {
 
     private int warningValue ;
 
+    private byte[] encodedValue;
+
+    private boolean critical;
+
+    private javax.naming.ldap.Control ldapControl;
+
+    public PasswordPolicyResponseControl() {
+        super( CONTROL_OID );
+        decoder = new PasswordPolicyControlDecoder();
+    }
+
+
     public PasswordPolicyErrorType getErrorType() {
         return errorType;
+    }
+
+    public void setErrorType(PasswordPolicyErrorType errorType) {
+        this.errorType = errorType;
     }
 
     public PasswordPolicyWarningType getWarningType() {
         return warningType;
     }
 
+    public void setWarningType(PasswordPolicyWarningType warningType) {
+        this.warningType = warningType;
+    }
+
     public int getWarningValue() {
         return warningValue;
     }
 
-    protected PasswordPolicyResponseControl(PasswordPolicyErrorType errorType,
-                                            PasswordPolicyWarningType warningType,
-                                            int warningValue) {
-        this.errorType = errorType;
-        this.warningType = warningType;
+    public void setWarningValue(int warningValue) {
         this.warningValue = warningValue;
     }
 
-    public static PasswordPolicyResponseControl decode(Control[] controls) {
+    public String getID() {
+        return CONTROL_OID;
+    }
 
-        for (Control control : controls) {
+    public boolean isCritical() {
+        return critical;
+    }
 
-            if (!control.getID().equals(OID)) {
-                continue;
-            }
-
-            if (control.getEncodedValue() == null || control.getEncodedValue().length == 0)
-                return null;
-
-            // TODO : Deconde ASN.1 BER Value and create control instance !!!
-            return new PasswordPolicyResponseControl(null, null, -1);
-        }
-        logger.warn("No LDAP Response Control with OID " + OID);
-        return null;
+    public byte[] getEncodedValue() {
+        return encodedValue;
     }
 }

@@ -28,6 +28,7 @@ import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationExceptio
 
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
+import javax.naming.ldap.BasicControl;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 
@@ -180,14 +181,20 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                 ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, username);
                 ctx.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
 
-                // Try to bind to LDAP an check for authentication problems.
+                if (isPasswordPolicySupport()) {
+                    // Configure request control for password policy:
+                    ctx.reconnect(new Control[] {new BasicControl(PasswordPolicyResponseControl.CONTROL_OID)});
+                } else {
+                    ctx.reconnect(new Control[] {});
+                }
 
+                // Bind to LDAP an check for authentication warning/errors reported in password policy control:
                 if (validateBindWithSearch)
                     selectUserDN(ctx, username);
 
                 if (isPasswordPolicySupport()) {
                     // Check password policy LDAP Control
-                    PasswordPolicyResponseControl ppolicyCtrl = PasswordPolicyResponseControl.decode(ctx.getResponseControls());
+                    PasswordPolicyResponseControl ppolicyCtrl = null;//PasswordPolicyResponseControl.decode(ctx.getResponseControls());
                     if (ppolicyCtrl != null && ppolicyCtrl.getWarningType() != null) {
 
                         if (logger.isDebugEnabled())
@@ -208,7 +215,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
                 if (isPasswordPolicySupport()) {
                     // Check password policy LDAP Control
-                    PasswordPolicyResponseControl ppolicyCtrl = PasswordPolicyResponseControl.decode(ctx.getResponseControls());
+                    PasswordPolicyResponseControl ppolicyCtrl = null;//PasswordPolicyResponseControl.decode(ctx.getResponseControls());
                     if (ppolicyCtrl != null && ppolicyCtrl.getWarningType() != null) {
                         if (logger.isDebugEnabled())
                             logger.debug("PasswordPolicy Warning : " + ppolicyCtrl.getWarningType().name() + ":" + ppolicyCtrl.getWarningValue());
