@@ -32,6 +32,14 @@ public class PasswordPolicyControlGrammar extends AbstractGrammar {
 
     private static final Log logger = LogFactory.getLog(PasswordPolicyControlGrammar.class);
 
+    public static final int WARNING_TAG = 0xA0;
+
+    public static final int ERROR_TAG = 0x81;
+
+    public static final int TIMEBEFOREEXPIRATION_TAG = 0x80;
+
+    public static final int GRACEAUTHNREMAINING_TAG = 0x81;
+
     /**
      * The instance of grammar. PSearchControlGrammar is a singleton
      */
@@ -69,10 +77,10 @@ public class PasswordPolicyControlGrammar extends AbstractGrammar {
          * warning [0] CHOICE {
          * ...
          */
-        super.transitions[PasswordPolicyControlStatesEnum.PPOLICYRESPONSEVALUE_SEQUENCE_STATE][0xA0] =
+        super.transitions[PasswordPolicyControlStatesEnum.PPOLICYRESPONSEVALUE_SEQUENCE_STATE][WARNING_TAG] =
                 new GrammarTransition(PasswordPolicyControlStatesEnum.PPOLICYRESPONSEVALUE_SEQUENCE_STATE,
                         PasswordPolicyControlStatesEnum.WARNING_STATE,
-                        0xA0, new GrammarAction("Set PPolicy Warning") {
+                        WARNING_TAG, new GrammarAction("Set PPolicy Warning") {
                             public void action(IAsn1Container container) throws DecoderException {
                                 PasswordPolicyControlContainer ppolicyContainer = (PasswordPolicyControlContainer) container;
 
@@ -87,10 +95,10 @@ public class PasswordPolicyControlGrammar extends AbstractGrammar {
          * timeBeforeExpiration [0] INTEGER (0 .. maxInt),
          * ...
          */
-        super.transitions[PasswordPolicyControlStatesEnum.WARNING_STATE][0x80] =
+        super.transitions[PasswordPolicyControlStatesEnum.WARNING_STATE][TIMEBEFOREEXPIRATION_TAG] =
                 new GrammarTransition(PasswordPolicyControlStatesEnum.WARNING_STATE,
                         PasswordPolicyControlStatesEnum.TIMEBEFOREEXPIRATION_STATE,
-                        0x80, new GrammarAction("Set Time Before Expiration Warning") {
+                        TIMEBEFOREEXPIRATION_TAG, new GrammarAction("Set Time Before Expiration Warning") {
                             public void action(IAsn1Container container) throws DecoderException {
                                 PasswordPolicyControlContainer ppolicyContainer = ( PasswordPolicyControlContainer  ) container;
                                 Value value = ppolicyContainer.getCurrentTLV().getValue();
@@ -127,10 +135,10 @@ public class PasswordPolicyControlGrammar extends AbstractGrammar {
          * graceAuthNsRemaining [1] INTEGER (0 .. maxInt) } OPTIONAL,
          * ...
          */
-        super.transitions[PasswordPolicyControlStatesEnum.WARNING_STATE][0x81] =
+        super.transitions[PasswordPolicyControlStatesEnum.WARNING_STATE][GRACEAUTHNREMAINING_TAG] =
                 new GrammarTransition(PasswordPolicyControlStatesEnum.WARNING_STATE,
                         PasswordPolicyControlStatesEnum.GRACEAUTHNREMAINING_STATE,
-                        0x81, new GrammarAction("Set Grace Authns Remaining Warning") {
+                        GRACEAUTHNREMAINING_TAG, new GrammarAction("Set Grace Authns Remaining Warning") {
                             public void action(IAsn1Container container) throws DecoderException {
                                 PasswordPolicyControlContainer ppolicyContainer = ( PasswordPolicyControlContainer  ) container;
                                 Value value = ppolicyContainer.getCurrentTLV().getValue();
@@ -168,10 +176,10 @@ public class PasswordPolicyControlGrammar extends AbstractGrammar {
          * ...
          */
 
-        super.transitions[PasswordPolicyControlStatesEnum.PPOLICYRESPONSEVALUE_SEQUENCE_STATE][0x81] =
+        super.transitions[PasswordPolicyControlStatesEnum.PPOLICYRESPONSEVALUE_SEQUENCE_STATE][ERROR_TAG] =
                 new GrammarTransition(PasswordPolicyControlStatesEnum.PPOLICYRESPONSEVALUE_SEQUENCE_STATE,
                         PasswordPolicyControlStatesEnum.ERROR_STATE,
-                        0x81, new GrammarAction("Set PPolicy Error") {
+                        ERROR_TAG, new GrammarAction("Set PPolicy Error") {
                             public void action(IAsn1Container container) throws DecoderException {
                                 PasswordPolicyControlContainer ppolicyContainer = (PasswordPolicyControlContainer) container;
                                 Value value = ppolicyContainer.getCurrentTLV().getValue();
