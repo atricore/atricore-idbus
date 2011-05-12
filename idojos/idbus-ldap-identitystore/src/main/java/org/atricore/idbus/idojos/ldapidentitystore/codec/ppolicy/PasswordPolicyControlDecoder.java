@@ -5,7 +5,6 @@ import org.apache.directory.shared.ldap.message.control.Control;
 import org.apache.directory.shared.asn1.Asn1Object;
 import org.apache.directory.shared.asn1.ber.Asn1Decoder;
 import org.apache.directory.shared.asn1.codec.DecoderException;
-import org.atricore.idbus.idojos.ldapidentitystore.ppolicy.PasswordPolicyResponseControl;
 
 import java.nio.ByteBuffer;
 

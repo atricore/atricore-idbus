@@ -1,12 +1,10 @@
-package org.atricore.idbus.idojos.ldapidentitystore.ppolicy;
+package org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy;
 
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.directory.shared.ldap.codec.controls.AbstractControl;
-
-import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyControlDecoder;
 
 
 /**

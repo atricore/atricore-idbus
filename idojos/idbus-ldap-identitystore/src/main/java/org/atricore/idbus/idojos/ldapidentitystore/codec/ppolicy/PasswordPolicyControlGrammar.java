@@ -9,8 +9,6 @@ import org.apache.directory.shared.asn1.ber.tlv.Value;
 import org.apache.directory.shared.asn1.codec.DecoderException;
 import org.apache.directory.shared.asn1.util.IntegerDecoder;
 import org.apache.directory.shared.asn1.util.IntegerDecoderException;
-import org.atricore.idbus.idojos.ldapidentitystore.ppolicy.PasswordPolicyErrorType;
-import org.atricore.idbus.idojos.ldapidentitystore.ppolicy.PasswordPolicyWarningType;
 
 /**
  * PasswordPolicyResponseValue ::= SEQUENCE {

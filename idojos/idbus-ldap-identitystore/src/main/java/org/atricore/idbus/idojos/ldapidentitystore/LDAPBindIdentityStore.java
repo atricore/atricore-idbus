@@ -22,7 +22,7 @@ package org.atricore.idbus.idojos.ldapidentitystore;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.idojos.ldapidentitystore.ppolicy.*;
+import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyResponseControl;
 import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 

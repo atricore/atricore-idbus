@@ -1,4 +1,4 @@
-package org.atricore.idbus.idojos.ldapidentitystore.ppolicy;
+package org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>

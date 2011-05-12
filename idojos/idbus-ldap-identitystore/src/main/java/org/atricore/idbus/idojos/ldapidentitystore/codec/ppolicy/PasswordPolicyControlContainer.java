@@ -1,7 +1,6 @@
 package org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy;
 
 import org.apache.directory.shared.asn1.ber.AbstractContainer;
-import org.atricore.idbus.idojos.ldapidentitystore.ppolicy.PasswordPolicyResponseControl;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>

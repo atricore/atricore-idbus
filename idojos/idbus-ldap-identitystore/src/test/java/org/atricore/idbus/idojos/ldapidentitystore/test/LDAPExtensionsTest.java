@@ -2,15 +2,12 @@ package org.atricore.idbus.idojos.ldapidentitystore.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.directory.shared.asn1.ber.Asn1Decoder;
 import org.apache.directory.shared.ldap.codec.controls.ControlDecoder;
 import org.apache.directory.shared.ldap.util.StringTools;
 import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyControlContainer;
-import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyControlDecoder;
-import org.atricore.idbus.idojos.ldapidentitystore.ppolicy.PasswordPolicyErrorType;
-import org.atricore.idbus.idojos.ldapidentitystore.ppolicy.PasswordPolicyResponseControl;
+import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyResponseControl;
+import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyErrorType;
 import org.bouncycastle.asn1.*;
-import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import javax.naming.Context;
@@ -25,7 +22,6 @@ import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Enumeration;
 import java.util.Properties;
 
 /**
