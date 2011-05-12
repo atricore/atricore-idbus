@@ -22,12 +22,12 @@ package org.atricore.idbus.idojos.ldapidentitystore;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.store.AbstractStore;
-import org.atricore.idbus.kernel.main.store.UserKey;
-import org.atricore.idbus.kernel.main.store.SimpleUserKey;
-import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
-import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.authn.*;
+import org.atricore.idbus.kernel.main.store.AbstractStore;
+import org.atricore.idbus.kernel.main.store.SimpleUserKey;
+import org.atricore.idbus.kernel.main.store.UserKey;
+import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
+import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;

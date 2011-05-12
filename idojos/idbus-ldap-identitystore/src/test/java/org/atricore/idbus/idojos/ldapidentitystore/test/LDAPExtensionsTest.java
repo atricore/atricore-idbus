@@ -3,26 +3,10 @@ package org.atricore.idbus.idojos.ldapidentitystore.test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.directory.shared.ldap.codec.controls.ControlDecoder;
-import org.apache.directory.shared.ldap.util.StringTools;
+import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.LDAPPasswordPolicyErrorType;
 import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyControlContainer;
 import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyResponseControl;
-import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyErrorType;
-import org.bouncycastle.asn1.*;
 import org.junit.Test;
-
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
-import javax.naming.ldap.BasicControl;
-import javax.naming.ldap.Control;
-import javax.naming.ldap.InitialLdapContext;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Properties;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -30,25 +14,6 @@ import java.util.Properties;
 public class LDAPExtensionsTest {
 
     private static final Log logger = LogFactory.getLog(LDAPExtensionsTest.class);
-
-    private String ppolicyControlType = "1.3.6.1.4.1.42.2.27.8.5.1";
-
-    private String securityPrincipal = "uid=user1,ou=people,dc=localhost";
-
-    private String securityCredential = "user4pwd";
-
-    private String initialContextFactory = "com.sun.jndi.ldap.LdapCtxFactory";
-
-    private String securityAuthentication = "simple";
-
-    private String providerUrl = "ldap://localhost:389";
-
-    private String securityProtocol = null;
-
-    private String principalUidAttrName = "uid";
-
-    private String usersCtxDN = "ou=people,dc=localhost";
-
 
     @Test
     public void testPasswordExpiredErrorControl() throws Exception {
@@ -71,7 +36,7 @@ public class LDAPExtensionsTest {
         assert ctrl.getWarningType() == null;
 
         assert ctrl.getErrorType() != null;
-        assert ctrl.getErrorType() == PasswordPolicyErrorType.PASSWORD_EXPIRED;
+        assert ctrl.getErrorType() == LDAPPasswordPolicyErrorType.PASSWORD_EXPIRED;
 
     }
 
@@ -97,7 +62,7 @@ public class LDAPExtensionsTest {
         assert ctrl.getWarningType() == null;
 
         assert ctrl.getErrorType() != null;
-        assert ctrl.getErrorType() == PasswordPolicyErrorType.ACCOUNT_LOCKED;
+        assert ctrl.getErrorType() == LDAPPasswordPolicyErrorType.ACCOUNT_LOCKED;
 
     }
 
@@ -116,7 +81,7 @@ public class LDAPExtensionsTest {
         assert ctrl.getWarningType() == null;
 
         assert ctrl.getErrorType() != null;
-        assert ctrl.getErrorType() == PasswordPolicyErrorType.CHANGE_AFTER_RESET;
+        assert ctrl.getErrorType() == LDAPPasswordPolicyErrorType.CHANGE_AFTER_RESET;
 
     }
 

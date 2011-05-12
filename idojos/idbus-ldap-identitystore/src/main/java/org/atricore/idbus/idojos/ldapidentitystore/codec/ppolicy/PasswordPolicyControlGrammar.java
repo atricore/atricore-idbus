@@ -114,7 +114,7 @@ public class PasswordPolicyControlGrammar extends AbstractGrammar {
                                     if (logger.isTraceEnabled())
                                         logger.trace("Set Time Before Expiration Warning : " + wValue);
 
-                                    ppolicyContainer.getPasswordPolicyControl().setWarningType(PasswordPolicyWarningType.TIME_BEFORE_EXPIRATION);
+                                    ppolicyContainer.getPasswordPolicyControl().setWarningType(LDAPPasswordPolicyWarningType.TIME_BEFORE_EXPIRATION);
                                     ppolicyContainer.getPasswordPolicyControl().setWarningValue(wValue);
 
                                     // As all the values are optional or defaulted, we can end here
@@ -155,7 +155,7 @@ public class PasswordPolicyControlGrammar extends AbstractGrammar {
                                     if (logger.isTraceEnabled())
                                         logger.trace("Set Grace Authns Remaining Warning : " + wValue);
 
-                                    ppolicyContainer.getPasswordPolicyControl().setWarningType(PasswordPolicyWarningType.GRACE_AUTHNS_REMAINING);
+                                    ppolicyContainer.getPasswordPolicyControl().setWarningType(LDAPPasswordPolicyWarningType.GRACE_AUTHNS_REMAINING);
                                     ppolicyContainer.getPasswordPolicyControl().setWarningValue(wValue);
 
                                     // As all the values are optional or defaulted, we can end here
@@ -189,12 +189,12 @@ public class PasswordPolicyControlGrammar extends AbstractGrammar {
                                     if (logger.isTraceEnabled())
                                         logger.trace("Set PPolicy error");
 
-                                    int errorTypeInt = IntegerDecoder.parse(value, 0, PasswordPolicyErrorType.PASSWORD_IN_HISTORY.intValue());
+                                    int errorTypeInt = IntegerDecoder.parse(value, 0, LDAPPasswordPolicyErrorType.PASSWORD_IN_HISTORY.intValue());
 
                                     if (logger.isTraceEnabled())
                                         logger.trace("Set PPolicy error : " + errorTypeInt);
 
-                                    PasswordPolicyErrorType errorType = PasswordPolicyErrorType.getErrorType(errorTypeInt);
+                                    LDAPPasswordPolicyErrorType errorType = LDAPPasswordPolicyErrorType.getErrorType(errorTypeInt);
 
                                     if (logger.isTraceEnabled())
                                         logger.trace("Set PPolicy error : " + errorType.name());

@@ -3,7 +3,7 @@ package org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public enum PasswordPolicyErrorType {
+public enum LDAPPasswordPolicyErrorType {
 
     /**
      * Indicates that the password has expired and must be reset.
@@ -58,7 +58,7 @@ public enum PasswordPolicyErrorType {
 
     private final String name;
 
-    private PasswordPolicyErrorType(final int intValue, final String name)
+    private LDAPPasswordPolicyErrorType(final int intValue, final String name)
     {
       this.intValue = intValue;
       this.name = name;
@@ -85,8 +85,8 @@ public enum PasswordPolicyErrorType {
       return intValue;
     }
 
-    public static PasswordPolicyErrorType getErrorType(int errorTypeInt) {
-        for (PasswordPolicyErrorType errorType : PasswordPolicyErrorType .values()) {
+    public static LDAPPasswordPolicyErrorType getErrorType(int errorTypeInt) {
+        for (LDAPPasswordPolicyErrorType errorType : LDAPPasswordPolicyErrorType.values()) {
             if (errorType.intValue() == errorTypeInt)
                 return errorType;
         }

@@ -3,7 +3,7 @@ package org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public enum PasswordPolicyWarningType
+public enum LDAPPasswordPolicyWarningType
 {
   /**
    * Indicates the number of seconds before a password will expire.
@@ -22,7 +22,7 @@ public enum PasswordPolicyWarningType
 
 
 
-  private PasswordPolicyWarningType(final int intValue, final String name)
+  private LDAPPasswordPolicyWarningType(final int intValue, final String name)
   {
     this.intValue = intValue;
     this.name = name;

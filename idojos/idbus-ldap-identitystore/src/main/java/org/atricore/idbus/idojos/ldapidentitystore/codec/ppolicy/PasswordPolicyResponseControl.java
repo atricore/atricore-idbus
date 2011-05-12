@@ -3,7 +3,6 @@ package org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.directory.shared.ldap.codec.controls.AbstractControl;
 
 
@@ -17,9 +16,9 @@ public class PasswordPolicyResponseControl extends AbstractControl  {
 
     public static final String CONTROL_OID = "1.3.6.1.4.1.42.2.27.8.5.1";
 
-    private PasswordPolicyErrorType errorType;
+    private LDAPPasswordPolicyErrorType errorType;
 
-    private PasswordPolicyWarningType warningType;
+    private LDAPPasswordPolicyWarningType warningType;
 
     private int warningValue ;
 
@@ -35,19 +34,19 @@ public class PasswordPolicyResponseControl extends AbstractControl  {
     }
 
 
-    public PasswordPolicyErrorType getErrorType() {
+    public LDAPPasswordPolicyErrorType getErrorType() {
         return errorType;
     }
 
-    public void setErrorType(PasswordPolicyErrorType errorType) {
+    public void setErrorType(LDAPPasswordPolicyErrorType errorType) {
         this.errorType = errorType;
     }
 
-    public PasswordPolicyWarningType getWarningType() {
+    public LDAPPasswordPolicyWarningType getWarningType() {
         return warningType;
     }
 
-    public void setWarningType(PasswordPolicyWarningType warningType) {
+    public void setWarningType(LDAPPasswordPolicyWarningType warningType) {
         this.warningType = warningType;
     }
 
