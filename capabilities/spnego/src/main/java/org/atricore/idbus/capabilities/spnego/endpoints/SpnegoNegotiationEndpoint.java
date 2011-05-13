@@ -9,9 +9,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import java.util.Map;
 
 /**
- * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  */
-
 public class SpnegoNegotiationEndpoint extends AbstractCamelEndpoint<CamelMediationExchange> {
     public SpnegoNegotiationEndpoint(String uri, Component component, Map parameters) throws Exception {
         super(uri, component, parameters);

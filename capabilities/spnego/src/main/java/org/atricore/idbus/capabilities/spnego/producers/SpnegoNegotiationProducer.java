@@ -27,25 +27,30 @@ import org.apache.camel.component.http.HttpExchange;
 import org.apache.camel.impl.DefaultProducer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 
 
 /**
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id$
  */
-public class SpnegoNegotiationProducer<E extends org.apache.camel.Exchange> extends DefaultProducer<E> {
+public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediationExchange> {
 
     private static final Log logger = LogFactory.getLog( SpnegoNegotiationProducer.class );
 
     public SpnegoNegotiationProducer(Endpoint endpoint) {
         super( endpoint );
-        assert endpoint != null : "Endpoint MUST be specified when creating producers!";
+    }
+
+    @Override
+    protected void doProcess(CamelMediationExchange exchange) throws Exception {
+        logger.debug("received http exchange to initiated SPNEGO negotiation");
     }
 
     public void process ( final Exchange e) throws Exception {
-        HttpExchange exchange = (HttpExchange) e;
 
-        logger.debug("received http exchange to initiated SPNEGO negotiation");
     }
+
 
 }
