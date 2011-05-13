@@ -167,10 +167,12 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
      */
     public boolean bind(String username, String password, BindContext bindCtx) throws SSOAuthenticationException {
 
+        String dn = null;
+
         try {
 
             // first try to retrieve the user using an known user
-            String dn = selectUserDN(username);
+            dn = selectUserDN(username);
             if (dn == null) {
                 // user not found
                 throw new SSOAuthenticationException("No DN found for user : " + username);
@@ -183,7 +185,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
             try {
 
-                ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, username);
+                ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, dn);
                 ctx.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
 
                 if (isPasswordPolicySupport()) {
@@ -222,8 +224,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
 
         } catch (Exception e) {
-
-            throw new SSOAuthenticationException("Cannot bind as user : " + username + " " + e.getMessage(), e);
+            throw new SSOAuthenticationException("Cannot bind as user : " + username + " ["+dn+"]" + e.getMessage(), e);
         }
 
     }
