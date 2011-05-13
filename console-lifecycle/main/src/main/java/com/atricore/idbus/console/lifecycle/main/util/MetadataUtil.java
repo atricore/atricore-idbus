@@ -127,7 +127,12 @@ public class MetadataUtil {
         // AssertionConsumerService
         IndexedEndpointType assertionConsumerService = new IndexedEndpointType();
         assertionConsumerService.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
-        assertionConsumerService.setLocation("https://login.salesforce.com");
+
+        if (salesforceProvider.getLoginUrl() != null && !"".equals(salesforceProvider.getLoginUrl())) {
+            assertionConsumerService.setLocation(salesforceProvider.getLoginUrl());
+        } else {
+            assertionConsumerService.setLocation("https://login.salesforce.com");
+        }
         assertionConsumerService.setIndex(0);
         assertionConsumerService.setIsDefault(true);
         spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService);

@@ -29,7 +29,6 @@
 
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{salesforceProviderName}" required="true" property="text"/>
-
         <s:Fade id="fadeFx" alphaFrom="1" alphaTo="0" duration="2000" startDelay="2000"/>
     </fx:Declarations>
 
@@ -39,6 +38,10 @@
         <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'salesforce.name')}:"
                      required="true">
             <s:TextInput id="salesforceProviderName" width="200"/>
+        </mx:FormItem>
+
+        <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'salesforce.loginUrl')}:">
+            <s:TextInput id="salesforceProvLoginUrl" width="300"/>
         </mx:FormItem>
 
         <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'salesforce.description')}:">

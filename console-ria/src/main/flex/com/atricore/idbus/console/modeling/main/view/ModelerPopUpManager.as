@@ -622,7 +622,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createSalesforceCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.salesforce");
         _popup.width = 410;
-        _popup.height = 140;
+        _popup.height = 220;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_salesforceCreateForm);

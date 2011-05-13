@@ -1920,7 +1920,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
             identityApplianceDAO.delete(appliance.getId());
 
-            identityApplianceUnitDAO.deleteUnitsByGroup(unitsGroup);
+            // identityApplianceUnitDAO.deleteUnitsByGroup(unitsGroup);
 
             /*for (Long idauID : idauIDs) {
                 identityApplianceUnitDAO.delete(idauID);

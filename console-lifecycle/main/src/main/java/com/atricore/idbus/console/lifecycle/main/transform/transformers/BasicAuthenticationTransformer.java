@@ -48,8 +48,13 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
 
         // Auth scheme name cannot be changed!
         setPropertyValue(basicAuthnBean, "name", "basic-authentication");
-        setPropertyValue(basicAuthnBean, "hashAlgorithm", basicAuthn.getHashAlgorithm());
-        setPropertyValue(basicAuthnBean, "hashEncoding", basicAuthn.getHashEncoding());
+
+        if (!basicAuthn.getHashAlgorithm().equalsIgnoreCase("none"))
+            setPropertyValue(basicAuthnBean, "hashAlgorithm", basicAuthn.getHashAlgorithm());
+
+        if (!basicAuthn.getHashEncoding().equalsIgnoreCase("none"))
+            setPropertyValue(basicAuthnBean, "hashEncoding", basicAuthn.getHashEncoding());
+
         setPropertyValue(basicAuthnBean, "ignorePasswordCase", false); // Dangerous
         setPropertyValue(basicAuthnBean, "ignoreUserCase", basicAuthn.isIgnoreUsernameCase());
 

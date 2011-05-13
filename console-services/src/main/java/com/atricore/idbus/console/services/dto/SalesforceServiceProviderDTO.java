@@ -23,4 +23,13 @@ package com.atricore.idbus.console.services.dto;
 
 public class SalesforceServiceProviderDTO extends ExternalServiceProviderDTO {
 
+    private String loginUrl;
+
+    public String getLoginUrl() {
+        return loginUrl;
+    }
+
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
+    }
 }

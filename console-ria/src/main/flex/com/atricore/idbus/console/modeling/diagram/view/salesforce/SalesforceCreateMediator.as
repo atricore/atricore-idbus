@@ -71,6 +71,7 @@ public class SalesforceCreateMediator extends IocFormMediator {
     private function resetForm():void {
         view.salesforceProvName.text = "salesforce";
         view.salesforceProvDescription.text = "";
+        view.salesforceProvLoginUrl.text = "https://login.salesforce.com"
 
         FormUtility.clearValidationErrors(_validators);
         //registerValidators();
@@ -81,6 +82,7 @@ public class SalesforceCreateMediator extends IocFormMediator {
 
         salesforceProvider.name = view.salesforceProvName.text;
         salesforceProvider.description = view.salesforceProvDescription.text;
+        salesforceProvider.loginUrl = view.salesforceProvLoginUrl.text;
         salesforceProvider.isRemote = true;
 
         _newSalesforceProvider = salesforceProvider;

@@ -5,5 +5,14 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  * @version $Id$
  */
 public class SalesforceServiceProvider extends ExternalServiceProvider {
-    
+
+    private String loginUrl;
+
+    public String getLoginUrl() {
+        return loginUrl;
+    }
+
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
+    }
 }

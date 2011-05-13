@@ -2036,14 +2036,17 @@ public class PropertySheetMediator extends IocMediator {
         if (salesforceProvider != null) {
             // bind view
             _salesforceCoreSection.salesforceProviderName.text = salesforceProvider.name;
+            _salesforceCoreSection.salesforceProvLoginUrl.text = salesforceProvider.loginUrl;
             _salesforceCoreSection.salesforceProvDescription.text = salesforceProvider.description;
 
             _salesforceCoreSection.salesforceProviderName.addEventListener(Event.CHANGE, handleSectionChange);
+            _salesforceCoreSection.salesforceProvLoginUrl.addEventListener(Event.CHANGE, handleSectionChange);
             _salesforceCoreSection.salesforceProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
 
             //clear all existing validators and add idp core section validators
             _validators = [];
             _validators.push(_salesforceCoreSection.nameValidator);
+
         }
     }
 
@@ -2053,6 +2056,7 @@ public class PropertySheetMediator extends IocMediator {
             var salesforceProvider:SalesforceServiceProvider = _currentIdentityApplianceElement as SalesforceServiceProvider;
 
             salesforceProvider.name = _salesforceCoreSection.salesforceProviderName.text;
+            salesforceProvider.loginUrl = _salesforceCoreSection.salesforceProvLoginUrl.text;
             salesforceProvider.description = _salesforceCoreSection.salesforceProvDescription.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);

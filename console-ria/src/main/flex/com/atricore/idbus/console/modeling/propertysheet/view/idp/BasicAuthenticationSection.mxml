@@ -36,22 +36,26 @@
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.hashAlgorithm')}:">
-            <s:DropDownList id="hashAlgorithm" width="100" selectedIndex="0">
+            <s:DropDownList id="hashAlgorithm" width="140" selectedIndex="0">
                 <s:dataProvider>
                     <mx:ArrayCollection>
+
                         <fx:Object label="MD5" data="MD5"/>
                         <fx:Object label="SHA1" data="SHA1"/>
+                        <fx:Object label="CRYPT (LDAP Only)" data="CRYPT"/>
+                        <fx:Object label="PLain Text (none)" data="NONE"/>
                     </mx:ArrayCollection>
                 </s:dataProvider>
             </s:DropDownList>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.hashEncoding')}:">
-            <s:DropDownList id="hashEncoding" width="100" selectedIndex="0">
+            <s:DropDownList id="hashEncoding" width="140" selectedIndex="0">
                 <s:dataProvider>
                     <mx:ArrayCollection>
                         <fx:Object label="HEX" data="HEX"/>
                         <fx:Object label="BASE64" data="BASE64"/>
+                        <fx:Object label="Plain Text (none)" data="NONE"/>
                     </mx:ArrayCollection>
                 </s:dataProvider>
             </s:DropDownList>

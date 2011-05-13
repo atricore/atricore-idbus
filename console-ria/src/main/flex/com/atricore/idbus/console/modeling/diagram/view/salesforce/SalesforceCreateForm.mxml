@@ -29,10 +29,15 @@
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{salesforceProvName}" required="true" property="text" trigger="{btnOk}"
                              triggerEvent="click"/>
+
     </fx:Declarations>
 
     <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'salesforce.name')}:" required="true">
         <s:TextInput id="salesforceProvName" width="300" text="salesforce"/>
+    </mx:FormItem>
+
+    <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'salesforce.loginUrl')}:">
+        <s:TextInput id="salesforceProvLoginUrl" width="300" text="https://login.salesforce.com"/>
     </mx:FormItem>
 
     <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'salesforce.description')}:">
