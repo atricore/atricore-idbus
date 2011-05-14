@@ -45,12 +45,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
-        logger.debug("received http exchange to initiated SPNEGO negotiation");
+        logger.info("doProcess: received http exchange to initiated SPNEGO negotiation");
     }
-
-    public void process ( final Exchange e) throws Exception {
-
-    }
-
 
 }
