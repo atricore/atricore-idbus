@@ -173,7 +173,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
             // first try to retrieve the user using an known user
             dn = selectUserDN(username);
-            if (dn == null) {
+            if (dn == null || "".equals(dn)) {
                 // user not found
                 throw new SSOAuthenticationException("No DN found for user : " + username);
             } else {

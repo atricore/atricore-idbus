@@ -780,10 +780,10 @@ public class LDAPIdentityStore extends AbstractStore  {
 
         env.setProperty(Context.PROVIDER_URL, providerURL);
 
-        if (securityPrincipal != null)
+        if (securityPrincipal != null && !"".equals(securityPrincipal))
             env.setProperty(Context.SECURITY_PRINCIPAL, securityPrincipal);
 
-        if (securityCredential != null)
+        if (securityCredential != null && !"".equals(securityCredential))
             env.put(Context.SECURITY_CREDENTIALS, securityCredential);
 
         // Logon into LDAP server
