@@ -245,7 +245,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                     logger.error("Unsupported LDAP Password Policy Warning Type : " + ppolicyCtrl.getWarningType().name());
             }
 
-            PasswordPolicyWarning warningPPolicy = new PasswordPolicyWarning (type);
+            PasswordPolicyEnforcementWarning warningPPolicy = new PasswordPolicyEnforcementWarning(type);
             warningPPolicy.setValue(ppolicyCtrl.getWarningValue());
 
             bindCtx.addPasswordPolicyMessages(warningPPolicy);
@@ -268,7 +268,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                     logger.error("Unsupported LDAP Password Policy Error Type : " + ppolicyCtrl.getErrorType().name());
             }
 
-            PasswordPolicyError errorPPolicy = new PasswordPolicyError(type);
+            PasswordPolicyEnforcementError errorPPolicy = new PasswordPolicyEnforcementError(type);
             bindCtx.addPasswordPolicyMessages(errorPPolicy);
         }
 

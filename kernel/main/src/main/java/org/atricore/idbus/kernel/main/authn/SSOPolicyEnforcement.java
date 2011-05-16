@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public interface SSOPolicy extends Serializable, Principal {
+public interface SSOPolicyEnforcement extends Serializable, Principal {
 
     Set<Object> getValues();
 }

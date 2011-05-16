@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.capabilities.sts.main;
 
-import org.atricore.idbus.kernel.main.authn.SSOPolicy;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcement;
 
 import java.util.Set;
 
@@ -30,11 +30,11 @@ import java.util.Set;
  */
 public class SecurityTokenAuthenticationFailure extends SecurityTokenEmissionException {
 
-    private Set<SSOPolicy> ssoPolicies;
+    private Set<SSOPolicyEnforcement> ssoPolicyEnforcements;
 
-    public SecurityTokenAuthenticationFailure(String scheme, Set<SSOPolicy> ssoPolicies, Throwable cause) {
+    public SecurityTokenAuthenticationFailure(String scheme, Set<SSOPolicyEnforcement> ssoPolicyEnforcements, Throwable cause) {
         super("Cannot authenticate token using scheme " + scheme, cause);
-        this.ssoPolicies = ssoPolicies;
+        this.ssoPolicyEnforcements = ssoPolicyEnforcements;
     }
 
     public SecurityTokenAuthenticationFailure(String scheme, Throwable cause) {
@@ -45,7 +45,7 @@ public class SecurityTokenAuthenticationFailure extends SecurityTokenEmissionExc
         super(message);
     }
 
-    public Set<SSOPolicy> getSsoPolicies() {
-        return ssoPolicies;
+    public Set<SSOPolicyEnforcement> getSsoPolicyEnforcements() {
+        return ssoPolicyEnforcements;
     }
 }

@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.kernel.main.mediation.claim;
 
-import org.atricore.idbus.kernel.main.authn.SSOPolicy;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcement;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
@@ -42,7 +42,7 @@ public class ClaimsRequestImpl implements ClaimsRequest {
     private ClaimChannel claimsChannel;
     private String lastErrorId;
     private String lastErrorMsg;
-    private Set<SSOPolicy> ssoPolicies = new HashSet<SSOPolicy>();
+    private Set<SSOPolicyEnforcement> ssoPolicyEnforcements = new HashSet<SSOPolicyEnforcement>();
 
     public ClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel) {
         this.id = id;
@@ -108,8 +108,8 @@ public class ClaimsRequestImpl implements ClaimsRequest {
         this.lastErrorId = lastErrorId;
     }
 
-    public Set<SSOPolicy> getSsoPolicies() {
-        return ssoPolicies;
+    public Set<SSOPolicyEnforcement> getSsoPolicyEnforcements() {
+        return ssoPolicyEnforcements;
     }
 
     public String getLastErrorMsg() {

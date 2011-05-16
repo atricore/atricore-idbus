@@ -7,13 +7,13 @@ import java.util.Set;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class BasePasswordPolicyImpl implements SSOPasswordPolicy, Principal {
+public class BasePasswordPolicyEnforcementImpl implements SSOPasswordPolicyEnforcement, Principal {
 
     private String name;
 
     private Set<Object> values = new HashSet<Object>();
 
-    public BasePasswordPolicyImpl(String name) {
+    public BasePasswordPolicyEnforcementImpl(String name) {
         this.name = name;
     }
 

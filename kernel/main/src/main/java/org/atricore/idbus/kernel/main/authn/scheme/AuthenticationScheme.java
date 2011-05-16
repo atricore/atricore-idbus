@@ -23,14 +23,13 @@ package org.atricore.idbus.kernel.main.authn.scheme;
 
 import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.CredentialProvider;
-import org.atricore.idbus.kernel.main.authn.SSOPolicy;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcement;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStoreKeyAdapter;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -84,7 +83,7 @@ public interface AuthenticationScheme extends CredentialProvider, Cloneable {
     /**
      * Get the list of policies enforced during authentication
      */
-    Set<SSOPolicy> getSSOPolicies();
+    Set<SSOPolicyEnforcement> getSSOPolicies();
 
     /**
      * This method returns the principal name derived from input credentials.

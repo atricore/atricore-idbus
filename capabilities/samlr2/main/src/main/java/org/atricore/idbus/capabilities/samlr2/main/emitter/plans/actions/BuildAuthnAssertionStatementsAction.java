@@ -31,7 +31,7 @@ import org.atricore.idbus.capabilities.samlr2.support.core.AttributeNameFormat;
 import org.atricore.idbus.capabilities.samlr2.support.profiles.DCEPACAttributeDefinition;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.SSONameValuePair;
-import org.atricore.idbus.kernel.main.authn.SSOPolicy;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcement;
 import org.atricore.idbus.kernel.main.authn.SSORole;
 import org.atricore.idbus.kernel.main.authn.SSOUser;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
@@ -97,15 +97,15 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSAMLR2Assertion
         // SSO Enforced policies
         // TODO : Can we use SAML Authn context information ?!
         List<AttributeType> attrPolicies = new ArrayList<AttributeType>();
-        Set<SSOPolicy> ssoPolicies = s.getPrincipals(SSOPolicy.class);
-        for (SSOPolicy ssoPolicy : ssoPolicies) {
+        Set<SSOPolicyEnforcement> ssoPolicyEnforcements = s.getPrincipals(SSOPolicyEnforcement.class);
+        for (SSOPolicyEnforcement ssoPolicyEnforcement : ssoPolicyEnforcements) {
             AttributeType attrPolicy = new AttributeType();
 
-            attrPolicy.setName(ssoPolicy.getName());
+            attrPolicy.setName(ssoPolicyEnforcement.getName());
             attrPolicy.setNameFormat(AttributeNameFormat.URI.getValue());
 
-            if (ssoPolicy.getValues().size() > 0) {
-                for (Object v : ssoPolicy.getValues())
+            if (ssoPolicyEnforcement.getValues().size() > 0) {
+                for (Object v : ssoPolicyEnforcement.getValues())
                     attrPolicy.getAttributeValue().add(v);
             }
 

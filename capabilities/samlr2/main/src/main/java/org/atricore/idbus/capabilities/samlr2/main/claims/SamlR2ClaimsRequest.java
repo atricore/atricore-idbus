@@ -22,14 +22,10 @@
 package org.atricore.idbus.capabilities.samlr2.main.claims;
 
 import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
-import org.atricore.idbus.kernel.main.authn.SSOPolicy;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequestImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

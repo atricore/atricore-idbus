@@ -27,10 +27,7 @@ import org.atricore.idbus.applications.server.ui.util.DashboardMessage;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.kernel.main.authn.PasswordPolicyError;
-import org.atricore.idbus.kernel.main.authn.PasswordPolicyWarning;
-import org.atricore.idbus.kernel.main.authn.PasswordPolicyWarningType;
-import org.atricore.idbus.kernel.main.authn.SSOPolicy;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -46,9 +43,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -96,13 +91,13 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
             List<DashboardMessage> ssoPolicyMsgs = new ArrayList<DashboardMessage>();
 
             // Publish SSO Policies information to be displayed ...
-            for (SSOPolicy ssoPolicy : claimsRequest.getSsoPolicies()) {
+            for (SSOPolicyEnforcement ssoPolicyEnforcement : claimsRequest.getSsoPolicyEnforcements()) {
                 List<Object> values = null;
-                if (ssoPolicy.getValues().size() > 0) {
+                if (ssoPolicyEnforcement.getValues().size() > 0) {
                     values = new ArrayList<Object>();
-                    values.addAll(ssoPolicy.getValues());
+                    values.addAll(ssoPolicyEnforcement.getValues());
                 }
-                ssoPolicyMsgs.add(new DashboardMessage("claims.text." + ssoPolicy.getName(), values));
+                ssoPolicyMsgs.add(new DashboardMessage("claims.text." + ssoPolicyEnforcement.getName(), values));
 
             }
 

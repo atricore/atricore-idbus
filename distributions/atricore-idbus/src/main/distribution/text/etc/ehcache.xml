@@ -62,7 +62,7 @@
     diskExpiryThreadIntervalSeconds- The number of seconds between runs of the disk expiry thread. The default value
                                      is 120 seconds.
     memoryStoreEvictionPolicy      - Policy would be enforced upon reaching the maxElementsInMemory limit. Default
-                                     policy is Least Recently Used (specified as LRU). Other policies available -
+                                     policy is Least Recently Used (specified as LRU). Other policyEnforcements available -
                                      First In First Out (specified as FIFO) and Less Frequently Used
                                      (specified as LFU)
     cacheEventListenerClassNames   - A comma separated list of CacheEventListeners. The fully qualified class name of
@@ -110,7 +110,7 @@
         diskExpiryThreadIntervalSeconds- The number of seconds between runs of the disk expiry thread. The default value
                                          is 120 seconds.
         memoryStoreEvictionPolicy      - Policy would be enforced upon reaching the maxElementsInMemory limit. Default
-                                         policy is Least Recently Used (specified as LRU). Other policies available -
+                                         policy is Least Recently Used (specified as LRU). Other policyEnforcements available -
                                          First In First Out (specified as FIFO) and Less Frequently Used
                                          (specified as LFU)
         cacheEventListenerClassNames   - A comma separated list of CacheEventListeners. The fully qualified class name of

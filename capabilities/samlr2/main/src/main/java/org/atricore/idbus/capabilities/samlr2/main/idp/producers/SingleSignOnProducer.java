@@ -581,7 +581,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         } catch (SecurityTokenAuthenticationFailure e) {
 
             // Set of policies enforced during authentication
-            Set<SSOPolicy> ssoPolicies = e.getSsoPolicies();
+            Set<SSOPolicyEnforcement> ssoPolicyEnforcements = e.getSsoPolicyEnforcements();
 
             if (logger.isDebugEnabled())
                 logger.debug("Security Token authentication failure : " + e.getMessage(), e);
@@ -613,7 +613,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             claimsRequest.setLastErrorId("AUTHN_FAILED");
             claimsRequest.setLastErrorMsg(e.getMessage());
-            claimsRequest.getSsoPolicies().addAll(ssoPolicies);
+            claimsRequest.getSsoPolicyEnforcements().addAll(ssoPolicyEnforcements);
 
             // Update authentication state
             claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());

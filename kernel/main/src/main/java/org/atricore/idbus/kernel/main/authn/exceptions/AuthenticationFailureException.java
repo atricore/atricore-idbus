@@ -21,9 +21,8 @@
 
 package org.atricore.idbus.kernel.main.authn.exceptions;
 
-import org.atricore.idbus.kernel.main.authn.SSOPolicy;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcement;
 
-import javax.security.auth.Subject;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,7 +40,7 @@ public class AuthenticationFailureException extends SSOAuthenticationException {
      */
     private String errorType;
 
-    private Set<SSOPolicy> policies = new HashSet<SSOPolicy>();
+    private Set<SSOPolicyEnforcement> policyEnforcements = new HashSet<SSOPolicyEnforcement>();
 
     /**
      * It uses AUTH_FAILDE as error type.
@@ -57,9 +56,9 @@ public class AuthenticationFailureException extends SSOAuthenticationException {
      *
      * @param message El mensaje asociado al error.
      */
-    public AuthenticationFailureException(String message, Set<SSOPolicy> policies) {
+    public AuthenticationFailureException(String message, Set<SSOPolicyEnforcement> policyEnforcements) {
         this(message, "AUTH_FAILED");
-        this.policies.addAll(policies);
+        this.policyEnforcements.addAll(policyEnforcements);
     }
 
 
@@ -78,7 +77,7 @@ public class AuthenticationFailureException extends SSOAuthenticationException {
         return this.errorType;
     }
 
-    public Set<SSOPolicy> getSSOPolicies() {
-        return policies;
+    public Set<SSOPolicyEnforcement> getSSOPolicies() {
+        return policyEnforcements;
     }
 }
