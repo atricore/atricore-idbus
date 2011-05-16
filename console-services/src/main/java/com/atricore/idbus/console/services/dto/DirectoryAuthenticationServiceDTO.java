@@ -7,6 +7,7 @@ public class DirectoryAuthenticationServiceDTO extends AuthenticationServiceDTO 
     private String initialContextFactory;
     private String providerUrl;
     private boolean performDnSearch;
+    private String passwordPolicy;
     private String securityAuthentication;
 
     private String usersCtxDN;
@@ -38,6 +39,14 @@ public class DirectoryAuthenticationServiceDTO extends AuthenticationServiceDTO 
 
     public void setPerformDnSearch(boolean performDnSearch) {
         this.performDnSearch = performDnSearch;
+    }
+
+    public String getPasswordPolicy() {
+        return passwordPolicy;
+    }
+
+    public void setPasswordPolicy(String passwordPolicy) {
+        this.passwordPolicy = passwordPolicy;
     }
 
     public String getSecurityAuthentication() {

@@ -7,6 +7,7 @@ public class DirectoryAuthenticationService extends AuthenticationService {
     private String initialContextFactory;
     private String providerUrl;
     private boolean performDnSearch;
+    private String passwordPolicy;
     private String principalUidAttributeID;
     private String usersCtxDN;
     private String securityPrincipal;
@@ -39,6 +40,13 @@ public class DirectoryAuthenticationService extends AuthenticationService {
         this.performDnSearch = performDnSearch;
     }
 
+    public String getPasswordPolicy() {
+        return passwordPolicy;
+    }
+
+    public void setPasswordPolicy(String passwordPolicy) {
+        this.passwordPolicy = passwordPolicy;
+    }
 
     public String getSecurityAuthentication() {
         return securityAuthentication;

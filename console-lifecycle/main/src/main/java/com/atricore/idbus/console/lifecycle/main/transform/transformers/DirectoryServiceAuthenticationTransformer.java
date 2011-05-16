@@ -81,6 +81,15 @@ public class DirectoryServiceAuthenticationTransformer extends AbstractTransform
             setPropertyValue(ldapBindCredStore, "securityAuthentication", directoryAuthnService.getSecurityAuthentication());
             setPropertyValue(ldapBindCredStore, "validateBindWithSearch", directoryAuthnService.isPerformDnSearch());
 
+            if (directoryAuthnService.getPasswordPolicy().equals("ldap-rfc-draft")) {
+                setPropertyValue(ldapBindCredStore, "passwordPolicySupport", true);
+            } else if (directoryAuthnService.getPasswordPolicy().equalsIgnoreCase("none")) {
+                setPropertyValue(ldapBindCredStore, "passwordPolicySupport", true);
+            } else {
+                logger.warn("Unknown selected password policy support for Directory Authentication Service : " +
+                        directoryAuthnService.getPasswordPolicy());
+            }
+
             setPropertyValue(ldapBindCredStore, "usersCtxDN", directoryAuthnService.getUsersCtxDN());
             setPropertyValue(ldapBindCredStore, "principalUidAttributeID", directoryAuthnService.getPrincipalUidAttributeID());
             setPropertyValue(ldapBindCredStore, "securityPrincipal", directoryAuthnService.getSecurityPrincipal());

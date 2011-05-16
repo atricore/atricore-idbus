@@ -90,6 +90,7 @@ public class DirectoryServiceCreateMediator extends IocFormMediator {
         directoryAuthnService.initialContextFactory = view.initialContextFactory.text;
         directoryAuthnService.providerUrl = view.providerUrl.text;
         directoryAuthnService.performDnSearch = view.performDnSearch.selected;
+        directoryAuthnService.passwordPolicy = view.passwordPolicy.selectedItem.data;
         directoryAuthnService.securityPrincipal = view.securityPrincipal.text;
         directoryAuthnService.securityCredential = view.securityCredential.text;
         directoryAuthnService.usersCtxDN = view.usersCtxDN.text;

@@ -61,6 +61,18 @@
             <s:CheckBox id="performDnSearch" />
         </mx:FormItem>
 
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.passwordPolicy')}:"
+                     required="true">
+            <s:DropDownList id="passwordPolicy" selectedIndex="0" width="180">
+                <s:dataProvider>
+                    <mx:ArrayCollection>
+                        <fx:Object label="None" data="none"/>
+                        <fx:Object label="RFC Draft" data="ldap-rfc-draft"/>
+                    </mx:ArrayCollection>
+                </s:dataProvider>
+            </s:DropDownList>
+        </mx:FormItem>
+
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityPrincipal')}:"
                      required="false">
             <s:TextInput id="securityPrincipal" width="300"/>

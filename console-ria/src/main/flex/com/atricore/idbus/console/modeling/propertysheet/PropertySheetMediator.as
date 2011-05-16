@@ -2452,6 +2452,14 @@ public class PropertySheetMediator extends IocMediator {
             _directoryAuthnServiceCoreSection.initialContextFactory.text = directoryAuthnService.initialContextFactory;
             _directoryAuthnServiceCoreSection.providerUrl.text = directoryAuthnService.providerUrl;
             _directoryAuthnServiceCoreSection.performDnSearch.selected = directoryAuthnService.performDnSearch;
+
+            for (var j:int = 0; j < _directoryAuthnServiceCoreSection.passwordPolicy.dataProvider.length; j++) {
+                if (_directoryAuthnServiceCoreSection.passwordPolicy.dataProvider[j].data == directoryAuthnService.passwordPolicy) {
+                    _directoryAuthnServiceCoreSection.passwordPolicy.selectedIndex = j;
+                    break;
+                }
+            }
+
             _directoryAuthnServiceCoreSection.securityPrincipal.text = directoryAuthnService.securityPrincipal;
             _directoryAuthnServiceCoreSection.securityCredential.text = directoryAuthnService.securityCredential;
             for (var i:int = 0; i < _directoryAuthnServiceCoreSection.securityAuthentication.dataProvider.length; i++) {
@@ -2466,6 +2474,7 @@ public class PropertySheetMediator extends IocMediator {
             _directoryAuthnServiceCoreSection.initialContextFactory.addEventListener(Event.CHANGE, handleSectionChange);
             _directoryAuthnServiceCoreSection.providerUrl.addEventListener(Event.CHANGE, handleSectionChange);
             _directoryAuthnServiceCoreSection.performDnSearch.addEventListener(Event.CHANGE, handleSectionChange);
+            _directoryAuthnServiceCoreSection.passwordPolicy.addEventListener(Event.CHANGE, handleSectionChange);
             _directoryAuthnServiceCoreSection.securityPrincipal.addEventListener(Event.CHANGE, handleSectionChange);
             _directoryAuthnServiceCoreSection.securityCredential.addEventListener(Event.CHANGE, handleSectionChange);
             _directoryAuthnServiceCoreSection.securityAuthentication.addEventListener(Event.CHANGE, handleSectionChange);
@@ -2488,6 +2497,7 @@ public class PropertySheetMediator extends IocMediator {
             directoryAuthnService.initialContextFactory = _directoryAuthnServiceCoreSection.initialContextFactory.text;
             directoryAuthnService.providerUrl = _directoryAuthnServiceCoreSection.providerUrl.text;
             directoryAuthnService.performDnSearch = _directoryAuthnServiceCoreSection.performDnSearch.selected;
+            directoryAuthnService.passwordPolicy = _directoryAuthnServiceCoreSection.passwordPolicy.selectedItem.data;
             directoryAuthnService.securityPrincipal = _directoryAuthnServiceCoreSection.securityPrincipal.text;
             directoryAuthnService.securityCredential = _directoryAuthnServiceCoreSection.securityCredential.text;
             directoryAuthnService.securityAuthentication = _directoryAuthnServiceCoreSection.securityAuthentication.selectedItem.data;
