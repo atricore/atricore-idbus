@@ -23,12 +23,15 @@ package org.atricore.idbus.kernel.main.authn.scheme;
 
 import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.CredentialProvider;
+import org.atricore.idbus.kernel.main.authn.SSOPolicy;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStoreKeyAdapter;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Represents any authentication scheme, like user&password, certificate, kerveros 5, etc.
@@ -77,6 +80,11 @@ public interface AuthenticationScheme extends CredentialProvider, Cloneable {
      * Cancels the authentication process.
      */
     void cancel();
+
+    /**
+     * Get the list of policies enforced during authentication
+     */
+    Set<SSOPolicy> getSSOPolicies();
 
     /**
      * This method returns the principal name derived from input credentials.

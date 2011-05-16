@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 public enum PasswordPolicyWarningType implements Serializable {
 
+
+
     /**
      * Indicates the number of seconds before a password will expire.
      */

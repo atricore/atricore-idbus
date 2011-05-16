@@ -1,7 +1,8 @@
 package org.atricore.idbus.kernel.main.authn;
 
 import java.security.Principal;
-import java.util.Iterator;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -10,12 +11,18 @@ public class BasePasswordPolicyImpl implements SSOPasswordPolicy, Principal {
 
     private String name;
 
+    private Set<Object> values = new HashSet<Object>();
+
+    public BasePasswordPolicyImpl(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
 
-    public BasePasswordPolicyImpl(String name) {
-        this.name = name;
+    public Set<Object> getValues() {
+        return values;
     }
 
     public String toString() {

@@ -23,6 +23,7 @@ public class PasswordPolicyWarning extends BasePasswordPolicyImpl {
     }
 
     public void setValue(int value) {
+        super.getValues().add(value);
         this.value = value;
     }
 }

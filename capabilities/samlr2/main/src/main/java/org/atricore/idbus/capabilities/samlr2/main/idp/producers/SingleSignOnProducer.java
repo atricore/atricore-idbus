@@ -580,6 +580,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         } catch (SecurityTokenAuthenticationFailure e) {
 
+            // Set of policies enforced during authentication
+            Set<SSOPolicy> ssoPolicies = e.getSsoPolicies();
+
             if (logger.isDebugEnabled())
                 logger.debug("Security Token authentication failure : " + e.getMessage(), e);
 
@@ -608,8 +611,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
                     ((SPChannel)channel).getClaimsProvider(),
                     uuidGenerator.generateId());
 
-            claimsRequest.setLastErrorId("AUTHN_FAILED"); // TODO : Replace with enums?
+            claimsRequest.setLastErrorId("AUTHN_FAILED");
             claimsRequest.setLastErrorMsg(e.getMessage());
+            claimsRequest.getSsoPolicies().addAll(ssoPolicies);
 
             // Update authentication state
             claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());

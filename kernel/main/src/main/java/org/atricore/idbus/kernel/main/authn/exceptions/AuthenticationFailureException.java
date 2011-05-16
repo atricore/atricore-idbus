@@ -21,6 +21,12 @@
 
 package org.atricore.idbus.kernel.main.authn.exceptions;
 
+import org.atricore.idbus.kernel.main.authn.SSOPolicy;
+
+import javax.security.auth.Subject;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * This exception is thrown when an authentication fails
  * An authentication failure can happen, for example, when the credentials supplied by the user are invalid.
@@ -35,6 +41,8 @@ public class AuthenticationFailureException extends SSOAuthenticationException {
      */
     private String errorType;
 
+    private Set<SSOPolicy> policies = new HashSet<SSOPolicy>();
+
     /**
      * It uses AUTH_FAILDE as error type.
      *
@@ -43,6 +51,17 @@ public class AuthenticationFailureException extends SSOAuthenticationException {
     public AuthenticationFailureException(String message) {
         this(message, "AUTH_FAILED");
     }
+
+    /**
+     * It uses AUTH_FAILDE as error type.
+     *
+     * @param message El mensaje asociado al error.
+     */
+    public AuthenticationFailureException(String message, Set<SSOPolicy> policies) {
+        this(message, "AUTH_FAILED");
+        this.policies.addAll(policies);
+    }
+
 
     /**
      * Allows error type specification, usefull when extending the Authenticator to provide business specific rules.
@@ -57,5 +76,9 @@ public class AuthenticationFailureException extends SSOAuthenticationException {
 
     public String getErrorType() {
         return this.errorType;
+    }
+
+    public Set<SSOPolicy> getSSOPolicies() {
+        return policies;
     }
 }

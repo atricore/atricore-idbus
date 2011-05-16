@@ -139,7 +139,7 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
 
 
         } catch (AuthenticationFailureException e) {
-            throw new SecurityTokenAuthenticationFailure(scheme, e);
+            throw new SecurityTokenAuthenticationFailure(scheme, e.getSSOPolicies(), e);
 
         } catch (SSOAuthenticationException e) {
             throw new SecurityTokenEmissionException(e);

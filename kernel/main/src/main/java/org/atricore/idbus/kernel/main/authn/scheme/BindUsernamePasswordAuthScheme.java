@@ -24,15 +24,10 @@ package org.atricore.idbus.kernel.main.authn.scheme;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.authn.SSOPasswordPolicy;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.atricore.idbus.kernel.main.store.identity.BindContext;
 import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
-
-import java.security.Principal;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Basic authentication scheme, supporting username and password credentials.
@@ -97,21 +92,12 @@ public class BindUsernamePasswordAuthScheme extends UsernamePasswordAuthScheme {
         }
 
         // Propagate bind context ppolicies, if any to subject.
-        if (bindCtx.getPasswordPolicyMessages().size() > 0) {
+        if (bindCtx.getSSOPolicies().size() > 0) {
             if (logger.isDebugEnabled())
-                logger.debug("Password Policy Messages received : " + bindCtx.getPasswordPolicyMessages().size());
+                logger.debug("Password Policy Messages received : " + bindCtx.getSSOPolicies().size());
 
-            for (int i = 0; i < bindCtx.getPasswordPolicyMessages().size(); i++) {
-
-                SSOPasswordPolicy ssoPasswordPolicy = bindCtx.getPasswordPolicyMessages().get(i);
-
-                if (ssoPasswordPolicy instanceof Principal)
-                    _subject.getPrincipals().add((Principal) ssoPasswordPolicy);
-                else
-                    logger.error("Password policy is not a principal : " + ssoPasswordPolicy);
-            }
-
-
+            // Propagate enforced policies to Subject
+            _subject.getPrincipals().addAll(bindCtx.getSSOPolicies());
 
         }
 
