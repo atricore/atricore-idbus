@@ -13,6 +13,7 @@ import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
@@ -23,9 +24,12 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.planning.*;
+import org.w3._1999.xhtml.Html;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+
+import java.io.ByteArrayInputStream;
 
 import static org.atricore.idbus.capabilities.samlr2.main.common.plans.SamlR2PlanningConstants.*;
 
@@ -229,12 +233,29 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
             copyBackState(out.getState(), exchange);
 
-            httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-            httpOut.getHeaders().put("Pragma", "no-cache");
-            httpOut.getHeaders().put("http.responseCode", 302);
-            httpOut.getHeaders().put("Content-Type", "text/html");
-            httpOut.getHeaders().put("Location", redirLocation);
+            if (!isEnableAjax()) {
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 302);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+                httpOut.getHeaders().put("Location", redirLocation);
+            } else {
 
+                Html redir = this.createHtmlArtifactMessage(redirLocation,
+                        null,
+                        null,
+                        (String) msgValue);
+                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
+                        new String[]{"org.w3._1999.xhtml"});
+
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 200);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+
+                ByteArrayInputStream baos = new ByteArrayInputStream (marshalledHttpResponseBody.getBytes());
+                httpOut.setBody(baos);
+            }
 
 
         } catch (Exception e) {

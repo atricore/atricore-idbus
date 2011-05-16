@@ -310,12 +310,67 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     // -------------------------------------------------------------
     // HTML Utils
     // -------------------------------------------------------------
-    protected Html createHtmlPostMessage(String url, String relayState, String msgName, String msgValue) throws Exception {
+    protected Html createHtmlRedirectMessage(String url,
+                                         String relayState,
+                                         String msgName,
+                                         String msgValue) throws Exception {
 
-        Html html = new Html();
-        html.setLang("en");
+        Html html = createHtmlBaseMessage();
+        Body body = html.getBody();
 
-        Body body = new Body();
+        Div div = (Div) body.getPOrH1OrH2().iterator().next();
+
+        Head head = html.getHead();
+
+        Meta meta = new Meta();
+        meta.setHttpEquiv("refresh");
+        meta.setContent("0;" + url);
+
+        head.getContent().add(meta);
+
+        Div formDiv = new Div();
+        //formDiv.getContent().add(form);
+        div.getContent().add(formDiv);
+
+        return html;
+
+    }
+
+    protected Html createHtmlArtifactMessage(String url,
+                                         String relayState,
+                                         String msgName,
+                                         String msgValue) throws Exception {
+        Html html = createHtmlBaseMessage();
+        Body body = html.getBody();
+
+        Div div = (Div) body.getPOrH1OrH2().iterator().next();
+
+        Head head = html.getHead();
+
+        Meta meta = new Meta();
+        meta.setHttpEquiv("refresh");
+        meta.setContent("0;" + url);
+
+        head.getContent().add(meta);
+
+        Div formDiv = new Div();
+        //formDiv.getContent().add(form);
+        div.getContent().add(formDiv);
+
+        return html;
+    }
+
+
+    protected Html createHtmlPostMessage(String url,
+                                         String relayState,
+                                         String msgName,
+                                         String msgValue) throws Exception {
+
+
+        Html html = createHtmlBaseMessage();
+        Body body = html.getBody();
+
+        Div div = (Div) body.getPOrH1OrH2().iterator().next();
 
         // Form
         Form form = new Form();
@@ -335,14 +390,14 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         {
             // Div with form fields
-            Div div = new Div();
+            Div divFields = new Div();
             if (relayState != null) {
                 Input input1 = new Input();
                 input1.setType(InputType.HIDDEN);
                 input1.setName("RelayState");
                 input1.setValue(relayState);
 
-                div.getContent().add(input1);
+                divFields.getContent().add(input1);
             }
 
             Input input2 = new Input();
@@ -352,33 +407,122 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             // TODO : Url encode msg value ?
             input2.setValue(msgValue);
 
-            div.getContent().add(input2);
+            divFields.getContent().add(input2);
 
             // Add first filds to form
-            form.getPOrH1OrH2().add(div);
+            form.getPOrH1OrH2().add(divFields);
         }
 
         {
             // Create noscript submit button
             Noscript noscript = new Noscript();
-            Div div = new Div();
-            noscript.getPOrH1OrH2().add(div);
+            Div divNoScript = new Div();
+            noscript.getPOrH1OrH2().add(divNoScript);
 
             Input submit = new Input();
             submit.setType(InputType.SUBMIT);
             submit.setValue("Continue");
-            div.getContent().add(submit);
+            divNoScript.getContent().add(submit);
 
             form.getPOrH1OrH2().add(noscript);
 
         }
 
+        // Parto of post binding
         body.setOnload("document.forms[0].submit();");
-        body.getPOrH1OrH2().add(form);
+
+
+        //body.getPOrH1OrH2().add(form);
+        Div formDiv = new Div();
+        formDiv.getContent().add(form);
+        div.getContent().add(formDiv);
 
         html.setBody(body);
 
         return html;
+    }
+
+    protected Html createHtmlBaseMessage() {
+
+        Html html = new Html();
+        html.setLang("en");
+
+        Head head = new Head();
+
+        if (isEnableAjax()) {
+
+            Style style = new Style();
+            style.setType("text/css");
+            style.setContent(
+                    "        /*this is what we want the div to look like\n" +
+                    "        when it is not showing*/\n" +
+                    "        div.loading-invisible {\n" +
+                    "        /*make invisible*/\n" +
+                    "            display: none;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "            /*this is what we want the div to look like\n" +
+                    "         when it IS showing*/\n" +
+                    "        div.loading-visible {\n" +
+                    "        /*make visible*/\n" +
+                    "        /*make visible*/\n" +
+                    "            display: block; /*set the div in the center of the screen*/\n" +
+                    "            position: absolute;\n" +
+                    "            top: 30%;\n" +
+                    "            left: 35%;\n" +
+                    "            width: 223px;\n" +
+                    "\n" +
+                    "            text-align: center;\n" +
+                    "\n" +
+                    "            /*in supporting browsers, make it\n" +
+                    "          a little transparent*/\n" +
+                    "            background: #fff;\n" +
+                    "            filter: alpha(opacity = 75); /* internet explorer */\n" +
+                    "            -khtml-opacity: 0.75; /* khtml, old safari */\n" +
+                    "            -moz-opacity: 0.75; /* mozilla, netscape */\n" +
+                    "            opacity: 0.75; /* fx, safari, opera */\n" +
+                    "            border-top: 1px solid #ddd;\n" +
+                    "            border-bottom: 1px solid #ddd;\n" +
+                    "        }");
+
+
+            head.getContent().add(style);
+        }
+
+        html.setHead(head);
+
+        Body body = new Body();
+
+        Div div = new Div();
+        div.setId("loading-visible");
+        div.getClazz().add("loading-visible");
+
+        if (isEnableAjax()) {
+            Div logoDiv = new Div();
+            Img logoImg = new Img();
+            logoImg.setId("logoImg");
+            logoImg.setAlt("JOSSO 2");
+            logoImg.setSrc("/idbus-ui/resources/img/content/josso-loading-logo.jpg");
+            logoDiv.getContent().add(logoImg);
+
+            div.getContent().add(logoDiv);
+
+            Div loadingDiv = new Div();
+            Img loadingImg = new Img();
+            loadingImg.setId("loadingImg");
+            loadingImg.setAlt("Wait ...");
+            loadingImg.setSrc("/idbus-ui/resources/img/loading-01.gif");
+            logoDiv.getContent().add(loadingImg);
+
+            div.getContent().add(loadingDiv);
+        }
+
+        body.getPOrH1OrH2().add(div);
+
+        html.setBody(body);
+
+        return html;
+
     }
 
     protected Html createHtmlErrorPage(MediationMessage fault) {
@@ -527,6 +671,10 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         }
         // Use our classloader to build JAXBContext so it can find binding classes.
         return JAXBContext.newInstance( packages.toString(), obj.getClass().getClassLoader());
+    }
+
+    protected boolean isEnableAjax() {
+        return getConfigurationContext() != null && Boolean.parseBoolean(getConfigurationContext().getProperty("binding.http.ajax"));
     }
 
 }

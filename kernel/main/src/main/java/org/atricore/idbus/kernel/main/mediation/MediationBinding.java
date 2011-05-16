@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.mediation;
 
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
+
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$

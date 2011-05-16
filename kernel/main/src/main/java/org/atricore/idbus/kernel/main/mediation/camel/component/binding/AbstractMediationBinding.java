@@ -31,6 +31,7 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -43,6 +44,7 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
     private String binding;
     protected Channel channel;
     protected ClassLoader stateManagerClassloader;
+    private ConfigurationContext cfg;
 
     protected AbstractMediationBinding(String binding, Channel channel) {
         this.binding = binding;
@@ -213,5 +215,13 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
 
     public Object sendMessage(MediationMessage message) throws IdentityMediationException {
         throw new UnsupportedOperationException("Binding does not support sending new messages");
+    }
+
+    public void setConfigurationContext(ConfigurationContext cfg) {
+        this.cfg = cfg;
+    }
+
+    public ConfigurationContext getConfigurationContext() {
+        return cfg;
     }
 }

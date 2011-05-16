@@ -25,6 +25,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
@@ -32,7 +33,9 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.w3._1999.xhtml.Html;
 
+import java.io.ByteArrayInputStream;
 import java.util.Map;
 
 /**
@@ -59,7 +62,7 @@ public class JossoHttpRedirectBinding extends AbstractMediationHttpBinding {
             if (logger.isDebugEnabled()) {
                 Map<String, Object> h = httpMsg.getHeaders();
                 for (String key : h.keySet()) {
-                    logger.debug("CAMEL Header:" + key + ":"+ h.get(key));
+                    logger.debug("CAMEL Header:" + key + ":" + h.get(key));
                 }
             }
 
@@ -71,11 +74,11 @@ public class JossoHttpRedirectBinding extends AbstractMediationHttpBinding {
         String relayState = state.getTransientVariable("RelayState");
 
         return new MediationMessageImpl(message.getMessageId(),
-                        null,
-                        null,
-                        relayState,
-                        null,
-                        state);
+                null,
+                null,
+                relayState,
+                null,
+                state);
     }
 
     public void copyMessageToExchange(CamelMediationMessage josso11Out, Exchange exchange) {
@@ -108,15 +111,40 @@ public class JossoHttpRedirectBinding extends AbstractMediationHttpBinding {
         if (logger.isDebugEnabled())
             logger.debug("Redirecting to " + jossoRedirLocation);
 
-        // ------------------------------------------------------------
-        // Prepare HTTP Resposne
-        // ------------------------------------------------------------
-        copyBackState(out.getState(), exchange);
+        try {
 
-        httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-        httpOut.getHeaders().put("Pragma", "no-cache");
-        httpOut.getHeaders().put("http.responseCode", 302);
-        httpOut.getHeaders().put("Content-Type", "text/html");
-        httpOut.getHeaders().put("Location", jossoRedirLocation);
+            // ------------------------------------------------------------
+            // Prepare HTTP Resposne
+            // ------------------------------------------------------------
+            copyBackState(out.getState(), exchange);
+
+            if (!isEnableAjax()) {
+
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 302);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+                httpOut.getHeaders().put("Location", jossoRedirLocation);
+
+            } else {
+
+                Html redir = this.createHtmlRedirectMessage(jossoRedirLocation,
+                        null,
+                        null,
+                        "");
+                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
+                        new String[]{"org.w3._1999.xhtml"});
+
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 200);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+
+                ByteArrayInputStream baos = new ByteArrayInputStream(marshalledHttpResponseBody.getBytes());
+                httpOut.setBody(baos);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 }

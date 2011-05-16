@@ -38,6 +38,7 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.w3._1999.xhtml.Html;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -240,11 +241,29 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
             copyBackState(out.getState(), exchange);
 
-            httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-            httpOut.getHeaders().put("Pragma", "no-cache");
-            httpOut.getHeaders().put("http.responseCode", 302);
-            httpOut.getHeaders().put("Content-Type", "text/html");
-            httpOut.getHeaders().put("Location", redirLocation);
+            if (!isEnableAjax()) {
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 302);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+                httpOut.getHeaders().put("Location", redirLocation);
+            } else {
+
+                Html redir = this.createHtmlRedirectMessage(redirLocation,
+                        null,
+                        null,
+                        "");
+                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
+                        new String[]{"org.w3._1999.xhtml"});
+
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 200);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+
+                ByteArrayInputStream baos = new ByteArrayInputStream(marshalledHttpResponseBody.getBytes());
+                httpOut.setBody(baos);
+            }
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
