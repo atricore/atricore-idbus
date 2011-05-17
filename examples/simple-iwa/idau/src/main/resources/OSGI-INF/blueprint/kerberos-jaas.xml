@@ -22,22 +22,7 @@
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
            xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0">
 
-    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-        <command name="spnego/init">
-            <action class="org.atricore.idbus.capabilities.spnego.jaas.KerberosServerInitCommand">
-            </action>
-        </command>
-    </command-bundle>
-
-    <!-- Allow usage of System properties, especially the karaf.base property -->
     <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]"/>
-
-    <!-- AdminConfig property place holder for the org.apache.karaf.jaas  -->
-    <cm:property-placeholder persistent-id="org.atricore.idbus.capabilities.spnego.jaas">
-        <cm:default-properties>
-            <cm:property name="encryption.encoding" value="hexadecimal"/>
-        </cm:default-properties>
-    </cm:property-placeholder>
 
     <jaas:config name="spnego">
         <jaas:module className="com.sun.security.auth.module.Krb5LoginModule" flags="required">
