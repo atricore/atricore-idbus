@@ -320,16 +320,12 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         Div div = (Div) body.getPOrH1OrH2().iterator().next();
 
-        Head head = html.getHead();
-
-        Meta meta = new Meta();
-        meta.setHttpEquiv("refresh");
-        meta.setContent("0;" + url);
-
-        head.getContent().add(meta);
+        body.setOnload("window.location.href='" + url + "';");
 
         Div formDiv = new Div();
-        //formDiv.getContent().add(form);
+        formDiv.setId("text");
+        formDiv.getClazz().add("text");
+
         div.getContent().add(formDiv);
 
         return html;
@@ -345,16 +341,12 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         Div div = (Div) body.getPOrH1OrH2().iterator().next();
 
-        Head head = html.getHead();
-
-        Meta meta = new Meta();
-        meta.setHttpEquiv("refresh");
-        meta.setContent("0;" + url);
-
-        head.getContent().add(meta);
+        body.setOnload("window.location.href='" + url+ "';");
 
         Div formDiv = new Div();
-        //formDiv.getContent().add(form);
+        formDiv.setId("text");
+        formDiv.getClazz().add("text");
+
         div.getContent().add(formDiv);
 
         return html;
@@ -434,6 +426,9 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         //body.getPOrH1OrH2().add(form);
         Div formDiv = new Div();
+        formDiv.setId("text");
+        formDiv.getClazz().add("text");
+
         formDiv.getContent().add(form);
         div.getContent().add(formDiv);
 
@@ -449,44 +444,21 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         Head head = new Head();
 
+        Title title = new Title();
+        title.setContent("JOSSO 2 - Processing ..."); // TODO : i18n
+
+        head.getContent().add(title);
+
         if (isEnableAjax()) {
 
-            Style style = new Style();
-            style.setType("text/css");
-            style.setContent(
-                    "        /*this is what we want the div to look like\n" +
-                    "        when it is not showing*/\n" +
-                    "        div.loading-invisible {\n" +
-                    "        /*make invisible*/\n" +
-                    "            display: none;\n" +
-                    "        }\n" +
-                    "\n" +
-                    "            /*this is what we want the div to look like\n" +
-                    "         when it IS showing*/\n" +
-                    "        div.loading-visible {\n" +
-                    "        /*make visible*/\n" +
-                    "        /*make visible*/\n" +
-                    "            display: block; /*set the div in the center of the screen*/\n" +
-                    "            position: absolute;\n" +
-                    "            top: 30%;\n" +
-                    "            left: 35%;\n" +
-                    "            width: 223px;\n" +
-                    "\n" +
-                    "            text-align: center;\n" +
-                    "\n" +
-                    "            /*in supporting browsers, make it\n" +
-                    "          a little transparent*/\n" +
-                    "            background: #fff;\n" +
-                    "            filter: alpha(opacity = 75); /* internet explorer */\n" +
-                    "            -khtml-opacity: 0.75; /* khtml, old safari */\n" +
-                    "            -moz-opacity: 0.75; /* mozilla, netscape */\n" +
-                    "            opacity: 0.75; /* fx, safari, opera */\n" +
-                    "            border-top: 1px solid #ddd;\n" +
-                    "            border-bottom: 1px solid #ddd;\n" +
-                    "        }");
+            Link css = new Link();
+            css.setHref("/idbus-ui/resources/css/loading.css");
 
+            css.getRel().add("stylesheet");
+            css.setType("text/css");
+            css.setMedia("screen, projector");
 
-            head.getContent().add(style);
+            head.getContent().add(css);
         }
 
         html.setHead(head);
@@ -494,27 +466,41 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         Body body = new Body();
 
         Div div = new Div();
-        div.setId("loading-visible");
-        div.getClazz().add("loading-visible");
+        div.setId("processing");
+        div.getClazz().add("processing");
 
         if (isEnableAjax()) {
-            Div logoDiv = new Div();
-            Img logoImg = new Img();
-            logoImg.setId("logoImg");
-            logoImg.setAlt("JOSSO 2");
-            logoImg.setSrc("/idbus-ui/resources/img/content/josso-loading-logo.jpg");
-            logoDiv.getContent().add(logoImg);
+            // To brand this, we need to replace images in IDBUS UI Bundle , can be improved though.
 
-            div.getContent().add(logoDiv);
+            {   // Loading div
+                Div loadingDiv = new Div();
+                loadingDiv.setId("processingBar");
+                loadingDiv.getClazz().add("processingBar");
 
-            Div loadingDiv = new Div();
-            Img loadingImg = new Img();
-            loadingImg.setId("loadingImg");
-            loadingImg.setAlt("Wait ...");
-            loadingImg.setSrc("/idbus-ui/resources/img/loading-01.gif");
-            logoDiv.getContent().add(loadingImg);
+                Img loadingImg = new Img();
+                loadingImg.setId("processingBarImg");
+                loadingImg.setAlt("Processing ...");
+                loadingImg.setSrc("/idbus-ui/resources/img/processing-02.gif");
+                loadingDiv.getContent().add(loadingImg);
 
-            div.getContent().add(loadingDiv);
+                div.getContent().add(loadingDiv);
+            }
+
+            {   // Logo div
+                Div logoDiv = new Div();
+                logoDiv.setId("processingLogo");
+                logoDiv.getClazz().add("processingLogo");
+
+                Img logoImg = new Img();
+                logoImg.setId("processingLogoImg");
+                logoImg.setAlt("JOSSO 2");
+                logoImg.setSrc("/idbus-ui/resources/img/content/processing-logo.jpg");
+                logoDiv.getContent().add(logoImg);
+
+                div.getContent().add(logoDiv);
+            }
+
+
         }
 
         body.getPOrH1OrH2().add(div);
@@ -536,7 +522,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         html.setHead(head);
         {
             Title t = new Title();
-            t.setContent("IDBus Error");
+            t.setContent("JOSSO 2 - Error"); // TODO : i18n
             head.getContent().add(t);
 
         }

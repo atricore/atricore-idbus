@@ -110,7 +110,7 @@ public class SamlR2LogMessageBuilder implements LogMessageBuilder {
                 logMsg.append("\n</SamlR2ClaimsResponse>");
 
             } else if (content instanceof oasis.names.tc.saml._1_0.protocol.ResponseType) {
-                logMsg.append(XmlUtils.marshallSamlR11Response((oasis.names.tc.saml._1_0.protocol.ResponseType) content, false));
+                logMsg.append(XmlUtils.marshalSamlR11Response((oasis.names.tc.saml._1_0.protocol.ResponseType) content, false));
             } else if (content == null) {
                 logger.warn("No Message content");
             } else {

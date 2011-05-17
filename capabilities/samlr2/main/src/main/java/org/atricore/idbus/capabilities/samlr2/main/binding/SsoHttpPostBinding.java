@@ -119,7 +119,7 @@ public class SsoHttpPostBinding extends AbstractMediationHttpBinding {
                     out.getRelayState(),
                     "JOSSOMessage",
                     "");
-            String marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "html",
+            String marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "xhtml",
                     new String[]{"org.w3._1999.xhtml"});
 
 

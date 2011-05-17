@@ -85,7 +85,7 @@ public class XmlUtils {
         Document doc = null;
         if (request.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
 
-            doc = marshalAsDom(
+            doc = marshalSamlR2AsDom(
                     request,
                     SAMLR2Constants.SAML_IDBUS_NS,
                     requestType,
@@ -94,7 +94,7 @@ public class XmlUtils {
 
         } else {
 
-            doc = marshalAsDom(
+            doc = marshalSamlR2AsDom(
                     request,
                     SAMLR2Constants.SAML_PROTOCOL_NS,
                     requestType,
@@ -112,7 +112,7 @@ public class XmlUtils {
         // Support IDBus SAMLR2 Extentions when marshalling
         if (request.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
 
-            marshalledRequest = marshal(
+            marshalledRequest = marshalSamlR2(
                     request,
                     SAMLR2Constants.SAML_IDBUS_NS,
                     requestType,
@@ -121,7 +121,7 @@ public class XmlUtils {
 
         } else {
 
-            marshalledRequest = marshal(
+            marshalledRequest = marshalSamlR2(
                     request,
                     SAMLR2Constants.SAML_PROTOCOL_NS,
                     requestType,
@@ -181,14 +181,14 @@ public class XmlUtils {
         // Support IDBus SAMLR2 Extentions when marshalling
         if (response.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
 
-            return XmlUtils.marshalAsDom(
+            return XmlUtils.marshalSamlR2AsDom(
                     response,
                     SAMLR2Constants.SAML_IDBUS_NS,
                     responseType,
                     new String[]{SAMLR2Constants.SAML_IDBUS_PKG}
             );
         } else {
-            return XmlUtils.marshalAsDom(
+            return XmlUtils.marshalSamlR2AsDom(
                     response,
                     SAMLR2Constants.SAML_PROTOCOL_NS,
                     responseType,
@@ -206,14 +206,14 @@ public class XmlUtils {
         // Support IDBus SAMLR2 Extentions when marshalling
         if (response.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
 
-            marshalledResponse = XmlUtils.marshal(
+            marshalledResponse = XmlUtils.marshalSamlR2(
                     response,
                     SAMLR2Constants.SAML_IDBUS_NS,
                     responseType,
                     new String[]{SAMLR2Constants.SAML_IDBUS_PKG}
             );
         } else {
-            marshalledResponse = XmlUtils.marshal(
+            marshalledResponse = XmlUtils.marshalSamlR2(
                     response,
                     SAMLR2Constants.SAML_PROTOCOL_NS,
                     responseType,
@@ -260,7 +260,7 @@ public class XmlUtils {
 
     public static String marshalSSORequest(SSORequestAbstractType request, String requestType, boolean encode) throws Exception {
 
-        String marshalledRequest = marshal(
+        String marshalledRequest = marshalSamlR2(
                 request,
                 SSOConstants.SSO_PROTOCOL_NS,
                 requestType,
@@ -299,7 +299,7 @@ public class XmlUtils {
 
     public static String marshalSSOResponse(SSOResponseType response,
                                             String responseType, boolean encode) throws Exception {
-        String marshalledResponse = XmlUtils.marshal(
+        String marshalledResponse = XmlUtils.marshalSamlR2(
                 response,
                 SSOConstants.SSO_PROTOCOL_NS,
                 responseType,
@@ -326,8 +326,8 @@ public class XmlUtils {
     }
 
     // SAML 1.1 Response
-    public static String marshallSamlR11Response(oasis.names.tc.saml._1_0.protocol.ResponseType response,
-                                                 boolean encode) throws Exception {
+    public static String marshalSamlR11Response(oasis.names.tc.saml._1_0.protocol.ResponseType response,
+                                                boolean encode) throws Exception {
         String type = response.getClass().getSimpleName();
         if (type.endsWith("Type"))
             type = type.substring(0, type.length() - 4);
@@ -339,7 +339,7 @@ public class XmlUtils {
                                                 String responseType, boolean encode) throws Exception {
 
         String marshalledResponse;
-        marshalledResponse = XmlUtils.marshal(
+        marshalledResponse = XmlUtils.marshalSamlR2(
                 response,
                 SAMLR11Constants.SAML_PROTOCOL_NS,
                 responseType,
@@ -395,10 +395,10 @@ public class XmlUtils {
 
     // JAXB Generic
 
-    public static String marshal(Object msg,
-                                 String msgQName,
-                                 String msgLocalName,
-                                 String[] userPackages) throws Exception {
+    public static String marshalSamlR2(Object msg,
+                                       String msgQName,
+                                       String msgLocalName,
+                                       String[] userPackages) throws Exception {
 
         JAXBContext jaxbContext = createJAXBContext(userPackages);
         JAXBElement jaxbRequest = new JAXBElement(new QName(msgQName, msgLocalName),
@@ -413,12 +413,6 @@ public class XmlUtils {
         Marshaller m = jaxbContext.createMarshaller();
 
         // TODO : What about non-sun XML Bind stacks!
-        //xmlStreamWriter.setPrefix("samlp", SAMLR2Constants.SAML_PROTOCOL_NS);
-        //xmlStreamWriter.setPrefix("saml", SAMLR2Constants.SAML_ASSERTION_NS);
-        //xmlStreamWriter.setPrefix("ds", "http://www.w3.org/2000/09/xmldsig#");
-        //xmlStreamWriter.setPrefix("enc", "http://www.w3.org/2001/04/xmlenc#");
-        //xmlStreamWriter.setPrefix("xsd", "http://www.w3.org/2001/XMLSchema");
-
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
                 new NamespacePrefixMapper() {
 
@@ -457,10 +451,31 @@ public class XmlUtils {
         return writer.toString();
     }
 
-    public static Document marshalAsDom(Object msg,
-                                        String msgQName,
-                                        String msgLocalName,
-                                        String[] userPackages) throws Exception {
+    public static String marshal(Object msg,
+                                       final String msgQName,
+                                       final String msgLocalName,
+                                       String[] userPackages) throws Exception {
+
+        JAXBContext jaxbContext = createJAXBContext(userPackages);
+        JAXBElement jaxbRequest = new JAXBElement(new QName(msgQName, msgLocalName),
+                msg.getClass(),
+                msg
+        );
+
+        Writer writer = new StringWriter();
+        XMLStreamWriter xmlStreamWriter = new NamespaceFilterXMLStreamWriter(writer);
+
+        // Support XMLDsig
+        Marshaller m = jaxbContext.createMarshaller();
+        m.marshal(jaxbRequest, xmlStreamWriter);
+
+        return writer.toString();
+    }
+
+    public static Document marshalSamlR2AsDom(Object msg,
+                                              String msgQName,
+                                              String msgLocalName,
+                                              String[] userPackages) throws Exception {
 
         // JAXB Element
         JAXBElement jaxbMsg = new JAXBElement(new QName(msgQName, msgLocalName), msg.getClass(), msg);
@@ -474,13 +489,6 @@ public class XmlUtils {
         XMLStreamWriter xmlStreamWriter = new NamespaceFilterXMLStreamWriter(writer);
 
         // TODO : What about non-sun XML Bind stacks!
-
-
-        //xmlStreamWriter.setPrefix("samlp", SAMLR2Constants.SAML_PROTOCOL_NS);
-        //xmlStreamWriter.setPrefix("saml", SAMLR2Constants.SAML_ASSERTION_NS);
-        //xmlStreamWriter.setPrefix("ds", "http://www.w3.org/2000/09/xmldsig#");
-        //xmlStreamWriter.setPrefix("enc", "http://www.w3.org/2001/04/xmlenc#");
-        //xmlStreamWriter.setPrefix("xsd", "http://www.w3.org/2001/XMLSchema");
 
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
                 new NamespacePrefixMapper() {
@@ -565,6 +573,6 @@ public class XmlUtils {
 
 
     public static Document marshalSamlR2AssertionAsDom(AssertionType assertion) throws Exception {
-        return marshalAsDom(assertion, SAMLR2Constants.SAML_ASSERTION_NS, "Assertion", new String[]{SAMLR2Constants.SAML_ASSERTION_PKG});
+        return marshalSamlR2AsDom(assertion, SAMLR2Constants.SAML_ASSERTION_NS, "Assertion", new String[]{SAMLR2Constants.SAML_ASSERTION_PKG});
     }
 }

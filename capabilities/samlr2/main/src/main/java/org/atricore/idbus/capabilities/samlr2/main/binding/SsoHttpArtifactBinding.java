@@ -164,7 +164,7 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
                         null,
                         "");
 
-                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
+                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "xhtml",
                         new String[]{"org.w3._1999.xhtml"});
 
                 httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");

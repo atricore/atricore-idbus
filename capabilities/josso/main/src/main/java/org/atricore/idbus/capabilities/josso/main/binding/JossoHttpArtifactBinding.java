@@ -160,7 +160,7 @@ public class JossoHttpArtifactBinding extends AbstractMediationHttpBinding {
                         null,
                         null,
                         (String) msgValue);
-                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
+                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "xhtml",
                         new String[]{"org.w3._1999.xhtml"});
 
                 httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");

@@ -1,22 +1,40 @@
+div.processing {
+    /*make visible*/
+    /*make visible*/
+    display: block; /*set the div in the center of the screen*/
+    width: 220px;
+    height: 90px;
 
-#loading {
-    vertical-align:middle;
-    padding: 10px 10px 10px 10px;
-}
-
-#loadingImg {
-    padding: 5px 0px 10px 0px;
-}
-
-#loadingText {
-    padding: 10px 0px 0px 10px;
     text-align: center;
-    vertical-align: middle;
+
+    /*in supporting browsers, make it
+  a little transparent*/
+    background: #fff;
+
+    filter: alpha(opacity = 75); /* internet explorer */
+    -khtml-opacity: 0.75; /* khtml, old safari */
+    -moz-opacity: 0.75; /* mozilla, netscape */
+    opacity: 0.75; /* fx, safari, opera */
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+    margin: 0px auto;
 }
 
-#loadingProgress {
+div.processingLogo {
+
+}
+
+div.processingBar {
+    vertical-align: middle;
+    margin-top: 5%;
+}
+
+div.processingText {
+    font-family: "Trebuchet MS", Verdana, Arial,fantasy;
+    font-size: 70%;
+}
+
+body {
+    background-color: #eee;
     text-align: center;
-    vertical-align: middle;
-    padding: 10px 0px 0px 10px;
 }
-

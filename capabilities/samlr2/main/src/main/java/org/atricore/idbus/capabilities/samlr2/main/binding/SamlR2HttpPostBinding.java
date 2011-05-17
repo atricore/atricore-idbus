@@ -190,7 +190,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
                     relayState,
                     msgName,
                     (String) msgValue);
-            String marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "html",
+            String marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "xhtml",
                     new String[]{"org.w3._1999.xhtml"});
 
             // ------------------------------------------------------------

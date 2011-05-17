@@ -22,7 +22,6 @@
 package org.atricore.idbus.capabilities.samlr2.main.binding;
 
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
-import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -253,7 +252,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
                         null,
                         null,
                         "");
-                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
+                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "xhtml",
                         new String[]{"org.w3._1999.xhtml"});
 
                 httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
