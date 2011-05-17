@@ -84,7 +84,7 @@ public class DirectoryServiceAuthenticationTransformer extends AbstractTransform
             if (directoryAuthnService.getPasswordPolicy().equals("ldap-rfc-draft")) {
                 setPropertyValue(ldapBindCredStore, "passwordPolicySupport", true);
             } else if (directoryAuthnService.getPasswordPolicy().equalsIgnoreCase("none")) {
-                setPropertyValue(ldapBindCredStore, "passwordPolicySupport", true);
+                setPropertyValue(ldapBindCredStore, "passwordPolicySupport", false);
             } else {
                 logger.warn("Unknown selected password policy support for Directory Authentication Service : " +
                         directoryAuthnService.getPasswordPolicy());
