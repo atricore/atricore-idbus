@@ -663,6 +663,9 @@
         </property>
     </bean>
     <bean class="org.atricore.idbus.capabilities.spnego.SpnegoMediator" name="idp1-spnego-claims-mediator">
+        <property name="bindingFactory">
+            <bean class="org.atricore.idbus.capabilities.spnego.SpnegoBindingFactory"/>
+        </property>
         <property name="logMessages">
             <value>true</value>
         </property>
@@ -768,5 +771,14 @@
             <bean class="org.atricore.idbus.kernel.main.store.identity.SimpleIdentityStoreKeyAdapter"/>
         </property>
     </bean>
-    <ns2:reference timeout="60" cardinality="1..1" interface="org.atricore.idbus.kernel.main.store.AbstractStore" id="idp1-identity-store"/>
+
+    <!-- ================================================================== -->
+    <!-- Memory Identity Store with non-bind authentication                 -->
+    <!-- ================================================================== -->
+    <bean name="idp1-identity-store"
+            class="org.atricore.idbus.idojos.memoryidentitystore.MemoryIdentityStore">
+        <property name="usersFileName" value="classpath:org/atricore/idbus/examples/idau/idp1/atricore-users.xml"/>
+        <property name="credentialsFileName" value="classpath:org/atricore/idbus/examples/idau/idp1/atricore-credentials.xml"/>
+    </bean>
 </beans>
+

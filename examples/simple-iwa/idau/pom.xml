@@ -10,12 +10,12 @@
     <parent>
         <groupId>org.atricore.idbus.examples.simple-iwa</groupId>
         <artifactId>org.atricore.idbus.examples.simple-iwa.project</artifactId>
-        <version>1.0.2</version>
+        <version>1.1.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.examples.simple-iwa</groupId>
     <artifactId>org.atricore.idbus.examples.simple-iwa.idau</artifactId>
-    <version>1.0.2</version>
+    <version>1.1.1-SNAPSHOT</version>
     <name>Id Appliance : simple-iwa :: Id Appliance Unit : idau</name>
     <description>Simple Integrated Windows Authentication Identity Appliance</description>
     <packaging>bundle</packaging>
@@ -247,7 +247,7 @@
                         <Private-Package>!*</Private-Package>
 
                         <Export-Package>
-                            org.atricore.idbus.examples.simple-iwa.idau; version="1.0.0"
+                            org.atricore.idbus.examples.simple-iwa.idau; version="1.1.1-SNAPSHOT"
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
