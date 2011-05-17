@@ -310,17 +310,14 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     // -------------------------------------------------------------
     // HTML Utils
     // -------------------------------------------------------------
-    protected Html createHtmlRedirectMessage(String url,
-                                         String relayState,
-                                         String msgName,
-                                         String msgValue) throws Exception {
+    protected Html createHtmlRedirectMessage(String location) throws Exception {
 
         Html html = createHtmlBaseMessage();
         Body body = html.getBody();
 
         Div div = (Div) body.getPOrH1OrH2().iterator().next();
 
-        body.setOnload("window.location.href='" + url + "';");
+        body.setOnload("window.location.href='" + location + "';");
 
         Div formDiv = new Div();
         formDiv.setId("text");
@@ -332,16 +329,13 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
     }
 
-    protected Html createHtmlArtifactMessage(String url,
-                                         String relayState,
-                                         String msgName,
-                                         String msgValue) throws Exception {
+    protected Html createHtmlArtifactMessage(String location) throws Exception {
         Html html = createHtmlBaseMessage();
         Body body = html.getBody();
 
         Div div = (Div) body.getPOrH1OrH2().iterator().next();
 
-        body.setOnload("window.location.href='" + url+ "';");
+        body.setOnload("window.location.href='" + location + "';");
 
         Div formDiv = new Div();
         formDiv.setId("text");
@@ -480,7 +474,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                 Img loadingImg = new Img();
                 loadingImg.setId("processingBarImg");
                 loadingImg.setAlt("Processing ...");
-                loadingImg.setSrc("/idbus-ui/resources/img/processing-02.gif");
+                loadingImg.setSrc("/idbus-ui/resources/img/processing-03.gif");
                 loadingDiv.getContent().add(loadingImg);
 
                 div.getContent().add(loadingDiv);

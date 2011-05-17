@@ -129,10 +129,7 @@ public class SsoHttpRedirectBinding extends AbstractMediationHttpBinding {
                 httpOut.getHeaders().put("Location", ssoRedirLocation);
             } else {
 
-                Html redir = this.createHtmlRedirectMessage(ssoRedirLocation,
-                        null,
-                        null,
-                        "");
+                Html redir = this.createHtmlRedirectMessage(ssoRedirLocation);
                 String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "xhtml",
                         new String[]{"org.w3._1999.xhtml"});
 

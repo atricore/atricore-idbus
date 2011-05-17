@@ -241,10 +241,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
                 httpOut.getHeaders().put("Location", redirLocation);
             } else {
 
-                Html redir = this.createHtmlArtifactMessage(redirLocation,
-                        null,
-                        null,
-                        (String) msgValue);
+                Html redir = this.createHtmlArtifactMessage(redirLocation);
                 String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "xhtml",
                         new String[]{"org.w3._1999.xhtml"});
 

@@ -128,10 +128,7 @@ public class JossoHttpRedirectBinding extends AbstractMediationHttpBinding {
 
             } else {
 
-                Html redir = this.createHtmlRedirectMessage(jossoRedirLocation,
-                        null,
-                        null,
-                        "");
+                Html redir = this.createHtmlRedirectMessage(jossoRedirLocation);
                 String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "xhtml",
                         new String[]{"org.w3._1999.xhtml"});
 

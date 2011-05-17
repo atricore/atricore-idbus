@@ -156,10 +156,8 @@ public class JossoHttpArtifactBinding extends AbstractMediationHttpBinding {
             } else {
 
 
-                Html redir = this.createHtmlArtifactMessage(artifactLocation,
-                        null,
-                        null,
-                        (String) msgValue);
+                Html redir = this.createHtmlArtifactMessage(artifactLocation);
+
                 String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "xhtml",
                         new String[]{"org.w3._1999.xhtml"});
 

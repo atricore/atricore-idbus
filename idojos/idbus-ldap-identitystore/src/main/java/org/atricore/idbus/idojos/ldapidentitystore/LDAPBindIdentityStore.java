@@ -202,7 +202,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                 if (logger.isTraceEnabled())
                     logger.trace("LDAP Bind with user credentials succeeded");
 
-                ctx.close();
+
             } catch (AuthenticationException e) {
 
                 if (logger.isDebugEnabled())
@@ -212,12 +212,15 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
             } finally {
 
-                  if (isPasswordPolicySupport()) {
+                if (isPasswordPolicySupport()) {
                     // Check password policy LDAP Control
                     PasswordPolicyResponseControl ppolicyCtrl = decodePasswordPolicyControl(ctx.getResponseControls());
-                    addPasswordPolicyToBindCtx(ppolicyCtrl, bindCtx);
+                    if (ppolicyCtrl != null)
+                        addPasswordPolicyToBindCtx(ppolicyCtrl, bindCtx);
 
                 }
+
+                ctx.close();
             }
 
             return true;

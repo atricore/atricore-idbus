@@ -775,8 +775,16 @@ public class LDAPIdentityStore extends AbstractStore  {
         String protocol = env.getProperty(Context.SECURITY_PROTOCOL);
         String providerURL = getProviderUrl();
         // Use localhost if providerUrl not set
-        if (providerURL == null)
+        if (providerURL == null) {
             providerURL = "ldap://localhost:" + ((protocol != null && protocol.equals("ssl")) ? "636" : "389");
+        } else {
+            // In case user configured provided URL
+            if (providerURL.startsWith("ldaps")) {
+                protocol = "ssl";
+                env.setProperty(Context.SECURITY_PROTOCOL, "ssl");
+            }
+
+        }
 
         env.setProperty(Context.PROVIDER_URL, providerURL);
 

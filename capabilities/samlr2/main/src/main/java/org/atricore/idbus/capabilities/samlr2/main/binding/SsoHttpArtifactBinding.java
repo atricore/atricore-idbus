@@ -159,10 +159,7 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
                 httpOut.getHeaders().put("Location", artifactLocation);
             } else {
 
-                Html redir = this.createHtmlArtifactMessage(artifactLocation,
-                        null,
-                        null,
-                        "");
+                Html redir = this.createHtmlArtifactMessage(artifactLocation);
 
                 String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "xhtml",
                         new String[]{"org.w3._1999.xhtml"});
