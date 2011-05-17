@@ -44,6 +44,9 @@ public class SpnegoMediator extends AbstractCamelMediator {
 
     private static final Log logger = LogFactory.getLog(SpnegoMediator.class);
 
+    private String principal;
+    private String realm;
+
     public SpnegoMediator() {
         logger.info("SpnegoMediator Instantiated");
     }
@@ -152,6 +155,23 @@ public class SpnegoMediator extends AbstractCamelMediator {
                     channel.getName() + " " + channel.getClass().getName());
         }
     }
+
+    public String getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(String principal) {
+        this.principal = principal;
+    }
+
+    public String getRealm() {
+        return realm;
+    }
+
+    public void setRealm(String realm) {
+        this.realm = realm;
+    }
+
 
     /**
      * @org.apache.xbean.Property alias="artifact-queue-mgr"

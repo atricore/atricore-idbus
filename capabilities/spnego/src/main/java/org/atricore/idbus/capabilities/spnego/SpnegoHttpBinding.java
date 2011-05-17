@@ -81,8 +81,6 @@ public class SpnegoHttpBinding extends AbstractMediationHttpBinding {
 
 
                 logger.debug("Token received in Authorization Header (base64) : " + base64token);
-                logger.debug("First token byte : " + binaryToken[0]);
-
                 sm = new AuthenticatedRequest(binaryToken);
             } else {
                  throw new UnsupportedOperationException("Only 'Negotiate' is supported:" + authorization);

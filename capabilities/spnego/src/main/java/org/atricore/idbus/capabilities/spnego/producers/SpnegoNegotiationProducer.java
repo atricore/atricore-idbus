@@ -25,10 +25,7 @@ import org.apache.camel.Endpoint;
 import org.apache.commons.io.HexDump;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.spnego.AuthenticatedRequest;
-import org.atricore.idbus.capabilities.spnego.UnauthenticatedRequest;
-import org.atricore.idbus.capabilities.spnego.RequestToken;
-import org.atricore.idbus.capabilities.spnego.SpnegoMessage;
+import org.atricore.idbus.capabilities.spnego.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
@@ -56,12 +53,12 @@ import java.security.PrivilegedAction;
  */
 public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediationExchange> {
 
-    private static final Log logger = LogFactory.getLog( SpnegoNegotiationProducer.class );
+    private static final Log logger = LogFactory.getLog(SpnegoNegotiationProducer.class);
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
     public SpnegoNegotiationProducer(Endpoint endpoint) {
-        super( endpoint );
+        super(endpoint);
     }
 
     @Override
@@ -79,8 +76,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
         if (content instanceof UnauthenticatedRequest) {
             spnegoResponse = doProcessUnauthenticatedRequest(exchange, (UnauthenticatedRequest) content);
-        } else
-        if (content instanceof AuthenticatedRequest) {
+        } else if (content instanceof AuthenticatedRequest) {
             spnegoResponse = doProcessAuthenticatedRequest(exchange, (AuthenticatedRequest) content);
         }
 
@@ -105,13 +101,15 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
     }
 
     protected SpnegoMessage doProcessAuthenticatedRequest(CamelMediationExchange exchange, AuthenticatedRequest content) {
+        final SpnegoMediator spnegoMediator = (SpnegoMediator) channel.getIdentityMediator();
+
         logger.info("Relaying SPNEGO token [" + content.getTokenValue() + "]");
         try {
-            LoginContext loginContext = new LoginContext("spnego", new CallbackHandler() {
+            LoginContext loginContext = new LoginContext(spnegoMediator.getRealm(), new CallbackHandler() {
                 public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
                     for (int i = 0; i < callbacks.length; i++) {
                         if (callbacks[i] instanceof NameCallback) {
-                            ((NameCallback) callbacks[i]).setName("atricore/jossotest@W2K3DEV.ATRICORE.COM");
+                            ((NameCallback) callbacks[i]).setName(spnegoMediator.getPrincipal());
                         } else {
                             throw new UnsupportedCallbackException(callbacks[i]);
                         }
@@ -120,7 +118,11 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
             });
             loginContext.login();
             Subject kerberosSubject = loginContext.getSubject();
-            new SecurityContextEstablisher().acceptKerberosServiceTicket(content.getTokenValue(), kerberosSubject);
+            new SecurityContextEstablisher().acceptKerberosServiceTicket(
+                    content.getTokenValue(),
+                    kerberosSubject,
+                    spnegoMediator.getPrincipal()
+            );
         } catch (LoginException e) {
             throw new SecurityException("Authentication failed", e);
         }
@@ -128,9 +130,10 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
         return null;
     }
 
-    class SecurityContextEstablisher implements PrivilegedAction  {
+    class SecurityContextEstablisher implements PrivilegedAction {
 
         private byte[] kerberosServiceTicket;
+        private String principal;
         private boolean loginOk = false;
 
         /**
@@ -138,8 +141,9 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
          *
          * @param kerberosSubject the kerberos subject under which the authentication logic is ran
          */
-        void acceptKerberosServiceTicket(byte[] kerberosServiceTicket, Subject kerberosSubject) {
+        void acceptKerberosServiceTicket(byte[] kerberosServiceTicket, Subject kerberosSubject, String principal) {
             this.kerberosServiceTicket = kerberosServiceTicket;
+            this.principal = principal;
             Subject.doAs(kerberosSubject, this);
         }
 
@@ -158,12 +162,12 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
             try {
                 GSSManager manager = GSSManager.getInstance();
-                Oid kerberos = new Oid("1.2.840.113554.1.2.2");
+                Oid spnego = new Oid("1.3.6.1.5.5.2");
 
-                GSSName serverGSSName = manager.createName("atricore/jossotest@W2K3DEV.ATRICORE.COM", null);
+                GSSName serverGSSName = manager.createName(principal, null);
                 GSSCredential serverGSSCreds = manager.createCredential(serverGSSName,
                         GSSCredential.INDEFINITE_LIFETIME,
-                        kerberos,
+                        spnego,
                         GSSCredential.ACCEPT_ONLY);
 
                 serverGSSContext = manager.createContext(serverGSSCreds);
@@ -175,7 +179,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
                 loginOk = true;
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 HexDump.dump(outputToken, 0, baos, 0);
-                logger.debug("Kerberos Service Ticket Successfully relayed (hex) : " + baos.toString() );
+                logger.debug("Kerberos Service Ticket Successfully relayed (hex) : " + baos.toString());
                 return outputToken;
             } catch (Exception e) {
                 logger.debug("Error creating security context", e);
