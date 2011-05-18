@@ -548,7 +548,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                     {
                         Img atcLogo = new Img();
                         atcLogo.setId("waitLogo");
-                        atcLogo.setSrc("/idbus-ui/resources/img/content/atricore-logo.png");
+                        atcLogo.setSrc("/idbus-ui/resources/img/content/atricore-logo-2.png");
 
                         Div waitBox = new Div();
                         waitBox.setId("waitBox");
@@ -566,6 +566,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                             Br br = new Br();
                             processingP.getContent().add(br);
                             processingP.getContent().add("You'll get redirected shortly, please wait ..."); // TODO : i18n
+                            processingP.getContent().add(br);
                             processingP.getContent().add(br);
 
                             waitBox.getContent().add(h1);
