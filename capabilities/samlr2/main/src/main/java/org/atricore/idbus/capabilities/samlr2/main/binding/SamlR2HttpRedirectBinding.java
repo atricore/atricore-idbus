@@ -249,7 +249,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             } else {
 
                 Html redir = this.createHtmlRedirectMessage(redirLocation);
-                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "xhtml",
+                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
                         new String[]{"org.w3._1999.xhtml"});
 
                 httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");

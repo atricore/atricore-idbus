@@ -115,11 +115,12 @@ public class SsoHttpPostBinding extends AbstractMediationHttpBinding {
             Message httpOut = exchange.getOut();
             Message httpIn = exchange.getIn();
 
+            // TODO : Add 'Ajax' support
             Html post = this.createHtmlPostMessage(this.buildHttpTargetLocation(httpIn, ed),
                     out.getRelayState(),
                     "JOSSOMessage",
                     "");
-            String marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "xhtml",
+            String marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "html",
                     new String[]{"org.w3._1999.xhtml"});
 
 

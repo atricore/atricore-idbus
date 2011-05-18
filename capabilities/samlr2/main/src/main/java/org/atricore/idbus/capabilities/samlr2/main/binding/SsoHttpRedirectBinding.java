@@ -130,7 +130,7 @@ public class SsoHttpRedirectBinding extends AbstractMediationHttpBinding {
             } else {
 
                 Html redir = this.createHtmlRedirectMessage(ssoRedirLocation);
-                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "xhtml",
+                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
                         new String[]{"org.w3._1999.xhtml"});
 
 
