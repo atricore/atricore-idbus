@@ -35,6 +35,12 @@
                 <log-property-errors>true</log-property-errors>
             </serialization>
         </channel>
+        <channel ref="my-secure-amf">
+            <serialization>
+                <log-property-errors>true</log-property-errors>
+            </serialization>
+        </channel>
+
     </default-channels>
 
 
