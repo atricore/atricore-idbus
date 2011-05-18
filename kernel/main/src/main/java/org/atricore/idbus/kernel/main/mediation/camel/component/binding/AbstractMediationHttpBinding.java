@@ -326,7 +326,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                 "       Event.observe(window, 'load', function() {\n" +
                         "                window.setTimeout(function() {\n" +
                         "                    window.location.href='" + location + "';\n" +
-                        "                }, 1000);\n" +
+                        "                }, 100);\n" +
                         "            });");
 
 
@@ -348,7 +348,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                 "       Event.observe(window, 'load', function() {\n" +
                         "                window.setTimeout(function() {\n" +
                         "                    window.location.href='" + location + "';\n" +
-                        "                }, 1000);\n" +
+                        "                }, 100);\n" +
                         "            });");
 
         pageDiv.getContent().add(redirectJs);
@@ -405,7 +405,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             submitJs.setType("text/javascript");
             submitJs.setContent("              Event.observe(window, 'load', \n" +
                     "                                function() {\n" +
-                    "                                    window.setTimeout(function() { document.forms.postbinding.submit(); }, 1000);\n" +
+                    "                                    window.setTimeout(function() { document.forms.postbinding.submit(); }, 100);\n" +
                     "                                }\n" +
                     "                        );");
 
