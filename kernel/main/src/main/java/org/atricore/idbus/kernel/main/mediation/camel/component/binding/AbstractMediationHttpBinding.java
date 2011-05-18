@@ -372,7 +372,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
             form.setMethod("post");
             form.setAction(url);
-            form.setId("post-bind");
+            form.setId("postbinding");
             form.setEnctype("application/x-www-form-urlencoded");
 
             Div fields = new Div();
@@ -405,7 +405,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             submitJs.setType("text/javascript");
             submitJs.setContent("              Event.observe(window, 'load', \n" +
                     "                                function() {\n" +
-                    "                                    window.setTimeout(function() { document.forms.post-bind.submit(); }, 1000);\n" +
+                    "                                    window.setTimeout(function() { document.forms.postbinding.submit(); }, 1000);\n" +
                     "                                }\n" +
                     "                        );");
 
@@ -426,7 +426,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
             form.setMethod("post");
             form.setAction(url);
-            form.setId("post-bind");
+            form.setId("postbinding");
             form.setEnctype("application/x-www-form-urlencoded");
 
             {
@@ -480,7 +480,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             }
 
             // Part of post binding
-            body.setOnload("document.forms.post-bind.submit();");
+            body.setOnload("document.forms.postbinding.submit();");
 
             pageDiv.getContent().add(form);
         }
