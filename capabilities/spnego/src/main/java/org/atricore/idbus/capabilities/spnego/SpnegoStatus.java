@@ -19,28 +19,41 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.kernel.main.authn;
+package org.atricore.idbus.capabilities.spnego;
 
 /**
- * Some constants used by frontchannel http.
- *
- * @author <a href="mailto:sgonzalez@josso.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: Constants.java 1168 2009-04-27 20:18:19Z ajadzinsky $
+ * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
+ * @version $Id$
  */
-
-public interface Constants  {
+public enum SpnegoStatus {
 
     /**
-     * Reqeuest parameter representing an SSO command.
-     * Value : sso_cmd
+     * HTTP Response Code <b>401</b>.
      */
-    public static final String PASSWORD_NS = "urn:org:atricore:idbus:kernel:main:authn:pwd";
-
-    public static final String PASSCODE_NS = "urn:org:atricore:idbus:kernel:main:authn:passcode";
-
-    public static final String TICKET_NS = "urn:org:atricore:idbus:kernel:main:authn:ticket";
-
-    public static final String REMEMBERME_NS = "urn:org:atricore:idbus:kernel:main:authn:remember-me";
+     UNAUTHORIZED(401);
 
 
+    private int value;
+
+    SpnegoStatus(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return "" + value;
+    }
+
+    public static SpnegoStatus asEnum(int value) {
+        for (SpnegoStatus b : values()) {
+            if (b.getValue() == value)
+                return b;
+        }
+
+        throw new IllegalArgumentException("Invalid Spnego Status '" + value + "'");
+    }
 }

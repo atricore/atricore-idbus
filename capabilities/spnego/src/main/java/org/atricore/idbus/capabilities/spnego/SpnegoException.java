@@ -19,28 +19,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.kernel.main.authn;
+package org.atricore.idbus.capabilities.spnego;
 
 /**
- * Some constants used by frontchannel http.
- *
- * @author <a href="mailto:sgonzalez@josso.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: Constants.java 1168 2009-04-27 20:18:19Z ajadzinsky $
+ * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
+ * @version $Id$
  */
+public class SpnegoException extends Exception {
 
-public interface Constants  {
+    public SpnegoException() {
+        super();
+    }
 
-    /**
-     * Reqeuest parameter representing an SSO command.
-     * Value : sso_cmd
-     */
-    public static final String PASSWORD_NS = "urn:org:atricore:idbus:kernel:main:authn:pwd";
+    public SpnegoException(String message) {
+        super(message);
+    }
 
-    public static final String PASSCODE_NS = "urn:org:atricore:idbus:kernel:main:authn:passcode";
+    public SpnegoException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-    public static final String TICKET_NS = "urn:org:atricore:idbus:kernel:main:authn:ticket";
-
-    public static final String REMEMBERME_NS = "urn:org:atricore:idbus:kernel:main:authn:remember-me";
-
-
+    public SpnegoException(Throwable cause) {
+        super(cause);
+    }
 }

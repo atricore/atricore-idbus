@@ -45,7 +45,7 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
 
     private static final Log logger = LogFactory.getLog(SamlR2BindingFactory.class);
 
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
