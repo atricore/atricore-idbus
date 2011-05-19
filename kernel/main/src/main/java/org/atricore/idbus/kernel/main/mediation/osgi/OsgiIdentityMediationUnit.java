@@ -76,7 +76,7 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
             for (Channel channel : channels) {
 
                 if (channel.getUnitContainer() == null) {
-                    logger.error("Channel " + channel.getName() + " ["+channel.getClass().getSimpleName()+"] does not have a mediation unitContainer!");
+                    logger.debug("Channel " + channel.getName() + " ["+channel.getClass().getSimpleName()+"] does not have a mediation unitContainer!");
                     continue;
                 }
                 if (channel.getName() == null) {

@@ -417,7 +417,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                                 if (attributeValue instanceof String ) {
 
                                     if (logger.isDebugEnabled()) {
-                                        logger.debug("Adding Attribute Statement to IDP Subject " +
+                                        logger.debug("Adding String Attribute Statement to IDP Subject " +
                                                 attr.getName() + ":" +
                                                 attr.getNameFormat() + "=" +
                                                 attr.getAttributeValue()) ;
@@ -427,6 +427,23 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                                             new SubjectAttribute(
                                                 attr.getName(),
                                                 (String) attributeValue
+                                            )
+
+                                    );
+
+                                } else if (attributeValue instanceof Integer) {
+
+                                    if (logger.isDebugEnabled()) {
+                                        logger.debug("Adding Integer Attribute Value to IDP Subject " +
+                                                attr.getName() + ":" +
+                                                attr.getNameFormat() + "=" +
+                                                attr.getAttributeValue()) ;
+                                    }
+
+                                    outSubject.getPrincipals().add(
+                                            new SubjectAttribute(
+                                                attr.getName(),
+                                                (Integer) attributeValue
                                             )
 
                                     );

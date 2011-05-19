@@ -1,10 +1,13 @@
 package org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.directory.shared.asn1.Asn1Object;
 import org.apache.directory.shared.asn1.ber.Asn1Decoder;
 import org.apache.directory.shared.asn1.codec.DecoderException;
 import org.apache.directory.shared.ldap.codec.controls.ControlDecoder;
 import org.apache.directory.shared.ldap.message.control.Control;
+import org.apache.directory.shared.ldap.util.StringTools;
 
 import java.nio.ByteBuffer;
 
@@ -13,6 +16,9 @@ import java.nio.ByteBuffer;
  */
 public class PasswordPolicyControlDecoder extends Asn1Decoder implements ControlDecoder
 {
+
+    private static final Log logger = LogFactory.getLog(PasswordPolicyControlDecoder.class);
+
     /** An instance of this decoder */
     private static final Asn1Decoder decoder = new Asn1Decoder();
 
@@ -29,6 +35,10 @@ public class PasswordPolicyControlDecoder extends Asn1Decoder implements Control
     public Asn1Object decode( byte[] controlBytes, Control control ) throws DecoderException
     {
         ByteBuffer bb = ByteBuffer.wrap( controlBytes );
+
+        if (logger.isTraceEnabled())
+            logger.trace("Decoding LDAP Password Policy control : " +  StringTools.dumpBytes(controlBytes));
+
         PasswordPolicyControlContainer container = new PasswordPolicyControlContainer();
         container.setPasswordPolicyResponseControl((PasswordPolicyResponseControl) control);
         decoder.decode( bb, container );

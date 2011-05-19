@@ -30,10 +30,7 @@ import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.core.AttributeNameFormat;
 import org.atricore.idbus.capabilities.samlr2.support.profiles.DCEPACAttributeDefinition;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
-import org.atricore.idbus.kernel.main.authn.SSONameValuePair;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcement;
-import org.atricore.idbus.kernel.main.authn.SSORole;
-import org.atricore.idbus.kernel.main.authn.SSOUser;
+import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
@@ -101,7 +98,11 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSAMLR2Assertion
         for (SSOPolicyEnforcement ssoPolicyEnforcement : ssoPolicyEnforcements) {
             AttributeType attrPolicy = new AttributeType();
 
-            attrPolicy.setName(ssoPolicyEnforcement.getName());
+            if (ssoPolicyEnforcement instanceof SSOPasswordPolicyEnforcement)
+                attrPolicy.setName(SAMLR2Constants.SSOPOLICY_ENF_NS + ":password:" + ssoPolicyEnforcement.getName());
+            else
+                attrPolicy.setName(SAMLR2Constants.SSOPOLICY_ENF_NS + ":enforcement:" + ssoPolicyEnforcement.getName());
+
             attrPolicy.setNameFormat(AttributeNameFormat.URI.getValue());
 
             if (ssoPolicyEnforcement.getValues().size() > 0) {
