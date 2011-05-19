@@ -70,6 +70,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
         Object content = in.getMessage().getContent();
 
         SpnegoMessage spnegoResponse = null;
+        IdentityMediationEndpoint targetEndpoint = endpoint;
 
         if (logger.isDebugEnabled())
             logger.info("doProcess() - Received SPNEGO Message = " + content);
@@ -79,37 +80,8 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
             SamlR2ClaimsRequest claimsRequest = (SamlR2ClaimsRequest) content;
             in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", claimsRequest);
             spnegoResponse = doProcessClaimsRequest(exchange, claimsRequest);
+            targetEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_NEGOTIATON.getValue());
         } else
-        if (content instanceof InitiateSpnegoNegotiation) {
-            InitiateSpnegoNegotiation unauthenticatedRequest = (InitiateSpnegoNegotiation) content;
-            spnegoResponse = doProcessInitiateRequest(exchange, unauthenticatedRequest);
-        }
-
-        IdentityMediationEndpoint initiateEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP.getValue());
-        EndpointDescriptor ed = new EndpointDescriptorImpl(initiateEndpoint.getName(),
-                initiateEndpoint.getType(), initiateEndpoint.getBinding(), null, null);
-        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                spnegoResponse,
-                null,
-                null,
-                ed,
-                in.getMessage().getState()));
-        exchange.setOut(out);
-    }
-
-    @Override
-    protected void doProcessResponse(CamelMediationExchange exchange) throws Exception {
-        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-
-        Object content = in.getMessage().getContent();
-
-        SpnegoMessage spnegoResponse = null;
-
-        if (logger.isDebugEnabled())
-            logger.info("doProcessResponse() - Received SPNEGO Message = " + content);
-
-
         if (content instanceof UnauthenticatedRequest) {
             spnegoResponse = doProcessUnauthenticatedRequest(exchange, (UnauthenticatedRequest) content);
         } else
@@ -117,9 +89,8 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
             spnegoResponse = doProcessAuthenticatedRequest(exchange, (AuthenticatedRequest) content);
         }
 
-        // Send spnegoResponse back.
-        EndpointDescriptor ed = new EndpointDescriptorImpl(endpoint.getName(),
-                endpoint.getType(), endpoint.getBinding(), null, null);
+        EndpointDescriptor ed = new EndpointDescriptorImpl(targetEndpoint.getName(),
+                targetEndpoint.getType(), targetEndpoint.getBinding(), null, null);
 
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 spnegoResponse,
@@ -127,33 +98,18 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
                 null,
                 ed,
                 in.getMessage().getState()));
-
         exchange.setOut(out);
     }
-
 
     protected SpnegoMessage doProcessClaimsRequest(CamelMediationExchange exchange, ClaimsRequest claimsRequest) throws Exception {
         IdentityMediationEndpoint spnegoHttpEndpoint = null;
 
-        spnegoHttpEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP.getValue());
+        spnegoInitiatorEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_INITIATOR.getValue());
 
         if (spnegoHttpEndpoint != null) {
-            return new InitiateSpnegoNegotiation(channel.getLocation() + spnegoHttpEndpoint.getLocation());
+            return new InitiateSpnegoNegotiation(channel.getLocation() + spnegoInitiatorEndpoint.getLocation());
         } else {
-            throw new SpnegoException("No SPNEGO/HTTP endpoint defined for claim channel " + channel.getName());
-        }
-
-    }
-
-    protected SpnegoMessage doProcessInitiateRequest(CamelMediationExchange exchange, InitiateSpnegoNegotiation content) throws Exception {
-        IdentityMediationEndpoint spnegoHttpEndpoint = null;
-
-        spnegoHttpEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP.getValue());
-
-        if (spnegoHttpEndpoint != null) {
-            return new InitiateSpnegoNegotiation(channel.getLocation() + spnegoHttpEndpoint.getResponseLocation());
-        } else {
-            throw new SpnegoException("No SPNEGO/HTTP endpoint defined for claim channel " + channel.getName());
+            throw new SpnegoException("No SPNEGO/Initiator endpoint defined for claim channel " + channel.getName());
         }
     }
 
@@ -341,3 +297,4 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
     }
 
 }
+
