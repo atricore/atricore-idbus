@@ -22,7 +22,6 @@
 package org.atricore.idbus.capabilities.spnego.producers;
 
 import org.apache.camel.Endpoint;
-import org.apache.commons.httpclient.RedirectException;
 import org.apache.commons.io.HexDump;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,11 +30,9 @@ import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsResponse;
 import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.spnego.*;
-import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
@@ -47,17 +44,8 @@ import org.ietf.jgss.*;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 
 import javax.security.auth.Subject;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.security.PrivilegedAction;
-import java.util.Collection;
 
 
 /**
@@ -76,7 +64,6 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
-
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
@@ -88,21 +75,25 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
             logger.info("doProcess() - Received SPNEGO Message = " + content);
 
 
-        if (content instanceof UnauthenticatedRequest) {
-            spnegoResponse = doProcessClaimsRequest(exchange, (UnauthenticatedRequest) content);
+        if (content instanceof SamlR2ClaimsRequest) {
+            SamlR2ClaimsRequest claimsRequest = (SamlR2ClaimsRequest) content;
+            in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", claimsRequest);
+            spnegoResponse = doProcessClaimsRequest(exchange, claimsRequest);
+        } else
+        if (content instanceof InitiateSpnegoNegotiation) {
+            InitiateSpnegoNegotiation unauthenticatedRequest = (InitiateSpnegoNegotiation) content;
+            spnegoResponse = doProcessInitiateRequest(exchange, unauthenticatedRequest);
         }
 
-        // Send spnegoResponse back.
-        EndpointDescriptor ed = new EndpointDescriptorImpl(endpoint.getName(),
-                endpoint.getType(), endpoint.getBinding(), null, null);
-
+        IdentityMediationEndpoint initiateEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP.getValue());
+        EndpointDescriptor ed = new EndpointDescriptorImpl(initiateEndpoint.getName(),
+                initiateEndpoint.getType(), initiateEndpoint.getBinding(), null, null);
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 spnegoResponse,
                 null,
                 null,
                 ed,
                 in.getMessage().getState()));
-
         exchange.setOut(out);
     }
 
@@ -116,7 +107,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
         SpnegoMessage spnegoResponse = null;
 
         if (logger.isDebugEnabled())
-            logger.info("doProcess() - Received SPNEGO Message = " + content);
+            logger.info("doProcessResponse() - Received SPNEGO Message = " + content);
 
 
         if (content instanceof UnauthenticatedRequest) {
@@ -141,13 +132,32 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
     }
 
 
-    protected SpnegoMessage doProcessClaimsRequest(CamelMediationExchange exchange, UnauthenticatedRequest content) throws Exception {
-        logger.info("Initiating Spnego Negotiation");
-        return new InitiateSpnegoNegotiation( channel.getLocation() + endpoint.getResponseLocation());
+    protected SpnegoMessage doProcessClaimsRequest(CamelMediationExchange exchange, ClaimsRequest claimsRequest) throws Exception {
+        IdentityMediationEndpoint spnegoHttpEndpoint = null;
+
+        spnegoHttpEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP.getValue());
+
+        if (spnegoHttpEndpoint != null) {
+            return new InitiateSpnegoNegotiation(channel.getLocation() + spnegoHttpEndpoint.getLocation());
+        } else {
+            throw new SpnegoException("No SPNEGO/HTTP endpoint defined for claim channel " + channel.getName());
+        }
+
     }
 
-    protected SpnegoMessage doProcessUnauthenticatedRequest(CamelMediationExchange exchange, UnauthenticatedRequest content) {
-        logger.info("Requesting Token to SPNEGO initiator");
+    protected SpnegoMessage doProcessInitiateRequest(CamelMediationExchange exchange, InitiateSpnegoNegotiation content) throws Exception {
+        IdentityMediationEndpoint spnegoHttpEndpoint = null;
+
+        spnegoHttpEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP.getValue());
+
+        if (spnegoHttpEndpoint != null) {
+            return new InitiateSpnegoNegotiation(channel.getLocation() + spnegoHttpEndpoint.getResponseLocation());
+        } else {
+            throw new SpnegoException("No SPNEGO/HTTP endpoint defined for claim channel " + channel.getName());
+        }
+    }
+
+    protected SpnegoMessage doProcessUnauthenticatedRequest(CamelMediationExchange exchange, UnauthenticatedRequest content) throws Exception {
         return new RequestToken();
     }
 
@@ -254,6 +264,21 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
     }
 
 
+    private IdentityMediationEndpoint resolveSpnegoEndpoint(String binding) throws Exception {
+        IdentityMediationEndpoint foundEndpoint = null;
+
+        for (IdentityMediationEndpoint endpoint : channel.getEndpoints()) {
+
+            // As a work around, ignore endpoints not using artifact binding
+            if (!endpoint.getBinding().equals(binding))
+                continue;
+
+            foundEndpoint = endpoint;
+            break;
+        }
+
+        return foundEndpoint;
+    }
 
     class SecurityContextEstablisher implements PrivilegedAction {
 

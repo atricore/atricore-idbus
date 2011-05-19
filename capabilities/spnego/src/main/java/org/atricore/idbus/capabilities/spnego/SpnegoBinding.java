@@ -31,7 +31,10 @@ public enum SpnegoBinding {
     SSO_ARTIFACT("urn:org:atricore:idbus:sso:bindings:HTTP-Artifact"),
 
     /** URI for SPNEGO over HTTP Binding */
-    SPNEGO_HTTP("urn:org:atricore:idbus:spnego:bindings:HTTP");
+    SPNEGO_HTTP_INITIATOR("urn:org:atricore:idbus:spnego:bindings:HTTP-INITIATOR"),
+
+    /** URI for SPNEGO over HTTP Binding */
+    SPNEGO_HTTP_NEGOTIATOR("urn:org:atricore:idbus:spnego:bindings:HTTP-NEGOTIATOR");
 
     private String binding;
 

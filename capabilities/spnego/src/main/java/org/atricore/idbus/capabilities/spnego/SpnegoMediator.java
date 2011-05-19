@@ -108,7 +108,7 @@ public class SpnegoMediator extends AbstractCamelMediator {
                             }
 
                             break;
-                        case SPNEGO_HTTP:
+                        case SPNEGO_HTTP_INITIATOR:
                             // FROM idbus-http TO idbus-bind
                             from("idbus-http:" + ed.getLocation()).
                                     process(new LoggerProcessor(getLogger())).
@@ -123,27 +123,23 @@ public class SpnegoMediator extends AbstractCamelMediator {
                                             "?channelRef=" + claimChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
-                            if (ed.getResponseLocation() != null) {
-
-                                // FROM idbus-http TO idbus-bind
-                                from("idbus-http:" + ed.getResponseLocation()).
-                                        process(new LoggerProcessor(getLogger())).
-                                        to("direct:" + ed.getName() + "-response");
-
-                                // FROM idbus-bind TO spnego (token negotiation)
-                                from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
-                                        "?binding=" + ed.getBinding() +
-                                        "&channelRef=" + claimChannel.getName()).
-                                        process(new LoggerProcessor(getLogger())).
-                                        to("spnego:" + ed.getType() +
-                                                "?channelRef=" + claimChannel.getName() +
-                                                "&endpointRef=" + endpoint.getName() +
-                                                "&response=true");
-                            } else {
-                                throw new SpnegoException("Response location for Spnego HTTP Binding is mandatory");
-                            }
-
                             break;
+                        case SPNEGO_HTTP_NEGOTIATOR:
+                            // FROM idbus-http TO idbus-bind
+                            from("idbus-http:" + ed.getLocation()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("direct:" + ed.getName());
+
+                            // FROM idbus-bind TO spnego (claim processing)
+                            from("idbus-bind:camel://direct:" + ed.getName() +
+                                    "?binding=" + ed.getBinding() +
+                                    "&channelRef=" + claimChannel.getName()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("spnego:" + ed.getType() +
+                                            "?channelRef=" + claimChannel.getName() +
+                                            "&endpointRef=" + endpoint.getName());
+
+
                         default:
                             throw new SpnegoException("Unsupported Spnego Binding " + binding.getValue());
                     }

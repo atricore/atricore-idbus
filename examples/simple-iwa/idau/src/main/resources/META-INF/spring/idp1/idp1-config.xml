@@ -649,17 +649,25 @@
                         <value>urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos</value>
                     </property>
                 </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="idp1-spnego-http">
+                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="idp1-spnego-http-initiator">
                     <property name="name">
-                        <value>idp1-spnego-http</value>
+                        <value>idp1-spnego-http-initiator</value>
                     </property>
                     <property name="binding">
-                        <value>urn:org:atricore:idbus:spnego:bindings:HTTP</value>
+                        <value>urn:org:atricore:idbus:spnego:bindings:HTTP-INITIATOR</value>
                     </property>
                     <property name="location">
                         <value>/HTTP/INITIATE</value>
                     </property>
-                    <property name="responseLocation">
+                </bean>
+                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="idp1-spnego-http-negotiator">
+                    <property name="name">
+                        <value>idp1-spnego-http-negotiator</value>
+                    </property>
+                    <property name="binding">
+                        <value>urn:org:atricore:idbus:spnego:bindings:HTTP-NEGOTIATOR</value>
+                    </property>
+                    <property name="location">
                         <value>/HTTP/NEGOTIATE</value>
                     </property>
                     <property name="type">

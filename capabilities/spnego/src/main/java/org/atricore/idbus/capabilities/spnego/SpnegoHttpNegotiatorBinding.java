@@ -40,12 +40,12 @@ import java.util.Map;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SpnegoHttpBinding extends AbstractMediationHttpBinding {
+public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
 
-    private static final Log logger = LogFactory.getLog(SpnegoHttpBinding.class);
+    private static final Log logger = LogFactory.getLog(SpnegoHttpNegotiatorBinding.class);
 
-    protected SpnegoHttpBinding(Channel channel) {
-        super(SpnegoBinding.SPNEGO_HTTP.getValue(), channel);
+    protected SpnegoHttpNegotiatorBinding(Channel channel) {
+        super(SpnegoBinding.SPNEGO_HTTP_NEGOTIATOR.getValue(), channel);
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {

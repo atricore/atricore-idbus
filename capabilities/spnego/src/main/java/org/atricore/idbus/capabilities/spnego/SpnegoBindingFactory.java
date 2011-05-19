@@ -5,11 +5,9 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationBinding;
-import org.atricore.idbus.kernel.main.mediation.MediationBindingFactory;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationBinding;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 /**
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
@@ -41,8 +39,11 @@ public class SpnegoBindingFactory extends SamlR2BindingFactory {
         
         MediationBinding mb = null;
         switch (b) {
-            case SPNEGO_HTTP:
-                mb = new SpnegoHttpBinding(channel);
+            case SPNEGO_HTTP_INITIATOR:
+                mb = new SpnegoHttpInitiatorBinding(channel);
+                break;
+            case SPNEGO_HTTP_NEGOTIATOR:
+                mb = new SpnegoHttpNegotiatorBinding(channel);
                 break;
             default:
         }
