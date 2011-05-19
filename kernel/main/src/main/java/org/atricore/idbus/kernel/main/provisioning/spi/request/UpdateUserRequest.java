@@ -21,10 +21,7 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.request;
 
-import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
-
-import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA.

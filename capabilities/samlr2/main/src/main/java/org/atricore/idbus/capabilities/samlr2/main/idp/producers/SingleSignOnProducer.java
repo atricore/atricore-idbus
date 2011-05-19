@@ -537,12 +537,17 @@ public class SingleSignOnProducer extends SamlR2Producer {
             logger.debug("New Assertion " + assertion.getID() + " emmitted form request " +
                     (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
+            // TODO : If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
+            // 1. Store assertion (as part of authn context for SP ?!)
+            // 2. Send artifact to waring endpoint w/ policies
+            // 3. Wait for user to come back, in a different endpoint
+            // 4. Send Authn Response to SP (from different endpoint)
+
             // Create a new SSO Session
             IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion);
 
             // Associate the SP with the new session, including relay state!
-            // TODO : Instead of authnRequest, use metadata to get issuer!
-
+            // We already validated authn request issuer, so we can use it.
             secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
 
             // Resolve SP endpoint
@@ -915,8 +920,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
         // Create session security token, use the sesionIndex as token ID
         SecurityToken<AuthnStatementType > st = new SecurityTokenImpl<AuthnStatementType >(authnStmt.getSessionIndex(), authnStmt);
 
-        // Get SSO User information
-        Principal userId = authnSubject.getPrincipals().iterator().next();
+        // Get SSO User information (stored as simple principal!)
+        Principal userId = authnSubject.getPrincipals(SimplePrincipal.class).iterator().next();
 
         if (logger.isDebugEnabled())
             logger.debug("Using username : " + userId.getName());

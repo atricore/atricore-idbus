@@ -25,7 +25,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.velocity.runtime.directive.Foreach;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -43,12 +42,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
-import java.awt.*;
 import java.io.*;
 import java.lang.Object;
 import java.net.URLDecoder;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.StringTokenizer;
 
 /**
@@ -366,24 +363,36 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         Html html = createHtmlBaseMessage();
         Body body = html.getBody();
 
-        // Ajax Form
-        if (isEnableAjax()) {
-            Form form = new Form();
 
-            form.setMethod("post");
-            form.setAction(url);
-            form.setId("postbinding");
-            form.setEnctype("application/x-www-form-urlencoded");
+        // Non-Ajax form
+        Div pageDiv = (Div) body.getPOrH1OrH2().iterator().next();
+        Form form = new Form();
 
-            Div fields = new Div();
+        form.setMethod("post");
+        form.setAction(url);
+        form.setId("postbinding");
+        form.setEnctype("application/x-www-form-urlencoded");
 
+        {
+            // Noscript paragraph
+
+            P paragraph = new P();
+            paragraph.setTitle("Note: Since your browser does not support JavaScript, you must press the Continue button once to proceed.");  // TODO : i18n
+            Noscript noscript = new Noscript();
+            noscript.getPOrH1OrH2().add(paragraph);
+            body.getPOrH1OrH2().add(noscript);
+        }
+
+        {
+            // Div with form fields
+            Div divFields = new Div();
             if (relayState != null) {
                 Input input1 = new Input();
                 input1.setType(InputType.HIDDEN);
                 input1.setName("RelayState");
                 input1.setValue(relayState);
 
-                fields.getContent().add(input1);
+                divFields.getContent().add(input1);
             }
 
             Input input2 = new Input();
@@ -392,97 +401,95 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
             input2.setValue(msgValue);
 
-            fields.getContent().add(input2);
+            divFields.getContent().add(input2);
 
-            form.getPOrH1OrH2().add(fields);
+            // Add first filds to form
+            form.getPOrH1OrH2().add(divFields);
+        }
 
-            Div pageDiv = (Div) body.getPOrH1OrH2().iterator().next();
-            Div div = (Div) pageDiv.getContent().iterator().next();
-            Div divFixedFull = (Div) div.getContent().iterator().next();
-            Div waitContainer = (Div) divFixedFull.getContent().iterator().next();
 
-            Script submitJs = new Script();
-            submitJs.setType("text/javascript");
-            submitJs.setContent("              Event.observe(window, 'load', \n" +
-                    "                                function() {\n" +
-                    "                                    window.setTimeout(function() { document.forms.postbinding.submit(); }, 100);\n" +
-                    "                                }\n" +
-                    "                        );");
+        {
+            // Create noscript submit button
+            Noscript noscript = new Noscript();
+            Div divNoScript = new Div();
+            noscript.getPOrH1OrH2().add(divNoScript);
 
-            waitContainer.getContent().add(submitJs);
+            Input submit = new Input();
+            submit.setType(InputType.SUBMIT);
+            submit.setValue("Continue");
+            divNoScript.getContent().add(submit);
 
-            for (Object c : waitContainer.getContent()) {
-                if (c instanceof Div) {
-                    Div waitBox = (Div) c;
-                    waitBox.getContent().add(form);
+            form.getPOrH1OrH2().add(noscript);
 
-                }
+        }
+
+        // Part of post binding
+        body.setOnload("document.forms.postbinding.submit();");
+
+        pageDiv.getContent().add(form);
+
+        return html;
+    }
+
+    protected Html createHtmlAjaxPostMessage(String url,
+                                         String relayState,
+                                         String msgName,
+                                         String msgValue) throws Exception {
+
+
+        Html html = createHtmlBaseMessage();
+        Body body = html.getBody();
+
+        // Ajax Form
+        Form form = new Form();
+
+        form.setMethod("post");
+        form.setAction(url);
+        form.setId("postbinding");
+        form.setEnctype("application/x-www-form-urlencoded");
+
+        Div fields = new Div();
+
+        if (relayState != null) {
+            Input input1 = new Input();
+            input1.setType(InputType.HIDDEN);
+            input1.setName("RelayState");
+            input1.setValue(relayState);
+
+            fields.getContent().add(input1);
+        }
+
+        Input input2 = new Input();
+        input2.setType(InputType.HIDDEN);
+        input2.setName(msgName);
+
+        input2.setValue(msgValue);
+
+        fields.getContent().add(input2);
+
+        form.getPOrH1OrH2().add(fields);
+
+        Div pageDiv = (Div) body.getPOrH1OrH2().iterator().next();
+        Div div = (Div) pageDiv.getContent().iterator().next();
+        Div divFixedFull = (Div) div.getContent().iterator().next();
+        Div waitContainer = (Div) divFixedFull.getContent().iterator().next();
+
+        Script submitJs = new Script();
+        submitJs.setType("text/javascript");
+        submitJs.setContent("              Event.observe(window, 'load', \n" +
+                "                                function() {\n" +
+                "                                    window.setTimeout(function() { document.forms.postbinding.submit(); }, 100);\n" +
+                "                                }\n" +
+                "                        );");
+
+        waitContainer.getContent().add(submitJs);
+
+        for (Object c : waitContainer.getContent()) {
+            if (c instanceof Div) {
+                Div waitBox = (Div) c;
+                waitBox.getContent().add(form);
+
             }
-        } else {
-
-            // Non-Ajax form
-            Div pageDiv = (Div) body.getPOrH1OrH2().iterator().next();
-            Form form = new Form();
-
-            form.setMethod("post");
-            form.setAction(url);
-            form.setId("postbinding");
-            form.setEnctype("application/x-www-form-urlencoded");
-
-            {
-                // Noscript paragraph
-
-                P paragraph = new P();
-                paragraph.setTitle("Note: Since your browser does not support JavaScript, you must press the Continue button once to proceed.");  // TODO : i18n
-                Noscript noscript = new Noscript();
-                noscript.getPOrH1OrH2().add(paragraph);
-                body.getPOrH1OrH2().add(noscript);
-            }
-
-            {
-                // Div with form fields
-                Div divFields = new Div();
-                if (relayState != null) {
-                    Input input1 = new Input();
-                    input1.setType(InputType.HIDDEN);
-                    input1.setName("RelayState");
-                    input1.setValue(relayState);
-
-                    divFields.getContent().add(input1);
-                }
-
-                Input input2 = new Input();
-                input2.setType(InputType.HIDDEN);
-                input2.setName(msgName);
-
-                input2.setValue(msgValue);
-
-                divFields.getContent().add(input2);
-
-                // Add first filds to form
-                form.getPOrH1OrH2().add(divFields);
-            }
-
-
-            {
-                // Create noscript submit button
-                Noscript noscript = new Noscript();
-                Div divNoScript = new Div();
-                noscript.getPOrH1OrH2().add(divNoScript);
-
-                Input submit = new Input();
-                submit.setType(InputType.SUBMIT);
-                submit.setValue("Continue");
-                divNoScript.getContent().add(submit);
-
-                form.getPOrH1OrH2().add(noscript);
-
-            }
-
-            // Part of post binding
-            body.setOnload("document.forms.postbinding.submit();");
-
-            pageDiv.getContent().add(form);
         }
 
         return html;

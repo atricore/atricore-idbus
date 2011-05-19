@@ -66,11 +66,14 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
 
     public boolean canAuthenticate(Object requestToken) {
 
+        if ( isRememberMeToken( requestToken ))
+            return true;
+
+        if (is2FactorAuthnToken(requestToken))
+            return true;
+
         if (requestToken instanceof UsernameTokenType)
             return true;
-        if ( isRememberMeToken( requestToken ) ){
-            return true;
-        }
 
         // TODO : Add X509, SAML2 and other token types!
 

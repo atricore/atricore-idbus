@@ -33,6 +33,7 @@ import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.*;
+import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;

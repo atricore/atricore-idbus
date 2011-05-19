@@ -180,8 +180,10 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                 logger.debug("user dn = " + dn);
             }
 
-            // Create context without bining!
-            InitialLdapContext ctx = this.createLdapInitialContext(null, null);
+            // Create context without binding!
+            InitialLdapContext ctx = isPasswordPolicySupport() ?
+                    this.createLdapInitialContext(null, null) :
+                    this.createLdapInitialContext(null, null);
 
             try {
 
@@ -190,7 +192,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
                 if (isPasswordPolicySupport()) {
                     // Configure request control for password policy:
-                    ctx.reconnect(new Control[] {new BasicControl(PasswordPolicyResponseControl.CONTROL_OID)});
+                    ctx.reconnect(new Control[] { new BasicControl(PasswordPolicyResponseControl.CONTROL_OID) } );
                 } else {
                     ctx.reconnect(new Control[] {});
                 }
@@ -235,6 +237,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
     private void addPasswordPolicyToBindCtx(PasswordPolicyResponseControl ppolicyCtrl, BindContext bindCtx) {
 
         if (ppolicyCtrl.getWarningType() != null) {
+
             PasswordPolicyWarningType type = null;
 
             switch(ppolicyCtrl.getWarningType()) {
