@@ -430,7 +430,7 @@
                         <value>urn:org:atricore:idbus:sso:bindings:SAML:2:0:IDP-Initiated-SSO-http</value>
                     </property>
                     <property name="location">
-                        <value>/SAML2/SSO/IDP_INITIATE</value>
+                            <value>/SAML2/SSO/IDP_INITIATE</value>
                     </property>
                     <property name="identityPlans">
                         <list>
@@ -530,7 +530,9 @@
             <!--
             <ref bean="idp1-claims-channel"/>
             -->
-            <!-- TODO: An SP channel should have 1-M claim channels, where more than one could be selected for authn -->
+            <!-- TODO: An SP channel should have 1-M claim channels, where more than one could be selected for collecting
+             credentials claims
+             -->
             <ref bean="idp1-spnego-claims-channel"/>
         </property>
         <property name="securityTokenService">
@@ -633,6 +635,20 @@
         </property>
         <property name="endpoints">
             <list>
+                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="idp1-cc-pwd-artifact">
+                    <property name="name">
+                        <value>idp1-spnego-http-artifact</value>
+                    </property>
+                    <property name="binding">
+                        <value>urn:org:atricore:idbus:sso:bindings:HTTP-Artifact</value>
+                    </property>
+                    <property name="location">
+                        <value>/HTTP/ARTIFACT</value>
+                    </property>
+                    <property name="type">
+                        <value>urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos</value>
+                    </property>
+                </bean>
                 <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="idp1-spnego-http">
                     <property name="name">
                         <value>idp1-spnego-http</value>
@@ -641,10 +657,10 @@
                         <value>urn:org:atricore:idbus:spnego:bindings:HTTP</value>
                     </property>
                     <property name="location">
-                        <value>/HTTP</value>
+                        <value>/HTTP/INITIATE</value>
                     </property>
                     <property name="responseLocation">
-                        <value>/POST-RESP</value>
+                        <value>/HTTP/NEGOTIATE</value>
                     </property>
                     <property name="type">
                         <value>urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos</value>

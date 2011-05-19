@@ -55,7 +55,7 @@ public class SpnegoMediator extends AbstractCamelMediator {
     protected RouteBuilder createClaimRoutes(final ClaimChannel claimChannel) throws Exception {
         logger.info("Creating SPNEGO Routes");
 
-         return new RouteBuilder() {
+        return new RouteBuilder() {
 
             @Override
             public void configure() throws Exception {
@@ -74,14 +74,13 @@ public class SpnegoMediator extends AbstractCamelMediator {
                     EndpointDescriptor ed = resolveEndpoint(claimChannel, endpoint);
 
                     switch (binding) {
-                        case SPNEGO_HTTP:
+                        case SSO_ARTIFACT:
                             // FROM idbus-http TO idbus-bind
-                            logger.info("Creating SPNEGO HTTP Route " + ed.getLocation());
                             from("idbus-http:" + ed.getLocation()).
                                     process(new LoggerProcessor(getLogger())).
                                     to("direct:" + ed.getName());
 
-                            // FROM idbus-bind TO spnego
+                            // FROM idbus-bind TO spnego (claim processing)
                             from("idbus-bind:camel://direct:" + ed.getName() +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + claimChannel.getName()).
@@ -89,6 +88,61 @@ public class SpnegoMediator extends AbstractCamelMediator {
                                     to("spnego:" + ed.getType() +
                                             "?channelRef=" + claimChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
+
+                            if (ed.getResponseLocation() != null) {
+
+                                // FROM idbus-http TO idbus-bind
+                                from("idbus-http:" + ed.getResponseLocation()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("direct:" + ed.getName() + "-response");
+
+                                // FROM idbus-bind TO spnego (token negotiation)
+                                from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
+                                        "?binding=" + ed.getBinding() +
+                                        "&channelRef=" + claimChannel.getName()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("spnego:" + ed.getType() +
+                                                "?channelRef=" + claimChannel.getName() +
+                                                "&endpointRef=" + endpoint.getName() +
+                                                "&response=true");
+                            }
+
+                            break;
+                        case SPNEGO_HTTP:
+                            // FROM idbus-http TO idbus-bind
+                            from("idbus-http:" + ed.getLocation()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("direct:" + ed.getName());
+
+                            // FROM idbus-bind TO spnego (claim processing)
+                            from("idbus-bind:camel://direct:" + ed.getName() +
+                                    "?binding=" + ed.getBinding() +
+                                    "&channelRef=" + claimChannel.getName()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("spnego:" + ed.getType() +
+                                            "?channelRef=" + claimChannel.getName() +
+                                            "&endpointRef=" + endpoint.getName());
+
+                            if (ed.getResponseLocation() != null) {
+
+                                // FROM idbus-http TO idbus-bind
+                                from("idbus-http:" + ed.getResponseLocation()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("direct:" + ed.getName() + "-response");
+
+                                // FROM idbus-bind TO spnego (token negotiation)
+                                from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
+                                        "?binding=" + ed.getBinding() +
+                                        "&channelRef=" + claimChannel.getName()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("spnego:" + ed.getType() +
+                                                "?channelRef=" + claimChannel.getName() +
+                                                "&endpointRef=" + endpoint.getName() +
+                                                "&response=true");
+                            } else {
+                                throw new SpnegoException("Response location for Spnego HTTP Binding is mandatory");
+                            }
+
                             break;
                         default:
                             throw new SpnegoException("Unsupported Spnego Binding " + binding.getValue());
@@ -102,7 +156,7 @@ public class SpnegoMediator extends AbstractCamelMediator {
 
     /**
      * This util will create an EndpointDescriptor based on the received channel and endpoint information.
-     * 
+     *
      * @param channel
      * @param endpoint
      * @return
@@ -174,9 +228,8 @@ public class SpnegoMediator extends AbstractCamelMediator {
 
 
     /**
-     * @org.apache.xbean.Property alias="artifact-queue-mgr"
-     *
      * @return
+     * @org.apache.xbean.Property alias="artifact-queue-mgr"
      */
     public MessageQueueManager getArtifactQueueManager() {
         return super.getArtifactQueueManager();
@@ -188,9 +241,8 @@ public class SpnegoMediator extends AbstractCamelMediator {
 
 
     /**
-     * @org.apache.xbean.Property alias="log-messages"
-     *
      * @return
+     * @org.apache.xbean.Property alias="log-messages"
      */
     @Override
     public boolean isLogMessages() {
@@ -201,7 +253,6 @@ public class SpnegoMediator extends AbstractCamelMediator {
     public void setLogMessages(boolean logMessages) {
         super.setLogMessages(logMessages);    //To change body of overridden methods use File | Settings | File Templates.
     }
-
 
 
 }

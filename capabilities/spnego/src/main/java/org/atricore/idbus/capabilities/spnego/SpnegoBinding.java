@@ -27,6 +27,9 @@ package org.atricore.idbus.capabilities.spnego;
  */
 public enum SpnegoBinding {
 
+    /** URI for IDBUS HTTP Artifact binding, this is NOT SAML Normative*/
+    SSO_ARTIFACT("urn:org:atricore:idbus:sso:bindings:HTTP-Artifact"),
+
     /** URI for SPNEGO over HTTP Binding */
     SPNEGO_HTTP("urn:org:atricore:idbus:spnego:bindings:HTTP");
 

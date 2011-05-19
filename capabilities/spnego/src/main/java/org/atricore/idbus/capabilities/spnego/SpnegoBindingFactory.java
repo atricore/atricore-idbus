@@ -2,6 +2,7 @@ package org.atricore.idbus.capabilities.spnego;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationBinding;
 import org.atricore.idbus.kernel.main.mediation.MediationBindingFactory;
@@ -13,7 +14,7 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
-public class SpnegoBindingFactory extends MediationBindingFactory implements ApplicationContextAware {
+public class SpnegoBindingFactory extends SamlR2BindingFactory {
 
     private static final Log logger = LogFactory.getLog(SpnegoBindingFactory.class);
 
@@ -21,6 +22,7 @@ public class SpnegoBindingFactory extends MediationBindingFactory implements App
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        super.setApplicationContext(applicationContext);
     }
 
     public ApplicationContext getApplicationContext() {
@@ -43,15 +45,15 @@ public class SpnegoBindingFactory extends MediationBindingFactory implements App
                 mb = new SpnegoHttpBinding(channel);
                 break;
             default:
-                logger.warn("Invalid Spnego Binding " + binding);
         }
         
         if (mb != null && mb instanceof AbstractMediationBinding) {
             ((AbstractMediationBinding)mb).setStateManagerClassLoader(this.applicationContext.getClassLoader());
+        } else {
+            mb = super.createBinding(binding, channel);
         }
         
         return mb;
-        
     }
 }
 

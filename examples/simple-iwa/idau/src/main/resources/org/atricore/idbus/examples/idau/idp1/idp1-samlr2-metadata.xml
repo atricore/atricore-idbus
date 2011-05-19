@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<EntityDescriptor ID="idDC2B19E23791E52D" entityID="http://localhost:8081/IDBUS/SIMPLE-IWA/IDP1/SAML2/MD" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ns4="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ns3="http://www.w3.org/2001/04/xmlenc#">
-    <AuthnAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" ID="idD31A5247AB46BBBE">
+<EntityDescriptor ID="id67AB2AA834F7CFD8" entityID="http://localhost:8081/IDBUS/SIMPLE-IWA/IDP1/SAML2/MD" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ns4="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ns3="http://www.w3.org/2001/04/xmlenc#">
+    <AuthnAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" ID="idD5AB70327593CA50">
         <KeyDescriptor use="signing">
             <ns2:KeyInfo>
                 <ns2:X509Data>

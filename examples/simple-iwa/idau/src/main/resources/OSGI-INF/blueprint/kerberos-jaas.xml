@@ -33,9 +33,11 @@
         </jaas:module>
     </jaas:config>
 
+    <!--
     <bean id="kerberosFactory" class="org.atricore.idbus.capabilities.spnego.jaas.KerberosAutomaticSignOn"
           init-method="signon"
           activation="eager">
         <property name="principal" value="HTTP/wsdev1.w2k3dev.atricore.com@W2K3DEV.ATRICORE.COM"/>
     </bean>
+    -->
 </blueprint>

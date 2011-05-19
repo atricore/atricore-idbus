@@ -109,10 +109,21 @@ public class SpnegoHttpBinding extends AbstractMediationHttpBinding {
 
         copyBackState(out.getState(), exchange);
 
+        if (sm instanceof InitiateSpnegoNegotiation) {
+            InitiateSpnegoNegotiation isn = (InitiateSpnegoNegotiation) sm;
+            logger.debug("Initiating Spnego Negotiation on " + isn.getTargetSpnegoEndpoint());
+
+            httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+            httpOut.getHeaders().put("Pragma", "no-cache");
+            httpOut.getHeaders().put("http.responseCode", 302);
+            httpOut.getHeaders().put("Content-Type", "text/html");
+            httpOut.getHeaders().put("Location", isn.getTargetSpnegoEndpoint());
+        } else
         if (sm instanceof RequestToken) {
             logger.debug("Requesting GSSAPI token to SPNEGO/HTTP initiator");
             httpOut.getHeaders().put(SpnegoHeader.AUTHN.getValue(), SpnegoHeader.NEGOTIATE.getValue());
             httpOut.getHeaders().put("http.responseCode", SpnegoStatus.UNAUTHORIZED.getValue());
         }
+
     }
 }

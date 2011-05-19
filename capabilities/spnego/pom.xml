@@ -39,6 +39,7 @@
 
     <properties>
         <idbus.kernel.version>1.1.1-SNAPSHOT</idbus.kernel.version>
+        <idbus.samlr2.version>1.1.1-SNAPSHOT</idbus.samlr2.version>
         <karaf.version>2.1.0</karaf.version>
         <camel.version>1.6.1</camel.version>
         <spring.version>3.0.3.RELEASE</spring.version>
@@ -50,6 +51,24 @@
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
             <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
+            <version>${idbus.samlr2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
+            <version>${idbus.samlr2.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
