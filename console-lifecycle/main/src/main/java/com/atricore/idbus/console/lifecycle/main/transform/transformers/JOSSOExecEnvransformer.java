@@ -270,6 +270,10 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                 setPropertyValue(gatewayServiceLocator, "endpoint",
                         applianceDef.getLocation().getHost() + ":" + applianceDef.getLocation().getPort());
 
+                // Enable SSL if JOSSO is using HTTPs
+                if (applianceDef.getLocation().getProtocol().equalsIgnoreCase("https"))
+                    setPropertyValue(gatewayServiceLocator, "transportSecurity", "confidential");
+
                 // Remove starting slash
                 setPropertyValue(gatewayServiceLocator, "sessionManagerServicePath",
                         (locationPath.startsWith("/") ? locationPath.substring(1) : locationPath) + "/JOSSO/SSOSessionManager/SOAP");
