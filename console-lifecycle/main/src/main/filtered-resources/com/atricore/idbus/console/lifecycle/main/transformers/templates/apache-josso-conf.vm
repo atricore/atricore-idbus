@@ -19,6 +19,12 @@
     DefaultResource /$partnerapp
     PartnerApplicationID "$partnerappID"
     PHP5SecurityContext On
+
+#if ($transportSecurity.equals("confidential"))
+    GatewayEndpointSSLEnable On
+### Path to server certificate file that stores trusted certificates (needed to verify server)
+    SSLServerCertFile /location/of/the/server/crt
+#end
 </Directory>
 
 #end

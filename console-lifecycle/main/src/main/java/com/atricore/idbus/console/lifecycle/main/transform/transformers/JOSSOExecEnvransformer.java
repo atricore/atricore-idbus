@@ -338,6 +338,11 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                 params.put("identityProviderServicePath",
                         (locationPath.startsWith("/") ? locationPath.substring(1) : locationPath) + "/JOSSO/SSOIdentityProvider/SOAP");
 
+                if (applianceDef.getLocation().getProtocol().equalsIgnoreCase("https"))
+                    params.put("transportSecurity", "confidential");
+                else
+                    params.put("transportSecurity", "none");
+
                 if (execEnv.getPlatformId().equals("apache")) {
                     IdProjectResource<String> agentConfig = new IdProjectResource<String>(idGen.generateId(),
                             "META-INF/spring/" + bpBean.getName() + "/josso", "josso-" + bpBean.getName(), "apache", "josso-conf");

@@ -7,10 +7,17 @@ identityManagerServicePath=$identityManagerServicePath
 identityProviderServicePath=$identityProviderServicePath
 
 ;;SSL setup
+#if ($transportSecurity.equals("confidential"))
+secureTransport=false
+caFile=/location/of/the/ca_file
+sslSkipHostCheck=false
+sslAllowExpiredCerts=false
+#else
 secureTransport=false
 ;;caFile=/location/of/the/ca_file
 ;;sslSkipHostCheck=false
 ;;sslAllowExpiredCerts=false
+#end
 
 ;;HTTP Basic Authentication setup
 ;;basicUserId=username

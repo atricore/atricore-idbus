@@ -56,10 +56,17 @@ $josso_identityManagerServicePath = '$identityManagerServicePath';
 $josso_identityProviderServicePath = '$identityProviderServicePath';
 
 // WS client configuration :
+#if ($transportSecurity.equals("confidential"))
+$josso_endpoint = 'https://$endpointHost:$endpointPort';
+//if $josso_wsdl_url is defined $josso_endpoint is ignored
+//it's used for josso2 only
+//$josso_wsdl_url = 'https://$endpointHost/josso/josso-1.2.wsdl';
+#else
 $josso_endpoint = 'http://$endpointHost:$endpointPort';
 //if $josso_wsdl_url is defined $josso_endpoint is ignored
 //it's used for josso2 only
 //$josso_wsdl_url = 'http://$endpointHost/josso/josso-1.2.wsdl';
+#end
 
 // This could be also "", it points to the path where JOSSO code is found, for example the josso-security-check.php page.
 // Do not end the baseCode with "/".
