@@ -32,6 +32,7 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
 
     private String realm;
     private String principalName;
+    private GSSName clientName;
 
     public SpnegoAuthenticationScheme() {
         this.setName("spnego-authentication");
@@ -51,7 +52,6 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
             if (logger.isTraceEnabled())
                 logger.trace("Authenticate Spnego Token : " + spnegoToken);
 
-
             try {
                 LoginContext loginContext = new LoginContext(realm, new CallbackHandler() {
 
@@ -67,12 +67,13 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
                 });
                 loginContext.login();
                 Subject kerberosSubject = loginContext.getSubject();
-                new SecurityContextEstablisher().acceptKerberosServiceTicket(
+                clientName = new SecurityContextEstablisher().acceptKerberosServiceTicket(
                         binarySpnegoToken,
                         kerberosSubject,
                         principalName
                 );
 
+                logger.debug("Client name is " + clientName.toString());
                 setAuthenticated(true);
 
             } catch (LoginException e) {
@@ -86,7 +87,7 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
     }
 
     public Principal getPrincipal() {
-        return new SimplePrincipal(getSpnegoToken(_inputCredentials));
+        return new SimplePrincipal(clientName.toString());
     }
 
     public Principal getPrincipal(Credential[] credentials) {
@@ -144,9 +145,7 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
         GSSName acceptKerberosServiceTicket(byte[] kerberosServiceTicket, Subject kerberosSubject, String principal) {
             this.kerberosServiceTicket = kerberosServiceTicket;
             this.principal = principal;
-            GSSName initiatorPrincipal = (GSSName) Subject.doAs(kerberosSubject, this);
-            logger.debug("Initiator Principal = " + initiatorPrincipal);
-            return initiatorPrincipal;
+            return (GSSName) Subject.doAs(kerberosSubject, this);
         }
 
         /**
@@ -182,7 +181,6 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 HexDump.dump(outputToken, 0, baos, 0);
                 logger.debug("Kerberos Service Ticket Successfully relayed (hex) : " + baos.toString());
-                logger.debug("Initiator Principal = " + serverGSSContext.getSrcName());
                 return serverGSSContext.getSrcName();
             } catch (Exception e) {
                 logger.debug("Error creating security context", e);

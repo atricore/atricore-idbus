@@ -26,16 +26,16 @@ IdentityMemoryStore user definitions.
 <josso-users>
     <users>
         <user>
-            <name>user1</name>
+            <name>Administrator@W2K3DEV.ATRICORE.COM</name>
             <!-- Optionally, define some properties for this user -->
             <properties>
                 <property>
                     <name>user.name</name>
-                    <value>User 1 Name</value>
+                    <value>W2K3DEV Administrator</value>
                 </property>
                 <property>
                     <name>user.lastName</name>
-                    <value>User 1 Last Name</value>
+                    <value>W2K3DEV Administrator</value>
                 </property>
                 <property>
                     <name>user.registrationDate</name>
@@ -43,7 +43,7 @@ IdentityMemoryStore user definitions.
                 </property>
                 <property>
                     <name>email</name>
-                    <value>user1@josso.org</value>
+                    <value>admin@acme.com</value>
                 </property>
             </properties>
             <!-- Optional comma sepparated set of roles, must be defined below -->
