@@ -40,7 +40,7 @@
                          <c:forEach var="warningData" items="${confirmWarnings.warningData}">
                             <p><strong><fmt:message key="${warningData.msgKey}">
                                 <c:if test="${warningData.hasMsgParams}">
-                                <c:forEach var="msgParam" items="${confirmWarnings.warningData.msgParams}">
+                                <c:forEach var="msgParam" items="${warningData.msgParams}">
                                     <fmt:param value="${msgParam}"/>
                                 </c:forEach>
                                 </c:if>
@@ -51,7 +51,9 @@
                         </div><!-- /highlight -->
                         </c:if>
 
-                        <a href="${confirmWarnings.request.replyTo.location}" class="button">Continue</a>
+                      <form:form method="post" commandName="confirmWarnings" >
+                        <div><input class="button indent" type="submit" value="Continue"/></div>
+                      </form:form>
 
                         <div id="login-options" class="clearfix">
 

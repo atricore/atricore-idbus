@@ -2,6 +2,7 @@ package org.atricore.idbus.applications.server.ui.warn;
 
 import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -26,7 +27,7 @@ public class WarningData {
         return msgKey;
     }
 
-    public Set<Object> getMsgParams() {
+    public Collection<Object> getMsgParams() {
         return stmt.getValues();
     }
 
