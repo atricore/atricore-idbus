@@ -82,7 +82,7 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
                 Collection<IdentityMediationEndpoint> endpoints = claimChannel.getEndpoints();
 
                 if (endpoints == null)
-                    throw new IdentityMediationException("No endpoits defined for claims channel : " + claimChannel.getName());
+                    throw new IdentityMediationException("No endpoints defined for claims channel : " + claimChannel.getName());
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 

@@ -313,7 +313,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
 
 
         if (logger.isDebugEnabled())
-            logger.debug("No COT Member registered with ID" + id);
+            logger.debug("No COT Member registered with ID " + id);
 
         // Not found !?
         return null;
