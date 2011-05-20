@@ -26,7 +26,7 @@
     </bean>
     <bean class="org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator" name="sp1-samlr2-mediator">
         <property name="preferredIdpAlias">
-            <value>http://localhost:8081/IDBUS/SIMPLE-IWA/IDP1/SAML2/MD</value>
+            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/IDP1/SAML2/MD</value>
         </property>
         <property name="preferredIdpSSOBinding">
             <value>urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</value>
@@ -35,10 +35,10 @@
             <value>urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</value>
         </property>
         <property name="spBindingACS">
-            <value>http://localhost:8081/IDBUS/SIMPLE-IWA/TC1/SSO/ACS/ARTIFACT</value>
+            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/TC1/SSO/ACS/ARTIFACT</value>
         </property>
         <property name="spBindingSLO">
-            <value>http://localhost:8081/IDBUS/SIMPLE-IWA/TC1/SSO/SLO/ARTIFACT</value>
+            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/TC1/SSO/SLO/ARTIFACT</value>
         </property>
         <property name="logMessages">
             <value>true</value>
@@ -65,7 +65,7 @@
             </bean>
         </property>
         <property name="errorUrl">
-            <value>http://localhost:8081/idbus-ui/error.do</value>
+            <value>http://wsdev1.w2k3dev.atricore.com:8081/idbus-ui/error.do</value>
         </property>
         <property name="signer">
             <ref bean="sp1-samlr2-signer"/>
@@ -212,7 +212,7 @@
             <value>Nonb1Tafo4FIXOsUPcDPnEWxv34=</value>
         </property>
         <property name="alias">
-            <value>http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MD</value>
+            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MD</value>
         </property>
         <property name="resource">
             <value>classpath:org/atricore/idbus/examples/idau/sp1/sp1-samlr2-metadata.xml</value>
@@ -226,7 +226,7 @@
             <value>SP1</value>
         </property>
         <property name="location">
-            <value>http://localhost:8081/IDBUS/SIMPLE-IWA/SP1</value>
+            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1</value>
         </property>
         <property name="provider">
             <ref bean="sp1"/>
@@ -394,7 +394,7 @@
             <ref bean="sp1"/>
         </property>
         <property name="location">
-            <value>http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SP1</value>
+            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SP1</value>
         </property>
         <property name="identityMediator">
             <ref bean="sp1-samlr2-mediator"/>

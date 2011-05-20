@@ -45,7 +45,7 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
     private static final Log logger = LogFactory.getLog(SpnegoHttpNegotiatorBinding.class);
 
     protected SpnegoHttpNegotiatorBinding(Channel channel) {
-        super(SpnegoBinding.SPNEGO_HTTP_NEGOTIATOR.getValue(), channel);
+        super(SpnegoBinding.SPNEGO_HTTP_NEGOTIATION.getValue(), channel);
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {
@@ -111,13 +111,13 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
 
         if (sm instanceof InitiateSpnegoNegotiation) {
             InitiateSpnegoNegotiation isn = (InitiateSpnegoNegotiation) sm;
-            logger.debug("Initiating Spnego Negotiation on " + isn.getTargetSpnegoEndpoint());
+            logger.debug("Initiating Spnego Negotiation on " + isn.getSpnegoInitiationEndpoint());
 
             httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
             httpOut.getHeaders().put("Pragma", "no-cache");
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
-            httpOut.getHeaders().put("Location", isn.getTargetSpnegoEndpoint());
+            httpOut.getHeaders().put("Location", isn.getSpnegoInitiationEndpoint());
         } else
         if (sm instanceof RequestToken) {
             logger.debug("Requesting GSSAPI token to SPNEGO/HTTP initiator");

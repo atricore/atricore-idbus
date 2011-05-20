@@ -39,10 +39,10 @@ public class SpnegoBindingFactory extends SamlR2BindingFactory {
         
         MediationBinding mb = null;
         switch (b) {
-            case SPNEGO_HTTP_INITIATOR:
+            case SPNEGO_HTTP_INITIATION:
                 mb = new SpnegoHttpInitiatorBinding(channel);
                 break;
-            case SPNEGO_HTTP_NEGOTIATOR:
+            case SPNEGO_HTTP_NEGOTIATION:
                 mb = new SpnegoHttpNegotiatorBinding(channel);
                 break;
             default:

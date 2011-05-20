@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<EntityDescriptor ID="idAB30465F3DB631D3" entityID="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MD" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ns4="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ns3="http://www.w3.org/2001/04/xmlenc#">
+<EntityDescriptor ID="idAB30465F3DB631D3" entityID="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MD" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ns4="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ns3="http://www.w3.org/2001/04/xmlenc#">
     <SPSSODescriptor WantAssertionsSigned="true" AuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" ID="id9BA9CE80FE9D0C64">
         <KeyDescriptor use="signing">
             <ns2:KeyInfo>
@@ -67,19 +67,19 @@ eflURWZiaSX8N4qNIM1030jBmGg3Vhfb9zltarBTjSx+XWcYAFmT</ns2:X509Certificate>
             </ns2:KeyInfo>
             <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
         </KeyDescriptor>
-        <ArtifactResolutionService isDefault="true" index="0" Location="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/ARTIFACT/SOAP" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"/>
+        <ArtifactResolutionService isDefault="true" index="0" Location="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/ARTIFACT/SOAP" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"/>
         <ArtifactResolutionService index="1" Location="local://SIMPLE-IWA/SP1/SAML2/ARTIFACT/LOCAL" Binding="urn:oasis:names:tc:SAML:2.0:bindings:LOCAL"/>
-        <SingleLogoutService ResponseLocation="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/SLO_RESPONSE/POST" Location="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/SLO/POST" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"/>
-        <SingleLogoutService Location="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/SLO/ARTIFACT" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"/>
-        <SingleLogoutService Location="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/SLO/SOAP" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"/>
+        <SingleLogoutService ResponseLocation="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/SLO_RESPONSE/POST" Location="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/SLO/POST" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"/>
+        <SingleLogoutService Location="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/SLO/ARTIFACT" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"/>
+        <SingleLogoutService Location="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/SLO/SOAP" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"/>
         <SingleLogoutService Location="local://SIMPLE-IWA/SP1/SAML2/SLO/LOCAL" Binding="urn:org:atricore:idbus:sso:bindings:LOCAL"/>
-        <ManageNameIDService Location="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MNI/SOAP" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"/>
-        <ManageNameIDService ResponseLocation="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MNI_RESPONSE/POST" Location="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MNI/POST" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"/>
-        <ManageNameIDService ResponseLocation="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MNI_RESPONSE/REDIR" Location="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MNI/REDIR" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"/>
+        <ManageNameIDService Location="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MNI/SOAP" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"/>
+        <ManageNameIDService ResponseLocation="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MNI_RESPONSE/POST" Location="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MNI/POST" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"/>
+        <ManageNameIDService ResponseLocation="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MNI_RESPONSE/REDIR" Location="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/MNI/REDIR" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"/>
         <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
         <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
-        <AssertionConsumerService isDefault="true" index="0" Location="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/ACS/ARTIFACT" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"/>
-        <AssertionConsumerService index="1" Location="http://localhost:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/ACS/POST" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"/>
+        <AssertionConsumerService isDefault="true" index="0" Location="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/ACS/ARTIFACT" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"/>
+        <AssertionConsumerService index="1" Location="http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/SP1/SAML2/ACS/POST" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"/>
     </SPSSODescriptor>
     <Organization>
         <OrganizationName xml:lang="en">Atricore IDBUs SAMLR2 JOSSO SP Sample</OrganizationName>

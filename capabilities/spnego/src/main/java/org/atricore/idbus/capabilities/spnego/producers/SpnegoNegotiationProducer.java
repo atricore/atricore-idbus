@@ -22,6 +22,7 @@
 package org.atricore.idbus.capabilities.spnego.producers;
 
 import org.apache.camel.Endpoint;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.HexDump;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +31,7 @@ import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsResponse;
 import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.spnego.*;
+import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -44,6 +46,7 @@ import org.ietf.jgss.*;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 
 import javax.security.auth.Subject;
+import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
 import java.security.PrivilegedAction;
 
@@ -69,47 +72,67 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
         Object content = in.getMessage().getContent();
 
-        SpnegoMessage spnegoResponse = null;
-        IdentityMediationEndpoint targetEndpoint = endpoint;
 
         if (logger.isDebugEnabled())
             logger.info("doProcess() - Received SPNEGO Message = " + content);
 
 
         if (content instanceof SamlR2ClaimsRequest) {
+            SpnegoMessage spnegoResponse = null;
+            IdentityMediationEndpoint targetEndpoint = endpoint;
+
             SamlR2ClaimsRequest claimsRequest = (SamlR2ClaimsRequest) content;
             in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", claimsRequest);
             spnegoResponse = doProcessClaimsRequest(exchange, claimsRequest);
-            targetEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_NEGOTIATON.getValue());
+            targetEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_NEGOTIATION.getValue());
+
+            EndpointDescriptor ed = new EndpointDescriptorImpl(targetEndpoint.getName(),
+                    targetEndpoint.getType(), targetEndpoint.getBinding(), null, null);
+
+            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                    spnegoResponse,
+                    null,
+                    null,
+                    ed,
+                    in.getMessage().getState()));
+            exchange.setOut(out);
+
         } else
         if (content instanceof UnauthenticatedRequest) {
+            SpnegoMessage spnegoResponse = null;
+            IdentityMediationEndpoint targetEndpoint = endpoint;
+
             spnegoResponse = doProcessUnauthenticatedRequest(exchange, (UnauthenticatedRequest) content);
+
+            EndpointDescriptor ed = new EndpointDescriptorImpl(targetEndpoint.getName(),
+                    targetEndpoint.getType(), targetEndpoint.getBinding(), null, null);
+
+            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                    spnegoResponse,
+                    null,
+                    null,
+                    ed,
+                    in.getMessage().getState()));
+            exchange.setOut(out);
+
         } else
         if (content instanceof AuthenticatedRequest) {
-            spnegoResponse = doProcessAuthenticatedRequest(exchange, (AuthenticatedRequest) content);
+            doProcessAuthenticatedRequest(exchange, (AuthenticatedRequest) content);
+        } else {
+            throw new SpnegoException("Unknown message received by Spnego Capability : " + content.getClass().getName());
         }
 
-        EndpointDescriptor ed = new EndpointDescriptorImpl(targetEndpoint.getName(),
-                targetEndpoint.getType(), targetEndpoint.getBinding(), null, null);
-
-        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                spnegoResponse,
-                null,
-                null,
-                ed,
-                in.getMessage().getState()));
-        exchange.setOut(out);
     }
 
     protected SpnegoMessage doProcessClaimsRequest(CamelMediationExchange exchange, ClaimsRequest claimsRequest) throws Exception {
-        IdentityMediationEndpoint spnegoHttpEndpoint = null;
+        IdentityMediationEndpoint spnegoNegotiationEndpoint = null;
 
-        spnegoInitiatorEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_INITIATOR.getValue());
+        spnegoNegotiationEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_NEGOTIATION.getValue());
 
-        if (spnegoHttpEndpoint != null) {
-            return new InitiateSpnegoNegotiation(channel.getLocation() + spnegoInitiatorEndpoint.getLocation());
+        if (spnegoNegotiationEndpoint != null) {
+            return new InitiateSpnegoNegotiation(channel.getLocation() + spnegoNegotiationEndpoint.getLocation());
         } else {
-            throw new SpnegoException("No SPNEGO/Initiator endpoint defined for claim channel " + channel.getName());
+            throw new SpnegoException("No SPNEGO/Negotiation endpoint defined for claim channel " + channel.getName());
         }
     }
 
@@ -118,7 +141,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
     }
 
     /* Factor out authentication to STS */
-    protected SpnegoMessage doProcessAuthenticatedRequest(CamelMediationExchange exchange, AuthenticatedRequest content) throws Exception {
+    protected void doProcessAuthenticatedRequest(CamelMediationExchange exchange, AuthenticatedRequest content) throws Exception {
         final SpnegoMediator spnegoMediator = (SpnegoMediator) channel.getIdentityMediator();
         final byte[] securityToken = content.getTokenValue();
 
@@ -162,11 +185,13 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
         EndpointDescriptor ed = mediator.resolveEndpoint(claimsRequest.getIssuerChannel(),
                 claimsProcessingEndpoint);
 
-        String serviceTicket = null;
+        String base64SpnegoToken = new String(Base64.encodeBase64(securityToken));
+
+        logger.debug("Base64 Spnego Token is " + base64SpnegoToken);
 
         // Build a SAMLR2 Compatible Security token
         BinarySecurityTokenType binarySecurityToken = new BinarySecurityTokenType ();
-        binarySecurityToken.setValue(serviceTicket);
+        binarySecurityToken.getOtherAttributes().put(new QName(Constants.SPNEGO_NS), base64SpnegoToken);
 
         Claim claim = new ClaimImpl(AuthnCtxClass.KERBEROS_AUTHN_CTX.getValue(), binarySecurityToken);
         ClaimSet claims = new ClaimSetImpl();
@@ -186,37 +211,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
         exchange.setOut(out);
 
-        /*
-        logger.info("Relaying SPNEGO token [" + content.getTokenValue() + "]");
 
-
-
-        try {
-            LoginContext loginContext = new LoginContext(spnegoMediator.getRealm(), new CallbackHandler() {
-                public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                    for (int i = 0; i < callbacks.length; i++) {
-                        if (callbacks[i] instanceof NameCallback) {
-                            ((NameCallback) callbacks[i]).setName(spnegoMediator.getPrincipal());
-                        } else {
-                            throw new UnsupportedCallbackException(callbacks[i]);
-                        }
-                    }
-                }
-            });
-            loginContext.login();
-            Subject kerberosSubject = loginContext.getSubject();
-            new SecurityContextEstablisher().acceptKerberosServiceTicket(
-                    content.getTokenValue(),
-                    kerberosSubject,
-                    spnegoMediator.getPrincipal()
-            );
-        } catch (LoginException e) {
-            throw new SecurityException("Authentication failed", e);
-        }
-
-        */
-
-        return null;
     }
 
 
@@ -234,66 +229,6 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
         }
 
         return foundEndpoint;
-    }
-
-    class SecurityContextEstablisher implements PrivilegedAction {
-
-        private byte[] kerberosServiceTicket;
-        private String principal;
-        private boolean loginOk = false;
-
-        /**
-         * Authenticates the kerberos service token .
-         *
-         * @param kerberosSubject the kerberos subject under which the authentication logic is ran
-         */
-        void acceptKerberosServiceTicket(byte[] kerberosServiceTicket, Subject kerberosSubject, String principal) {
-            this.kerberosServiceTicket = kerberosServiceTicket;
-            this.principal = principal;
-            Subject.doAs(kerberosSubject, this);
-        }
-
-        /**
-         * <p>
-         * This is the only method in PrivilegedAction interface.
-         * </p>
-         * <p>
-         * Created a GSS security context by verifying the kerberos service ticket supplied
-         * by the client
-         * </p>
-         */
-        public Object run() {
-            //The context for secure communication with client.
-            GSSContext serverGSSContext = null;
-
-            try {
-                GSSManager manager = GSSManager.getInstance();
-                Oid spnego = new Oid("1.3.6.1.5.5.2");
-
-                GSSName serverGSSName = manager.createName(principal, null);
-                GSSCredential serverGSSCreds = manager.createCredential(serverGSSName,
-                        GSSCredential.INDEFINITE_LIFETIME,
-                        spnego,
-                        GSSCredential.ACCEPT_ONLY);
-
-                serverGSSContext = manager.createContext(serverGSSCreds);
-
-                byte[] outputToken;
-                outputToken = serverGSSContext.acceptSecContext(kerberosServiceTicket, 0,
-                        kerberosServiceTicket.length);
-
-                loginOk = true;
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                HexDump.dump(outputToken, 0, baos, 0);
-                logger.debug("Kerberos Service Ticket Successfully relayed (hex) : " + baos.toString());
-                return outputToken;
-            } catch (Exception e) {
-                logger.debug("Error creating security context", e);
-            }
-
-            return null;
-        }
-
     }
 
 }

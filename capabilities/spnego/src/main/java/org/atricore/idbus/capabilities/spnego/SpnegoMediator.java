@@ -24,16 +24,17 @@ package org.atricore.idbus.capabilities.spnego;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
+import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
-import java.io.StringReader;
 import java.util.Collection;
 
 /**
@@ -108,7 +109,7 @@ public class SpnegoMediator extends AbstractCamelMediator {
                             }
 
                             break;
-                        case SPNEGO_HTTP_INITIATOR:
+                        case SPNEGO_HTTP_INITIATION:
                             // FROM idbus-http TO idbus-bind
                             from("idbus-http:" + ed.getLocation()).
                                     process(new LoggerProcessor(getLogger())).
@@ -124,7 +125,7 @@ public class SpnegoMediator extends AbstractCamelMediator {
                                             "&endpointRef=" + endpoint.getName());
 
                             break;
-                        case SPNEGO_HTTP_NEGOTIATOR:
+                        case SPNEGO_HTTP_NEGOTIATION:
                             // FROM idbus-http TO idbus-bind
                             from("idbus-http:" + ed.getLocation()).
                                     process(new LoggerProcessor(getLogger())).
@@ -139,7 +140,7 @@ public class SpnegoMediator extends AbstractCamelMediator {
                                             "?channelRef=" + claimChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
-
+                            break;
                         default:
                             throw new SpnegoException("Unsupported Spnego Binding " + binding.getValue());
                     }
@@ -158,8 +159,8 @@ public class SpnegoMediator extends AbstractCamelMediator {
      * @return
      */
     public EndpointDescriptor resolveEndpoint(Channel channel, IdentityMediationEndpoint endpoint) throws IdentityMediationException {
-        if (channel instanceof ClaimChannel) {
 
+        if (channel instanceof ClaimChannel) {
             String type = null;
             String location;
             String responseLocation;
@@ -193,13 +194,65 @@ public class SpnegoMediator extends AbstractCamelMediator {
             // Resolve Endpoint type
             // ---------------------------------------------
             // If no ':' is present, lastIndexOf should resturn -1 and the entire type is used.
-            type = endpoint.getType().substring(endpoint.getType().lastIndexOf("}") + 1);
+            if (endpoint.getType() != null) {
+                type = endpoint.getType().substring(endpoint.getType().lastIndexOf("}") + 1);
+            }
 
             return new EndpointDescriptorImpl(endpoint.getName(),
                     type,
                     binding.getValue(),
                     location,
                     responseLocation);
+        } if (channel instanceof SPChannel) {
+            String type = null;
+            String location;
+            String responseLocation;
+            SamlR2Binding binding = null;
+
+            // ---------------------------------------------
+            // Resolve Endpoint binding
+            // ---------------------------------------------
+            if (endpoint.getBinding() != null)
+                binding = SamlR2Binding.asEnum(endpoint.getBinding());
+            else
+                logger.warn("No SamlR2Binding found in endpoint " + endpoint.getName());
+
+            // ---------------------------------------------
+            // Resolve Endpoint location
+            // ---------------------------------------------
+            location = endpoint.getLocation();
+            if (location == null)
+                throw new IdentityMediationException("Endpoint location cannot be null.  " + endpoint);
+
+            if (location.startsWith("/"))
+                location = channel.getLocation() + location;
+
+            // ---------------------------------------------
+            // Resolve Endpoint response location
+            // ---------------------------------------------
+            responseLocation = endpoint.getResponseLocation();
+            if (responseLocation != null && responseLocation.startsWith("/"))
+                responseLocation = channel.getLocation() + responseLocation;
+
+            // ---------------------------------------------
+            // Resolve Endpoint type
+            // ---------------------------------------------
+
+            // Remove qualifier, format can be :
+            // 1 - {qualifier}type
+            // 2 - qualifier:type
+            int bracketPos = endpoint.getType().lastIndexOf("}");
+            if (bracketPos > 0)
+                type = endpoint.getType().substring(bracketPos + 1);
+            else
+                type = endpoint.getType().substring(endpoint.getType().lastIndexOf(":") + 1);
+
+            return new EndpointDescriptorImpl(endpoint.getName(),
+                    type,
+                    binding.getValue(),
+                    location,
+                    responseLocation);
+
         } else {
             throw new IdentityMediationException("Unsupported channel type " +
                     channel.getName() + " " + channel.getClass().getName());

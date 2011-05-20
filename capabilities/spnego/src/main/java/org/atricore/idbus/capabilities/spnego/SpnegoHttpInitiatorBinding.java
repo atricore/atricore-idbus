@@ -23,7 +23,6 @@ package org.atricore.idbus.capabilities.spnego;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -37,7 +36,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import java.util.Map;
 
 /**
- * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
+ * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  * @version $Id$
  */
 public class SpnegoHttpInitiatorBinding extends AbstractMediationHttpBinding {
@@ -45,40 +44,12 @@ public class SpnegoHttpInitiatorBinding extends AbstractMediationHttpBinding {
     private static final Log logger = LogFactory.getLog(SpnegoHttpInitiatorBinding.class);
 
     protected SpnegoHttpInitiatorBinding(Channel channel) {
-        super(SpnegoBinding.SPNEGO_HTTP_INITIATOR.getValue(), channel);
+        super(SpnegoBinding.SPNEGO_HTTP_INITIATION.getValue(), channel);
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {
-        SpnegoMessage sm = null;
-
-        Exchange exchange = message.getExchange().getExchange();
-        logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
-
-        Message httpMsg = exchange.getIn();
-
-        if (httpMsg.getHeader("http.requestMethod") == null) {
-
-            if (logger.isDebugEnabled()) {
-                Map<String, Object> h = httpMsg.getHeaders();
-                for (String key : h.keySet()) {
-                    logger.debug("CAMEL Header:" + key + ":"+ h.get(key));
-                }
-            }
-
-            throw new IllegalArgumentException("Unknown message, no valid HTTP Method header found!");
-        }
-
-        sm = new InitiateSpnegoNegotiation();
-
-        // HTTP Request Parameters from HTTP Request body
-        MediationState state = createMediationState(exchange);
-
-        return new MediationMessageImpl(message.getMessageId(),
-                        sm,
-                        null,
-                        null,
-                        null,
-                        state);
+        throw new UnsupportedOperationException("Spnego Initiator Endpoint in channel " + channel.getName() +
+                " cannot be accessed directly");
     }
 
     public void copyMessageToExchange(CamelMediationMessage spnegoOut, Exchange exchange) {
@@ -94,18 +65,13 @@ public class SpnegoHttpInitiatorBinding extends AbstractMediationHttpBinding {
 
         if (sm instanceof InitiateSpnegoNegotiation) {
             InitiateSpnegoNegotiation isn = (InitiateSpnegoNegotiation) sm;
-            logger.debug("Initiating Spnego Negotiation on " + isn.getTargetSpnegoEndpoint());
+            logger.debug("Initiating Spnego Negotiation on " + isn.getSpnegoInitiationEndpoint());
 
             httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
             httpOut.getHeaders().put("Pragma", "no-cache");
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
-            httpOut.getHeaders().put("Location", isn.getTargetSpnegoEndpoint());
-        } else
-        if (sm instanceof RequestToken) {
-            logger.debug("Requesting GSSAPI token to SPNEGO/HTTP initiator");
-            httpOut.getHeaders().put(SpnegoHeader.AUTHN.getValue(), SpnegoHeader.NEGOTIATE.getValue());
-            httpOut.getHeaders().put("http.responseCode", SpnegoStatus.UNAUTHORIZED.getValue());
+            httpOut.getHeaders().put("Location", isn.getSpnegoInitiationEndpoint());
         }
 
     }

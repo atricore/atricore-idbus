@@ -19,13 +19,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.capabilities.sts.main;
+package org.atricore.idbus.capabilities.spnego;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
+import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticator;
+import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.kernel.main.authn.Authenticator;
-import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.Constants;
+import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.exceptions.AuthenticationFailureException;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
@@ -36,21 +39,12 @@ import javax.xml.namespace.QName;
 
 /**
  *
- *  @org.apache.xbean.XBean element="security-token-authenticator"
- *
- * This implementation supports built-in authentication schemes.
- * This will probably be replaced once the provisioning infrastructure is in place.
- *
- * For now, the component will addapt authenticaiton requests and redirect them to legacy authenticator component.
- *
- * TODO : Replace with pluggable authentication infrastructure!
- *
- * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: DefaultSecurityTokenAuthenticator.java 1359 2009-07-19 16:57:57Z sgonzalez $
+ * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
+ * @version $Id$
  */
-public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthenticator {
+public class SpnegoAuthenticator implements SecurityTokenAuthenticator {
 
-    private static Log logger = LogFactory.getLog(DefaultSecurityTokenAuthenticator.class);
+    private static Log logger = LogFactory.getLog(SpnegoAuthenticator.class);
 
     private String id;
 
@@ -66,17 +60,9 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
 
     public boolean canAuthenticate(Object requestToken) {
 
-        if (requestToken instanceof UsernameTokenType)
-            return true;
-        if ( isRememberMeToken( requestToken ) ){
+        if ( isSpnegoToken(requestToken) ){
             return true;
         }
-        if ( isSpnegoToken( requestToken)) {
-            return true;
-        }
-
-        // TODO : Add X509, SAML2 and other token types!
-
         return false;
     }
 
@@ -87,31 +73,7 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
 
         try {
 
-            // Username/password (basic) authentication scheme
-            if (isRememberMeToken( requestToken )) {
-                scheme = "rememberme-authentication";
-
-                BinarySecurityTokenType rememberMeToken = (BinarySecurityTokenType) requestToken;
-
-                Credential rememberMeCredential = getAuthenticator().newCredential( scheme, "remembermeToken", rememberMeToken.getValue() );
-
-                credentials = new Credential[] { rememberMeCredential };
-                
-            } else if (is2FactorAuthnToken(requestToken)) {
-                scheme = "2factor-authentication";
-
-                UsernameTokenType usernameToken = (UsernameTokenType) requestToken;
-
-                String username = usernameToken.getUsername().getValue();
-                String passcode = usernameToken.getOtherAttributes().get( new QName( Constants.PASSCODE_NS) );
-
-                Credential usernameCredential = getAuthenticator().newCredential(scheme, "username", username);
-                Credential passcodeCredential = getAuthenticator().newCredential(scheme, "passcode", passcode);
-
-                credentials = new Credential[] {usernameCredential, passcodeCredential};
-
-
-            } else if (isSpnegoToken(requestToken)) {
+            if (isSpnegoToken(requestToken)) {
 
                 scheme = "spnego-authentication";
 
@@ -122,22 +84,7 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
                 Credential spnegoCredential = getAuthenticator().newCredential(scheme, "spnegoSecurityToken", spnegoSecurityToken);
                 credentials = new Credential[] {spnegoCredential};
 
-            } else if (requestToken instanceof UsernameTokenType) {
-
-                scheme = "basic-authentication";
-
-                UsernameTokenType usernameToken = (UsernameTokenType) requestToken;
-
-                String username = usernameToken.getUsername().getValue();
-                String password = usernameToken.getOtherAttributes().get( new QName( Constants.PASSWORD_NS) );
-
-                Credential usernameCredential = getAuthenticator().newCredential(scheme, "username", username);
-                Credential passwordCredential = getAuthenticator().newCredential(scheme, "password", password);
-
-                credentials = new Credential[] {usernameCredential, passwordCredential};
-
             }
-
 
             // TODO : Add X509, SAML2 and other token types!
 
