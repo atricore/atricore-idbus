@@ -46,6 +46,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -166,6 +167,9 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
 
         // errorUrl
         setPropertyValue(idpMediator, "errorUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/error.do");
+
+        // warningUrl
+        setPropertyValue(idpMediator, "warningUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/warn/policy-enforcement.do");
 
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 

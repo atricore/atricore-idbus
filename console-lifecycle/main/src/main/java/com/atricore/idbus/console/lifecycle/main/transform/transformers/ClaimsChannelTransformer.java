@@ -155,6 +155,9 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         // errorUrl
         setPropertyValue(ccMediator, "errorUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/error.do");
 
+        // warningUrl
+        setPropertyValue(ccMediator, "warningUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/warn/policy-enforcement.do");
+
         // identityMediator
         setPropertyRef(claimsChannelBean, "identityMediator", ccMediator.getName());
 

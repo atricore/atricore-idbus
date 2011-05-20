@@ -218,7 +218,11 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         // artifactQueueManager
         setPropertyRef(bindingMediator, "artifactQueueManager", applianceDef.getName() + "-aqm");
 
+        // errorUrl
         setPropertyValue(bindingMediator, "errorUrl", resolveLocationBaseUrl(applianceDef.getLocation()) + "/idbus-ui/error.do");
+
+        // warningUrl
+        setPropertyValue(bindingMediator, "warningUrl", resolveLocationBaseUrl(applianceDef.getLocation()) + "/idbus-ui/warn/policy-enforcement.do");
 
         // logger
         List<Bean> bpLogBuilders = new ArrayList<Bean>();

@@ -234,6 +234,10 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         // errorUrl
         setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getIdentityAppliance().getLocation()) + "/idbus-ui/error.do");
 
+        // warningUrl
+        setPropertyValue(spMediator, "warningUrl", resolveLocationBaseUrl(provider.getIdentityAppliance().getLocation()) + "/idbus-ui/warn/policy-enforcement.do");
+
+
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
         Keystore signKs = null;
