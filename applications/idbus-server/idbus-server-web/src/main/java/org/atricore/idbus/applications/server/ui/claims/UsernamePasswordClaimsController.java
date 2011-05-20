@@ -27,7 +27,7 @@ import org.atricore.idbus.applications.server.ui.util.DashboardMessage;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcement;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -91,7 +91,7 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
             List<DashboardMessage> ssoPolicyMsgs = new ArrayList<DashboardMessage>();
 
             // Publish SSO Policies information to be displayed ...
-            for (SSOPolicyEnforcement ssoPolicyEnforcement : claimsRequest.getSsoPolicyEnforcements()) {
+            for (SSOPolicyEnforcementStatement ssoPolicyEnforcement : claimsRequest.getSsoPolicyEnforcements()) {
                 List<Object> values = null;
                 if (ssoPolicyEnforcement.getValues().size() > 0) {
                     values = new ArrayList<Object>();

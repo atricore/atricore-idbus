@@ -26,6 +26,14 @@ public enum PasswordPolicyErrorType implements Serializable {
       this.name = name;
     }
 
+    public static PasswordPolicyErrorType fromName(String name) {
+        for (PasswordPolicyErrorType p : values()) {
+            if (p.getName().equals(name))
+                return p;
+        }
+        throw new IllegalArgumentException("No enum const class PasswordPolicyErrorType for name " + name);
+    }
+
     public String getName() {
         return name;
     }

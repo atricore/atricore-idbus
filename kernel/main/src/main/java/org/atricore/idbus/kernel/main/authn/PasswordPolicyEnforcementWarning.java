@@ -5,12 +5,14 @@ package org.atricore.idbus.kernel.main.authn;
  */
 public class PasswordPolicyEnforcementWarning extends BasePasswordPolicyEnforcementImpl {
 
+    public static final String NAMESPACE = "urn:org:atricore:idbus:policy:warn:password";
+
     private PasswordPolicyWarningType  type ;
 
     private int value;
 
     public PasswordPolicyEnforcementWarning(PasswordPolicyWarningType type) {
-        super(type.getName());
+        super(NAMESPACE, type.getName());
         this.type = type;
     }
 

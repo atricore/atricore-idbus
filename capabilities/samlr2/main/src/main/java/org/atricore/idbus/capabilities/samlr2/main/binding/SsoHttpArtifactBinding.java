@@ -36,6 +36,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.Abstract
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimsResponse;
+import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
+import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
 import org.w3._1999.xhtml.Html;
 
 import java.io.ByteArrayInputStream;
@@ -128,10 +130,22 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
 
             } else if (out.getContent() instanceof SSORequestAbstractType) {
                 msgValue = out.getContent();
-
             } else if (out.getContent() instanceof SSOResponseType) {
                 msgValue = out.getContent();
                 isResponse = true;
+            } else if (out.getContent() instanceof PolicyEnforcementRequest) {
+                msgValue = out.getContent();
+
+            } else if (out.getContent() instanceof PolicyEnforcementResponse) {
+                msgValue = out.getContent();
+                isResponse = true;
+
+            } else if (msgValue != null) {
+                msgValue = out.getContent();
+                logger.warn("Unknown message content : " + msgValue.getClass().getName());
+                // Try to guess if this is a response ...
+                if (msgValue.getClass().getSimpleName().contains("esponse"))
+                    isResponse = true;
             }
 
             MessageQueueManager aqm = getArtifactQueueManager();

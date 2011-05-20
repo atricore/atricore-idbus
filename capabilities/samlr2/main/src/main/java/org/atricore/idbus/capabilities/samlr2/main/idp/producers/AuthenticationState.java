@@ -45,11 +45,12 @@ public class AuthenticationState implements java.io.Serializable {
 
     private Set<String> usedClaimsEndpoints = new HashSet<String>();
 
-    private AuthnRequestType authnRequest;
-
     private String responseMode;
 
     private String responseFormat;
+
+    // The last authn request
+    private AuthnRequestType authnRequest;
 
     public AuthnRequestType getAuthnRequest() {
         return authnRequest;

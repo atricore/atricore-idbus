@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.CredentialKey;
 import org.atricore.idbus.kernel.main.authn.CredentialProvider;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcement;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
@@ -188,8 +188,8 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
         _credentialStoreKeyAdapter = a;
     }
 
-    public Set<SSOPolicyEnforcement> getSSOPolicies() {
-        return _subject.getPrincipals(SSOPolicyEnforcement.class);
+    public Set<SSOPolicyEnforcementStatement> getSSOPolicies() {
+        return _subject.getPrincipals(SSOPolicyEnforcementStatement.class);
     }
 
     /**

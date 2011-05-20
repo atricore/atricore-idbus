@@ -1,5 +1,6 @@
 package org.atricore.idbus.kernel.main.authn;
 
+import javax.xml.namespace.QName;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,12 +10,23 @@ import java.util.Set;
  */
 public class BasePasswordPolicyEnforcementImpl implements SSOPasswordPolicyEnforcement, Principal {
 
+    private String ns;
+
     private String name;
 
     private Set<Object> values = new HashSet<Object>();
 
-    public BasePasswordPolicyEnforcementImpl(String name) {
+    public BasePasswordPolicyEnforcementImpl(String ns, String name) {
+        this.ns = ns;
         this.name = name;
+    }
+
+    public QName getQName() {
+        return new QName(ns, name);
+    }
+
+    public String getNs() {
+        return ns;
     }
 
     public String getName() {

@@ -1,7 +1,7 @@
 package org.atricore.idbus.kernel.main.store.identity;
 
 import org.atricore.idbus.kernel.main.authn.SSOPasswordPolicyEnforcement;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcement;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 
 import java.util.List;
 
@@ -12,5 +12,5 @@ public interface BindContext {
 
     void addPasswordPolicyMessages(SSOPasswordPolicyEnforcement msg);
 
-    List<SSOPolicyEnforcement> getSSOPolicies();
+    List<SSOPolicyEnforcementStatement> getSSOPolicies();
 }

@@ -22,9 +22,16 @@ public enum PasswordPolicyWarningType implements Serializable {
 
     private final String name;
 
-    private PasswordPolicyWarningType(final String name)
-    {
+    private PasswordPolicyWarningType(final String name) {
       this.name = name;
+    }
+
+    public static PasswordPolicyWarningType fromName(String name) {
+        for (PasswordPolicyWarningType p : values()) {
+            if (p.getName().equals(name))
+                return p;
+        }
+        throw new IllegalArgumentException("No enum const class PasswordPolicyWarningType for name " + name);
     }
 
     public String getName() {
@@ -35,8 +42,7 @@ public enum PasswordPolicyWarningType implements Serializable {
      * {@inheritDoc}
      */
     @Override
-    public String toString()
-    {
+    public String toString() {
       return name;
     }
 

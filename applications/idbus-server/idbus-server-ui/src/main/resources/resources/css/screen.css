@@ -10,7 +10,7 @@
   $ Authentication (authentication.html)
   $ Authentication-success (authentication-success.html)
   $ Lost-password (lost-password.html)
-  $ Partner-public (partner-public.html)
+  $ warning (warning.html)
   $ Partner-protected (partner-protected.html)
 ************************************************************************************************************************************************/
 
@@ -178,39 +178,68 @@ body {text-align:center; background:#1A2739 url(../img/body.jpg) no-repeat 50% 0
 
       /* Highlight */
       #content #authentication  .highlight {position:absolute; top:115px; right:0; width:246px; } /* Check IE6 Stylesheet too */
-      #content #authentication  .highlight .footer {width:290px; right:0px;}     
+      #content #authentication  .highlight .footer {width:290px; right:0px;}
+
 
       
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- $ Partner-public
+ $ warning
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 
 /* Content */
 
       /* Main Content */ 
-      #content #partner-public { }
+      #content #warning { }
       
       /* Highlight */  
-      #content #partner-public .highlight {width:510px; float:left; } /* Check IE6 Stylesheet too */
-      #content #partner-public .highlight .footer {width:528px; right:0px;}
+      #content #warning .highlight {width:510px; float:left; } /* Check IE6 Stylesheet too */
+      #content #warning .highlight .footer {width:528px; right:0px;}
       
-      #content #partner-public .button {float:right;}
+      #content #warning .button {float:right;}
 
       /* Login-options */        
-      #content #partner-public #login-options {clear:both; padding-top:10px; width:100%; overflow:hidden; } /* Check IE6 and IE7 Stylesheets too */
+      #content #warning #login-options {clear:both; padding-top:10px; width:100%; overflow:hidden; } /* Check IE6 and IE7 Stylesheets too */
       
-      #partner-public #login-options #col1  {margin:0 38px 0 0; }
+      #warning #login-options #col1  {margin:0 38px 0 0; }
     
-      #partner-public #login-options #col1, 
-      #partner-public #login-options #col2  {float:left; width:320px; }
+      #warning #login-options #col1,
+      #warning #login-options #col2  {float:left; width:320px; }
       
-      #partner-public #login-options h3 {display:block; border-bottom:1px solid #DDDDDD; margin:0 0 5px 0; }
-      #partner-public #login-options h4 {float:left; padding:0 5px 0 0; clear:left; }
-      #partner-public #login-options p {margin:0; float:left; line-height:1.4;font-size:0.9em;  }
-      #partner-public #login-options a {font-size:1em;  }
+      #warning #login-options h3 {display:block; border-bottom:1px solid #DDDDDD; margin:0 0 5px 0; }
+      #warning #login-options h4 {float:left; padding:0 5px 0 0; clear:left; }
+      #warning #login-options p {margin:0; float:left; line-height:1.4;font-size:0.9em;  }
+      #warning #login-options a {font-size:1em;  }
 
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ $ warning
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+
+/* Content */
+
+      /* Main Content */
+      #content #warning { }
+
+      /* Highlight */
+      #content #warning .highlight {width:510px; float:left; } /* Check IE6 Stylesheet too */
+      #content #warning .highlight .footer {width:528px; right:0px;}
+
+      #content #warning .button {float:right;}
+
+      /* Login-options */
+      #content #warning #login-options {clear:both; padding-top:10px; width:100%; overflow:hidden; } /* Check IE6 and IE7 Stylesheets too */
+
+      #warning #login-options #col1  {margin:0 38px 0 0; }
+
+      #warning #login-options #col1,
+      #warning #login-options #col2  {float:left; width:320px; }
+
+      #warning #login-options h3 {display:block; border-bottom:1px solid #DDDDDD; margin:0 0 5px 0; }
+      #warning #login-options h4 {float:left; padding:0 5px 0 0; clear:left; }
+      #warning #login-options p {margin:0; float:left; line-height:1.4;font-size:0.9em;  }
+      #warning #login-options a {font-size:1em;  }
 
       
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -94,15 +94,12 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSAMLR2Assertion
         // SSO Enforced policies
         // TODO : Can we use SAML Authn context information ?!
         List<AttributeType> attrPolicies = new ArrayList<AttributeType>();
-        Set<SSOPolicyEnforcement> ssoPolicyEnforcements = s.getPrincipals(SSOPolicyEnforcement.class);
-        for (SSOPolicyEnforcement ssoPolicyEnforcement : ssoPolicyEnforcements) {
+        Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = s.getPrincipals(SSOPolicyEnforcementStatement.class);
+        for (SSOPolicyEnforcementStatement ssoPolicyEnforcement : ssoPolicyEnforcements) {
             AttributeType attrPolicy = new AttributeType();
 
-            if (ssoPolicyEnforcement instanceof SSOPasswordPolicyEnforcement)
-                attrPolicy.setName(SAMLR2Constants.SSOPOLICY_ENF_NS + ":password:" + ssoPolicyEnforcement.getName());
-            else
-                attrPolicy.setName(SAMLR2Constants.SSOPOLICY_ENF_NS + ":enforcement:" + ssoPolicyEnforcement.getName());
-
+            attrPolicy.setFriendlyName(ssoPolicyEnforcement.getName());
+            attrPolicy.setName(ssoPolicyEnforcement.getNs() + ":" + ssoPolicyEnforcement.getName());
             attrPolicy.setNameFormat(AttributeNameFormat.URI.getValue());
 
             if (ssoPolicyEnforcement.getValues().size() > 0) {

@@ -102,7 +102,7 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
                 Subject auths = (Subject) ex.getProperty(WSTConstants.SUBJECT_PROP);
 
                 // Use existing SSOPolicyEnforcement principals
-                Set<SSOPolicyEnforcement> ssoPolicies = auths.getPrincipals(SSOPolicyEnforcement.class);
+                Set<SSOPolicyEnforcementStatement> ssoPolicies = auths.getPrincipals(SSOPolicyEnforcementStatement.class);
 
                 if (ssoPolicies != null) {
                     if (logger.isDebugEnabled())
