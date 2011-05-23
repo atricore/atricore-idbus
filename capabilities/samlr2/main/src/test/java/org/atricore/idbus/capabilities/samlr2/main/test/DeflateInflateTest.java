@@ -1,98 +1,146 @@
 package org.atricore.idbus.capabilities.samlr2.main.test;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
-import java.net.URLDecoder;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
+import java.util.zip.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class DeflateInflateTest {
 
+    private static final Log logger = LogFactory.getLog(DeflateInflateTest.class);
+
+    private static String bufferLen = "4096";
+
+
     @BeforeClass
     public static void setupTestSuite() throws Exception {
     }
 
-    @Test
+    //    @Test
     public void deflateInflate() throws Exception {
 
-        String s = deflate("Hello, World!", true);
-        System.out.println("DF:" + s) ;
-        s = inflate(s, true);
+        String s = deflateForRedirect("Hello, World!", true);
+        System.out.println("DF:" + s);
+        s = inflateFromRedirect(s, true);
         System.out.println("IF:" + s);
-
 
 
     }
 
-    @Test
+    //@Test
     public void inflateXml() throws Exception {
         String s = "pZJNb+IwEIb/iuUeOBHbST+CRagoCVKk0kWEVtVeVm7sgqXERhlTuv9+HSCoXan00IMtefTMO+94Znj7XlfoTTWgrUl6LKA9pExppTarpPe4nPbj3u1oCKKuNnyhYGMNKORzDPB3kAleO7fhhOx2u2AXBbZZkZBSRp5n90W5VrXAR9iLfgnTS+IhT1x09L5egreN4VaABm5ErYC7khfj2T0PA8o3jXW2tFWXIuELfUrooNWXoFefCpzXFwCqcf5XMJq0TRt3ni8PELcvTmijJEapAqeNaDVO1ipbimptwfGYxozk6d1j4e8xI8XcHy8WkvGk+LPIivmvhyIjiyzNFxjlAFuVG3Ci9RFSxvr0qk+jZcg4ozwMA0YHvzF6Ok4Se0s+y3QjW9oEaxlN0uv4ckzpzdV1FjHmibSNT+8GLKRxlmZZPMjiCB8mzvdVGzS1TS2+ab+NaNl/3aN+2k67v3j0bdd5emp7lg7Jh6rd0hVOuC18fk2sVOhJVFt13hTs6ePeStXgH8k82LlfCv2mMBkdrH4U+i90enYTGP0D";
 
         System.out.println("DFXML:" + s);
-        s = inflate(s, true);
+        s = inflateFromRedirect(s, true);
         System.out.println("IFXML:" + s);
     }
 
-    protected String deflate(String in, boolean encode) throws Exception {
+    @Test
+    public void inflateServiceNowRequest() throws Exception {
+        String s = "nZNPc9owEMW/ikd3/5EJSdFgZoyhU2bS1MVODr2p8jrR1JZcrQzk20c2JOHQ0Gmvu0/atz89zZG3TdyxtLdPagu/e0DrHdpGITt2EtIbxTRHiUzxFpBZwYr06y2Lg4h1RlstdEO8FBGMlVplWmHfginA7KSA  1tQp6s7ZCFIf567qCCXYDHpq/0PhC6DRXfdfwRgkoT77M2AkY/Cal5g0C8zSohxV1GV5 Wy3V6HaVRmkbxTRRFk mMrtN0TSdXs5kTYs4R5Q7ejyL2sFFoubIJiSNK/Wjqx5OSXjN6w hVEE8nP4iXnzZZSlVJ9Xh57Z9HEbIvZZn7 beiHC/YyQrMnVO706qCWiqoiPcABh0XNzyIyGI YmWjLXNO vJE/oqXLP4Gcx6ejzgN7Njga7PKdSPFs5c2jd5nBrh1Xq3pYcTecvuxCxrQsSIrvx6lrFfYgZC1HLYs8mHA9543Q8H825uHby5PEYRqDIDLkoWD9TLddtxIHCjCgQv7xvFcljWO0hbq/6J6USaYGO525SFee22qIS4gnM/ScIdBG/uK/U OFqfmB/u9t8 /4eIF";
 
-        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-        DeflaterOutputStream deflated = new DeflaterOutputStream(bytesOut, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
-        ByteArrayInputStream inflated = new ByteArrayInputStream(in.getBytes("UTF-8"));
+        System.out.println("DFXML:" + s);
 
+        s = inflateFromRedirect(s, true);
 
-        byte[] buf = new byte[1024];
-        int read = inflated.read(buf);
-        while (read > 0) {
-            deflated.write(buf, 0, read);
-            read = inflated.read(buf);
-        }
+        System.out.println("Inflated : " + s);
 
-
-        deflated.flush();
-        deflated.finish();
-
-
-        byte[] encodedbytes = bytesOut.toByteArray();
-        if (encode) {
-            encodedbytes = new Base64().encode(encodedbytes);
-        }
-
-        deflated.close();
-
-        return new String(encodedbytes);
 
     }
 
-    protected String inflate(String in, boolean decode) throws Exception {
+    public static String deflateForRedirect(String redirStr, boolean encode) {
 
-        byte[] decodedBytes = in.getBytes();
-        if (decode) {
-            decodedBytes = new Base64().decode(in.getBytes());
+        int n = redirStr.length();
+        byte[] redirIs = null;
+        try {
+            redirIs = redirStr.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
 
-        ByteArrayInputStream bytesIn = new ByteArrayInputStream(decodedBytes);
-        InputStream inflater = new InflaterInputStream(bytesIn, new Inflater(true));
+        byte[] deflated = new byte[n];
 
-        // This gets rid of platform specific EOL chars ...
-        BufferedReader r = new BufferedReader(new InputStreamReader(inflater));
-        StringBuffer sb = new StringBuffer();
+        Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
+        deflater.setInput(redirIs);
+        deflater.finish();
+        int len = deflater.deflate(deflated);
+        deflater.end();
 
-        String l = r.readLine();
-        while (l != null) {
-            sb.append(l);
-            l = r.readLine();
+        byte[] exact = new byte[len];
+
+        System.arraycopy(deflated, 0, exact, 0, len);
+
+        if (encode) {
+            byte[] base64Str = new Base64().encode(exact);
+            return new String(base64Str);
         }
 
-        return sb.toString();
+        return new String(exact);
+    }
 
+    public static String inflateFromRedirect(String redirStr, boolean decode) throws Exception {
+
+        if (redirStr == null || redirStr.length() == 0) {
+            throw new RuntimeException("Redirect string cannot be null or empty");
+        }
+
+        byte[] redirBin = null;
+        if (decode)
+            redirBin = new Base64().decode(removeNewLineChars(redirStr).getBytes());
+        else
+            redirBin = redirStr.getBytes();
+
+        // Decompress the bytes
+        Inflater inflater = new Inflater(true);
+        inflater.setInput(redirBin);
+        int resultLen = 4096;
+
+        byte[] result = new byte[resultLen];
+        int resultLength = 0;
+        try {
+            resultLength = inflater.inflate(result);
+        } catch (DataFormatException e) {
+            throw new RuntimeException("Cannot inflate SAML message : " + e.getMessage(), e);
+        }
+
+
+        inflater.end();
+
+        // Decode the bytes into a String
+        String outputString = null;
+        try {
+            outputString = new String(result, 0, resultLength, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Cannot convert byte array to string " + e.getMessage(), e);
+        }
+        return outputString;
+    }
+
+    public static String removeNewLineChars(String s) {
+        String retString = null;
+        if ((s != null) && (s.length() > 0) && (s.indexOf('\n') != -1)) {
+            char[] chars = s.toCharArray();
+            int len = chars.length;
+            StringBuffer sb = new StringBuffer(len);
+            for (int i = 0; i < len; i++) {
+                char c = chars[i];
+                if (c != '\n') {
+                    sb.append(c);
+                }
+            }
+            retString = sb.toString();
+        } else {
+            retString = s;
+        }
+        return retString;
     }
 
 }
