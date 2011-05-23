@@ -41,10 +41,11 @@
         <idbus.kernel.version>1.1.1-SNAPSHOT</idbus.kernel.version>
         <idbus.samlr2.version>1.1.1-SNAPSHOT</idbus.samlr2.version>
         <idbus.sts.version>1.1.1-SNAPSHOT</idbus.sts.version>
-        <karaf.version>2.1.0</karaf.version>
+        <karaf.version>2.2.1</karaf.version>
         <camel.version>1.6.1</camel.version>
         <spring.version>3.0.3.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
+        <felix.plugin.version>2.1.0</felix.plugin.version>
    </properties>
 
     <dependencies>
@@ -159,7 +160,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${karaf.version}</version>
+                <version>${felix.plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>

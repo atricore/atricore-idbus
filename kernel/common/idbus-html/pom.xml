@@ -70,6 +70,9 @@
                 <version>1.1</version>
                 <configuration>
                     <extension>true</extension>
+                    <catalog>${basedir}/src/main/resources/catalog.xml</catalog>
+                    <verbose>true</verbose>
+                    <debug>true</debug>
                 </configuration>
                 <executions>
                     <execution>

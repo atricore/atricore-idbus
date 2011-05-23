@@ -81,7 +81,7 @@
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
         <junit.version>4.4</junit.version>
-        <karaf.version>1.4.0</karaf.version>
+        <karaf.version>2.2.1</karaf.version>
         <log4j.version>1.2.16</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
         <ravis.version>1.0.0.RC2</ravis.version>
