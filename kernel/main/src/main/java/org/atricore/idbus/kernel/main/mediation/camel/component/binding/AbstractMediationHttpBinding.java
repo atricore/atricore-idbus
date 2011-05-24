@@ -53,7 +53,7 @@ import java.util.StringTokenizer;
  * @version $Id$
  */
 public abstract class AbstractMediationHttpBinding extends AbstractMediationBinding {
-    
+
     private static final Log logger = LogFactory.getLog(AbstractMediationHttpBinding.class);
 
     public AbstractMediationHttpBinding(String binding, Channel channel) {
@@ -70,12 +70,12 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                         "ErrorUIService",
                         getBinding(),
                         errorUrl,
-                        null), 
+                        null),
                 true);
 
         if (logger.isDebugEnabled())
             logger.debug("Processing Fault Message " + fault.getMessageId() + ". Redirecting to " +
-            errorUrl);
+                    errorUrl);
 
         // ------------------------------------------------------------
         // Prepare HTTP Resposne
@@ -129,7 +129,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             String htmlStr = this.marshal(htmlErr, "http://www.w3.org/1999/xhtml", "html",
                     new String[]{"org.w3._1999.xhtml"});
 
-            ByteArrayInputStream baos = new ByteArrayInputStream (htmlStr.getBytes());
+            ByteArrayInputStream baos = new ByteArrayInputStream(htmlStr.getBytes());
             httpOut.setBody(baos);
 
         } catch (Exception e) {
@@ -165,14 +165,14 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             String localStateVarName = p.getName().toUpperCase() + "_STATE";
 
             if (logger.isDebugEnabled())
-                logger.debug("Using Provider State manager to store local state ("+p.getName()+"). Channel ("+channel.getName()+")");
+                logger.debug("Using Provider State manager to store local state (" + p.getName() + "). Channel (" + channel.getName() + ")");
 
             LocalState pState = state.getLocalState();
             String stateId = (String) exchange.getIn().getHeader("org.atricore.idbus.http.Cookie." + localStateVarName);
             if (stateId == null || !stateId.equals(pState.getId())) {
 
                 if (logger.isDebugEnabled())
-                    logger.debug("Updating state id " + stateId + " with new id " + pState.getId() + " ("+p.getName()+"). Channel ("+channel.getName()+")");
+                    logger.debug("Updating state id " + stateId + " with new id " + pState.getId() + " (" + p.getName() + "). Channel (" + channel.getName() + ")");
 
                 state.setRemoteVariable(localStateVarName, pState.getId());
             }
@@ -184,7 +184,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         } else {
 
             if (logger.isDebugEnabled())
-                logger.debug("Using local HTTP session to store local state. Channel ("+channel.getName()+")");
+                logger.debug("Using local HTTP session to store local state. Channel (" + channel.getName() + ")");
 
         }
 
@@ -215,7 +215,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         if (p != null) {
 
             if (logger.isDebugEnabled())
-                logger.debug("Using Provider State manager to store local state ("+p.getName()+"). Channel ("+channel.getName()+")");
+                logger.debug("Using Provider State manager to store local state (" + p.getName() + "). Channel (" + channel.getName() + ")");
 
             String localStateVarName = p.getName().toUpperCase() + "_STATE";
             String localStateId = (String) exchange.getIn().getHeader("org.atricore.idbus.http.Cookie." + localStateVarName);
@@ -230,7 +230,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             if (localStateId == null) {
 
                 if (logger.isDebugEnabled())
-                    logger.debug("Created new local state for provider " + p.getName() + ". Channel ("+channel.getName()+") " + localStateId);
+                    logger.debug("Created new local state for provider " + p.getName() + ". Channel (" + channel.getName() + ") " + localStateId);
 
                 lState = ctx.createState();
                 localStateId = lState.getId();
@@ -245,12 +245,12 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                     localStateId = lState.getId();
 
                     if (logger.isDebugEnabled())
-                        logger.debug("Created new local state for provider " + p.getName() + ". Channel ("+channel.getName()+") " + localStateId);
+                        logger.debug("Created new local state for provider " + p.getName() + ". Channel (" + channel.getName() + ") " + localStateId);
 
                 } else {
 
                     if (logger.isDebugEnabled())
-                        logger.debug("Found local state for provider " + p.getName() + ". Channel ("+channel.getName()+") " + lState.getId());
+                        logger.debug("Found local state for provider " + p.getName() + ". Channel (" + channel.getName() + ") " + lState.getId());
                 }
             }
 
@@ -259,7 +259,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         } else {
 
             if (logger.isDebugEnabled())
-                logger.debug("Using local HTTP session to store local state. Channel ("+channel.getName()+")");
+                logger.debug("Using local HTTP session to store local state. Channel (" + channel.getName() + ")");
 
             HttpSession session = (HttpSession) exchange.getIn().getHeaders().get("org.atricore.idbus.http.HttpSession");
             LocalState lState = new HttpLocalState(session);
@@ -268,13 +268,13 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         // Cookies as remote vars
         java.util.Map<String, Object> headers = exchange.getIn().getHeaders();
-        for (String headerName : headers.keySet() ) {
+        for (String headerName : headers.keySet()) {
 
             if (headerName.startsWith("org.atricore.idbus.http.Cookie.")) {
                 String varName = headerName.substring("org.atricore.idbus.http.Cookie.".length());
                 String varValue = exchange.getIn().getHeader(headerName, String.class);
 
-                logger.debug("Remote Variable from HTTP Cookie ("+headerName+") " + varName + "=" + varValue);
+                logger.debug("Remote Variable from HTTP Cookie (" + headerName + ") " + varName + "=" + varValue);
                 state.getRemoteVars().put(varName, varValue);
             }
 
@@ -285,7 +285,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
             java.util.Map<String, String> params = getParameters(exchange.getIn().getHeader("org.apache.camel.component.http.query", String.class));
 
-            if ( exchange.getIn().getHeader("http.requestMethod").equals("POST") )
+            if (exchange.getIn().getHeader("http.requestMethod").equals("POST"))
                 params.putAll(getParameters((InputStream) exchange.getIn().getBody()));
 
             state.getTransientVars().putAll(params);
@@ -310,24 +310,74 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     // -------------------------------------------------------------
     // HTML Utils
     // -------------------------------------------------------------
-    protected Html createHtmlPostMessage(String url, String relayState, String msgName, String msgValue) throws Exception {
+    protected Html createHtmlRedirectMessage(String location) throws Exception {
 
-        Html html = new Html();
-        html.setLang("en");
+        Html html = createHtmlBaseMessage();
+        Body body = html.getBody();
 
-        Body body = new Body();
+        Div pageDiv = (Div) body.getPOrH1OrH2().iterator().next();
 
-        // Form
+        Script loadJs = new Script();
+        loadJs.setType("text/javascript");
+        loadJs.setContent(
+                "       Event.observe(window, 'load', function() {\n" +
+                        "                window.setTimeout(function() {\n" +
+                        "                    window.location.href='" + location + "';\n" +
+                        "                }, 100);\n" +
+                        "            });");
+
+
+        pageDiv.getContent().add(loadJs);
+
+        return html;
+
+    }
+
+    protected Html createHtmlArtifactMessage(String location) throws Exception {
+        Html html = createHtmlBaseMessage();
+        Body body = html.getBody();
+
+        Div pageDiv = (Div) body.getPOrH1OrH2().iterator().next();
+
+        Script redirectJs = new Script();
+        redirectJs.setType("text/javascript");
+        redirectJs.setContent(
+                "       Event.observe(window, 'load', function() {\n" +
+                        "                window.setTimeout(function() {\n" +
+                        "                    window.location.href='" + location + "';\n" +
+                        "                }, 100);\n" +
+                        "            });");
+
+        pageDiv.getContent().add(redirectJs);
+
+        return html;
+    }
+
+
+    protected Html createHtmlPostMessage(String url,
+                                         String relayState,
+                                         String msgName,
+                                         String msgValue) throws Exception {
+
+
+        Html html = createHtmlBaseMessage();
+        Body body = html.getBody();
+
+
+        // Non-Ajax form
+        Div pageDiv = (Div) body.getPOrH1OrH2().iterator().next();
         Form form = new Form();
+
         form.setMethod("post");
         form.setAction(url);
+        form.setId("postbinding");
         form.setEnctype("application/x-www-form-urlencoded");
 
         {
             // Noscript paragraph
 
             P paragraph = new P();
-            paragraph.setTitle("Note: Since your browser does not support JavaScript, you must press the Continue button once to proceed.");
+            paragraph.setTitle("Note: Since your browser does not support JavaScript, you must press the Continue button once to proceed.");  // TODO : i18n
             Noscript noscript = new Noscript();
             noscript.getPOrH1OrH2().add(paragraph);
             body.getPOrH1OrH2().add(noscript);
@@ -335,50 +385,220 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         {
             // Div with form fields
-            Div div = new Div();
+            Div divFields = new Div();
             if (relayState != null) {
                 Input input1 = new Input();
                 input1.setType(InputType.HIDDEN);
                 input1.setName("RelayState");
                 input1.setValue(relayState);
 
-                div.getContent().add(input1);
+                divFields.getContent().add(input1);
             }
 
             Input input2 = new Input();
             input2.setType(InputType.HIDDEN);
             input2.setName(msgName);
 
-            // TODO : Url encode msg value ?
             input2.setValue(msgValue);
 
-            div.getContent().add(input2);
+            divFields.getContent().add(input2);
 
             // Add first filds to form
-            form.getPOrH1OrH2().add(div);
+            form.getPOrH1OrH2().add(divFields);
         }
+
 
         {
             // Create noscript submit button
             Noscript noscript = new Noscript();
-            Div div = new Div();
-            noscript.getPOrH1OrH2().add(div);
+            Div divNoScript = new Div();
+            noscript.getPOrH1OrH2().add(divNoScript);
 
             Input submit = new Input();
             submit.setType(InputType.SUBMIT);
             submit.setValue("Continue");
-            div.getContent().add(submit);
+            divNoScript.getContent().add(submit);
 
             form.getPOrH1OrH2().add(noscript);
 
         }
 
-        body.setOnload("document.forms[0].submit();");
-        body.getPOrH1OrH2().add(form);
+        // Part of post binding
+        body.setOnload("document.forms.postbinding.submit();");
 
+        pageDiv.getContent().add(form);
+
+        return html;
+    }
+
+    protected Html createHtmlAjaxPostMessage(String url,
+                                         String relayState,
+                                         String msgName,
+                                         String msgValue) throws Exception {
+
+
+        Html html = createHtmlBaseMessage();
+        Body body = html.getBody();
+
+        // Ajax Form
+        Form form = new Form();
+
+        form.setMethod("post");
+        form.setAction(url);
+        form.setId("postbinding");
+        form.setEnctype("application/x-www-form-urlencoded");
+
+        Div fields = new Div();
+
+        if (relayState != null) {
+            Input input1 = new Input();
+            input1.setType(InputType.HIDDEN);
+            input1.setName("RelayState");
+            input1.setValue(relayState);
+
+            fields.getContent().add(input1);
+        }
+
+        Input input2 = new Input();
+        input2.setType(InputType.HIDDEN);
+        input2.setName(msgName);
+
+        input2.setValue(msgValue);
+
+        fields.getContent().add(input2);
+
+        form.getPOrH1OrH2().add(fields);
+
+        Div pageDiv = (Div) body.getPOrH1OrH2().iterator().next();
+        Div div = (Div) pageDiv.getContent().iterator().next();
+        Div divFixedFull = (Div) div.getContent().iterator().next();
+        Div waitContainer = (Div) divFixedFull.getContent().iterator().next();
+
+        Script submitJs = new Script();
+        submitJs.setType("text/javascript");
+        submitJs.setContent("              Event.observe(window, 'load', \n" +
+                "                                function() {\n" +
+                "                                    window.setTimeout(function() { document.forms.postbinding.submit(); }, 100);\n" +
+                "                                }\n" +
+                "                        );");
+
+        waitContainer.getContent().add(submitJs);
+
+        for (Object c : waitContainer.getContent()) {
+            if (c instanceof Div) {
+                Div waitBox = (Div) c;
+                waitBox.getContent().add(form);
+
+            }
+        }
+
+        return html;
+    }
+
+    protected Html createHtmlBaseMessage() {
+
+        Html html = new Html();
+        html.setLang("en");
+
+
+        Head head = new Head();
+
+        // Title :
+        Title title = new Title();
+        title.setContent("JOSSO 2 - Processing ..."); // TODO : i18n
+        head.getContent().add(title);
+
+        if (isEnableAjax()) {
+
+            // Meta :
+            Meta m1 = new Meta();
+            m1.setHttpEquiv("X-UA-Compatible");
+            m1.setContent("IE=EmulateIE7,chrome=1");
+            head.getContent().add(m1);
+
+
+            // Style:
+            Link processingCss = new Link();
+            processingCss.setHref("/idbus-ui/resources/css/processing.css");
+            processingCss.getRel().add("stylesheet");
+            processingCss.setType("text/css");
+            //processingCss.setMedia("screen, projector");
+            head.getContent().add(processingCss);
+
+            Script processingJs = new Script();
+            processingJs.setSrc("/idbus-ui/resources/script/prototype.js");
+            processingJs.setType("text/javascript");
+            processingJs.setContent(" ");
+
+            head.getContent().add(processingJs);
+        }
+
+        html.setHead(head);
+
+        Body body = new Body();
+
+        Div pageDiv = new Div();
+        pageDiv.setId("page");
+
+        if (isEnableAjax()) {
+            // To brand this, we need to replace images in IDBUS UI Bundle , can be improved though.
+
+            Div div = new Div();
+            {
+
+                Div divFixedFull = new Div();
+                divFixedFull.getClazz().add("fixed full");
+                {
+                    Div waitContainer = new Div();
+                    waitContainer.setId("waitContainer");
+                    waitContainer.getClazz().add("clearit");
+                    {
+                        Img atcLogo = new Img();
+                        atcLogo.setId("waitLogo");
+                        atcLogo.setSrc("/idbus-ui/resources/img/content/atricore-logo-2.png");
+
+                        Div waitBox = new Div();
+                        waitBox.setId("waitBox");
+                        {
+
+                            Img spinner = new Img();
+                            spinner.setSrc("/idbus-ui/resources/img/processing-04.gif");
+                            spinner.setAlt("Wait ...");
+
+                            H1 h1 = new H1();
+                            h1.getContent().add(spinner);
+                            h1.getContent().add("Processing");
+
+                            P processingP = new P();
+                            Br br = new Br();
+                            processingP.getContent().add(br);
+                            processingP.getContent().add("You'll get redirected shortly, please wait ..."); // TODO : i18n
+                            processingP.getContent().add(br);
+                            processingP.getContent().add(br);
+
+                            waitBox.getContent().add(h1);
+                            waitBox.getContent().add(processingP);
+
+                            // TODO : Add form here
+
+                        }
+                        waitContainer.getContent().add(atcLogo);
+                        waitContainer.getContent().add(waitBox);
+
+                    }
+                    divFixedFull.getContent().add(waitContainer);
+                }
+                div.getContent().add(divFixedFull);
+            }
+            pageDiv.getContent().add(div);
+        }
+
+
+        body.getPOrH1OrH2().add(pageDiv);
         html.setBody(body);
 
         return html;
+
     }
 
     protected Html createHtmlErrorPage(MediationMessage fault) {
@@ -392,7 +612,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         html.setHead(head);
         {
             Title t = new Title();
-            t.setContent("IDBus Error");
+            t.setContent("JOSSO 2 - Error"); // TODO : i18n
             head.getContent().add(t);
 
         }
@@ -487,14 +707,14 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         java.util.Map<String, String> params = new HashMap<String, String>();
         if (httpBody == null)
-            return params;        
+            return params;
 
         StringTokenizer st = new StringTokenizer(httpBody, "&");
         while (st.hasMoreTokens()) {
             String param = st.nextToken();
             int pos = param.indexOf('=');
             String key = URLDecoder.decode(param.substring(0, pos), "UTF-8"); // TODO : Can encoding be modified?
-            String value = URLDecoder.decode(param.substring(pos+1), "UTF-8");
+            String value = URLDecoder.decode(param.substring(pos + 1), "UTF-8");
 
             if (logger.isDebugEnabled()) {
                 logger.debug("HTTP Parameter " + key + "=[" + value + "]");
@@ -505,28 +725,32 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         return params;
     }
 
-    protected String marshal ( Object obj, String msgQName, String msgLocalName, String[] userPackages ) throws Exception {
+    protected String marshal(Object obj, String msgQName, String msgLocalName, String[] userPackages) throws Exception {
 
-        JAXBContext jaxbContext = createJAXBContext( obj, userPackages );
-        JAXBElement jaxbRequest = new JAXBElement( new QName( msgQName, msgLocalName ),
+        JAXBContext jaxbContext = createJAXBContext(obj, userPackages);
+        JAXBElement jaxbRequest = new JAXBElement(new QName(msgQName, msgLocalName),
                 obj.getClass(),
                 obj
         );
         Writer writer = new StringWriter();
 
         // Support XMLDsig
-        jaxbContext.createMarshaller().marshal( jaxbRequest, writer);
+        jaxbContext.createMarshaller().marshal(jaxbRequest, writer);
 
         return writer.toString();
     }
 
-    protected JAXBContext createJAXBContext ( Object obj, String[] userPackages ) throws JAXBException {
+    protected JAXBContext createJAXBContext(Object obj, String[] userPackages) throws JAXBException {
         StringBuilder packages = new StringBuilder();
-        for ( String userPackage : userPackages ) {
-            packages.append( userPackage ).append( ":" );
+        for (String userPackage : userPackages) {
+            packages.append(userPackage).append(":");
         }
         // Use our classloader to build JAXBContext so it can find binding classes.
-        return JAXBContext.newInstance( packages.toString(), obj.getClass().getClassLoader());
+        return JAXBContext.newInstance(packages.toString(), obj.getClass().getClassLoader());
+    }
+
+    protected boolean isEnableAjax() {
+        return getConfigurationContext() != null && Boolean.parseBoolean(getConfigurationContext().getProperty("binding.http.ajax"));
     }
 
 }

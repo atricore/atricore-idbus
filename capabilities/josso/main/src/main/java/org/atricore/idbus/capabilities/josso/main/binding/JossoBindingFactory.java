@@ -29,8 +29,11 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationBinding;
 import org.atricore.idbus.kernel.main.mediation.MediationBindingFactory;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationBinding;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import java.util.Map;
 
 /**
  * @org.apache.xbean.XBean element="josso11-binding-factory"
@@ -84,7 +87,15 @@ public class JossoBindingFactory extends MediationBindingFactory implements Appl
         }
 
         if (mb != null && mb instanceof AbstractMediationBinding) {
+
+            Map<String, ConfigurationContext> cfgs  = applicationContext.getBeansOfType(ConfigurationContext.class);
+            if (cfgs.size() == 1) {
+                ConfigurationContext cfg = cfgs.values().iterator().next();
+                ((AbstractMediationBinding)mb).setConfigurationContext(cfg);
+            }
+
             ((AbstractMediationBinding)mb).setStateManagerClassLoader(this.applicationContext.getClassLoader());
+
         }
 
         return mb;

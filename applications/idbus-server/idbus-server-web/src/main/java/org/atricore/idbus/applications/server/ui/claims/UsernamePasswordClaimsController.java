@@ -23,9 +23,11 @@ package org.atricore.idbus.applications.server.ui.claims;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.applications.server.ui.util.DashboardMessage;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -40,6 +42,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -83,6 +87,24 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
 
                 hreq.setAttribute("statusMessageKey", "claims.text.invalidCredentials");
             }
+
+            List<DashboardMessage> ssoPolicyMsgs = new ArrayList<DashboardMessage>();
+
+            // Publish SSO Policies information to be displayed ...
+            for (SSOPolicyEnforcementStatement ssoPolicyEnforcement : claimsRequest.getSsoPolicyEnforcements()) {
+                List<Object> values = null;
+                if (ssoPolicyEnforcement.getValues().size() > 0) {
+                    values = new ArrayList<Object>();
+                    values.addAll(ssoPolicyEnforcement.getValues());
+                }
+                ssoPolicyMsgs.add(new DashboardMessage("claims.text." + ssoPolicyEnforcement.getName(), values));
+
+            }
+
+            if (ssoPolicyMsgs.size() > 0)
+                hreq.setAttribute("ssoPolicyMessages", ssoPolicyMsgs);
+
+
 
             collectClaims.setClaimsRequest(claimsRequest);
 

@@ -68,6 +68,9 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
+import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequestImpl;
+import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
@@ -88,9 +91,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.math.BigInteger;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -98,12 +99,12 @@ import java.util.Set;
  */
 public class SingleSignOnProducer extends SamlR2Producer {
 
-    private static final Log logger = LogFactory.getLog( SingleSignOnProducer.class );
+    private static final Log logger = LogFactory.getLog(SingleSignOnProducer.class);
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    public SingleSignOnProducer( AbstractCamelEndpoint<CamelMediationExchange> endpoint ) throws Exception {
-        super( endpoint );
+    public SingleSignOnProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
+        super(endpoint);
     }
 
     @Override
@@ -115,7 +116,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         if (content instanceof IDPInitiatedAuthnRequestType) {
 
             // New IDP Initiated Single Sign-On
-            doProcessIDPInitiantedSSO(exchange, (IDPInitiatedAuthnRequestType)content);
+            doProcessIDPInitiantedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
 
         } else if (content instanceof SecTokenAuthnRequestType) {
 
@@ -130,10 +131,15 @@ public class SingleSignOnProducer extends SamlR2Producer {
         } else if (content instanceof SamlR2ClaimsResponse) {
 
             // Processing Claims to create authn resposne
-            doProcessClaimsResponse(exchange, (SamlR2ClaimsResponse)content);
+            doProcessClaimsResponse(exchange, (SamlR2ClaimsResponse) content);
+
+        } else if (content instanceof PolicyEnforcementResponse) {
+
+            // Process policy enforcement response
+            doProcessPolicyEnforcementResponse(exchange, (PolicyEnforcementResponse) content);
 
         } else {
-            throw new IdentityMediationFault (StatusCode.TOP_RESPONDER.getValue(),
+            throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
                     StatusDetails.UNKNOWN_REQUEST.getValue(),
                     content.getClass().getName(),
@@ -144,14 +150,13 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
     /**
      * This procedure will handle an IdP-initiated (aka IdP unsolicited response) request.
-     *
      */
     protected void doProcessIDPInitiantedSSO(CamelMediationExchange exchange, IDPInitiatedAuthnRequestType idpInitiatedAuthnRequest) throws SamlR2Exception {
 
 
         logger.debug("Processing IDP Initiated Single Sign-On with " +
                 idpInitiatedAuthnRequest.getPreferredResponseFormat() + " preferred Response Format"
-                );
+        );
 
         try {
 
@@ -184,7 +189,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             // ------------------------------------------------------
             // Create AuthnRequest using identity plan
             // ------------------------------------------------------
-            AuthnRequestType authnRequest = buildIdPInitiatedAuthnRequest(exchange, idp, ed, (FederationChannel)channel);
+            AuthnRequestType authnRequest = buildIdPInitiatedAuthnRequest(exchange, idp, ed, (FederationChannel) channel);
 
             // ------------------------------------------------------
             // Send Authn Request to IDP
@@ -212,13 +217,13 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
     /**
      * This procedure will process an authn request.
-     *
-     *
+     * <p/>
+     * <p/>
      * If we already stablished identity for the 'presenter' (user) of the request, we'll generate
      * an assertion using the authn statement stored in session as security token.
      * The assertion will be sent to the SP in a new Response.
-     *
-     *
+     * <p/>
+     * <p/>
      * If we don't have user identity yet, we have to decide if we're handling the request or we are proxying it to a
      * different IDP.
      * If we handle the request, we'll search for a claims endpoint and start collecting claims.  If no claims endpoint
@@ -234,7 +239,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
-        
+
         String responseMode = (String) mediationState.getLocalVariable("urn:org:atricore:idbus:sso:protocol:responseMode");
         String responseFormat = (String) mediationState.getLocalVariable("urn:org:atricore:idbus:sso:protocol:responseFormat");
 
@@ -245,7 +250,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             logger.debug("Response Mode for Authentication Request " + authnRequest.getID() + " is NOT unsolicited");
         }
 
-        SSOSessionManager sessionMgr = ((SPChannel)channel).getSessionManager();
+        SSOSessionManager sessionMgr = ((SPChannel) channel).getSessionManager();
 
         // Validate AuthnRequest
         validateRequest(authnRequest, in.getMessage().getRawContent());
@@ -311,7 +316,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             logger.debug("Selected claims endpoint : " + claimsEndpoint);
 
             // Create Claims Request
-            SamlR2ClaimsRequest claimsRequest = new SamlR2ClaimsRequest (authnRequest.getID(),
+            SamlR2ClaimsRequest claimsRequest = new SamlR2ClaimsRequest(authnRequest.getID(),
                     channel,
                     endpoint,
                     ((SPChannel) channel).getClaimsProvider(),
@@ -356,13 +361,13 @@ public class SingleSignOnProducer extends SamlR2Producer {
             securityTokenEmissionCtx.setAuthnState(authnState);
             securityTokenEmissionCtx.setSessionIndex(secCtx.getSessionIndex());
             securityTokenEmissionCtx.setSsoSession(sessionMgr.getSession(secCtx.getSessionIndex()));
-            securityTokenEmissionCtx.setIssuerMetadata(((SPChannel)channel).getMember().getMetadata());
+            securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
 
             securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest);
 
             if (logger.isDebugEnabled())
                 logger.debug("Created SAMLR2 Assertion " + securityTokenEmissionCtx.getAssertion().getID() +
-                        " for AuthnRequest " + authnRequest.getID() );
+                        " for AuthnRequest " + authnRequest.getID());
 
             // Register SP in SSO List
             secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
@@ -401,7 +406,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         AuthenticationState authnState = this.getAuthnState(exchange);
 
-        NameIDType issuer =  authnRequest.getIssuer();
+        NameIDType issuer = authnRequest.getIssuer();
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(issuer);
 
         // -------------------------------------------------------
@@ -420,19 +425,19 @@ public class SingleSignOnProducer extends SamlR2Producer {
         securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
         securityTokenEmissionCtx.setIssuerMetadata(sp.getMetadata());
 
-        UsernameTokenType usernameToken = new UsernameTokenType ();
+        UsernameTokenType usernameToken = new UsernameTokenType();
         AttributedString usernameString = new AttributedString();
-        usernameString.setValue( authnRequest.getUsername() );
+        usernameString.setValue(authnRequest.getUsername());
 
-        usernameToken.setUsername( usernameString );
-        usernameToken.getOtherAttributes().put( new QName( Constants.PASSWORD_NS), authnRequest.getPassword() );
+        usernameToken.setUsername(usernameString);
+        usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), authnRequest.getPassword());
         usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
 
         Claim claim = new ClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(claim);
 
-        SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,  securityTokenEmissionCtx, claims, sp);
+        SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange, securityTokenEmissionCtx, claims, sp);
         AssertionType assertion = cxt.getAssertion();
         Subject authnSubject = cxt.getSubject();
 
@@ -451,7 +456,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
 
         // Build a response for the SP
-        ResponseType response = buildSamlResponse(exchange,  authnState, assertion, sp, ed);
+        ResponseType response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
 
         // Set the SSO Session var
         // State not supported in SOAP yet in.getMessage().getState().setLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
@@ -474,7 +479,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
      * be issued to the original SP.
      * If an error occures, the procedure will decide to retry collecting claims with the las
      * claims endpoint selected or collect claims using a new claims endpoint.
-     *
+     * <p/>
      * If no more claim endpoits are available, this will send an satus error response to the SP.
      *
      * @param exchange
@@ -495,7 +500,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         AuthenticationState authnState = getAuthnState(exchange);
         AuthnRequestType authnRequest = authnState.getAuthnRequest();
 
-        NameIDType issuer =  authnRequest.getIssuer();
+        NameIDType issuer = authnRequest.getIssuer();
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(issuer);
 
         String responseMode = authnState.getResponseMode();
@@ -522,7 +527,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx = new SamlR2SecurityTokenEmissionContext();
             // Send extra information to STS, using the emission context
 
-            securityTokenEmissionCtx.setIssuerMetadata(((SPChannel)channel).getMember().getMetadata());
+            securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
             securityTokenEmissionCtx.setMember(sp);
             // TODO : Resolve SP SAMLR2 Role springmetadata
 
@@ -530,26 +535,31 @@ public class SingleSignOnProducer extends SamlR2Producer {
             securityTokenEmissionCtx.setAuthnState(authnState);
             securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
 
-            SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,  securityTokenEmissionCtx, claimsResponse.getClaimSet(), sp);
+            SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
+                    securityTokenEmissionCtx,
+                    claimsResponse.getClaimSet(),
+                    sp);
+
             AssertionType assertion = cxt.getAssertion();
             Subject authnSubject = cxt.getSubject();
 
             logger.debug("New Assertion " + assertion.getID() + " emmitted form request " +
                     (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
+
             // Create a new SSO Session
             IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion);
 
             // Associate the SP with the new session, including relay state!
-            // TODO : Instead of authnRequest, use metadata to get issuer!
-
+            // We already validated authn request issuer, so we can use it.
             secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
 
             // Resolve SP endpoint
             EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
 
             // Build a response for the SP
-            ResponseType response = buildSamlResponse(exchange,  authnState, assertion, sp, ed);
+            ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
+            oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response = null;
 
             // Set the SSO Session var
             in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
@@ -559,26 +569,74 @@ public class SingleSignOnProducer extends SamlR2Producer {
             // Send Authn Response to SP
             // --------------------------------------------------------------------
 
+
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
-                oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response;
-
-                saml11Response = transformSamlR2ResponseToSaml11(response);
-                SamlR2Signer signer = ((SamlR2IDPMediator)channel.getIdentityMediator()).getSigner();
+                saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
+                SamlR2Signer signer = ((SamlR2IDPMediator) channel.getIdentityMediator()).getSigner();
                 saml11Response = signer.sign(saml11Response);
+            }
 
+
+            clearAuthnState(exchange);
+
+            // TODO : If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
+            List<SSOPolicyEnforcementStatement> stmts = getPolicyEnforcementStatements(assertion);
+
+            if (stmts != null && stmts.size() > 0) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Processing " + stmts.size() + " SSO Policy Enforcement Statements");
+
+                // Store: Authn Response and Endpoint Descriptor
+                in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:samlr2:idp:pendingAuthnResponse",
+                        saml11Response != null ? saml11Response : saml2Response);
+
+                in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:samlr2:idp:pendingAuthnResponseEndpoint",
+                        ed);
+
+                in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:samlr2:idp:pendingAuthnResponseRelayState",
+                        authnState.getReceivedRelayState());
+
+
+                // 2. Send artifact to warning endpoint w/ policies
+                EndpointDescriptor pweEd = new EndpointDescriptorImpl("PolicyEnforcementWarningService",
+                        "PolicyEnforcementWarningService",
+                        SamlR2Binding.SSO_ARTIFACT.getValue(),
+                        channel.getIdentityMediator().getWarningUrl(),
+                        null);
+
+
+                EndpointDescriptor replyTo = resolveIdpSsoContinueEndpoint();
+                PolicyEnforcementRequest per = new PolicyEnforcementRequestImpl(uuidGenerator.generateId(), replyTo);
+
+                per.getStatements().addAll(stmts);
+
+
+                out.setMessage(new MediationMessageImpl(
+                        per.getId(),
+                        per,
+                        "PolicyEnforcementWarning",
+                        null,
+                        pweEd,
+                        in.getMessage().getState()));
+                return;
+            }
+
+            if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
                         saml11Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
             } else {
                 // SAML R2 is used by default
-                out.setMessage(new MediationMessageImpl(response.getID(),
-                        response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
+                out.setMessage(new MediationMessageImpl(saml2Response.getID(),
+                        saml2Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
             }
-
-            clearAuthnState(exchange);
 
             exchange.setOut(out);
 
         } catch (SecurityTokenAuthenticationFailure e) {
+
+            // Set of policies enforced during authentication
+            Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = e.getSsoPolicyEnforcements();
 
             if (logger.isDebugEnabled())
                 logger.debug("Security Token authentication failure : " + e.getMessage(), e);
@@ -602,14 +660,15 @@ public class SingleSignOnProducer extends SamlR2Producer {
             }
 
             logger.debug("Selecting claims endpoint : " + endpoint.getName());
-            SamlR2ClaimsRequest claimsRequest = new SamlR2ClaimsRequest (authnRequest.getID(),
+            SamlR2ClaimsRequest claimsRequest = new SamlR2ClaimsRequest(authnRequest.getID(),
                     channel,
                     endpoint,
-                    ((SPChannel)channel).getClaimsProvider(),
+                    ((SPChannel) channel).getClaimsProvider(),
                     uuidGenerator.generateId());
 
-            claimsRequest.setLastErrorId("AUTHN_FAILED"); // TODO : Replace with enums?
+            claimsRequest.setLastErrorId("AUTHN_FAILED");
             claimsRequest.setLastErrorMsg(e.getMessage());
+            claimsRequest.getSsoPolicyEnforcements().addAll(ssoPolicyEnforcements);
 
             // Update authentication state
             claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
@@ -627,7 +686,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                     claimChannel.getLocation() + claimEndpoint.getLocation(),
                     claimEndpoint.getResponseLocation());
 
-            logger.debug("Collecting claims using endpoint " + claimEndpoint.getName() + " ["+ed.getLocation()+"]");
+            logger.debug("Collecting claims using endpoint " + claimEndpoint.getName() + " [" + ed.getLocation() + "]");
 
             out.setMessage(new MediationMessageImpl(claimsRequest.getId(),
                     claimsRequest, "ClaimsRequest", null, ed, in.getMessage().getState()));
@@ -636,6 +695,39 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
 
         }
+
+
+    }
+
+    protected void doProcessPolicyEnforcementResponse(CamelMediationExchange exchange,
+                                                      PolicyEnforcementResponse response) throws Exception {
+
+        // Recover SSO Artifacts:
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+
+        // Recover: Authn Response, RelayState and Endpoint Descriptor
+        Object saml11OrSaml2AuthnResponse = in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:samlr2:idp:pendingAuthnResponse");
+
+        EndpointDescriptor acs =
+                (EndpointDescriptor) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:samlr2:idp:pendingAuthnResponseEndpoint");
+
+        String relayState =
+                (String) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:samlr2:idp:pendingAuthnResponseRelayState");
+
+        if (saml11OrSaml2AuthnResponse instanceof oasis.names.tc.saml._1_0.protocol.ResponseType) {
+            oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response = (oasis.names.tc.saml._1_0.protocol.ResponseType) saml11OrSaml2AuthnResponse;
+            out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
+                    saml11Response, "Response", relayState, acs, in.getMessage().getState()));
+        } else {
+            // SAML R2 is used by default
+            ResponseType saml2Response = (ResponseType) saml11OrSaml2AuthnResponse;
+            out.setMessage(new MediationMessageImpl(saml2Response.getID(),
+                    saml2Response, "Response", relayState, acs, in.getMessage().getState()));
+        }
+
+        exchange.setOut(out);
 
 
     }
@@ -661,12 +753,12 @@ public class SingleSignOnProducer extends SamlR2Producer {
             String spAlias = request.getIssuer().getValue();
             MetadataEntry spMd = getCotManager().findEntityRoleMetadata(spAlias,
                     "urn:oasis:names:tc:SAML:2.0:metadata:SPSSODescriptor");
-            saml2SpMd  = (SPSSODescriptorType) spMd.getEntry();
+            saml2SpMd = (SPSSODescriptorType) spMd.getEntry();
 
             // Lookup IDP SAML MD
             MetadataEntry idpMd = getCotManager().findEntityRoleMetadata(getCotMemberDescriptor().getAlias(),
                     "urn:oasis:names:tc:SAML:2.0:metadata:IDPSSODescriptor");
-            saml2IdpMd  = (IDPSSODescriptorType) idpMd.getEntry();
+            saml2IdpMd = (IDPSSODescriptorType) idpMd.getEntry();
 
         } catch (CircleOfTrustManagerException e) {
             throw new SamlR2RequestException(request,
@@ -679,10 +771,10 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         // SAML Want AuthnRequest signed has precedence over want requests signed
         boolean validateSignature = mediator.isValidateRequestsSignature();
-        if (saml2IdpMd.isWantAuthnRequestsSigned() != null )
+        if (saml2IdpMd.isWantAuthnRequestsSigned() != null)
             validateSignature = saml2IdpMd.isWantAuthnRequestsSigned();
 
-		// XML Signature, saml2 core, section 5
+        // XML Signature, saml2 core, section 5
         if (validateSignature) {
 
             // If no signature is present, throw an exception!
@@ -720,9 +812,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
     /**
      * This has the logic to select endpoings for claims collecting.
      */
-    protected IdentityMediationEndpoint selectNextClaimsEndpoint( AuthenticationState status) {
+    protected IdentityMediationEndpoint selectNextClaimsEndpoint(AuthenticationState status) {
 
-        ClaimChannel claimChannel = ( (SPChannel) channel ).getClaimsProvider();
+        ClaimChannel claimChannel = ((SPChannel) channel).getClaimsProvider();
 
         if (status.getAuthnRequest() != null && status.getAuthnRequest().getRequestedAuthnContext() != null) {
             // TODO !
@@ -778,10 +870,10 @@ public class SingleSignOnProducer extends SamlR2Producer {
     }
 
     protected SamlR2SecurityTokenEmissionContext emitAssertionFromPreviousSession(CamelMediationExchange exchange,
-                                                                 SamlR2SecurityTokenEmissionContext ctx,
-                                                                 AuthnRequestType authnRequest) throws Exception {
+                                                                                  SamlR2SecurityTokenEmissionContext ctx,
+                                                                                  AuthnRequestType authnRequest) throws Exception {
 
-        SSOIdentityManager identityMgr = ((SPChannel)channel).getIdentityManager();
+        SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
         SSOUser ssoUser = identityMgr.findUser(ctx.getSsoSession().getUsername());
 
         AssertionType assertion = null;
@@ -794,8 +886,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
         ex.setProperty(VAR_DESTINATION_COT_MEMBER, sp);
         ex.setProperty(WSTConstants.RST_CTX, ctx);
 
-        ex.setTransientProperty(VAR_SAMLR2_SIGNER, ((SamlR2IDPMediator)channel.getIdentityMediator()).getSigner());
-        ex.setTransientProperty(VAR_SAMLR2_ENCRYPTER, ((SamlR2IDPMediator)channel.getIdentityMediator()).getEncrypter());
+        ex.setTransientProperty(VAR_SAMLR2_SIGNER, ((SamlR2IDPMediator) channel.getIdentityMediator()).getSigner());
+        ex.setTransientProperty(VAR_SAMLR2_ENCRYPTER, ((SamlR2IDPMediator) channel.getIdentityMediator()).getEncrypter());
 
         Set<Principal> principals = new HashSet<Principal>();
         principals.add(ssoUser);
@@ -811,8 +903,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
         // Create in/out artifacts
         AuthnStatementType authnStmt = (AuthnStatementType) ctx.getSsoSession().getSecurityToken().getContent();
         IdentityArtifact<AuthnStatementType> in =
-            new IdentityArtifactImpl<AuthnStatementType>(new QName(SAML_ASSERTION_NS, "AuthnStatement"),
-                    authnStmt);
+                new IdentityArtifactImpl<AuthnStatementType>(new QName(SAML_ASSERTION_NS, "AuthnStatement"),
+                        authnStmt);
         ex.setIn(in);
 
         IdentityArtifact<AssertionType> out =
@@ -846,9 +938,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
      * @return SamlR2 Security emission context containing SAMLR2 Assertion and Subject.
      */
     protected SamlR2SecurityTokenEmissionContext emitAssertionFromClaims(CamelMediationExchange exchange,
-                                         SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
-                                         ClaimSet receivedClaims,
-                                         CircleOfTrustMemberDescriptor sp) throws Exception {
+                                                                         SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
+                                                                         ClaimSet receivedClaims,
+                                                                         CircleOfTrustMemberDescriptor sp) throws Exception {
 
         MessageQueueManager aqm = getArtifactQueueManager();
 
@@ -860,9 +952,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
         // Queue this contenxt and send the artifact as RST context information
         Artifact emitterCtxArtifact = aqm.pushMessage(securityTokenEmissionCtx);
 
-        SecurityTokenService sts = ((SPChannel)channel).getSecurityTokenService();
+        SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
         // Send artifact id as RST context information, similar to relay state.
-        RequestSecurityTokenType rst = buildRequestSecurityToken( receivedClaims, emitterCtxArtifact.getContent() );
+        RequestSecurityTokenType rst = buildRequestSecurityToken(receivedClaims, emitterCtxArtifact.getContent());
 
         if (logger.isDebugEnabled())
             logger.debug("Requesting Security Token (RST) w/context " + rst.getContext());
@@ -890,8 +982,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
     }
 
     protected IdPSecurityContext createSecurityContext(CamelMediationExchange exchange,
-                                      Subject authnSubject,
-                                      AssertionType assertion) throws Exception {
+                                                       Subject authnSubject,
+                                                       AssertionType assertion) throws Exception {
 
         // -------------------------------------------------------
         // Create the SSO Session, using authnStatusment as security token
@@ -899,8 +991,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
         // The security token must store the AuthnStatmenet only, the rest of the assertion must be generated per request.
         AuthnStatementType authnStmt = null;
         for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
-            if (stmt instanceof AuthnStatementType ) {
-                authnStmt = (AuthnStatementType ) stmt;
+            if (stmt instanceof AuthnStatementType) {
+                authnStmt = (AuthnStatementType) stmt;
                 break;
             }
         }
@@ -909,16 +1001,16 @@ public class SingleSignOnProducer extends SamlR2Producer {
             throw new SamlR2Exception("Assertion MUST contain an AuthnStatement");
 
         // Create session security token, use the sesionIndex as token ID
-        SecurityToken<AuthnStatementType > st = new SecurityTokenImpl<AuthnStatementType >(authnStmt.getSessionIndex(), authnStmt);
+        SecurityToken<AuthnStatementType> st = new SecurityTokenImpl<AuthnStatementType>(authnStmt.getSessionIndex(), authnStmt);
 
-        // Get SSO User information
-        Principal userId = authnSubject.getPrincipals().iterator().next();
+        // Get SSO User information (stored as simple principal!)
+        Principal userId = authnSubject.getPrincipals(SimplePrincipal.class).iterator().next();
 
         if (logger.isDebugEnabled())
             logger.debug("Using username : " + userId.getName());
 
         // Initiate SSO Session
-        String ssoSessionId = ((SPChannel)channel).getSessionManager().initiateSession(userId.getName(), st);
+        String ssoSessionId = ((SPChannel) channel).getSessionManager().initiateSession(userId.getName(), st);
         assert ssoSessionId.equals(st.getId()) : "SSO Session Manager MUST use security token ID as session ID";
 
         return new IdPSecurityContext(authnSubject, ssoSessionId, authnStmt);
@@ -928,10 +1020,10 @@ public class SingleSignOnProducer extends SamlR2Producer {
      * Creates a new SAML Response for the given assertion
      */
     protected ResponseType buildSamlResponse(CamelMediationExchange exchange,
-                                         AuthenticationState authnState,
-                                         AssertionType assertion,
-                                         CircleOfTrustMemberDescriptor sp,
-                                         EndpointDescriptor spEndpoint  ) throws Exception {
+                                             AuthenticationState authnState,
+                                             AssertionType assertion,
+                                             CircleOfTrustMemberDescriptor sp,
+                                             EndpointDescriptor spEndpoint) throws Exception {
         // Build authnresponse
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2AuthnRequestToSamlR2ResponsePlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
@@ -945,8 +1037,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         // Create in/out artifacts
         IdentityArtifact<AuthnRequestType> in =
-            new IdentityArtifactImpl<AuthnRequestType>(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, "AuthnRequest"),
-                    authnState.getAuthnRequest());
+                new IdentityArtifactImpl<AuthnRequestType>(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, "AuthnRequest"),
+                        authnState.getAuthnRequest());
         idPlanExchange.setIn(in);
 
         IdentityArtifact<ResponseType> out =
@@ -974,9 +1066,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
      * Build an AuthnRequest for the target SP to which IDP's unsollicited response needs to be pushed to.
      */
     protected AuthnRequestType buildIdPInitiatedAuthnRequest(CamelMediationExchange exchange,
-                                                 CircleOfTrustMemberDescriptor idp,
-                                                 EndpointDescriptor ed,
-                                                 FederationChannel spChannel
+                                                             CircleOfTrustMemberDescriptor idp,
+                                                             EndpointDescriptor ed,
+                                                             FederationChannel spChannel
     ) throws IdentityPlanningException, SamlR2Exception {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(IDPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
@@ -990,11 +1082,11 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         // Get SPInitiated authn request, if any!
         IDPInitiatedAuthnRequestType ssoAuthnRequest =
-                (IDPInitiatedAuthnRequestType) ((CamelMediationMessage)exchange.getIn()).getMessage().getContent();
+                (IDPInitiatedAuthnRequestType) ((CamelMediationMessage) exchange.getIn()).getMessage().getContent();
 
         // Create in/out artifacts
         IdentityArtifact in =
-            new IdentityArtifactImpl(new QName("urn:org:atricore:idbus:sso:protocol", "IDPInitiatedAuthnRequest"), ssoAuthnRequest );
+                new IdentityArtifactImpl(new QName("urn:org:atricore:idbus:sso:protocol", "IDPInitiatedAuthnRequest"), ssoAuthnRequest);
         idPlanExchange.setIn(in);
 
         IdentityArtifact<AuthnRequestType> out =
@@ -1022,7 +1114,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
     protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(NameIDType issuer) {
 
-        if (    issuer.getFormat() != null && !issuer.getFormat().equals(NameIDFormat.ENTITY.getValue())) {
+        if (issuer.getFormat() != null && !issuer.getFormat().equals(NameIDFormat.ENTITY.getValue())) {
             logger.warn("Invalid issuer format for entity : " + issuer.getFormat());
             return null;
         }
@@ -1036,7 +1128,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
     }
 
     protected EndpointDescriptor resolveSpAcsEndpoint(CamelMediationExchange exchange,
-                                                   AuthnRequestType authnRequest) throws SamlR2Exception {
+                                                      AuthnRequestType authnRequest) throws SamlR2Exception {
 
         try {
 
@@ -1047,7 +1139,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             CircleOfTrust cot = this.getCot();
             CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(authnRequest.getIssuer());
-            CircleOfTrustManager cotMgr = ((SPChannel)channel).getProvider().getCotManager();
+            CircleOfTrustManager cotMgr = ((SPChannel) channel).getProvider().getCotManager();
 
             MetadataEntry md = cotMgr.findEntityRoleMetadata(sp.getAlias(),
                     "urn:oasis:names:tc:SAML:2.0:metadata:SPSSODescriptor");
@@ -1062,7 +1154,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             for (IndexedEndpointType ac : samlr2sp.getAssertionConsumerService()) {
 
                 if (authnRequest.getAssertionConsumerServiceIndex() != null &&
-                    authnRequest.getAssertionConsumerServiceIndex() >= 0) {
+                        authnRequest.getAssertionConsumerServiceIndex() >= 0) {
                     if (ac.getIndex() == authnRequest.getAssertionConsumerServiceIndex()) {
                         acEndpoint = ac;
                         break;
@@ -1148,7 +1240,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             idp = getCotManager().loolkupMemberByAlias(idpAlias);
             if (idp == null) {
-                throw new SamlR2Exception("No IDP found in circle of trust for received alias ["+idpAlias+"], verify your setup.");
+                throw new SamlR2Exception("No IDP found in circle of trust for received alias [" + idpAlias + "], verify your setup.");
             }
         }
         if (idp != null)
@@ -1166,7 +1258,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             idp = getCotManager().loolkupMemberByAlias(idpAlias);
             if (idp == null) {
-                throw new SamlR2Exception("No IDP found in circle of trust for preferred alias ["+idpAlias+"], verify your setup.");
+                throw new SamlR2Exception("No IDP found in circle of trust for preferred alias [" + idpAlias + "], verify your setup.");
             }
         }
         if (idp != null)
@@ -1175,7 +1267,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         // --------------------------------------------------------------
         // Fallback to the local IdP definition for this SP Channel
         // --------------------------------------------------------------
-        return ((FederationChannel)channel).getMember();
+        return ((FederationChannel) channel).getMember();
 
     }
 
@@ -1212,7 +1304,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         if (idpMd == null || idpMd.getEntry() == null)
             throw new SamlR2Exception("No metadata descriptor found for IDP " + idp);
 
-        if (idpMd.getEntry() instanceof EntityDescriptorType ) {
+        if (idpMd.getEntry() instanceof EntityDescriptorType) {
             EntityDescriptorType md = (EntityDescriptorType) idpMd.getEntry();
 
             for (RoleDescriptorType role : md.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
@@ -1245,22 +1337,43 @@ public class SingleSignOnProducer extends SamlR2Producer {
         throw new SamlR2Exception("IDP does not support preferred binding " + preferredBinding);
     }
 
+    protected EndpointDescriptor resolveIdpSsoContinueEndpoint() {
+
+        // Sso 'continue' endpoint for policy enforcement responses
+
+        String location = endpoint.getLocation();
+        if (location.startsWith("/"))
+            location = channel.getLocation() + location;
+
+        EndpointDescriptor ed = new EndpointDescriptorImpl(endpoint.getName(),
+                endpoint.getType(),
+                SamlR2Binding.SSO_ARTIFACT.getValue(),
+                location, null);
+
+        if (logger.isTraceEnabled())
+                logger.trace("Resolved IDP SSO 'Continue' endpoint to " + ed);
+
+        return ed;
+
+
+    }
+
 
     /**
      * Create a new RSTR based on the received claims.
      *
-     * @param claims the claims sent by the user.
+     * @param claims  the claims sent by the user.
      * @param context the context string used in the request.
      */
-    protected RequestSecurityTokenType buildRequestSecurityToken ( ClaimSet claims, String context) throws Exception {
+    protected RequestSecurityTokenType buildRequestSecurityToken(ClaimSet claims, String context) throws Exception {
 
-        logger.debug( "generating RequestSecurityToken..." );
+        logger.debug("generating RequestSecurityToken...");
         org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of = new org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory();
 
         RequestSecurityTokenType rstRequest = new RequestSecurityTokenType();
 
-        rstRequest.getAny().add( of.createTokenType( WSTConstants.WST_SAMLR2_TOKEN_TYPE ) );
-        rstRequest.getAny().add( of.createRequestType( WSTConstants.WST_ISSUE_REQUEST ) );
+        rstRequest.getAny().add(of.createTokenType(WSTConstants.WST_SAMLR2_TOKEN_TYPE));
+        rstRequest.getAny().add(of.createRequestType(WSTConstants.WST_ISSUE_REQUEST));
 
         org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory ofwss = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory();
 
@@ -1269,9 +1382,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
             Object claimObj = claim.getValue();
 
             if (claimObj instanceof UsernameTokenType) {
-                rstRequest.getAny().add( ofwss.createUsernameToken((UsernameTokenType) claim.getValue()));
+                rstRequest.getAny().add(ofwss.createUsernameToken((UsernameTokenType) claim.getValue()));
             } else if (claimObj instanceof BinarySecurityTokenType) {
-                rstRequest.getAny().add( ofwss.createBinarySecurityToken((BinarySecurityTokenType) claim.getValue()));
+                rstRequest.getAny().add(ofwss.createBinarySecurityToken((BinarySecurityTokenType) claim.getValue()));
             } else {
                 throw new SamlR2Exception("Claim type not supported " + claimObj.getClass().getName());
             }
@@ -1281,7 +1394,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         if (context != null)
             rstRequest.setContext(context);
 
-        logger.debug( "generated RequestSecurityToken [" + rstRequest + "]" );
+        logger.debug("generated RequestSecurityToken [" + rstRequest + "]");
         return rstRequest;
     }
 
@@ -1310,6 +1423,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         if (state == null) {
             logger.debug("Creating new AuthenticationState");
             state = new AuthenticationState();
+            // Be careful, users COULD be using two IDPs on same JOSSO ... (not very likely, but ...)
             in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:samlr2:idp:authn-state", state);
         }
         return state;
@@ -1348,8 +1462,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
         saml11Response.setStatus(saml11ResponseStatus);
 
         // Assertion
-        for ( Object aoe : responseType.getAssertionOrEncryptedAssertion() ) {
-            if (aoe instanceof oasis.names.tc.saml._2_0.assertion.AssertionType ) {
+        for (Object aoe : responseType.getAssertionOrEncryptedAssertion()) {
+            if (aoe instanceof oasis.names.tc.saml._2_0.assertion.AssertionType) {
                 AssertionType saml2Assertion = (oasis.names.tc.saml._2_0.assertion.AssertionType) aoe;
                 oasis.names.tc.saml._1_0.assertion.AssertionType saml11Assertion = new oasis.names.tc.saml._1_0.assertion.AssertionType();
 
@@ -1367,12 +1481,12 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
                 saml11Assertion.setConditions(saml11Conditions);
 
-                for ( ConditionAbstractType cond : saml2Conditions.getConditionOrAudienceRestrictionOrOneTimeUse() ) {
+                for (ConditionAbstractType cond : saml2Conditions.getConditionOrAudienceRestrictionOrOneTimeUse()) {
                     if (cond instanceof AudienceRestrictionType) {
                         AudienceRestrictionType saml2ar = (AudienceRestrictionType) cond;
                         oasis.names.tc.saml._1_0.assertion.AudienceRestrictionConditionType saml11arc = new AudienceRestrictionConditionType();
 
-                        for (String audience : saml2ar.getAudience() ) {
+                        for (String audience : saml2ar.getAudience()) {
                             saml11arc.getAudience().add(audience);
                         }
 
@@ -1383,9 +1497,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 }
 
                 // Assertion's authentication statement
-                for ( StatementAbstractType s : saml2Assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement() ) {
+                for (StatementAbstractType s : saml2Assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
 
-                    if ( s instanceof AuthnStatementType ) {
+                    if (s instanceof AuthnStatementType) {
                         AuthnStatementType saml2authnStatement = (AuthnStatementType) s;
                         oasis.names.tc.saml._1_0.assertion.AuthenticationStatementType saml11authnStatement = new oasis.names.tc.saml._1_0.assertion.AuthenticationStatementType();
                         oasis.names.tc.saml._1_0.assertion.AttributeStatementType saml11attrStatement = new oasis.names.tc.saml._1_0.assertion.AttributeStatementType();
@@ -1399,12 +1513,12 @@ public class SingleSignOnProducer extends SamlR2Producer {
                         if (saml2AuthnContext.getContent().size() > 0) {
                             JAXBElement acc = saml2AuthnContext.getContent().get(0);
 
-                            String saml2authnCtxClassRef =  (String)acc.getValue();
+                            String saml2authnCtxClassRef = (String) acc.getValue();
 
                             if (saml2authnCtxClassRef.equals("urn:oasis:names:tc:SAML:2.0:ac:classes:Password")) {
                                 saml11authnStatement.setAuthenticationMethod("urn:oasis:names:tc:SAML:1.0:am:password");
                             }
-                                // TODO: map remaining authentication context classes types
+                            // TODO: map remaining authentication context classes types
                         } else {
                             saml11authnStatement.setAuthenticationMethod("urn:oasis:names:tc:SAML:1.0:am:unspecified");
                         }
@@ -1412,10 +1526,10 @@ public class SingleSignOnProducer extends SamlR2Producer {
                         // Embed Assertion's Subject within Authentication Statement
                         SubjectType saml2Subject = saml2Assertion.getSubject();
                         oasis.names.tc.saml._1_0.assertion.SubjectType saml11Subject = new oasis.names.tc.saml._1_0.assertion.SubjectType();
-                        for ( JAXBElement sc : saml2Subject.getContent()) {
+                        for (JAXBElement sc : saml2Subject.getContent()) {
                             Object scv = sc.getValue();
 
-                            if (scv instanceof NameIDType ) {
+                            if (scv instanceof NameIDType) {
                                 NameIDType saml2nameid = (NameIDType) scv;
                                 oasis.names.tc.saml._1_0.assertion.NameIdentifierType saml11nameid = new oasis.names.tc.saml._1_0.assertion.NameIdentifierType();
 
@@ -1423,8 +1537,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                                 saml11nameid.setNameQualifier(saml2nameid.getNameQualifier());
                                 saml11nameid.setValue(saml2nameid.getValue());
                                 saml11Subject.getContent().add(saml11AssertionObjectFactory.createNameIdentifier(saml11nameid));
-                            } else
-                            if (scv instanceof SubjectConfirmationType ) {
+                            } else if (scv instanceof SubjectConfirmationType) {
                                 SubjectConfirmationType saml2subjectConfirmation = (SubjectConfirmationType) scv;
                                 oasis.names.tc.saml._1_0.assertion.SubjectConfirmationType saml11subjectConfirmation =
                                         new oasis.names.tc.saml._1_0.assertion.SubjectConfirmationType();
@@ -1456,6 +1569,72 @@ public class SingleSignOnProducer extends SamlR2Producer {
         }
 
         return saml11Response;
+    }
+
+    protected List<SSOPolicyEnforcementStatement> getPolicyEnforcementStatements(AssertionType assertion) {
+
+        List<SSOPolicyEnforcementStatement> policyStatements = new ArrayList<SSOPolicyEnforcementStatement>();
+        List<StatementAbstractType> stmts = assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement();
+
+        if (stmts == null)
+            return policyStatements;
+
+        for (StatementAbstractType stmt : stmts) {
+
+            if (stmt instanceof AttributeStatementType) {
+
+                AttributeStatementType attrStmt = (AttributeStatementType) stmt;
+                if (attrStmt.getAttributeOrEncryptedAttribute() == null)
+                    continue;
+
+                for (Object attrOrEncAttr : attrStmt.getAttributeOrEncryptedAttribute()) {
+
+                    if (attrOrEncAttr == null)
+                        continue;
+
+                    if (attrOrEncAttr instanceof AttributeType) {
+
+                        // TODO : Make this 'dynamic' to decouple from specific policy types
+                        AttributeType attr = (AttributeType) attrOrEncAttr;
+                        SSOPasswordPolicyEnforcement policy = null;
+
+                        if (attr.getName().startsWith(PasswordPolicyEnforcementWarning.NAMESPACE)) {
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Processing Password Policy Warning statement : " + attr.getFriendlyName());
+
+                            policy = new PasswordPolicyEnforcementWarning(PasswordPolicyWarningType.fromName(attr.getFriendlyName()));
+
+                            if (attr.getAttributeValue() != null) {
+
+                                if (logger.isTraceEnabled())
+                                    logger.trace("Processing Password Policy Warning statement values, total " + attr.getAttributeValue().size());
+
+                                policy.getValues().addAll(attr.getAttributeValue());
+                            }
+
+                        } else if (attr.getName().startsWith(PasswordPolicyEnforcementError.NAMESPACE)) {
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Processing Password Policy Error statement : " + attr.getFriendlyName());
+
+                            policy = new PasswordPolicyEnforcementError(PasswordPolicyErrorType.fromName(attr.getFriendlyName()));
+
+                        } else {
+                            // What other policies can we handle ?!?
+                            logger.trace("Ignoring attribute : " + attr.getName());
+                        }
+
+                        if (policy != null)
+                            policyStatements.add(policy);
+
+                    } else {
+                        logger.warn("Unsupported Attribute Type " + attrOrEncAttr.getClass().getName());
+                    }
+                }
+            }
+        }
+        return policyStatements;
     }
 
 

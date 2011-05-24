@@ -25,6 +25,7 @@ package org.atricore.idbus.kernel.main.authn.scheme;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
+import org.atricore.idbus.kernel.main.store.identity.BindContext;
 import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
 
@@ -41,7 +42,7 @@ import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
  * @version $Id: BindUsernamePasswordAuthScheme.java 1040 2009-03-05 00:56:52Z gbrigand $
  * @see org.atricore.idbus.kernel.main.store.identity.CredentialStore
  * @see org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore
- * @see org.atricore.idbus.kernel.main.store.identity.AbstractStore
+ * @see org.atricore.idbus.kernel.main.store.identity.IdentityStore
  *
  * @org.apache.xbean.XBean element="bind-auth-scheme"
  */
@@ -81,17 +82,27 @@ public class BindUsernamePasswordAuthScheme extends UsernamePasswordAuthScheme {
 
         // Authenticate the user against the configured store via a bind
         // The configured store could be using a LDAP server , a DB, etc.
-        if (((BindableCredentialStore) _credentialStore).bind(username, password)) {
+        BindContext bindCtx = new BindContextImpl();
+        setAuthenticated(((BindableCredentialStore) _credentialStore).bind(username, password, bindCtx));
 
+        if (logger.isDebugEnabled()) {
             if (logger.isDebugEnabled())
-                logger.debug("[authenticate()], Principal authenticated : " + username);
-
-            // We have successfully authenticated this user.
-            setAuthenticated(true);
-            return true;
+                logger.debug("[authenticate()], Principal "+(isAuthenticated() ? "IS" : "IS NOT")+" authenticated : "
+                        + username);
         }
 
-        return false;
+        // Propagate bind context ppolicies, if any to subject.
+        if (bindCtx.getSSOPolicies().size() > 0) {
+            if (logger.isDebugEnabled())
+                logger.debug("Password Policy Messages received : " + bindCtx.getSSOPolicies().size());
+
+            // Propagate enforced policies to Subject
+            _subject.getPrincipals().addAll(bindCtx.getSSOPolicies());
+
+        }
+
+
+        return isAuthenticated();
     }
 
     public void setCredentialStore(CredentialStore c) {

@@ -70,6 +70,18 @@
 
     <!-- the application context definition for the spring app DispatcherServlet -->
 
+    <bean name="/warn/policy-enforcement.do"
+          class="org.atricore.idbus.applications.server.ui.warn.DisplayWarningsController">
+        <property name="artifactQueueManager" ref="artifactQueueManager"/>
+
+        <property name="sessionForm" value="true"/>
+        <property name="commandName" value="confirmWarnings"/>
+        <property name="commandClass" value="org.atricore.idbus.applications.server.ui.warn.ConfirmWarnings"/>
+        <!-- Refer to tiles -->
+        <property name="formView" value="policy-enforcement"/>
+
+    </bean>
+
     <bean name="/claims/username-password.do"
           class="org.atricore.idbus.applications.server.ui.claims.UsernamePasswordClaimsController">
 
@@ -95,7 +107,6 @@
         <property name="formView" value="username-passcode"/>
 
     </bean>
-
 
     <bean name="/error.do"
           class="org.atricore.idbus.applications.server.ui.error.DisplayErrorController">

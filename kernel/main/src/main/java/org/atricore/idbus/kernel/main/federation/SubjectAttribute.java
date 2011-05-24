@@ -41,6 +41,12 @@ public class SubjectAttribute extends AbstractPrincipal {
         this.value = value;
     }
 
+    public SubjectAttribute(String name, Integer value) {
+        this.name = name;
+        this.value = value.toString();
+    }
+
+
     public String getName() {
         return name;
     }

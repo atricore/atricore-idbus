@@ -69,11 +69,15 @@ public class AuthenticatorImpl implements Authenticator {
         if (scheme.authenticate()) {
             scheme.confirm();
             _authCount++;
+
+            // Add all SSO Policies to authenticated Subject
+            s.getPrincipals().addAll(scheme.getSSOPolicies());
         } else {
             scheme.cancel();
             _authFailures++;
 
-            throw new AuthenticationFailureException(scheme.getPrincipal().getName());
+            // Send SSO Policies with Authn error
+            throw new AuthenticationFailureException(scheme.getPrincipal().getName(), scheme.getSSOPolicies());
         }
 
         return s;

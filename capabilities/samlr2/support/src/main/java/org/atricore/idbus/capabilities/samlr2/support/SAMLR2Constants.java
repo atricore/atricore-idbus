@@ -49,5 +49,4 @@ public interface SAMLR2Constants {
 
     static final String SSOUSER_PROPERTY_NS= "urn:org:atricore:idbus:user:property";
 
-
 }

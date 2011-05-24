@@ -178,6 +178,8 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSAMLR2AssertionAct
         // Subject Name Identifier
         // TODO : Check AuthnRequest to see if NameIDPolicy is present, check also SP springmetadata ?
         NameIDType subjectNameID = new NameIDType();
+
+        // TODO : Use 8.3 Name Identifier Format Identifiers form SAML 2 Core spec: email, x509, kerberos, windows domain controler, etc
         subjectNameID.setFormat(NameIDFormat.UNSPECIFIED.getValue());
         subjectNameID.setValue(ssoUser.getName());
         // TODO : Set SPNameQualifier

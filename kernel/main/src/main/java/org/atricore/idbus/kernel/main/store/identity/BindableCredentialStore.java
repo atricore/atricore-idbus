@@ -33,6 +33,6 @@ import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationExceptio
  */
 public interface BindableCredentialStore extends CredentialStore {
 
-    boolean bind(String username, String password) throws SSOAuthenticationException;
+    boolean bind(String username, String password, BindContext ctx) throws SSOAuthenticationException;
 
 }

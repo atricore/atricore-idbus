@@ -22,7 +22,6 @@
 package org.atricore.idbus.capabilities.samlr2.main.binding;
 
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
-import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -38,13 +37,11 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.w3._1999.xhtml.Html;
 
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
+import java.util.zip.*;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -97,7 +94,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             if (base64SAMLRequest != null) {
 
                 // By default, we use inflate/deflate
-                base64SAMLRequest = inflate(base64SAMLRequest, true);
+                base64SAMLRequest = inflateFromRedirect(base64SAMLRequest, true);
 
                 // SAML Request
                 RequestAbstractType samlRequest = XmlUtils.unmarshalSamlR2Request(base64SAMLRequest, false);
@@ -118,7 +115,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             } else {
 
                 // SAML Response
-                base64SAMLResponse = inflate(base64SAMLResponse, true);
+                base64SAMLResponse = inflateFromRedirect(base64SAMLResponse, true);
 
                 StatusResponseType samlResponse = XmlUtils.unmarshalSamlR2Response(base64SAMLResponse, false);
                 logger.debug("Received SAML Response " + samlResponse.getID());
@@ -183,7 +180,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
                 String s = XmlUtils.marshalSamlR2Request((RequestAbstractType) out.getContent(), element, false);
 
                 // Use default DEFLATE (rfc 1951)
-                msgValue = deflate(s, true);
+                msgValue = deflateForRedirect(s, true);
                 msgValue = URLEncoder.encode((String) msgValue, "UTF-8");
 
             } else if (out.getContent() instanceof StatusResponseType) {
@@ -200,7 +197,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
                 String s = XmlUtils.marshalSamlR2Response((StatusResponseType) out.getContent(), element, false);
 
                 // Use default DEFLATE (rfc 1951)
-                msgValue = deflate(s, true);
+                msgValue = deflateForRedirect(s, true);
                 msgValue = URLEncoder.encode((String) msgValue, "UTF-8");
 
                 StatusResponseType samlResponse = (StatusResponseType) out.getContent();
@@ -240,69 +237,117 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
             copyBackState(out.getState(), exchange);
 
-            httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-            httpOut.getHeaders().put("Pragma", "no-cache");
-            httpOut.getHeaders().put("http.responseCode", 302);
-            httpOut.getHeaders().put("Content-Type", "text/html");
-            httpOut.getHeaders().put("Location", redirLocation);
+            if (!isEnableAjax()) {
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 302);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+                httpOut.getHeaders().put("Location", redirLocation);
+            } else {
+
+                Html redir = this.createHtmlRedirectMessage(redirLocation);
+                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
+                        new String[]{"org.w3._1999.xhtml"});
+
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 200);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+
+                ByteArrayInputStream baos = new ByteArrayInputStream(marshalledHttpResponseBody.getBytes());
+                httpOut.setBody(baos);
+            }
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
-    protected String deflate(String in, boolean encode) throws Exception {
+    public static String deflateForRedirect(String redirStr, boolean encode) {
 
-        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-        DeflaterOutputStream deflated = new DeflaterOutputStream(bytesOut, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
-        ByteArrayInputStream inflated = new ByteArrayInputStream(in.getBytes());
-
-
-        byte[] buf = new byte[1024];
-        int read = inflated.read(buf);
-        while (read > 0) {
-            deflated.write(buf, 0, read);
-            read = inflated.read(buf);
+        int n = redirStr.length();
+        byte[] redirIs = null;
+        try {
+            redirIs = redirStr.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
 
+        byte[] deflated = new byte[n];
 
-        deflated.flush();
-        deflated.finish();
+        Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
+        deflater.setInput(redirIs);
+        deflater.finish();
+        int len = deflater.deflate(deflated);
+        deflater.end();
 
+        byte[] exact = new byte[len];
 
-        byte[] encodedbytes = bytesOut.toByteArray();
+        System.arraycopy(deflated, 0, exact, 0, len);
+
         if (encode) {
-            encodedbytes = new Base64().encode(encodedbytes);
+            byte[] base64Str = new Base64().encode(exact);
+            return new String(base64Str);
         }
 
-        deflated.close();
-
-        return new String(encodedbytes);
-
+        return new String(exact);
     }
 
-    protected String inflate(String in, boolean decode) throws Exception {
+    public static String inflateFromRedirect(String redirStr, boolean decode) throws Exception {
 
-        byte[] decodedBytes = in.getBytes();
-        if (decode) {
-            decodedBytes = new Base64().decode(in.getBytes());
-        }
-        
-        ByteArrayInputStream bytesIn = new ByteArrayInputStream(decodedBytes);
-        InputStream inflater = new InflaterInputStream(bytesIn, new Inflater(true));
-
-        // This gets rid of platform specific EOL chars ...
-        BufferedReader r = new BufferedReader(new InputStreamReader(inflater));
-        StringBuffer sb = new StringBuffer();
-        
-        String l = r.readLine();
-        while (l != null) {
-            sb.append(l);
-            l = r.readLine();
+        if (redirStr == null || redirStr.length() == 0) {
+            throw new RuntimeException("Redirect string cannot be null or empty");
         }
 
-        return sb.toString();
+        byte[] redirBin = null;
+        if (decode)
+            redirBin = new Base64().decode(removeNewLineChars(redirStr).getBytes());
+        else
+            redirBin = redirStr.getBytes();
 
+        // Decompress the bytes
+        Inflater inflater = new Inflater(true);
+        inflater.setInput(redirBin);
+        int resultLen = 4096;
+
+        byte[] result = new byte[resultLen];
+        int resultLength = 0;
+        try {
+            resultLength = inflater.inflate(result);
+        } catch (DataFormatException e) {
+            throw new RuntimeException("Cannot inflate SAML message : " + e.getMessage(), e);
+        }
+
+
+        inflater.end();
+
+        // Decode the bytes into a String
+        String outputString = null;
+        try {
+            outputString = new String(result, 0, resultLength, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Cannot convert byte array to string " + e.getMessage(), e);
+        }
+        return outputString;
+    }
+
+    public static String removeNewLineChars(String s) {
+        String retString = null;
+        if ((s != null) && (s.length() > 0) && (s.indexOf('\n') != -1)) {
+            char[] chars = s.toCharArray();
+            int len = chars.length;
+            StringBuffer sb = new StringBuffer(len);
+            for (int i = 0; i < len; i++) {
+                char c = chars[i];
+                if (c != '\n') {
+                    sb.append(c);
+                }
+            }
+            retString = sb.toString();
+        } else {
+            retString = s;
+        }
+        return retString;
     }
 
 }

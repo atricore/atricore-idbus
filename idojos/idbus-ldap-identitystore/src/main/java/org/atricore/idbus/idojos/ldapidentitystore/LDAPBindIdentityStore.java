@@ -22,10 +22,19 @@ package org.atricore.idbus.idojos.ldapidentitystore;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
+import org.apache.directory.shared.asn1.codec.DecoderException;
+import org.apache.directory.shared.ldap.codec.controls.ControlDecoder;
+import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyControlContainer;
+import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyResponseControl;
+import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
+import org.atricore.idbus.kernel.main.store.identity.BindContext;
+import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
 
 import javax.naming.AuthenticationException;
+import javax.naming.Context;
+import javax.naming.ldap.BasicControl;
+import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 
 
@@ -130,6 +139,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
     private boolean validateBindWithSearch = false;
 
+    private boolean passwordPolicySupport = false;
 
     public boolean isValidateBindWithSearch() {
         return this.validateBindWithSearch;
@@ -137,6 +147,14 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
     public void setValidateBindWithSearch(boolean validateBindWithSearch) {
         this.validateBindWithSearch = validateBindWithSearch;
+    }
+
+    public boolean isPasswordPolicySupport() {
+        return passwordPolicySupport;
+    }
+
+    public void setPasswordPolicySupport(boolean passwordPolicySupport) {
+        this.passwordPolicySupport = passwordPolicySupport;
     }
 
     // ----------------------------------------------------- CredentialStore Methods
@@ -147,44 +165,147 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
      *
      * @return true if the bind is successful
      */
-    public boolean bind(String username, String password) throws SSOAuthenticationException {
+    public boolean bind(String username, String password, BindContext bindCtx) throws SSOAuthenticationException {
+
+        String dn = null;
 
         try {
 
             // first try to retrieve the user using an known user
-            String dn = selectUserDN(username);
-
-            if (dn == null) {
+            dn = selectUserDN(username);
+            if (dn == null || "".equals(dn)) {
                 // user not found
                 throw new SSOAuthenticationException("No DN found for user : " + username);
             } else {
                 logger.debug("user dn = " + dn);
             }
 
+            // Create context without binding!
+            InitialLdapContext ctx = isPasswordPolicySupport() ?
+                    this.createLdapInitialContext(null, null) :
+                    this.createLdapInitialContext(null, null);
 
             try {
-                // Try to bind to LDAP an check for authentication problems.
-                InitialLdapContext ctx = this.createLdapInitialContext(dn, password);
+
+                ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, dn);
+                ctx.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
+
+                if (isPasswordPolicySupport()) {
+                    // Configure request control for password policy:
+                    ctx.reconnect(new Control[] { new BasicControl(PasswordPolicyResponseControl.CONTROL_OID) } );
+                } else {
+                    ctx.reconnect(new Control[] {});
+                }
+
+                // Bind to LDAP an check for authentication warning/errors reported in password policy control:
                 if (validateBindWithSearch)
                     selectUserDN(ctx, username);
-                
+
                 if (logger.isTraceEnabled())
                     logger.trace("LDAP Bind with user credentials succeeded");
-                ctx.close();
+
+
             } catch (AuthenticationException e) {
+
                 if (logger.isDebugEnabled())
                     logger.debug("LDAP Bind Authentication error : " + e.getMessage(), e);
 
                 return false;
+
+            } finally {
+
+                if (isPasswordPolicySupport()) {
+                    // Check password policy LDAP Control
+                    PasswordPolicyResponseControl ppolicyCtrl = decodePasswordPolicyControl(ctx.getResponseControls());
+                    if (ppolicyCtrl != null)
+                        addPasswordPolicyToBindCtx(ppolicyCtrl, bindCtx);
+
+                }
+
+                ctx.close();
             }
 
             return true;
 
 
         } catch (Exception e) {
-            throw new SSOAuthenticationException("Cannot bind as user : " + username + " " + e.getMessage(), e);
+            throw new SSOAuthenticationException("Cannot bind as user : " + username + " ["+dn+"]" + e.getMessage(), e);
         }
 
+    }
+
+    private void addPasswordPolicyToBindCtx(PasswordPolicyResponseControl ppolicyCtrl, BindContext bindCtx) {
+
+        if (ppolicyCtrl.getWarningType() != null) {
+
+            PasswordPolicyWarningType type = null;
+
+            switch(ppolicyCtrl.getWarningType()) {
+                case TIME_BEFORE_EXPIRATION:
+                    type = PasswordPolicyWarningType.TIME_BEFORE_EXPIRATION;
+                    break;
+                case GRACE_AUTHNS_REMAINING:
+                    type = PasswordPolicyWarningType.GRACE_AUTHNS_REMAINING;
+                    break;
+                default:
+                    logger.error("Unsupported LDAP Password Policy Warning Type : " + ppolicyCtrl.getWarningType().name());
+            }
+
+            PasswordPolicyEnforcementWarning warningPPolicy = new PasswordPolicyEnforcementWarning(type);
+            warningPPolicy.setValue(ppolicyCtrl.getWarningValue());
+
+            bindCtx.addPasswordPolicyMessages(warningPPolicy);
+        }
+
+        if (ppolicyCtrl.getErrorType() != null) {
+            PasswordPolicyErrorType type = null;
+
+            switch(ppolicyCtrl.getErrorType()) {
+                case PASSWORD_EXPIRED:
+                    type = PasswordPolicyErrorType.PASSWORD_EXPIRED;
+                    break;
+                case ACCOUNT_LOCKED:
+                    type = PasswordPolicyErrorType.ACCOUNT_LOCKED;
+                    break;
+                case CHANGE_AFTER_RESET:
+                    type = PasswordPolicyErrorType.CHANGE_PASSWORD_REQUIRED;
+                    break;
+                default:
+                    logger.error("Unsupported LDAP Password Policy Error Type : " + ppolicyCtrl.getErrorType().name());
+            }
+
+            PasswordPolicyEnforcementError errorPPolicy = new PasswordPolicyEnforcementError(type);
+            bindCtx.addPasswordPolicyMessages(errorPPolicy);
+        }
+
+    }
+
+    protected PasswordPolicyResponseControl decodePasswordPolicyControl(Control[] ldapControls) throws DecoderException {
+
+        if (ldapControls == null)
+            return null;
+
+        for (Control ldapControl : ldapControls) {
+
+            if (ldapControl.getID().equals(PasswordPolicyResponseControl.CONTROL_OID)) {
+
+                PasswordPolicyControlContainer container = new PasswordPolicyControlContainer();
+                container.setPasswordPolicyResponseControl(new PasswordPolicyResponseControl());
+                ControlDecoder decoder = container.getPasswordPolicyControl().getDecoder();
+                decoder.decode(ldapControl.getEncodedValue(), container.getPasswordPolicyControl());
+
+                PasswordPolicyResponseControl ctrl = container.getPasswordPolicyControl();
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Password Policy Control : " + ctrl.toString());
+
+                return ctrl;
+            }
+        }
+
+        logger.warn("No LDAP Control found for " + PasswordPolicyResponseControl.CONTROL_OID);
+
+        return null;
     }
 
 

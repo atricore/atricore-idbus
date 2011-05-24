@@ -23,10 +23,7 @@ package org.atricore.idbus.capabilities.samlr2.main.emitter.plans;
 
 import oasis.names.tc.saml._2_0.assertion.AuthnStatementType;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
-import org.atricore.idbus.kernel.main.authn.Constants;
-import org.atricore.idbus.kernel.main.authn.SSORole;
-import org.atricore.idbus.kernel.main.authn.SSOUser;
-import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
+import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
@@ -101,18 +98,26 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
             SSORole[] ssoRoles = getIdentityManager().findRolesByUsername(username);
             principals.addAll(Arrays.asList(ssoRoles));
 
-            if (logger.isTraceEnabled()) {
-
-            }
-
             // Build subject and publish as execution context variable.
             Subject s = null;
             // If we had a subject already, use the private / public credentials!
             // This subject came probably from a JOSSO1 Auth Scheme.
             if (ex.getProperty(WSTConstants.SUBJECT_PROP) != null) {
                 Subject auths = (Subject) ex.getProperty(WSTConstants.SUBJECT_PROP);
+
+                // Use existing SSOPolicyEnforcement principals
+                Set<SSOPolicyEnforcementStatement> ssoPolicies = auths.getPrincipals(SSOPolicyEnforcementStatement.class);
+
+                if (ssoPolicies != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principas ");
+
+                    principals.addAll(ssoPolicies);
+                }
+
                 s = new Subject(true, principals, auths.getPrivateCredentials(), auths.getPublicCredentials());
             } else {
+
                 s = new Subject(true, principals, new HashSet(), new HashSet());
             }
 

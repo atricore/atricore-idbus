@@ -23,10 +23,8 @@ package org.atricore.idbus.kernel.main.mediation.camel;
 
 import org.apache.camel.*;
 import org.apache.camel.impl.DefaultEndpoint;
-import org.apache.camel.spi.Registry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
 

@@ -86,11 +86,8 @@
 
     <!-- PAGE FOOTER  -->
     <div id="footer">
-        <p>Copyright &copy; 2009. Atricore, Inc.</p>
+        <p>Copyright &copy; 2011. Atricore, Inc.</p>
     </div>
-
-
 </div>
-
 </body>
 </html>

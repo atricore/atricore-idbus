@@ -23,7 +23,6 @@ package org.atricore.idbus.idojos.ldapidentitystore.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
 import org.apache.directory.server.configuration.ApacheDS;
 import org.atricore.idbus.idojos.ldapidentitystore.LDAPIdentityStore;
 import org.atricore.idbus.kernel.main.store.SimpleUserKey;
@@ -35,6 +34,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
 

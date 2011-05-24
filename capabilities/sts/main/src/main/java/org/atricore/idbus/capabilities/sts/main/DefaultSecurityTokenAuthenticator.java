@@ -66,14 +66,21 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
 
     public boolean canAuthenticate(Object requestToken) {
 
+        if ( isRememberMeToken( requestToken ))
+            return true;
+
+        if (is2FactorAuthnToken(requestToken))
+            return true;
+
         if (requestToken instanceof UsernameTokenType)
             return true;
-        if ( isRememberMeToken( requestToken ) ){
-            return true;
+<<<<<<< HEAD
         }
         if ( isSpnegoToken( requestToken)) {
             return true;
         }
+=======
+>>>>>>> master
 
         // TODO : Add X509, SAML2 and other token types!
 
@@ -153,7 +160,7 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
 
 
         } catch (AuthenticationFailureException e) {
-            throw new SecurityTokenAuthenticationFailure(scheme, e);
+            throw new SecurityTokenAuthenticationFailure(scheme, e.getSSOPolicies(), e);
 
         } catch (SSOAuthenticationException e) {
             throw new SecurityTokenEmissionException(e);

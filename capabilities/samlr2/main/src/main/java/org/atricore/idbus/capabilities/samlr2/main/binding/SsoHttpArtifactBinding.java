@@ -26,6 +26,7 @@ import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
 import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -35,6 +36,11 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.Abstract
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimsResponse;
+import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
+import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
+import org.w3._1999.xhtml.Html;
+
+import java.io.ByteArrayInputStream;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -124,10 +130,22 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
 
             } else if (out.getContent() instanceof SSORequestAbstractType) {
                 msgValue = out.getContent();
-
             } else if (out.getContent() instanceof SSOResponseType) {
                 msgValue = out.getContent();
                 isResponse = true;
+            } else if (out.getContent() instanceof PolicyEnforcementRequest) {
+                msgValue = out.getContent();
+
+            } else if (out.getContent() instanceof PolicyEnforcementResponse) {
+                msgValue = out.getContent();
+                isResponse = true;
+
+            } else if (msgValue != null) {
+                msgValue = out.getContent();
+                logger.warn("Unknown message content : " + msgValue.getClass().getName());
+                // Try to guess if this is a response ...
+                if (msgValue.getClass().getSimpleName().contains("esponse"))
+                    isResponse = true;
             }
 
             MessageQueueManager aqm = getArtifactQueueManager();
@@ -147,11 +165,28 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
             copyBackState(out.getState(), exchange);
 
-            httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-            httpOut.getHeaders().put("Pragma", "no-cache");
-            httpOut.getHeaders().put("http.responseCode", 302);
-            httpOut.getHeaders().put("Content-Type", "text/html");
-            httpOut.getHeaders().put("Location", artifactLocation);
+            if (!isEnableAjax()) {
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 302);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+                httpOut.getHeaders().put("Location", artifactLocation);
+            } else {
+
+                Html redir = this.createHtmlArtifactMessage(artifactLocation);
+
+                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
+                        new String[]{"org.w3._1999.xhtml"});
+
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 200);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+
+                ByteArrayInputStream baos = new ByteArrayInputStream(marshalledHttpResponseBody.getBytes());
+                httpOut.setBody(baos);
+            }
+
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);

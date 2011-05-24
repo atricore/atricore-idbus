@@ -156,10 +156,10 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             if (logger.isDebugEnabled())
                 logger.debug("Marshalling SAMLR2 Assertion to DOM Tree [" + assertion.getID() + "]");
 
-            Document doc = XmlUtils.marshalAsDom(assertion,
+            Document doc = XmlUtils.marshalSamlR2AsDom(assertion,
                     SAMLR2Constants.SAML_ASSERTION_NS,
                     "Assertion",
-                    new String[] {SAMLR2Constants.SAML_ASSERTION_PKG});
+                    new String[]{SAMLR2Constants.SAML_ASSERTION_PKG});
 
             doc = sign(doc, assertion.getID());
 
@@ -233,7 +233,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             if (logger.isDebugEnabled())
                 logger.debug("Marshalling SAMLR2 Status Response to DOM Tree [" + response.getID() + "]");
 
-            Document doc = XmlUtils.marshalAsDom(response,
+            Document doc = XmlUtils.marshalSamlR2AsDom(response,
                     SAMLR2Constants.SAML_PROTOCOL_NS,
                     "Response",
                     new String[]{

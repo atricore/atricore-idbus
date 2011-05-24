@@ -40,6 +40,7 @@
 
     <properties>
         <apacheds.version>1.5.4</apacheds.version>
+        <apacheds.shared.version>0.9.19</apacheds.shared.version>
         <commons.logging.version>1.1.1</commons.logging.version>
         <hsqldb.version>1.8.0.7</hsqldb.version>
         <spring.version>3.0.3.RELEASE</spring.version>
@@ -81,8 +82,16 @@
                         <Import-Package>
                                org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
                                org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                               javax.net.ssl,
+                               antlr; resolution:="optional",
+                               antlr.collections.impl; resolution:="optional",
+
                                *
                         </Import-Package>
+                        <Embed-Dependency>
+                            *;artifactId=shared-asn1,shared-ldap,shared-i18n,shared-ldap-constants
+                        </Embed-Dependency>
+
                     </instructions>
                 </configuration>
             </plugin>
@@ -93,6 +102,26 @@
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.4.2</version>
+                <configuration>
+                    <useFile>true</useFile>
+                    <forkMode>once</forkMode>
+                    <childDelegation>false</childDelegation>
+                    <argLine>-Xmx512M</argLine>
+                    <!--<redirectTestOutputToFile>true</redirectTestOutputToFile>-->
+                    <workingDirectory>${basedir}</workingDirectory>
+                    <systemProperties>
+                        <property>
+                            <name>log4j.configuration</name>
+                            <value>log4j-tests.properties</value>
+                        </property>
+                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>
@@ -115,6 +144,32 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.directory.shared</groupId>
+            <artifactId>shared-asn1</artifactId>
+            <version>${apacheds.shared.version}</version>
+            <!--scope>provided</scope-->
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.directory.shared</groupId>
+            <artifactId>shared-ldap</artifactId>
+            <version>${apacheds.shared.version}</version>
+            <!--scope>provided</scope-->
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.directory.shared</groupId>
+            <artifactId>shared-i18n</artifactId>
+            <version>${apacheds.shared.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.directory.shared</groupId>
+            <artifactId>shared-ldap-constants</artifactId>
+            <version>${apacheds.shared.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
@@ -125,6 +180,13 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.8</version>
             <scope>test</scope>
         </dependency>
 
@@ -141,6 +203,7 @@
             <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
+
         <!-- LDAP test support -->
         <!-- APACHE DIRECTORY DEPENDENCIES -->
         <dependency>
@@ -163,6 +226,7 @@
             <version>${apacheds.version}</version>
             <scope>test</scope>
         </dependency>
+
 
         <dependency>
             <groupId>org.apache.directory.server</groupId>

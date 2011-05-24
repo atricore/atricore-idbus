@@ -35,6 +35,20 @@
                             <div>
                                 <ul>
                                     <li><fmt:message key="${statusMessageKey}"/></li>
+                                    <c:if test="${not empty ssoPolicyMessages}">
+                                    <c:forEach var="ssoPolicyMessage" items="${ssoPolicyMessages}">
+                                    <% // TODO : Add policy value to message, if any! %>
+                                    <li>
+                                        <fmt:message key="${ssoPolicyMessage.msgKey}" >
+                                            <c:if test="${not empty ssoPolicyMessage.values}">
+                                                <c:forEach var="ssoPolicyMessageValue" items="${ssoPolicyMessage.values}">
+                                                    <fmt:param value="${ssoPolicyMessageValue}"/>
+                                                </c:forEach>
+                                            </c:if>
+                                        </fmt:message>
+                                    </li>
+                                    </c:forEach>
+                                    </c:if>
                                 </ul>
                             </div>
                         </p>

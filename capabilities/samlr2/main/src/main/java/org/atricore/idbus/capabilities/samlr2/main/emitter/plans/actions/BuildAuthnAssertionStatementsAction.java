@@ -30,9 +30,7 @@ import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.core.AttributeNameFormat;
 import org.atricore.idbus.capabilities.samlr2.support.profiles.DCEPACAttributeDefinition;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
-import org.atricore.idbus.kernel.main.authn.SSONameValuePair;
-import org.atricore.idbus.kernel.main.authn.SSORole;
-import org.atricore.idbus.kernel.main.authn.SSOUser;
+import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
@@ -93,15 +91,39 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSAMLR2Assertion
         for(SSORole role : ssoRoles)
             attrRole.getAttributeValue().add( role.getName() );
 
+        // SSO Enforced policies
+        // TODO : Can we use SAML Authn context information ?!
+        List<AttributeType> attrPolicies = new ArrayList<AttributeType>();
+        Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = s.getPrincipals(SSOPolicyEnforcementStatement.class);
+        for (SSOPolicyEnforcementStatement ssoPolicyEnforcement : ssoPolicyEnforcements) {
+            AttributeType attrPolicy = new AttributeType();
+
+            attrPolicy.setFriendlyName(ssoPolicyEnforcement.getName());
+            attrPolicy.setName(ssoPolicyEnforcement.getNs() + ":" + ssoPolicyEnforcement.getName());
+            attrPolicy.setNameFormat(AttributeNameFormat.URI.getValue());
+
+            if (ssoPolicyEnforcement.getValues().size() > 0) {
+                for (Object v : ssoPolicyEnforcement.getValues())
+                    attrPolicy.getAttributeValue().add(v);
+            }
+
+            attrPolicies.add(attrPolicy);
+        }
+
+
         // Create attribute statements
         AttributeStatementType attributeStatement = new AttributeStatementType();
         attributeStatement.getAttributeOrEncryptedAttribute().add(attrRole);
         attributeStatement.getAttributeOrEncryptedAttribute().add(attrPrincipal);
-        
+
         if (attrProps.size() > 0) {
             for (AttributeType attrProp : attrProps)
                 attributeStatement.getAttributeOrEncryptedAttribute().add(attrProp);
         }
+
+        if (attrPolicies.size() > 0)
+            for (AttributeType attrPolicy : attrPolicies)
+                attributeStatement.getAttributeOrEncryptedAttribute().add(attrPolicy);
 
         // Assembly all
         assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().add( attributeStatement );

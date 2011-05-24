@@ -46,6 +46,8 @@ public interface IdentityMediator {
 
     String getErrorUrl();
 
+    String getWarningUrl();
+
     MediationLogger getLogger();
 
     boolean isLogMessages();

@@ -182,14 +182,28 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
             // Create HTML Form for response body
             // ------------------------------------------------------------
-            if (logger.isDebugEnabled())
-                logger.debug("Creating HTML Form with action " + targetLocation);
 
+            Html post = null;
 
-            Html post = this.createHtmlPostMessage(targetLocation,
-                    relayState,
-                    msgName,
-                    (String) msgValue);
+            if (isEnableAjax()) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Creating HTML Ajax Form with action " + targetLocation);
+
+                post = this.createHtmlAjaxPostMessage(targetLocation,
+                        relayState,
+                        msgName,
+                        (String) msgValue);
+
+            } else {
+                if (logger.isDebugEnabled())
+                    logger.debug("Creating HTML Form with action " + targetLocation);
+
+                post = this.createHtmlPostMessage(targetLocation,
+                        relayState,
+                        msgName,
+                        (String) msgValue);
+            }
+
             String marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "html",
                     new String[]{"org.w3._1999.xhtml"});
 

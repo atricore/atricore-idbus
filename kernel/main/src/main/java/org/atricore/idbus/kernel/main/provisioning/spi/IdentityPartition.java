@@ -3,10 +3,7 @@ package org.atricore.idbus.kernel.main.provisioning.spi;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
-import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
-import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 

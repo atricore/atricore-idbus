@@ -115,6 +115,7 @@ public class SsoHttpPostBinding extends AbstractMediationHttpBinding {
             Message httpOut = exchange.getOut();
             Message httpIn = exchange.getIn();
 
+            // TODO : Add 'Ajax' support
             Html post = this.createHtmlPostMessage(this.buildHttpTargetLocation(httpIn, ed),
                     out.getRelayState(),
                     "JOSSOMessage",

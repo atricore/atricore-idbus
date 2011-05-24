@@ -145,6 +145,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="aqm.useCompression">false</prop>
         <!-- EHCache properties -->
         <prop key="ehcache.config">file:${karaf.base}/etc/ehcache.xml</prop>
+
+        <prop key="binding.http.ajax">true</prop>
     </osgix:cm-properties>
 
     <ctx:property-placeholder properties-ref="kernelProps" />

@@ -36,11 +36,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  *
@@ -52,6 +48,8 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
     private static final Log logger = LogFactory.getLog( AbstractCamelMediator.class );
 
     private String errorUrl;
+
+    private String warningUrl;
 
     protected CamelContext context;
 
@@ -247,6 +245,14 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     public void setErrorUrl ( String errorUrl ) {
         this.errorUrl = errorUrl;
+    }
+
+    public String getWarningUrl() {
+        return warningUrl;
+    }
+
+    public void setWarningUrl(String warningUrl) {
+        this.warningUrl = warningUrl;
     }
 
     protected RouteBuilder createIdPRoutes(SPChannel SPChannel) throws Exception  {

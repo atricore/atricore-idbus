@@ -22,17 +22,18 @@ package org.atricore.idbus.idojos.ldapidentitystore;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.store.AbstractStore;
-import org.atricore.idbus.kernel.main.store.UserKey;
-import org.atricore.idbus.kernel.main.store.SimpleUserKey;
-import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
-import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.authn.*;
+import org.atricore.idbus.kernel.main.store.AbstractStore;
+import org.atricore.idbus.kernel.main.store.SimpleUserKey;
+import org.atricore.idbus.kernel.main.store.UserKey;
+import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
+import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.*;
+import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
@@ -775,12 +776,24 @@ public class LDAPIdentityStore extends AbstractStore  {
         String protocol = env.getProperty(Context.SECURITY_PROTOCOL);
         String providerURL = getProviderUrl();
         // Use localhost if providerUrl not set
-        if (providerURL == null)
+        if (providerURL == null) {
             providerURL = "ldap://localhost:" + ((protocol != null && protocol.equals("ssl")) ? "636" : "389");
+        } else {
+            // In case user configured provided URL
+            if (providerURL.startsWith("ldaps")) {
+                protocol = "ssl";
+                env.setProperty(Context.SECURITY_PROTOCOL, "ssl");
+            }
+
+        }
 
         env.setProperty(Context.PROVIDER_URL, providerURL);
-        env.setProperty(Context.SECURITY_PRINCIPAL, securityPrincipal);
-        env.put(Context.SECURITY_CREDENTIALS, securityCredential);
+
+        if (securityPrincipal != null && !"".equals(securityPrincipal))
+            env.setProperty(Context.SECURITY_PRINCIPAL, securityPrincipal);
+
+        if (securityCredential != null && !"".equals(securityCredential))
+            env.put(Context.SECURITY_CREDENTIALS, securityCredential);
 
         // Logon into LDAP server
         if (logger.isDebugEnabled())

@@ -21,10 +21,12 @@
 
 package org.atricore.idbus.kernel.main.mediation.claim;
 
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  *
@@ -46,4 +48,6 @@ public interface ClaimsRequest extends Serializable {
     String getLastErrorId();
 
     String getLastErrorMsg();
+
+    Set<SSOPolicyEnforcementStatement> getSsoPolicyEnforcements();
 }
