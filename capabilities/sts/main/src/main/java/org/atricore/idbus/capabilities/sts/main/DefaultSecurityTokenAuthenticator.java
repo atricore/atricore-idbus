@@ -74,13 +74,9 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
 
         if (requestToken instanceof UsernameTokenType)
             return true;
-<<<<<<< HEAD
-        }
-        if ( isSpnegoToken( requestToken)) {
+
+        if ( isSpnegoToken( requestToken))
             return true;
-        }
-=======
->>>>>>> master
 
         // TODO : Add X509, SAML2 and other token types!
 
