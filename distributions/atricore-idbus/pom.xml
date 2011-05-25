@@ -116,6 +116,7 @@
         <idbus.cap.saml2.version>1.2.0-SNAPSHOT</idbus.cap.saml2.version>
         <idbus.cap.spml2.version>1.2.0-SNAPSHOT</idbus.cap.spml2.version>
         <idbus.cap.sts.version>1.2.0-SNAPSHOT</idbus.cap.sts.version>
+        <idbus.cap.spnego.version>1.2.0-SNAPSHOT</idbus.cap.spnego.version>
 
         <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.2.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
         <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.2.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
@@ -1458,7 +1459,11 @@
             <version>${idbus.cap.spml2.version}</version>
             <type>pom</type>
         </dependency>
-
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.spnego</groupId>
+            <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
+            <version>${idbus.cap.spnego.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.dbidentitystore</artifactId>
