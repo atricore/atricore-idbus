@@ -58,6 +58,7 @@
         <module>capabilities/samlr2</module>
         <module>capabilities/josso</module>
         <module>capabilities/sts</module>
+        <module>capabilities/spnego</module>
 
         <module>idojos/idbus-db-identitystore</module>
         <module>idojos/idbus-db-sessionstore</module>
@@ -74,6 +75,7 @@
         <module>examples/simple-federation</module>
         <module>examples/simple-provisioning</module>
         <module>examples/salesforce</module>
+        <module>examples/simple-iwa</module>
 
         <module>distributions</module>
     </modules>
