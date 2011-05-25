@@ -35,7 +35,7 @@
     <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
     <version>1.2.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Atricore IDBus :: Capability : SPNEGO Capability</name>
+    <name>Atricore IDBus :: Capability : SPNEGO</name>
 
     <properties>
         <idbus.kernel.version>1.2.0-SNAPSHOT</idbus.kernel.version>
