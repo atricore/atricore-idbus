@@ -16,7 +16,7 @@
     <groupId>org.atricore.idbus.examples.simple-iwa</groupId>
     <artifactId>org.atricore.idbus.examples.simple-iwa.idau</artifactId>
     <version>1.2.0-SNAPSHOT</version>
-    <name>Id Appliance : simple-iwa :: Id Appliance Unit : idau</name>
+    <name>Atricore IDBus :: Example : Simple Integrated Windows Authentication Identity Appliance IDAU</name>
     <description>Simple Integrated Windows Authentication Identity Appliance</description>
     <packaging>bundle</packaging>
 

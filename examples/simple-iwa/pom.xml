@@ -17,9 +17,7 @@
     <artifactId>org.atricore.idbus.examples.simple-iwa.project</artifactId>
     <version>1.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-
-    <name>Simple Integrated Windows Authentication Identity Appliance</name>
-
+    <name>Atricore IDBus :: Example : Simple Integrated Windows Authentication Identity Appliance Project</name>
     <properties>
 
         <atricore.idbus.version>1.2.0-SNAPSHOT</atricore.idbus.version>
