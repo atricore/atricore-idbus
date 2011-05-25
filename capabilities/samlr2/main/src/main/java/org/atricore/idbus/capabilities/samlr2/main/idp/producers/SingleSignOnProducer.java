@@ -852,7 +852,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
                     continue;
 
                 // Only use endpoints that are 'passive' when 'passive' was requested.
-                if (status.getAuthnRequest().isIsPassive()) {
+                if (status.getAuthnRequest().isIsPassive() != null &&
+                    status.getAuthnRequest().isIsPassive()) {
                     AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(endpoint.getType());
                     if (!authnCtxClass.isPassive())
                         continue;
