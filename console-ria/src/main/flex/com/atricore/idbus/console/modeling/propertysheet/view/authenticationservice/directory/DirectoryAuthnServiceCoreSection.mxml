@@ -57,7 +57,7 @@
 
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.performDnSearch')}:"
-                     required="true">
+                     required="false">
             <s:CheckBox id="performDnSearch" />
         </mx:FormItem>
 
