@@ -31,6 +31,8 @@
         http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
         >
 
+    <import resource="idbus-ui-servlet-extensions.xml" />
+
     <!-- ========================================================================= -->
     <!-- IDBus compoments                                                          -->
     <!-- ========================================================================= -->

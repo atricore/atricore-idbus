@@ -180,10 +180,14 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                 logger.debug("user dn = " + dn);
             }
 
+
+
             // Create context without binding!
             InitialLdapContext ctx = isPasswordPolicySupport() ?
                     this.createLdapInitialContext(null, null) :
                     this.createLdapInitialContext(null, null);
+
+            Control[] ldapControls = ctx.getResponseControls();
 
             try {
 
@@ -197,13 +201,20 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                     ctx.reconnect(new Control[] {});
                 }
 
+                // Get response controls from reconnect BEFORE dn search, or they're lost
+                ldapControls = ctx.getResponseControls();
+
                 // Bind to LDAP an check for authentication warning/errors reported in password policy control:
-                if (validateBindWithSearch)
+                if (validateBindWithSearch) {
                     selectUserDN(ctx, username);
+
+                    // Perhaps controls are not send during reconnet, try to get them now
+                    if (ldapControls == null || ldapControls.length == 0)
+                        ldapControls = ctx.getResponseControls();
+                }
 
                 if (logger.isTraceEnabled())
                     logger.trace("LDAP Bind with user credentials succeeded");
-
 
             } catch (AuthenticationException e) {
 
@@ -216,7 +227,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
                 if (isPasswordPolicySupport()) {
                     // Check password policy LDAP Control
-                    PasswordPolicyResponseControl ppolicyCtrl = decodePasswordPolicyControl(ctx.getResponseControls());
+                    PasswordPolicyResponseControl ppolicyCtrl = decodePasswordPolicyControl(ldapControls);
                     if (ppolicyCtrl != null)
                         addPasswordPolicyToBindCtx(ppolicyCtrl, bindCtx);
 
