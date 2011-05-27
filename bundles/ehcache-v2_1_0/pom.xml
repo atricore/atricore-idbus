@@ -29,12 +29,12 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.1.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.ehcache-v2_1_0</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.1.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Bundle : EHCache Core v2.1.0 OSGi</name>
 
@@ -43,8 +43,8 @@
         <ehcache.version>2.1.3</ehcache.version>
         <ehcache.core.version>2.1.0</ehcache.core.version>
         <ehcache.jms.version>0.4</ehcache.jms.version>
-        <idbus.kernel.version>1.2.0-SNAPSHOT</idbus.kernel.version>
-        <idbus.bundle.javax-jdo-v3_0.version>1.2.0-SNAPSHOT</idbus.bundle.javax-jdo-v3_0.version>
+        <idbus.kernel.version>1.1.1-SNAPSHOT</idbus.kernel.version>
+        <idbus.bundle.javax-jdo-v3_0.version>1.1.1-SNAPSHOT</idbus.bundle.javax-jdo-v3_0.version>
 
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <spring.version>3.0.3.RELEASE</spring.version>

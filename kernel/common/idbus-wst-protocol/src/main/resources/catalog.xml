@@ -26,5 +26,4 @@ PUBLIC "-//OASIS/DTD Entity Resolution XML Catalog V1.0//EN"
 
 <catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
     <rewriteURI rewritePrefix="./xmldsig-core-schema.xsd" uriStartString="http://www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd"/>
-    <rewriteURI rewritePrefix="./xml.xsd" uriStartString="http://www.w3.org/2001/xml.xsd"/>
 </catalog>

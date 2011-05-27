@@ -75,9 +75,6 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
         if (requestToken instanceof UsernameTokenType)
             return true;
 
-        if ( isSpnegoToken( requestToken))
-            return true;
-
         // TODO : Add X509, SAML2 and other token types!
 
         return false;
@@ -113,17 +110,6 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
 
                 credentials = new Credential[] {usernameCredential, passcodeCredential};
 
-
-            } else if (isSpnegoToken(requestToken)) {
-
-                scheme = "spnego-authentication";
-
-                BinarySecurityTokenType binaryToken = (BinarySecurityTokenType) requestToken;
-
-                String spnegoSecurityToken = binaryToken.getOtherAttributes().get( new QName( Constants.SPNEGO_NS) );
-
-                Credential spnegoCredential = getAuthenticator().newCredential(scheme, "spnegoSecurityToken", spnegoSecurityToken);
-                credentials = new Credential[] {spnegoCredential};
 
             } else if (requestToken instanceof UsernameTokenType) {
 
@@ -182,13 +168,6 @@ public class DefaultSecurityTokenAuthenticator implements SecurityTokenAuthentic
     private Boolean is2FactorAuthnToken(Object requestToken){
         if (requestToken instanceof UsernameTokenType ){
             return ((UsernameTokenType)requestToken).getOtherAttributes().containsKey( new QName( Constants.PASSCODE_NS) );
-        }
-        return false;
-    }
-
-    private Boolean isSpnegoToken(Object requestToken){
-        if (requestToken instanceof BinarySecurityTokenType ){
-            return ((BinarySecurityTokenType)requestToken).getOtherAttributes().containsKey( new QName( Constants.SPNEGO_NS) );
         }
         return false;
     }

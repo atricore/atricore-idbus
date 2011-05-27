@@ -38,8 +38,6 @@ public interface Constants  {
 
     public static final String PASSCODE_NS = "urn:org:atricore:idbus:kernel:main:authn:passcode";
 
-    public static final String SPNEGO_NS = "urn:org:atricore:idbus:kernel:main:authn:spnego";
-
     public static final String TICKET_NS = "urn:org:atricore:idbus:kernel:main:authn:ticket";
 
     public static final String REMEMBERME_NS = "urn:org:atricore:idbus:kernel:main:authn:remember-me";
