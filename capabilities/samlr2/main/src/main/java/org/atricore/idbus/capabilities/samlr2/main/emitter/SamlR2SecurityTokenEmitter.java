@@ -34,6 +34,7 @@ import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmitter;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
+import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.atricore.idbus.kernel.planning.IdentityArtifactImpl;
@@ -88,9 +89,13 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
                 && WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType);
         logger.debug( "isRememberMeToken = " + isRememberMeToken);
 
+        Boolean isSpnegoToken = isSpnegoToken(requestToken)
+                && WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType);
+        logger.debug( "isSpnegoToken = " + isSpnegoToken);
+
         // Outcome :
-        logger.debug( "canEmit?" + (isUserNameToken || isRememberMeToken));
-        return isUserNameToken || isRememberMeToken;
+        logger.debug( "canEmit?" + (isUserNameToken || isRememberMeToken || isSpnegoToken));
+        return isUserNameToken || isRememberMeToken || isSpnegoToken;
     }
 
     /**
@@ -189,5 +194,13 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
                 && ((BinarySecurityTokenType) requestToken).
                 getOtherAttributes().containsKey(new QName(SSOConstants.SSO_REMEMBERME_TOKEN));
     }
+
+    private Boolean isSpnegoToken(Object requestToken){
+        if (requestToken instanceof BinarySecurityTokenType ){
+            return ((BinarySecurityTokenType)requestToken).getOtherAttributes().containsKey( new QName( Constants.SPNEGO_NS) );
+        }
+        return false;
+    }
+
 
 }

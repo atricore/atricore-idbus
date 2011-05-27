@@ -59,7 +59,7 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
 
 
             if (logger.isTraceEnabled())
-                logger.trace("Emitting toke for " + requestToken.getClass().getSimpleName());
+                logger.trace("Emitting token for " + requestToken.getClass().getSimpleName());
 
             String username = null;
             if (requestToken instanceof UsernameTokenType ) {
@@ -73,6 +73,10 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
                 Subject s = (Subject) ex.getProperty( WSTConstants.SUBJECT_PROP );
                 SSOUser ssoUser = s.getPrincipals(SSOUser.class).iterator().next();
                 username = ssoUser.getName(); 
+            } else if (isSpnegoToken( artifact.getContent() ) ) {
+                Subject s = (Subject) ex.getProperty( WSTConstants.SUBJECT_PROP );
+                SimplePrincipal principal = s.getPrincipals( SimplePrincipal.class ).iterator().next();
+                username = principal.getName();
             } else {
                 throw new IdentityPlanningException("Unsupported token " + requestToken.getClass().getName());
             }
@@ -145,4 +149,12 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
         }
         return false;
     }
+
+    private Boolean isSpnegoToken(Object requestToken){
+        if (requestToken instanceof BinarySecurityTokenType ){
+            return ((BinarySecurityTokenType)requestToken).getOtherAttributes().containsKey( new QName( Constants.SPNEGO_NS) );
+        }
+        return false;
+    }
+
 }

@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.atricore.idbus.kernel.common</groupId>
         <artifactId>common</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.kernel.common</groupId>
@@ -70,6 +70,9 @@
                 <version>1.1</version>
                 <configuration>
                     <extension>true</extension>
+                    <catalog>${basedir}/src/main/resources/catalog.xml</catalog>
+                    <verbose>true</verbose>
+                    <debug>true</debug>
                 </configuration>
                 <executions>
                     <execution>

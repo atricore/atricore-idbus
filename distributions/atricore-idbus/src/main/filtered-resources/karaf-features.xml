@@ -65,7 +65,7 @@
         <bundle start-level="40">mvn:org.ops4j.pax.web/pax-web-extender-war/${pax.web.version}</bundle>
         <bundle start-level="40">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/${pax.web.version}</bundle>
         <bundle start-level="40">mvn:org.ops4j.pax.url/pax-url-war/${pax.url.version}</bundle>
-        <bundle start-level="40">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.war/${karaf.version}</bundle>
+        <bundle start-level="40">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.war/${karaf.deployer.war.version}</bundle>
     </feature>
     <feature name="webconsole-base" version="${karaf.version}">
         <feature version="${karaf.version}">http</feature>

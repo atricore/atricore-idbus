@@ -28,4 +28,5 @@ PUBLIC "-//OASIS/DTD Entity Resolution XML Catalog V1.0//EN"
     <rewriteURI rewritePrefix="./xmldsig-core-schema.xsd" uriStartString="http://www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd"/>
     <rewriteURI rewritePrefix="./xmldsig-core-schema.xsd" uriStartString="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"/>
     <rewriteURI rewritePrefix="./xenc-schema.xsd" uriStartString="http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd"/>
+    <rewriteURI rewritePrefix="./xml.xsd" uriStartString="http://www.w3.org/2001/xml.xsd"/>
 </catalog>

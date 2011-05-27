@@ -13,6 +13,7 @@
         <feature version="${version}">atricore-saml2</feature>
         <feature version="${version}">atricore-spml2</feature>
         <feature version="${version}">atricore-josso</feature>
+        <feature version="${version}">atricore-spnego</feature>
         <feature version="${version}">atricore-idbus-ui</feature>
     </feature>
 
@@ -92,6 +93,9 @@
         <bundle>mvn:org.atricore.idbus.capabilities.spmlr2/org.atricore.idbus.capabilities.spmlr2.command/${idbus.cap.spml2.version}</bundle>
     </feature>
 
+    <feature name="atricore-spnego" version="${version}">
+        <bundle>mvn:org.atricore.idbus.capabilities.spnego/org.atricore.idbus.capabilities.spnego/${idbus.cap.spnego.version}</bundle>
+    </feature>
 
     <feature name="atricore-idbus-ui" version="${version}">
         <bundle>mvn:org.atricore.idbus.applications.server/org.atricore.idbus.applications.server.ui/${idbus.app.server.version}</bundle>

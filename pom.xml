@@ -29,7 +29,7 @@
     <artifactId>all</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <name>Atricore IDBus All POM</name>
     <inceptionYear>2009</inceptionYear>
 
@@ -58,6 +58,7 @@
         <module>capabilities/samlr2</module>
         <module>capabilities/josso</module>
         <module>capabilities/sts</module>
+        <module>capabilities/spnego</module>
 
         <module>idojos/idbus-db-identitystore</module>
         <module>idojos/idbus-db-sessionstore</module>
@@ -74,6 +75,7 @@
         <module>examples/simple-federation</module>
         <module>examples/simple-provisioning</module>
         <module>examples/salesforce</module>
+        <module>examples/simple-iwa</module>
 
         <module>distributions</module>
     </modules>
@@ -192,7 +194,7 @@
         <!-- Apache -->
         <repository>
             <id>apache</id>
-            <name>Apache Releases Repository</name>
+            <name>Apache People Releases Repository</name>
             <url>http://people.apache.org/repo/m2-ibiblio-rsync-repository</url>
             <releases>
                 <enabled>true</enabled>
@@ -208,6 +210,23 @@
             <url>http://people.apache.org/repo/m2-incubating-repository</url>
         </repository>
 
+        <repository>
+            <id>apache-releases</id>
+            <name>Apache Releases Repository</name>
+            <url>https://repository.apache.org/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>apache.incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+        </repository>
         <repository>
             <id>apache-snapshots</id>
             <name>Apache Snapshots Repository</name>
@@ -382,7 +401,16 @@
                 <enabled>true</enabled>
             </releases>
         </repository>
-
+        <repository>
+            <id>repo1</id>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
         <repository>
             <id>java.net M2</id>
             <url>http://download.java.net/maven/2</url>
@@ -410,6 +438,28 @@
     <pluginRepositories>
 
         <pluginRepository>
+            <id>repo1</id>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>apache-releases</id>
+            <name>Apache Releases Repository</name>
+            <url>https://repository.apache.org/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+
+        <pluginRepository>
             <id>java.net M2</id>
             <url>http://download.java.net/maven/2</url>
             <snapshots>
@@ -434,11 +484,24 @@
 
         </pluginRepository>
 
-        <!-- Apache releases -->
+        <!-- Apache releases 
         <pluginRepository>
             <id>apache-releases</id>
             <name>Apache Releases repository</name>
             <url>http://people.apache.org/repo/m2-ibiblio-rsync-repository</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+-->
+
+        <pluginRepository>
+            <id>apache-releases</id>
+            <name>Apache Releases Repository</name>
+            <url>https://repository.apache.org/content/repositories/releases</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -484,7 +547,15 @@
         </pluginRepository>
 
     </pluginRepositories>
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.4</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <build>
         <pluginManagement>
             <plugins>
@@ -499,8 +570,6 @@
             </plugins>
         </pluginManagement>
     </build>
-
-
     <profiles>
         <profile>
             <id>setup.eclipse</id>
