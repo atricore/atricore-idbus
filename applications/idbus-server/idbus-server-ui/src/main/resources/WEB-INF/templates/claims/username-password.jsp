@@ -70,7 +70,7 @@
                             <div><input class="button indent" type="submit" value="Login"/></div>
                         </form:form>
 
-                        <p class="indent"><a href="<%=request.getContextPath()%>/selfservices/lostpassword/lostPassword.do?josso_cmd=lostPwd"><fmt:message key="claims.label.forgotPassword"/></a></p>
+                        <p class="indent"><a href="<%=request.getContextPath()%>/ssvcs/lost-password.do"><fmt:message key="claims.label.forgotPassword"/></a></p>
 
                         <div class="highlight">
                             <h3 class="help"><fmt:message key="claims.title.help"/></h3>
