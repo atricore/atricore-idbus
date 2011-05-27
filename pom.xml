@@ -86,7 +86,7 @@
         <cxf.version>2.2.2</cxf.version>
         <datanucleus.version>2.1.2</datanucleus.version>
         <dozer.version>5.2.2_1</dozer.version>
-        <felix.karaf.version>2.1.0</felix.karaf.version>
+        <felix.karaf.version>2.2.1</felix.karaf.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <!--
@@ -105,15 +105,15 @@
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
         <jaxws.api.version>2.1</jaxws.api.version>
-        <josso1.version>1.8.4-SNAPSHOT</josso1.version>
+        <josso1.version>1.8.5-SNAPSHOT</josso1.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.14</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
         <ravis.version>1.0.0.RC2-20100628</ravis.version>
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <spring.security.version>2.0.4</spring.security.version>
-        <spring.version>3.0.3.RELEASE</spring.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <spring.version>3.0.5.RELEASE</spring.version>
+        <spring.osgi.version>1.2.1</spring.osgi.version>
         <velocity.version>1.6.2</velocity.version>
         <xbean.version>3.7</xbean.version>
         <xalan.version>2.7.1</xalan.version>

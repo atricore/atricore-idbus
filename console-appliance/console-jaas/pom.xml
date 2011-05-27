@@ -38,7 +38,7 @@
     <name>Atricore Console :: JAAS Modules</name>
 
     <properties>
-        <karaf.version>2.1.0</karaf.version>
+        <karaf.version>2.2.1</karaf.version>
     </properties>
 
     <dependencies>
@@ -46,6 +46,12 @@
             <groupId>org.apache.karaf.jaas</groupId>
             <artifactId>org.apache.karaf.jaas.modules</artifactId>
             <version>${karaf.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

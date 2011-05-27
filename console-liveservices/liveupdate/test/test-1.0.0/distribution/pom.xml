@@ -37,8 +37,8 @@
     <name>Atricore Console :: Tests : LiveUpdate Sample ${pom.version} Distribution</name>
 
     <properties>
-        <karaf.version>2.1.0</karaf.version>
-        <josso2ee.version>2.0.0-SNAPSHOT</josso2ee.version>
+        <karaf.version>2.2.1</karaf.version>
+        <josso2ee.version>2.2.0-SNAPSHOT</josso2ee.version>
     </properties>
 
     <dependencies>
