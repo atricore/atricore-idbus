@@ -13,6 +13,7 @@ import java.util.*;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
+@Deprecated // provided by Karaf since 2.1.1
 public class RBACLoginModule implements LoginModule {
 
     private static Log logger = LogFactory.getLog(RBACLoginModule.class);
