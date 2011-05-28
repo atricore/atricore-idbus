@@ -280,6 +280,13 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>0.9.94</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
     <build>
         <resources>
@@ -327,6 +334,7 @@
                             sun.io; resolution:=optional,
                             org.apache.karaf.jaas.boot,
                             org.apache.karaf.jaas.modules,
+                            jline.*; version="0.9.94",
                             *
                         </Import-Package>
                         <Require-Bundle>
