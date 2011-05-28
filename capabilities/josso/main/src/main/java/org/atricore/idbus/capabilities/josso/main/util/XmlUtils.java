@@ -1,7 +1,11 @@
 package org.atricore.idbus.capabilities.josso.main.util;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoConstants;
+import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
+import org.springframework.util.StopWatch;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -11,12 +15,39 @@ import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
 public class XmlUtils {
+    private static final Log logger = LogFactory.getLog(XmlUtils.class);
+    private static JAXBContext jossoJaxbContext;
+    private static JAXBContext xhtmlJaxbContext;
+
+    static {
+        try {
+
+            StopWatch stopWatch = new StopWatch("JaxB Stop Watch");
+            stopWatch.start("create josso jaxb context");
+            jossoJaxbContext = createJAXBContext(new String[]{
+                    JossoConstants.JOSSO_PROTOCOL_PKG
+            });
+            stopWatch.stop();
+            stopWatch.start("create xhtml jaxb context");
+            xhtmlJaxbContext = createJAXBContext(new String[]{
+                    JossoConstants.XHTML_PKG
+
+            });
+            stopWatch.stop();
+            logger.debug(stopWatch.prettyPrint());
+
+        } catch (JAXBException e) {
+            logger.error("Error Initializing JAXB Contexts", e);
+        }
+    }
+
 
     public static String marshall(Object content , boolean encode) throws Exception {
         String type = content.getClass().getSimpleName();
@@ -63,7 +94,13 @@ public class XmlUtils {
 
     public static String marshal ( Object msg, String msgQName, String msgLocalName, String[] userPackages ) throws Exception {
 
-        JAXBContext jaxbContext = createJAXBContext( userPackages );
+        //JAXBContext jaxbContext = createJAXBContext( userPackages );
+        JAXBContext jaxbContext = jossoJaxbContext;
+        logger.debug("userPackages = " + Arrays.toString(userPackages));
+        if (userPackages.length == 1 && userPackages[0].equals(JossoConstants.XHTML_PKG)) {
+            jaxbContext = xhtmlJaxbContext;
+        }
+
         JAXBElement jaxbRequest = new JAXBElement( new QName( msgQName, msgLocalName ),
                 msg.getClass(),
                 msg
@@ -78,6 +115,7 @@ public class XmlUtils {
 
     public static Object unmarshal( String msg, String userPackages[] ) throws Exception {
         JAXBContext jaxbContext = createJAXBContext( userPackages );
+
         // TODO : Verify !
         return jaxbContext.createUnmarshaller().unmarshal( new ByteArrayInputStream(msg.getBytes()));
 

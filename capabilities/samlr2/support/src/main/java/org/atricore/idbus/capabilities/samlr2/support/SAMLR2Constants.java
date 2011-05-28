@@ -49,4 +49,9 @@ public interface SAMLR2Constants {
 
     static final String SSOUSER_PROPERTY_NS= "urn:org:atricore:idbus:user:property";
 
+    static final String SSO_COMMON_PKG = "org.atricore.idbus.common.sso._1_0.protocol";
+
+    static final String XHTML_PKG = "org.w3._1999.xhtml";
+
+
 }

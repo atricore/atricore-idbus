@@ -55,8 +55,8 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
 
     protected JbpmConfiguration jbpmConfiguration = null;
 
-    private ProcessFragmentRegistry processFragmentRegistry;
-    private ApplicationContext applicationContext;
+    protected ProcessFragmentRegistry processFragmentRegistry;
+    protected ApplicationContext applicationContext;
 
     // ///////////////////////////////////////////////////////////////////////////
     // Property accessor and setter methods

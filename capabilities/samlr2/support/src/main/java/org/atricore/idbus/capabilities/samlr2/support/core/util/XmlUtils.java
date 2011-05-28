@@ -33,6 +33,7 @@ import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.SSOConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.springframework.util.StopWatch;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBContext;
@@ -45,6 +46,7 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -55,6 +57,34 @@ public class XmlUtils {
     // TODO : Convert this class into a component!
 
     private static final Log logger = LogFactory.getLog(XmlUtils.class);
+
+    private static JAXBContext samlr2JaxbContext;
+    private static JAXBContext xhtmlJaxbContext;
+
+    static {
+        try {
+
+            StopWatch stopWatch = new StopWatch("JaxB Stop Watch");
+            stopWatch.start("create saml jaxb context");
+            samlr2JaxbContext = createJAXBContext(new String[]{
+                    SAMLR2Constants.SAML_PROTOCOL_PKG, SAMLR2Constants.SAML_IDBUS_PKG,
+                    SAMLR2Constants.SAML_ASSERTION_PKG, SAMLR2Constants.SSO_COMMON_PKG,
+                    SAMLR2Constants.SAML_METADATA_PKG
+
+            });
+            stopWatch.stop();
+            stopWatch.start("create xhtml jaxb context");
+            xhtmlJaxbContext = createJAXBContext(new String[]{
+                    SAMLR2Constants.XHTML_PKG
+
+            });
+            stopWatch.stop();
+            logger.debug(stopWatch.prettyPrint());
+
+        } catch (JAXBException e) {
+            logger.error("Error Initializing JAXB Contexts", e);
+        }
+    }
 
     //  -----------------------------------------------------------
     // JAXBUtils
@@ -137,8 +167,13 @@ public class XmlUtils {
         if (decode)
             request = decode(request);
 
-        return (RequestAbstractType) unmarshal(request, new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG,
-                SAMLR2Constants.SAML_IDBUS_PKG});
+        JAXBContext jaxbContext = samlr2JaxbContext;
+        Object o = jaxbContext.createUnmarshaller().unmarshal(new StringSource(request));
+
+        if (o instanceof JAXBElement)
+            return (RequestAbstractType)((JAXBElement) o).getValue();
+
+        return (RequestAbstractType) o;
     }
 
 
@@ -232,9 +267,13 @@ public class XmlUtils {
         if (decode)
             response = decode(response);
 
-        return (StatusResponseType) unmarshal(response,
-                new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG, SAMLR2Constants.SAML_IDBUS_PKG});
+        JAXBContext jaxbContext = samlr2JaxbContext;
+        Object o = jaxbContext.createUnmarshaller().unmarshal(new StringSource(response));
 
+        if (o instanceof JAXBElement)
+            return (StatusResponseType)((JAXBElement) o).getValue();
+
+        return (StatusResponseType)o;
     }
 
     public static StatusResponseType unmarshalSamlR2Response(String base64Response) throws Exception {
@@ -274,7 +313,13 @@ public class XmlUtils {
         if (decode)
             request = decode(request);
 
-        return (SSORequestAbstractType) unmarshal(request, new String[]{SSOConstants.SSO_PROTOCOL_PKG});
+        JAXBContext jaxbContext = samlr2JaxbContext;
+        Object o = jaxbContext.createUnmarshaller().unmarshal(new StringSource(request));
+
+        if (o instanceof JAXBElement)
+            return (SSORequestAbstractType)((JAXBElement) o).getValue();
+
+        return (SSORequestAbstractType)o;
     }
 
 
@@ -316,8 +361,13 @@ public class XmlUtils {
         if (decode)
             response = decode(response);
 
-        return (SSOResponseType) unmarshal(response, new String[]{SSOConstants.SSO_PROTOCOL_PKG});
+        JAXBContext jaxbContext = samlr2JaxbContext;
+        Object o = jaxbContext.createUnmarshaller().unmarshal(new StringSource(response));
 
+        if (o instanceof JAXBElement)
+            return (SSOResponseType)((JAXBElement) o).getValue();
+
+        return (SSOResponseType)o;
     }
 
     public static StatusResponseType unmarshalSSOResponse(String base64Response) throws Exception {
@@ -400,7 +450,8 @@ public class XmlUtils {
                                        String msgLocalName,
                                        String[] userPackages) throws Exception {
 
-        JAXBContext jaxbContext = createJAXBContext(userPackages);
+        //JAXBContext jaxbContext = createJAXBContext(userPackages);
+        JAXBContext jaxbContext = samlr2JaxbContext;
         JAXBElement jaxbRequest = new JAXBElement(new QName(msgQName, msgLocalName),
                 msg.getClass(),
                 msg
@@ -456,7 +507,13 @@ public class XmlUtils {
                                        final String msgLocalName,
                                        String[] userPackages) throws Exception {
 
-        JAXBContext jaxbContext = createJAXBContext(userPackages);
+        //JAXBContext jaxbContext = createJAXBContext(userPackages);
+        JAXBContext jaxbContext = samlr2JaxbContext;
+        logger.debug("userPackages = " + Arrays.toString(userPackages));
+        if (userPackages.length == 1 && userPackages[0].equals(SAMLR2Constants.XHTML_PKG)) {
+            jaxbContext = xhtmlJaxbContext;
+        }
+
         JAXBElement jaxbRequest = new JAXBElement(new QName(msgQName, msgLocalName),
                 msg.getClass(),
                 msg
@@ -468,7 +525,7 @@ public class XmlUtils {
         // Support XMLDsig
         Marshaller m = jaxbContext.createMarshaller();
         m.marshal(jaxbRequest, xmlStreamWriter);
-
+        logger.debug("output = " + writer.toString());
         return writer.toString();
     }
 
@@ -481,7 +538,8 @@ public class XmlUtils {
         JAXBElement jaxbMsg = new JAXBElement(new QName(msgQName, msgLocalName), msg.getClass(), msg);
 
         // JAXB Context
-        JAXBContext jaxbContext = createJAXBContext(userPackages);
+        //JAXBContext jaxbContext = createJAXBContext(userPackages);
+        JAXBContext jaxbContext = samlr2JaxbContext;
 
         // Marshal as string and then parse with DOM ...
         Marshaller m = jaxbContext.createMarshaller();
@@ -552,7 +610,8 @@ public class XmlUtils {
     }
 
     public static Object unmarshal(Document doc, String userPackages[]) throws Exception {
-        JAXBContext jaxbContext = createJAXBContext(userPackages);
+//        JAXBContext jaxbContext = createJAXBContext(userPackages);
+        JAXBContext jaxbContext = samlr2JaxbContext;
         Object o = jaxbContext.createUnmarshaller().unmarshal(doc);
 
         if (o instanceof JAXBElement)
