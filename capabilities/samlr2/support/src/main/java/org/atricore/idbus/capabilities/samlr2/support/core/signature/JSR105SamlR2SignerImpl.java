@@ -382,6 +382,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             XMLStreamWriter sw = new NamespaceFilterXMLStreamWriter(swrsp);
             // TODO : Use XML Utils!!!!
             m.marshal(jaxbResponse, sw);
+            sw.flush();
 
             Document doc =
                     dbf.newDocumentBuilder().parse(new ByteArrayInputStream(swrsp.toString().getBytes()));
