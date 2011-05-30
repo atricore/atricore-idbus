@@ -27,8 +27,10 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
+import org.atricore.idbus.kernel.main.databinding.JAXBUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
@@ -38,7 +40,10 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.Abstract
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.w3._1999.xhtml.Html;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.ws.Holder;
 import java.io.ByteArrayInputStream;
+import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -47,6 +52,7 @@ import java.io.ByteArrayInputStream;
 public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
 
     private static final Log logger = LogFactory.getLog(SamlR2HttpPostBinding.class);
+
 
     public SamlR2HttpPostBinding(Channel channel) {
         super(SamlR2Binding.SAMLR2_POST.getValue(), channel);

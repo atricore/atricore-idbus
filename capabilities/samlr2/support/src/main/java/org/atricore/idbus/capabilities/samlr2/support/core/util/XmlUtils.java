@@ -33,28 +33,40 @@ import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.SSOConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.atricore.idbus.kernel.main.databinding.JAXBUtils;
+import org.springframework.util.StopWatch;
 import org.w3c.dom.Document;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.ws.Holder;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: XmlUtils.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
 public class XmlUtils {
-
-    // TODO : Convert this class into a component!
-
     private static final Log logger = LogFactory.getLog(XmlUtils.class);
+
+    private static final TreeSet<String> ssoContextPackages = new TreeSet<String>();
+
+    private static final Holder<JAXBUtils.CONSTRUCTION_TYPE> constructionType = new Holder<JAXBUtils.CONSTRUCTION_TYPE>();
+
+    static {
+        ssoContextPackages.add(SAMLR2Constants.SAML_PROTOCOL_PKG);
+        ssoContextPackages.add(SAMLR2Constants.SAML_ASSERTION_PKG);
+        ssoContextPackages.add(SAMLR2Constants.SSO_COMMON_PKG);
+        ssoContextPackages.add(SAMLR2Constants.SAML_IDBUS_PKG);
+        ssoContextPackages.add(SAMLR2Constants.SAML_METADATA_PKG);
+    }
 
     //  -----------------------------------------------------------
     // JAXBUtils
@@ -137,8 +149,15 @@ public class XmlUtils {
         if (decode)
             request = decode(request);
 
-        return (RequestAbstractType) unmarshal(request, new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG,
-                SAMLR2Constants.SAML_IDBUS_PKG});
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(ssoContextPackages, constructionType,
+                ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
+        Object o = unmarshaller.unmarshal(new StringSource(request));
+
+        if (o instanceof JAXBElement)
+            return (RequestAbstractType)((JAXBElement) o).getValue();
+
+        return (RequestAbstractType) o;
     }
 
 
@@ -232,9 +251,15 @@ public class XmlUtils {
         if (decode)
             response = decode(response);
 
-        return (StatusResponseType) unmarshal(response,
-                new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG, SAMLR2Constants.SAML_IDBUS_PKG});
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(ssoContextPackages, constructionType,
+                ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
+        Object o = unmarshaller.unmarshal(new StringSource(response));
 
+        if (o instanceof JAXBElement)
+            return (StatusResponseType)((JAXBElement) o).getValue();
+
+        return (StatusResponseType)o;
     }
 
     public static StatusResponseType unmarshalSamlR2Response(String base64Response) throws Exception {
@@ -274,7 +299,15 @@ public class XmlUtils {
         if (decode)
             request = decode(request);
 
-        return (SSORequestAbstractType) unmarshal(request, new String[]{SSOConstants.SSO_PROTOCOL_PKG});
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(ssoContextPackages, constructionType,
+                ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
+        Object o = unmarshaller.unmarshal(new StringSource(request));
+
+        if (o instanceof JAXBElement)
+            return (SSORequestAbstractType)((JAXBElement) o).getValue();
+
+        return (SSORequestAbstractType)o;
     }
 
 
@@ -316,8 +349,15 @@ public class XmlUtils {
         if (decode)
             response = decode(response);
 
-        return (SSOResponseType) unmarshal(response, new String[]{SSOConstants.SSO_PROTOCOL_PKG});
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(ssoContextPackages, constructionType,
+                ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
+        Object o = unmarshaller.unmarshal(new StringSource(response));
 
+        if (o instanceof JAXBElement)
+            return (SSOResponseType)((JAXBElement) o).getValue();
+
+        return (SSOResponseType)o;
     }
 
     public static StatusResponseType unmarshalSSOResponse(String base64Response) throws Exception {
@@ -371,28 +411,6 @@ public class XmlUtils {
             return new JAXBElement<RequestAbstractType>(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, element), clazz, request);
     }
 
-    public static JAXBContext createSamlR2JAXBContext(RequestAbstractType request) throws JAXBException {
-        return createJAXBContext(new String[]{request.getClass().getPackage().getName()});
-        /*
-        return createJAXBContext(new String[]{ SAMLR2Constants.SAML_PROTOCOL_PKG,
-                SAMLR2Constants.SAML_IDBUS_PKG,
-                SAMLR2Constants.SAML_ASSERTION_PKG,
-                SAMLR2Constants.SAML_METADATA_PKG});
-                */
-    }
-
-    public static JAXBContext createSamlR2JAXBContext() throws JAXBException {
-        return createJAXBContext(new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG,
-                SAMLR2Constants.SAML_IDBUS_PKG,
-                SAMLR2Constants.SAML_ASSERTION_PKG,
-                SAMLR2Constants.SAML_METADATA_PKG});
-    }
-
-
-    public static JAXBContext createSSOJAXBContext() throws JAXBException {
-        return createJAXBContext(new String[]{SSOConstants.SSO_PROTOCOL_PKG});
-    }
-
     // JAXB Generic
 
     public static String marshalSamlR2(Object msg,
@@ -400,7 +418,10 @@ public class XmlUtils {
                                        String msgLocalName,
                                        String[] userPackages) throws Exception {
 
-        JAXBContext jaxbContext = createJAXBContext(userPackages);
+        //JAXBContext jaxbContext = createJAXBContext(userPackages);
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(ssoContextPackages, constructionType,
+                ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Marshaller m = JAXBUtils.getJAXBMarshaller(jaxbContext);
         JAXBElement jaxbRequest = new JAXBElement(new QName(msgQName, msgLocalName),
                 msg.getClass(),
                 msg
@@ -410,7 +431,6 @@ public class XmlUtils {
         XMLStreamWriter xmlStreamWriter = new NamespaceFilterXMLStreamWriter(writer);
 
         // Support XMLDsig
-        Marshaller m = jaxbContext.createMarshaller();
 
         // TODO : What about non-sun XML Bind stacks!
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
@@ -447,6 +467,7 @@ public class XmlUtils {
                 });
 
         m.marshal(jaxbRequest, xmlStreamWriter);
+        xmlStreamWriter.flush();
 
         return writer.toString();
     }
@@ -456,7 +477,17 @@ public class XmlUtils {
                                        final String msgLocalName,
                                        String[] userPackages) throws Exception {
 
-        JAXBContext jaxbContext = createJAXBContext(userPackages);
+
+        TreeSet<String> contextPackages = new TreeSet<String>();
+        for (int i = 0; i < userPackages.length; i++) {
+            String userPackage = userPackages[i];
+            contextPackages.add(userPackage);
+        }
+
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(contextPackages, constructionType,
+                contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Marshaller marshaller = JAXBUtils.getJAXBMarshaller(jaxbContext);
+
         JAXBElement jaxbRequest = new JAXBElement(new QName(msgQName, msgLocalName),
                 msg.getClass(),
                 msg
@@ -466,8 +497,8 @@ public class XmlUtils {
         XMLStreamWriter xmlStreamWriter = new NamespaceFilterXMLStreamWriter(writer);
 
         // Support XMLDsig
-        Marshaller m = jaxbContext.createMarshaller();
-        m.marshal(jaxbRequest, xmlStreamWriter);
+        marshaller.marshal(jaxbRequest, xmlStreamWriter);
+        xmlStreamWriter.flush();
 
         return writer.toString();
     }
@@ -480,22 +511,22 @@ public class XmlUtils {
         // JAXB Element
         JAXBElement jaxbMsg = new JAXBElement(new QName(msgQName, msgLocalName), msg.getClass(), msg);
 
-        // JAXB Context
-        JAXBContext jaxbContext = createJAXBContext(userPackages);
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(ssoContextPackages, constructionType,
+                ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Marshaller marshaller = JAXBUtils.getJAXBMarshaller(jaxbContext);
 
         // Marshal as string and then parse with DOM ...
-        Marshaller m = jaxbContext.createMarshaller();
         StringWriter writer = new StringWriter();
         XMLStreamWriter xmlStreamWriter = new NamespaceFilterXMLStreamWriter(writer);
 
         // TODO : What about non-sun XML Bind stacks!
 
-        m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
+        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper",
                 new NamespacePrefixMapper() {
 
                     @Override
                     public String[] getPreDeclaredNamespaceUris() {
-                        return new String[] {
+                        return new String[]{
                                 SAMLR2Constants.SAML_PROTOCOL_NS,
                                 SAMLR2Constants.SAML_ASSERTION_NS,
                                 "http://www.w3.org/2000/09/xmldsig#",
@@ -523,7 +554,8 @@ public class XmlUtils {
                     }
                 });
 
-        m.marshal(jaxbMsg, xmlStreamWriter);
+        marshaller.marshal(jaxbMsg, xmlStreamWriter);
+        xmlStreamWriter.flush();
 
         // Instantiate the document to be signed
         javax.xml.parsers.DocumentBuilderFactory dbf =
@@ -541,8 +573,16 @@ public class XmlUtils {
 
 
     public static Object unmarshal(String msg, String userPackages[]) throws Exception {
-        JAXBContext jaxbContext = createJAXBContext(userPackages);
-        Object o = jaxbContext.createUnmarshaller().unmarshal(new StringSource(msg));
+        TreeSet<String> contextPackages = new TreeSet<String>();
+        for (int i = 0; i < userPackages.length; i++) {
+            String userPackage = userPackages[i];
+            contextPackages.add(userPackage);
+        }
+
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(contextPackages, constructionType,
+                contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
+        Object o = unmarshaller.unmarshal(new StringSource(msg));
 
         if (o instanceof JAXBElement)
             return ((JAXBElement) o).getValue();
@@ -552,25 +592,23 @@ public class XmlUtils {
     }
 
     public static Object unmarshal(Document doc, String userPackages[]) throws Exception {
-        JAXBContext jaxbContext = createJAXBContext(userPackages);
-        Object o = jaxbContext.createUnmarshaller().unmarshal(doc);
+
+        TreeSet<String> contextPackages = new TreeSet<String>();
+        for (int i = 0; i < userPackages.length; i++) {
+            String userPackage = userPackages[i];
+            contextPackages.add(userPackage);
+        }
+
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(contextPackages, constructionType,
+                contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
+        Object o = unmarshaller.unmarshal(doc);
 
         if (o instanceof JAXBElement)
             return ((JAXBElement) o).getValue();
 
         return o;
     }
-
-
-    public static JAXBContext createJAXBContext(String[] userPackages) throws JAXBException {
-        StringBuilder packages = new StringBuilder();
-        for (String userPackage : userPackages) {
-            packages.append(userPackage).append(":");
-        }
-        // Use our classloader to build JAXBContext so it can find binding classes.
-        return JAXBContext.newInstance(packages.toString(), XmlUtils.class.getClassLoader());
-    }
-
 
     public static Document marshalSamlR2AssertionAsDom(AssertionType assertion) throws Exception {
         return marshalSamlR2AsDom(assertion, SAMLR2Constants.SAML_ASSERTION_NS, "Assertion", new String[]{SAMLR2Constants.SAML_ASSERTION_PKG});

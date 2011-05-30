@@ -1,22 +1,41 @@
 package org.atricore.idbus.capabilities.josso.main.util;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoConstants;
+import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.samlr2.support.core.util.StringSource;
+import org.atricore.idbus.kernel.main.databinding.JAXBUtils;
+import org.springframework.util.StopWatch;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
+import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
+import javax.xml.ws.Holder;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
 public class XmlUtils {
+    private static final Log logger = LogFactory.getLog(XmlUtils.class);
+
+    private static final TreeSet<String> ssoContextPackages = new TreeSet<String>();
+
+    private static final Holder<JAXBUtils.CONSTRUCTION_TYPE> constructionType = new Holder<JAXBUtils.CONSTRUCTION_TYPE>();
+
+    static {
+        ssoContextPackages.add(JossoConstants.JOSSO_PROTOCOL_PKG);
+    }
+
+
 
     public static String marshall(Object content , boolean encode) throws Exception {
         String type = content.getClass().getSimpleName();
@@ -55,15 +74,20 @@ public class XmlUtils {
 
    }
 
-   public static JAXBContext createJOSSOJAXBContext() throws JAXBException {
-        return createJAXBContext(new String[]{ JossoConstants.JOSSO_PROTOCOL_PKG});
-    }
-
     // JAXB Generic
 
     public static String marshal ( Object msg, String msgQName, String msgLocalName, String[] userPackages ) throws Exception {
 
-        JAXBContext jaxbContext = createJAXBContext( userPackages );
+        TreeSet<String> contextPackages = new TreeSet<String>();
+        for (int i = 0; i < userPackages.length; i++) {
+            String userPackage = userPackages[i];
+            contextPackages.add(userPackage);
+        }
+
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(contextPackages, constructionType,
+                contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Marshaller marshaller = JAXBUtils.getJAXBMarshaller(jaxbContext);
+
         JAXBElement jaxbRequest = new JAXBElement( new QName( msgQName, msgLocalName ),
                 msg.getClass(),
                 msg
@@ -76,19 +100,23 @@ public class XmlUtils {
         return writer.toString();
     }
 
-    public static Object unmarshal( String msg, String userPackages[] ) throws Exception {
-        JAXBContext jaxbContext = createJAXBContext( userPackages );
-        // TODO : Verify !
-        return jaxbContext.createUnmarshaller().unmarshal( new ByteArrayInputStream(msg.getBytes()));
-
-    }
-
-    public static JAXBContext createJAXBContext ( String[] userPackages ) throws JAXBException {
-        StringBuilder packages = new StringBuilder();
-        for ( String userPackage : userPackages ) {
-            packages.append( userPackage ).append( ":" );
+    public static Object unmarshal(String msg, String userPackages[]) throws Exception {
+        TreeSet<String> contextPackages = new TreeSet<String>();
+        for (int i = 0; i < userPackages.length; i++) {
+            String userPackage = userPackages[i];
+            contextPackages.add(userPackage);
         }
-        // Use our classloader to build JAXBContext so it can find binding classes.
-        return JAXBContext.newInstance( packages.toString(), XmlUtils.class.getClassLoader());
+
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(contextPackages, constructionType,
+                contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
+        Object o = unmarshaller.unmarshal(new StringSource(msg));
+
+        if (o instanceof JAXBElement)
+            return ((JAXBElement) o).getValue();
+
+        return o;
+
     }
+
 }
