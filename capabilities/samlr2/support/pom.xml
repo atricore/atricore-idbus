@@ -184,23 +184,19 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Test dependencies -->
-
-
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>stax2-api</artifactId>
             <version>${woodstox.stax2api.version}</version>
-            <scope>test</scope>
         </dependency>
         
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>woodstox-core-asl</artifactId>
             <version>${woodstox.version}</version>
-            <scope>test</scope>
         </dependency>
 
+        <!-- Test dependencies -->
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.commons-httpclient</artifactId>

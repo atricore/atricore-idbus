@@ -36,10 +36,13 @@ import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.main.databinding.JAXBUtils;
 import org.springframework.util.StopWatch;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.ws.Holder;
 import java.io.ByteArrayInputStream;
@@ -66,6 +69,21 @@ public class XmlUtils {
         ssoContextPackages.add(SAMLR2Constants.SSO_COMMON_PKG);
         ssoContextPackages.add(SAMLR2Constants.SAML_IDBUS_PKG);
         ssoContextPackages.add(SAMLR2Constants.SAML_METADATA_PKG);
+
+        javax.xml.parsers.DocumentBuilderFactory dbf =
+                javax.xml.parsers.DocumentBuilderFactory.newInstance();
+
+        javax.xml.parsers.SAXParserFactory saxf =
+                SAXParserFactory.newInstance();
+        try {
+            logger.debug("DocumentBuilder = " + dbf.newDocumentBuilder());
+            logger.debug("SAXParser = " + saxf.newSAXParser());
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (SAXException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
     }
 
     //  -----------------------------------------------------------
