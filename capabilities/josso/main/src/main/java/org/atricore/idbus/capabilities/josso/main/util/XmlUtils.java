@@ -95,7 +95,8 @@ public class XmlUtils {
         Writer writer = new StringWriter();
 
         // Support XMLDsig
-        jaxbContext.createMarshaller().marshal( jaxbRequest, writer);
+        marshaller.marshal( jaxbRequest, writer);
+        JAXBUtils.releaseJAXBMarshaller(jaxbContext, marshaller);
 
         return writer.toString();
     }
@@ -111,6 +112,7 @@ public class XmlUtils {
                 contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
         Object o = unmarshaller.unmarshal(new StringSource(msg));
+        JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
             return ((JAXBElement) o).getValue();

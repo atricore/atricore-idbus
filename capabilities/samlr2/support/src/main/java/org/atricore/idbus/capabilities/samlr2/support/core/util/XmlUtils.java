@@ -153,6 +153,7 @@ public class XmlUtils {
                 ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
         Object o = unmarshaller.unmarshal(new StringSource(request));
+        JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
             return (RequestAbstractType)((JAXBElement) o).getValue();
@@ -255,6 +256,7 @@ public class XmlUtils {
                 ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
         Object o = unmarshaller.unmarshal(new StringSource(response));
+        JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
             return (StatusResponseType)((JAXBElement) o).getValue();
@@ -303,6 +305,7 @@ public class XmlUtils {
                 ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
         Object o = unmarshaller.unmarshal(new StringSource(request));
+        JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
             return (SSORequestAbstractType)((JAXBElement) o).getValue();
@@ -353,6 +356,7 @@ public class XmlUtils {
                 ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
         Object o = unmarshaller.unmarshal(new StringSource(response));
+        JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
             return (SSOResponseType)((JAXBElement) o).getValue();
@@ -422,6 +426,7 @@ public class XmlUtils {
         JAXBContext jaxbContext = JAXBUtils.getJAXBContext(ssoContextPackages, constructionType,
                 ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Marshaller m = JAXBUtils.getJAXBMarshaller(jaxbContext);
+
         JAXBElement jaxbRequest = new JAXBElement(new QName(msgQName, msgLocalName),
                 msg.getClass(),
                 msg
@@ -468,6 +473,7 @@ public class XmlUtils {
 
         m.marshal(jaxbRequest, xmlStreamWriter);
         xmlStreamWriter.flush();
+        JAXBUtils.releaseJAXBMarshaller(jaxbContext, m);
 
         return writer.toString();
     }
@@ -499,6 +505,7 @@ public class XmlUtils {
         // Support XMLDsig
         marshaller.marshal(jaxbRequest, xmlStreamWriter);
         xmlStreamWriter.flush();
+        JAXBUtils.releaseJAXBMarshaller(jaxbContext, marshaller);
 
         return writer.toString();
     }
@@ -566,6 +573,7 @@ public class XmlUtils {
 
         Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(writer.toString().getBytes()));
 
+        JAXBUtils.releaseJAXBMarshaller(jaxbContext, marshaller);
         return doc;
 
 
@@ -583,6 +591,7 @@ public class XmlUtils {
                 contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
         Object o = unmarshaller.unmarshal(new StringSource(msg));
+        JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
             return ((JAXBElement) o).getValue();
@@ -603,6 +612,7 @@ public class XmlUtils {
                 contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
         Object o = unmarshaller.unmarshal(doc);
+        JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
             return ((JAXBElement) o).getValue();
