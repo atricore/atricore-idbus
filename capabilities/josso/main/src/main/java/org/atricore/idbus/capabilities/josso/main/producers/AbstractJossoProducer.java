@@ -72,10 +72,10 @@ public abstract class AbstractJossoProducer extends AbstractCamelProducer<CamelM
 
         Set<SubjectAttribute> attrs = subject.getPrincipals(SubjectAttribute.class);
         for (SubjectAttribute attr : attrs) {
-            // TODO : Make this configurable ?!
+            // TODO : Make this configurable ?! perhaps the JOSSO Assertion should already be modified ?!
             String name = attr.getName();
             if (name.lastIndexOf(":") > 0)
-                name = name.substring(name.lastIndexOf(':'));
+                name = name.substring(name.lastIndexOf(':') + 1);
             name = name.replace('.', '_');
 
             user.addProperty(new SSONameValuePair(name, attr.getValue()));
