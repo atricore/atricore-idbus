@@ -196,6 +196,18 @@
             <version>${woodstox.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>msv</groupId>
+            <artifactId>msv</artifactId>
+            <version>20050913</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.msv.datatype.xsd</groupId>
+            <artifactId>xsdlib</artifactId>
+            <version>20060615</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
@@ -258,6 +270,10 @@
                             org.apache.commons.io,
                             *
                         </Import-Package>
+                        <Require-Bundle>woodstox-core-asl</Require-Bundle>
+                        <!--
+                        <Embed-Dependency>woodstox-core-asl,stax2-api,msv,xsdlib</Embed-Dependency>
+                        -->
                     </instructions>
                 </configuration>
             </plugin>
