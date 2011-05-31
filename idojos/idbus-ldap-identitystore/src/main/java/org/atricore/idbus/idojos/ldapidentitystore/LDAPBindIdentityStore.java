@@ -226,6 +226,11 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
             } finally {
 
                 if (isPasswordPolicySupport()) {
+
+                    // If an execption occured, controls are not retrived yet
+                    if (ldapControls == null || ldapControls.length == 0)
+                        ldapControls = ctx.getResponseControls();
+
                     // Check password policy LDAP Control
                     PasswordPolicyResponseControl ppolicyCtrl = decodePasswordPolicyControl(ldapControls);
                     if (ppolicyCtrl != null)
