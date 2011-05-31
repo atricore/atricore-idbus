@@ -72,7 +72,13 @@ public abstract class AbstractJossoProducer extends AbstractCamelProducer<CamelM
 
         Set<SubjectAttribute> attrs = subject.getPrincipals(SubjectAttribute.class);
         for (SubjectAttribute attr : attrs) {
-            user.addProperty(new SSONameValuePair(attr.getName(), attr.getValue()));
+            // TODO : Make this configurable ?!
+            String name = attr.getName();
+            if (name.lastIndexOf(":") > 0)
+                name = name.substring(name.lastIndexOf(':'));
+            name = name.replace('.', '_');
+
+            user.addProperty(new SSONameValuePair(name, attr.getValue()));
         }
 
         return user;
