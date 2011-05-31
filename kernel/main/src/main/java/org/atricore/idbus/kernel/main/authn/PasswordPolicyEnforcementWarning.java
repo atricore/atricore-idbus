@@ -21,11 +21,8 @@ public class PasswordPolicyEnforcementWarning extends BasePasswordPolicyEnforcem
     }
 
     public int getValue() {
-        return value;
+        Integer i = (Integer) super.getValues().iterator().next();
+        return super.getValues().size() > 0 ? i : -1;
     }
 
-    public void setValue(int value) {
-        super.getValues().add(value);
-        this.value = value;
-    }
 }

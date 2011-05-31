@@ -13,6 +13,7 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
+    // TODO : Purge old artifacts!
     private Map<String, Object> msgs = new HashMap<String, Object>();
 
     public ConnectionFactory getConnectionFactory() {

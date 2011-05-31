@@ -17,12 +17,14 @@ import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -71,9 +73,8 @@ public class DisplayWarningsController extends SimpleFormController {
 
                     if (ppolicyWarn.getType().equals(PasswordPolicyWarningType.TIME_BEFORE_EXPIRATION)) {
 
-
                         wd.getMsgParams().clear();
-                        wd.getMsgParams().addAll(this.millisToDHMS(ppolicyWarn.getValue()));
+                        wd.getMsgParams().add(this.millisToDHMS(ppolicyWarn.getValue(), hreq.getLocale()));
                     }
                 }
 
@@ -125,39 +126,71 @@ public class DisplayWarningsController extends SimpleFormController {
 
     public final static long ONE_DAY = ONE_HOUR * 24;
 
-    protected List<String> millisToDHMS(int seconds) {
+    protected String millisToDHMS(int seconds, Locale locale) {
 
-        List<String> dhms = new ArrayList<String>();
+        String dhms = "";
 
         long duration = seconds * 1000;
+        
+        
 
         long temp = 0;
         if (duration >= ONE_SECOND) {
             temp = duration / ONE_DAY;
-            dhms.add(temp+"");
             if (temp > 0) {
                 duration -= temp * ONE_DAY;
+
+                dhms += temp + "";
+                if (temp > 1)
+                    dhms += " " + getMessageSourceAccessor().getMessage("general.days", new Object[]{temp});
+                else
+                    dhms += " " + getMessageSourceAccessor().getMessage("general.day", new Object[]{temp});
+
+                dhms += " ";
+
+
             }
 
             temp = duration / ONE_HOUR;
-            dhms.add(temp+"");
+
             if (temp > 0) {
                 duration -= temp * ONE_HOUR;
+
+
+                dhms += temp + "";
+                if (temp > 1)
+                    dhms += " " + getMessageSourceAccessor().getMessage("general.hours", new Object[]{temp});
+                else
+                    dhms += " " + getMessageSourceAccessor().getMessage("general.hour", new Object[]{temp});
+
+                dhms += " ";
             }
 
             temp = duration / ONE_MINUTE;
-            dhms.add(temp+"");
+
             if (temp > 0) {
                 duration -= temp * ONE_MINUTE;
+                dhms += temp + "";
+                if (temp > 1)
+                    dhms += " " + getMessageSourceAccessor().getMessage("general.minutes", new Object[]{temp});
+                else
+                    dhms += " " + getMessageSourceAccessor().getMessage("general.minute", new Object[]{temp});
+
+                dhms += " ";
+
             }
 
             temp = duration / ONE_SECOND;
+            if (temp > 0) {
+                dhms += temp + "";
+                if (temp > 1)
+                    dhms += " " + getMessageSourceAccessor().getMessage("general.seconds", new Object[]{temp});
+                else
+                    dhms += " " + getMessageSourceAccessor().getMessage("general.second", new Object[]{temp});
 
-        } else {
-            dhms.add("0");
-            dhms.add("0");
-            dhms.add("0");
-            dhms.add("0");
+                dhms += " ";
+            }
+
         }
 
         return dhms;

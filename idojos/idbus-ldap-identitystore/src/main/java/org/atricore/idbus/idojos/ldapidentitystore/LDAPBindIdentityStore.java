@@ -268,7 +268,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
             }
 
             PasswordPolicyEnforcementWarning warningPPolicy = new PasswordPolicyEnforcementWarning(type);
-            warningPPolicy.setValue(ppolicyCtrl.getWarningValue());
+            warningPPolicy.getValues().add(ppolicyCtrl.getWarningValue());
 
             bindCtx.addPasswordPolicyMessages(warningPPolicy);
         }

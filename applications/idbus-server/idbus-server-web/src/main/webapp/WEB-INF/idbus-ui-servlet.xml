@@ -81,7 +81,6 @@
         <property name="commandClass" value="org.atricore.idbus.applications.server.ui.warn.ConfirmWarnings"/>
         <!-- Refer to tiles -->
         <property name="formView" value="policy-enforcement"/>
-
     </bean>
 
     <bean name="/claims/username-password.do"
