@@ -90,7 +90,7 @@ public class DefaultMediationLogger implements MediationLogger, InitializingBean
 
             logMessageDetails(message, logEntry);
             logEntry.append("\n</message>");
-            log.info(logEntry.toString());
+            log.trace(logEntry.toString());
         }
 
     }

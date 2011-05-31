@@ -320,11 +320,13 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         Script loadJs = new Script();
         loadJs.setType("text/javascript");
         loadJs.setContent(
-                "       Event.observe(window, 'load', function() {\n" +
+                "\n       <![CDATA[" +
+                        "            Event.observe(window, 'load', function() {\n" +
                         "                window.setTimeout(function() {\n" +
                         "                    window.location.href='" + location + "';\n" +
                         "                }, 100);\n" +
-                        "            });");
+                        "            });\n" +
+                        "]]>");
 
 
         pageDiv.getContent().add(loadJs);
@@ -342,11 +344,13 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         Script redirectJs = new Script();
         redirectJs.setType("text/javascript");
         redirectJs.setContent(
-                "       Event.observe(window, 'load', function() {\n" +
+                "\n       <![CDATA[" +
+                        "            Event.observe(window, 'load', function() {\n" +
                         "                window.setTimeout(function() {\n" +
                         "                    window.location.href='" + location + "';\n" +
                         "                }, 100);\n" +
-                        "            });");
+                        "            });\n" +
+                        "]]>");
 
         pageDiv.getContent().add(redirectJs);
 

@@ -2,7 +2,9 @@ package org.atricore.idbus.applications.server.ui.warn;
 
 import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,9 +16,13 @@ public class WarningData {
 
     private String msgKey;
 
+    private List<Object> msgParams = new ArrayList<Object>();
+
     public WarningData(SSOPolicyEnforcementStatement stmt) {
         this.stmt = stmt;
         this.msgKey = stmt.getNs()  + ":" + stmt.getName();
+        if (stmt.getValues() != null)
+            msgParams.addAll(stmt.getValues());
     }
 
     public SSOPolicyEnforcementStatement getStatement() {
@@ -28,10 +34,10 @@ public class WarningData {
     }
 
     public Collection<Object> getMsgParams() {
-        return stmt.getValues();
+        return msgParams;
     }
 
     public boolean isHasMsgParams() {
-        return stmt.getValues().size() > 0;
+        return msgParams.size() > 0;
     }
 }

@@ -508,6 +508,7 @@ public class XmlUtils {
         JAXBUtils.releaseJAXBMarshaller(jaxbContext, marshaller);
 
         return writer.toString();
+
     }
 
     public static Document marshalSamlR2AsDom(Object msg,
