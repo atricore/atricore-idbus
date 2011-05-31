@@ -183,11 +183,8 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
 
             // Create context without binding!
-            InitialLdapContext ctx = isPasswordPolicySupport() ?
-                    this.createLdapInitialContext(null, null) :
-                    this.createLdapInitialContext(null, null);
-
-            Control[] ldapControls = ctx.getResponseControls();
+            InitialLdapContext ctx = this.createLdapInitialContext(null, null);
+            Control[] ldapControls = null;
 
             try {
 
@@ -227,7 +224,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
                 if (isPasswordPolicySupport()) {
 
-                    // If an execption occured, controls are not retrived yet
+                    // If an exception occurred, controls are not retrieved yet
                     if (ldapControls == null || ldapControls.length == 0)
                         ldapControls = ctx.getResponseControls();
 
@@ -255,20 +252,23 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
         if (ppolicyCtrl.getWarningType() != null) {
 
             PasswordPolicyWarningType type = null;
+            int value = 0;
 
             switch(ppolicyCtrl.getWarningType()) {
                 case TIME_BEFORE_EXPIRATION:
                     type = PasswordPolicyWarningType.TIME_BEFORE_EXPIRATION;
+                    value = ppolicyCtrl.getWarningValue();
                     break;
                 case GRACE_AUTHNS_REMAINING:
                     type = PasswordPolicyWarningType.GRACE_AUTHNS_REMAINING;
+                    value = ppolicyCtrl.getWarningValue() - 1;
                     break;
                 default:
                     logger.error("Unsupported LDAP Password Policy Warning Type : " + ppolicyCtrl.getWarningType().name());
             }
 
             PasswordPolicyEnforcementWarning warningPPolicy = new PasswordPolicyEnforcementWarning(type);
-            warningPPolicy.getValues().add(ppolicyCtrl.getWarningValue());
+            warningPPolicy.getValues().add(value);
 
             bindCtx.addPasswordPolicyMessages(warningPPolicy);
         }

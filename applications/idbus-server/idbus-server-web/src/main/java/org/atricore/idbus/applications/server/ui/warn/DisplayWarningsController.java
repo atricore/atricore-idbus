@@ -132,8 +132,6 @@ public class DisplayWarningsController extends SimpleFormController {
 
         long duration = seconds * 1000;
         
-        
-
         long temp = 0;
         if (duration >= ONE_SECOND) {
             temp = duration / ONE_DAY;
