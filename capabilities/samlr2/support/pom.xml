@@ -271,9 +271,6 @@
                             *
                         </Import-Package>
                         <Require-Bundle>woodstox-core-asl</Require-Bundle>
-                        <!--
-                        <Embed-Dependency>woodstox-core-asl,stax2-api,msv,xsdlib</Embed-Dependency>
-                        -->
                     </instructions>
                 </configuration>
             </plugin>
