@@ -12,6 +12,9 @@ import org.springframework.util.StopWatch;
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.ws.Holder;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -30,6 +33,9 @@ public class XmlUtils {
     private static final TreeSet<String> ssoContextPackages = new TreeSet<String>();
 
     private static final Holder<JAXBUtils.CONSTRUCTION_TYPE> constructionType = new Holder<JAXBUtils.CONSTRUCTION_TYPE>();
+
+    private static final XMLInputFactory staxIF = XMLInputFactory.newInstance();
+    private static final XMLOutputFactory staxOF = XMLOutputFactory.newInstance();
 
     static {
         ssoContextPackages.add(JossoConstants.JOSSO_PROTOCOL_PKG);
@@ -95,7 +101,9 @@ public class XmlUtils {
         Writer writer = new StringWriter();
 
         // Support XMLDsig
-        marshaller.marshal( jaxbRequest, writer);
+        XMLEventWriter xmlWriter = staxOF.createXMLEventWriter(writer);
+        marshaller.marshal( jaxbRequest, xmlWriter);
+        xmlWriter.flush();
         JAXBUtils.releaseJAXBMarshaller(jaxbContext, marshaller);
 
         return writer.toString();
@@ -111,7 +119,7 @@ public class XmlUtils {
         JAXBContext jaxbContext = JAXBUtils.getJAXBContext(contextPackages, constructionType,
                 contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
-        Object o = unmarshaller.unmarshal(new StringSource(msg));
+        Object o = unmarshaller.unmarshal(staxIF.createXMLStreamReader(new StringSource(msg)));
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
