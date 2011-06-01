@@ -93,6 +93,7 @@
         <property name="activationMediator" ref="activationMediator"/>
         <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
         <property name="directoryServiceCreateMediator" ref="directoryServiceCreateMediator"/>
+        <property name="windowsIntegratedAuthnCreateMediator" ref="windowsIntegratedAuthnCreateMediator"/>
 
         <!-- Commands -->
         <property name="identityApplianceUpdateCommand" ref="identityApplianceUpdateCommand"/>
@@ -636,6 +637,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="windowsIntegratedAuthnCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.windows.WindowsIntegratedAuthnCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="activationCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -869,6 +874,7 @@
         <property name="activationMediator" ref="activationMediator"/>
         <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
         <property name="directoryServiceCreateMediator" ref="directoryServiceCreateMediator"/>
+        <property name="windowsIntegratedAuthnCreateMediator" ref="windowsIntegratedAuthnCreateMediator"/>
     </object>
 
     <object id="accountManagementPopUpManager"

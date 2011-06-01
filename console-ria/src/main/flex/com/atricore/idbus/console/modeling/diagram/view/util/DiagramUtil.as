@@ -1,4 +1,5 @@
 package com.atricore.idbus.console.modeling.diagram.view.util {
+
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.base.diagram.DiagramElementTypes;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
@@ -148,6 +149,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.wikidMiniIcon;
             case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
                 return EmbeddedIcons.directoryServiceMiniIcon;
+            case DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:
+                return EmbeddedIcons.windowsIntegratedAuthnMiniIcon;
         }
         return null;
     }

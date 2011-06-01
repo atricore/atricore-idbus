@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
+         paddingRight="5" paddingTop="5" paddingBottom="5">
+
+    <fx:Declarations>
+        <utils:NameValidator id="nameValidator" source="{nodeName}" required="true" property="text"/>
+    </fx:Declarations>
+
+    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+             verticalGap="8" labelWidth="140">
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.name')}:" required="true">
+            <s:TextInput id="nodeName" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.description')}:">
+            <s:TextInput id="description" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.domain')}:"
+                     required="true">
+            <s:TextInput id="domain" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.protocol')}:"
+                     required="true">
+            <s:DropDownList id="protocol" selectedIndex="0" width="180">
+                <s:dataProvider>
+                    <mx:ArrayCollection>
+                        <fx:Object label="Kerberos" data="kerberos"/>
+                        <fx:Object label="NTLM v2" data="ntlmv2"/>
+                    </mx:ArrayCollection>
+                </s:dataProvider>
+            </s:DropDownList>
+        </mx:FormItem>
+
+    </mx:Form>
+
+</s:HGroup>

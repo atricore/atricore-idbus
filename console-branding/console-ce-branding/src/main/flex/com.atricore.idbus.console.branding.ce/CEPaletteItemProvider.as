@@ -40,6 +40,12 @@ public class CEPaletteItemProvider implements PaletteItemProvider {
 
                 );
 
+        authenticationPaletteDrawer.add(
+                new PaletteEntry("Windows Domain", EmbeddedIcons.windowsIntegratedAuthnMiniIcon, "Windows Domain Entry", DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE)
+
+                );
+
+
         pr.add(authenticationPaletteDrawer);
 
         var identitySourcesPaletteDrawer:PaletteDrawer = new PaletteDrawer("Identity Sources", null, null);

@@ -127,11 +127,13 @@
             <b>authenticationServices</b>
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WikidAuthenticationService,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO,
-                com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO
+                com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO ,
+                com.atricore.idbus.console.services.dto.WindowsIntegratedAuthenticationDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -188,12 +190,14 @@
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.TwoFactorAuthentication,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.BindAuthentication
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.BindAuthentication,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsAuthentication
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.BasicAuthenticationDTO,
                 com.atricore.idbus.console.services.dto.TwoFactorAuthenticationDTO,
-                com.atricore.idbus.console.services.dto.BindAuthenticationDTO
+                com.atricore.idbus.console.services.dto.BindAuthenticationDTO,
+                com.atricore.idbus.console.services.dto.WindowsAuthenticationDTO
             </b-hint>
         </field>
     </mapping>
@@ -270,6 +274,12 @@
     </mapping>
 
     <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.WindowsIntegratedAuthenticationDTO</class-b>
+    </mapping>
+
+
+    <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DelegatedAuthentication</class-a>
         <class-b>com.atricore.idbus.console.services.dto.DelegatedAuthenticationDTO</class-b>
         <field>
@@ -287,11 +297,13 @@
             <b>authnService</b>
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WikidAuthenticationService,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO,
-                com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO
+                com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO,
+                com.atricore.idbus.console.services.dto.WindowsIntegratedAuthenticationDTO
             </b-hint>
         </field>
     </mapping>
@@ -767,6 +779,12 @@
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.BindAuthentication</class-a>
         <class-b>com.atricore.idbus.console.services.dto.BindAuthenticationDTO</class-b>
     </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsAuthentication</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.WindowsAuthenticationDTO</class-b>
+    </mapping>
+
 
     <mapping>
         <class-a>com.atricore.josso2.licensing._1_0.license.LicenseType</class-a>

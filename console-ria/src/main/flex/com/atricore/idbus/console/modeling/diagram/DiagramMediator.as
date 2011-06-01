@@ -54,6 +54,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateSalesforc
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateWikidElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateWindowsIntegratedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDelegatedAuthnElementRequest;
@@ -71,6 +72,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforc
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWikidElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWindowsIntegratedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
@@ -98,6 +100,7 @@ import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
+import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import flash.display.DisplayObject;
@@ -596,6 +599,25 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         //                            }
 
                         break;
+                    case DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:
+                        // assert that source end is an Identity Appliance
+                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
+                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                        var winIntegratedAuthnOwnerAppliance:IdentityAppliance = _identityAppliance;
+
+                        var cwinauthn:CreateWindowsIntegratedAuthnElementRequest = new CreateWindowsIntegratedAuthnElementRequest(
+                                winIntegratedAuthnOwnerAppliance,
+                            //                                        _currentlySelectedNode.stringid
+                                null
+                                );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_WINDOWS_INTEGRATED_AUTHN_ELEMENT, cwinauthn);
+                        //                            }
+
+                        break;
+
                 }
 
                 break;
@@ -745,6 +767,16 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_DIRECTORY_SERVICE_ELEMENT, rdirservice);
                             break;
+                        case DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:
+                            var winIntegratedAuthn:WindowsIntegratedAuthentication = _currentlySelectedNode.data as WindowsIntegratedAuthentication;
+
+                            var rwinauthn:RemoveWindowsIntegratedAuthnElementRequest = new RemoveWindowsIntegratedAuthnElementRequest(winIntegratedAuthn);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_WINDOWS_INTEGRATED_AUTHN_ELEMENT, rwinauthn);
+                            break;
+
                     }
                 }
 
@@ -1206,6 +1238,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.WIKID_ELEMENT_TYPE;
             } else if (node.data is DirectoryAuthenticationService) {
                 elementType = DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE;
+            } else if (node.data is WindowsIntegratedAuthentication) {
+                elementType = DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE;
             }
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE, elementType);

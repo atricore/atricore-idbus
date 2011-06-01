@@ -54,5 +54,6 @@ public class DiagramElementTypes {
     public static const WIKID_ELEMENT_TYPE:int = 30;
     public static const DELEGATED_AUTHENTICATION_ELEMENT_TYPE:int = 31;
     public static const DIRECTORY_SERVICE_ELEMENT_TYPE:int = 32;
+    public static const WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:int =33;
 }
 }

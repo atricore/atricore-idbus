@@ -71,6 +71,7 @@
         import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
         import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
         import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
         import mx.controls.Alert;
@@ -148,6 +149,10 @@
                 var directoryService:DirectoryAuthenticationService = obj as DirectoryAuthenticationService;
                 _linkLabel = directoryService.name;
                 _linkIcon = EmbeddedIcons.directoryServiceIcon;
+            } else if (obj is WindowsIntegratedAuthentication) {
+                var winIntegratedAuthn:WindowsIntegratedAuthentication = obj as WindowsIntegratedAuthentication;
+                _linkLabel = winIntegratedAuthn.name;
+                _linkIcon = EmbeddedIcons.windowsIntegratedAuthnIcon;
             } else if (obj is Channel) {
                  _linkLabel = (obj as Channel).name;
             } else if (obj is IdentitySource) {

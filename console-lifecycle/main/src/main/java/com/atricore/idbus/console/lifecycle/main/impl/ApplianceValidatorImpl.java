@@ -473,6 +473,12 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
             if (StringUtils.isBlank(directoryAuthnService.getSecurityAuthentication()))
                 addError("Directory Authentication Service [" + node.getName() + "] Security Authentication cannot be null or empty");
 
+        } else if (node instanceof WindowsIntegratedAuthentication) {
+            WindowsIntegratedAuthentication windowsIntegratedAuthn = (WindowsIntegratedAuthentication) node;
+
+            if (StringUtils.isBlank(windowsIntegratedAuthn.getDomain()))
+                addError("Windows Integrated Authentication [" + node.getName() + "] Windows Domain cannot be null or empty");
+
         }
     }
 

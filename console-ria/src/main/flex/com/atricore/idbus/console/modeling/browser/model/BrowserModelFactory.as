@@ -57,6 +57,7 @@ import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
 import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import mx.resources.IResourceManager;
@@ -145,6 +146,8 @@ public class BrowserModelFactory {
                 authnServiceNode.icon = EmbeddedIcons.wikidMiniIcon;
             } else if (authnService is DirectoryAuthenticationService) {
                 authnServiceNode.icon = EmbeddedIcons.directoryServiceMiniIcon;
+            } else if (authnService is WindowsIntegratedAuthentication) {
+                authnServiceNode.icon = EmbeddedIcons.windowsIntegratedAuthnMiniIcon;
             }
             return authnServiceNode;
         }

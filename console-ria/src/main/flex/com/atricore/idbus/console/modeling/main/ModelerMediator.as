@@ -43,6 +43,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforc
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWikidElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWindowsIntegratedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceImportCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
@@ -369,6 +370,8 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.REMOVE_WIKID_ELEMENT,
             ApplicationFacade.CREATE_DIRECTORY_SERVICE_ELEMENT,
             ApplicationFacade.REMOVE_DIRECTORY_SERVICE_ELEMENT,
+            ApplicationFacade.CREATE_WINDOWS_INTEGRATED_AUTHN_ELEMENT,
+            ApplicationFacade.REMOVE_WINDOWS_INTEGRATED_AUTHN_ELEMENT,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
@@ -734,6 +737,15 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 var rdirservice:RemoveDirectoryServiceElementRequest = RemoveDirectoryServiceElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rdirservice.directoryAuthnService);
                 break;
+
+            case ApplicationFacade.CREATE_WINDOWS_INTEGRATED_AUTHN_ELEMENT:
+                popupManager.showCreateWindowsIntegratedAuthnWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_WINDOWS_INTEGRATED_AUTHN_ELEMENT:
+                var rwinauthn:RemoveWindowsIntegratedAuthnElementRequest = RemoveWindowsIntegratedAuthnElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rwinauthn.windowsIntegratedAuthentication);
+                break;
+
             default:
                 // Let super mediator handle notifications.
                 super.handleNotification(notification);

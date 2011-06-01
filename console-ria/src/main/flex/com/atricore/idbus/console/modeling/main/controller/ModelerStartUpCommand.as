@@ -52,6 +52,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _activationMediator:IIocMediator;
     private var _wikidCreateMediator:IIocMediator;
     private var _directoryServiceCreateMediator:IIocMediator;
+    private var _windowsIntegratedAuthnCreateMediator:IIocMediator;
     
     // Commands
     private var _createSimpleSSOIdentityApplianceCommand:IIocCommand;
@@ -479,6 +480,15 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     public function set directoryServiceCreateMediator(value:IIocMediator):void {
         _directoryServiceCreateMediator = value;
     }
+
+    public function get windowsIntegratedAutCreateMediator():IIocMediator {
+        return _windowsIntegratedAuthnCreateMediator;
+    }
+
+    public function set windowsIntegratedAuthnCreateMediator(value:IIocMediator):void {
+        _windowsIntegratedAuthnCreateMediator = value;
+    }
+
 
     public function get createSimpleSSOIdentityApplianceCommand():IIocCommand {
         return _createSimpleSSOIdentityApplianceCommand;

@@ -53,13 +53,18 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
 
         var authenticationPaletteDrawer:PaletteDrawer = new PaletteDrawer("Authentication", null, null);
         authenticationPaletteDrawer.add(
-                new PaletteEntry("WiKID", EmbeddedIcons.wikidMiniIcon, "WiKID Entry", DiagramElementTypes.WIKID_ELEMENT_TYPE)
+                new PaletteEntry("WiKID 2FA", EmbeddedIcons.wikidMiniIcon, "WiKID 2FA Entry", DiagramElementTypes.WIKID_ELEMENT_TYPE)
 
                 );
         authenticationPaletteDrawer.add(
                 new PaletteEntry("Directory Service", EmbeddedIcons.directoryServiceMiniIcon, "Directory Service Entry", DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE)
 
                 );
+        authenticationPaletteDrawer.add(
+                new PaletteEntry("Windows Domain", EmbeddedIcons.windowsIntegratedAuthnMiniIcon, "Windows Domain Entry", DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE)
+
+                );
+
 
         pr.add(authenticationPaletteDrawer);
 

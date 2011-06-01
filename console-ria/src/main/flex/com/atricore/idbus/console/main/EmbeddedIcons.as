@@ -239,6 +239,11 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/48x48/directory_service.png")]
     public static var directoryServiceIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/win_integrated_authn.png")]
+    public static var windowsIntegratedAuthnIcon:Class;
+
+
     //TODO add BP icon
     [Bindable]
     [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
@@ -308,6 +313,11 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/directory_service.png")]
     public static var directoryServiceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/win_integrated_authn.png")]
+    public static var windowsIntegratedAuthnMiniIcon:Class;
+
 
     //TODO add BP icon
     [Bindable]

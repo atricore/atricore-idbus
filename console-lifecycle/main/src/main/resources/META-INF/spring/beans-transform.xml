@@ -66,6 +66,10 @@
     <bean name="directoryServiceAuthenticationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.DirectoryServiceAuthenticationTransformer"/>
 
+    <bean name="windowsIntegratedAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WindowsIntegratedAuthenticationTransformer"/>
+
+
 
     <bean name="spLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPLocalTransformer">
@@ -340,6 +344,7 @@
                                         <ref bean="basicAuthenticationTransformer"/>
                                         <ref bean="twoFactorAuthenticationTransformer"/>
                                         <ref bean="directoryServiceAuthenticationTransformer"/>
+                                        <ref bean="windowsIntegratedAuthenticationTransformer"/>
 
                                         <!-- SP Transformers -->
                                         <ref bean="spLocalTransformer"/>

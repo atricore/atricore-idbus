@@ -48,6 +48,10 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/directory_service.png")]
     public static var directoryServiceMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/win_integrated_authn.png")]
+    public static var windowsIntegratedAuthnMiniIcon:Class;
+
     // Identity sources
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/identity_vault.png")]

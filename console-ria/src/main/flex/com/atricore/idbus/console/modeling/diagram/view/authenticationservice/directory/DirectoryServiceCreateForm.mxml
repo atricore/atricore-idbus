@@ -40,7 +40,7 @@
                                  noMatchError="Passwords do not match"/>
     </fx:Declarations>
 
-    <mx:TabNavigator borderStyle="solid" width="100%" height="285" creationPolicy="all">
+    <mx:TabNavigator borderStyle="solid" width="100%" height="315" creationPolicy="all">
 
         <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.tab.base')}">
             <s:VGroup>

@@ -38,6 +38,7 @@ import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListComman
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.directory.DirectoryAuthnServiceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.directory.DirectoryAuthnServiceLookupSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.windows.WindowsIntegratedAuthnCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.wikid.WikidAuthnServiceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
@@ -72,6 +73,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.identitylookup.Ide
 import com.atricore.idbus.console.modeling.propertysheet.view.identityvault.EmbeddedDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.BasicAuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.BindAuthenticationSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.idp.WindowsAuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.TwoFactorAuthenticationSection;
@@ -96,6 +98,8 @@ import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
+import com.atricore.idbus.console.services.dto.WindowsAuthentication;
+import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
@@ -220,10 +224,12 @@ public class PropertySheetMediator extends IocMediator {
     private var _basicAuthenticationSection:BasicAuthenticationSection;
     private var _twoFactorAuthenticationSection:TwoFactorAuthenticationSection;
     private var _bindAuthenticationSection:BindAuthenticationSection;
+    private var _windowsAuthenticationSection:WindowsAuthenticationSection;
     private var _certificateSection:CertificateSection;
     private var _wikidAuthnServiceCoreSection:WikidAuthnServiceCoreSection;
     private var _directoryAuthnServiceCoreSection:DirectoryAuthnServiceCoreSection;
     private var _directoryAuthnServiceLookupSection:DirectoryAuthnServiceLookupSection;
+    private var _windowsIntegratedAuthnCoreSection:WindowsIntegratedAuthnCoreSection;
     private var _dirty:Boolean;
     private var _applianceSaved:Boolean;
 
@@ -374,6 +380,8 @@ public class PropertySheetMediator extends IocMediator {
                     enableWikidAuthnServicePropertyTabs();
                 } else if (_currentIdentityApplianceElement is DirectoryAuthenticationService) {
                     enableDirectoryAuthnServicePropertyTabs();
+                } else if (_currentIdentityApplianceElement is WindowsIntegratedAuthentication) {
+                    enableWindowsIntegratedAuthnPropertyTabs();
                 } else if (_currentIdentityApplianceElement is IdentitySource) {
                     if (_currentIdentityApplianceElement is EmbeddedIdentitySource) {
                         enableIdentityVaultPropertyTabs();
@@ -842,6 +850,9 @@ public class PropertySheetMediator extends IocMediator {
                     selectedAuthnMechanism = "2factor";
                 else if (authnMechanism is BindAuthentication)
                     selectedAuthnMechanism = "bind";
+                else if (authnMechanism is WindowsAuthentication)
+                    selectedAuthnMechanism = "windows";
+
             }
             for (var j:int = 0; j < _ipCoreSection.authMechanismCombo.dataProvider.length; j++) {
                 if (_ipCoreSection.authMechanismCombo.dataProvider[j].data == selectedAuthnMechanism) {
@@ -1119,6 +1130,12 @@ public class PropertySheetMediator extends IocMediator {
 
             _bindAuthenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleBindAuthenticationPropertyTabCreationComplete);
             _authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleBindAuthenticationPropertyTabRollOut);
+        } else if (_ipCoreSection.authMechanismCombo.selectedItem.data == "windows") {
+            _windowsAuthenticationSection = new WindowsAuthenticationSection();
+            _authenticationPropertyTab.addElement(_windowsAuthenticationSection);
+
+            _windowsAuthenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleWindowsAuthenticationPropertyTabCreationComplete);
+            _authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleWindowsAuthenticationPropertyTabRollOut);
         }
     }
 
@@ -1251,21 +1268,21 @@ public class PropertySheetMediator extends IocMediator {
             // bind view
 
             // find bind authentication
-            var bindAuthentication:BindAuthentication = null;
+            var windowsAuthentication:WindowsAuthentication = null;
             for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
-                if (authMechanism is BindAuthentication) {
-                    bindAuthentication = authMechanism as BindAuthentication;
+                if (authMechanism is WindowsAuthentication) {
+                    windowsAuthentication = authMechanism as WindowsAuthentication;
                 }
             }
 
-            if (bindAuthentication != null) {
-                _bindAuthenticationSection.authName.text = bindAuthentication.name;
+            if (windowsAuthentication != null) {
+                _windowsAuthenticationSection.authName.text = windowsAuthentication.name;
 
-                _bindAuthenticationSection.authName.addEventListener(Event.CHANGE, handleSectionChange);
+                _windowsAuthenticationSection.authName.addEventListener(Event.CHANGE, handleSectionChange);
 
                 //clear all existing validators and add basic auth. section validators
                 //_validators = [];
-                _validators.push(_bindAuthenticationSection.nameValidator);
+                _validators.push(_windowsAuthenticationSection.nameValidator);
             }
         }
     }
@@ -1285,6 +1302,57 @@ public class PropertySheetMediator extends IocMediator {
 
             if (bindAuthentication != null) {
                 bindAuthentication.name = _bindAuthenticationSection.authName.text;
+
+                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+                _applianceSaved = false;
+                _dirty = false;
+            }
+        }
+    }
+
+    private function handleWindowsAuthenticationPropertyTabCreationComplete(event:Event):void {
+        var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            // bind view
+
+            // find bind authentication
+            var windowsAuthentication:WindowsAuthentication = null;
+            for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                if (authMechanism is WindowsAuthentication) {
+                    windowsAuthentication = authMechanism as WindowsAuthentication;
+                }
+            }
+
+            if (windowsAuthentication != null) {
+                _windowsAuthenticationSection.authName.text = windowsAuthentication.name;
+
+                _windowsAuthenticationSection.authName.addEventListener(Event.CHANGE, handleSectionChange);
+
+                //clear all existing validators and add basic auth. section validators
+                //_validators = [];
+                _validators.push(_windowsAuthenticationSection.nameValidator);
+            }
+        }
+    }
+
+    private function handleWindowsAuthenticationPropertyTabRollOut(event:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+            // find bind authentication
+            var windowsAuthentication:WindowsAuthentication = null;
+            for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                if (authMechanism is WindowsAuthentication) {
+                    windowsAuthentication = authMechanism as WindowsAuthentication;
+                }
+            }
+
+            if (windowsAuthentication != null) {
+                windowsAuthentication.name = _windowsAuthenticationSection.authName.text;
 
                 sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -2439,7 +2507,7 @@ public class PropertySheetMediator extends IocMediator {
         lookupPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleDirectoryAuthnServiceLookupPropertyTabRollOut);
 
     }
-
+    
     private function handleDirectoryAuthnServiceCorePropertyTabCreationComplete(event:Event):void {
         var directoryAuthnService:DirectoryAuthenticationService = _currentIdentityApplianceElement as DirectoryAuthenticationService;
 
@@ -2549,6 +2617,67 @@ public class PropertySheetMediator extends IocMediator {
             _dirty = false;
         }
     }
+    
+    protected function enableWindowsIntegratedAuthnPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _windowsIntegratedAuthnCoreSection = new WindowsIntegratedAuthnCoreSection();
+        corePropertyTab.addElement(_windowsIntegratedAuthnCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _windowsIntegratedAuthnCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleWindowsIntegratedAuthnCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleWindowsIntegratedAuthnCorePropertyTabRollOut);
+
+
+    }
+    
+    private function handleWindowsIntegratedAuthnCorePropertyTabCreationComplete(event:Event):void {
+        var windowsIntegratedAuth:WindowsIntegratedAuthentication = _currentIdentityApplianceElement as WindowsIntegratedAuthentication;
+
+        // if windowsIntegratedAuth is null that means some other element was selected before completing this
+        if (windowsIntegratedAuth != null) {
+            // bind view
+            _windowsIntegratedAuthnCoreSection.nodeName.text = windowsIntegratedAuth.name;
+            _windowsIntegratedAuthnCoreSection.description.text = windowsIntegratedAuth.description;
+
+            _windowsIntegratedAuthnCoreSection.domain.text = windowsIntegratedAuth.domain;
+
+            for (var j:int = 0; j < _windowsIntegratedAuthnCoreSection.protocol.dataProvider.length; j++) {
+                if (_windowsIntegratedAuthnCoreSection.protocol.dataProvider[j].data == windowsIntegratedAuth.protocol) {
+                    _windowsIntegratedAuthnCoreSection.protocol.selectedIndex = j;
+                    break;
+                }
+            }
+
+            _validators = [];
+            _validators.push(_windowsIntegratedAuthnCoreSection.nameValidator);
+        }
+    }
+
+    private function handleWindowsIntegratedAuthnCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var windowsIntegratedAuthn:WindowsIntegratedAuthentication = _currentIdentityApplianceElement as WindowsIntegratedAuthentication;
+            windowsIntegratedAuthn.name = _windowsIntegratedAuthnCoreSection.nodeName.text;
+            windowsIntegratedAuthn.description = _windowsIntegratedAuthnCoreSection.description.text;
+            windowsIntegratedAuthn.domain = _windowsIntegratedAuthnCoreSection.domain.text;
+            windowsIntegratedAuthn.protocol = _windowsIntegratedAuthnCoreSection.protocol.selectedItem.data;
+            
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }    
+    
 
     protected function enableIdentityVaultPropertyTabs():void {
         // Attach embedded DB identity vault editor form to property tabbed view
@@ -6082,6 +6211,9 @@ public class PropertySheetMediator extends IocMediator {
                 selectedAuthnMechanism = "2factor";
             else if (authnMechanism is BindAuthentication)
                 selectedAuthnMechanism = "bind";
+            else if (authnMechanism is WindowsAuthentication)
+                selectedAuthnMechanism = "windows";
+
         }
         for (var j:int = 0; j < _federatedConnectionSPChannelSection.spChannelAuthMechanism.dataProvider.length; j++) {
             if (_federatedConnectionSPChannelSection.spChannelAuthMechanism.dataProvider[j].data == selectedAuthnMechanism) {

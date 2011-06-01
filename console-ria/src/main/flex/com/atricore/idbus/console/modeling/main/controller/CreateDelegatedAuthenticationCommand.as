@@ -5,11 +5,13 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateDelegated
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.BindAuthentication;
+import com.atricore.idbus.console.services.dto.WindowsAuthentication;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
 import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
+import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
 
 import mx.collections.ArrayCollection;
 import mx.rpc.Fault;
@@ -62,7 +64,12 @@ public class CreateDelegatedAuthenticationCommand extends IocSimpleCommand imple
                 bindAuthn.name = idp.name.replace(/\s+/g, "-").toLowerCase() + "-bind-authn";
                 idp.authenticationMechanisms.removeAll();
                 idp.authenticationMechanisms.addItem(bindAuthn);
-            }
+            } else if (authnService is WindowsIntegratedAuthentication) {
+                var winAuthn:WindowsAuthentication = new WindowsAuthentication();
+                winAuthn.name = idp.name.replace(/\s+/g, "-").toLowerCase() + "-windows-authn";
+                idp.authenticationMechanisms.removeAll();
+                idp.authenticationMechanisms.addItem(winAuthn);
+            } // TODO : Avoid depending on the authn type
 
             if (authnService.delegatedAuthentications == null){
                 authnService.delegatedAuthentications = new ArrayCollection();

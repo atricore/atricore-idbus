@@ -31,6 +31,8 @@ import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.di
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.windows.WindowsIntegratedAuthnCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.windows.WindowsIntegratedAuthnCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateForm;
@@ -145,6 +147,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _activationMediator:ExecEnvActivationMediator;
     private var _wikidCreateMediator:WikidCreateMediator;
     private var _directoryServiceCreateMediator:DirectoryServiceCreateMediator;
+    private var _windowsIntegratedAuthnCreateMediator:WindowsIntegratedAuthnCreateMediator;
 
     // views
     private var _simpleSSOWizardView:SimpleSSOWizardView;
@@ -185,6 +188,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _activationView:ExecEnvActivationView;
     private var _wikidCreateForm:WikidCreateForm;
     private var _directoryServiceCreateForm:DirectoryServiceCreateForm;
+    private var _windowsIntegratedAuthnCreateForm:WindowsIntegratedAuthnCreateForm;
 
     public function ModelerPopUpManager() {
         super();
@@ -497,6 +501,15 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set directoryServiceCreateMediator(value:DirectoryServiceCreateMediator):void {
         _directoryServiceCreateMediator = value;
+    }
+
+
+    public function get windowsIntegratedAuthnCreateMediator():WindowsIntegratedAuthnCreateMediator {
+        return _windowsIntegratedAuthnCreateMediator;
+    }
+
+    public function set windowsIntegratedAuthnCreateMediator(value:WindowsIntegratedAuthnCreateMediator):void {
+        _windowsIntegratedAuthnCreateMediator = value;
     }
 
     public function showSimpleSSOWizardWindow(notification:INotification):void {
@@ -1272,20 +1285,43 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createDirectoryServiceCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.directoryService");
         _popup.width = 510;
-        _popup.height = 385;
+        _popup.height = 405;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_directoryServiceCreateForm);
     }
+
+    public function showCreateWindowsIntegratedAuthnWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createWindowsIntegratedAuthnCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.windowsIntegratedAuthn");
+        _popup.width = 510;
+        _popup.height = 325;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_windowsIntegratedAuthnCreateForm);
+    }
+
 
     private function createDirectoryServiceCreateForm():void {
         _directoryServiceCreateForm = new DirectoryServiceCreateForm();
         _directoryServiceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleDirectoryServiceCreateFormCreated);
     }
 
+    private function createWindowsIntegratedAuthnCreateForm():void {
+        _windowsIntegratedAuthnCreateForm = new WindowsIntegratedAuthnCreateForm();
+        _windowsIntegratedAuthnCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleWindowsIntegratedAuthnCreateFormCreated);
+    }
+
+
     private function handleDirectoryServiceCreateFormCreated(event:FlexEvent):void {
         directoryServiceCreateMediator.setViewComponent(_directoryServiceCreateForm);
         directoryServiceCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    private function handleWindowsIntegratedAuthnCreateFormCreated(event:FlexEvent):void {
+        windowsIntegratedAuthnCreateMediator.setViewComponent(_windowsIntegratedAuthnCreateForm);
+        windowsIntegratedAuthnCreateMediator.handleNotification(_lastWindowNotification);
     }
 }
 }
