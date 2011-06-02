@@ -488,6 +488,7 @@
 
     <modules>
         <module>support/springmetadata</module>
+        <!--module>support/blueprintmetadata</module-->
         <module>main</module>
         <module>command</module>
     </modules>

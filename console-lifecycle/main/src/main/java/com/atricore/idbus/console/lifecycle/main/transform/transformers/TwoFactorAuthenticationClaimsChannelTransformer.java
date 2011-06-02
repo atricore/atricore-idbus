@@ -1,7 +1,10 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.AuthenticationMechanism;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.TwoFactorAuthentication;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsAuthentication;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
@@ -26,21 +29,40 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.addPropertyBeansAsRefs;
 
 /**
- * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id$
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class ClaimsChannelTransformer extends AbstractTransformer {
+public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(ClaimsChannelTransformer.class);
+    private static final Log logger = LogFactory.getLog(TwoFactorAuthenticationClaimsChannelTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof IdentityProvider &&
-                !((IdentityProvider)event.getData()).isRemote();
+        if (!(event.getData() instanceof IdentityProvider))
+            return false;
+        IdentityProvider idp = (IdentityProvider)event.getData();
+        if (idp.isRemote())
+            return false;
+
+        if (idp.getAuthenticationMechanisms() == null)
+            return false;
+
+        for (AuthenticationMechanism a : idp.getAuthenticationMechanisms()) {
+            if (a instanceof TwoFactorAuthentication)
+                return true;
+        }
+
+        // None of the authn mechanisms is supported!
+        return false;
     }
 
+    /**
+     *  TODO : Support multiple claim channels per IDP!
+     * @param event
+     * @throws com.atricore.idbus.console.lifecycle.main.exception.TransformException
+     */
     @Override
     public void before(TransformEvent event) throws TransformException {
 
@@ -61,10 +83,11 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
             throw new TransformException("Invalid IdP definition count : " + b.size());
         }
         idpBean = b.iterator().next();
-        
+
         // ----------------------------------------
         // Claims Channel
         // ----------------------------------------
+
 
         Bean claimsChannelBean = newBean(idpBeans, idpBean.getName() + "-claims-channel", ClaimChannelImpl.class);
 
@@ -78,27 +101,10 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         // endpoints
         List<Bean> ccEndpoints = new ArrayList<Bean>();
 
+
         for (AuthenticationMechanism authnMechanism : provider.getAuthenticationMechanisms()) {
             // Bind authn is a variant of basic authn
-            if (authnMechanism instanceof BasicAuthentication ||
-                authnMechanism instanceof BindAuthentication) {
-                Bean ccPwdArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                ccPwdArtifact.setName(idpBean.getName() + "-cc-pwd-artifact");
-                setPropertyValue(ccPwdArtifact, "name", ccPwdArtifact.getName());
-                setPropertyValue(ccPwdArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
-                setPropertyValue(ccPwdArtifact, "location", "/PWD/ARTIFACT");
-                setPropertyValue(ccPwdArtifact, "responseLocation", "/PWD/POST-RESP");
-                setPropertyValue(ccPwdArtifact, "type", AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue());
-                ccEndpoints.add(ccPwdArtifact);
-
-                Bean ccPwdPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                ccPwdPost.setName(idpBean.getName() + "-cc-pwd-post");
-                setPropertyValue(ccPwdPost, "name", ccPwdPost.getName());
-                setPropertyValue(ccPwdPost, "binding", SamlR2Binding.SSO_POST.getValue());
-                setPropertyValue(ccPwdPost, "location", "/PWD/POST");
-                setPropertyValue(ccPwdPost, "type", AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue());
-                ccEndpoints.add(ccPwdPost);
-            } else if (authnMechanism instanceof TwoFactorAuthentication) {
+            if (authnMechanism instanceof TwoFactorAuthentication) {
                 Bean cc2faArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 cc2faArtifact.setName(idpBean.getName() + "-cc-2fa-artifact");
                 setPropertyValue(cc2faArtifact, "name", cc2faArtifact.getName());
@@ -123,20 +129,17 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         // ----------------------------------------
         // Claims Mediator
         // ----------------------------------------
-        Bean ccMediator = newBean(idpBeans, idpBean.getName() + "-samlr2-claims-mediator", SamlR2ClaimsMediator.class);
+        Bean ccMediator = newBean(idpBeans, idpBean.getName() + "-2fa-claims-mediator", SamlR2ClaimsMediator.class);
 
         // logMessages
         setPropertyValue(ccMediator, "logMessages", true);
-
-        // basicAuthnUILocation
-        setPropertyValue(ccMediator, "basicAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-password.do");
 
         // 2faAuthnUILocation
         setPropertyValue(ccMediator, "twoFactorAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-passcode.do");
 
         // artifactQueueManager
         setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
-        
+
         // bindingFactory
         setPropertyBean(ccMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));
 
@@ -166,7 +169,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
 
         // unitContainer
         setPropertyRef(claimsChannelBean, "unitContainer", provider.getIdentityAppliance().getName() + "-container");
-        
+
         // Mediation Unit
         Collection<Bean> mus = getBeansOfType(baseBeans, OsgiIdentityMediationUnit.class.getName());
         if (mus.size() == 1) {

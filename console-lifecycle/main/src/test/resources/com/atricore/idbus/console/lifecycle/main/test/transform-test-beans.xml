@@ -53,7 +53,7 @@
     </bean>
 
     <bean name="claimsChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ClaimsChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationClaimsChannelTransformer"/>
 
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.STSTransformer"/>

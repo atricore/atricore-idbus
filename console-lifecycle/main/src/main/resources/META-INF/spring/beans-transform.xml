@@ -51,8 +51,14 @@
         <property name="roleA" value="false"/>
     </bean>
 
-    <bean name="claimsChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ClaimsChannelTransformer"/>
+    <bean name="basicAuthnClaimsChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationClaimsChannelTransformer"/>
+
+    <bean name="2faAuthnClaimsChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.TwoFactorAuthenticationClaimsChannelTransformer"/>
+
+    <bean name="wiaAuthnClaimsChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WindowsIntegratedAuthenticationClaimsChannelTransformer"/>
 
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.STSTransformer"/>
@@ -66,10 +72,10 @@
     <bean name="directoryServiceAuthenticationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.DirectoryServiceAuthenticationTransformer"/>
 
+    <!--
     <bean name="windowsIntegratedAuthenticationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WindowsIntegratedAuthenticationTransformer"/>
-
-
+    -->
 
     <bean name="spLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPLocalTransformer">
@@ -339,12 +345,15 @@
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
 
-                                        <ref bean="claimsChannelTransformer"/>
+                                        <ref bean="basicAuthnClaimsChannelTransformer"/>
+                                        <ref bean="2faAuthnClaimsChannelTransformer"/>
+                                        <ref bean="wiaAuthnClaimsChannelTransformer"/>
+
                                         <ref bean="stsTransformer"/>
                                         <ref bean="basicAuthenticationTransformer"/>
                                         <ref bean="twoFactorAuthenticationTransformer"/>
                                         <ref bean="directoryServiceAuthenticationTransformer"/>
-                                        <ref bean="windowsIntegratedAuthenticationTransformer"/>
+                                        <!--ref bean="windowsIntegratedAuthenticationTransformer"/-->
 
                                         <!-- SP Transformers -->
                                         <ref bean="spLocalTransformer"/>

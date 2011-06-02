@@ -120,6 +120,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.spnego</groupId>
+            <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
+            <version>${idbus.cap.sts.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
         <!-- ================================================================== -->
         <!-- IDBus Connectors -->
         <!-- ================================================================== -->
@@ -328,6 +336,7 @@
                            org.atricore.idbus.capabilities.samlr2.support,
                            org.atricore.idbus.capabilities.spmlr2.main,
                            org.atricore.idbus.capabilities.josso.main,
+                            org.atricore.idbus.capabilities.spnego,
                            org.atricore.idbus.connectors.jdoidentityvault,
                            org.atricore.idbus.idojos.dbidentitystore,
                            org.atricore.idbus.idojos.memorysessionstore,
