@@ -29,13 +29,13 @@
             storeKey = true
             debug = true
             useKeyTab = true
-            keyTab = $[karaf.base]/etc/atricore.keytab
+            keyTab = $[karaf.base]/etc/josso2.keytab
         </jaas:module>
     </jaas:config>
 
     <bean id="kerberosFactory" class="org.atricore.idbus.capabilities.spnego.jaas.KerberosAutomaticSignOn"
           init-method="signon"
           activation="eager">
-        <property name="principal" value="HTTP/wsdev1.w2k3dev.atricore.com@W2K3DEV.ATRICORE.COM"/>
+        <property name="principal" value="HTTP/josso2.demo.atricore.com@DEMO.ATRICORE.COM"/>
     </bean>
 </blueprint>
