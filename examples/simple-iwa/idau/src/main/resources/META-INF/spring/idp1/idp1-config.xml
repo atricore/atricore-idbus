@@ -50,7 +50,7 @@
             </bean>
         </property>
         <property name="errorUrl">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/idbus-ui/error.do</value>
+            <value>http://josso2.demo.atricore.com:8081/idbus-ui/error.do</value>
         </property>
         <property name="signRequests">
             <value>true</value>
@@ -214,7 +214,7 @@
             <value>ukVDlD1IKruDE3MHNtTKyUuXKjk=</value>
         </property>
         <property name="alias">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/IDP1/SAML2/MD</value>
+            <value>http://josso2.demo.atricore.com:8081/IDBUS/SIMPLE-IWA/IDP1/SAML2/MD</value>
         </property>
         <property name="resource">
             <value>classpath:org/atricore/idbus/examples/idau/idp1/idp1-samlr2-metadata.xml</value>
@@ -228,7 +228,7 @@
             <value>IDP1</value>
         </property>
         <property name="location">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/IDP1</value>
+            <value>http://josso2.demo.atricore.com:8081/IDBUS/SIMPLE-IWA/IDP1</value>
         </property>
         <property name="provider">
             <ref bean="idp1"/>
@@ -544,7 +544,7 @@
             <value>idp1-claims-channel</value>
         </property>
         <property name="location">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/IDP1/CC</value>
+            <value>http://josso2.demo.atricore.com:8081/IDBUS/SIMPLE-IWA/IDP1/CC</value>
         </property>
         <property name="endpoints">
             <list>
@@ -596,10 +596,10 @@
             <value>true</value>
         </property>
         <property name="basicAuthnUILocation">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/idbus-ui/claims/username-password.do</value>
+            <value>http://josso2.demo.atricore.com:8081/idbus-ui/claims/username-password.do</value>
         </property>
         <property name="twoFactorAuthnUILocation">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/idbus-ui/claims/username-passcode.do</value>
+            <value>http://josso2.demo.atricore.com:8081/idbus-ui/claims/username-passcode.do</value>
         </property>
         <property name="artifactQueueManager">
             <ref bean="simple-iwa-aqm"/>
@@ -622,7 +622,7 @@
             </bean>
         </property>
         <property name="errorUrl">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/idbus-ui/error.do</value>
+            <value>http://josso2.demo.atricore.com:8081/idbus-ui/error.do</value>
         </property>
     </bean>
     <!-- Claim Channel for negotiating Service Token through SPNEGO/HTTP -->
@@ -631,7 +631,7 @@
             <value>idp1-spnego-claims-channel</value>
         </property>
         <property name="location">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-IWA/IDP1/SPNEGO</value>
+            <value>http://josso2.demo.atricore.com:8081/IDBUS/SIMPLE-IWA/IDP1/SPNEGO</value>
         </property>
         <property name="endpoints">
             <list>
@@ -688,7 +688,7 @@
     </bean>
     <bean class="org.atricore.idbus.capabilities.spnego.SpnegoMediator" name="idp1-spnego-claims-mediator">
         <property name="realm" value="spnego"/>
-        <property name="principal" value="HTTP/wsdev1.w2k3dev.atricore.com@W2K3DEV.ATRICORE.COM"/>
+        <property name="principal" value="HTTP/josso2.demo.atricore.com@W2K3DEV.ATRICORE.COM"/>
         <property name="bindingFactory">
             <bean class="org.atricore.idbus.capabilities.spnego.SpnegoBindingFactory"/>
         </property>
@@ -799,7 +799,7 @@
             <value>spnego</value>
         </property>
         <property name="principalName">
-            <value>HTTP/wsdev1.w2k3dev.atricore.com@W2K3DEV.ATRICORE.COM</value>
+            <value>HTTP/josso2.demo.atricore.com@W2K3DEV.ATRICORE.COM</value>
         </property>
     </bean>
 
