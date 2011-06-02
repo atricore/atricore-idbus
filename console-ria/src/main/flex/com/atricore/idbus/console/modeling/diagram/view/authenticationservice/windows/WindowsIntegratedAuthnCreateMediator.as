@@ -9,6 +9,8 @@ import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
 
+import flash.events.Event;
+
 import flash.events.MouseEvent;
 
 import mx.events.CloseEvent;
@@ -47,22 +49,39 @@ public class WindowsIntegratedAuthnCreateMediator extends IocFormMediator {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleWindowsIntegratedAuthnSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.focusManager.setFocus(view.nodeName);
+
+        view.domain.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
+        view.serviceClass.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
+        view.host.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
+        view.port.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
+        view.serviceName.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
     }
 
     private function resetForm():void {
         view.nodeName.text = "";
         view.description.text = "";
-        view.domain.text = "myCompanyDomain";
+
         view.protocol.selectedIndex = 0;
+        view.domain.text = "myCompanyDomain";
+        view.serviceClass.selectedIndex = 0;
+        view.host.text = "";
+        view.port.text = "8081";
+        view.serviceName.text = "";
 
         FormUtility.clearValidationErrors(_validators);
     }
 
     override public function bindForm():void {
+
         view.nodeName.text = "";
         view.description.text = "";
-        view.domain.text = "myCompanyDomain";
         view.protocol.selectedIndex = 0;
+        view.domain.text = "myCompanyDomain";
+        view.serviceClass.selectedIndex = 0;
+        view.host.text = "";
+        view.port.text = "8081";
+        view.serviceName.text = "";
+
 
         FormUtility.clearValidationErrors(_validators);
 
@@ -73,11 +92,27 @@ public class WindowsIntegratedAuthnCreateMediator extends IocFormMediator {
 
         windowsIntegratedAuthn.name = view.nodeName.text;
         windowsIntegratedAuthn.description = view.description.text;
-        
-        windowsIntegratedAuthn.domain = view.domain.text;
+
         windowsIntegratedAuthn.protocol = view.protocol.selectedItem.data;
+        windowsIntegratedAuthn.domain = view.domain.text;
+        windowsIntegratedAuthn.serviceClass = view.serviceClass.selectedItem.data;
+        windowsIntegratedAuthn.host = view.host.text;
+        windowsIntegratedAuthn.port = parseInt(view.port.text);
+        windowsIntegratedAuthn.serviceName = view.serviceName.text;
 
         _newDirectoryAuthnService = windowsIntegratedAuthn;
+    }
+
+    private function handleWindowsIntegratedAuthnSPNAttributeChange(e:Event):void {
+        var spn:String = "";
+        spn = view.serviceClass.selectedItem.data + "/" + view.host.text + ":" + view.port.text;
+        if (view.serviceName != null && view.serviceName.text != "") {
+            spn += "/" + view.serviceName.text;
+        }
+        spn += "@" + view.domain.text;
+
+        view.servicePrincipalName.text = spn;
+
     }
 
     private function handleWindowsIntegratedAuthnSave(event:MouseEvent):void {
@@ -110,6 +145,9 @@ public class WindowsIntegratedAuthnCreateMediator extends IocFormMediator {
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
+        _validators.push(view.hostValidator);
+        _validators.push(view.portValidator);
+        _validators.push(view.serviceNameValidator);
     }
 
     override public function listNotificationInterests():Array {

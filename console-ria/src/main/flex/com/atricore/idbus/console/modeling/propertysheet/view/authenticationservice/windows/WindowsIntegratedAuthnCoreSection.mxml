@@ -21,29 +21,35 @@
   -->
 
 <s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"
-         xmlns:fx="http://ns.adobe.com/mxml/2009"
-         xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
-         paddingRight="5" paddingTop="5" paddingBottom="5">
+          xmlns:fx="http://ns.adobe.com/mxml/2009"
+          xmlns:s="library://ns.adobe.com/flex/spark"
+          xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
+          paddingRight="5" paddingTop="5" paddingBottom="5">
 
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{nodeName}" required="true" property="text"/>
+
+        <mx:StringValidator id="domainValidator" source="{domain}" required="true" property="text"/>
+
+        <mx:StringValidator id="hostValidator" source="{host}" required="true" property="text"/>
+
+        <mx:StringValidator id="serviceNameValidator" source="{serviceName}" required="false" property="text"/>
+
+        <mx:NumberValidator id="portValidator" source="{port}" required="true" property="text" minValue="1"
+                            maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.portValidationError')}"/>
     </fx:Declarations>
 
     <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
              verticalGap="8" labelWidth="140">
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.name')}:" required="true">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.name')}:"
+                     required="true">
             <s:TextInput id="nodeName" width="300"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.description')}:">
             <s:TextInput id="description" width="300"/>
-        </mx:FormItem>
-
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.domain')}:"
-                     required="true">
-            <s:TextInput id="domain" width="300"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.protocol')}:"
@@ -57,6 +63,43 @@
                 </s:dataProvider>
             </s:DropDownList>
         </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.domain')}:"
+                     required="true">
+            <s:TextInput id="domain" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.serviceClass')}:"
+                     required="true">
+            <s:DropDownList id="serviceClass" selectedIndex="0" width="180">
+                <s:dataProvider>
+                    <mx:ArrayCollection>
+                        <fx:Object label="HTTP" data="HTTP"/>
+                    </mx:ArrayCollection>
+                </s:dataProvider>
+            </s:DropDownList>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.host')}:"
+                     required="true">
+            <s:TextInput id="host" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.port')}:"
+                     required="true">
+            <s:TextInput id="port" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.serviceName')}:"
+                     required="false">
+            <s:TextInput id="serviceName" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.spn')}:"
+                     required="false">
+            <s:TextInput id="servicePrincipalName" width="300" editable="false"/>
+        </mx:FormItem>
+
 
     </mx:Form>
 

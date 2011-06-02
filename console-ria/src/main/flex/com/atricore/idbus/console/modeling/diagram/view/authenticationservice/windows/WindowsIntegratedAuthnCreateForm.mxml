@@ -5,34 +5,45 @@
          xmlns:utils="com.atricore.idbus.console.components.*"
          defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8" labelWidth="160">
     <fx:Declarations>
+
         <utils:NameValidator id="nameValidator" source="{nodeName}" required="true" property="text" trigger="{btnOk}"
-                        triggerEvent="click"/>
-        <mx:StringValidator id="initialContextFactoryValidator" source="{domain}" required="true" property="text"
+                             triggerEvent="click"/>
+
+        <mx:StringValidator id="domainValidator" source="{domain}" required="true" property="text"
                             trigger="{btnOk}" triggerEvent="click"/>
+
+        <mx:StringValidator id="hostValidator" source="{host}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+
+        <mx:StringValidator id="serviceNameValidator" source="{serviceName}" required="false" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+
+        <mx:NumberValidator id="portValidator" source="{port}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.portValidationError')}"/>
+
     </fx:Declarations>
 
-    <mx:TabNavigator borderStyle="solid" width="100%" height="225" creationPolicy="all">
+    <mx:TabNavigator borderStyle="solid" width="100%" height="285" creationPolicy="all">
 
-        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.tab.base')}">
+        <s:NavigatorContent
+                label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.tab.base')}">
             <s:VGroup>
 
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.name')}:" required="true">
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.name')}:"
+                             required="true">
                     <s:TextInput id="nodeName" width="300"/>
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.description')}:">
+                <mx:FormItem
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.description')}:">
                     <s:TextInput id="description" width="300"/>
                 </mx:FormItem>
 
-
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.domain')}:"
-                             required="true">
-                    <s:TextInput id="domain" width="300"/>
-                </mx:FormItem>
-
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.protocol')}:"
-                             required="true">
+                <mx:FormItem
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.protocol')}:"
+                        required="true">
                     <s:DropDownList id="protocol" selectedIndex="0" width="180">
                         <s:dataProvider>
                             <mx:ArrayCollection>
@@ -42,6 +53,46 @@
                         </s:dataProvider>
                     </s:DropDownList>
                 </mx:FormItem>
+
+                <mx:FormItem
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.domain')}:"
+                        required="true">
+                    <s:TextInput id="domain" width="300"/>
+                </mx:FormItem>
+
+                <mx:FormItem
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.serviceClass')}:"
+                        required="true">
+                    <s:DropDownList id="serviceClass" selectedIndex="0" width="180">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object label="HTTP" data="HTTP"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.host')}:"
+                             required="true">
+                    <s:TextInput id="host" width="300"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.port')}:"
+                             required="true">
+                    <s:TextInput id="port" width="300"/>
+                </mx:FormItem>
+
+                <mx:FormItem
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.serviceName')}:"
+                        required="false">
+                    <s:TextInput id="serviceName" width="300"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.spn')}:"
+                             required="false" >
+                    <s:TextInput id="servicePrincipalName" width="300" editable="false"/>
+                </mx:FormItem>
+
             </s:VGroup>
         </s:NavigatorContent>
 

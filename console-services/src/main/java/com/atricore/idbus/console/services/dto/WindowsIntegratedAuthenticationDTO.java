@@ -7,9 +7,25 @@ public class WindowsIntegratedAuthenticationDTO extends AuthenticationServiceDTO
 
     private static final long serialVersionUID = -7512383445913433166L;
 
+private String protocol;
+
     private String domain;
 
-    private String protocol;
+    private String serviceClass;
+
+    private String host;
+
+    private int port;
+
+    private String serviceName;
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
 
     public String getDomain() {
         return domain;
@@ -19,11 +35,35 @@ public class WindowsIntegratedAuthenticationDTO extends AuthenticationServiceDTO
         this.domain = domain;
     }
 
-    public String getProtocol() {
-        return protocol;
+    public String getServiceClass() {
+        return serviceClass;
     }
 
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
+    public void setServiceClass(String serviceClass) {
+        this.serviceClass = serviceClass;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 }

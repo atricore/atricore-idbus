@@ -1334,6 +1334,7 @@ public class PropertySheetMediator extends IocMediator {
                 //clear all existing validators and add basic auth. section validators
                 //_validators = [];
                 _validators.push(_windowsAuthenticationSection.nameValidator);
+
             }
         }
     }
@@ -2648,8 +2649,6 @@ public class PropertySheetMediator extends IocMediator {
             _windowsIntegratedAuthnCoreSection.nodeName.text = windowsIntegratedAuth.name;
             _windowsIntegratedAuthnCoreSection.description.text = windowsIntegratedAuth.description;
 
-            _windowsIntegratedAuthnCoreSection.domain.text = windowsIntegratedAuth.domain;
-
             for (var j:int = 0; j < _windowsIntegratedAuthnCoreSection.protocol.dataProvider.length; j++) {
                 if (_windowsIntegratedAuthnCoreSection.protocol.dataProvider[j].data == windowsIntegratedAuth.protocol) {
                     _windowsIntegratedAuthnCoreSection.protocol.selectedIndex = j;
@@ -2657,10 +2656,60 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
+            _windowsIntegratedAuthnCoreSection.domain.text = windowsIntegratedAuth.domain;
+
+            for (var i:int = 0; i < _windowsIntegratedAuthnCoreSection.serviceClass.dataProvider.length; i++) {
+                if (_windowsIntegratedAuthnCoreSection.protocol.dataProvider[i].data == windowsIntegratedAuth.serviceClass) {
+                    _windowsIntegratedAuthnCoreSection.protocol.selectedIndex = i;
+                    break;
+                }
+            }
+
+            _windowsIntegratedAuthnCoreSection.host.text = windowsIntegratedAuth.host;
+            _windowsIntegratedAuthnCoreSection.port.text = windowsIntegratedAuth.port.toString();
+            _windowsIntegratedAuthnCoreSection.serviceName.text = windowsIntegratedAuth.serviceName;
+            _windowsIntegratedAuthnCoreSection.servicePrincipalName.text = windowsIntegratedAuthnSPN();
+
+            _windowsIntegratedAuthnCoreSection.nodeName.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIntegratedAuthnCoreSection.description.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIntegratedAuthnCoreSection.protocol.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIntegratedAuthnCoreSection.domain.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIntegratedAuthnCoreSection.serviceClass.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIntegratedAuthnCoreSection.host.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIntegratedAuthnCoreSection.port.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIntegratedAuthnCoreSection.serviceName.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _windowsIntegratedAuthnCoreSection.domain.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
+            _windowsIntegratedAuthnCoreSection.serviceClass.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
+            _windowsIntegratedAuthnCoreSection.host.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
+            _windowsIntegratedAuthnCoreSection.port.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
+            _windowsIntegratedAuthnCoreSection.serviceName.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
+
             _validators = [];
             _validators.push(_windowsIntegratedAuthnCoreSection.nameValidator);
+            _validators.push(_windowsIntegratedAuthnCoreSection.hostValidator);
+            _validators.push(_windowsIntegratedAuthnCoreSection.portValidator);
+            _validators.push(_windowsIntegratedAuthnCoreSection.serviceNameValidator);
+
         }
     }
+
+    private function handleWindowsIntegratedAuthnSPNAttributeChange(e:Event):void {
+        _windowsIntegratedAuthnCoreSection.servicePrincipalName.text = windowsIntegratedAuthnSPN();
+    }
+
+    private function windowsIntegratedAuthnSPN():String {
+        var spn:String = "";
+        spn = _windowsIntegratedAuthnCoreSection.serviceClass.selectedItem.data + "/" + _windowsIntegratedAuthnCoreSection.host.text + ":" + _windowsIntegratedAuthnCoreSection.port.text;
+        if (_windowsIntegratedAuthnCoreSection.serviceName != null && _windowsIntegratedAuthnCoreSection.serviceName.text != "") {
+            spn += "/" + _windowsIntegratedAuthnCoreSection.serviceName.text;
+        }
+        spn += "@" + _windowsIntegratedAuthnCoreSection.domain.text;
+
+        return spn;
+
+    }
+
 
     private function handleWindowsIntegratedAuthnCorePropertyTabRollOut(e:Event):void {
         if (_dirty && validate(true)) {
@@ -2668,9 +2717,13 @@ public class PropertySheetMediator extends IocMediator {
             var windowsIntegratedAuthn:WindowsIntegratedAuthentication = _currentIdentityApplianceElement as WindowsIntegratedAuthentication;
             windowsIntegratedAuthn.name = _windowsIntegratedAuthnCoreSection.nodeName.text;
             windowsIntegratedAuthn.description = _windowsIntegratedAuthnCoreSection.description.text;
-            windowsIntegratedAuthn.domain = _windowsIntegratedAuthnCoreSection.domain.text;
             windowsIntegratedAuthn.protocol = _windowsIntegratedAuthnCoreSection.protocol.selectedItem.data;
-            
+            windowsIntegratedAuthn.domain = _windowsIntegratedAuthnCoreSection.domain.text;
+            windowsIntegratedAuthn.serviceClass = _windowsIntegratedAuthnCoreSection.serviceClass.selectedItem.data;
+            windowsIntegratedAuthn.host = _windowsIntegratedAuthnCoreSection.host.text;
+            windowsIntegratedAuthn.port = parseInt(_windowsIntegratedAuthnCoreSection.port.text);
+            windowsIntegratedAuthn.serviceName = _windowsIntegratedAuthnCoreSection.serviceName.text;
+
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
