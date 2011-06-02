@@ -47,7 +47,7 @@
         <idbus.bundle.javax-jdo-v3_0.version>1.2.0-SNAPSHOT</idbus.bundle.javax-jdo-v3_0.version>
 
         <felix.plugin.version>2.1.0</felix.plugin.version>
-        <spring.version>3.0.3.RELEASE</spring.version>
+        <spring.version>3.0.5.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
 
     </properties>

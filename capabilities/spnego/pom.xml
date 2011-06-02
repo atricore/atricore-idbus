@@ -43,7 +43,7 @@
         <idbus.sts.version>1.2.0-SNAPSHOT</idbus.sts.version>
         <karaf.version>2.2.1</karaf.version>
         <camel.version>1.6.1</camel.version>
-        <spring.version>3.0.3.RELEASE</spring.version>
+        <spring.version>3.0.5.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
    </properties>

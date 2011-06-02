@@ -36,7 +36,7 @@
         <apache.directory.version>1.5.7</apache.directory.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
-        <spring.version>3.0.3.RELEASE</spring.version>
+        <spring.version>3.0.5.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
         <xbean.version>3.7</xbean.version>
 
