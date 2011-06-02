@@ -36,13 +36,17 @@ import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.main.databinding.JAXBUtils;
 import org.springframework.util.StopWatch;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamWriter;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.*;
 import javax.xml.ws.Holder;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
@@ -60,12 +64,36 @@ public class XmlUtils {
 
     private static final Holder<JAXBUtils.CONSTRUCTION_TYPE> constructionType = new Holder<JAXBUtils.CONSTRUCTION_TYPE>();
 
+    private static final XMLInputFactory staxIF = XMLInputFactory.newInstance();
+    private static final XMLOutputFactory staxOF = XMLOutputFactory.newInstance();
+
     static {
         ssoContextPackages.add(SAMLR2Constants.SAML_PROTOCOL_PKG);
         ssoContextPackages.add(SAMLR2Constants.SAML_ASSERTION_PKG);
         ssoContextPackages.add(SAMLR2Constants.SSO_COMMON_PKG);
         ssoContextPackages.add(SAMLR2Constants.SAML_IDBUS_PKG);
         ssoContextPackages.add(SAMLR2Constants.SAML_METADATA_PKG);
+
+        javax.xml.parsers.DocumentBuilderFactory dbf =
+                javax.xml.parsers.DocumentBuilderFactory.newInstance();
+
+        javax.xml.parsers.SAXParserFactory saxf =
+                SAXParserFactory.newInstance();
+
+
+        try {
+            logger.debug("DocumentBuilder = " + dbf.newDocumentBuilder());
+            logger.debug("SAXParser = " + saxf.newSAXParser());
+            logger.debug("XMLEventReader = " + staxIF.createXMLEventReader(new StringSource("<a>Hello</a>")));
+            logger.debug("XMLEventWriter = " + staxOF.createXMLEventWriter(new ByteArrayOutputStream()));
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (SAXException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (XMLStreamException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
     }
 
     //  -----------------------------------------------------------
@@ -152,7 +180,7 @@ public class XmlUtils {
         JAXBContext jaxbContext = JAXBUtils.getJAXBContext(ssoContextPackages, constructionType,
                 ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
-        Object o = unmarshaller.unmarshal(new StringSource(request));
+        Object o = unmarshaller.unmarshal(staxIF.createXMLEventReader(new StringSource(request)));
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
@@ -255,7 +283,7 @@ public class XmlUtils {
         JAXBContext jaxbContext = JAXBUtils.getJAXBContext(ssoContextPackages, constructionType,
                 ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
-        Object o = unmarshaller.unmarshal(new StringSource(response));
+        Object o = unmarshaller.unmarshal(staxIF.createXMLEventReader(new StringSource(response)));
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
@@ -304,7 +332,7 @@ public class XmlUtils {
         JAXBContext jaxbContext = JAXBUtils.getJAXBContext(ssoContextPackages, constructionType,
                 ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
-        Object o = unmarshaller.unmarshal(new StringSource(request));
+        Object o = unmarshaller.unmarshal(staxIF.createXMLEventReader(new StringSource(request)));
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
@@ -355,7 +383,7 @@ public class XmlUtils {
         JAXBContext jaxbContext = JAXBUtils.getJAXBContext(ssoContextPackages, constructionType,
                 ssoContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
-        Object o = unmarshaller.unmarshal(new StringSource(response));
+        Object o = unmarshaller.unmarshal(staxIF.createXMLEventReader(new StringSource(response)));
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
@@ -500,11 +528,11 @@ public class XmlUtils {
         );
 
         Writer writer = new StringWriter();
-        XMLStreamWriter xmlStreamWriter = new NamespaceFilterXMLStreamWriter(writer);
 
         // Support XMLDsig
-        marshaller.marshal(jaxbRequest, xmlStreamWriter);
-        xmlStreamWriter.flush();
+        XMLEventWriter xmlWriter = staxOF.createXMLEventWriter(writer);
+        marshaller.marshal(jaxbRequest, xmlWriter);
+        xmlWriter.flush();
         JAXBUtils.releaseJAXBMarshaller(jaxbContext, marshaller);
 
         return writer.toString();
@@ -591,7 +619,7 @@ public class XmlUtils {
         JAXBContext jaxbContext = JAXBUtils.getJAXBContext(contextPackages, constructionType,
                 contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
         Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
-        Object o = unmarshaller.unmarshal(new StringSource(msg));
+        Object o = unmarshaller.unmarshal(staxIF.createXMLEventReader(new StringSource(msg)));
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
