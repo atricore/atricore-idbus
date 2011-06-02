@@ -25,7 +25,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  */
 public class DirectoryServiceAuthenticationTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(WiKIDAuthenticationTransformer.class);
+    private static final Log logger = LogFactory.getLog(DirectoryServiceAuthenticationTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
