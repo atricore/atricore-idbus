@@ -14,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.AuthenticatorImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
+import org.atricore.idbus.capabilities.spnego.SpnegoAuthenticationScheme;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.addPropertyBeansAsRefs;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 
 /**
@@ -54,7 +56,7 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
         // TODO : For now user veolicty , but we MUST use blueprint xml bunding, like we do with spring!
 
         String spn = wia.getServiceClass() +
-                "/" + wia.getHost() + ":" + wia.getPort() +
+                "/" + wia.getHost() +
                 (wia.getServiceName() != null && !"".equals(wia.getServiceName()) ? "/" + wia.getServiceName() : "") +
                 "@" + wia.getDomain();
 
@@ -73,12 +75,44 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
         agentConfig.setScope(IdProjectResource.Scope.RESOURCE);
         module.addResource(agentConfig);
 
+        // Authentication scheme
+        WindowsAuthentication basicAuthn = (WindowsAuthentication) event.getData();
+
+        Bean idpBean = null;
+        Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
+        if (b.size() != 1) {
+            throw new TransformException("Invalid IdP definition count : " + b.size());
+        }
+        idpBean = b.iterator().next();
+
+        if (logger.isTraceEnabled())
+            logger.trace("Generating Basic Authentication Scheme for IdP " + idpBean.getName());
+
+        Bean spnegoAuthn = newBean(idpBeans, normalizeBeanName(basicAuthn.getName()), SpnegoAuthenticationScheme.class);
+
+        // Auth scheme name cannot be changed!
+        setPropertyValue(spnegoAuthn, "name", "spnego-authentication");
+
+        setPropertyValue(spnegoAuthn, "realm", wia.getName());
+        setPropertyValue(spnegoAuthn, "principalName", spn);
+
 
     }
 
     @Override
     public Object after(TransformEvent event) throws TransformException {
-        return null;
+        WindowsAuthentication wiaAuthn = (WindowsAuthentication) event.getData();
+        Beans idpBeans = (Beans) event.getContext().get("idpBeans");
+        Bean basicAuthnBean = getBean(idpBeans, normalizeBeanName(wiaAuthn.getName()));
+
+        // Wire basic authentication scheme to Authenticator
+        Collection<Bean> authenticators = getBeansOfType(idpBeans, AuthenticatorImpl.class.getName());
+        if (authenticators.size() == 1) {
+            Bean authenticator = authenticators.iterator().next();
+            addPropertyBeansAsRefs(authenticator, "authenticationSchemes", basicAuthnBean);
+        }
+
+        return basicAuthnBean;
     }
 
 }

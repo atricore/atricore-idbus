@@ -116,7 +116,7 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
                 ccEndpoints.add(ccWiaSpnegoArtifact);
 
                 Bean ccWiaSpnegoHttpInit = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                ccWiaSpnegoHttpInit.setName(idpBean.getName() + "-cc-spnego-artifact");
+                ccWiaSpnegoHttpInit.setName(idpBean.getName() + "-cc-spnego-initiator");
                 setPropertyValue(ccWiaSpnegoHttpInit, "name", ccWiaSpnegoHttpInit.getName());
                 setPropertyValue(ccWiaSpnegoHttpInit, "binding", "urn:org:atricore:idbus:spnego:bindings:HTTP-INITIATION");
                 setPropertyValue(ccWiaSpnegoHttpInit, "location", "/SPNEGO/HTTP/INITIATE");
@@ -124,7 +124,7 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
                 ccEndpoints.add(ccWiaSpnegoHttpInit);
 
                 Bean ccWiaSpnegoHttpNegotiate = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                ccWiaSpnegoHttpNegotiate.setName(idpBean.getName() + "-cc-spnego-artifact");
+                ccWiaSpnegoHttpNegotiate.setName(idpBean.getName() + "-cc-spnego-negotiatior");
                 setPropertyValue(ccWiaSpnegoHttpNegotiate, "name", ccWiaSpnegoHttpNegotiate.getName());
                 setPropertyValue(ccWiaSpnegoHttpNegotiate, "binding", "urn:org:atricore:idbus:spnego:bindings:HTTP-NEGOTIATION");
                 setPropertyValue(ccWiaSpnegoHttpNegotiate, "location", "/SPNEGO/HTTP/NEGOTIATE");
@@ -149,7 +149,7 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
         // Service Principal Name
         WindowsIntegratedAuthentication wia = (WindowsIntegratedAuthentication) provider.getDelegatedAuthentication().getAuthnService();
         String spn = wia.getServiceClass() +
-                "/" + wia.getHost() + ":" + wia.getPort() +
+                "/" + wia.getHost() +
                 (wia.getServiceName() != null && !"".equals(wia.getServiceName()) ? "/" + wia.getServiceName() : "") +
                 "@" + wia.getDomain();
 
@@ -176,13 +176,13 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
         setPropertyBean(ccMediator, "logger", ccLogger);
 
         // identityMediator
-        //setPropertyRef(claimsChannelBean, "identityMediator", ccMediator.getName());
+        setPropertyRef(claimsChannelBean, "identityMediator", ccMediator.getName());
 
         // provider
-        //setPropertyRef(claimsChannelBean, "provider", idpBean.getName());
+        setPropertyRef(claimsChannelBean, "provider", idpBean.getName());
 
         // unitContainer
-        //setPropertyRef(claimsChannelBean, "unitContainer", provider.getIdentityAppliance().getName() + "-container");
+        setPropertyRef(claimsChannelBean, "unitContainer", provider.getIdentityAppliance().getName() + "-container");
 
         // Mediation Unit
         Collection<Bean> mus = getBeansOfType(baseBeans, OsgiIdentityMediationUnit.class.getName());

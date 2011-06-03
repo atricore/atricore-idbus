@@ -272,7 +272,7 @@
                         <Private-Package>!*</Private-Package>
 
                         <Export-Package>
-                            $module.getName(); version="${pom.version}"
+                            $module.getName()
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,

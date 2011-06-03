@@ -86,6 +86,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.spnego</groupId>
+            <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.apache-maven-v3_0</artifactId>
             <scope>provided</scope>

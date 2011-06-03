@@ -97,6 +97,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.atricore.idbus.capabilities.spnego</groupId>
+                <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
+                <version>${idbus.cap.spnego.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.apache-maven-v3_0</artifactId>
                 <version>${idbus.bundle.apache-maven-v3_0.version}</version>

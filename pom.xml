@@ -39,6 +39,7 @@
         <atricore.idbus.version>1.2.0-SNAPSHOT</atricore.idbus.version>
         <idbus.kernel.version>1.2.0-SNAPSHOT</idbus.kernel.version>
         <idbus.cap.saml2.version>1.2.0-SNAPSHOT</idbus.cap.saml2.version>
+        <idbus.cap.spnego.version>1.2.0-SNAPSHOT</idbus.cap.spnego.version>
         <idbus.cap.spml2.version>1.2.0-SNAPSHOT</idbus.cap.spml2.version>
         <idbus.cap.josso.version>1.2.0-SNAPSHOT</idbus.cap.josso.version>
         <idbus.cap.sts.version>1.2.0-SNAPSHOT</idbus.cap.sts.version>
