@@ -29,7 +29,7 @@
             storeKey = true
             debug = true
             useKeyTab = true
-            keyTab = $[karaf.base]/etc/atricore.keytab
+            keyTab = $[karaf.base]/etc/josso2.keytab
         </jaas:module>
     </jaas:config>
 

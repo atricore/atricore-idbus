@@ -74,6 +74,7 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
                 );
 
                 logger.debug("Client name is " + clientName.toString());
+
                 setAuthenticated(true);
 
             } catch (LoginException e) {
@@ -87,7 +88,10 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
     }
 
     public Principal getPrincipal() {
-        return new SimplePrincipal(clientName.toString());
+        // TODO : Look for GSSNAME oid format
+        String pName = clientName.toString();
+        pName = pName.substring(0, pName.indexOf("@"));
+        return new SimplePrincipal(pName);
     }
 
     public Principal getPrincipal(Credential[] credentials) {
