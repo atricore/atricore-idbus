@@ -799,7 +799,7 @@
             <value>spnego</value>
         </property>
         <property name="principalName">
-            <value>HTTP/josso2.demo.atricore.com@W2K3DEV.ATRICORE.COM</value>
+            <value>HTTP/josso2.demo.atricore.com@DEMO.ATRICORE.COM</value>
         </property>
     </bean>
 
