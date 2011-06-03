@@ -688,7 +688,7 @@
     </bean>
     <bean class="org.atricore.idbus.capabilities.spnego.SpnegoMediator" name="idp1-spnego-claims-mediator">
         <property name="realm" value="spnego"/>
-        <property name="principal" value="HTTP/josso2.demo.atricore.com@W2K3DEV.ATRICORE.COM"/>
+        <property name="principal" value="HTTP/josso2.demo.atricore.com@DEMO.ATRICORE.COM"/>
         <property name="bindingFactory">
             <bean class="org.atricore.idbus.capabilities.spnego.SpnegoBindingFactory"/>
         </property>
