@@ -22,14 +22,14 @@
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
            xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0">
 
-    <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]"/>
+    <ext:property-placeholder placeholder-prefix="\$[" placeholder-suffix="]"/>
 
     <jaas:config name="$realmName">
         <jaas:module className="com.sun.security.auth.module.Krb5LoginModule" flags="required">
             storeKey = true
             debug = true
             useKeyTab = true
-            keyTab = $[karaf.base]/etc/atricore.keytab
+            keyTab = \$[karaf.base]/etc/atricore.keytab
         </jaas:module>
     </jaas:config>
 
