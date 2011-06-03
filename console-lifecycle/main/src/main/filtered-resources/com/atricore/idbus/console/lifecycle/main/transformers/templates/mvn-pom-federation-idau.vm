@@ -321,6 +321,12 @@
                             org.apache.camel.impl,
                             org.osgi.framework,
                             org.apache.derby.jdbc,
+                            org.apache.aries.blueprint,
+                            org.apache.aries.blueprint.ext,
+                            org.osgi.service.blueprint,
+                            org.apache.karaf.jaas.config,
+                            org.apache.karaf.jaas.boot,
+                            org.atricore.idbus.capabilities.spnego.jaas,
                         </Import-Package>
                         <Require-Bundle>
                            org.atricore.idbus.kernel.common.support,
@@ -336,7 +342,7 @@
                            org.atricore.idbus.capabilities.samlr2.support,
                            org.atricore.idbus.capabilities.spmlr2.main,
                            org.atricore.idbus.capabilities.josso.main,
-                            org.atricore.idbus.capabilities.spnego,
+                           org.atricore.idbus.capabilities.spnego,
                            org.atricore.idbus.connectors.jdoidentityvault,
                            org.atricore.idbus.idojos.dbidentitystore,
                            org.atricore.idbus.idojos.memorysessionstore,
