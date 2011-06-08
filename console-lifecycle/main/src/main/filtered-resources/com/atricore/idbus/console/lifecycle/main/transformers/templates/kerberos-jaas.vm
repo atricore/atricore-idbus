@@ -36,13 +36,24 @@
     <bean id="kerberosFactory" class="org.atricore.idbus.capabilities.spnego.jaas.KerberosServiceInit"
           init-method="init"
           activation="eager">
+        <!-- Already available blueprint variable -->
         <property name="bundleContext" ref="blueprintBundleContext"/>
+
         <property name="principal" value="$servicePrincipalName"/>
         <property name="realm" value="$realmName"/>
-        <property name="keyTabName" value="$keyTabName"/>
+        <property name="keyDistributionCenter" value="$keyDistributionCenter"/>
+        <property name="kerberosRealm" value="$kerberosRealm"/>
+
+        <!-- KeyTab setup -->
+        <property name="keyTabResource" value="$keyTabName"/>
         <property name="keyTabRepository" value="\$[karaf.base]/etc/krb5/keytabs/"/>
+
+        <!-- Kerberos config file-->
         <property name="krb5Config" value="\$[karaf.base]/etc/krb5/krb5.conf"/>
-        <property name="overwriteSetup" value="$overwriteSetup"/>
+
+
+        <property name="configureKerberos" value="$configureKerberos"/>
+        <property name="authenticatOnInit" value="true"/>
 
     </bean>
 </blueprint>

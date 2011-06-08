@@ -35,6 +35,9 @@
 
         <mx:StringValidator id="serviceNameValidator" source="{serviceName}" required="false" property="text"/>
 
+        <mx:StringValidator id="domainControllerValidator" source="{domainController}" required="true" property="text"/>
+
+
         <mx:NumberValidator id="portValidator" source="{port}" required="false" property="text" minValue="1"
                             maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.portValidationError')}"/>
@@ -95,6 +98,12 @@
                      required="false">
             <s:TextInput id="serviceName" width="300"/>
         </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.domainController')}:"
+                     required="true">
+            <s:TextInput id="domainController" width="300"/>
+        </mx:FormItem>
+
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.overwriteKerberosSetup')}:">
             <s:CheckBox id="overwriteKerberosSetup" selected="true"/>

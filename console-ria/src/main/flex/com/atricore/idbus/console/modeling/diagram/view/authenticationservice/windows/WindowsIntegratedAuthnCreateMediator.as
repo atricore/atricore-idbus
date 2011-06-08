@@ -82,7 +82,8 @@ public class WindowsIntegratedAuthnCreateMediator extends IocFormMediator {
         view.host.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
         view.port.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
         view.serviceName.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
-        view.overwriteKerberosSetup.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
+
+
 
         // upload bindings
         view.keyTabFile.addEventListener(MouseEvent.CLICK, browseHandler);
@@ -95,11 +96,12 @@ public class WindowsIntegratedAuthnCreateMediator extends IocFormMediator {
         view.description.text = "";
 
         view.protocol.selectedIndex = 0;
-        view.domain.text = "myCompanyDomain";
+        view.domain.text = "MYCOMPANYDOMAIN.COM";
         view.serviceClass.selectedIndex = 0;
         view.host.text = "";
         view.port.text = "8081";
         view.serviceName.text = "";
+        view.domainController.text =  "dc.mycompanydomain.com";
         view.overwriteKerberosSetup.selected = true;
 
         _fileRef = null;
@@ -116,11 +118,12 @@ public class WindowsIntegratedAuthnCreateMediator extends IocFormMediator {
         view.nodeName.text = "";
         view.description.text = "";
         view.protocol.selectedIndex = 0;
-        view.domain.text = "myCompanyDomain";
+        view.domain.text = "MYCOMPANYDOMAIN.COM";
         view.serviceClass.selectedIndex = 0;
         view.host.text = "";
         view.port.text = "8081";
         view.serviceName.text = "";
+        view.domainController.text =  "dc.mycompanydomain.com";
         view.overwriteKerberosSetup.selected = true;
 
         FormUtility.clearValidationErrors(_validators);
@@ -139,6 +142,7 @@ public class WindowsIntegratedAuthnCreateMediator extends IocFormMediator {
         windowsIntegratedAuthn.host = view.host.text;
         windowsIntegratedAuthn.port = parseInt(view.port.text);
         windowsIntegratedAuthn.serviceName = view.serviceName.text;
+        windowsIntegratedAuthn.domainController = view.domainController.text;
         windowsIntegratedAuthn.overwriteKerberosSetup = view.overwriteKerberosSetup.selected;
 
         var resource:Resource = new Resource();
@@ -250,6 +254,7 @@ public class WindowsIntegratedAuthnCreateMediator extends IocFormMediator {
         _validators.push(view.hostValidator);
         _validators.push(view.portValidator);
         _validators.push(view.serviceNameValidator);
+        _validators.push(view.domainConrollerValidator);
     }
 
     override public function listNotificationInterests():Array {

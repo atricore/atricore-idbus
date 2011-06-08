@@ -58,13 +58,15 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
 
         String spn = buildSpn(wia);
 
-        String keyTabName =idp.getIdentityAppliance().getName() + "-" +  wiaAuthn.getName() + ".keytab";
+        String keyTabName = idp.getIdentityAppliance().getName() + "-" +  wia.getName() + ".keytab";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("realmName", wia.getName());
         params.put("servicePrincipalName", spn);
+        params.put("kerberosRealm", wia.getDomain());
+        params.put("keyDistributionCenter", wia.getDomainController());
         params.put("keyTabName", keyTabName);
-        params.put("overwriteSetup", wia.isOverwriteKerberosSetup());
+        params.put("configureKerberos", wia.isOverwriteKerberosSetup());
 
         IdProjectModule module = event.getContext().getCurrentModule();
 

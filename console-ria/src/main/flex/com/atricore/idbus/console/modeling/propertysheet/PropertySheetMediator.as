@@ -2686,6 +2686,7 @@ public class PropertySheetMediator extends IocMediator {
                 _windowsIntegratedAuthnCoreSection.port.text = windowsIntegratedAuth.port.toString();
 
             _windowsIntegratedAuthnCoreSection.serviceName.text = windowsIntegratedAuth.serviceName;
+            _windowsIntegratedAuthnCoreSection.domainController.text = windowsIntegratedAuth.domainController;
             _windowsIntegratedAuthnCoreSection.overwriteKerberosSetup.selected = windowsIntegratedAuth.overwriteKerberosSetup;
             _windowsIntegratedAuthnCoreSection.servicePrincipalName.text = windowsIntegratedAuthnSPN();
 
@@ -2697,6 +2698,7 @@ public class PropertySheetMediator extends IocMediator {
             _windowsIntegratedAuthnCoreSection.host.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIntegratedAuthnCoreSection.port.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIntegratedAuthnCoreSection.serviceName.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIntegratedAuthnCoreSection.domainController.addEventListener(Event.CHANGE, handleSectionChange);
 
             _windowsIntegratedAuthnCoreSection.domain.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
             _windowsIntegratedAuthnCoreSection.serviceClass.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
@@ -2712,6 +2714,7 @@ public class PropertySheetMediator extends IocMediator {
             _validators.push(_windowsIntegratedAuthnCoreSection.hostValidator);
             _validators.push(_windowsIntegratedAuthnCoreSection.portValidator);
             _validators.push(_windowsIntegratedAuthnCoreSection.serviceNameValidator);
+            _validators.push(_windowsIntegratedAuthnCoreSection.domainControllerValidator);
 
         }
     }
@@ -2771,6 +2774,7 @@ public class PropertySheetMediator extends IocMediator {
             windowsIntegratedAuthn.port = 0;
 
         windowsIntegratedAuthn.serviceName = _windowsIntegratedAuthnCoreSection.serviceName.text;
+        windowsIntegratedAuthn.domainController = _windowsIntegratedAuthnCoreSection.domainController.text;
         windowsIntegratedAuthn.overwriteKerberosSetup = _windowsIntegratedAuthnCoreSection.overwriteKerberosSetup.selected;
 
 

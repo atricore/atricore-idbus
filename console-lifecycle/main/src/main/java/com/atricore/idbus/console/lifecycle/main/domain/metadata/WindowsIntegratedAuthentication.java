@@ -19,6 +19,8 @@ public class WindowsIntegratedAuthentication extends AuthenticationService {
 
     private String serviceName;
 
+    private String domainController;
+
     private Resource keyTab;
 
     private boolean overwriteKerberosSetup;
@@ -85,5 +87,13 @@ public class WindowsIntegratedAuthentication extends AuthenticationService {
 
     public void setOverwriteKerberosSetup(boolean overwriteKerberosSetup) {
         this.overwriteKerberosSetup = overwriteKerberosSetup;
+    }
+
+    public String getDomainController() {
+        return domainController;
+    }
+
+    public void setDomainController(String domainController) {
+        this.domainController = domainController;
     }
 }

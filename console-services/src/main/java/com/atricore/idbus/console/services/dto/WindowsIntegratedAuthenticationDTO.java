@@ -19,6 +19,8 @@ private String protocol;
 
     private String serviceName;
 
+    private String domainController;
+
     private ResourceDTO keyTab;
 
     private boolean overwriteKerberosSetup;
@@ -69,6 +71,14 @@ private String protocol;
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String getDomainController() {
+        return domainController;
+    }
+
+    public void setDomainController(String domainController) {
+        this.domainController = domainController;
     }
 
     public ResourceDTO getKeyTab() {

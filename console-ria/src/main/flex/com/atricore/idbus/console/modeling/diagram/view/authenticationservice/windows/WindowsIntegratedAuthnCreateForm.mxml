@@ -18,13 +18,16 @@
         <mx:StringValidator id="serviceNameValidator" source="{serviceName}" required="false" property="text"
                             trigger="{btnOk}" triggerEvent="click"/>
 
+        <mx:StringValidator id="domainConrollerValidator" source="{domainController}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+
         <mx:NumberValidator id="portValidator" source="{port}" required="false" property="text"
                             trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.portValidationError')}"/>
 
     </fx:Declarations>
 
-    <mx:TabNavigator borderStyle="solid" width="100%" height="355" creationPolicy="all">
+    <mx:TabNavigator borderStyle="solid" width="100%" height="385" creationPolicy="all">
 
         <s:NavigatorContent
                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.tab.base')}">
@@ -87,6 +90,14 @@
                         required="false">
                     <s:TextInput id="serviceName" width="300"/>
                 </mx:FormItem>
+
+
+                <mx:FormItem
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.domainController')}:"
+                        required="true">
+                    <s:TextInput id="domainController" width="300"/>
+                </mx:FormItem>
+
 
                 <mx:FormItem
                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.overwriteKerberosSetup')}:">
