@@ -21,7 +21,6 @@
     <properties>
 
         <atricore.idbus.version>1.2.0-SNAPSHOT</atricore.idbus.version>
-        <atricore.idbus.revision>${buildNumber}</atricore.idbus.revision>
 
         <!-- Atricore Kernel -->
         <idbus.kernel.version>1.2.0-SNAPSHOT</idbus.kernel.version>

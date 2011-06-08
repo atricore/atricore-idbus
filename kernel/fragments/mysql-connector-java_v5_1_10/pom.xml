@@ -36,6 +36,10 @@
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Kernel : MySQL Connector Java v5.1.10</name>
 
+    <properties>
+        <mysql.connector.version>5.1.10</mysql.connector.version>
+    </properties>
+
     <dependencies>
 
         <dependency>

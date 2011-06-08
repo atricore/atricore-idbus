@@ -266,7 +266,6 @@
                             oasis.names.tc.saml._2_0.idbus;version=${idbus.kernel.version},
                             oasis.names.tc.saml._2_0.wsdl;version=${idbus.kernel.version},
                             org.w3._1999.xhtml;version=${idbus.kernel.version},
-                            org.osgi.service.command,
                             org.apache.commons.io,
                             *
                         </Import-Package>

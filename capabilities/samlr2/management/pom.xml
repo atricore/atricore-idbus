@@ -139,7 +139,6 @@
                             !${pom.artifactId}*,
                             javax.management,
                             javax.management.loading,
-                            org.osgi.service.command,
                             org.apache.felix.gogo.commands,
                             org.apache.karaf.shell.console,
                             *

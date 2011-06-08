@@ -69,18 +69,16 @@
     </feature>
     <feature name="webconsole-base" version="${karaf.version}">
         <feature version="${karaf.version}">http</feature>
-        <!--config name="org.apache.karaf.webconsole">
-            realm=karaf
-        </config-->
         <bundle start-level="40">mvn:org.apache.felix/org.apache.felix.metatype/${felix.metatype.version}</bundle>
-        <!--bundle>mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.branding/${karaf.version}</bundle-->
-        <bundle start-level="40">mvn:org.apache.felix/org.apache.felix.webconsole/${felix.webconsole.version}</bundle>
+        <!--bundle start-level="40">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.branding/${karaf.version}</bundle-->
+        <bundle start-level="40">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.console/${karaf.version}</bundle>
     </feature>
     <feature name="webconsole" version="${karaf.version}">
         <feature version="${karaf.version}">webconsole-base</feature>
         <bundle start-level="40">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.admin/${karaf.version}</bundle>
         <bundle start-level="40">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.features/${karaf.version}</bundle>
         <bundle start-level="40">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.gogo/${karaf.version}</bundle>
+        <bundle>mvn:org.apache.felix/org.apache.felix.webconsole.plugins.event/${felix.eventadmin-plugin.version}</bundle>
     </feature>
     <feature name="ssh" version="${karaf.version}">
         <!--config name="org.apache.karaf.shell.ssh">
