@@ -29,17 +29,22 @@
             storeKey = true
             debug = true
             useKeyTab = true
-            keyTab = $[karaf.base]/etc/josso2.keytab
+            keyTab = $[karaf.base]/etc/krb5/keytabs/ida1-spnego-windows-authn.keytab
         </jaas:module>
     </jaas:config>
 
-    <!-- TODO : Kerberos setup bean , copy keytab and configure realms -->
-
-
     <bean id="kerberosFactory" class="org.atricore.idbus.capabilities.spnego.jaas.KerberosServiceInit"
-          init-method="signon"
+          init-method="init"
           activation="eager">
-        <property name="principal" value="HTTP/wsdev1.w2k3dev.atricore.com@W2K3DEV.ATRICORE.COM"/>
+        <property name="bundleContext" ref="blueprintBundleContext"/>
+        <property name="principal" value="HTTP/josso2.demo.atricore.com@DEMO.ATRICORE.COM"/>
+        <property name="realm" value="spnego"/>
+        <property name="keyDistributionCenter" value="dc.demo.atricore.com"/>
+        <property name="kerberosRealm" value="DEMO.ATRICORE.COM"/>
+        <property name="keyTabResource" value="josso2.keytab"/>
+        <property name="keyTabRepository" value="$[karaf.base]/etc/krb5/keytabs/"/>
+        <property name="krb5Config" value="$[karaf.base]/etc/krb5/krb5.conf"/>
+        <property name="configureKerberos" value="true"/>
 
     </bean>
 </blueprint>

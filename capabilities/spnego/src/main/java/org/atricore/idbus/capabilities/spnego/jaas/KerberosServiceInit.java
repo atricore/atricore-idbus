@@ -26,13 +26,13 @@ public class KerberosServiceInit {
 
     private String realm;
 
-    private String windowsDomain;
+    private String kerberosRealm;
 
-    private String domainController;
+    private String keyDistributionCenter;
 
     private String principal;
 
-    private String keyTabName;
+    private String keyTabResource;
 
     private boolean configureKerberos;
 
@@ -54,6 +54,10 @@ public class KerberosServiceInit {
         this.principal = principal;
     }
 
+    /**
+     * Name of the JAAS Realm that configures the Kerberos Login Module
+     * @return
+     */
     public String getRealm() {
         return realm;
     }
@@ -62,30 +66,46 @@ public class KerberosServiceInit {
         this.realm = realm;
     }
 
-    public String getWindowsDomain() {
-        return windowsDomain;
+    /**
+     * Name of the Windows Domain (TODO : Remove 'windows' semantic from this module and call this Kerberos Realm ? )
+     * @return
+     */
+    public String getKerberosRealm() {
+        return kerberosRealm;
     }
 
-    public void setWindowsDomain(String windowsDomain) {
-        this.windowsDomain = windowsDomain;
+    public void setKerberosRealm(String kerberosRealm) {
+        this.kerberosRealm = kerberosRealm;
     }
 
-    public String getDomainController() {
-        return domainController;
+    /**
+     * Domain Controller server name
+     * @return
+     */
+    public String getKeyDistributionCenter() {
+        return keyDistributionCenter;
     }
 
-    public void setDomainController(String domainController) {
-        this.domainController = domainController;
+    public void setKeyDistributionCenter(String keyDistributionCenter) {
+        this.keyDistributionCenter = keyDistributionCenter;
     }
 
-    public String getKeyTabName() {
-        return keyTabName;
+    /**
+     * Name of the embedded resource to be found in the classpath that is actually the keytab file
+     * @return
+     */
+    public String getKeyTabResource() {
+        return keyTabResource;
     }
 
-    public void setKeyTabName(String keyTabName) {
-        this.keyTabName = keyTabName;
+    public void setKeyTabResource(String keyTabResource) {
+        this.keyTabResource = keyTabResource;
     }
 
+    /**
+     * Path to deploy the embedded keytab
+     * @return
+     */
     public String getKeyTabRepository() {
         return keyTabRepository;
     }
@@ -94,6 +114,10 @@ public class KerberosServiceInit {
         this.keyTabRepository = keyTabRepository;
     }
 
+    /**
+     * If true, the service will configure kerberos
+     * @return
+     */
     public boolean isConfigureKerberos() {
         return configureKerberos;
     }
@@ -102,6 +126,10 @@ public class KerberosServiceInit {
         this.configureKerberos = configureKerberos;
     }
 
+    /**
+     * Kerberos 5 confgiruation file
+     * @return
+     */
     public String getKrb5Config() {
         return krb5Config;
     }
@@ -174,9 +202,9 @@ public class KerberosServiceInit {
         InputStream in = null;
         try {
             // Install KeyTab
-            in = loadKeyTabResource(keyTabName);
+            in = loadKeyTabResource(keyTabResource);
 
-            File file = new File(keyTabRepository + "/" + keyTabName);
+            File file = new File(keyTabRepository + "/" + keyTabResource);
 
             if (!file.exists() || overwriteExistingSetup) {
                 out = new FileOutputStream(file, false);
@@ -206,18 +234,18 @@ public class KerberosServiceInit {
             // Setup Kerberos realms
             Ini.Section krb5Realms = krb5Conf.get("realms");
 
-            String windowsDomainSetup = krb5Realms.get(windowsDomain);
-            if (windowsDomain == null || overwriteExistingSetup) {
-                windowsDomainSetup = "{  kdc = " + domainController + ":88 admin_server = "+domainController+":749  default_domain = "+windowsDomain+"  }";
-                krb5Realms.put(windowsDomain, windowsDomainSetup);
+            String windowsDomainSetup = krb5Realms.get(kerberosRealm);
+            if (kerberosRealm == null || overwriteExistingSetup) {
+                windowsDomainSetup = "{  kdc = " + keyDistributionCenter + ":88 admin_server = "+ keyDistributionCenter +":749  default_domain = "+ kerberosRealm +"  }";
+                krb5Realms.put(kerberosRealm, windowsDomainSetup);
             }
 
             // Setup Kerberos domain realms
             Ini.Section krb5DomainRealms = krb5Conf.get("domain_realm");
-            String domainRealmSetup = krb5DomainRealms.get(windowsDomain.toLowerCase());
+            String domainRealmSetup = krb5DomainRealms.get(kerberosRealm.toLowerCase());
             if (domainRealmSetup == null || overwriteExistingSetup) {
-                krb5DomainRealms.put(windowsDomain.toLowerCase(), windowsDomain);
-                krb5DomainRealms.put("." + windowsDomain.toLowerCase(), windowsDomain);
+                krb5DomainRealms.put(kerberosRealm.toLowerCase(), kerberosRealm);
+                krb5DomainRealms.put("." + kerberosRealm.toLowerCase(), kerberosRealm);
             }
 
             // Save KRB 5 Conf
@@ -235,9 +263,12 @@ public class KerberosServiceInit {
 
     }
 
-    public InputStream loadKeyTabResource(String keyTabName) throws Exception {
+    /**
+     * This will try the default location and the resource name as is.
+     */
+    public InputStream loadKeyTabResource(String keyTabResource) throws Exception {
 
-        String resourcePath = KEYTAB_RESOURCE_BASE  + "/" + keyTabName;
+        String resourcePath = KEYTAB_RESOURCE_BASE  + "/" + keyTabResource;
 
         if (logger.isTraceEnabled())
             logger.trace("Loading resource : " + resourcePath);
@@ -245,9 +276,14 @@ public class KerberosServiceInit {
         ClassLoader cl = new OsgiBundleClassLoader(bundleContext.getBundle());
         InputStream in = cl.getResourceAsStream(resourcePath);
         if (in == null) {
-            logger.error("Resource load faile for : " + resourcePath);
-            throw new Exception("No keytab found as resource " + resourcePath);
+            logger.warn("Cannot load keytab resource from bundle classpath using : " + resourcePath);
+            in = cl.getResourceAsStream(keyTabResource);
+            if (in == null) {
+                logger.warn("Cannot load keytab resource from bundle classpath using : " + keyTabResource);
+            }
         }
+        if (in == null)
+            throw new Exception("Cannot load keytab resource from bundle classpath (check log for details)");
 
         return in;
     }
