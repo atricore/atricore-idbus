@@ -325,7 +325,7 @@
             <url>http://repository.springsource.com/maven/bundles/external</url>
         </repository>
 
-        <!-- Codehaus -->
+        <!-- Codehaus 
         <repository>
             <id>codehaus</id>
             <name>Codehaus repository</name>
@@ -336,7 +336,7 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>
+        </repository>-->
         <!-- Java.net -->
         <repository>
             <id>java.net</id>
