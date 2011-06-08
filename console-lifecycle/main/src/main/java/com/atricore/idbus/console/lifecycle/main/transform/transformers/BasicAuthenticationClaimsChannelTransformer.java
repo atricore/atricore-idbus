@@ -39,6 +39,7 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
     public boolean accept(TransformEvent event) {
         if (!(event.getData() instanceof IdentityProvider))
             return false;
+
         IdentityProvider idp = (IdentityProvider)event.getData();
         if (idp.isRemote())
             return false;
@@ -47,7 +48,9 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
             return false;
 
         for (AuthenticationMechanism a : idp.getAuthenticationMechanisms()) {
-            if (a instanceof BasicAuthentication)
+            // Basic and Bind are prity mutch the same from a 'claiming' point of view
+            if (a instanceof BasicAuthentication ||
+                a instanceof BindAuthentication)
                 return true;
         }
 

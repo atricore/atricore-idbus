@@ -261,6 +261,18 @@ public class PropertySheetMediator extends IocMediator {
     [Bindable]
     public var _selectedMetadataFiles:ArrayCollection;
 
+
+    // keytab file
+    private var _uploadedKeyTab:ByteArray;
+    private var _uploadedKeyTabName:String;
+
+    [Bindable]
+    private var _keyTabFileRef:FileReference;
+
+    [Bindable]
+    public var _selectedKeyTabFiles:ArrayCollection;
+
+
     private var _execEnvLocationValidator:Validator;
 
     [Bindable]
@@ -1327,8 +1339,10 @@ public class PropertySheetMediator extends IocMediator {
             }
 
             if (windowsAuthentication != null) {
-                _windowsAuthenticationSection.authName.text = windowsAuthentication.name;
 
+                // if serviceProvider is null that means some other element was selected before completing this
+
+                _windowsAuthenticationSection.authName.text = windowsAuthentication.name;
                 _windowsAuthenticationSection.authName.addEventListener(Event.CHANGE, handleSectionChange);
 
                 //clear all existing validators and add basic auth. section validators
@@ -2646,6 +2660,8 @@ public class PropertySheetMediator extends IocMediator {
         // if windowsIntegratedAuth is null that means some other element was selected before completing this
         if (windowsIntegratedAuth != null) {
             // bind view
+
+            resetUploadKeyTabFields();
             _windowsIntegratedAuthnCoreSection.nodeName.text = windowsIntegratedAuth.name;
             _windowsIntegratedAuthnCoreSection.description.text = windowsIntegratedAuth.description;
 
@@ -2666,8 +2682,11 @@ public class PropertySheetMediator extends IocMediator {
             }
 
             _windowsIntegratedAuthnCoreSection.host.text = windowsIntegratedAuth.host;
-            _windowsIntegratedAuthnCoreSection.port.text = windowsIntegratedAuth.port.toString();
+            if (windowsIntegratedAuth.port > 0)
+                _windowsIntegratedAuthnCoreSection.port.text = windowsIntegratedAuth.port.toString();
+
             _windowsIntegratedAuthnCoreSection.serviceName.text = windowsIntegratedAuth.serviceName;
+            _windowsIntegratedAuthnCoreSection.overwriteKerberosSetup.selected = windowsIntegratedAuth.overwriteKerberosSetup;
             _windowsIntegratedAuthnCoreSection.servicePrincipalName.text = windowsIntegratedAuthnSPN();
 
             _windowsIntegratedAuthnCoreSection.nodeName.addEventListener(Event.CHANGE, handleSectionChange);
@@ -2685,6 +2704,9 @@ public class PropertySheetMediator extends IocMediator {
             _windowsIntegratedAuthnCoreSection.port.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
             _windowsIntegratedAuthnCoreSection.serviceName.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
 
+            _windowsIntegratedAuthnCoreSection.keyTabFile.addEventListener(MouseEvent.CLICK, browseKeyTabHandler);
+            BindingUtils.bindProperty(_windowsIntegratedAuthnCoreSection.keyTabFile, "dataProvider", this, "_selectedMetadataFiles");
+
             _validators = [];
             _validators.push(_windowsIntegratedAuthnCoreSection.nameValidator);
             _validators.push(_windowsIntegratedAuthnCoreSection.hostValidator);
@@ -2699,8 +2721,13 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function windowsIntegratedAuthnSPN():String {
+
         var spn:String = "";
-        spn = _windowsIntegratedAuthnCoreSection.serviceClass.selectedItem.data + "/" + _windowsIntegratedAuthnCoreSection.host.text + ":" + _windowsIntegratedAuthnCoreSection.port.text;
+        spn = _windowsIntegratedAuthnCoreSection.serviceClass.selectedItem.data + "/" + _windowsIntegratedAuthnCoreSection.host.text;
+
+        if (_windowsIntegratedAuthnCoreSection.port.text != null && _windowsIntegratedAuthnCoreSection.port.text != "")
+             spn += ":" + _windowsIntegratedAuthnCoreSection.port.text;
+
         if (_windowsIntegratedAuthnCoreSection.serviceName != null && _windowsIntegratedAuthnCoreSection.serviceName.text != "") {
             spn += "/" + _windowsIntegratedAuthnCoreSection.serviceName.text;
         }
@@ -2712,24 +2739,56 @@ public class PropertySheetMediator extends IocMediator {
 
 
     private function handleWindowsIntegratedAuthnCorePropertyTabRollOut(e:Event):void {
+
         if (_dirty && validate(true)) {
-            // bind model
-            var windowsIntegratedAuthn:WindowsIntegratedAuthentication = _currentIdentityApplianceElement as WindowsIntegratedAuthentication;
-            windowsIntegratedAuthn.name = _windowsIntegratedAuthnCoreSection.nodeName.text;
-            windowsIntegratedAuthn.description = _windowsIntegratedAuthnCoreSection.description.text;
-            windowsIntegratedAuthn.protocol = _windowsIntegratedAuthnCoreSection.protocol.selectedItem.data;
-            windowsIntegratedAuthn.domain = _windowsIntegratedAuthnCoreSection.domain.text;
-            windowsIntegratedAuthn.serviceClass = _windowsIntegratedAuthnCoreSection.serviceClass.selectedItem.data;
-            windowsIntegratedAuthn.host = _windowsIntegratedAuthnCoreSection.host.text;
-            windowsIntegratedAuthn.port = parseInt(_windowsIntegratedAuthnCoreSection.port.text);
-            windowsIntegratedAuthn.serviceName = _windowsIntegratedAuthnCoreSection.serviceName.text;
+
+            if (_selectedKeyTabFiles != null && _selectedKeyTabFiles .length > 0) {
+                _keyTabFileRef.load();
+            } else {
+                updateWindowsIntegratedAuthn();
+            }
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
             _dirty = false;
         }
-    }    
+
+    }
+
+    protected function updateWindowsIntegratedAuthn():void {
+
+        var windowsIntegratedAuthn:WindowsIntegratedAuthentication = _currentIdentityApplianceElement as WindowsIntegratedAuthentication;
+        windowsIntegratedAuthn.name = _windowsIntegratedAuthnCoreSection.nodeName.text;
+        windowsIntegratedAuthn.description = _windowsIntegratedAuthnCoreSection.description.text;
+        windowsIntegratedAuthn.protocol = _windowsIntegratedAuthnCoreSection.protocol.selectedItem.data;
+        windowsIntegratedAuthn.domain = _windowsIntegratedAuthnCoreSection.domain.text;
+        windowsIntegratedAuthn.serviceClass = _windowsIntegratedAuthnCoreSection.serviceClass.selectedItem.data;
+        windowsIntegratedAuthn.host = _windowsIntegratedAuthnCoreSection.host.text;
+        if (_windowsIntegratedAuthnCoreSection.port.text != null && _windowsIntegratedAuthnCoreSection.port.text != "")
+            windowsIntegratedAuthn.port = parseInt(_windowsIntegratedAuthnCoreSection.port.text);
+        else
+            windowsIntegratedAuthn.port = 0;
+
+        windowsIntegratedAuthn.serviceName = _windowsIntegratedAuthnCoreSection.serviceName.text;
+        windowsIntegratedAuthn.overwriteKerberosSetup = _windowsIntegratedAuthnCoreSection.overwriteKerberosSetup.selected;
+
+
+        if (_uploadedKeyTab != null && _uploadedKeyTabName != null) {
+            var resource:Resource = windowsIntegratedAuthn.keyTab;
+            resource.name = _uploadedKeyTabName.substring(0, _uploadedKeyTabName.lastIndexOf("."));
+            resource.displayName = _uploadedKeyTabName;
+            resource.uri = _uploadedKeyTabName;
+            resource.value = _uploadedKeyTab;
+            windowsIntegratedAuthn.keyTab = resource;
+            //sendNotification(ApplicationFacade.GET_METADATA_INFO, ["SPSSO", _uploadedKeyTab]);
+        }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
     
 
     protected function enableIdentityVaultPropertyTabs():void {
@@ -5990,6 +6049,58 @@ public class PropertySheetMediator extends IocMediator {
         _wikidAuthnServiceCoreSection.wcStore.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "wikid.wc.store.browse");
 
         saveWikidAuthnService();
+    }
+
+    // metadata file upload functions
+    private function browseKeyTabHandler(event:MouseEvent):void {
+        if (_keyTabFileRef == null) {
+            _keyTabFileRef = new FileReference();
+            _keyTabFileRef.addEventListener(Event.SELECT, keyTabSelectHandler);
+            _keyTabFileRef.addEventListener(Event.COMPLETE, uploadKeyTabCompleteHandler);
+        }
+        var fileFilter:FileFilter = new FileFilter("KeyTab (*.keytab)", "*.keytab");
+        var fileFilterAll:FileFilter = new FileFilter("All (*.all)", "*.*");
+        var fileTypes:Array = new Array(fileFilter, fileFilterAll);
+        _keyTabFileRef.browse(fileTypes);
+    }
+
+    private function keyTabSelectHandler(evt:Event):void {
+        if (_currentIdentityApplianceElement is WindowsIntegratedAuthentication) {
+            _windowsIntegratedAuthnCoreSection.keyTabFile.prompt = null;
+            _selectedKeyTabFiles = new ArrayCollection();
+            _selectedKeyTabFiles.addItem(_keyTabFileRef.name);
+            _windowsIntegratedAuthnCoreSection.keyTabFile.selectedIndex = 0;
+            _windowsIntegratedAuthnCoreSection.lblUploadMsg.text = "";
+            _windowsIntegratedAuthnCoreSection.lblUploadMsg.visible = false;
+        }
+
+        _dirty = true;
+        disableExportButtons();
+    }
+
+    // Windows integrated authentication keytab upload functions
+    private function uploadKeyTabCompleteHandler(event:Event):void {
+        _uploadedKeyTab = _keyTabFileRef.data;
+        _uploadedKeyTabName = _keyTabFileRef.name;
+
+        _keyTabFileRef = null;
+        _selectedKeyTabFiles = new ArrayCollection();
+
+
+        _windowsIntegratedAuthnCoreSection.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "windowsIntegratedAuthn.keyTab.uploadSuccess");
+        _windowsIntegratedAuthnCoreSection.lblUploadMsg.setStyle("color", "Green");
+        _windowsIntegratedAuthnCoreSection.lblUploadMsg.visible = true;
+        _windowsIntegratedAuthnCoreSection.fadeFx.play([_windowsIntegratedAuthnCoreSection.lblUploadMsg]);
+        _windowsIntegratedAuthnCoreSection.keyTabFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "windowsIntegratedAuthn.keyTab.browseFile");
+        updateWindowsIntegratedAuthn();
+
+    }
+
+    private function resetUploadKeyTabFields():void {
+        _keyTabFileRef = null;
+        _selectedKeyTabFiles = new ArrayCollection();
+        _uploadedKeyTab = null;
+        _uploadedKeyTabName = null;
     }
 
     protected function clearPropertyTabs():void {

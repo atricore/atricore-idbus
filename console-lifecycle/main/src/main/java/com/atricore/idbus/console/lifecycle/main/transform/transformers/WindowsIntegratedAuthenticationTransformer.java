@@ -49,21 +49,22 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
 
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         String idauPath = (String) event.getContext().get("idauPath");
+        WindowsAuthentication wiaAuthn = (WindowsAuthentication) event.getData();
 
         IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
         WindowsIntegratedAuthentication wia = (WindowsIntegratedAuthentication) idp.getDelegatedAuthentication().getAuthnService();
 
-        // TODO : For now user veolicty , but we MUST use blueprint xml bunding, like we do with spring!
+        // TODO : For now user veolicty , but we MUST use blueprint xml binding, like we do with spring!
 
-        String spn = wia.getServiceClass() +
-                "/" + wia.getHost() +
-                (wia.getServiceName() != null && !"".equals(wia.getServiceName()) ? "/" + wia.getServiceName() : "") +
-                "@" + wia.getDomain();
+        String spn = buildSpn(wia);
+
+        String keyTabName =idp.getIdentityAppliance().getName() + "-" +  wiaAuthn.getName() + ".keytab";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("realmName", wia.getName());
         params.put("servicePrincipalName", spn);
-
+        params.put("keyTabName", keyTabName);
+        params.put("overwriteSetup", wia.isOverwriteKerberosSetup());
 
         IdProjectModule module = event.getContext().getCurrentModule();
 
@@ -76,7 +77,7 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
         module.addResource(agentConfig);
 
         // Authentication scheme
-        WindowsAuthentication basicAuthn = (WindowsAuthentication) event.getData();
+
 
         Bean idpBean = null;
         Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
@@ -86,17 +87,30 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
         idpBean = b.iterator().next();
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating Basic Authentication Scheme for IdP " + idpBean.getName());
+            logger.trace("Generating Spnego Authentication Scheme for IdP " + idpBean.getName());
 
-        Bean spnegoAuthn = newBean(idpBeans, normalizeBeanName(basicAuthn.getName()), SpnegoAuthenticationScheme.class);
+        Bean spnegoAuthn = newBean(idpBeans, normalizeBeanName(wiaAuthn.getName()), SpnegoAuthenticationScheme.class);
 
         // Auth scheme name cannot be changed!
         setPropertyValue(spnegoAuthn, "name", "spnego-authentication");
-
         setPropertyValue(spnegoAuthn, "realm", wia.getName());
         setPropertyValue(spnegoAuthn, "principalName", spn);
 
+        // metadata file
+        IdProjectResource<byte[]> keyTabResource = new IdProjectResource<byte[]>(idGen.generateId(),
+                "META-INF/krb5/" , keyTabName,
+                "binary", wia.getKeyTab().getValue());
+        keyTabResource.setClassifier("byte");
+        event.getContext().getCurrentModule().addResource(keyTabResource);
 
+    }
+
+    public static String buildSpn(WindowsIntegratedAuthentication wia) {
+        return wia.getServiceClass() +
+                "/" + wia.getHost() +
+                (wia.getPort() > 0 ? ":" + wia.getPort() : "") +
+                (wia.getServiceName() != null && !"".equals(wia.getServiceName()) ? "/" + wia.getServiceName() : "") +
+                "@" + wia.getDomain();
     }
 
     @Override

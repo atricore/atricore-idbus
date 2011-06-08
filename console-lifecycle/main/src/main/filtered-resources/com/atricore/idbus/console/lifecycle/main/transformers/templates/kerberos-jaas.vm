@@ -29,13 +29,20 @@
             storeKey = true
             debug = true
             useKeyTab = true
-            keyTab = \$[karaf.base]/etc/josso2.keytab
+            keyTab = \$[karaf.base]/etc/krb5/keytabs/$keyTabName
         </jaas:module>
     </jaas:config>
 
-    <bean id="kerberosFactory" class="org.atricore.idbus.capabilities.spnego.jaas.KerberosAutomaticSignOn"
-          init-method="signon"
+    <bean id="kerberosFactory" class="org.atricore.idbus.capabilities.spnego.jaas.KerberosServiceInit"
+          init-method="init"
           activation="eager">
+        <property name="bundleContext" ref="blueprintBundleContext"/>
         <property name="principal" value="$servicePrincipalName"/>
+        <property name="realm" value="$realmName"/>
+        <property name="keyTabName" value="$keyTabName"/>
+        <property name="keyTabRepository" value="\$[karaf.base]/etc/krb5/keytabs/"/>
+        <property name="krb5Config" value="\$[karaf.base]/etc/krb5/krb5.conf"/>
+        <property name="overwriteSetup" value="$overwriteSetup"/>
+
     </bean>
 </blueprint>

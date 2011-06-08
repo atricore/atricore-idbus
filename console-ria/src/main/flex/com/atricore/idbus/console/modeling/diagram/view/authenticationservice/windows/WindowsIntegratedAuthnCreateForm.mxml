@@ -18,13 +18,13 @@
         <mx:StringValidator id="serviceNameValidator" source="{serviceName}" required="false" property="text"
                             trigger="{btnOk}" triggerEvent="click"/>
 
-        <mx:NumberValidator id="portValidator" source="{port}" required="true" property="text"
+        <mx:NumberValidator id="portValidator" source="{port}" required="false" property="text"
                             trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.portValidationError')}"/>
 
     </fx:Declarations>
 
-    <mx:TabNavigator borderStyle="solid" width="100%" height="285" creationPolicy="all">
+    <mx:TabNavigator borderStyle="solid" width="100%" height="355" creationPolicy="all">
 
         <s:NavigatorContent
                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.tab.base')}">
@@ -78,7 +78,7 @@
                 </mx:FormItem>
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.port')}:"
-                             required="true">
+                             required="false">
                     <s:TextInput id="port" width="300"/>
                 </mx:FormItem>
 
@@ -88,10 +88,23 @@
                     <s:TextInput id="serviceName" width="300"/>
                 </mx:FormItem>
 
+                <mx:FormItem
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.overwriteKerberosSetup')}:">
+                    <s:CheckBox id="overwriteKerberosSetup" selected="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.keyTab')}:" >
+                    <s:DropDownList id="keyTabFile" width="170" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.keyTab.browseFile')}"
+                                    requireSelection="true"/>
+                </mx:FormItem>
+                <s:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.keyTab.uploadSuccess')}" visible="false" paddingLeft="95"/>
+
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'windowsIntegratedAuthn.spn')}:"
                              required="false" >
                     <s:TextInput id="servicePrincipalName" width="300" editable="false"/>
                 </mx:FormItem>
+
 
             </s:VGroup>
         </s:NavigatorContent>

@@ -482,7 +482,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
             if (StringUtils.isBlank(windowsIntegratedAuthn.getHost()))
                 addError("Windows Integrated Authentication [" + node.getName() + "] Service Host cannot be null or empty");
 
-            if (windowsIntegratedAuthn.getPort() < 1 || windowsIntegratedAuthn.getPort() > 65535)
+            if (windowsIntegratedAuthn.getPort() < 0 || windowsIntegratedAuthn.getPort() > 65535)
                 addError("Windows Integrated Authentication [" + node.getName() + "] Service Port must be between 1 and 65535");
 
         }

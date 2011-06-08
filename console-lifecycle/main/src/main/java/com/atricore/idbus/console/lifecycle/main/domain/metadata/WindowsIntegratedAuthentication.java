@@ -19,6 +19,10 @@ public class WindowsIntegratedAuthentication extends AuthenticationService {
 
     private String serviceName;
 
+    private Resource keyTab;
+
+    private boolean overwriteKerberosSetup;
+
     public String getProtocol() {
         return protocol;
     }
@@ -65,5 +69,21 @@ public class WindowsIntegratedAuthentication extends AuthenticationService {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public Resource getKeyTab() {
+        return keyTab;
+    }
+
+    public void setKeyTab(Resource keyTab) {
+        this.keyTab = keyTab;
+    }
+
+    public boolean isOverwriteKerberosSetup() {
+        return overwriteKerberosSetup;
+    }
+
+    public void setOverwriteKerberosSetup(boolean overwriteKerberosSetup) {
+        this.overwriteKerberosSetup = overwriteKerberosSetup;
     }
 }

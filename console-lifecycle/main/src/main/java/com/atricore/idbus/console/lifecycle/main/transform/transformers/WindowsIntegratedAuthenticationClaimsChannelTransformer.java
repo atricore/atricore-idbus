@@ -148,10 +148,7 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
 
         // Service Principal Name
         WindowsIntegratedAuthentication wia = (WindowsIntegratedAuthentication) provider.getDelegatedAuthentication().getAuthnService();
-        String spn = wia.getServiceClass() +
-                "/" + wia.getHost() +
-                (wia.getServiceName() != null && !"".equals(wia.getServiceName()) ? "/" + wia.getServiceName() : "") +
-                "@" + wia.getDomain();
+        String spn = WindowsIntegratedAuthenticationTransformer.buildSpn(wia);
 
         setPropertyValue(ccMediator, "principal", spn);
 

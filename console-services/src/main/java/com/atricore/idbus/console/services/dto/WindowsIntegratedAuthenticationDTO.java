@@ -19,6 +19,10 @@ private String protocol;
 
     private String serviceName;
 
+    private ResourceDTO keyTab;
+
+    private boolean overwriteKerberosSetup;
+
     public String getProtocol() {
         return protocol;
     }
@@ -65,5 +69,21 @@ private String protocol;
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public ResourceDTO getKeyTab() {
+        return keyTab;
+    }
+
+    public void setKeyTab(ResourceDTO keyTab) {
+        this.keyTab = keyTab;
+    }
+
+    public boolean isOverwriteKerberosSetup() {
+        return overwriteKerberosSetup;
+    }
+
+    public void setOverwriteKerberosSetup(boolean overwriteKerberosSetup) {
+        this.overwriteKerberosSetup = overwriteKerberosSetup;
     }
 }

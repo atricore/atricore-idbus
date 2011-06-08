@@ -1296,7 +1296,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createWindowsIntegratedAuthnCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.windowsIntegratedAuthn");
         _popup.width = 510;
-        _popup.height = 385;
+        _popup.height = 455;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_windowsIntegratedAuthnCreateForm);

@@ -131,8 +131,5 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/websphere_execution_environment.png")]
     public static var websphereEnvironmentMiniIcon:Class;
 
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/windows_execution_environment.png")]
-    public static var windowsEnvironmentMiniIcon:Class;
 }
 }
