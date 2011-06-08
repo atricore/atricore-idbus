@@ -40,6 +40,8 @@ public class KerberosServiceInit {
 
     private String krb5Config;
 
+    private boolean authenticatOnInit;
+
     private BundleContext bundleContext;
 
     public void setBundleContext(BundleContext bundleContext) {
@@ -138,17 +140,39 @@ public class KerberosServiceInit {
         this.krb5Config = krb5Config;
     }
 
+
+    public boolean isAuthenticatOnInit() {
+        return authenticatOnInit;
+    }
+
+    public void setAuthenticatOnInit(boolean authenticatOnInit) {
+        this.authenticatOnInit = authenticatOnInit;
+    }
+
     /**
      * Initialize Kerberos
      * @throws Exception
      */
     public void init() throws Exception {
-        // Check if Kerberos setup must be updated
-        configureKerberos(configureKerberos);
 
-        // Perform an automatic signon, to make sure that everything is working.
+
         try {
-            authenticate(new String[] { principal } );
+
+            // Check if Kerberos setup must be updated
+            if (configureKerberos)
+                configureKerberos(true);
+
+        } catch (Exception e) {
+            logger.error("Cannot perform Kerberos configuration :" + e.getMessage(), e);
+            throw e;
+        }
+
+        try {
+
+            // Perform an automatic signon, to make sure that everything is working.
+            if (authenticatOnInit)
+                authenticate(new String[] { principal } );
+
         } catch (Exception e) {
             logger.error("Cannot perform Kerberos Sign-On:" + e.getMessage(), e);
             // TODO : Should we stop JOSSO Start=up ? what if the DC get's back on-line later.
