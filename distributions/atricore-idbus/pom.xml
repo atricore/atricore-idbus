@@ -132,10 +132,10 @@
         <idbus.bundle.pax-web-jetty-v0_7_2.version>1.2.0-SNAPSHOT</idbus.bundle.pax-web-jetty-v0_7_2.version>
         <idbus.bundle.wadi-v2_1_2.version>1.2.0-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
         <idbus.bundle.apacheds-v1_5_7.server.version>1.2.0-SNAPSHOT</idbus.bundle.apacheds-v1_5_7.server.version>
+        <idbus.bundle.ini4j-v0_5_1.version>1.2.0-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
 
 
-        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.2.0-SNAPSHOT
-        </idbus.fragment.mysql-connector-java_v5_1_10.version>
+        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.2.0-SNAPSHOT</idbus.fragment.mysql-connector-java_v5_1_10.version>
         <idbus.connectors.jdoidentityvault.version>1.2.0-SNAPSHOT</idbus.connectors.jdoidentityvault.version>
 
         <idbus.idojo.dbidentitystore.version>1.2.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
@@ -1361,6 +1361,12 @@
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.apacheds-v1_5_7.server</artifactId>
             <version>${idbus.bundle.apacheds-v1_5_7.server.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.ini4j-v0_5_1</artifactId>
+            <version>${idbus.bundle.ini4j-v0_5_1.version}</version>
             <type>pom</type>
         </dependency>
 

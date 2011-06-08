@@ -53,6 +53,7 @@
         <module>bundles/pax-web-jetty-v0_7_2</module>
         <module>bundles/pax-web-jetty-v0_7_3</module>
         <module>bundles/wadi-v2_1_2</module>
+        <module>bundles/ini4j-v0_5_1</module>
 
         <module>capabilities/spmlr2</module>
         <module>capabilities/samlr2</module>

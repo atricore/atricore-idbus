@@ -1,0 +1,4 @@
+This is where Kerberos keytab files are stored.  Keytab names should user the following convention (case sensiteve)
+
+For windows integrated authentication
+<appliance-id>-<windows-authn-name>-windwos.keytab

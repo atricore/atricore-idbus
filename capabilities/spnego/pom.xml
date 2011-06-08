@@ -41,6 +41,7 @@
         <idbus.kernel.version>1.2.0-SNAPSHOT</idbus.kernel.version>
         <idbus.samlr2.version>1.2.0-SNAPSHOT</idbus.samlr2.version>
         <idbus.sts.version>1.2.0-SNAPSHOT</idbus.sts.version>
+        <idbus.bundle.ini4j-v0_5_1.version>1.2.0-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
         <karaf.version>2.2.1</karaf.version>
         <camel.version>1.6.1</camel.version>
         <spring.version>3.0.5.RELEASE</spring.version>
@@ -85,6 +86,13 @@
             <version>${idbus.samlr2.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.ini4j-v0_5_1</artifactId>
+            <version>${idbus.bundle.ini4j-v0_5_1.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.karaf.jaas</groupId>
             <artifactId>org.apache.karaf.jaas.modules</artifactId>
