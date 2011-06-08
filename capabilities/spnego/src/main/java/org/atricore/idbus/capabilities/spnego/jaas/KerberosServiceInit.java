@@ -4,6 +4,8 @@ package org.atricore.idbus.capabilities.spnego.jaas;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.io.IOUtils;
+import org.ini4j.Ini;
+import org.ini4j.Wini;
 import org.osgi.framework.BundleContext;
 import org.atricore.idbus.kernel.common.support.osgi.OsgiBundleClassLoader;
 
@@ -24,11 +26,15 @@ public class KerberosServiceInit {
 
     private String realm;
 
+    private String windowsDomain;
+
+    private String domainController;
+
     private String principal;
 
     private String keyTabName;
 
-    private boolean overwriteSetup;
+    private boolean configureKerberos;
 
     private String keyTabRepository;
 
@@ -56,6 +62,22 @@ public class KerberosServiceInit {
         this.realm = realm;
     }
 
+    public String getWindowsDomain() {
+        return windowsDomain;
+    }
+
+    public void setWindowsDomain(String windowsDomain) {
+        this.windowsDomain = windowsDomain;
+    }
+
+    public String getDomainController() {
+        return domainController;
+    }
+
+    public void setDomainController(String domainController) {
+        this.domainController = domainController;
+    }
+
     public String getKeyTabName() {
         return keyTabName;
     }
@@ -72,12 +94,12 @@ public class KerberosServiceInit {
         this.keyTabRepository = keyTabRepository;
     }
 
-    public boolean isOverwriteSetup() {
-        return overwriteSetup;
+    public boolean isConfigureKerberos() {
+        return configureKerberos;
     }
 
-    public void setOverwriteSetup(boolean overwriteSetup) {
-        this.overwriteSetup = overwriteSetup;
+    public void setConfigureKerberos(boolean configureKerberos) {
+        this.configureKerberos = configureKerberos;
     }
 
     public String getKrb5Config() {
@@ -94,15 +116,14 @@ public class KerberosServiceInit {
      */
     public void init() throws Exception {
         // Check if Kerberos setup must be updated
-        if (overwriteSetup)
-            overwriteKerberosSetup();
+        configureKerberos(configureKerberos);
 
         // Perform an automatic signon, to make sure that everything is working.
         try {
             authenticate(new String[] { principal } );
         } catch (Exception e) {
             logger.error("Cannot perform Kerberos Sign-On:" + e.getMessage(), e);
-            // TODO : Should we stop JOSSO Start=up ? what if the DC get's back on=line later.
+            // TODO : Should we stop JOSSO Start=up ? what if the DC get's back on-line later.
             throw e;
         }
     }
@@ -147,7 +168,7 @@ public class KerberosServiceInit {
         }
     }
 
-    public void overwriteKerberosSetup() throws Exception {
+    public void configureKerberos(boolean overwriteExistingSetup) throws Exception {
 
         OutputStream out = null;
         InputStream in = null;
@@ -156,17 +177,56 @@ public class KerberosServiceInit {
             in = loadKeyTabResource(keyTabName);
 
             File file = new File(keyTabRepository + "/" + keyTabName);
-            out = new FileOutputStream(file, false);
 
-            if (logger.isDebugEnabled())
-                logger.debug("Installing keytab file to : " + file.getAbsolutePath());
-
-            IOUtils.copy(in, out);
+            if (!file.exists() || overwriteExistingSetup) {
+                out = new FileOutputStream(file, false);
+                if (logger.isDebugEnabled())
+                    logger.debug("Installing keytab file to : " + file.getAbsolutePath());
+                IOUtils.copy(in, out);
+            }
 
             // Update Kerberos setup file:
 
+            File krb5ConfFile = new File(krb5Config);
+            Wini krb5Conf = new Wini(krb5ConfFile);
+
+
+            Ini.Section krb5Logging = krb5Conf.get("logging");
+            // TODO : Setup logging properties
+
+            if (overwriteExistingSetup) {
+                String fileSeparator = System.getProperty("file.separator");
+                String logFolder = System.getProperty("karaf.base") + fileSeparator + "data" + fileSeparator + "log" + fileSeparator;
+                krb5Logging.put("default", "FILE:" + logFolder + "krb5libs.log");
+                krb5Logging.put("kdc", "FILE:" + logFolder + "krb5kdc.log");
+                krb5Logging.put("admin_server", "FILE:" + logFolder + "kadmin.log");
+            }
+
+
+            // Setup Kerberos realms
+            Ini.Section krb5Realms = krb5Conf.get("realms");
+
+            String windowsDomainSetup = krb5Realms.get(windowsDomain);
+            if (windowsDomain == null || overwriteExistingSetup) {
+                windowsDomainSetup = "{  kdc = " + domainController + ":88 admin_server = "+domainController+":749  default_domain = "+windowsDomain+"  }";
+                krb5Realms.put(windowsDomain, windowsDomainSetup);
+            }
+
+            // Setup Kerberos domain realms
+            Ini.Section krb5DomainRealms = krb5Conf.get("domain_realm");
+            String domainRealmSetup = krb5DomainRealms.get(windowsDomain.toLowerCase());
+            if (domainRealmSetup == null || overwriteExistingSetup) {
+                krb5DomainRealms.put(windowsDomain.toLowerCase(), windowsDomain);
+                krb5DomainRealms.put("." + windowsDomain.toLowerCase(), windowsDomain);
+            }
+
+            // Save KRB 5 Conf
+
+            krb5Conf.store(krb5ConfFile);
+
+
         } catch (Exception e) {
-            logger.error("Cannot configure Kerberos :" + e.getMessage(), e);
+            logger.error("Error while configuring Kerberos :" + e.getMessage(), e);
             throw e;
         } finally {
             IOUtils.closeQuietly(out);
