@@ -68,6 +68,18 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
         params.put("keyTabName", keyTabName);
         params.put("configureKerberos", wia.isOverwriteKerberosSetup());
 
+
+        String keyTabsRepository = System.getProperty("karaf.base");
+        keyTabsRepository += "/etc/krb5/keytabs/";
+        keyTabsRepository = keyTabsRepository.replace('\\', '/');
+
+        String krb5Config = System.getProperty("karaf.base");
+        krb5Config += "/etc/krb5/krb5.conf";
+        krb5Config = krb5Config.replace('\\', '/');
+
+        params.put("keyTabsRepository", keyTabsRepository);
+        params.put("krb5Config", krb5Config);
+
         IdProjectModule module = event.getContext().getCurrentModule();
 
         IdProjectResource<String> agentConfig = new IdProjectResource<String>(idGen.generateId(),

@@ -29,7 +29,7 @@
             storeKey = true
             debug = true
             useKeyTab = true
-            keyTab = \$[karaf.base]/etc/krb5/keytabs/$keyTabName
+            keyTab = $keyTabsRepository/$keyTabName
         </jaas:module>
     </jaas:config>
 
@@ -46,10 +46,10 @@
 
         <!-- KeyTab setup -->
         <property name="keyTabResource" value="$keyTabName"/>
-        <property name="keyTabRepository" value="\$[karaf.base]/etc/krb5/keytabs/"/>
+        <property name="keyTabRepository" value="$keyTabsRepository"/>
 
         <!-- Kerberos config file-->
-        <property name="krb5Config" value="\$[karaf.base]/etc/krb5/krb5.conf"/>
+        <property name="krb5Config" value="$krb5Config"/>
 
 
         <property name="configureKerberos" value="$configureKerberos"/>
