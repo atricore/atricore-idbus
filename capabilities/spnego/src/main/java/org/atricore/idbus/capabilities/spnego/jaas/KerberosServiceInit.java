@@ -222,23 +222,28 @@ public class KerberosServiceInit {
 
     public void configureKerberos(boolean overwriteExistingSetup) throws Exception {
 
-        OutputStream out = null;
-        InputStream in = null;
+        OutputStream keyTabOut = null;
+        InputStream keyTabIn = null;
+        OutputStream krb5ConfOut = null;
         try {
+            // ==============================================================
             // Install KeyTab
-            in = loadKeyTabResource(keyTabResource);
+            // ==============================================================
+            keyTabIn = loadKeyTabResource(keyTabResource);
 
-            File file = new File(keyTabRepository + "/" + keyTabResource);
-
+            File file = new File(keyTabRepository + keyTabResource);
             if (!file.exists() || overwriteExistingSetup) {
-                out = new FileOutputStream(file, false);
+                keyTabOut = new FileOutputStream(file, false);
                 if (logger.isDebugEnabled())
                     logger.debug("Installing keytab file to : " + file.getAbsolutePath());
-                IOUtils.copy(in, out);
+                IOUtils.copy(keyTabIn, keyTabOut);
             }
 
+            // ==============================================================
             // Update Kerberos setup file:
+            // ==============================================================
 
+            // 1. read original file and conver to Windows INI format (hack!)
             File krb5ConfFile = new File(System.getProperty("java.security.krb5.conf", defaultKrb5Config));
 
             if (logger.isDebugEnabled())
@@ -247,30 +252,21 @@ public class KerberosServiceInit {
             if (!krb5ConfFile.exists())
                 throw new Exception("Kerberos config file not found : " + krb5ConfFile.getAbsolutePath());
 
-            Wini krb5Conf = new Wini(krb5ConfFile);
-
-            Ini.Section krb5Logging = krb5Conf.get("logging");
-            // Setup logging properties
-
-            if (overwriteExistingSetup) {
-                String fileSeparator = System.getProperty("file.separator");
-                String logFolder = System.getProperty("karaf.base") + fileSeparator + "data" + fileSeparator + "log" + fileSeparator;
-                krb5Logging.put("default", "FILE:" + logFolder + "krb5libs.log");
-                krb5Logging.put("kdc", "FILE:" + logFolder + "krb5kdc.log");
-                krb5Logging.put("admin_server", "FILE:" + logFolder + "kadmin.log");
-            }
+            FileInputStream fis = new FileInputStream(krb5ConfFile);
 
 
-            // Setup Kerberos realms
+            Wini krb5Conf = new Wini(KerberosConfigUtil.toIni(fis));
+
+            // 2. Setup Kerberos realms
             Ini.Section krb5Realms = krb5Conf.get("realms");
 
             String windowsDomainSetup = krb5Realms.get(kerberosRealm);
             if (kerberosRealm == null || overwriteExistingSetup) {
-                windowsDomainSetup = "{  kdc = " + keyDistributionCenter + ":88 admin_server = "+ keyDistributionCenter +":749  default_domain = "+ kerberosRealm +"  }";
+                windowsDomainSetup = "{  kdc = " + keyDistributionCenter + ":88 admin_server = "+ keyDistributionCenter +":749  default_domain = "+ kerberosRealm.toLowerCase() +"  }";
                 krb5Realms.put(kerberosRealm, windowsDomainSetup);
             }
 
-            // Setup Kerberos domain realms
+            // 3. Setup Kerberos domain realms
             Ini.Section krb5DomainRealms = krb5Conf.get("domain_realm");
             String domainRealmSetup = krb5DomainRealms.get(kerberosRealm.toLowerCase());
             if (domainRealmSetup == null || overwriteExistingSetup) {
@@ -278,17 +274,28 @@ public class KerberosServiceInit {
                 krb5DomainRealms.put("." + kerberosRealm.toLowerCase(), kerberosRealm);
             }
 
-            // Save KRB 5 Conf
+            // 4. Save KRB 5 Conf, convert from ini to Kerberos
 
-            krb5Conf.store(krb5ConfFile);
+            // Save ini to byte array
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            krb5Conf.store(baos);
+
+            // Transform ini to krb5
+            InputStream bios = new ByteArrayInputStream(baos.toByteArray());
+            bios = KerberosConfigUtil.toKrb5(bios);
+
+            // Write krb5 to file
+            krb5ConfOut = new FileOutputStream(krb5ConfFile, false);
+            IOUtils.copy(bios, krb5ConfOut);
 
 
         } catch (Exception e) {
             logger.error("Error while configuring Kerberos :" + e.getMessage(), e);
             throw e;
         } finally {
-            IOUtils.closeQuietly(out);
-            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(keyTabOut);
+            IOUtils.closeQuietly(keyTabIn);
+            IOUtils.closeQuietly(krb5ConfOut);
         }
 
     }
