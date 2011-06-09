@@ -29,7 +29,8 @@
             storeKey = true
             debug = true
             useKeyTab = true
-            keyTab = $keyTabsRepository/$keyTabName
+            refreshKrb5Config = true
+            keyTab = $keyTabsRepository$keyTabName
         </jaas:module>
     </jaas:config>
 
@@ -49,7 +50,7 @@
         <property name="keyTabRepository" value="$keyTabsRepository"/>
 
         <!-- Kerberos config file-->
-        <property name="krb5Config" value="$krb5Config"/>
+        <property name="defaultKrb5Config" value="$defaultKrb5Config"/>
 
 
         <property name="configureKerberos" value="$configureKerberos"/>
