@@ -41,6 +41,7 @@
     <properties>
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <ini4j.version>0.5.1</ini4j.version>
+        <commons-logging.version>1.1.1</commons-logging.version>
     </properties>
 
     <dependencies>
@@ -50,6 +51,21 @@
             <artifactId>ini4j</artifactId>
             <version>0.5.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons-logging.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
 
     </dependencies>
 
