@@ -43,7 +43,7 @@
         <property name="kerberosRealm" value="DEMO.ATRICORE.COM"/>
         <property name="keyTabResource" value="josso2.keytab"/>
         <property name="keyTabRepository" value="$[karaf.base]/etc/krb5/keytabs/"/>
-        <property name="krb5Config" value="$[karaf.base]/etc/krb5/krb5.conf"/>
+        <property name="defaultKrb5Config" value="$[karaf.base]/etc/krb5/krb5.conf"/>
         <property name="configureKerberos" value="true"/>
 
     </bean>

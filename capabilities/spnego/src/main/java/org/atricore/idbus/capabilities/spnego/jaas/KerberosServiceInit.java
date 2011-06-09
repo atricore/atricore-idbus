@@ -38,7 +38,7 @@ public class KerberosServiceInit {
 
     private String keyTabRepository;
 
-    private String krb5Config;
+    private String defaultKrb5Config;
 
     private boolean authenticatOnInit;
 
@@ -132,12 +132,12 @@ public class KerberosServiceInit {
      * Kerberos 5 confgiruation file
      * @return
      */
-    public String getKrb5Config() {
-        return krb5Config;
+    public String getDefaultKrb5Config() {
+        return defaultKrb5Config;
     }
 
-    public void setKrb5Config(String krb5Config) {
-        this.krb5Config = krb5Config;
+    public void setDefaultKrb5Config(String defaultKrb5Config) {
+        this.defaultKrb5Config = defaultKrb5Config;
     }
 
 
@@ -239,12 +239,18 @@ public class KerberosServiceInit {
 
             // Update Kerberos setup file:
 
-            File krb5ConfFile = new File(krb5Config);
+            File krb5ConfFile = new File(System.getProperty("java.security.krb5.conf", defaultKrb5Config));
+
+            if (logger.isDebugEnabled())
+                logger.debug("Using Kerberos config file : " + krb5ConfFile.getAbsolutePath());
+
+            if (!krb5ConfFile.exists())
+                throw new Exception("Kerberos config file not found : " + krb5ConfFile.getAbsolutePath());
+
             Wini krb5Conf = new Wini(krb5ConfFile);
 
-
             Ini.Section krb5Logging = krb5Conf.get("logging");
-            // TODO : Setup logging properties
+            // Setup logging properties
 
             if (overwriteExistingSetup) {
                 String fileSeparator = System.getProperty("file.separator");
