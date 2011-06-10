@@ -32,6 +32,8 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
 
     private boolean loadDefaultDrivers;
 
+    private static long requestedConnections;
+
     public List<String> getDefaultDriversUrls() {
         return defaultDriversUrls;
     }
@@ -446,6 +448,7 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
            */
 
         public java.sql.Connection connect(String u, Properties p) throws SQLException {
+
             if (logger.isDebugEnabled())
                 logger.debug(WrappedDriver.class.getName() + ":" + driverClass + ", connect=" + u);
 

@@ -184,6 +184,7 @@
                             javax.xml.parsers,
                             javax.el,
                             javax.security.auth,
+                            javax.net.ssl,
                             org.springframework.context,
                             org.springframework.context.support,
                             org.springframework.beans,
