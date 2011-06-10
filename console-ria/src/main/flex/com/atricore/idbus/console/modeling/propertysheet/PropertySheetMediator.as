@@ -2699,6 +2699,7 @@ public class PropertySheetMediator extends IocMediator {
             _windowsIntegratedAuthnCoreSection.port.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIntegratedAuthnCoreSection.serviceName.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIntegratedAuthnCoreSection.domainController.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIntegratedAuthnCoreSection.overwriteKerberosSetup.addEventListener(Event.CHANGE, handleSectionChange);
 
             _windowsIntegratedAuthnCoreSection.domain.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
             _windowsIntegratedAuthnCoreSection.serviceClass.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
