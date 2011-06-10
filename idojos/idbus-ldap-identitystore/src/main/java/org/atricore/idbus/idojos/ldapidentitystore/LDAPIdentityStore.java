@@ -205,6 +205,8 @@ public class LDAPIdentityStore extends AbstractStore  {
             }
 
             String uid = selectUser(((SimpleUserKey) key).getId());
+            if (uid == null)
+                throw new NoSuchUserException(key);
 
             BaseUser bu = new BaseUserImpl();
             bu.setName(uid);
