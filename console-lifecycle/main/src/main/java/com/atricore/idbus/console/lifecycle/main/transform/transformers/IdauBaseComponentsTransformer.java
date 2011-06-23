@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
+import org.atricore.idbus.kernel.planning.IdentityPlanRegistryImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.OsgiCamelIdentityMediationUnitContainerImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 
@@ -205,6 +206,12 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         bpmsManagerImporter.setInterface("org.atricore.idbus.kernel.planning.jbpm.BPMSManager");
 
         idauBeansOsgi.getImportsAndAliasAndBeen().add(bpmsManagerImporter);
+
+        // ----------------------------------------
+        // Indentity Plans registry
+        // ----------------------------------------
+        Bean identityPlansRegistry = newBean(idauBeans, "identity-plans-registry", IdentityPlanRegistryImpl.class);
+        identityPlansRegistry.setScope("singleton");
 
         // ----------------------------------------
         // Message Queue Manager

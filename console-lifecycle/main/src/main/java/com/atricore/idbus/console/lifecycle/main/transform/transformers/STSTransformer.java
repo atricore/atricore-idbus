@@ -61,14 +61,8 @@ public class STSTransformer extends AbstractTransformer {
                 "org.atricore.idbus.capabilities.samlr2.main.emitter.SamlR2SecurityTokenEmitter");
         setPropertyValue(stsEmitter, "id", stsEmitter.getName());
 
-        Bean stsSecTkn2AssertionPlan = newBean(idpBeans,
-                idpBean.getName() + "-samlr2-sectoken-to-authnassertion-plan",
-                "org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan");
-        setPropertyRef(stsSecTkn2AssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
-        setPropertyRef(stsSecTkn2AssertionPlan, "bpmsManager", "bpms-manager");
-
-        // identityPlan
-        setPropertyRef(stsEmitter, "identityPlan", stsSecTkn2AssertionPlan.getName());
+        // identityPlanRegistry
+        setPropertyRef(stsEmitter, "identityPlansRegistry", "identity-plans-registry");
 
 
         Collection<Bean> mediators = getBeansOfType(idpBeans, "org.atricore.idbus.capabilities.samlr2.main.idp.SamlR2IDPMediator");
