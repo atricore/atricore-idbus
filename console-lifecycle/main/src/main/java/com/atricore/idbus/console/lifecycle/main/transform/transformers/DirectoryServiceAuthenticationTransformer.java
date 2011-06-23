@@ -104,12 +104,28 @@ public class DirectoryServiceAuthenticationTransformer extends AbstractTransform
         BindAuthentication bindAuthentication = (BindAuthentication) event.getData();
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         Bean bindAuthnScheam = getBean(idpBeans, normalizeBeanName(bindAuthentication.getName()));
+        Bean idpBean = null;
+        Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
+        if (b.size() != 1) {
+            throw new TransformException("Invalid IdP definition count : " + b.size());
+        }
+        idpBean = b.iterator().next();
 
         // Wire two factor authentication scheme to Authenticator
         Collection<Bean> authenticators = getBeansOfType(idpBeans, AuthenticatorImpl.class.getName());
         if (authenticators.size() == 1) {
-            Bean authenticator = authenticators.iterator().next();
-            addPropertyBeansAsRefs(authenticator, "authenticationSchemes", bindAuthnScheam);
+
+            // Wire basic authentication scheme to Authenticator
+            Bean legacyAuthenticator = authenticators.iterator().next();
+            addPropertyBeansAsRefs(legacyAuthenticator, "authenticationSchemes", bindAuthnScheam);
+
+            // Add new Basic Authenticator
+            Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
+            Bean twoFactorAuthenticator = newAnonymousBean("org.atricore.idbus.capabilities.sts.main.authenticators.BasicSecurityTokenAuthenticator");
+            setPropertyRef(twoFactorAuthenticator, "authenticator", legacyAuthenticator.getName());
+
+            addPropertyBean(sts, "authenticators", twoFactorAuthenticator);
+
         }
 
         return bindAuthnScheam;

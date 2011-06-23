@@ -24,6 +24,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
+import com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPolicy;
 import com.atricore.idbus.console.services.dto.AuthenticationContract;
@@ -35,6 +36,7 @@ import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.Resource;
 import com.atricore.idbus.console.services.dto.SamlR2IDPConfig;
+import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -67,6 +69,9 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
     [Bindable]
     public var _selectedFiles:ArrayCollection;
+
+    [Bindable]
+    public var _subjectNameIdPolicies:ArrayCollection;
 
     public function IdentityProviderCreateMediator(name:String = null, viewComp:IdentityProviderCreateForm = null) {
         super(name, viewComp);
@@ -110,7 +115,10 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
         //view.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         BindingUtils.bindProperty(view.certificateKeyPair, "dataProvider", this, "_selectedFiles");
-        
+
+        BindingUtils.bindProperty(view.subjectNameIdPolicyCombo, "dataProvider", this, "_subjectNameIdPolicies");
+        sendNotification(ApplicationFacade.LIST_NAMEID_POLICIES);
+
         initLocation();
         view.focusManager.setFocus(view.identityProviderName);
     }
@@ -136,6 +144,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.authContract.selectedIndex = 0;
         view.authAssertionEmissionPolicy.selectedIndex = 0;
         view.authMechanism.selectedIndex = 0;
+        view.subjectNameIdPolicyCombo.selectedIndex = 0;
+        view.ignoreRequestedNameIDPolicy.selected = true;
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
@@ -160,6 +170,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         _idaURI = "";
         _uploadedFile = null;
         _uploadedFileName = null;
+
+        _subjectNameIdPolicies = new ArrayCollection();
 
         FormUtility.clearValidationErrors(_validators);
 //        registerValidators();
@@ -202,6 +214,9 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         identityProvider.wantAuthnRequestsSigned = view.wantAuthnRequestsSignedCheck.selected;
         identityProvider.signRequests = view.signRequestsCheck.selected;
         identityProvider.wantSignedRequests = view.wantSignedRequestsCheck.selected;
+
+        identityProvider.ignoreRequestedNameIDPolicy = view.ignoreRequestedNameIDPolicy.selected;
+        identityProvider.subjectNameIDPolicy = view.subjectNameIdPolicyCombo.selectedItem;
 
         identityProvider.activeBindings = new ArrayCollection();
         if (view.samlBindingHttpPostCheck.selected) {
@@ -421,13 +436,32 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return super.listNotificationInterests();
+        return [SubjectNameIDPolicyListCommand.SUCCESS,
+            SubjectNameIDPolicyListCommand.FAILURE];
     }
 
+
     override public function handleNotification(notification:INotification):void {
-        super.handleNotification(notification);
-        initLocation();
-//        registerValidators();
+        switch (notification.getName()) {
+            case SubjectNameIDPolicyListCommand.SUCCESS:
+                if (view != null && view.parent != null) {
+                    _subjectNameIdPolicies = projectProxy.subjectNameIdentifierPolicies;
+                    for (var i:int=0; i < view.subjectNameIdPolicyCombo.dataProvider.length; i++) {
+                        // hard-coded saml format string ...
+                        if (view.subjectNameIdPolicyCombo.dataProvider[i].type.toString() == SubjectNameIDPolicyType.PRINCIPAL.toString()) {
+                            view.subjectNameIdPolicyCombo.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                break;
+            default:
+                initLocation();
+                break;
+        }
+
+
+
     }
 
 }

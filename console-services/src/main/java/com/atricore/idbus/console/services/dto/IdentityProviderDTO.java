@@ -34,6 +34,11 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     private boolean wantSignedRequests;
 
+    private boolean ignoreRequestedNameIDPolicy = true;
+
+    // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
+    private SubjectNameIdentifierPolicyDTO subjectNameIDPolicy;
+
     // RFU
     private AttributeProfileDTO attributeProfile;
 
@@ -131,5 +136,21 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     public void setDelegatedAuthentication(DelegatedAuthenticationDTO delegatedAuthentication) {
         this.delegatedAuthentication = delegatedAuthentication;
+    }
+
+    public boolean isIgnoreRequestedNameIDPolicy() {
+        return ignoreRequestedNameIDPolicy;
+    }
+
+    public void setIgnoreRequestedNameIDPolicy(boolean ignoreRequestedNameIDPolicy) {
+        this.ignoreRequestedNameIDPolicy = ignoreRequestedNameIDPolicy;
+    }
+
+    public SubjectNameIdentifierPolicyDTO getSubjectNameIDPolicy() {
+        return subjectNameIDPolicy;
+    }
+
+    public void setSubjectNameIDPolicy(SubjectNameIdentifierPolicyDTO subjectNameIDPolicy) {
+        this.subjectNameIDPolicy = subjectNameIDPolicy;
     }
 }

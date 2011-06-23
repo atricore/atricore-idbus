@@ -618,6 +618,21 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, ListIdentityMappingPolicyResponse.class);
     }
 
+    public ListSubjectNameIDPoliciesResponse listSubjectNameIDPolicies(ListSubjectNameIDPoliciesRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListSubjectNameIDPoliciesRequest beReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.ListSubjectNameIDPoliciesRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListSubjectNameIDPoliciesResponse beRes;
+        try {
+            beRes = idApplianceManagementService.listSubjectNameIDPolicies(beReq);
+        }
+
+        catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ListSubjectNameIDPoliciesResponse.class);
+    }
+
     /****************************
      * Lookup methods
      ***************************/

@@ -580,6 +580,22 @@
     </mapping>
 
     <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.SubjectNameIdentifierPolicy</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.SubjectNameIdentifierPolicyDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.SubjectNameIDPolicyType</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.SubjectNameIDPolicyTypeDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.CustomNameIdentifierPolicy</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.CustomNameIdentifierPolicyDTO</class-b>
+    </mapping>
+
+
+    <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityMappingPolicy</class-a>
         <class-b>com.atricore.idbus.console.services.dto.IdentityMappingPolicyDTO</class-b>
     </mapping>

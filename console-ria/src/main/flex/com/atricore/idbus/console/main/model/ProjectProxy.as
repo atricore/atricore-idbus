@@ -45,6 +45,7 @@ public class ProjectProxy extends IocProxy implements IDisposable
     private var _jdbcDrivers:ArrayCollection;
     private var _accountLinkagePolicies:ArrayCollection;
     private var _identityMappingPolicies:ArrayCollection;
+    private var _subjectNameIdentifierPolicies:ArrayCollection;
 
     public function ProjectProxy()
     {
@@ -137,6 +138,15 @@ public class ProjectProxy extends IocProxy implements IDisposable
 
     public function set identityMappingPolicies(value:ArrayCollection):void {
         _identityMappingPolicies = value;
+    }
+
+
+    public function get subjectNameIdentifierPolicies():ArrayCollection {
+        return _subjectNameIdentifierPolicies;
+    }
+
+    public function set subjectNameIdentifierPolicies(value:ArrayCollection):void {
+        _subjectNameIdentifierPolicies = value;
     }
 
     public function dispose():void {

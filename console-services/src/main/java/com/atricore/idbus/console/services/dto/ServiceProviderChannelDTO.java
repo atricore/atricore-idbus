@@ -40,6 +40,11 @@ public class ServiceProviderChannelDTO extends FederatedChannelDTO {
 
     private boolean wantAuthnRequestsSigned;
 
+    private boolean ignoreRequestedNameIDPolicy = true;
+
+    // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
+    private SubjectNameIdentifierPolicyDTO subjectNameIDPolicy;
+
     public AttributeProfileDTO getAttributeProfile() {
         return attributeProfile;
     }
@@ -78,5 +83,21 @@ public class ServiceProviderChannelDTO extends FederatedChannelDTO {
 
     public void setWantAuthnRequestsSigned(boolean wantAuthnRequestsSigned) {
         this.wantAuthnRequestsSigned = wantAuthnRequestsSigned;
+    }
+
+    public boolean isIgnoreRequestedNameIDPolicy() {
+        return ignoreRequestedNameIDPolicy;
+    }
+
+    public void setIgnoreRequestedNameIDPolicy(boolean ignoreRequestedNameIDPolicy) {
+        this.ignoreRequestedNameIDPolicy = ignoreRequestedNameIDPolicy;
+    }
+
+    public SubjectNameIdentifierPolicyDTO getSubjectNameIDPolicy() {
+        return subjectNameIDPolicy;
+    }
+
+    public void setSubjectNameIDPolicy(SubjectNameIdentifierPolicyDTO subjectNameIDPolicy) {
+        this.subjectNameIDPolicy = subjectNameIDPolicy;
     }
 }

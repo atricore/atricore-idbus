@@ -10,6 +10,10 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
+import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
+import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
+import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.federation.*;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
@@ -238,6 +242,23 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             }
         }
 
+        
+        // IDP channel plans
+        Bean sloToSamlPlan = newBean(spBeans, idpChannelName + "-spsso-samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);
+        setPropertyRef(sloToSamlPlan, "bpmsManager", "bpms-manager");
+        
+        Bean spAuthnToSamlPlan = newBean(spBeans, idpChannelName + "-idpunsolicitedresponse-to-subject-plan", SPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
+        setPropertyRef(spAuthnToSamlPlan, "bpmsManager", "bpms-manager");
+
+        Bean samlArtResToSamlArtRespPlan = newBean(spBeans, idpChannelName + "-samlr2artresolve-to-samlr2artresponse-plan", SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan.class);
+        setPropertyRef(samlArtResToSamlArtRespPlan, "bpmsManager", "bpms-manager");
+
+        Bean samlArtToSamlArtResPlan = newBean(spBeans, idpChannelName + "-samlr2art-to-samlr2artresolve-plan", SamlR2ArtifactToSamlR2ArtifactResolvePlan.class);
+        setPropertyRef(samlArtToSamlArtResPlan, "bpmsManager", "bpms-manager");
+
+        // ---------------------------------------
+        // IDP Channel Services
+        // ---------------------------------------
         // SingleLogoutService
 
         if (sloEnabled) {
@@ -280,7 +301,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(sloSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
-                plan.setBean(spBean.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan");
+                plan.setBean(sloToSamlPlan.getName());
                 plansList.add(plan);
                 setPropertyRefs(sloSoap, "identityPlans", plansList);
                 endpoints.add(sloSoap);
@@ -297,7 +318,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                     idpChannel.getLocation().getUri().toUpperCase() : sp.getLocation().getUri().toUpperCase()) + "/SLO/LOCAL");
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
-            plan.setBean(spBean.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan");
+            plan.setBean(sloToSamlPlan.getName());
             plansList.add(plan);
             setPropertyRefs(sloLocal, "identityPlans", plansList);
             endpoints.add(sloLocal);
@@ -313,7 +334,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(acHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
-                plan.setBean(spBean.getName() + "-idpunsolicitedresponse-to-subject-plan");
+                plan.setBean(spAuthnToSamlPlan.getName());
                 plansList.add(plan);
                 setPropertyRefs(acHttpPost, "identityPlans", plansList);
                 endpoints.add(acHttpPost);
@@ -327,7 +348,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(acHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
-                plan.setBean(spBean.getName() + "-idpunsolicitedresponse-to-subject-plan");
+                plan.setBean(spAuthnToSamlPlan.getName());
                 plansList.add(plan);
                 setPropertyRefs(acHttpArtifact, "identityPlans", plansList);
                 endpoints.add(acHttpArtifact);
@@ -341,7 +362,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(acHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
-                plan.setBean(spBean.getName() + "-idpunsolicitedresponse-to-subject-plan");
+                plan.setBean(spAuthnToSamlPlan.getName());
                 plansList.add(plan);
                 setPropertyRefs(acHttpRedirect, "identityPlans", plansList);
                 endpoints.add(acHttpRedirect);
@@ -358,10 +379,10 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             setPropertyValue(arSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
-            plan.setBean(spBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
+            plan.setBean(samlArtResToSamlArtRespPlan.getName());
             plansList.add(plan);
             Ref plan2 = new Ref();
-            plan2.setBean(spBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
+            plan2.setBean(samlArtToSamlArtResPlan.getName());
             plansList.add(plan2);
             setPropertyRefs(arSoap, "identityPlans", plansList);
             endpoints.add(arSoap);
@@ -373,10 +394,10 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             setPropertyValue(arLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
             plansList = new ArrayList<Ref>();
             plan = new Ref();
-            plan.setBean(spBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
+            plan.setBean(samlArtResToSamlArtRespPlan.getName());
             plansList.add(plan);
             plan2 = new Ref();
-            plan2.setBean(spBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
+            plan2.setBean(samlArtToSamlArtResPlan.getName());
             plansList.add(plan2);
             setPropertyRefs(arLocal, "identityPlans", plansList);
             endpoints.add(arLocal);

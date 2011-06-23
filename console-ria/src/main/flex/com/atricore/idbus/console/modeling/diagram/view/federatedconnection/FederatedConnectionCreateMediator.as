@@ -27,6 +27,7 @@ import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicyListCommand;
+import com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AccountLinkEmitterType;
 import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPolicy;
@@ -76,6 +77,10 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
     [Bindable]
     public var _identityMappingPolicies:ArrayCollection;
+
+    [Bindable]
+    public var _subjectNameIdentifierPolicies:ArrayCollection;
+
     
     public function FederatedConnectionCreateMediator(name:String = null, viewComp:FederatedConnectionCreateForm = null) {
         super(name, viewComp);
@@ -103,6 +108,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
     private function init():void {
         BindingUtils.bindProperty(view.accountLinkagePolicyCombo, "dataProvider", this, "_accountLinkagePolicies");
         BindingUtils.bindProperty(view.identityMappingPolicyCombo, "dataProvider", this, "_identityMappingPolicies");
+        BindingUtils.bindProperty(view.subjectNameIdPolicyCombo, "dataProvider", this, "_subjectNameIdentifierPolicies");
 
         view.btnOk.addEventListener(MouseEvent.CLICK, handleFederatedConnectionSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
@@ -126,6 +132,17 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         } else if (_roleB is ServiceProvider){
             sp = _roleB as ServiceProvider;
         }
+
+        if (_roleA is IdentityProvider) {
+            _idpName = (_roleA as IdentityProvider).name;
+        } else if (_roleA is ExternalIdentityProvider) {
+            _idpName = (_roleA as ExternalIdentityProvider).name;
+        } else if (_roleB is IdentityProvider) {
+            _idpName = (_roleB as IdentityProvider).name;
+        } else if (_roleB is ExternalIdentityProvider) {
+            _idpName = (_roleB as ExternalIdentityProvider).name;
+        }
+
         view.signAuthnRequestsCheck.selected = sp.signAuthenticationRequests;
         view.wantAssertionSignedCheck.selected = sp.wantAssertionSigned;
         view.samlBindingHttpPostCheck.selected = false;
@@ -215,6 +232,16 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             var idp:IdentityProvider = _roleA as IdentityProvider;
         } else if (_roleB is IdentityProvider){
             idp = _roleB as IdentityProvider;
+        }
+
+        if (_roleA is ServiceProvider) {
+            _spName = (_roleA as ServiceProvider).name;
+        } else if (_roleA is ExternalServiceProvider) {
+            _spName = (_roleA as ExternalServiceProvider).name;
+        } else if (_roleB is ServiceProvider) {
+            _spName = (_roleB as ServiceProvider).name;
+        } else if (_roleB is ExternalServiceProvider) {
+            _spName = (_roleB as ExternalServiceProvider).name;
         }
 
         view.wantAuthnRequestsSignedCheck.selected = idp.wantAuthnRequestsSigned;
@@ -486,6 +513,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             }
 
             spChannel.wantAuthnRequestsSigned = view.wantAuthnRequestsSignedCheck.selected;
+
+            spChannel.ignoreRequestedNameIDPolicy = view.ignoreRequestedNameIDPolicy;
+            spChannel.subjectNameIDPolicy = view.subjectNameIdPolicyCombo.selectedItem;
             
             // set location
             var newLoc:Location = new Location();
@@ -620,7 +650,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
     override public function listNotificationInterests():Array {
         return [AccountLinkagePolicyListCommand.SUCCESS,
-            IdentityMappingPolicyListCommand.SUCCESS];
+            IdentityMappingPolicyListCommand.SUCCESS,
+        SubjectNameIDPolicyListCommand.SUCCESS];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -681,6 +712,36 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
                     }
                 }
                 break;
+            case SubjectNameIDPolicyListCommand.SUCCESS:
+                if (view != null && view.parent != null) {
+                    _subjectNameIdentifierPolicies = projectProxy.subjectNameIdentifierPolicies;
+
+                    var sp3:IdentityProvider;
+                    if (_roleA is IdentityProvider) {
+                        sp3 = _roleA as IdentityProvider;
+                    } else if (_roleB is IdentityProvider) {
+                        sp3 = _roleB as IdentityProvider;
+                    }
+
+                    if (sp3.subjectNameIDPolicy != null) {
+                        for (var k2:int=0; k2 < view.subjectNameIdPolicyCombo.dataProvider.length; k2++) {
+                            if (view.subjectNameIdPolicyCombo.dataProvider[k2].name == sp3.subjectNameIDPolicy.name) {
+                                view.subjectNameIdPolicyCombo.selectedIndex = k2;
+                                break;
+                            }
+                        }
+                    } else {
+                        for (var l2:int=0; l2 < view.subjectNameIdPolicyCombo.dataProvider.length; l2++) {
+                            if (view.subjectNameIdPolicyCombo.dataProvider[l2].mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
+                                view.subjectNameIdPolicyCombo.selectedIndex = l2;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+
+                break;
             default:
                 var cfc:CreateFederatedConnectionElementRequest = notification.getBody() as CreateFederatedConnectionElementRequest;
                 _roleA = cfc.roleA;
@@ -692,6 +753,10 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
                 if (_roleA is ServiceProvider || _roleB is ServiceProvider) {
                     sendNotification(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES);
                     sendNotification(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES);
+                }
+
+                if (_roleA is IdentityProvider || _roleB is IdentityProvider) {
+                    sendNotification(ApplicationFacade.LIST_NAMEID_POLICIES);
                 }
                 break;
         }
@@ -720,6 +785,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
             view.accountLinkagePolicyCombo.enabled = false;
             view.identityMappingPolicyCombo.enabled = false;
+            view.subjectNameIdPolicyCombo.enabled = false;
+            view.ignoreRequestedNameIDPolicy.enabled = false;
 
             view.idpChannelLocationProtocol.enabled = false;
             view.idpChannelLocationDomain.enabled = false;
@@ -740,12 +807,15 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
             view.accountLinkagePolicyCombo.enabled = true;
             view.identityMappingPolicyCombo.enabled = true;
+            view.subjectNameIdPolicyCombo.enabled = true;
+            view.ignoreRequestedNameIDPolicy.enabled = true;
 
             view.idpChannelLocationProtocol.enabled = true;
             view.idpChannelLocationDomain.enabled = true;
             view.idpChannelLocationPort.enabled = true;
             view.idpChannelLocationContext.enabled = true;
             view.idpChannelLocationPath.enabled = true;
+
         }
     }
 
@@ -763,6 +833,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.wantAuthnRequestsSignedCheck.enabled = false;
             
             view.spChannelAuthContractCombo.enabled = false;
+            view.subjectNameIdPolicyCombo.enabled = false;
+            view.ignoreRequestedNameIDPolicy.enabled = false;
+
             view.spChannelAuthMechanism.enabled = false;
             view.spChannelAuthAssertionEmissionPolicyCombo.enabled = false;
 
@@ -783,6 +856,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.wantAuthnRequestsSignedCheck.enabled = true;
             
             view.spChannelAuthContractCombo.enabled = true;
+            view.subjectNameIdPolicyCombo.enabled = true;
+            view.ignoreRequestedNameIDPolicy.enabled = true;
             view.spChannelAuthMechanism.enabled = false; //dont enable auth mechanism
             view.spChannelAuthAssertionEmissionPolicyCombo.enabled = true;
 

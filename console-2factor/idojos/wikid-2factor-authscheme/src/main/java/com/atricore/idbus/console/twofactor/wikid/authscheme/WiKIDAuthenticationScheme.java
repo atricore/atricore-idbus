@@ -16,6 +16,8 @@ import java.security.Principal;
  */
 public class WiKIDAuthenticationScheme extends AbstractAuthenticationScheme {
 
+    public static final String SCHEME_NAME = "2factor-authentication";
+
     private static final Log logger = LogFactory.getLog(WiKIDAuthenticationScheme.class);
 
     private String serverHost;
@@ -33,7 +35,7 @@ public class WiKIDAuthenticationScheme extends AbstractAuthenticationScheme {
     private String wcStorePass;
 
     public WiKIDAuthenticationScheme() {
-        this.setName("2factor-authentication");
+        this.setName(SCHEME_NAME);
     }
 
     @Override

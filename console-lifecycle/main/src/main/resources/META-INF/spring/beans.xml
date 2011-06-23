@@ -82,6 +82,7 @@
 
         <property name="identityMappingPolicyRegistry" ref="identityMappingPolicyRegistry"/>
         <property name="accountLinkagePolicyRegistry" ref="accountLinkagePolicyRegistry"/>
+        <property name="subjectNameIdentifierPolicyRegistry" ref="subjectNameIdentifierPolicyRegistry"/>
 
         <!-- DAO's -->
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
@@ -159,6 +160,11 @@
 
     </bean>
 
+    <bean name="subjectNameIdentifierPolicyRegistry"
+          class="com.atricore.idbus.console.lifecycle.main.impl.SubjectNameIdentifierPolicyRegistry">
+
+    </bean>
+
     <bean name="identityMappingPolicyRegistry"
           class="com.atricore.idbus.console.lifecycle.main.impl.IdentityMappingPolicyRegistry">
 
@@ -178,6 +184,14 @@
                        bind-method="register"
                        unbind-method="unregister"/>
     </osgi:list>
+
+    <osgi:list id="customSubjectNameIdentifierPolicies" cardinality="0..N"
+               interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.SubjectNameIdentifierPolicy">
+        <osgi:listener ref="subjectNameIdentifierPolicyRegistry"
+                       bind-method="register"
+                       unbind-method="unregister"/>
+    </osgi:list>
+
 
 
     <!-- =================================================================== -->

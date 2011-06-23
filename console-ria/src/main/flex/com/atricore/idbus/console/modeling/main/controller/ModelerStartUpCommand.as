@@ -86,6 +86,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _exportMetadataCommand:IIocCommand;
     private var _accountLinkagePolicyListCommand:IIocCommand;
     private var _identityMappingPolicyListCommand:IIocCommand;
+    private var _subjectNameIDPolicyListCommand:IIocCommand;
     
     public function ModelerStartUpCommand() {
     }
@@ -175,6 +176,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.METADATA_EXPORT, exportMetadataCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES, accountLinkagePolicyListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES, identityMappingPolicyListCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_NAMEID_POLICIES, subjectNameIDPolicyListCommand.getConfigName());
     }
 
     public function get browserMediator():IIocMediator {
@@ -736,6 +738,15 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set identityMappingPolicyListCommand(value:IIocCommand):void {
         _identityMappingPolicyListCommand = value;
+    }
+
+
+    public function get subjectNameIDPolicyListCommand():IIocCommand {
+        return _subjectNameIDPolicyListCommand;
+    }
+
+    public function set subjectNameIDPolicyListCommand(value:IIocCommand):void {
+        _subjectNameIDPolicyListCommand = value;
     }
 }
 }

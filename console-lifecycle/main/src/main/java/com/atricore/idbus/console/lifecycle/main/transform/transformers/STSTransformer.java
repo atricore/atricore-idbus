@@ -97,66 +97,26 @@ public class STSTransformer extends AbstractTransformer {
         // ----------------------------------------
         // JOSSO Legacy authenticator
         // ----------------------------------------
-        //Bean legacyAuthenticator = newAnonymousBean("org.atricore.idbus.kernel.main.authn.AuthenticatorImpl");
+
         Bean legacyAuthenticator = newBean(idpBeans, "authenticator", "org.atricore.idbus.kernel.main.authn.AuthenticatorImpl");
         List<Ref> authnSchemes = new ArrayList<Ref>();
-/*
-        for (AuthenticationMechanism authn : provider.getAuthenticationMechanisms()) {
 
-            if (authn instanceof BasicAuthentication) {
-
-                BasicAuthentication basicAuthn = (BasicAuthentication) authn;
-                Bean basicAuthnBean = newBean(idpBeans, normalizeBeanName(provider.getName()) + "-basic-authn", UsernamePasswordAuthScheme.class);
-
-                // Auth scheme name cannot be changed!
-                setPropertyValue(basicAuthnBean, "name", "basic-authentication");
-                setPropertyValue(basicAuthnBean, "hashAlgorithm", basicAuthn.getHashAlgorithm());
-                setPropertyValue(basicAuthnBean, "hashEncoding", basicAuthn.getHashEncoding());
-                setPropertyValue(basicAuthnBean, "ignorePasswordCase", false); // Dangerous
-                setPropertyValue(basicAuthnBean, "ignoreUserCase", basicAuthn.isIgnoreUsernameCase());
-
-                setPropertyRef(basicAuthnBean, "credentialStore", idpBean.getName() + "-identity-store");
-                setPropertyBean(basicAuthnBean, "credentialStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));
-
-                Ref basicAuthnRef = new Ref();
-                basicAuthnRef.setBean(basicAuthnBean.getName());
-
-                authnSchemes.add(basicAuthnRef);
-
-            } else {
-                throw new TransformException("Unsupported Authentication Scheme Type [" + authn.getName() + "] " +
-                        authn.getClass().getSimpleName());
-            }
-
-        }
-*/
         if (provider.getAuthenticationMechanisms().size() < 1)
             throw new TransformException("No Authentication Mechanism defined for " + provider.getName());
 
         setPropertyRefs(legacyAuthenticator, "authenticationSchemes", authnSchemes);
         
         // ----------------------------------------
-        // Atricore Authenticator
+        // Atricore Authenticators
         // ----------------------------------------
 
-        // Default Authenticator
-        Bean stsAuthn = newAnonymousBean("org.atricore.idbus.capabilities.sts.main.DefaultSecurityTokenAuthenticator");
-        //setPropertyBean(stsAuthn, "authenticator", legacyAuthenticator);
-        setPropertyRef(stsAuthn, "authenticator", legacyAuthenticator.getName());
-
+        // Create empty list with all authenticators ...
         List<Bean> authenticators = new ArrayList<Bean>();
-        authenticators.add(stsAuthn);
 
         // authenticators
         setPropertyAsBeans(sts, "authenticators", authenticators);
 
         // artifactQueueManager
-        /*String aqmName = event.getContext().getCurrentModule().getId() + "-aqm";
-        Beans beansOsgi = (Beans) event.getContext().get("beansOsgi");
-        Bean aqmBean = getBean(beansOsgi, aqmName);
-        if (aqmBean == null) {
-            throw new TransformException("No Artifact Queue Manager defined as " + aqmName);
-        }*/
         setPropertyRef(sts, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
     }
 }

@@ -132,12 +132,28 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
         WindowsAuthentication wiaAuthn = (WindowsAuthentication) event.getData();
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         Bean basicAuthnBean = getBean(idpBeans, normalizeBeanName(wiaAuthn.getName()));
+        Bean idpBean = null;
+        Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
+        if (b.size() != 1) {
+            throw new TransformException("Invalid IdP definition count : " + b.size());
+        }
+        idpBean = b.iterator().next();
 
         // Wire basic authentication scheme to Authenticator
         Collection<Bean> authenticators = getBeansOfType(idpBeans, AuthenticatorImpl.class.getName());
         if (authenticators.size() == 1) {
-            Bean authenticator = authenticators.iterator().next();
-            addPropertyBeansAsRefs(authenticator, "authenticationSchemes", basicAuthnBean);
+
+            // Wire two factor authentication scheme to Authenticator
+            Bean legacyAuthenticator = authenticators.iterator().next();
+            addPropertyBeansAsRefs(legacyAuthenticator, "authenticationSchemes", basicAuthnBean);
+
+            // Add new 2F Authenticator
+            Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
+            Bean twoFactorAuthenticator = newAnonymousBean("org.atricore.idbus.capabilities.spnego.authenticators.SpnegoSecurityTokenAuthenticator");
+            setPropertyRef(twoFactorAuthenticator, "authenticator", legacyAuthenticator.getName());
+
+            addPropertyBean(sts, "authenticators", twoFactorAuthenticator);
+
         }
 
         return basicAuthnBean;

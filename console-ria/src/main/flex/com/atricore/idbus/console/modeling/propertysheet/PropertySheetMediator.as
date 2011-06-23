@@ -35,6 +35,7 @@ import com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCom
 import com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicyListCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
+import com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.directory.DirectoryAuthnServiceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.directory.DirectoryAuthnServiceLookupSection;
@@ -98,6 +99,7 @@ import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
+import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
 import com.atricore.idbus.console.services.dto.WindowsAuthentication;
 import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
@@ -281,6 +283,9 @@ public class PropertySheetMediator extends IocMediator {
     [Bindable]
     public var _identityMappingPolicies:ArrayCollection;
 
+    [Bindable]
+    public var _subjectNameIdPolicies:ArrayCollection;
+
     // WiKID
     [Bindable]
     private var _wikidCAStoreFileRef:FileReference;
@@ -356,7 +361,9 @@ public class PropertySheetMediator extends IocMediator {
             AccountLinkagePolicyListCommand.SUCCESS,
             AccountLinkagePolicyListCommand.FAILURE,
             IdentityMappingPolicyListCommand.SUCCESS,
-            IdentityMappingPolicyListCommand.FAILURE];
+            IdentityMappingPolicyListCommand.FAILURE,
+            SubjectNameIDPolicyListCommand.SUCCESS,
+            SubjectNameIDPolicyListCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -628,6 +635,57 @@ public class PropertySheetMediator extends IocMediator {
                     }
                 }
                 break;
+            case SubjectNameIDPolicyListCommand.SUCCESS:
+                if (_currentIdentityApplianceElement != null) {
+                    if (_currentIdentityApplianceElement is IdentityProvider && _ipCoreSection != null) {
+                        _subjectNameIdPolicies = projectProxy.subjectNameIdentifierPolicies;
+                        var ip2:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+                        if (ip2.subjectNameIDPolicy != null) {
+                            for (var n1:int=0; n1 < _ipCoreSection.subjectNameIdPolicyCombo.dataProvider.length; n1++) {
+                                if (_ipCoreSection.subjectNameIdPolicyCombo.dataProvider[n1].name == ip2.subjectNameIDPolicy.name) {
+                                    _ipCoreSection.subjectNameIdPolicyCombo.selectedIndex = n1;
+                                    break;
+                                }
+                            }
+                        } else {
+                            for (var p1:int=0; p < _ipCoreSection.subjectNameIdPolicyCombo.dataProvider.length; p1++) {
+
+                                if (_ipCoreSection.subjectNameIdPolicyCombo.dataProvider[p1].type.toString() == SubjectNameIDPolicyType.PRINCIPAL.toString()) {
+                                    _ipCoreSection.subjectNameIdPolicyCombo.selectedIndex = p1;
+                                    break;
+                                }
+                            }
+                        }
+                        _ipCoreSection.subjectNameIdPolicyCombo.addEventListener(Event.CHANGE, handleSectionChange);
+                    } else if (_currentIdentityApplianceElement is FederatedConnection && _federatedConnectionSPChannelSection != null) {
+                        _subjectNameIdPolicies = projectProxy.subjectNameIdentifierPolicies;
+                        var spChannel2:ServiceProviderChannel;
+                        var fc3:FederatedConnection = _currentIdentityApplianceElement as FederatedConnection;
+                        if (fc3.channelA is ServiceProviderChannel) {
+                            spChannel2 = fc3.channelA as ServiceProviderChannel;
+                        } else if (fc3.channelB is IdentityProviderChannel) {
+                            spChannel2 = fc3.channelB as ServiceProviderChannel;
+                        }
+
+                        if (spChannel2.subjectNameIDPolicy != null) {
+                            for (var q2:int=0; q2 < _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.dataProvider.length; q2++) {
+                                if (_federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.dataProvider[q2].name == spChannel2.subjectNameIDPolicy.name) {
+                                    _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.selectedIndex = q2;
+                                    break;
+                                }
+                            }
+                        } else {
+                            for (var r2:int=0; r2 < _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.dataProvider.length; r2++) {
+                                if (_federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.dataProvider[r2].type.toString() == SubjectNameIDPolicyType.PRINCIPAL.toString()) {
+                                    _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.selectedIndex = r2;
+                                    break;
+                                }
+                            }
+                        }
+                        _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.addEventListener(Event.CHANGE, handleSectionChange);
+                    }
+                }
+                break;
         }
 
     }
@@ -838,7 +896,9 @@ public class PropertySheetMediator extends IocMediator {
             // bind view
             _ipCoreSection.identityProviderName.text = identityProvider.name;
             _ipCoreSection.identityProvDescription.text = identityProvider.description;
-            //TODO
+
+            BindingUtils.bindProperty(_ipCoreSection.subjectNameIdPolicyCombo, "dataProvider", this, "_subjectNameIdPolicies");
+            sendNotification(ApplicationFacade.LIST_NAMEID_POLICIES);
 
             for (var i:int = 0; i < _ipCoreSection.idpLocationProtocol.dataProvider.length; i++) {
                 if (identityProvider.location != null && _ipCoreSection.idpLocationProtocol.dataProvider[i].data == identityProvider.location.protocol) {
@@ -851,6 +911,7 @@ public class PropertySheetMediator extends IocMediator {
                     identityProvider.location.port.toString() : "";
             _ipCoreSection.idpLocationContext.text = identityProvider.location.context;
             _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
+            _ipCoreSection.ignoreRequestedNameIDPolicy.selected = identityProvider.ignoreRequestedNameIDPolicy;
 
             // select authentication mechanism (currently there is always only one selected authn. mechanism)
             var selectedAuthnMechanism:String = "basic";
@@ -873,16 +934,6 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            /*
-            for each(var authMech:AuthenticationMechanism in identityProvider.authenticationMechanisms){
-                if(authMech is BasicAuthentication){
-                    var liv:ListItemValueObject = _ipCoreSection.authMechanismColl.getItemAt(0) as ListItemValueObject;
-                    liv.isSelected = true;
-                }
-                //TODO ADD OTHER AUTH MECHANISMS
-            }
-            */
-
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
@@ -890,6 +941,7 @@ public class PropertySheetMediator extends IocMediator {
             _ipCoreSection.idpLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.ignoreRequestedNameIDPolicy.addEventListener(Event.CHANGE, handleSectionChange);
 
             //clear all existing validators and add idp core section validators
             _validators = [];
@@ -917,33 +969,8 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.location.port = parseInt(_ipCoreSection.idpLocationPort.text);
             identityProvider.location.context = _ipCoreSection.idpLocationContext.text;
             identityProvider.location.uri = _ipCoreSection.idpLocationPath.text;
-
-            // For now only Basic Authentication is enabled. Modification is done through "Authentication" tab
-            /*
-            for each(var liv:ListItemValueObject in  _ipCoreSection.authMechanismCombo.dataProvider){
-                if(liv.isSelected){
-                    if(identityProvider.authenticationMechanisms == null){
-                        identityProvider.authenticationMechanisms = new ArrayCollection();
-                    }
-                    switch(liv.name){
-                        case "basic":
-                            var basicAuth:BasicAuthentication = new BasicAuthentication();
-                            basicAuth.name = identityProvider.name + "-basic-authn";
-                            basicAuth.hashAlgorithm = "MD5";
-                            basicAuth.hashEncoding = "HEX";
-                            basicAuth.ignoreUsernameCase = false;
-                            identityProvider.authenticationMechanisms.addItem(basicAuth);
-                            break;
-                        case "strong":
-                            break;
-                    }
-                }
-            }
-            */
-
-            // For now only "Default" contract and emission policy exists and there's no need for modification.
-            //authenticationContract
-            //authenticationAssertionEmissionPolicy
+            identityProvider.subjectNameIDPolicy = _ipCoreSection.subjectNameIdPolicyCombo.selectedItem;
+            identityProvider.ignoreRequestedNameIDPolicy = _ipCoreSection.ignoreRequestedNameIDPolicy.selected;
 
             // update default sp channels
             if (identityProvider.federatedConnectionsA != null) {
@@ -1886,6 +1913,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // if identityProvider is null that means some other element was selected before completing this
         if (identityProvider != null) {
+
             resetUploadMetadataFields();
             
             // bind view
@@ -3344,6 +3372,9 @@ public class PropertySheetMediator extends IocMediator {
         // if spChannel is null that means some other element was selected before completing this
         if (spChannel != null) {
 
+            BindingUtils.bindProperty(_federatedConnectionSPChannelSection.subjectNameIdPolicyCombo, "dataProvider", this, "_subjectNameIdPolicies");
+            sendNotification(ApplicationFacade.LIST_NAMEID_POLICIES);
+
             _federatedConnectionSPChannelSection.useInheritedIDPSettings.addEventListener(Event.CHANGE, handleUseInheritedIDPSettingsChange);
             _federatedConnectionSPChannelSection.useInheritedIDPSettings.selected = !spChannel.overrideProviderSetup;
             reflectIdpSettingsInSpChannelTab();
@@ -3379,6 +3410,8 @@ public class PropertySheetMediator extends IocMediator {
                     _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.selected = true;
                 }
             }
+
+            _federatedConnectionSPChannelSection.ignoreRequestedNameIDPolicy.selected = spChannel.ignoreRequestedNameIDPolicy;
 
             // set location
             if (spChannel.location != null) {
@@ -3422,6 +3455,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.spChannelAuthContractCombo.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelAuthMechanism.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelAuthAssertionEmissionPolicyCombo.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionSPChannelSection.ignoreRequestedNameIDPolicy.addEventListener(Event.CHANGE, handleSectionChange);
 
             //clear all existing validators and add sp channel section validators
             if (spChannel.overrideProviderSetup) {
@@ -3437,12 +3472,15 @@ public class PropertySheetMediator extends IocMediator {
     private function handleFederatedConnectionSpChannelPropertyTabRollOut(event:Event):void {
         if (_dirty && validate(true)) {
             var spChannel:ServiceProviderChannel;
+            var idp:IdentityProvider;
 
             var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
             if(connection.channelA is ServiceProviderChannel){
                 spChannel = connection.channelA as ServiceProviderChannel;
+                idp = connection.roleA as IdentityProvider;
             } else if (connection.channelB is ServiceProviderChannel){
                 spChannel = connection.channelB as ServiceProviderChannel;
+                idp = connection.roleB as IdentityProvider;
             }
             spChannel.overrideProviderSetup = !_federatedConnectionSPChannelSection.useInheritedIDPSettings.selected;
 
@@ -3483,7 +3521,18 @@ public class PropertySheetMediator extends IocMediator {
             spChannel.location.context = _federatedConnectionSPChannelSection.spChannelLocationContext.text;
             spChannel.location.uri = _federatedConnectionSPChannelSection.spChannelLocationPath.text;
 
-            spChannel.wantAuthnRequestsSigned = _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.selected;
+
+            if (!spChannel.overrideProviderSetup) {
+                spChannel.subjectNameIDPolicy = idp.subjectNameIDPolicy;
+                spChannel.ignoreRequestedNameIDPolicy = idp.ignoreRequestedNameIDPolicy;
+                spChannel.wantAuthnRequestsSigned = idp.wantAuthnRequestsSigned
+
+            } else {
+                spChannel.subjectNameIDPolicy = _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.selectedItem;
+                spChannel.ignoreRequestedNameIDPolicy = _federatedConnectionSPChannelSection.ignoreRequestedNameIDPolicy.selected;
+                spChannel.wantAuthnRequestsSigned = _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.selected;
+            }
+
             
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
@@ -6204,6 +6253,25 @@ public class PropertySheetMediator extends IocMediator {
             _validators.push(_federatedConnectionSPChannelSection.domainValidator);
             _validators.push(_federatedConnectionSPChannelSection.contextValidator);
             _validators.push(_federatedConnectionSPChannelSection.pathValidator);
+
+            // Rebuild Location
+            var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
+            var spName:String = null;
+            var idp:IdentityProvider = null;
+            if(connection.roleA is IdentityProvider){
+                idp = connection.roleA as IdentityProvider;
+                spName = connection.roleB.name;
+
+            } else if (connection.roleB is IdentityProvider){
+                idp = connection.roleB as IdentityProvider;
+                spName = connection.roleA.name;
+            }
+
+            _federatedConnectionSPChannelSection.spChannelLocationDomain.text = idp.location.host;
+            _federatedConnectionSPChannelSection.spChannelLocationPort.text = idp.location.port.toString() != "0" ? idp.location.port.toString() : "";
+            _federatedConnectionSPChannelSection.spChannelLocationContext.text = idp.location.context;
+            _federatedConnectionSPChannelSection.spChannelLocationPath.text = idp.location.uri + "/" + spName.toUpperCase().replace(/\s+/g, "-");
+
         }
         _dirty = true;
         disableExportButtons();
@@ -6218,6 +6286,25 @@ public class PropertySheetMediator extends IocMediator {
             _validators.push(_federatedConnectionIDPChannelSection.domainValidator);
             _validators.push(_federatedConnectionIDPChannelSection.contextValidator);
             _validators.push(_federatedConnectionIDPChannelSection.pathValidator);
+
+            // Rebuild Location
+            var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
+            var idpName:String = null;
+            var sp:ServiceProvider = null;
+            if(connection.roleA is ServiceProvider){
+                sp = connection.roleA as ServiceProvider;
+                idpName = connection.roleB.name;
+
+            } else if (connection.roleB is ServiceProvider){
+                sp = connection.roleB as ServiceProvider;
+                idpName = connection.roleA.name;
+            }
+
+            _federatedConnectionIDPChannelSection.idpChannelLocationDomain.text = sp.location.host;
+            _federatedConnectionIDPChannelSection.idpChannelLocationPort.text = sp.location.port.toString() != "0" ? sp.location.port.toString() : "";
+            _federatedConnectionIDPChannelSection.idpChannelLocationContext.text = sp.location.context;
+            _federatedConnectionIDPChannelSection.idpChannelLocationPath.text = sp.location.uri + "/" + idpName.toUpperCase().replace(/\s+/g, "-");
+
         }
         _dirty = true;
         disableExportButtons();
@@ -6458,6 +6545,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.enabled = false;
 
             _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.enabled = false;
+            _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.enabled = false;
+            _federatedConnectionSPChannelSection.ignoreRequestedNameIDPolicy.enabled = false;
 
             _federatedConnectionSPChannelSection.spChannelAuthContractCombo.enabled = false;
             _federatedConnectionSPChannelSection.spChannelAuthMechanism.enabled = false;
@@ -6478,6 +6567,9 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.enabled = true;
 
             _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.enabled = true;
+            _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.enabled = true;
+            _federatedConnectionSPChannelSection.ignoreRequestedNameIDPolicy.enabled = true;
+
             
             _federatedConnectionSPChannelSection.spChannelAuthContractCombo.enabled = true;
             _federatedConnectionSPChannelSection.spChannelAuthMechanism.enabled = false; //dont enable auth mechanism

@@ -344,24 +344,6 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
             setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
         }
 
-        // TODO : Support channel specific stores !?
-        // TODO RETROFIT  : if (provider.getDefaultChannel() != null && ((IdentityProviderChannel)provider.getDefaultChannel()).getIdentityVault() != null) {
-        // TODO RETROFIT  :     setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
-        // TODO RETROFIT  : }
-
-        // idp channel plans
-        Bean sloToSamlPlan = newBean(spBeans, sp.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);
-        setPropertyRef(sloToSamlPlan, "bpmsManager", "bpms-manager");
-        
-        Bean spAuthnToSamlPlan = newBean(spBeans, sp.getName() + "-idpunsolicitedresponse-to-subject-plan", SPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
-        setPropertyRef(spAuthnToSamlPlan, "bpmsManager", "bpms-manager");
-
-        Bean samlArtResToSamlArtRespPlan = newBean(spBeans, sp.getName() + "-samlr2artresolve-to-samlr2artresponse-plan", SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan.class);
-        setPropertyRef(samlArtResToSamlArtRespPlan, "bpmsManager", "bpms-manager");
-
-        Bean samlArtToSamlArtResPlan = newBean(spBeans, sp.getName() + "-samlr2art-to-samlr2artresolve-plan", SamlR2ArtifactToSamlR2ArtifactResolvePlan.class);
-        setPropertyRef(samlArtToSamlArtResPlan, "bpmsManager", "bpms-manager");
-        
         // ----------------------------------------
         // MBean
         // ----------------------------------------
@@ -385,21 +367,6 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         mBeans.add(mBeanEntry);
 
         setPropertyAsMapEntries(mBeanExporter, "beans", mBeans);
-
-        // mbean assembler
-        /*Bean mBeanAssembler = newAnonymousBean("org.springframework.jmx.export.assembler.MethodNameBasedMBeanInfoAssembler");
-
-        List<Prop> props = new ArrayList<Prop>();
-
-        Prop prop = new Prop();
-        prop.setKey("org.atricore.idbus." + event.getContext().getCurrentModule().getId() +
-                ":type=ServiceProvider,name=" + sp.getName());
-        prop.getContent().add("listSessions,listUserSessions,listSessionsAsTable,listUserSessionsAsTable,listStatesAsTable,listStateEntriesAsTable");
-        props.add(prop);
-
-        setPropertyValue(mBeanAssembler, "methodMappings", props);
-
-        setPropertyBean(mBeanExporter, "assembler", mBeanAssembler);*/
 
         // -------------------------------------------------------
         // Define Session Manager bean

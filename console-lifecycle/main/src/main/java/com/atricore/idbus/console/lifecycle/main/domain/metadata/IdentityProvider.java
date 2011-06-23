@@ -32,7 +32,12 @@ public class IdentityProvider extends FederatedProvider {
     private boolean signRequests;
 
     private boolean wantSignedRequests;
-    
+
+    private boolean ignoreRequestedNameIDPolicy = true;
+
+    // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
+    private SubjectNameIdentifierPolicy subjectNameIDPolicy;
+
     // RFU
     private AttributeProfile attributeProfile;
 
@@ -127,5 +132,21 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setDelegatedAuthentication(DelegatedAuthentication delegatedAuthentication) {
         this.delegatedAuthentication = delegatedAuthentication;
+    }
+
+    public boolean isIgnoreRequestedNameIDPolicy() {
+        return ignoreRequestedNameIDPolicy;
+    }
+
+    public void setIgnoreRequestedNameIDPolicy(boolean ignoreRequestedNameIDPolicy) {
+        this.ignoreRequestedNameIDPolicy = ignoreRequestedNameIDPolicy;
+    }
+
+    public SubjectNameIdentifierPolicy getSubjectNameIDPolicy() {
+        return subjectNameIDPolicy;
+    }
+
+    public void setSubjectNameIDPolicy(SubjectNameIdentifierPolicy subjectNameIDPolicy) {
+        this.subjectNameIDPolicy = subjectNameIDPolicy;
     }
 }

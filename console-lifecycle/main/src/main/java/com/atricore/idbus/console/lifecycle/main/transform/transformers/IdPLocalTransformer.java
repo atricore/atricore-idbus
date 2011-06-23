@@ -295,57 +295,6 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
 
         setPropertyAsMapEntries(mBeanExporter, "beans", mBeans);
 
-        // plans
-        Bean sloToSamlPlan = newBean(idpBeans, idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);
-        setPropertyRef(sloToSamlPlan, "bpmsManager", "bpms-manager");
-
-        Bean sloToSamlSpSloPlan = newBean(idpBeans, idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan", SamlR2SloRequestToSpSamlR2SloRequestPlan.class);
-        setPropertyRef(sloToSamlSpSloPlan, "bpmsManager", "bpms-manager");
-
-        Bean authnToSamlPlan = newBean(idpBeans, idpBean.getName() + "-samlr2authnreq-to-samlr2resp-plan", SamlR2AuthnRequestToSamlR2ResponsePlan.class);
-        setPropertyRef(authnToSamlPlan, "bpmsManager", "bpms-manager");
-
-        Bean stmtToAssertionPlan = newBean(idpBeans, idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
-        setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
-        setPropertyRef(stmtToAssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
-
-        Bean samlArtResToSamlArtRespPlan = newBean(idpBeans, idpBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan", SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan.class);
-        setPropertyRef(samlArtResToSamlArtRespPlan, "bpmsManager", "bpms-manager");
-
-        Bean samlArtToSamlArtResPlan = newBean(idpBeans, idpBean.getName() + "-samlr2art-to-samlr2artresolve-plan", SamlR2ArtifactToSamlR2ArtifactResolvePlan.class);
-        setPropertyRef(samlArtToSamlArtResPlan, "bpmsManager", "bpms-manager");
-
-        Bean samlr2IdpInitToSamlr2AuthnReqPlan = newBean(idpBeans, idpBean.getName() + "-samlr2idpinitiatedauthnreq-to-samlr2authnreq-plan", IDPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
-        setPropertyRef(samlr2IdpInitToSamlr2AuthnReqPlan, "bpmsManager", "bpms-manager");
-
-
-        /*
-    <bean name="samlr2idpinitiatedauthnreq-to-samlr2authnreq-plan"
-          class="org.atricore.idbus.capabilities.samlr2.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan">
-        <property name="bpmsManager" ref="bpms-manager"/>
-    </bean>
-
-         */
-        
-        //Bean authnToSamlResponsePlan = newBean(idpBeans, "samlr2authnreq-to-samlr2response-plan", SamlR2AuthnReqToSamlR2RespPlan.class);
-        //setPropertyRef(authnToSamlResponsePlan, "bpmsManager", "bpms-manager");
-
-
-        // mbean assembler
-        /*Bean mBeanAssembler = newAnonymousBean("org.springframework.jmx.export.assembler.MethodNameBasedMBeanInfoAssembler");
-
-        List<Prop> props = new ArrayList<Prop>();
-
-        Prop prop = new Prop();
-        prop.setKey("org.atricore.idbus." + event.getContext().getCurrentModule().getId() +
-                ":type=IdentityProvider,name=" + idpBean.getName());
-        prop.getContent().add("listSessions,listSessionsAsTable,listUserSessions,listUserSessionsAsTable,invalidateSession,invalidateAllSessions,invalidateUserSessions,getMaxInactiveInterval,listStatesAsTable,listStateEntriesAsTable");
-        props.add(prop);
-        
-        setPropertyValue(mBeanAssembler, "methodMappings", props);
-        
-        setPropertyBean(mBeanExporter, "assembler", mBeanAssembler);*/
-
         // -------------------------------------------------------
         // Session Manager bean
         // -------------------------------------------------------
@@ -384,22 +333,6 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
 
         Bean idpBean = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName()).iterator().next();
-
-        // Wire SP Channels (DONE IN FED.CONN. TRANSF.
-        /*
-        List<Bean> bc = new ArrayList<Bean>();
-        Collection<Bean> channels = getBeansOfType(idpBeans, SPChannelImpl.class.getName());
-        for (Bean b : channels) {
-            String channelProvider = getPropertyRef(b, "provider");
-            if (channelProvider != null && !channelProvider.equals(idpBean.getName())) {
-                bc.add(b);
-            } else {
-                setPropertyRef(idpBean, "channel", b.getName());
-            }
-        }
-        if (bc.size() > 0)
-            setPropertyAsRefs(idpBean, "channels", bc);
-        */
 
         // Wire provider to COT
         Collection<Bean> cots = getBeansOfType(baseBeans, CircleOfTrustImpl.class.getName());

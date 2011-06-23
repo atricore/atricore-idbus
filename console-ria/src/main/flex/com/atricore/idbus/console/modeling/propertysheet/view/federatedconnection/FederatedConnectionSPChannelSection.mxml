@@ -124,6 +124,14 @@
                         </s:dataProvider>
                     </s:DropDownList>
                 </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.subjectNameIDPolicy')}:" labelWidth="235">
+                    <s:DropDownList id="subjectNameIdPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" enabled="false"/>
+                </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.ignoreRequestedNameIDPolicy')}:" labelWidth="235">
+                    <s:CheckBox id="ignoreRequestedNameIDPolicy" selected="true" enabled="false"/>
+                </mx:FormItem>
+
         </mx:Form>
     </utils:TitledBorderBox>
 </s:HGroup>

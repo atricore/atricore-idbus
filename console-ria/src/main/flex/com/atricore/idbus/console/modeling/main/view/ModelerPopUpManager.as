@@ -1034,7 +1034,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createFederatedConnectionCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.federated.connection");
         _popup.width = 640;
-        _popup.height = 425;
+        _popup.height = 475;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_federatedConnectionCreateForm);

@@ -57,6 +57,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
@@ -143,6 +144,8 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private IdentityMappingPolicyRegistry identityMappingPolicyRegistry;
 
+    private SubjectNameIdentifierPolicyRegistry  subjectNameIdentifierPolicyRegistry;
+
     public void afterPropertiesSet() throws Exception {
         if (sampleKeystore.getStore() != null &&
                 (sampleKeystore.getStore().getValue() == null ||
@@ -165,7 +168,25 @@ public class IdentityApplianceManagementServiceImpl implements
         logger.info("Initializing Identity Appliance Management serivce ....");
         syncAppliances();
 
-        // Register built-in policies
+        // Register buil-in Subject NameID Policies
+
+        // Principal name
+        SubjectNameIdentifierPolicy principalPolicy =
+                new SubjectNameIdentifierPolicy ("samlr2-unspecified-nameidpolicy",
+                        "Principal",
+                        "samlr2.principal",
+                        SubjectNameIDPolicyType.PRINCIPAL);
+        this.subjectNameIdentifierPolicyRegistry.register(principalPolicy, null);
+
+        // Email
+        SubjectNameIdentifierPolicy emailPolicy =
+                new SubjectNameIdentifierPolicy ("samlr2-email-nameidpolicy",
+                        "Email Address",
+                        "samlr2.email",
+                        SubjectNameIDPolicyType.EMAIL);
+        this.subjectNameIdentifierPolicyRegistry.register(emailPolicy, null);
+
+        // Register built-in Account Linkage policies
         for (IdentityMappingType type : IdentityMappingType.values()) {
             if (type != IdentityMappingType.CUSTOM) {
                 IdentityMappingPolicy policy = new IdentityMappingPolicy();
@@ -911,6 +932,17 @@ public class IdentityApplianceManagementServiceImpl implements
         return res;
     }
 
+    @Transactional
+    public ListSubjectNameIDPoliciesResponse listSubjectNameIDPolicies(ListSubjectNameIDPoliciesRequest req) throws IdentityServerException {
+        ListSubjectNameIDPoliciesResponse res = new ListSubjectNameIDPoliciesResponse();
+
+        for (SubjectNameIdentifierPolicy policy : subjectNameIdentifierPolicyRegistry.getPolicies()) {
+            res.getPolicies().add(policy);
+        }
+
+        return res;
+    }
+
     /***************************************************************
      * Lookup methods
      ***************************************************************/
@@ -1387,6 +1419,14 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setAccountLinkagePolicyRegistry(AccountLinkagePolicyRegistry accountLinkagePolicyRegistry) {
         this.accountLinkagePolicyRegistry = accountLinkagePolicyRegistry;
+    }
+
+    public SubjectNameIdentifierPolicyRegistry getSubjectNameIdentifierPolicyRegistry() {
+        return subjectNameIdentifierPolicyRegistry;
+    }
+
+    public void setSubjectNameIdentifierPolicyRegistry(SubjectNameIdentifierPolicyRegistry subjectNameIdentifierPolicyRegistry) {
+        this.subjectNameIdentifierPolicyRegistry = subjectNameIdentifierPolicyRegistry;
     }
 
     public IdentityMappingPolicyRegistry getIdentityMappingPolicyRegistry() {

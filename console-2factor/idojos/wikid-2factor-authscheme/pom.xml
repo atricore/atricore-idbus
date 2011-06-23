@@ -129,13 +129,26 @@
         </plugins>
     </build>
 
-
     <dependencies>
 
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
             <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sts</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
+            <version>${idbus.cap.sts.version}</version>
             <scope>provided</scope>
         </dependency>
 

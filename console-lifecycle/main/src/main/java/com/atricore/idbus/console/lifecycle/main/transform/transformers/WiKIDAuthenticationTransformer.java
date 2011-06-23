@@ -109,13 +109,30 @@ public class WiKIDAuthenticationTransformer extends AbstractTransformer {
         TwoFactorAuthentication twoFactorAuthn = (TwoFactorAuthentication) event.getData();
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         Bean twoFactorAuthnBean = getBean(idpBeans, normalizeBeanName(twoFactorAuthn.getName()));
-        
-        // Wire two factor authentication scheme to Authenticator
-        Collection<Bean> authenticators = getBeansOfType(idpBeans, AuthenticatorImpl.class.getName());
-        if (authenticators.size() == 1) {
-            Bean authenticator = authenticators.iterator().next();
-            addPropertyBeansAsRefs(authenticator, "authenticationSchemes", twoFactorAuthnBean);
+        Bean idpBean = null;
+        Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
+        if (b.size() != 1) {
+            throw new TransformException("Invalid IdP definition count : " + b.size());
         }
+        idpBean = b.iterator().next();
+
+        Collection<Bean> legacyAuthenticators = getBeansOfType(idpBeans, AuthenticatorImpl.class.getName());
+        if (legacyAuthenticators.size() == 1) {
+
+            // Wire two factor authentication scheme to Authenticator
+            Bean legacyAuthenticator = legacyAuthenticators.iterator().next();
+            addPropertyBeansAsRefs(legacyAuthenticator, "authenticationSchemes", twoFactorAuthnBean);
+
+            // Add new 2F Authenticator
+            Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
+            Bean twoFactorAuthenticator = newAnonymousBean("org.atricore.idbus.capabilities.sts.main.authenticators.TwoFactorSecurityTokenAuthenticator");
+            setPropertyRef(twoFactorAuthenticator, "authenticator", legacyAuthenticator.getName());
+
+            addPropertyBean(sts, "authenticators", twoFactorAuthenticator);
+
+        }
+
+
 
         return twoFactorAuthnBean;
     }

@@ -7,10 +7,21 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
+import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
+import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
+import org.atricore.idbus.capabilities.samlr2.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
+import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
+import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
+import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
+import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.EmailNameIDBuilder;
+import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.UnspecifiedNameIDBuiler;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
@@ -20,10 +31,7 @@ import org.atricore.idbus.kernel.main.util.HashGenerator;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
@@ -50,10 +58,14 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
                                      FederatedProvider target,
                                      FederatedChannel targetChannel,
                                      IdApplianceTransformationContext ctx) throws TransformException {
+        
+        boolean isDefaultChannel = spChannel == null; 
 
         Beans idpBeans = (Beans) ctx.get("idpBeans");
+        Beans beansOsgi = (Beans) ctx.get("beansOsgi");
+
         if (logger.isTraceEnabled())
-            logger.trace("Generating Beans for SP Channel " + (spChannel != null ? spChannel.getName() : "default") + " of IdP " + idp.getName());
+            logger.trace("Generating Beans for SP Channel " + (!isDefaultChannel ? spChannel.getName() : "default") + " of IdP " + idp.getName());
 
         Bean idpBean = null;
 
@@ -63,7 +75,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         }
         idpBean = b.iterator().next();
 
-        String spChannelName = idpBean.getName() +  "-" + (spChannel != null ? normalizeBeanName(target.getName()) : "default") + "-sp-channel";
+        String spChannelName = idpBean.getName() +  "-" + (!isDefaultChannel ? normalizeBeanName(target.getName()) : "default") + "-sp-channel";
 
         String idauPath = (String) ctx.get("idauPath");
         
@@ -176,6 +188,95 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
                 soapEnabled = true;
             }
         }
+        
+
+        // SP Channel plans
+        Bean sloToSamlPlan = newBean(idpBeans, spChannelName + "-samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);
+        setPropertyRef(sloToSamlPlan, "bpmsManager", "bpms-manager");
+
+        Bean sloToSamlSpSloPlan = newBean(idpBeans, spChannelName + "-samlr2sloreq-to-samlr2spsloreq-plan", SamlR2SloRequestToSpSamlR2SloRequestPlan.class);
+        setPropertyRef(sloToSamlSpSloPlan, "bpmsManager", "bpms-manager");
+
+        Bean authnToSamlPlan = newBean(idpBeans, spChannelName + "-samlr2authnreq-to-samlr2resp-plan", SamlR2AuthnRequestToSamlR2ResponsePlan.class);
+        setPropertyRef(authnToSamlPlan, "bpmsManager", "bpms-manager");
+
+        Bean stmtToAssertionPlan = newBean(idpBeans, spChannelName + "-samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
+        setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
+        setPropertyRef(stmtToAssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
+
+        // Add name id builders based on channel properties
+
+
+        // Unspecified nameid builder
+        Bean unspecifiedNameIdBuilder = newAnonymousBean(UnspecifiedNameIDBuiler.class);
+        addPropertyBean(stmtToAssertionPlan, "nameIDBuilders", unspecifiedNameIdBuilder);
+
+        // Email nameid builder
+        Bean emailNameIdBuilder = newAnonymousBean(EmailNameIDBuilder.class);
+        addPropertyBean(stmtToAssertionPlan, "nameIDBuilders", emailNameIdBuilder);
+
+        SubjectNameIdentifierPolicy subjectNameIDPolicy = spChannel != null ? spChannel.getSubjectNameIDPolicy() : idp.getSubjectNameIDPolicy();
+        if (subjectNameIDPolicy != null) {
+
+            // Set attribute if policy is defined
+            if (subjectNameIDPolicy.getSubjectAttribute() != null)
+                setPropertyValue(unspecifiedNameIdBuilder, "ssoUserProperty", subjectNameIDPolicy.getSubjectAttribute());
+
+            if (subjectNameIDPolicy.getType() != null) {
+                switch (subjectNameIDPolicy.getType()) {
+                    case PRINCIPAL:
+                        setPropertyBean(stmtToAssertionPlan, "defaultNameIDBuilder", unspecifiedNameIdBuilder);
+                        break;
+                    case EMAIL:
+                        setPropertyBean(stmtToAssertionPlan, "defaultNameIDBuilder", emailNameIdBuilder);
+                        break;
+                    case CUSTOM:
+                        // Define CUSTOM builder
+
+                        String customNameIDBuilderName = idpBean.getName() + "-custom-subject-name-id-builder";
+
+                        CustomNameIdentifierPolicy cp = (CustomNameIdentifierPolicy) subjectNameIDPolicy;
+
+                        Reference customNameIDBuilder = new Reference();
+                        customNameIDBuilder.setId(customNameIDBuilderName);
+                        customNameIDBuilder.setBeanName(cp.getCustomNameIDBuilder());
+                        customNameIDBuilder.setInterface("org.atricore.idbus.kernel.main.federation.AccountLinkEmitter");
+                        beansOsgi.getImportsAndAliasAndBeen().add(customNameIDBuilder);
+
+                        addPropertyRefsToSet(stmtToAssertionPlan, "nameIDBuilders", customNameIDBuilderName);
+
+                        // set it as default
+                        setPropertyRef(stmtToAssertionPlan, "defaultNameIDBuilder", customNameIDBuilderName);
+                        break;
+                    default:
+                        setPropertyBean(stmtToAssertionPlan, "defaultNameIDBuilder", unspecifiedNameIdBuilder);
+                        break;
+
+                }
+            } else {
+                // Default is principal
+                setPropertyBean(stmtToAssertionPlan, "defaultNameIDBuilder", unspecifiedNameIdBuilder);
+            }
+        } else {
+            // Default is principal
+            setPropertyBean(stmtToAssertionPlan, "defaultNameIDBuilder", unspecifiedNameIdBuilder);
+        }
+
+        boolean ignoreRequestedNameIDPolicy = spChannel != null ? spChannel.isIgnoreRequestedNameIDPolicy() : idp.isIgnoreRequestedNameIDPolicy();
+        setPropertyValue(stmtToAssertionPlan, "ignoreRequestedNameIDPolicy", ignoreRequestedNameIDPolicy);
+
+        Bean samlArtResToSamlArtRespPlan = newBean(idpBeans, spChannelName + "-samlr2artresolve-to-samlr2artresponse-plan", SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan.class);
+        setPropertyRef(samlArtResToSamlArtRespPlan, "bpmsManager", "bpms-manager");
+
+        Bean samlArtToSamlArtResPlan = newBean(idpBeans, spChannelName + "-samlr2art-to-samlr2artresolve-plan", SamlR2ArtifactToSamlR2ArtifactResolvePlan.class);
+        setPropertyRef(samlArtToSamlArtResPlan, "bpmsManager", "bpms-manager");
+
+        Bean samlr2IdpInitToSamlr2AuthnReqPlan = newBean(idpBeans, spChannelName + "-samlr2idpinitiatedauthnreq-to-samlr2authnreq-plan", IDPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
+        setPropertyRef(samlr2IdpInitToSamlr2AuthnReqPlan, "bpmsManager", "bpms-manager");
+
+        // ---------------------------------------
+        // SP Channel Services
+        // ---------------------------------------
 
         // SingleLogoutService
 
@@ -189,10 +290,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(sloHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
-                plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan");
+                plan.setBean(sloToSamlPlan.getName());
                 plansList.add(plan);
                 Ref plan2 = new Ref();
-                plan2.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
+                plan2.setBean(sloToSamlSpSloPlan.getName());
                 plansList.add(plan2);
                 setPropertyRefs(sloHttpPost, "identityPlans", plansList);
                 endpoints.add(sloHttpPost);
@@ -207,10 +308,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(sloHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
-                plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan");
+                plan.setBean(sloToSamlPlan.getName());
                 plansList.add(plan);
                 Ref plan2 = new Ref();
-                plan2.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
+                plan2.setBean(sloToSamlSpSloPlan.getName());
                 plansList.add(plan2);
                 setPropertyRefs(sloHttpArtifact, "identityPlans", plansList);
                 endpoints.add(sloHttpArtifact);
@@ -225,10 +326,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(sloHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
-                plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan");
+                plan.setBean(sloToSamlPlan.getName());
                 plansList.add(plan);
                 Ref plan2 = new Ref();
-                plan2.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
+                plan2.setBean(sloToSamlSpSloPlan.getName());
                 plansList.add(plan2);
                 setPropertyRefs(sloHttpRedirect, "identityPlans", plansList);
                 endpoints.add(sloHttpRedirect);
@@ -243,10 +344,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(sloSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
-                plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan");
+                plan.setBean(sloToSamlPlan.getName());
                 plansList.add(plan);
                 Ref plan2 = new Ref();
-                plan2.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
+                plan2.setBean(sloToSamlSpSloPlan.getName());
                 plansList.add(plan2);
                 setPropertyRefs(sloSoap, "identityPlans", plansList);
                 endpoints.add(sloSoap);
@@ -260,10 +361,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             setPropertyValue(sloLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
-            plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan");
+            plan.setBean(sloToSamlPlan.getName());
             plansList.add(plan);
             Ref plan2 = new Ref();
-            plan2.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
+            plan2.setBean(sloToSamlSpSloPlan.getName());
             plansList.add(plan2);
             setPropertyRefs(sloLocal, "identityPlans", plansList);
             endpoints.add(sloLocal);
@@ -281,10 +382,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(ssoHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
-                plan.setBean(idpBean.getName() + "-samlr2authnreq-to-samlr2resp-plan");
+                plan.setBean(authnToSamlPlan.getName());
                 plansList.add(plan);
                 Ref plan2 = new Ref();
-                plan2.setBean(idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan");
+                plan2.setBean(stmtToAssertionPlan.getName());
                 plansList.add(plan2);
                 setPropertyRefs(ssoHttpPost, "identityPlans", plansList);
                 endpoints.add(ssoHttpPost);
@@ -299,10 +400,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(ssoHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
-                plan.setBean(idpBean.getName() + "-samlr2authnreq-to-samlr2resp-plan");
+                plan.setBean(authnToSamlPlan.getName());
                 plansList.add(plan);
                 Ref plan2 = new Ref();
-                plan2.setBean(idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan");
+                plan2.setBean(stmtToAssertionPlan.getName());
                 plansList.add(plan2);
                 setPropertyRefs(ssoHttpArtifact, "identityPlans", plansList);
                 endpoints.add(ssoHttpArtifact);
@@ -317,10 +418,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(ssoHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
-                plan.setBean(idpBean.getName() + "-samlr2authnreq-to-samlr2resp-plan");
+                plan.setBean(authnToSamlPlan.getName());
                 plansList.add(plan);
                 Ref plan2 = new Ref();
-                plan2.setBean(idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan");
+                plan2.setBean(stmtToAssertionPlan.getName());
                 plansList.add(plan2);
                 setPropertyRefs(ssoHttpRedirect, "identityPlans", plansList);
                 endpoints.add(ssoHttpRedirect);
@@ -337,10 +438,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             setPropertyValue(arSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
-            plan.setBean(idpBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
+            plan.setBean(samlArtResToSamlArtRespPlan.getName());
             plansList.add(plan);
             Ref plan2 = new Ref();
-            plan2.setBean(idpBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
+            plan2.setBean(samlArtToSamlArtResPlan.getName());
             plansList.add(plan2);
             setPropertyRefs(arSoap, "identityPlans", plansList);
             endpoints.add(arSoap);
@@ -352,10 +453,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             setPropertyValue(arLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
             plansList = new ArrayList<Ref>();
             plan = new Ref();
-            plan.setBean(idpBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
+            plan.setBean(samlArtResToSamlArtRespPlan.getName());
             plansList.add(plan);
             plan2 = new Ref();
-            plan2.setBean(idpBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
+            plan2.setBean(samlArtToSamlArtResPlan.getName());
             plansList.add(plan2);
             setPropertyRefs(arLocal, "identityPlans", plansList);
             endpoints.add(arLocal);
@@ -367,10 +468,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             setPropertyValue(arSoap11, "binding", SamlR2Binding.SAMLR11_SOAP.getValue());
             plansList = new ArrayList<Ref>();
             plan = new Ref();
-            plan.setBean(idpBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
+            plan.setBean(samlArtResToSamlArtRespPlan.getName());
             plansList.add(plan);
             plan2 = new Ref();
-            plan2.setBean(idpBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
+            plan2.setBean(samlArtToSamlArtResPlan.getName());
             plansList.add(plan2);
             setPropertyRefs(arSoap11, "identityPlans", plansList);
             endpoints.add(arSoap11);
@@ -386,7 +487,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             setPropertyValue(idpSsoInit, "location", "/SAML11/SSO/IDP_INITIATE");
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
-            plan.setBean(idpBean.getName() + "-samlr2idpinitiatedauthnreq-to-samlr2authnreq-plan");
+            plan.setBean(samlr2IdpInitToSamlr2AuthnReqPlan.getName());
             plansList.add(plan);
             setPropertyRefs(idpSsoInit, "identityPlans", plansList);
             endpoints.add(idpSsoInit);
@@ -399,7 +500,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             setPropertyValue(idpSsoInit11, "location", "/SAML2/SSO/IDP_INITIATE");
             plansList = new ArrayList<Ref>();
             plan = new Ref();
-            plan.setBean(idpBean.getName() + "-samlr2idpinitiatedauthnreq-to-samlr2authnreq-plan");
+            plan.setBean(samlr2IdpInitToSamlr2AuthnReqPlan.getName());
             plansList.add(plan);
             setPropertyRefs(idpSsoInit11, "identityPlans", plansList);
             endpoints.add(idpSsoInit11);
@@ -436,10 +537,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             setPropertyValue(ssoSsoHttpArtifact, "location", "/SSO/SSO/ARTIFACT");
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
-            plan.setBean(idpBean.getName() + "-samlr2authnreq-to-samlr2resp-plan");
+            plan.setBean(authnToSamlPlan.getName());
             plansList.add(plan);
             Ref plan2 = new Ref();
-            plan2.setBean(idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan");
+            plan2.setBean(stmtToAssertionPlan.getName());
             plansList.add(plan2);
             setPropertyRefs(ssoSsoHttpArtifact, "identityPlans", plansList);
             endpoints.add(ssoSsoHttpArtifact);
@@ -456,7 +557,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             setPropertyValue(ssoSloSoap, "location", "/SSO/SLO/SOAP");
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
-            plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
+            plan.setBean(sloToSamlSpSloPlan.getName());
             plansList.add(plan);
             setPropertyRefs(ssoSloSoap, "identityPlans", plansList);
             endpoints.add(ssoSloSoap);
@@ -468,11 +569,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             setPropertyValue(ssoSloLocal, "type", SAMLR2MetadataConstants.IDPInitiatedSingleLogoutService_QNAME.toString());
             setPropertyValue(ssoSloLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
             setPropertyValue(ssoSloLocal, "location", "local://" + (spChannel != null ?
-                    spChannel.getLocation().getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) +
-                    "/" + idpBean.getName().toUpperCase() + "/SSO/SLO/LOCAL");
+                    spChannel.getLocation().getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SSO/SLO/LOCAL");
             plansList = new ArrayList<Ref>();
             plan = new Ref();
-            plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
+            plan.setBean(sloToSamlSpSloPlan.getName());
             plansList.add(plan);
             setPropertyRefs(ssoSloLocal, "identityPlans", plansList);
             endpoints.add(ssoSloLocal);
