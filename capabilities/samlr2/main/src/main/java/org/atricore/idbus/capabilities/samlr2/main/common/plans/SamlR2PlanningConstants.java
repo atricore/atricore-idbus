@@ -75,6 +75,8 @@ public interface SamlR2PlanningConstants {
 
     static final String VAR_SUBJECT = WSTConstants.SUBJECT_PROP;
 
+    static final String VAR_IDENTITY_PLAN_NAME = WSTConstants.IDENTITY_PLAN_PROP;
+
     static final String VAR_SECURITY_CONTEXT = "urn:org:atricore:idbus:security-context";
 
     static final String VAR_LOCAL_SUBJECT = "urn:org:atricore:idbus:local-subject";

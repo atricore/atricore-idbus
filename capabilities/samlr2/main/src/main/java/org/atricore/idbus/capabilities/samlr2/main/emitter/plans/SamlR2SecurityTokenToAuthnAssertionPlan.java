@@ -57,6 +57,13 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
             ex.setTransientProperty(SamlR2PlanningConstants.VAR_DEFAULT_NAMEID_BUILDER, getDefaultNameIDBuilder());
             ex.setTransientProperty(SamlR2PlanningConstants.VAR_NAMEID_BUILDERS, getNameIDBuilders());
 
+            if (logger.isTraceEnabled())
+                logger.trace("Using default SubjectNameID builder : " + getDefaultNameIDBuilder());
+
+            if (logger.isTraceEnabled())
+                logger.trace("Using SubjectNameID builders : " + (getNameIDBuilders() != null ? getNameIDBuilders().size() + "" : "<NULL>"));
+
+
             // Build subject and publish as execution context variable.
             Subject s = (Subject) ex.getProperty(WSTConstants.SUBJECT_PROP);
 

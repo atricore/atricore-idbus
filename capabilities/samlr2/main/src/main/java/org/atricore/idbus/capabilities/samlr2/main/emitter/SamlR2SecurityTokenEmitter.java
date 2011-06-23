@@ -110,6 +110,7 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
             ex.setTransientProperty(VAR_SAMLR2_EMITTER_CXT, ctx);
             ex.setProperty(VAR_SAMLR2_AUTHN_REQUEST, ctx.getRequest());
             ex.setProperty(VAR_SUBJECT, ctx.getSubject());
+            ex.setProperty(VAR_IDENTITY_PLAN_NAME, ctx.getIdentityPlanName());
             ex.setProperty(VAR_COT_MEMBER, ctx.getMember());
         } else {
             logger.debug("No SamlR2 Emitter context found");
@@ -121,17 +122,22 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
     @Override
     public SecurityToken emit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) throws SecurityTokenEmissionException {
 
+        // Lookup identityplan sent by SAML Producers
+        SamlR2SecurityTokenEmissionContext samlr2EmissionCtx = (SamlR2SecurityTokenEmissionContext) context.getProperty(WSTConstants.RST_CTX);
+        String identityPlanName = (String) samlr2EmissionCtx.getIdentityPlanName();
+        identityPlan.set(getIdentityPlansRegistry().lookup(identityPlanName));
+
+        // Emit, now that the plan is in place
         SecurityToken st = super.emit(context, requestToken, tokenType);
 
-        SamlR2SecurityTokenEmissionContext ctx = (SamlR2SecurityTokenEmissionContext) context.getProperty(WSTConstants.RST_CTX);
-        if (ctx != null) {
+        if (samlr2EmissionCtx != null) {
             // Propagate authenticated subject to samlr2 security token emitter context
-            ctx.setSubject((Subject) context.getProperty(WSTConstants.SUBJECT_PROP));
-            logger.debug("Propagating Subject " + ctx.getSubject() + " to Security Token Emission Context");
+            samlr2EmissionCtx.setSubject((Subject) context.getProperty(WSTConstants.SUBJECT_PROP));
+            logger.debug("Propagating Subject " + samlr2EmissionCtx.getSubject() + " to Security Token Emission Context");
 
             // Propagate generated assertion to context.
             AssertionType assertion = (AssertionType) st.getContent();
-            ctx.setAssertion(assertion);
+            samlr2EmissionCtx.setAssertion(assertion);
             if (logger.isDebugEnabled())
                 logger.debug("Propagating Assertion " + assertion.getID() + " to Security Token Emission Context");
 
@@ -153,20 +159,6 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
 
     public void setEncrypter(SamlR2Encrypter encrypter) {
         this.encrypter = encrypter;
-    }
-
-    /**
-     * @org.apache.xbean.Property alias="identity-plan"
-     * @return
-     */
-    @Override
-    public IdentityPlan getIdentityPlan() {
-        return super.getIdentityPlan();
-    }
-
-    @Override
-    public void setIdentityPlan(IdentityPlan idPlan) {
-        super.setIdentityPlan(idPlan);
     }
 
 }

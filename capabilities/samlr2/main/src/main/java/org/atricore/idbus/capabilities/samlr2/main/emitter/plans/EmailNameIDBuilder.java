@@ -25,14 +25,17 @@ public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
         SSOUser ssoUser = getSsoUser(s);
 
         // Try with several values ...
-        String nameId = getPropertyValue(ssoUser, "urn:org:atricore:idbus:user:property:mail");
-        if (nameId == null) {
-            nameId = getPropertyValue(ssoUser, "urn:org:atricore:idbus:user:property:email");
-        }
+        String nameId = getPropertyValue(ssoUser, "email");
 
-        if (nameId == null) {
+        if (nameId == null)
+            nameId = getPropertyValue(ssoUser, "urn:org:atricore:idbus:user:property:mail");
+
+        if (nameId == null)
+            nameId = getPropertyValue(ssoUser, "urn:org:atricore:idbus:user:property:email");
+
+
+        if (nameId == null)
             nameId = getPropertyValue(ssoUser, "urn:org:atricore:idbus:user:property:emailAddress");
-        }
 
         if (nameId == null) {
             logger.error("SSO User does not have an email property, check your identity source configuration!");

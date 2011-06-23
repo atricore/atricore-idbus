@@ -362,6 +362,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             securityTokenEmissionCtx.setSessionIndex(secCtx.getSessionIndex());
             securityTokenEmissionCtx.setSsoSession(sessionMgr.getSession(secCtx.getSessionIndex()));
             securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
+            securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
 
             securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest);
 
@@ -424,6 +425,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         securityTokenEmissionCtx.setAuthnState(authnState);
         securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
         securityTokenEmissionCtx.setIssuerMetadata(sp.getMetadata());
+        securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
 
         UsernameTokenType usernameToken = new UsernameTokenType();
         AttributedString usernameString = new AttributedString();
@@ -529,6 +531,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
             securityTokenEmissionCtx.setMember(sp);
+            securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
             // TODO : Resolve SP SAMLR2 Role springmetadata
 
             securityTokenEmissionCtx.setRoleMetadata(null);
@@ -782,7 +785,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 throw new SamlR2RequestException(request,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
+                        StatusDetails.INVALID_REQUEST_SIGNATURE);
             try {
 
                 if (originalRequest != null)
@@ -1638,6 +1641,36 @@ public class SingleSignOnProducer extends SamlR2Producer {
             }
         }
         return policyStatements;
+    }
+
+    protected String getSTSPlanName() throws SamlR2Exception {
+
+        Map<String, SamlR2SecurityTokenToAuthnAssertionPlan> stsPlans = applicationContext.getBeansOfType(SamlR2SecurityTokenToAuthnAssertionPlan.class);
+        SamlR2SecurityTokenToAuthnAssertionPlan stsPlan = null;
+
+        for (IdentityPlan plan : endpoint.getIdentityPlans()) {
+            if (plan instanceof SamlR2SecurityTokenToAuthnAssertionPlan) {
+                stsPlan = (SamlR2SecurityTokenToAuthnAssertionPlan) plan;
+                break;
+            }
+        }
+
+        if (stsPlan == null)
+            throw new SamlR2Exception("No valid STS Plan found, looking for SamlR2SecurityTokenToAuthnAssertionPlan instances");
+
+        for (String planName : stsPlans.keySet()) {
+            SamlR2SecurityTokenToAuthnAssertionPlan registeredStsPlan = stsPlans.get(planName);
+
+            // We need to know that it is the same instance!
+            if (registeredStsPlan == stsPlan) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Using STS plan : " + planName);
+                return planName;
+            }
+        }
+
+        logger.warn("No STS plan found for endpoint : " + endpoint.getName());
+        return null;
     }
 
 
