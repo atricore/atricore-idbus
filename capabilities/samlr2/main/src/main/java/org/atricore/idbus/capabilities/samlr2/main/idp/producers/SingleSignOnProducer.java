@@ -113,37 +113,56 @@ public class SingleSignOnProducer extends SamlR2Producer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         Object content = in.getMessage().getContent();
 
-        if (content instanceof IDPInitiatedAuthnRequestType) {
+        try {
 
-            // New IDP Initiated Single Sign-On
-            doProcessIDPInitiantedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
+            if (content instanceof IDPInitiatedAuthnRequestType) {
 
-        } else if (content instanceof SecTokenAuthnRequestType) {
+                // New IDP Initiated Single Sign-On
+                doProcessIDPInitiantedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
 
-            // New Assert Identity with Basic authentication
-            doProcessAssertIdentityWithBasicAuth(exchange, (SecTokenAuthnRequestType) content);
+            } else if (content instanceof SecTokenAuthnRequestType) {
 
-        } else if (content instanceof AuthnRequestType) {
+                // New Assert Identity with Basic authentication
+                doProcessAssertIdentityWithBasicAuth(exchange, (SecTokenAuthnRequestType) content);
 
-            // New SP Initiated Single SignOn
-            doProcessAuthnRequest(exchange, (AuthnRequestType) content, in.getMessage().getRelayState());
+            } else if (content instanceof AuthnRequestType) {
 
-        } else if (content instanceof SamlR2ClaimsResponse) {
+                // New SP Initiated Single SignOn
+                doProcessAuthnRequest(exchange, (AuthnRequestType) content, in.getMessage().getRelayState());
 
-            // Processing Claims to create authn resposne
-            doProcessClaimsResponse(exchange, (SamlR2ClaimsResponse) content);
+            } else if (content instanceof SamlR2ClaimsResponse) {
 
-        } else if (content instanceof PolicyEnforcementResponse) {
+                // Processing Claims to create authn resposne
+                doProcessClaimsResponse(exchange, (SamlR2ClaimsResponse) content);
 
-            // Process policy enforcement response
-            doProcessPolicyEnforcementResponse(exchange, (PolicyEnforcementResponse) content);
+            } else if (content instanceof PolicyEnforcementResponse) {
 
-        } else {
+                // Process policy enforcement response
+                doProcessPolicyEnforcementResponse(exchange, (PolicyEnforcementResponse) content);
+
+            } else {
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        null,
+                        StatusDetails.UNKNOWN_REQUEST.getValue(),
+                        content.getClass().getName(),
+                        null);
+            }
+        } catch (SamlR2RequestException e) {
+
+            throw new IdentityMediationFault(
+                    e.getTopLevelStatusCode() != null ? e.getTopLevelStatusCode().getValue() : StatusCode.TOP_RESPONDER.getValue(),
+                    e.getSecondLevelStatusCode() != null ? e.getSecondLevelStatusCode().getValue() : null,
+                    e.getStatusDtails() != null ? e.getStatusDtails().getValue() : StatusDetails.UNKNOWN_REQUEST.getValue(),
+                    e.getErrorDetails() != null ? e.getErrorDetails() : content.getClass().getName(),
+                    e);
+
+        } catch (SamlR2Exception e) {
+
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
                     StatusDetails.UNKNOWN_REQUEST.getValue(),
                     content.getClass().getName(),
-                    null);
+                    e);
         }
     }
 

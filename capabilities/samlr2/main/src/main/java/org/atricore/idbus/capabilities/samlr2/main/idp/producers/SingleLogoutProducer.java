@@ -87,16 +87,34 @@ public class SingleLogoutProducer extends SamlR2Producer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         Object content = in.getMessage().getContent();
 
-        if (content instanceof LogoutRequestType) {
-            doProcessLogoutRequest(exchange, (LogoutRequestType) content);
-        } else if (content instanceof IDPInitiatedLogoutRequestType) {
-            doProcessIdPInitiatedLogoutRequest(exchange, (IDPInitiatedLogoutRequestType) content);
-        } else {
+        try {
+            if (content instanceof LogoutRequestType) {
+                doProcessLogoutRequest(exchange, (LogoutRequestType) content);
+            } else if (content instanceof IDPInitiatedLogoutRequestType) {
+                doProcessIdPInitiatedLogoutRequest(exchange, (IDPInitiatedLogoutRequestType) content);
+            } else {
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        null,
+                        StatusDetails.UNKNOWN_REQUEST.getValue(),
+                        content.getClass().getName(),
+                        null);
+            }
+        } catch (SamlR2RequestException e) {
+
+            throw new IdentityMediationFault(
+                    e.getTopLevelStatusCode() != null ? e.getTopLevelStatusCode().getValue() : StatusCode.TOP_RESPONDER.getValue(),
+                    e.getSecondLevelStatusCode() != null ? e.getSecondLevelStatusCode().getValue() : null,
+                    e.getStatusDtails() != null ? e.getStatusDtails().getValue() : StatusDetails.UNKNOWN_REQUEST.getValue(),
+                    e.getErrorDetails() != null ? e.getErrorDetails() : content.getClass().getName(),
+                    e);
+
+        } catch (SamlR2Exception e) {
+
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
                     StatusDetails.UNKNOWN_REQUEST.getValue(),
                     content.getClass().getName(),
-                    null);
+                    e);
         }
 
     }

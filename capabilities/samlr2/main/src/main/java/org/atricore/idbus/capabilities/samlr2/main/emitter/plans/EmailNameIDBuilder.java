@@ -16,6 +16,8 @@ public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
 
     private static final Log logger = LogFactory.getLog(UnspecifiedNameIDBuiler.class);
 
+    private String[] emailPropNames = {"email", "mail", "mailAddress", "emailAddress"};
+
     public boolean supportsPolicy(NameIDPolicyType nameIDPolicy) {
         return nameIDPolicy.getFormat().equalsIgnoreCase(NameIDFormat.EMAIL.getValue());
     }
@@ -25,18 +27,7 @@ public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
         SSOUser ssoUser = getSsoUser(s);
 
         // Try with several values ...
-        String nameId = getPropertyValue(ssoUser, "email");
-
-        if (nameId == null)
-            nameId = getPropertyValue(ssoUser, "urn:org:atricore:idbus:user:property:mail");
-
-        if (nameId == null)
-            nameId = getPropertyValue(ssoUser, "urn:org:atricore:idbus:user:property:email");
-
-
-        if (nameId == null)
-            nameId = getPropertyValue(ssoUser, "urn:org:atricore:idbus:user:property:emailAddress");
-
+        String nameId = getEmail(ssoUser, emailPropNames);
         if (nameId == null) {
             logger.error("SSO User does not have an email property, check your identity source configuration!");
             throw new RuntimeException("SSO User does not have an email property, check your identity source configuration!");
@@ -48,5 +39,16 @@ public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
 
         return subjectNameID;
 
+    }
+
+    protected String getEmail(SSOUser ssoUser, String[] emailPropNames) {
+        for (int i = 0; i < emailPropNames.length; i++) {
+            String emailPropName = emailPropNames[i];
+            String email = getPropertyValue(ssoUser, emailPropName);
+            if (email != null)
+                return email;
+        }
+
+        return null;
     }
 }
