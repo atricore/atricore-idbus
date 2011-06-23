@@ -33,8 +33,8 @@ public class PersistentAccountLinkImpl extends AbstractAccountLink implements Pe
 		this.setDeleted(false);
 	}
 
-	public PersistentAccountLinkImpl(Subject idpSubject, String localAccountNameIdentifier) {
-        super(idpSubject, localAccountNameIdentifier);
+	public PersistentAccountLinkImpl(Subject idpSubject, String localAccountNameIdentifier, String localAccountNameFormat) {
+        super(idpSubject, localAccountNameIdentifier, localAccountNameFormat);
         this.setEnabled(true);
         this.setDeleted(false);
     }

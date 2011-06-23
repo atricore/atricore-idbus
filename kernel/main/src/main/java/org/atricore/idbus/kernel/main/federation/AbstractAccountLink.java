@@ -31,19 +31,25 @@ import javax.security.auth.Subject;
  * @version $Rev: 1040 $ $Date: 2009-03-04 22:56:52 -0200 (Wed, 04 Mar 2009) $
  */
 public abstract class AbstractAccountLink implements AccountLink {
+
     private String id;
-    private Subject idpSubject;
+
     private String localAccountNameIdentifier;
+    private String localAccountNameFormat;
+
+    private Subject idpSubject;
+
     private boolean enabled;
     private boolean deleted;
     
     
     protected AbstractAccountLink(){}
 
-    protected AbstractAccountLink(Subject idpSubject, String localAccountNameIdentifier) {
+    protected AbstractAccountLink(Subject idpSubject, String localAccountNameIdentifier, String format) {
         this.id = new UUIDGenerator().generateId();
         this.idpSubject = idpSubject;
         this.localAccountNameIdentifier = localAccountNameIdentifier;
+        this.localAccountNameFormat = format;
     }
 
     public String getId() {
@@ -52,6 +58,10 @@ public abstract class AbstractAccountLink implements AccountLink {
 
     public String getLocalAccountNameIdentifier() {
         return localAccountNameIdentifier;
+    }
+
+    private String getLocalAccountNameFormat() {
+        return localAccountNameFormat;
     }
 
 	public Subject getIdpSubject() {

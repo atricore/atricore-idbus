@@ -32,7 +32,7 @@ public interface SecurityTokenEmitter {
 
     String getId();
 
-    boolean canEmit(Object requestToken, String tokenType);
+    boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType);
 
     SecurityToken emit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) throws SecurityTokenEmissionException;
 

@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.capabilities.samlr2.main.emitter.plans;
 
-import oasis.names.tc.saml._2_0.assertion.AuthnStatementType;
+import org.atricore.idbus.capabilities.samlr2.main.common.plans.SamlR2PlanningConstants;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
@@ -30,11 +30,8 @@ import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
 import org.atricore.idbus.kernel.planning.IdentityPlanningException;
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
 import javax.security.auth.Subject;
-import javax.xml.namespace.QName;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -55,72 +52,72 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
         IdentityArtifact artifact = ex.getIn();
 
         try {
-            Object requestToken = artifact.getContent();
 
-
-            if (logger.isTraceEnabled())
-                logger.trace("Emitting token for " + requestToken.getClass().getSimpleName());
-
-            String username = null;
-            if (requestToken instanceof UsernameTokenType ) {
-                UsernameTokenType usernameToken = (UsernameTokenType) requestToken;
-                username = usernameToken.getUsername().getValue();
-            } else if (isRememberMeToken( artifact.getContent() ) ) {
-                Subject s = (Subject) ex.getProperty( WSTConstants.SUBJECT_PROP );
-                SimplePrincipal principal = s.getPrincipals( SimplePrincipal.class ).iterator().next();
-                username = principal.getName();
-            } else if (requestToken instanceof AuthnStatementType) {
-                Subject s = (Subject) ex.getProperty( WSTConstants.SUBJECT_PROP );
-                SSOUser ssoUser = s.getPrincipals(SSOUser.class).iterator().next();
-                username = ssoUser.getName(); 
-            } else if (isSpnegoToken( artifact.getContent() ) ) {
-                Subject s = (Subject) ex.getProperty( WSTConstants.SUBJECT_PROP );
-                SimplePrincipal principal = s.getPrincipals( SimplePrincipal.class ).iterator().next();
-                username = principal.getName();
-            } else {
-                throw new IdentityPlanningException("Unsupported token " + requestToken.getClass().getName());
-            }
-
-            if (logger.isDebugEnabled())
-                logger.debug("Emitting token for " + username);
-
-            // All principals that will be added to the subject
-            Set<Principal> principals = new HashSet<Principal>();
-            SSOIdentityManager idMgr = getIdentityManager();
-            if (idMgr == null)
-                throw new IllegalStateException("SSOIdentityManager not configured for plan " + getClass().getSimpleName());
-
-            // Find SSOUser principal
-            SSOUser ssoUser = idMgr.findUser(username);
-            principals.add(ssoUser);
-
-            // Find SSORole principals
-            SSORole[] ssoRoles = getIdentityManager().findRolesByUsername(username);
-            principals.addAll(Arrays.asList(ssoRoles));
+            ex.setTransientProperty(SamlR2PlanningConstants.VAR_IGNORE_REQUESTED_NAMEID_POLICY, new Boolean(this.isIgnoreRequestedNameIDPolicy()));
+            ex.setTransientProperty(SamlR2PlanningConstants.VAR_DEFAULT_NAMEID_BUILDER, getDefaultNameIDBuilder());
+            ex.setTransientProperty(SamlR2PlanningConstants.VAR_NAMEID_BUILDERS, getNameIDBuilders());
 
             // Build subject and publish as execution context variable.
-            Subject s = null;
+            Subject s = (Subject) ex.getProperty(WSTConstants.SUBJECT_PROP);
+
+            if (s == null)
+                throw new IdentityPlanningException("Subject not found in context (Property name:"+WSTConstants.SUBJECT_PROP+")");
+
             // If we had a subject already, use the private / public credentials!
             // This subject came probably from a JOSSO1 Auth Scheme.
-            if (ex.getProperty(WSTConstants.SUBJECT_PROP) != null) {
-                Subject auths = (Subject) ex.getProperty(WSTConstants.SUBJECT_PROP);
+            Set<SSOUser> ssoUsers = s.getPrincipals(SSOUser.class);
+            Set<SimplePrincipal> simplePrincipals = s.getPrincipals(SimplePrincipal.class);
+
+            if (ssoUsers != null && ssoUsers.size() > 0) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Emitting token for Subject with SSOUser");
+
+                // Build Subject
+                // s = new Subject(true, s.getPrincipals(), s.getPrivateCredentials(), s.getPublicCredentials());
+
+            } else if (simplePrincipals != null && simplePrincipals.size() > 0) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Emitting token for Subject with SimplePrincipal");
+
+                SimplePrincipal sp = simplePrincipals.iterator().next();
+                String username = sp.getName();
+
+                // All principals that will be added to the subject
+                Set<Principal> principals = new HashSet<Principal>();
+                SSOIdentityManager idMgr = getIdentityManager();
+                if (idMgr == null)
+                    throw new IllegalStateException("SSOIdentityManager not configured for plan " + getClass().getSimpleName());
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Resolving SSOUser for " + username);
+
+                // Find SSOUser principal
+                SSOUser ssoUser = idMgr.findUser(username);
+                principals.add(ssoUser);
+
+                // Find SSORole principals
+                SSORole[] ssoRoles = getIdentityManager().findRolesByUsername(username);
+                principals.addAll(Arrays.asList(ssoRoles));
 
                 // Use existing SSOPolicyEnforcement principals
-                Set<SSOPolicyEnforcementStatement> ssoPolicies = auths.getPrincipals(SSOPolicyEnforcementStatement.class);
-
+                Set<SSOPolicyEnforcementStatement> ssoPolicies = s.getPrincipals(SSOPolicyEnforcementStatement.class);
                 if (ssoPolicies != null) {
                     if (logger.isDebugEnabled())
-                        logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principas ");
+                        logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals ");
 
                     principals.addAll(ssoPolicies);
                 }
 
-                s = new Subject(true, principals, auths.getPrivateCredentials(), auths.getPublicCredentials());
+                // Build Subject
+                s = new Subject(true, principals, s.getPublicCredentials(), s.getPrivateCredentials());
             } else {
-
-                s = new Subject(true, principals, new HashSet(), new HashSet());
+                logger.debug("Invalid Subject, no SSOUser or SimplePrincipal found : " + s);
+                throw new IdentityPlanningException("Invalid Subject, no SSOUser or SimplePrincipal found!");
             }
 
+            // We have a valid IPD Subject now, with a SSOUser as one of the principals
             ex.setProperty(WSTConstants.SUBJECT_PROP, s);
 
         } catch (NoSuchUserException e) {
@@ -139,22 +136,6 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
 
     protected String getProcessDescriptorName() {
         return "samlr2-assertion-from-token-process";
-    }
-
-    private Boolean isRememberMeToken(Object requestToken){
-
-        // TODO : User SAMLR2 AuthnContextClass Previous Session
-        if (requestToken instanceof BinarySecurityTokenType ){
-            return ((BinarySecurityTokenType)requestToken).getOtherAttributes().containsKey( new QName( Constants.REMEMBERME_NS) );
-        }
-        return false;
-    }
-
-    private Boolean isSpnegoToken(Object requestToken){
-        if (requestToken instanceof BinarySecurityTokenType ){
-            return ((BinarySecurityTokenType)requestToken).getOtherAttributes().containsKey( new QName( Constants.SPNEGO_NS) );
-        }
-        return false;
     }
 
 }

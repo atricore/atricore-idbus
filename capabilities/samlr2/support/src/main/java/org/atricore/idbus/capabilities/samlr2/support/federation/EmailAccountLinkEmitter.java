@@ -23,6 +23,7 @@ package org.atricore.idbus.capabilities.samlr2.support.federation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.main.federation.AccountLink;
 import org.atricore.idbus.kernel.main.federation.AccountLinkEmitter;
 import org.atricore.idbus.kernel.main.federation.DynamicAccountLinkImpl;
@@ -64,7 +65,7 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
                     logger.debug("Found email ["+email+"]");
 
                 // TODO : For now, email user and JOSSO local user MUST match!
-                return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")) );
+                return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
             }
 
         }

@@ -514,7 +514,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         }
 
         // ----------------------------------------------------
-        // Emitt new assertion
+        // Emit new assertion
         // ----------------------------------------------------
 
         try {
@@ -874,15 +874,12 @@ public class SingleSignOnProducer extends SamlR2Producer {
                                                                                   SamlR2SecurityTokenEmissionContext ctx,
                                                                                   AuthnRequestType authnRequest) throws Exception {
 
-        SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
-        SSOUser ssoUser = identityMgr.findUser(ctx.getSsoSession().getUsername());
-
         AssertionType assertion = null;
 
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SecurityTokenToAuthnAssertionPlan.class);
         IdentityPlanExecutionExchange ex = createIdentityPlanExecutionExchange();
 
-        // Publish IDP springmetadata
+        // Publish SP SAMLR2 Metadata
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(authnRequest.getIssuer());
         ex.setProperty(VAR_DESTINATION_COT_MEMBER, sp);
         ex.setProperty(WSTConstants.RST_CTX, ctx);
@@ -890,7 +887,12 @@ public class SingleSignOnProducer extends SamlR2Producer {
         ex.setTransientProperty(VAR_SAMLR2_SIGNER, ((SamlR2IDPMediator) channel.getIdentityMediator()).getSigner());
         ex.setTransientProperty(VAR_SAMLR2_ENCRYPTER, ((SamlR2IDPMediator) channel.getIdentityMediator()).getEncrypter());
 
+        // Build Subject for SSOUser
         Set<Principal> principals = new HashSet<Principal>();
+
+        SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
+        SSOUser ssoUser = identityMgr.findUser(ctx.getSsoSession().getUsername());
+
         principals.add(ssoUser);
         SSORole[] roles = identityMgr.findRolesByUsername(ssoUser.getName());
 

@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.capabilities.samlr2.main.test.components;
 
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.main.federation.AccountLink;
 import org.atricore.idbus.kernel.main.federation.AccountLinkEmitter;
 import org.atricore.idbus.kernel.main.federation.DynamicAccountLinkImpl;
@@ -41,7 +42,7 @@ public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
 
         for (SubjectAttribute idpAttr : idpAttrs) {
             if (idpAttr.getName().equals("urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE:principal")) {
-                return new DynamicAccountLinkImpl(subject, idpAttr.getValue() );
+                return new DynamicAccountLinkImpl(subject, idpAttr.getValue(), NameIDFormat.UNSPECIFIED.getValue() );
             }
         }
 

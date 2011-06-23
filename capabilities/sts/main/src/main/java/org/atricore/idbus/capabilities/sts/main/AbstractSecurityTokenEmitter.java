@@ -83,7 +83,7 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
     /**
      * The default implementation always returns false.
      */
-    public boolean canEmit(Object requestToken, String tokenType) {
+    public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         return false;
     }
 

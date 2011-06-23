@@ -25,7 +25,6 @@ import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.ObjectFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.SSOConstants;
 import org.atricore.idbus.capabilities.samlr2.main.common.plans.SamlR2PlanningConstants;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.core.encryption.SamlR2Encrypter;
@@ -34,14 +33,11 @@ import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmitter;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
-import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.atricore.idbus.kernel.planning.IdentityArtifactImpl;
 import org.atricore.idbus.kernel.planning.IdentityPlan;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
 import javax.security.auth.Subject;
 import javax.xml.namespace.QName;
@@ -78,24 +74,9 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
      *
      * @return true, if the received token and requested token type are supported.
      */
-    public boolean canEmit(Object requestToken, String tokenType) {
-
-        Boolean isUserNameToken = requestToken instanceof UsernameTokenType
-                && WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType);
-
-        logger.debug( "isUserNameToken = " + isUserNameToken);
-
-        Boolean isRememberMeToken = isRememberMeToken( requestToken )
-                && WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType);
-        logger.debug( "isRememberMeToken = " + isRememberMeToken);
-
-        Boolean isSpnegoToken = isSpnegoToken(requestToken)
-                && WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType);
-        logger.debug( "isSpnegoToken = " + isSpnegoToken);
-
-        // Outcome :
-        logger.debug( "canEmit?" + (isUserNameToken || isRememberMeToken || isSpnegoToken));
-        return isUserNameToken || isRememberMeToken || isSpnegoToken;
+    public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
+        // We can emit for any context with a valid subject!
+        return context.getProperty(WSTConstants.SUBJECT_PROP) != null;
     }
 
     /**
@@ -187,20 +168,5 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
     public void setIdentityPlan(IdentityPlan idPlan) {
         super.setIdentityPlan(idPlan);
     }
-
-    private Boolean isRememberMeToken(Object requestToken){
-        // True if this is a binary token with the 'SSO Remember Me' token attribute.
-        return requestToken instanceof BinarySecurityTokenType
-                && ((BinarySecurityTokenType) requestToken).
-                getOtherAttributes().containsKey(new QName(SSOConstants.SSO_REMEMBERME_TOKEN));
-    }
-
-    private Boolean isSpnegoToken(Object requestToken){
-        if (requestToken instanceof BinarySecurityTokenType ){
-            return ((BinarySecurityTokenType)requestToken).getOtherAttributes().containsKey( new QName( Constants.SPNEGO_NS) );
-        }
-        return false;
-    }
-
 
 }

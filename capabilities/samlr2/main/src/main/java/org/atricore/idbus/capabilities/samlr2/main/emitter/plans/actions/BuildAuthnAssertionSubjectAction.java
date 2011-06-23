@@ -23,20 +23,21 @@ package org.atricore.idbus.capabilities.samlr2.main.emitter.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
+import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.emitter.SamlR2SecurityTokenEmissionContext;
+import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SubjectNameIDBuilder;
 import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.samlr2.support.core.util.DateUtils;
 import org.atricore.idbus.capabilities.samlr2.support.profiles.SubjectConfirmationMethod;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
-import org.atricore.idbus.kernel.main.authn.SSOUser;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
 import javax.security.auth.Subject;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 
 /**
  * <h2>Standards Reference</h2>
@@ -130,11 +131,6 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSAMLR2AssertionAct
         if (s == null)
             throw new IllegalArgumentException("Subject not found as process variable : " + WSTConstants.SUBJECT_PROP);
 
-        Set<SSOUser> ssoUsers = s.getPrincipals(SSOUser.class);
-        if (ssoUsers == null || ssoUsers.size() != 1)
-            throw new RuntimeException("Subject must contain a SSOUser principal");
-        SSOUser ssoUser = ssoUsers.iterator().next();
-
         oasis.names.tc.saml._2_0.assertion.ObjectFactory samlObjectFactory;
         samlObjectFactory = new oasis.names.tc.saml._2_0.assertion.ObjectFactory();
 
@@ -172,18 +168,21 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSAMLR2AssertionAct
         subjectConfirmation.setSubjectConfirmationData(subjectConfirmationData);
 
         // Subject
-        // TODO : Check AuthnRequest to see if a Subject element is present, check also SP springmetadata ?
+        // TODO : Check AuthnRequest to see if a Subject element is present, check also SP SAML2 Metadata ?
         SubjectType subject = samlObjectFactory.createSubjectType();
 
-        // Subject Name Identifier
-        // TODO : Check AuthnRequest to see if NameIDPolicy is present, check also SP springmetadata ?
-        NameIDType subjectNameID = new NameIDType();
-
-        // TODO : Use 8.3 Name Identifier Format Identifiers form SAML 2 Core spec: email, x509, kerberos, windows domain controler, etc
-        subjectNameID.setFormat(NameIDFormat.UNSPECIFIED.getValue());
-        subjectNameID.setValue(ssoUser.getName());
         // TODO : Set SPNameQualifier
         //subjectNameID.setSPNameQualifier("google.com/a/atricore.com");
+
+
+
+        NameIDType subjectNameID = null;
+        NameIDPolicyType nameIDPolicy = resolveNameIDPolicy(ctx);
+
+        SubjectNameIDBuilder nameIDBuilder = resolveNameIDBuiler(executionContext, nameIDPolicy);
+        subjectNameID = nameIDBuilder.buildNameID(nameIDPolicy, s);
+        if (subjectNameID == null)
+            throw new RuntimeException("No NameID builder found for " + nameIDPolicy.getFormat());
 
         // Previously built parts
         subject.getContent().add(samlObjectFactory.createNameID(subjectNameID));
@@ -193,6 +192,69 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSAMLR2AssertionAct
         assertion.setSubject(subject);
 
         logger.debug("ending-action");
+
+    }
+
+    protected NameIDPolicyType resolveNameIDPolicy(SamlR2SecurityTokenEmissionContext ctx) {
+
+        NameIDPolicyType nameIDPolicy = null;
+        if (ctx.getRequest() != null) {
+
+            if (ctx.getRequest()  instanceof AuthnRequestType) {
+                AuthnRequestType authnRequest = (AuthnRequestType) ctx.getRequest();
+                nameIDPolicy = authnRequest.getNameIDPolicy();
+            }
+
+        }
+
+        if (nameIDPolicy == null) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Using default NameIDPolicy");
+
+            // Default name id policy : unspecified
+            nameIDPolicy = new NameIDPolicyType();
+            nameIDPolicy.setFormat(NameIDFormat.UNSPECIFIED.getValue());
+        } else {
+            if (logger.isDebugEnabled())
+                logger.debug("Using request NameIDPolicy " + nameIDPolicy.getFormat());
+
+        }
+
+        return nameIDPolicy;
+    }
+
+    protected SubjectNameIDBuilder resolveNameIDBuiler(ExecutionContext executionContext, NameIDPolicyType nameIDPolicy) {
+
+        Boolean ignoreRequestedNameIDPolicy = (Boolean) executionContext.getContextInstance().getTransientVariable(VAR_IGNORE_REQUESTED_NAMEID_POLICY);
+
+        SubjectNameIDBuilder defaultNameIDBuilder = (SubjectNameIDBuilder) executionContext.getContextInstance().getTransientVariable(VAR_DEFAULT_NAMEID_BUILDER);
+        if (ignoreRequestedNameIDPolicy != null && ignoreRequestedNameIDPolicy) {
+            if (logger.isDebugEnabled())
+                logger.debug("Ignoring requested NameIDPolicy, using DefaultNameIDBuilder : " + defaultNameIDBuilder);
+            return defaultNameIDBuilder;
+        }
+
+        Collection<SubjectNameIDBuilder> nameIdBuilders =
+                (Collection<SubjectNameIDBuilder>) executionContext.getContextInstance().getTransientVariable(VAR_NAMEID_BUILDERS);
+
+        if (nameIdBuilders == null || nameIdBuilders.size() == 0)
+            throw new RuntimeException("No NameIDBuilders configured for plan!");
+
+        for (SubjectNameIDBuilder nameIDBuilder : nameIdBuilders) {
+
+            if (nameIDBuilder.supportsPolicy(nameIDPolicy)) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Using NameIDBuilder : " + nameIDBuilder);
+                return nameIDBuilder;
+
+            }
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Using DefaultNameIDBuilder : " + defaultNameIDBuilder);
+
+        return defaultNameIDBuilder;
 
     }
 }
