@@ -60,10 +60,14 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
 	private EntityManager entityManager;
 
     public PersistentAccountLink establishPersistent(Subject idpSubject, String localSubjectNameIdentifier) {
-        PersistentAccountLink pal = new PersistentAccountLinkImpl(idpSubject, localSubjectNameIdentifier);
+        PersistentAccountLink pal = new PersistentAccountLinkImpl(idpSubject,
+                localSubjectNameIdentifier,
+                "PERSISTENT");
         entityManager.persist(pal);
         return pal;
     }
+
+
 
     public TransientAccountLink establishTransient(Subject idpSubject, String localSubjectNameIdentifier) {
         throw new UnsupportedOperationException("Unsupported Account Link Lifecycle Operation");

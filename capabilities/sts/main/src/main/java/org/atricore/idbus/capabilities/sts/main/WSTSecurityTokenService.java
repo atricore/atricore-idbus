@@ -176,9 +176,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                     requestToken.getClass().getSimpleName());
         }
 
-        Subject subject = selectedAuthenticator.authenticate(requestToken);
-
-        return subject;
+        return selectedAuthenticator.authenticate(requestToken);
 
     }
 
@@ -190,7 +188,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             if(logger.isDebugEnabled())
                 logger.debug( "Testing emitter " + emitter.getId() );
 
-            if (emitter.canEmit(requestToken, tokenType)) {
+            if (emitter.canEmit(ctx, requestToken, tokenType)) {
 
                 selectedEmitter = emitter;
                 logger.debug("Selected Security Token Emitter for token type [" + tokenType + " is " +

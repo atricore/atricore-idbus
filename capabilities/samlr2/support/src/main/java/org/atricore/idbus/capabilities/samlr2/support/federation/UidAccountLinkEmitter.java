@@ -21,6 +21,7 @@ package org.atricore.idbus.capabilities.samlr2.support.federation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.main.federation.AccountLink;
 import org.atricore.idbus.kernel.main.federation.AccountLinkEmitter;
 import org.atricore.idbus.kernel.main.federation.DynamicAccountLinkImpl;
@@ -62,7 +63,7 @@ public class UidAccountLinkEmitter implements AccountLinkEmitter {
                     logger.debug("Found UID ["+uid+"]");
 
                 // uid attribute is used as username
-                return new DynamicAccountLinkImpl(subject, uid );
+                return new DynamicAccountLinkImpl(subject, uid , NameIDFormat.UNSPECIFIED.getValue());
             }
 
         }

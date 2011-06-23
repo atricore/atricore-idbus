@@ -48,4 +48,6 @@ public interface WSTConstants {
      */
     static final String SUBJECT_PROP = "urn:org:atricore:idbus:kernel:main:sts:Subject";
 
+    static final String IDENTITY_PLAN_PROP = "urn:org:atricore:idbus:kernel:main:sts:IdentityPlan";
+
 }

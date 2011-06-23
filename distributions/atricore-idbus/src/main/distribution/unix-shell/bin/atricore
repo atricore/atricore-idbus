@@ -31,7 +31,7 @@ if [ "x$JAVA_MIN_MEM" = "x" ]; then
 fi
 
 if [ "x$JAVA_MAX_MEM" = "x" ]; then
-    JAVA_MAX_MEM=768M
+    JAVA_MAX_MEM=1024M
     export JAVA_MAX_MEM
 fi
 

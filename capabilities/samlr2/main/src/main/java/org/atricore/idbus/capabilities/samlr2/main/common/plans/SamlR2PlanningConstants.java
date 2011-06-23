@@ -75,8 +75,16 @@ public interface SamlR2PlanningConstants {
 
     static final String VAR_SUBJECT = WSTConstants.SUBJECT_PROP;
 
+    static final String VAR_IDENTITY_PLAN_NAME = WSTConstants.IDENTITY_PLAN_PROP;
+
     static final String VAR_SECURITY_CONTEXT = "urn:org:atricore:idbus:security-context";
 
     static final String VAR_LOCAL_SUBJECT = "urn:org:atricore:idbus:local-subject";
+
+    static final String VAR_NAMEID_BUILDERS = "urn:org:atricore:idbus:samlr2:emitter:NameIDBuilders";
+
+    static final String VAR_DEFAULT_NAMEID_BUILDER = "urn:org:atricore:idbus:samlr2:emitter:DefaultNameIDBuilder";
+
+    static final String VAR_IGNORE_REQUESTED_NAMEID_POLICY = "urn:org:atricore:idbus:samlr2:emitter:IgnoreRequestedNameIDPolicy";
 
 }

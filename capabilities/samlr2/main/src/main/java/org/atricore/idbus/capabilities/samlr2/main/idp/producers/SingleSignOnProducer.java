@@ -113,37 +113,56 @@ public class SingleSignOnProducer extends SamlR2Producer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         Object content = in.getMessage().getContent();
 
-        if (content instanceof IDPInitiatedAuthnRequestType) {
+        try {
 
-            // New IDP Initiated Single Sign-On
-            doProcessIDPInitiantedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
+            if (content instanceof IDPInitiatedAuthnRequestType) {
 
-        } else if (content instanceof SecTokenAuthnRequestType) {
+                // New IDP Initiated Single Sign-On
+                doProcessIDPInitiantedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
 
-            // New Assert Identity with Basic authentication
-            doProcessAssertIdentityWithBasicAuth(exchange, (SecTokenAuthnRequestType) content);
+            } else if (content instanceof SecTokenAuthnRequestType) {
 
-        } else if (content instanceof AuthnRequestType) {
+                // New Assert Identity with Basic authentication
+                doProcessAssertIdentityWithBasicAuth(exchange, (SecTokenAuthnRequestType) content);
 
-            // New SP Initiated Single SignOn
-            doProcessAuthnRequest(exchange, (AuthnRequestType) content, in.getMessage().getRelayState());
+            } else if (content instanceof AuthnRequestType) {
 
-        } else if (content instanceof SamlR2ClaimsResponse) {
+                // New SP Initiated Single SignOn
+                doProcessAuthnRequest(exchange, (AuthnRequestType) content, in.getMessage().getRelayState());
 
-            // Processing Claims to create authn resposne
-            doProcessClaimsResponse(exchange, (SamlR2ClaimsResponse) content);
+            } else if (content instanceof SamlR2ClaimsResponse) {
 
-        } else if (content instanceof PolicyEnforcementResponse) {
+                // Processing Claims to create authn resposne
+                doProcessClaimsResponse(exchange, (SamlR2ClaimsResponse) content);
 
-            // Process policy enforcement response
-            doProcessPolicyEnforcementResponse(exchange, (PolicyEnforcementResponse) content);
+            } else if (content instanceof PolicyEnforcementResponse) {
 
-        } else {
+                // Process policy enforcement response
+                doProcessPolicyEnforcementResponse(exchange, (PolicyEnforcementResponse) content);
+
+            } else {
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        null,
+                        StatusDetails.UNKNOWN_REQUEST.getValue(),
+                        content.getClass().getName(),
+                        null);
+            }
+        } catch (SamlR2RequestException e) {
+
+            throw new IdentityMediationFault(
+                    e.getTopLevelStatusCode() != null ? e.getTopLevelStatusCode().getValue() : StatusCode.TOP_RESPONDER.getValue(),
+                    e.getSecondLevelStatusCode() != null ? e.getSecondLevelStatusCode().getValue() : null,
+                    e.getStatusDtails() != null ? e.getStatusDtails().getValue() : StatusDetails.UNKNOWN_REQUEST.getValue(),
+                    e.getErrorDetails() != null ? e.getErrorDetails() : content.getClass().getName(),
+                    e);
+
+        } catch (SamlR2Exception e) {
+
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
                     StatusDetails.UNKNOWN_REQUEST.getValue(),
                     content.getClass().getName(),
-                    null);
+                    e);
         }
     }
 
@@ -362,6 +381,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             securityTokenEmissionCtx.setSessionIndex(secCtx.getSessionIndex());
             securityTokenEmissionCtx.setSsoSession(sessionMgr.getSession(secCtx.getSessionIndex()));
             securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
+            securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
 
             securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest);
 
@@ -424,6 +444,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         securityTokenEmissionCtx.setAuthnState(authnState);
         securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
         securityTokenEmissionCtx.setIssuerMetadata(sp.getMetadata());
+        securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
 
         UsernameTokenType usernameToken = new UsernameTokenType();
         AttributedString usernameString = new AttributedString();
@@ -514,7 +535,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         }
 
         // ----------------------------------------------------
-        // Emitt new assertion
+        // Emit new assertion
         // ----------------------------------------------------
 
         try {
@@ -529,6 +550,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
             securityTokenEmissionCtx.setMember(sp);
+            securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
             // TODO : Resolve SP SAMLR2 Role springmetadata
 
             securityTokenEmissionCtx.setRoleMetadata(null);
@@ -782,7 +804,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 throw new SamlR2RequestException(request,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
+                        StatusDetails.INVALID_REQUEST_SIGNATURE);
             try {
 
                 if (originalRequest != null)
@@ -874,15 +896,12 @@ public class SingleSignOnProducer extends SamlR2Producer {
                                                                                   SamlR2SecurityTokenEmissionContext ctx,
                                                                                   AuthnRequestType authnRequest) throws Exception {
 
-        SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
-        SSOUser ssoUser = identityMgr.findUser(ctx.getSsoSession().getUsername());
-
         AssertionType assertion = null;
 
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SecurityTokenToAuthnAssertionPlan.class);
         IdentityPlanExecutionExchange ex = createIdentityPlanExecutionExchange();
 
-        // Publish IDP springmetadata
+        // Publish SP SAMLR2 Metadata
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(authnRequest.getIssuer());
         ex.setProperty(VAR_DESTINATION_COT_MEMBER, sp);
         ex.setProperty(WSTConstants.RST_CTX, ctx);
@@ -890,7 +909,12 @@ public class SingleSignOnProducer extends SamlR2Producer {
         ex.setTransientProperty(VAR_SAMLR2_SIGNER, ((SamlR2IDPMediator) channel.getIdentityMediator()).getSigner());
         ex.setTransientProperty(VAR_SAMLR2_ENCRYPTER, ((SamlR2IDPMediator) channel.getIdentityMediator()).getEncrypter());
 
+        // Build Subject for SSOUser
         Set<Principal> principals = new HashSet<Principal>();
+
+        SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
+        SSOUser ssoUser = identityMgr.findUser(ctx.getSsoSession().getUsername());
+
         principals.add(ssoUser);
         SSORole[] roles = identityMgr.findRolesByUsername(ssoUser.getName());
 
@@ -1636,6 +1660,36 @@ public class SingleSignOnProducer extends SamlR2Producer {
             }
         }
         return policyStatements;
+    }
+
+    protected String getSTSPlanName() throws SamlR2Exception {
+
+        Map<String, SamlR2SecurityTokenToAuthnAssertionPlan> stsPlans = applicationContext.getBeansOfType(SamlR2SecurityTokenToAuthnAssertionPlan.class);
+        SamlR2SecurityTokenToAuthnAssertionPlan stsPlan = null;
+
+        for (IdentityPlan plan : endpoint.getIdentityPlans()) {
+            if (plan instanceof SamlR2SecurityTokenToAuthnAssertionPlan) {
+                stsPlan = (SamlR2SecurityTokenToAuthnAssertionPlan) plan;
+                break;
+            }
+        }
+
+        if (stsPlan == null)
+            throw new SamlR2Exception("No valid STS Plan found, looking for SamlR2SecurityTokenToAuthnAssertionPlan instances");
+
+        for (String planName : stsPlans.keySet()) {
+            SamlR2SecurityTokenToAuthnAssertionPlan registeredStsPlan = stsPlans.get(planName);
+
+            // We need to know that it is the same instance!
+            if (registeredStsPlan == stsPlan) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Using STS plan : " + planName);
+                return planName;
+            }
+        }
+
+        logger.warn("No STS plan found for endpoint : " + endpoint.getName());
+        return null;
     }
 
 

@@ -25,7 +25,7 @@ import javax.security.auth.Subject;
 
 public class DynamicAccountLinkImpl extends AbstractAccountLink implements DynamicAccountLink {
 
-    public DynamicAccountLinkImpl(Subject idpSubject, String localAccountNameIdentifier) {
-        super(idpSubject, localAccountNameIdentifier);
+    public DynamicAccountLinkImpl(Subject idpSubject, String localAccountNameIdentifier, String localAccountNameFormat) {
+        super(idpSubject, localAccountNameIdentifier, localAccountNameFormat);
     }
 }

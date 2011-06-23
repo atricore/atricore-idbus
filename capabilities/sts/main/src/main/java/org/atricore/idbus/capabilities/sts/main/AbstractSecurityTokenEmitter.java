@@ -40,9 +40,12 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
 
     private String id;
 
+    // To support simultaneous token emissions, using different plan instances!
+    protected ThreadLocal<IdentityPlan> identityPlan = new ThreadLocal<IdentityPlan>();
+
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    private IdentityPlan identityPlan;
+    private IdentityPlanRegistry identityPlansRegistry;
 
     private static final Log logger = LogFactory.getLog(AbstractSecurityTokenEmitter.class);
 
@@ -63,27 +66,18 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
         this.uuidGenerator = uuidGenerator;
     }
 
-    /**
-     * @org.apache.xbean.Property alias="identity-plan"
-     *
-     * @return
-     */
-    public IdentityPlan getIdentityPlan() {
-        return identityPlan;
+    public IdentityPlanRegistry getIdentityPlansRegistry() {
+        return identityPlansRegistry;
     }
 
-    /**
-     * 
-     * @param idPlan
-     */
-    public void setIdentityPlan(IdentityPlan idPlan) {
-        this.identityPlan = idPlan;
+    public void setIdentityPlansRegistry(IdentityPlanRegistry identityPlansRegistry) {
+        this.identityPlansRegistry = identityPlansRegistry;
     }
 
     /**
      * The default implementation always returns false.
      */
-    public boolean canEmit(Object requestToken, String tokenType) {
+    public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         return false;
     }
 
@@ -113,10 +107,10 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
             }
 
             // Prepare execution
-            identityPlan.prepare(ex);
+            identityPlan.get().prepare(ex);
 
             // Perform execution
-            identityPlan.perform(ex);
+            identityPlan.get().perform(ex);
 
             if (!ex.getStatus().equals(IdentityPlanExecutionStatus.SUCCESS)) {
                 throw new SecurityTokenEmissionException("Identity plan returned : " + ex.getStatus());

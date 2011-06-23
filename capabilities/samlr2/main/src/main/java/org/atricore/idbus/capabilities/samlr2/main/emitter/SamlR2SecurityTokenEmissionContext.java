@@ -53,6 +53,8 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
     private MetadataEntry issuerMetadata;
 
+    private String identityPlanName;
+
     public SamlR2SecurityTokenEmissionContext() {
     }
 
@@ -131,5 +133,13 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
     public void setIssuerMetadata(MetadataEntry issuerMetadata) {
         this.issuerMetadata = issuerMetadata;
+    }
+
+    public void setIdentityPlanName(String identityPlanName) {
+        this.identityPlanName = identityPlanName;
+    }
+
+    public String getIdentityPlanName() {
+        return identityPlanName;
     }
 }

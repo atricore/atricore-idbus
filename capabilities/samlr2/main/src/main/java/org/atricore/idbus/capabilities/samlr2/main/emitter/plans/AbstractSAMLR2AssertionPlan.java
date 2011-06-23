@@ -24,6 +24,8 @@ package org.atricore.idbus.capabilities.samlr2.main.emitter.plans;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.planning.jbpm.AbstractJbpmIdentityPlan;
 
+import java.util.Set;
+
 /**
  * @org.apache.xbean.XBean element="abstract-saml-assertion-plan"
  *
@@ -33,6 +35,12 @@ import org.atricore.idbus.kernel.planning.jbpm.AbstractJbpmIdentityPlan;
 public abstract class AbstractSAMLR2AssertionPlan extends AbstractJbpmIdentityPlan {
 
     private SSOIdentityManager identityManager;
+
+    private Set<SubjectNameIDBuilder> nameIDBuilders;
+
+    private SubjectNameIDBuilder defaultNameIDBuilder;
+
+    private boolean ignoreRequestedNameIDPolicy = false;
 
     /**
      * @org.apache.xbean.Property alias="identity-manager"
@@ -47,4 +55,27 @@ public abstract class AbstractSAMLR2AssertionPlan extends AbstractJbpmIdentityPl
         this.identityManager = identityManager;
     }
 
+    public Set<SubjectNameIDBuilder> getNameIDBuilders() {
+        return nameIDBuilders;
+    }
+
+    public void setNameIDBuilders(Set<SubjectNameIDBuilder> nameIDBuilders) {
+        this.nameIDBuilders = nameIDBuilders;
+    }
+
+    public SubjectNameIDBuilder getDefaultNameIDBuilder() {
+        return defaultNameIDBuilder;
+    }
+
+    public void setDefaultNameIDBuilder(SubjectNameIDBuilder defaultNameIDBuilder) {
+        this.defaultNameIDBuilder = defaultNameIDBuilder;
+    }
+
+    public boolean isIgnoreRequestedNameIDPolicy() {
+        return ignoreRequestedNameIDPolicy;
+    }
+
+    public void setIgnoreRequestedNameIDPolicy(boolean ignoreRequestedNameIDPolicy) {
+        this.ignoreRequestedNameIDPolicy = ignoreRequestedNameIDPolicy;
+    }
 }
