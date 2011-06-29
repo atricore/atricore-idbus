@@ -5,6 +5,8 @@ package com.atricore.idbus.console.services.spi.response;
  */
 public class ValidateLicenseResponse {
 
+    private boolean valid;
+
     private String errorMsg;
 
     public String getErrorMsg() {
@@ -15,4 +17,11 @@ public class ValidateLicenseResponse {
         this.errorMsg = errorMsg;
     }
 
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
+    }
 }

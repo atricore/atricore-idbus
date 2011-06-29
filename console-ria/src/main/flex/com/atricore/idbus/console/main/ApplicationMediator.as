@@ -262,6 +262,7 @@ public class ApplicationMediator extends IocMediator {
             ProcessingMediator.STOP,
             CheckLicenseCommand.SUCCESS,
             CheckLicenseCommand.FAILURE,
+            CheckLicenseCommand.INVALID,
             ActivateLicenseCommand.SUCCESS
         ];
     }
@@ -343,6 +344,9 @@ public class ApplicationMediator extends IocMediator {
                 popupManager.hideProcessingWindow(notification);
                 break;
             case CheckLicenseCommand.FAILURE:
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "System error, check your configuration and restart JOSSO");
+                break;
+            case CheckLicenseCommand.INVALID:
                 showLicenseActivation();
                 break;
             case CheckLicenseCommand.SUCCESS:

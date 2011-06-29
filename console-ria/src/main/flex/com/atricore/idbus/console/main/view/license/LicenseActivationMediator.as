@@ -85,6 +85,7 @@ public class LicenseActivationMediator extends IocMediator {
 
     override public function listNotificationInterests():Array {
         return [CheckLicenseCommand.SUCCESS,
+                CheckLicenseCommand.INVALID,
                 ApplicationFacade.DISPLAY_ACTIVATE_LICENSE,
                 CheckLicenseCommand.FAILURE,
                 ActivateLicenseCommand.FAILURE];
@@ -96,6 +97,9 @@ public class LicenseActivationMediator extends IocMediator {
                 // do nothing AppMediator is taking care of it
                 break;
             case CheckLicenseCommand.FAILURE :
+                handleCheckLicenseFailure();
+                break;
+            case CheckLicenseCommand.INVALID :
                 handleCheckLicenseFailure();
                 break;
             case ApplicationFacade.DISPLAY_ACTIVATE_LICENSE:

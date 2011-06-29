@@ -7,6 +7,7 @@ import com.atricore.idbus.console.services.dto.LicenseTypeDTO;
  */
 public class GetLicenseResponse {
 
+    private boolean valid;
     private LicenseTypeDTO license;
     private String error;
 
@@ -24,5 +25,13 @@ public class GetLicenseResponse {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

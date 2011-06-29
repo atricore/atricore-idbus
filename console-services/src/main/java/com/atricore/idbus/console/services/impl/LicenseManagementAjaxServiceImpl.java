@@ -2,6 +2,7 @@ package com.atricore.idbus.console.services.impl;
 
 import com.atricore.idbus.console.licensing.main.InvalidLicenseException;
 import com.atricore.idbus.console.licensing.main.LicenseManager;
+import com.atricore.idbus.console.licensing.main.LicenseServiceError;
 import com.atricore.idbus.console.services.dto.LicenseTypeDTO;
 import com.atricore.idbus.console.services.spi.LicenseManagementAjaxService;
 import com.atricore.idbus.console.services.spi.request.ActivateLicenseRequest;
@@ -26,8 +27,11 @@ public class LicenseManagementAjaxServiceImpl implements LicenseManagementAjaxSe
         ValidateLicenseResponse res = new ValidateLicenseResponse();
         try {
             licenseManager.validateLicense(req.getLicense().getValue());
+            res.setValid(true);
         } catch (InvalidLicenseException e) {
-            res.setErrorMsg("Invalid license file!");
+            res.setValid(false);
+        } catch (LicenseServiceError e) {
+            res.setErrorMsg(e.getMessage());
         }
         return res;
     }
@@ -36,8 +40,11 @@ public class LicenseManagementAjaxServiceImpl implements LicenseManagementAjaxSe
         ActivateLicenseResponse res = new ActivateLicenseResponse();
         try {
             licenseManager.activateLicense(req.getLicense().getValue());
+            res.setValid(true);
         } catch (InvalidLicenseException e) {
-            res.setErrorMsg("Invalid license file!");
+            res.setValid(false);
+        } catch (LicenseServiceError e) {
+            res.setErrorMsg(e.getMessage());
         }
         return res;
     }
@@ -47,8 +54,11 @@ public class LicenseManagementAjaxServiceImpl implements LicenseManagementAjaxSe
         try {
             LicenseType license = licenseManager.getCurrentLicense();
             res.setLicense(dozerMapper.map(license, LicenseTypeDTO.class));
+            res.setValid(true);
         } catch (InvalidLicenseException e) {
-            res.setError("Error loading license.");
+            res.setValid(false);
+        } catch (Exception e) {
+            res.setError(e.getMessage());
         }
         //TODO implement
         return res;

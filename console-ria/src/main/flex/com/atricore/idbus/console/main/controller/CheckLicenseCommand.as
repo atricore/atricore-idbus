@@ -41,6 +41,7 @@ import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleComma
 public class CheckLicenseCommand extends IocSimpleCommand implements IResponder
 {
     public static const SUCCESS:String = "com.atricore.idbus.console.licensing.main.controller.CheckLicenseCommand.SUCCESS";
+    public static const INVALID:String = "com.atricore.idbus.console.licensing.main.controller.CheckLicenseCommand.INVALID";
     public static const FAILURE:String = "com.atricore.idbus.console.licensing.main.controller.CheckLicenseCommand.FAILURE";
 
     private var _registry:ServiceRegistry;
@@ -67,14 +68,14 @@ public class CheckLicenseCommand extends IocSimpleCommand implements IResponder
 
     public function result(data:Object):void {
         var getLicenseResponse:GetLicenseResponse = data.result as GetLicenseResponse;
-        if(getLicenseResponse.license != null){
-            _licenseProxy.license = getLicenseResponse.license;
-        }
 
-        if (_licenseProxy.license !=null){
+        if (getLicenseResponse.valid) {
+            _licenseProxy.license = getLicenseResponse.license;
             sendNotification(SUCCESS);
-        } else {
+        } else if (getLicenseResponse.error != null) {
             sendNotification(FAILURE);
+        } else {
+            sendNotification(INVALID);
         }
     }
 

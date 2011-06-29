@@ -1,9 +1,6 @@
 package com.atricore.idbus.console.licensing.main.impl;
 
-import com.atricore.idbus.console.licensing.main.InvalidFeatureException;
-import com.atricore.idbus.console.licensing.main.InvalidLicenseException;
-import com.atricore.idbus.console.licensing.main.LicenseManager;
-import com.atricore.idbus.console.licensing.main.ProductFeature;
+import com.atricore.idbus.console.licensing.main.*;
 import com.atricore.josso2.licensing._1_0.license.FeatureType;
 import com.atricore.josso2.licensing._1_0.license.LicenseType;
 import com.atricore.josso2.licensing._1_0.license.LicensedFeatureType;
@@ -55,7 +52,7 @@ public class LicenseManagerImpl implements LicenseManager {
     // Installed product features descriptors, contributed as OSGi services.
     private Map<String, ProductFeature> productFeatures = new HashMap<String, ProductFeature>();
 
-    public LicenseType activateLicense(byte[] license) throws InvalidLicenseException {
+    public LicenseType activateLicense(byte[] license) throws LicenseServiceError, InvalidLicenseException {
         LicenseType licenseType = null;
         try {            
             byte[] decoded = unzipAndDecodeLicense(license);
@@ -67,18 +64,20 @@ public class LicenseManagerImpl implements LicenseManager {
             storeLicense(license);
 
             return licenseType;
+        } catch (InvalidLicenseException e) {
+            throw new InvalidLicenseException(e);
         } catch (JAXBException e) {
             logger.error("Error unmarshalling the license : " + e.getMessage(), e);
-            throw new InvalidLicenseException(e);
+            throw new LicenseServiceError(e);
 
         } catch (Exception e) {
             logger.error("Invalid License : " + e.getMessage(), e);
-            throw new InvalidLicenseException(e);
+            throw new LicenseServiceError(e);
 
         }
     }
 
-    public LicenseType validateLicense(byte[] license) throws InvalidLicenseException {
+    public LicenseType validateLicense(byte[] license) throws LicenseServiceError, InvalidLicenseException {
         LicenseType licenseType = null;
         try {
             byte[] decoded = unzipAndDecodeLicense(license);
@@ -88,30 +87,34 @@ public class LicenseManagerImpl implements LicenseManager {
             validateLicense(licenseType);
 
             return licenseType;
+        } catch (InvalidLicenseException e) {
+            throw new InvalidLicenseException(e);
         } catch (JAXBException e) {
             logger.error("Error unmarshalling the license : " + e.getMessage(), e);
-            throw new InvalidLicenseException(e);
+            throw new LicenseServiceError(e);
 
         } catch (Exception e) {
             logger.error("Invalid License : " + e.getMessage(), e);
-            throw new InvalidLicenseException(e);
+            throw new LicenseServiceError(e);
 
         }
     }
 
-    public void validateCurrentLicense() throws InvalidLicenseException {
+    public void validateCurrentLicense() throws LicenseServiceError, InvalidLicenseException {
         try {
             // 1. Retrieve consoleLicense file
             LicenseType consoleLicense = getCurrentLicense();
             // 2. Validate
             validateLicense(consoleLicense);
+        }  catch (InvalidLicenseException e) {
+            throw new InvalidLicenseException(e);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new InvalidLicenseException(e);
+            throw new LicenseServiceError(e);
         }
     }
 
-    public void validateFeature(String group, String name, String version, LicenseType license) throws InvalidFeatureException {
+    public void validateFeature(String group, String name, String version, LicenseType license) throws LicenseServiceError, InvalidFeatureException {
         try {
 
             Calendar now = Calendar.getInstance();
@@ -178,18 +181,20 @@ public class LicenseManagerImpl implements LicenseManager {
                     name + "/" +
                     version + ".... INVALID (Error occured : " + e.getMessage(), e);
 
-            throw new InvalidFeatureException(e);
+            throw new LicenseServiceError(e);
         }
     }
 
-    public LicenseType getCurrentLicense() throws InvalidLicenseException {
+    public LicenseType getCurrentLicense() throws LicenseServiceError, InvalidLicenseException {
         try {
             LicenseType consoleLicense = loadLicense();
             validateLicense(consoleLicense);
             return consoleLicense;
+        } catch (InvalidLicenseException e) {
+            throw new InvalidLicenseException(e);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new InvalidLicenseException(e);
+            throw new LicenseServiceError(e);
         }
     }
 
@@ -229,7 +234,7 @@ public class LicenseManagerImpl implements LicenseManager {
         return decodeLicense(unzipped);        
     }
 
-    protected void validateLicense(LicenseType license) throws InvalidLicenseException {
+    protected void validateLicense(LicenseType license) throws LicenseServiceError, InvalidLicenseException {
         // 1. Validate signature
         validateSignature(license, certificate);
 
@@ -257,7 +262,7 @@ public class LicenseManagerImpl implements LicenseManager {
         }
     }
 
-    protected void validateLicenseInformation(LicenseType license) throws InvalidLicenseException {
+    protected void validateLicenseInformation(LicenseType license) throws LicenseServiceError, InvalidLicenseException {
 
         boolean valid = true;
 
