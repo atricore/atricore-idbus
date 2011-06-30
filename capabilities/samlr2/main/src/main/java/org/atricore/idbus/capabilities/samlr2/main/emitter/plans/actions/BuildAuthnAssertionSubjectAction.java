@@ -195,16 +195,21 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSAMLR2AssertionAct
 
     }
 
+
     protected NameIDPolicyType resolveNameIDPolicy(SamlR2SecurityTokenEmissionContext ctx) {
 
+        // Take NameID policy from request
         NameIDPolicyType nameIDPolicy = null;
         if (ctx.getRequest() != null) {
-
             if (ctx.getRequest()  instanceof AuthnRequestType) {
                 AuthnRequestType authnRequest = (AuthnRequestType) ctx.getRequest();
                 nameIDPolicy = authnRequest.getNameIDPolicy();
             }
+        }
 
+        if (nameIDPolicy == null) {
+            // TODO : Take NameIDFormat from Provider Metadata
+            // TODO : Consider SAML R2 Metadata, it can also specify the required Name ID policy as <md:NameIDFormat> in SSO Descriptor!
         }
 
         if (nameIDPolicy == null) {
