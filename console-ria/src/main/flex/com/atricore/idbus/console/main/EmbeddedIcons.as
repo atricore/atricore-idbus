@@ -525,7 +525,7 @@ public class EmbeddedIcons {
     public static var saveApplianceMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/modeler/export_identity_appliance_22.png")]
+    [Embed(source="/assets/icons/modeler/import_identity_appliance_22.png")]
     public static var importApplianceMiniIcon:Class;
 
     [Bindable]
