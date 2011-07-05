@@ -300,7 +300,7 @@ public class PSPProducer extends SpmlR2Producer {
         } else if (o instanceof Element) {
             // DOM Element
             Element e = (Element) o;
-            spmlSelect = (SelectionType) XmlUtils.unmarshal(e);
+            spmlSelect = (SelectionType) XmlUtils.unmarshal(e, new String[] {SPMLR2Constants.SPML_PKG});
         }
         else {
             // JAXB Element

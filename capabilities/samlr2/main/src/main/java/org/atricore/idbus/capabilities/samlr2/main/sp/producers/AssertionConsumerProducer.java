@@ -859,13 +859,18 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                     StatusDetails.NO_STATUS);
     	}
     	
-		// XML Signature, saml2 core, section 5 (always validate response signatures)
+		// XML Signature, saml2 core, section 5 (always validate response signatures
 
         if (response.getSignature() == null) {
-            throw new SamlR2ResponseException(response,
+
+            // Redirect binding does not have signature elements!
+            if (!endpoint.getBinding().equals(SamlR2Binding.SAMLR2_REDIRECT.getValue())) {
+
+                throw new SamlR2ResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_RESPONSE_SIGNATURE);
+            }
         }
 
         try {

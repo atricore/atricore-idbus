@@ -106,6 +106,7 @@
         <karaf.version>2.2.1</karaf.version>
         <karaf.deployer.war.version>2.1.5</karaf.deployer.war.version>
 
+        <idbus.version>1.2.0-SNAPSHOT</idbus.version>
         <idbus.kernel.version>1.2.0-SNAPSHOT</idbus.kernel.version>
         <idbus.examples.version>1.2.0-SNAPSHOT</idbus.examples.version>
         <idbus.app.server.version>1.2.0-SNAPSHOT</idbus.app.server.version>
@@ -989,7 +990,7 @@
         <dependency>
             <groupId>org.atricore.idbus</groupId>
             <artifactId>all</artifactId>
-            <version>${idbus.kernel.version}</version>
+            <version>${idbus.version}</version>
             <type>pom</type>
         </dependency>
 
@@ -2225,6 +2226,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jbpm.jbpm3</groupId>
+            <artifactId>jbpm</artifactId>
+            <version>3.3.1.GA</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.geronimo.genesis.config</groupId>
             <artifactId>config</artifactId>
             <version>1.4</version>
@@ -2284,6 +2292,23 @@
             <groupId>org.apache</groupId>
             <artifactId>apache</artifactId>
             <version>5</version>
+            <type>pom</type>
+        </dependency>
+
+        <!-- Required by maven 3 rutime -->
+
+        <!-- Maven runtime and plugins -->
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-components</artifactId>
+            <version>1.1.6</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus</artifactId>
+            <version>1.0.11</version>
             <type>pom</type>
         </dependency>
 

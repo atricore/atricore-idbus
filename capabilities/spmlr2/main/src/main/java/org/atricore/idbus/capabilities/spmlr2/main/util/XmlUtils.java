@@ -6,15 +6,25 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
+import org.atricore.idbus.kernel.main.databinding.JAXBUtils;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
+import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.ws.Holder;
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.TreeSet;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -26,6 +36,51 @@ import java.io.Writer;
 public class XmlUtils {
 
     private static final Log logger = LogFactory.getLog(XmlUtils.class);
+
+    private static final TreeSet<String> spmlContextPackages = new TreeSet<String>();
+
+    private static final Holder<JAXBUtils.CONSTRUCTION_TYPE> constructionType = new Holder<JAXBUtils.CONSTRUCTION_TYPE>();
+
+    private static final XMLInputFactory staxIF = XMLInputFactory.newInstance();
+    private static final XMLOutputFactory staxOF = XMLOutputFactory.newInstance();
+
+    static {
+        spmlContextPackages.add(SPMLR2Constants.SPML_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_ASYNC_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_ATRICORE_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_BATCH_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_BULK_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_DSML_CORE_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_DSML_CORE_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_DSML_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_PASSWORD_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_REFERENCE_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_SEARCH_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_SUSPEND_PKG);
+        spmlContextPackages.add(SPMLR2Constants.SPML_UPDATES_PKG);
+
+        javax.xml.parsers.DocumentBuilderFactory dbf =
+                javax.xml.parsers.DocumentBuilderFactory.newInstance();
+
+        javax.xml.parsers.SAXParserFactory saxf =
+                SAXParserFactory.newInstance();
+
+
+        try {
+            logger.debug("DocumentBuilder = " + dbf.newDocumentBuilder());
+            logger.debug("SAXParser = " + saxf.newSAXParser());
+            logger.debug("XMLEventReader = " + staxIF.createXMLEventReader(new StringSource("<a>Hello</a>")));
+            logger.debug("XMLEventWriter = " + staxOF.createXMLEventWriter(new ByteArrayOutputStream()));
+        } catch (ParserConfigurationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (SAXException e) {
+            logger.error(e.getMessage(), e);
+        } catch (XMLStreamException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+    }
+
 
     //  -----------------------------------------------------------
     // JAXBUtils
@@ -46,9 +101,7 @@ public class XmlUtils {
         String marshalledRequest = marshal(
                 request,
                 SPMLR2Constants.SPML_NS,
-                requestType,
-                new String[]{ SPMLR2Constants.SPML_PKG }
-            );
+                requestType );
 
         return encode ? new String(new Base64().encode( marshalledRequest.getBytes())) : marshalledRequest;
     }
@@ -87,8 +140,7 @@ public class XmlUtils {
         String marshalledResponse = marshalledResponse = XmlUtils.marshal(
                 response,
                 SPMLR2Constants.SPML_NS,
-                responseType,
-                new String[]{ SPMLR2Constants.SPML_PKG }
+                responseType
         );
 
         return encode ? new String( new Base64().encode( marshalledResponse.getBytes() ) ) : marshalledResponse;
@@ -128,74 +180,68 @@ public class XmlUtils {
         return new JAXBElement<RequestType>(new QName(SPMLR2Constants.SPML_WSDL_NS, element), clazz, request);
     }
 
-    public static JAXBContext createSpmlR2JAXBContext(RequestType request) throws JAXBException {
-        return createJAXBContext(new String[] {request.getClass().getPackage().getName()});
-        /*
-        return createJAXBContext(new String[]{ SPMLR2Constants.SPML_WSDL_PKG,
-                SPMLR2Constants.SPML_IDBUS_PKG,
-                SPMLR2Constants.SPML_ASSERTION_PKG,
-                SPMLR2Constants.SPML_METADATA_PKG});
-                */
-    }
-
-    public static JAXBContext createSpmlR2JAXBContext() throws JAXBException {
-        return createJAXBContext(new String[]{
-                SPMLR2Constants.SPML_PKG,
-                SPMLR2Constants.SPML_ASYNC_PKG,
-                SPMLR2Constants.SPML_ATRICORE_PKG,
-                SPMLR2Constants.SPML_BATCH_PKG,
-                SPMLR2Constants.SPML_BULK_PKG,
-                SPMLR2Constants.SPML_DSML_CORE_PKG,
-                SPMLR2Constants.SPML_DSML_CORE_PKG,
-                SPMLR2Constants.SPML_DSML_PKG,
-                SPMLR2Constants.SPML_PASSWORD_PKG,
-                SPMLR2Constants.SPML_REFERENCE_PKG,
-                SPMLR2Constants.SPML_SEARCH_PKG,
-                SPMLR2Constants.SPML_SUSPEND_PKG,
-                SPMLR2Constants.SPML_UPDATES_PKG});
-    }
-
 
     // JAXB Generic
 
-    public static String marshal ( Object msg, String msgQName, String msgLocalName, String[] userPackages ) throws Exception {
+    public static String marshal ( Object msg, String msgQName, String msgLocalName) throws Exception {
 
-        JAXBContext jaxbContext = createJAXBContext( userPackages );
-        JAXBElement jaxbRequest = new JAXBElement( new QName( msgQName, msgLocalName ),
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(spmlContextPackages, constructionType,
+                spmlContextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+
+        Marshaller m = JAXBUtils.getJAXBMarshaller(jaxbContext);
+
+        JAXBElement jaxbRequest = new JAXBElement(new QName(msgQName, msgLocalName),
                 msg.getClass(),
                 msg
         );
+
         Writer writer = new StringWriter();
 
         // Support XMLDsig
-        jaxbContext.createMarshaller().marshal( jaxbRequest, writer);
+        m.marshal(jaxbRequest, writer);
+        writer.flush();
+        JAXBUtils.releaseJAXBMarshaller(jaxbContext, m);
 
         return writer.toString();
     }
 
-    public static Object unmarshal(Node domMsg) throws Exception {
-        JAXBContext jaxbContext = createSpmlR2JAXBContext();
-        return jaxbContext.createUnmarshaller().unmarshal( domMsg );
-    }
-    public static Object unmarshal( String msg) throws Exception {
-        JAXBContext jaxbContext = createSpmlR2JAXBContext();
-        return jaxbContext.createUnmarshaller().unmarshal( new StringSource( msg ) );
-    }
-
-
-    public static Object unmarshal( String msg, String userPackages[] ) throws Exception {
-        JAXBContext jaxbContext = createJAXBContext( userPackages );
-        return jaxbContext.createUnmarshaller().unmarshal( new StringSource( msg ) );
-    }
-
-    public static JAXBContext createJAXBContext ( String[] userPackages ) throws JAXBException {
-        StringBuilder packages = new StringBuilder();
-        for ( String userPackage : userPackages ) {
-            packages.append( userPackage ).append( ":" );
+    public static Object unmarshal(Node domMsg, String userPackages[]) throws Exception {
+        TreeSet<String> contextPackages = new TreeSet<String>();
+        for (int i = 0; i < userPackages.length; i++) {
+            String userPackage = userPackages[i];
+            contextPackages.add(userPackage);
         }
 
-        // Use our classloader to build JAXBContext so it can find binding classes.
-        return JAXBContext.newInstance( packages.toString(), XmlUtils.class.getClassLoader());
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(contextPackages, constructionType,
+                contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
+        Object o = unmarshaller.unmarshal(domMsg);
+        JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
+
+        if (o instanceof JAXBElement)
+            return ((JAXBElement) o).getValue();
+
+        return o;
+    }
+
+    public static Object unmarshal(String msg, String userPackages[]) throws Exception {
+        TreeSet<String> contextPackages = new TreeSet<String>();
+        for (int i = 0; i < userPackages.length; i++) {
+            String userPackage = userPackages[i];
+            contextPackages.add(userPackage);
+        }
+
+        JAXBContext jaxbContext = JAXBUtils.getJAXBContext(contextPackages, constructionType,
+                contextPackages.toString(), XmlUtils.class.getClassLoader(), new HashMap<String, Object>());
+        Unmarshaller unmarshaller = JAXBUtils.getJAXBUnmarshaller(jaxbContext);
+        Object o = unmarshaller.unmarshal(staxIF.createXMLEventReader(new StringSource(msg)));
+        JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
+
+        if (o instanceof JAXBElement)
+            return ((JAXBElement) o).getValue();
+
+        return o;
+
     }
 
 
