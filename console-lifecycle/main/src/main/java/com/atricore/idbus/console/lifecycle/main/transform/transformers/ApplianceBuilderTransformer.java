@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
 import org.atricore.idbus.bundles.maven.MavenEmbeddedRuntime;
+import org.atricore.idbus.bundles.maven.MavenRuntimeExecutionOutcome;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.context.BundleContextAware;
 
@@ -73,7 +74,7 @@ public class ApplianceBuilderTransformer extends AbstractTransformer implements 
             if (logger.isTraceEnabled())
                 logger.trace("Created Maven runtime");
 
-            rt.doExecute();
+            MavenRuntimeExecutionOutcome outcome = rt.doExecute();
             if (logger.isTraceEnabled())
                 logger.trace("Executed Maven");
 
@@ -81,6 +82,13 @@ public class ApplianceBuilderTransformer extends AbstractTransformer implements 
 
             if (logger.isTraceEnabled())
                 logger.trace("Destroyed Maven runtime");
+
+            if (outcome.hasExceptions()) {
+                logger.debug("Error building appliance at " + baseDir.getURL());
+                throw new TransformException("Error building appliance " +
+                                             ((IdentityApplianceDefinition) event.getData()).getName() +
+                                             " at " + baseDir.getURL());
+            }
 
             IdentityApplianceDefinition applianceDef = (IdentityApplianceDefinition) event.getData();
             IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
