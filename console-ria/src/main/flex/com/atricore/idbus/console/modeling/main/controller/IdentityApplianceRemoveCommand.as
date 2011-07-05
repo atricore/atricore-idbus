@@ -44,6 +44,10 @@ public class IdentityApplianceRemoveCommand extends IocSimpleCommand implements 
     private var _registry:ServiceRegistry;
     private var _projectProxy:ProjectProxy;
 
+
+    public function IdentityApplianceRemoveCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

@@ -8,9 +8,10 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
 
 import java.io.PrintStream;
+import java.util.Map;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
 
@@ -32,6 +33,10 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
 
     public void setErr(PrintStream err) {
         this.err = err;
+    }
+
+    public void print(T o, Map<String, Object> options) {
+        print(o);
     }
 
     public void printError(Exception e) {

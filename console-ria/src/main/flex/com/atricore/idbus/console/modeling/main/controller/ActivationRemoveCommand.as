@@ -17,6 +17,9 @@ public class ActivationRemoveCommand extends IocSimpleCommand {
     private var _projectProxy:ProjectProxy;
 
 
+    public function ActivationRemoveCommand() {
+    }
+
     public function get projectProxy():ProjectProxy {
         return _projectProxy;
     }

@@ -30,8 +30,6 @@
     <mx:Script><![CDATA[
         import com.atricore.idbus.console.main.EmbeddedIcons;
 
-        public static const AtricoreConsole.BUNDLE:String = "setup";
-
         [Bindable]
         private var _onFinish:Function;
 

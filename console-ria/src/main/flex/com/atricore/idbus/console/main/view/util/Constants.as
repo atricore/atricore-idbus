@@ -37,6 +37,8 @@ package com.atricore.idbus.console.main.view.util {
         
         public static const EXEC_ENVIRONMENT_DEEP:uint=2;
 
+        public static const AUTHENTICATION_SERVICE_DEEP:uint=2;
+
         public static const CONNECTIONS_DEEP:uint=3;
 
         public static const CONNECTION_DEEP:uint=4;

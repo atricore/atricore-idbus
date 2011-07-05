@@ -45,6 +45,10 @@ public class EditGroupCommand extends IocSimpleCommand implements IResponder {
     private var _accountManagementProxy:AccountManagementProxy;
     private var group:Group;
 
+
+    public function EditGroupCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }
@@ -67,6 +71,7 @@ public class EditGroupCommand extends IocSimpleCommand implements IResponder {
         req.id = group.id;
         req.name = group.name;
         req.description = group.description;
+        req.extraAttributes = group.extraAttributes;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
         var call:Object = service.updateGroup(req);

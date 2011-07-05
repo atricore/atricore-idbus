@@ -31,7 +31,6 @@ import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class AccountManagementProxy extends IocProxy implements IDisposable
 {
-
     private var _groupsList:Array;
     private var _userList:Array;
 

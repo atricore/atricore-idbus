@@ -1,8 +1,11 @@
 package com.atricore.idbus.console.modeling.diagram.view.util {
+
 import com.atricore.idbus.console.main.EmbeddedIcons;
-import com.atricore.idbus.console.modeling.diagram.DiagramElementTypes;
+import com.atricore.idbus.console.base.diagram.DiagramElementTypes;
+import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
-import com.atricore.idbus.console.services.dto.FederatedProvider;
+import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
+import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 
 import com.atricore.idbus.console.services.dto.IdentitySource;
@@ -21,8 +24,10 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id && !nodeLinkExists(node1.node, node2.node) && !nodeLinkExists(node2.node, node1.node)) {
             // TODO: finish this
-            if ((node1.data is ServiceProvider && node2.data is IdentityProvider)
-                    || (node1.data is IdentityProvider && node2.data is ServiceProvider)) {                    
+            if ((node1.data is ServiceProvider && (node2.data is IdentityProvider || node2.data is ExternalIdentityProvider))
+                    || (node1.data is IdentityProvider && (node2.data is ServiceProvider || node2.data is ExternalServiceProvider))
+                    || (node1.data is ExternalServiceProvider && node2.data is IdentityProvider)
+                    || (node1.data is ExternalIdentityProvider && node2.data is ServiceProvider)) {
                 canBeLinked = true;
             }
         }
@@ -33,13 +38,13 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
             if (node1.data is ServiceProvider && node2.data is ExecutionEnvironment){
-                var sp:ServiceProvider = node1.data as ServiceProvider;
-                if(sp.activation == null){
+                var sp1:ServiceProvider = node1.data as ServiceProvider;
+                if(sp1.activation == null){
                     canBeLinked = true;
                 }
             } else if (node1.data is ExecutionEnvironment && node2.data is ServiceProvider) {
-                var sp:ServiceProvider = node2.data as ServiceProvider;
-                if(sp.activation == null){
+                var sp2:ServiceProvider = node2.data as ServiceProvider;
+                if(sp2.activation == null){
                     canBeLinked = true;
                 }
             }
@@ -51,13 +56,31 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
             if (node1.data is Provider && node2.data is IdentitySource){
-                var prov:Provider = node1.data as Provider;
-                if(prov.identityLookup == null){
+                var prov1:Provider = node1.data as Provider;
+                if(prov1.identityLookup == null){
                     canBeLinked = true;
                 }
             } else if (node1.data is IdentitySource && node2.data is Provider) {
-                var prov:Provider = node2.data as Provider;
-                if(prov.identityLookup == null){
+                var prov2:Provider = node2.data as Provider;
+                if(prov2.identityLookup == null){
+                    canBeLinked = true;
+                }
+            }
+        }
+        return canBeLinked;
+    }
+
+    public static function nodesCanBeLinkedWithDelegatedAuthentication(node1:IVisualNode, node2:IVisualNode):Boolean {
+        var canBeLinked:Boolean = false;
+        if (node1 != null && node2 != null && node1.id != node2.id) {
+            if (node1.data is IdentityProvider && node2.data is AuthenticationService) {
+                var idp1:IdentityProvider = node1.data as IdentityProvider;
+                if (idp1.delegatedAuthentication == null) {
+                    canBeLinked = true;
+                }
+            } else if (node1.data is AuthenticationService && node2.data is IdentityProvider) {
+                var idp2:IdentityProvider = node2.data as IdentityProvider;
+                if (idp2.delegatedAuthentication == null) {
                     canBeLinked = true;
                 }
             }
@@ -78,6 +101,16 @@ public class DiagramUtil {
                 return EmbeddedIcons.idpMiniIcon;
             case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.spMiniIcon;
+            case DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.externalIdpMiniIcon;
+            case DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.externalSpMiniIcon;
+            case DiagramElementTypes.SALESFORCE_ELEMENT_TYPE:
+                return EmbeddedIcons.salesforceMiniIcon;
+            case DiagramElementTypes.GOOGLE_APPS_ELEMENT_TYPE:
+                return EmbeddedIcons.googleAppsMiniIcon;
+            case DiagramElementTypes.SUGAR_CRM_ELEMENT_TYPE:
+                return EmbeddedIcons.sugarCRMMiniIcon;
             case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                 return EmbeddedIcons.vaultMiniIcon;
             case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
@@ -106,10 +139,18 @@ public class DiagramUtil {
                 return EmbeddedIcons.alfrescoEnvironmentMiniIcon;
             case DiagramElementTypes.JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.javaEnvironmentMiniIcon;
+            case DiagramElementTypes.PHP_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.phpEnvironmentMiniIcon;
             case DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.phpbbEnvironmentMiniIcon;
             case DiagramElementTypes.WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.webEnvironmentMiniIcon;
+            case DiagramElementTypes.WIKID_ELEMENT_TYPE:
+                return EmbeddedIcons.wikidMiniIcon;
+            case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
+                return EmbeddedIcons.directoryServiceMiniIcon;
+            case DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:
+                return EmbeddedIcons.windowsIntegratedAuthnMiniIcon;
         }
         return null;
     }

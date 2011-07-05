@@ -49,6 +49,7 @@
                 var idApplianceDef:IdentityApplianceDefinition = new IdentityApplianceDefinition();
                 idApplianceDef.name = applianceName.text;
                 idApplianceDef.description = applianceDescription.text;
+                idApplianceDef.namespace = applianceNamespace.text;
 
                 var location:Location = new Location();
                 location.protocol = applianceLocationProtocol.selectedItem.data;
@@ -66,10 +67,11 @@
 
             override public function get readableStepDecision():String {
                 readableDecisionArray = new Array();
-                readableDecisionArray.push("Appliance name: " + applianceName.text);
-                readableDecisionArray.push("Appliance description: " + applianceDescription.text);
-                readableDecisionArray.push("Appliance namespace: " + applianceNamespace.text);
-                readableDecisionArray.push("Appliance location: " + applianceLocationProtocol.labelDisplay.text + "://" +
+
+                readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.appliance.name") + ": " + applianceName.text);
+                readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.appliance.desc") + ": " + applianceDescription.text);
+                readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.appliance.namespace") + ": " + applianceNamespace.text);
+                readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.appliance.location") + ": " + applianceLocationProtocol.labelDisplay.text + "://" +
                         applianceLocationDomain.text +
                         ((applianceLocationPort.text != null && applianceLocationPort.text != "") ?
                                 ":" + applianceLocationPort.text : "") + "/IDBUS/" + applianceName.text.toUpperCase());

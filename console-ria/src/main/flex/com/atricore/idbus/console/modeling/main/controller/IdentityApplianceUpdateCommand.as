@@ -44,6 +44,11 @@ public class IdentityApplianceUpdateCommand extends IocSimpleCommand implements 
     private var _projectProxy:ProjectProxy;
     private var _registry:ServiceRegistry;
 
+    private var _silentUpdate:Boolean;
+
+
+    public function IdentityApplianceUpdateCommand() {
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;
@@ -62,6 +67,7 @@ public class IdentityApplianceUpdateCommand extends IocSimpleCommand implements 
     }
 
     override public function execute(notification:INotification):void {
+        _silentUpdate = notification.getBody() as Boolean;
         var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
         
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
@@ -79,8 +85,11 @@ public class IdentityApplianceUpdateCommand extends IocSimpleCommand implements 
             sendNotification(ApplicationFacade.APPLIANCE_VALIDATION_ERRORS);
         } else {
             projectProxy.currentIdentityAppliance = resp.appliance;
-            sendNotification(SUCCESS);
+            //if (!_silentUpdate) {
+                sendNotification(SUCCESS, _silentUpdate);
+            //}
         }
+        _silentUpdate = false;
     }
 
     public function fault(info:Object):void {
@@ -88,6 +97,7 @@ public class IdentityApplianceUpdateCommand extends IocSimpleCommand implements 
         var msg:String = fault.faultString.substring((fault.faultString.indexOf('.') + 1), fault.faultString.length);
         trace(msg);
         sendNotification(FAILURE, msg);
+        _silentUpdate = false;
     }
 }
 }

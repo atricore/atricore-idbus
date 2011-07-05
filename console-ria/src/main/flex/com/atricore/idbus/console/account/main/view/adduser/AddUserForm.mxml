@@ -32,7 +32,7 @@
         <mx:StringValidator id="firstnameUserValidator" source="{userFirstName}" required="true" property="text"/>
         <mx:StringValidator id="lastnameUserValidator" source="{userLastName}" required="true" property="text"/>
         <utils:PasswordValidator id="pwvPasswords" source="{userPassword}" property="text" required="true"
-                                 matchSource="{userRetypePassword}" matchProperty="text"
+                                 matchSource="{userRetypePassword}" matchProperty="text" defaultLength="8"
                                  noMatchError="Passwords do not match"/>
 
         <mx:EmailValidator id="userEmailValidator" source="{userEmail}" property="text" required="false"/>

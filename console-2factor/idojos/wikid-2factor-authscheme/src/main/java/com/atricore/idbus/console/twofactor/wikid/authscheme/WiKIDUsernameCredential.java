@@ -1,0 +1,17 @@
+package com.atricore.idbus.console.twofactor.wikid.authscheme;
+
+import org.atricore.idbus.kernel.main.authn.BaseCredential;
+
+/**
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
+ */
+public class WiKIDUsernameCredential extends BaseCredential {
+
+    public WiKIDUsernameCredential(String username) {
+        super(username);
+    }
+
+    public WiKIDUsernameCredential() {
+        super();
+    }
+}

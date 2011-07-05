@@ -58,6 +58,9 @@ public abstract class Provider implements Serializable {
 
     private IdentityApplianceDefinition identityAppliance;
 
+    private double x;
+    private double y;
+    
     public long getId() {
         return id;
     }
@@ -160,6 +163,22 @@ public abstract class Provider implements Serializable {
 
     public void setRemote(boolean remote) {
         isRemote = remote;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     @Override

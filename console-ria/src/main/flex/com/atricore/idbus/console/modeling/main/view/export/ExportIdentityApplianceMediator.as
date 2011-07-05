@@ -1,21 +1,19 @@
 package com.atricore.idbus.console.modeling.main.view.export {
+import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.modeling.main.controller.ExportIdentityApplianceCommand;
+import com.atricore.idbus.console.services.spi.response.ExportIdentityApplianceProjectResponse;
 
-import flash.events.ErrorEvent;
 import flash.events.Event;
-import flash.events.IOErrorEvent;
 import flash.events.MouseEvent;
-import flash.events.SecurityErrorEvent;
-import flash.external.ExternalInterface;
 import flash.net.FileReference;
-import flash.net.URLLoader;
-import flash.net.URLLoaderDataFormat;
-import flash.net.URLRequest;
-import flash.net.URLRequestMethod;
-import flash.net.URLVariables;
 
 import mx.events.CloseEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
+import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class ExportIdentityApplianceMediator extends IocMediator {
@@ -26,7 +24,7 @@ public class ExportIdentityApplianceMediator extends IocMediator {
 
     private var _exportedAppliance:Object;
 
-    private var _urlLoader:URLLoader;
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     public function ExportIdentityApplianceMediator(name:String = null, viewComp:ExportIdentityApplianceView = null) {
         super(name, viewComp);
@@ -61,26 +59,9 @@ public class ExportIdentityApplianceMediator extends IocMediator {
         if (projectProxy.currentIdentityAppliance != null) {
 
             view.progBar.setProgress(0, 0);
-            view.progBar.label = "Exporting Identity Appliance...";
+            view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.export.progress");
 
-            var currentUrl:String = ExternalInterface.call("window.location.href.toString");
-            var url:String = currentUrl.substring(0, currentUrl.lastIndexOf("/")) + "/export.do";
-
-            _urlLoader = new URLLoader();
-            _urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
-            
-            _urlLoader.addEventListener(Event.COMPLETE, urlLoaderCompleteHandler);
-            _urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
-            _urlLoader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
-
-            var request:URLRequest = new URLRequest(url);
-            var variables:URLVariables = new URLVariables();
-            variables.applianceId = projectProxy.currentIdentityAppliance.id;
-            variables.name = projectProxy.currentIdentityAppliance.idApplianceDefinition.name + "-1.0." +
-                    projectProxy.currentIdentityAppliance.idApplianceDefinition.revision;
-            request.data = variables;
-            request.method = URLRequestMethod.GET;
-            _urlLoader.load(request);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_EXPORT, projectProxy.currentIdentityAppliance.id.toString());
         } else {
             closeWindow();
         }
@@ -97,24 +78,33 @@ public class ExportIdentityApplianceMediator extends IocMediator {
         closeWindow();
     }
 
-    private function urlLoaderCompleteHandler(event:Event):void {
-        _exportedAppliance = _urlLoader.data;
-        view.progBar.indeterminate = false;
-        view.progBar.setProgress(100, 100);
-        if (_exportedAppliance != null && _exportedAppliance.length > 0) {
-            view.progBar.label = "Appliance successfully exported";
-            view.btnSave.enabled = true;
-        } else {
-            view.progBar.label = "Error exporting Appliance!!!";
+    override public function listNotificationInterests():Array {
+        return [ExportIdentityApplianceCommand.SUCCESS,
+                ExportIdentityApplianceCommand.FAILURE];
+    }
+
+    override public function handleNotification(notification:INotification):void {
+        switch (notification.getName()) {
+            case ExportIdentityApplianceCommand.SUCCESS:
+                var resp:ExportIdentityApplianceProjectResponse = notification.getBody() as ExportIdentityApplianceProjectResponse;
+                _exportedAppliance = resp.zip;
+                view.progBar.indeterminate = false;
+                view.progBar.setProgress(100, 100);
+                if (_exportedAppliance != null && _exportedAppliance.length > 0) {
+                    view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.export.success");
+                    view.btnSave.enabled = true;
+                } else {
+                    view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.export.error");
+                }
+                break;
+            case ExportIdentityApplianceCommand.FAILURE:
+                view.progBar.indeterminate = false;
+                view.progBar.setProgress(100, 100);
+                view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.export.error");
+                break;
         }
     }
 
-    public function errorHandler(event:ErrorEvent):void {
-        view.progBar.indeterminate = false;
-        view.progBar.setProgress(100, 100);
-        view.progBar.label = "Error exporting Appliance!!!";
-    }
-    
     private function closeWindow():void {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }

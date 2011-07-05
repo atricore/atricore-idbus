@@ -24,6 +24,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.main.ModelerViewFactory;
 import com.atricore.idbus.console.modeling.main.ModelerMediator;
 import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
 
@@ -31,6 +32,9 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.events.CloseEvent;
+
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -41,6 +45,8 @@ public class BuildApplianceMediator extends IocFormMediator
     private var _projectProxy:ProjectProxy;
 
     private var _processingStarted:Boolean;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     public function BuildApplianceMediator(name : String = null, viewComp:BuildApplianceView = null) {
         super(name, viewComp);
@@ -77,26 +83,27 @@ public class BuildApplianceMediator extends IocFormMediator
         return [BuildIdentityApplianceCommand.SUCCESS,
                 BuildIdentityApplianceCommand.FAILURE];
     }
-    
+
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case BuildIdentityApplianceCommand.SUCCESS:
-                if (projectProxy.currentView == ModelerMediator.viewName) {
+                if (projectProxy.currentView == ModelerViewFactory.VIEW_NAME) {
                     projectProxy.currentIdentityAppliance = projectProxy.commandResultIdentityAppliance;
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                    var msg:String = "Appliance has been successfully built.";
+                    var msg:String = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.build.success");
                     if (view.deployAppliance.selected) {
-                        msg =  "Appliance has been successfully built and deployed.";
+                        msg = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.build.deploy.success");
                     }
 //                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
                 }
                 break;
             case BuildIdentityApplianceCommand.FAILURE:
-                if (projectProxy.currentView == ModelerMediator.viewName) {
+                if (projectProxy.currentView == ModelerViewFactory.VIEW_NAME) {
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error building appliance.");
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.build.error"));
+
                 }
                 break;
         }
@@ -106,7 +113,7 @@ public class BuildApplianceMediator extends IocFormMediator
     private function handleNextClick(event:MouseEvent):void {
         _processingStarted = true;
         closeWindow();
-        sendNotification(ProcessingMediator.START, "Building appliance ...");
+        sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.build.progress"));
         sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE,
                 [projectProxy.currentIdentityAppliance.id.toString(), view.deployAppliance.selected]);
     }

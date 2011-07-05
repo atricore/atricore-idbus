@@ -32,6 +32,8 @@ public interface IdentityApplianceManagementService {
 
     ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException;
 
+    ImportIdentityApplianceResponse importIdentityApplianceProject(ImportIdentityApplianceRequest request) throws IdentityServerException;
+
     ImportApplianceDefinitionResponse importApplianceDefinition(ImportApplianceDefinitionRequest request) throws IdentityServerException;
 
     ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException;
@@ -41,6 +43,10 @@ public interface IdentityApplianceManagementService {
     ValidateApplianceResponse validateApplinace(ValidateApplianceRequest request) throws IdentityServerException;
 
     ExportIdentityApplianceProjectResponse exportIdentityApplianceProject(ExportIdentityApplianceProjectRequest request) throws IdentityServerException;
+
+    ExportProviderCertificateResponse exportProviderCertificate(ExportProviderCertificateRequest request) throws IdentityServerException;
+
+    ExportMetadataResponse exportMetadata(ExportMetadataRequest request) throws IdentityServerException;
 
     //-----------------------< CRUD Operations >
 
@@ -76,6 +82,8 @@ public interface IdentityApplianceManagementService {
     ListAuthenticationMechanismsResponse listAuthenticationMechanisms(ListAuthenticationMechanismsRequest req) throws IdentityServerException;
     ListAttributeProfilesResponse listAttributeProfiles(ListAttributeProfilesRequest req) throws IdentityServerException;
     ListAuthAssertionEmissionPoliciesResponse listAuthAssertionEmissionPolicies(ListAuthAssertionEmissionPoliciesRequest req) throws IdentityServerException;
+    ListIdentityMappingPolicyResponse listIdentityMappingPolicies(ListIdentityMappingPolicyRequest req) throws IdentityServerException;
+    ListSubjectNameIDPoliciesResponse listSubjectNameIDPolicies(ListSubjectNameIDPoliciesRequest req) throws IdentityServerException;
 
     /****************************
      * Lookup methods
@@ -87,7 +95,11 @@ public interface IdentityApplianceManagementService {
     LookupAuthenticationMechanismByIdResponse lookupAuthenticationMechanismById(LookupAuthenticationMechanismByIdRequest req) throws IdentityServerException;
     LookupAttributeProfileByIdResponse lookupAttributeProfileById(LookupAttributeProfileByIdRequest req) throws IdentityServerException;
     LookupAuthAssertionEmissionPolicyByIdResponse lookupAuthAssertionEmissionPolicyById(LookupAuthAssertionEmissionPolicyByIdRequest req) throws IdentityServerException;
+    LookupIdentityMappingPolicyByIdResponse lookupIdentityMappingPolicyById(LookupIdentityMappingPolicyByIdRequest req) throws IdentityServerException;
 
     AddResourceResponse addResource(AddResourceRequest req) throws IdentityServerException;
     LookupResourceByIdResponse lookupResourceById(LookupResourceByIdRequest req) throws IdentityServerException;
+
+    GetMetadataInfoResponse getMetadataInfo(GetMetadataInfoRequest req) throws IdentityServerException;
+    GetCertificateInfoResponse getCertificateInfo(GetCertificateInfoRequest req) throws IdentityServerException;
 }

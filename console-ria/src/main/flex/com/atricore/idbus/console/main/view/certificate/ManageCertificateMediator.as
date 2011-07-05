@@ -20,7 +20,6 @@
  */
 
 package com.atricore.idbus.console.main.view.certificate {
-
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.KeystoreProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
@@ -38,6 +37,8 @@ import flash.net.FileReference;
 
 import mx.binding.utils.BindingUtils;
 import mx.events.CloseEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -46,6 +47,8 @@ public class ManageCertificateMediator extends IocFormMediator
     public static const CREATE:String = "ManageCertificateMediator.CREATE";
     public static const EDIT:String = "ManageCertificateMediator.EDIT";
 
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
+    
     private var _keystoreProxy:KeystoreProxy;
     private var _keystore:Keystore;
     private var _resourceId:String;
@@ -106,7 +109,7 @@ public class ManageCertificateMediator extends IocFormMediator
         _fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
 
         BindingUtils.bindProperty(view.certificateKeyPair, "dataProvider", this, "_selectedFiles");
-        view.certificateKeyPair.prompt = "Browse Key Pair";
+        view.certificateKeyPair.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "manageCertificate.form.browseKeyPair");
 
     }
 

@@ -101,6 +101,7 @@
         <property name="hashEncoding" value="HEX"/>
 
         <property name="identityPartition" ref="idpart-default"/>
+        <property name="schemaManager" ref="schema-manager-default"/>
     </bean>
 
     <bean name="idvault-default" class="org.atricore.idbus.connectors.jdoidentityvault.JDOIdentityVault" >
@@ -127,6 +128,17 @@
         <property name="identityStore" ref="idstore-default"/>
         <property name="userDao" ref="user-dao"/>
         <property name="groupDao" ref="group-dao"/>
+        <!--property name="schemaManager" ref="schema-manager-default"/-->
+        <property name="usrAttrValDao" ref="user-attribute-value-dao"/>
+        <property name="grpAttrValDao" ref="group-attribute-value-dao"/>
+    </bean>
+
+    <bean name="schema-manager-default" class="org.atricore.idbus.connectors.jdoidentityvault.JDOSchemaManager">
+        <property name="schemaName" value="schemaManager1"/>
+        <property name="usrAttrDefDao" ref="user-attribute-dao"/>
+        <property name="grpAttrDefDao" ref="group-attribute-dao"/>
+        <property name="usrAttrValDao" ref="user-attribute-value-dao"/>
+        <property name="grpAttrValDao" ref="group-attribute-value-dao"/>
     </bean>
 
     <bean name="group-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl">
@@ -134,6 +146,22 @@
     </bean>
 
     <bean name="user-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl">
+        <property name="persistenceManagerFactory" ref="default-pmf"/>
+    </bean>
+
+    <bean name="user-attribute-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserAttributeDefinitionDAOImpl">
+        <property name="persistenceManagerFactory" ref="default-pmf"/>
+    </bean>
+
+    <bean name="group-attribute-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupAttributeDefinitionDAOImpl">
+        <property name="persistenceManagerFactory" ref="default-pmf"/>
+    </bean>
+
+    <bean name="user-attribute-value-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserAttributeValueDAOImpl">
+        <property name="persistenceManagerFactory" ref="default-pmf"/>
+    </bean>
+
+    <bean name="group-attribute-value-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupAttributeValueDAOImpl">
         <property name="persistenceManagerFactory" ref="default-pmf"/>
     </bean>
 
@@ -145,6 +173,8 @@
         <property name="targetPersistenceManagerFactory" >
             <bean name="idvault1-pmf-jdo"
                 class="org.atricore.idbus.bundles.datanucleus.core.OsgiJDOPersistenceManagerFactoryBean" >
+
+                <property name="dataSource" ref="josso-ds"/>
                 <property name="jdoProperties" ref="idau-default-jdo-properties"/>
             </bean>
 

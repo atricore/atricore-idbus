@@ -5,6 +5,9 @@ public class CheckInstallFolderRequest {
     private var _environmentName:String;
 
 
+    public function CheckInstallFolderRequest() {
+    }
+
     public function get homeDir():String {
         return _homeDir;
     }

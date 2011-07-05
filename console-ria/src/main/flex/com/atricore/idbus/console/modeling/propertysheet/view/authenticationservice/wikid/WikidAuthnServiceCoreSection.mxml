@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
+         paddingRight="5" paddingTop="5" paddingBottom="5">
+
+    <fx:Declarations>
+        <utils:NameValidator id="nameValidator" source="{wikidName}" required="true" property="text"/>
+        <mx:StringValidator id="serverHostValidator" source="{serverHost}" required="true" property="text"/>
+        <mx:NumberValidator id="serverPortValidator" source="{serverPort}" required="true" property="text"
+                        minValue="1" maxValue="65535"
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <utils:WikidServerCodeValidator id="serverCodeValidator" source="{serverCode}" required="true" property="text"/>
+        <mx:StringValidator id="caStorePassValidator" source="{caStorePass}" required="true" property="text"/>
+        <mx:StringValidator id="wcStorePassValidator" source="{wcStorePass}" required="true" property="text"/>
+
+        <s:Fade id="caFadeFx" alphaFrom="1" alphaTo="0" duration="2000" startDelay="2000"/>
+        <s:Fade id="wcFadeFx" alphaFrom="1" alphaTo="0" duration="2000" startDelay="2000"/>
+    </fx:Declarations>
+
+    <utils:TitledBorderBox title="" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
+
+        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+                 verticalGap="8" labelWidth="80">
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.name')}:" required="true">
+                <s:TextInput id="wikidName" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.description')}:">
+                <s:TextInput id="wikidDescription" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.server.host')}:" required="true">
+                <s:TextInput id="serverHost" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.server.port')}:" required="true">
+                <s:TextInput id="serverPort" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.server.code')}:" required="true">
+                <s:TextInput id="serverCode" width="300"/>
+            </mx:FormItem>
+
+        </mx:Form>
+    </utils:TitledBorderBox>
+
+    <utils:TitledBorderBox title="" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
+
+        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+                 verticalGap="8" labelWidth="190">
+
+            <s:HGroup width="100%">
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.ca.store')}:" required="true">
+                    <s:DropDownList id="caStore" width="250" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.ca.store.browse')}"
+                                    requireSelection="true"/>
+                </mx:FormItem>
+                <s:Label id="lblCAStoreMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.ca.store.upload.success')}"
+                         visible="false" paddingTop="5">
+                    <s:filters>
+                        <s:BlurFilter blurX="0" blurY="0" />
+                    </s:filters>
+                </s:Label>
+            </s:HGroup>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.ca.store.pass')}:" required="true">
+                <s:TextInput id="caStorePass" width="250" displayAsPassword="true"/>
+            </mx:FormItem>
+
+            <s:HGroup width="100%">
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.wc.store')}:" required="true">
+                    <s:DropDownList id="wcStore" width="250" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.wc.store.browse')}"
+                                    requireSelection="true"/>
+                </mx:FormItem>
+                <s:Label id="lblWCStoreMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.wc.store.upload.success')}"
+                         visible="false" paddingTop="5">
+                    <s:filters>
+                        <s:BlurFilter blurX="0" blurY="0" />
+                    </s:filters>
+                </s:Label>
+            </s:HGroup>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'wikid.wc.store.pass')}:" required="true">
+                <s:TextInput id="wcStorePass" width="250" displayAsPassword="true"/>
+            </mx:FormItem>
+
+        </mx:Form>
+    </utils:TitledBorderBox>
+</s:HGroup>

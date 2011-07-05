@@ -97,6 +97,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.atricore.idbus.capabilities.spnego</groupId>
+                <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
+                <version>${idbus.cap.spnego.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.apache-maven-v3_0</artifactId>
                 <version>${idbus.bundle.apache-maven-v3_0.version}</version>
@@ -158,12 +164,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>${felix.osgi.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
                 <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
@@ -171,8 +171,14 @@
 
             <dependency>
                 <groupId>org.atricore.idbus.kernel.common</groupId>
+                <artifactId>org.atricore.idbus.kernel.common.xmldsig</artifactId>
+                <version>${idbus.kernel.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.atricore.idbus.kernel.common</groupId>
                 <artifactId>org.atricore.idbus.kernel.common.samlr2</artifactId>
-                <version>1.1.0-SNAPSHOT</version>
+                <version>${idbus.kernel.version}</version>
             </dependency>
 
             <dependency>
@@ -488,32 +494,9 @@
 
     <modules>
         <module>support/springmetadata</module>
+        <!--module>support/blueprintmetadata</module-->
         <module>main</module>
         <module>command</module>
     </modules>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>${felix.plugin.version}</version>
-                    <extensions>true</extensions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.0.2</version>
-                    <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
-                        <maxmem>256M</maxmem>
-                        <fork>${compiler.fork}</fork>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins/>
-    </build>
 </project>

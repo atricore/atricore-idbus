@@ -8,7 +8,7 @@ import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "appliance", name = "validate", description = "Verifies Identity Appliance integrity")
 public class ValidateApplianceCommand extends ManagementCommandSupport {

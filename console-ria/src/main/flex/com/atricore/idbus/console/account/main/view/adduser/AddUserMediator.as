@@ -22,6 +22,9 @@
 package com.atricore.idbus.console.account.main.view.adduser {
 import com.atricore.idbus.console.account.main.controller.AddUserCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
@@ -32,14 +35,22 @@ import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.collections.ArrayList;
+import mx.core.UIComponent;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 
+import mx.managers.IFocusManagerComponent;
+import mx.validators.Validator;
+
 import org.puremvc.as3.interfaces.INotification;
+
+import spark.components.NavigatorContent;
 
 public class AddUserMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _schemasManagementProxy:SchemasManagementProxy;
+    private var _extraAttributesMediator:ExtraAttributesMediator;
     private var _newUser:User;
 
     private var _processingStarted:Boolean;
@@ -54,6 +65,22 @@ public class AddUserMediator extends IocFormMediator
 
     public function set accountManagementProxy(value:AccountManagementProxy):void {
         _accountManagementProxy = value;
+    }
+
+    public function get schemasManagementProxy():SchemasManagementProxy {
+        return _schemasManagementProxy;
+    }
+
+    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
+        _schemasManagementProxy = value;
+    }
+
+    public function get extraAttributesMediator():ExtraAttributesMediator {
+        return _extraAttributesMediator;
+    }
+
+    public function set extraAttributesMediator(value:ExtraAttributesMediator):void {
+        _extraAttributesMediator = value;
     }
 
     override public function setViewComponent(viewComponent:Object):void {
@@ -86,6 +113,14 @@ public class AddUserMediator extends IocFormMediator
         view.securitySection.addEventListener(FlexEvent.SHOW, initSecuritySection);
         view.passwordSection.addEventListener(FlexEvent.SHOW, initPasswordSection);
 
+        if (    schemasManagementProxy.attributesForEntity !=null &&
+                schemasManagementProxy.attributesForEntity.length > 0) {
+            var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
+            view.tabNav.addChild(extraTab);
+            extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
+            extraAttributesMediator.setViewComponent(extraTab);
+        }
+
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         view.focusManager.setFocus(view.userUsername);
     }
@@ -114,10 +149,17 @@ public class AddUserMediator extends IocFormMediator
         }
     }
 
+    private function showTabForComponent(comp:UIComponent):void {
+        for each (var tab:NavigatorContent in view.tabNav.getChildren()) {
+            if (tab.contains(comp))
+                view.tabNav.selectedChild = tab;
+        }
+    }
+
     private function onSubmitAddUser(event:MouseEvent):void {
         _processingStarted = true;
 
-        if (validate(true)) {
+        if (validate(true) && extraAttributesMediator.validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
             sendNotification(ApplicationFacade.ADD_USER, _newUser);
@@ -126,25 +168,18 @@ public class AddUserMediator extends IocFormMediator
         else {
             event.stopImmediatePropagation();
 
-            if (view.usernameUserValidator.source.errorString != "") {
-                view.tabNav.selectedIndex = 0;
-                view.focusManager.setFocus(view.userUsername);
+            for each (var valdator:Validator in _validators) {
+                if (valdator.source.errorString != "") {
+                    showTabForComponent(valdator.source as UIComponent);
+                    view.focusManager.setFocus(valdator.source as IFocusManagerComponent);
+                }
             }
-            if (view.pwvPasswords.source.errorString != "") {
-                view.tabNav.selectedIndex = 4;
-                view.focusManager.setFocus(view.userPassword);
-            }
-            if (view.firstnameUserValidator.source.errorString != "") {
-                view.tabNav.selectedIndex = 0;
-                view.focusManager.setFocus(view.userFirstName);
-            }
-            if (view.lastnameUserValidator.source.errorString !="") {
-                view.tabNav.selectedIndex = 0;
-                view.focusManager.setFocus(view.userLastName);
-            }
-            if (view.userEmailValidator.source.errorString != "") {
-                view.tabNav.selectedIndex = 0;
-                view.focusManager.setFocus(view.userEmail);
+            // do same for extra attributes section
+            for each (var valdatorExtra:Validator in extraAttributesMediator.getValidators) {
+                if (valdatorExtra.source.errorString != "") {
+                    showTabForComponent(valdatorExtra.source as UIComponent);
+                    extraAttributesMediator.view.focusManager.setFocus(valdatorExtra.source as IFocusManagerComponent);
+                }
             }
         }
     }
@@ -181,6 +216,10 @@ public class AddUserMediator extends IocFormMediator
 
     private function initPasswordSection(event:FlexEvent):void {
         view.focusManager.setFocus(view.userPassword);
+    }
+
+    private function initExtraSection(event:FlexEvent):void {
+
     }
 
     private function closeWindow():void {
@@ -242,6 +281,9 @@ public class AddUserMediator extends IocFormMediator
             newUserDef.automaticallyGeneratePassword = view.generatePasswordCheck.selected;
             newUserDef.emailNewPasword = view.emailNewPasswordCheck.selected;
         }
+
+        extraAttributesMediator.bindModel();
+        newUserDef.extraAttributes = extraAttributesMediator.attributesValues;
 
         _newUser = newUserDef;
     }

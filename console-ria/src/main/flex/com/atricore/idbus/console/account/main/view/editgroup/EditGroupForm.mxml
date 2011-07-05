@@ -32,16 +32,26 @@
         <!--<mx:StringValidator id="groupDescriptionValidator"  source="{groupDescription}" required="true" property="text" />-->
     </fx:Declarations>
 
-    <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.groups.edit.form.heading')}"/>
+    <mx:TabNavigator id="tabNav" width="510" height="230" creationPolicy="all">
+        <s:NavigatorContent id="generalSection"
+                            label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.add.form.general')}" >
+            <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15" width="100%">
 
-    <mx:HRule width="100%"/>
+                <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.groups.edit.form.heading')}"/>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.name')}:" required="true">
-        <mx:TextInput id="groupName" width="300" />
-    </mx:FormItem>
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.description')}:">
-        <mx:TextArea id="groupDescription" width="300"/>
-    </mx:FormItem>
+                <mx:HRule width="100%"/>
+
+                <mx:FormItem  labelWidth="100"
+                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.name')}:" required="true">
+                    <mx:TextInput id="groupName" width="300" />
+                </mx:FormItem>
+                <mx:FormItem  labelWidth="100"
+                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.description')}:">
+                    <mx:TextArea id="groupDescription" width="300"/>
+                </mx:FormItem>
+            </s:VGroup>
+        </s:NavigatorContent>
+    </mx:TabNavigator>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
         <s:Button id="submitEditGroupButton"

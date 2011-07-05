@@ -23,14 +23,10 @@
 <s:Application xmlns:mx="library://ns.adobe.com/flex/mx"
                xmlns:fx="http://ns.adobe.com/mxml/2009"
                xmlns:s="library://ns.adobe.com/flex/spark"
-               xmlns:view="com.atricore.idbus.console.modeling.view.*"
                xmlns:heading="com.atricore.idbus.console.branding.heading.*"
-               xmlns:modeler="com.atricore.idbus.console.modeling.main.*"
                xmlns:comp="com.atricore.idbus.console.components.*"
                xmlns:login="com.atricore.idbus.console.main.view.login.*"
-               xmlns:lifecycle="com.atricore.idbus.console.lifecycle.*"
-               xmlns:account="com.atricore.idbus.console.account.main.*"
-               xmlns:setup="com.atricore.idbus.console.setup.*"
+               xmlns:activation="com.atricore.idbus.console.main.view.license.*"
                height="100%" width="100%" minWidth="955" minHeight="600"
                preloader="com.atricore.idbus.console.branding.AtricoreConsolePreloader"
                creationComplete="onCreationComplete()">
@@ -42,12 +38,9 @@
     <fx:Script>
       <![CDATA[
         import com.atricore.idbus.console.main.ApplicationFacade;
-
         import com.atricore.idbus.console.main.EmbeddedIcons;
 
         import mx.collections.ArrayList;
-
-        import mx.core.IVisualElement;
 
         import org.puremvc.as3.patterns.observer.Notification;
 
@@ -64,6 +57,7 @@
             // --- Configuring IoC facade through addConfigSource()
             m_facade = ApplicationFacade.getInstance();
             m_facade.addConfigSource("flex/flexApplicationContext.xml");
+            m_facade.addConfigSource("flex/flexApplicationContextExt.xml");
             m_facade.addEventListener(Event.COMPLETE, startupApp);
             m_facade.initializeIocContainer();
         }
@@ -71,6 +65,8 @@
         private function startupApp(p_event:Event):void {
             m_facade.removeEventListener(Event.COMPLETE, startupApp);
             m_facade.notifyObservers(new Notification(ApplicationFacade.STARTUP, this));
+            m_facade.notifyObservers(new Notification(ApplicationFacade.CHECK_LICENSE));
+
         }
         ]]>
     </fx:Script>
@@ -82,6 +78,12 @@
         <mx:WipeUp id="wipeUp" duration="200"/>
         <mx:WipeRight id="wipeRight" duration="200"/>
 
+        <fx:XMLList id="userMenuData">
+            <topmenu label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.menu.user.defaultUser')}" icon="userProfileIcon" >
+                <submenu label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.menu.user.changePassword')}"/>
+                <submenu label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.menu.user.logout')}"/>
+            </topmenu>
+        </fx:XMLList>
     </fx:Declarations>
 
     <fx:Metadata>
@@ -91,45 +93,32 @@
     <fx:Style source="../resources/style/yflexskin.css"/>
     <fx:Style source="../resources/style/style.css"/>
 
+
+    <!-- We can use states as Eclipse uses layouts :) -->
     <s:states>
+        <s:State name="activation"/>
         <s:State name="splash"/>
-        <s:State name="operation"/>
+        <s:State name="operation"/>        
     </s:states>
 
-    <s:VGroup paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
-              width="100%" height="100%" includeIn="splash,operation">
 
-        <heading:AtricoreHeading id="brandedHeading" includeIn="splash,operation">
-            <!--<comp:MessageBox id="messageBox" x="400" width="70%" height="70%" includeIn="splash,operation"-->
-                             <!--showEffect="{wipeRight}" verticalAlign="middle" horizontalAlign="center"/>-->
-            <mx:MenuBar id="userActionMenuBar" includeIn="operation" labelField="@label" iconField="@icon"
-                        textAlign="center">
-                <fx:XMLList>
-                    <topmenu label="Administrator" icon="userProfileIcon" >
-                        <submenu label="Change Password"/>
-                        <submenu label="Logout"/>
-                    </topmenu>
-                </fx:XMLList>
-            </mx:MenuBar>
+    <s:VGroup id="mainVGroup" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+              width="100%" height="100%" includeIn="activation,splash,operation">
+
+        <heading:AtricoreHeading id="brandedHeading" includeIn="activation,splash,operation" >
+            <mx:MenuBar id="userActionMenuBar" excludeFrom="activation,splash" labelField="@label" iconField="@icon"
+                        textAlign="center" dataProvider="{userMenuData}"/>
         </heading:AtricoreHeading>
 
+        <activation:LicenseActivationView id="licenseActivationView" includeIn="activation"/>
+
         <login:LoginView id="loginView" includeIn="splash"/>
-        <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name"
+
+        <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(appSectionsViewStack.content)}" labelField="name"
                      skinClass="com.atricore.idbus.console.skin.buttonbar.IconButtonBarSkin" requireSelection="true"
-                     includeIn="operation"/>
+                     excludeFrom="activation,splash"/>
 
-        <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%" includeIn="operation">
-            <modeler:ModelerView id="modelerView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.modelerTab.name')}"/>
-            <lifecycle:LifecycleView id="lifecycleView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.lifecycleTab.name')}"/>
-            <account:AccountManagementView id="accountManagementView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.accountTab.name')}"/>
-            <!--setup:SetupView id="setupView" name="Setup"/-->
-            <!--<s:Group width="95%" height="95%" name="Setup">-->
-            <!--<s:Label text="Setup"/>-->
-            <!--<s:BitmapImage id="icon" source="{EmbeddedIcons.setupMiniIcon}" />-->
-            <!--</s:Group>-->
-
-        </comp:CustomViewStack>
-
+        <comp:CustomViewStack id="appSectionsViewStack" width="100%" height="100%" excludeFrom="activation,splash"/>
 
     </s:VGroup>
 </s:Application>

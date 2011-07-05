@@ -20,7 +20,7 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"
+<s:VGroup xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
@@ -35,64 +35,119 @@
         <s:RadioButtonGroup id="certificateManagementType"/>
 
         <s:Fade id="fadeFx" alphaFrom="1" alphaTo="0" duration="2000" startDelay="2000"/>
+
+        <mx:DateFormatter id="dateFormatter" formatString="MM/DD/YYYY L:NN A"/>
     </fx:Declarations>
 
-    <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.manageCertificate')}"
-                   height="100%" width="30%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
-        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
-            <s:RadioButton groupName="certificateManagementType" id="useDefaultKeystore" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.useDefaultKeystore')}"/>
-            <!--s:RadioButton groupName="certificateManagementType" id="autoGenerate" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.autoGenerate')}"/-->
-            <s:RadioButton groupName="certificateManagementType" id="uploadKeystore" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.uploadKeystore')}"/>
-        </mx:Form>
-    </utils:TitledBorderBox>
+    <s:HGroup width="100%">
+        <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.manageCertificate')}"
+                       height="100%" width="30%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
+            <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
+                <s:RadioButton groupName="certificateManagementType" id="useDefaultKeystore" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.useDefaultKeystore')}"/>
+                <!--s:RadioButton groupName="certificateManagementType" id="autoGenerate" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.autoGenerate')}"/-->
+                <s:RadioButton groupName="certificateManagementType" id="uploadKeystore" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.uploadKeystore')}"/>
 
-    <!-- UPLOAD CERTIFICATE -->
-    <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.uploadKeyPair')}"
-                   height="100%" width="70%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
-        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
-            <s:HGroup width="100%" height="100%">
-                <s:VGroup paddingTop="5" height="100%" width="50%">
-                    <s:HGroup>
-                        <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateKeyPair')}:">
-                            <s:DropDownList id="certificateKeyPair" width="145" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.browseKeyPair')}"
-                                            requireSelection="true" enabled="false"/>
+                <s:Button id="btnExportCertificate" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.export')}" enabled="false"/>
+            </mx:Form>
+        </utils:TitledBorderBox>
+
+        <!-- UPLOAD CERTIFICATE -->
+        <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.uploadKeyPair')}"
+                       height="100%" width="70%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+            <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
+                <s:HGroup width="100%" height="100%">
+                    <s:VGroup paddingTop="5" height="100%" width="50%">
+                        <s:HGroup>
+                            <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateKeyPair')}:">
+                                <s:DropDownList id="certificateKeyPair" width="145" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.browseKeyPair')}"
+                                                requireSelection="true" enabled="false"/>
+                            </mx:FormItem>
+                            <!--s:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/-->
+                        </s:HGroup>
+
+                        <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystoreFormat')}:">
+                            <s:DropDownList id="keystoreFormat" width="145" enabled="false" selectedIndex="0">
+                                <mx:ArrayCollection>
+                                     <fx:Object label="Java Keystore" data="JKS"/>
+                                 </mx:ArrayCollection>
+                            </s:DropDownList>
                         </mx:FormItem>
-                        <!--s:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/-->
-                    </s:HGroup>
 
-                    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystoreFormat')}:">
-                        <s:DropDownList id="keystoreFormat" width="145" enabled="false" selectedIndex="0">
-                            <mx:ArrayCollection>
-                                 <fx:Object label="Java Keystore" data="JKS"/>
-                             </mx:ArrayCollection>
-                        </s:DropDownList>
-                    </mx:FormItem>
+                        <s:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload.success')}" visible="false" paddingLeft="135" paddingTop="10">
+                            <s:filters>
+                                <s:BlurFilter blurX="0" blurY="0" />
+                            </s:filters>
+                        </s:Label>
+                    </s:VGroup>
+                    <s:VGroup paddingTop="5" height="100%" width="50%">
+                        <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystorePassword')}:" required="true">
+                            <s:TextInput id="keystorePassword" width="145" enabled="false"/>
+                        </mx:FormItem>
 
-                    <s:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload.success')}" visible="false" paddingLeft="135" paddingTop="10">
-                        <s:filters>
-                            <s:BlurFilter blurX="0" blurY="0" />
-                        </s:filters>
-                    </s:Label>
-                </s:VGroup>
-                <s:VGroup paddingTop="5" height="100%" width="50%">
-                    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystorePassword')}:" required="true">
-                        <s:TextInput id="keystorePassword" width="145" enabled="false"/>
-                    </mx:FormItem>
-                    
-                    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateAlias')}:" required="true">
-                        <s:TextInput id="certificateAlias" width="145" enabled="false"/>
-                    </mx:FormItem>
+                        <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateAlias')}:" required="true">
+                            <s:TextInput id="certificateAlias" width="145" enabled="false"/>
+                        </mx:FormItem>
 
-                    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyAlias')}:" required="true">
-                        <s:TextInput id="keyAlias" width="145" enabled="false"/>
-                    </mx:FormItem>
+                        <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyAlias')}:" required="true">
+                            <s:TextInput id="keyAlias" width="145" enabled="false"/>
+                        </mx:FormItem>
 
-                    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyPassword')}:" required="true">
-                        <s:TextInput id="keyPassword" width="145" enabled="false"/>
-                    </mx:FormItem>
-                </s:VGroup>
-            </s:HGroup>
-        </mx:Form>
-    </utils:TitledBorderBox>
+                        <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyPassword')}:" required="true">
+                            <s:TextInput id="keyPassword" width="145" enabled="false"/>
+                        </mx:FormItem>
+                    </s:VGroup>
+                </s:HGroup>
+            </mx:Form>
+        </utils:TitledBorderBox>
+    </s:HGroup>
 
-</s:HGroup>
+    <s:HGroup width="100%">
+        <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.cert.signing')}"
+                               height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
+            <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+                     verticalGap="8">
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.cert.issuerDN')}:">
+                    <s:TextInput id="signingCertIssuerDN" width="400" editable="false"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.cert.subjectDN')}:">
+                    <s:TextInput id="signingCertSubjectDN" width="400" editable="false"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.cert.notBefore')}:">
+                    <s:TextInput id="signingCertNotBefore" width="400" editable="false"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.cert.notAfter')}:">
+                    <s:TextInput id="signingCertNotAfter" width="400" editable="false"/>
+                </mx:FormItem>
+
+            </mx:Form>
+        </utils:TitledBorderBox>
+        <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.cert.encryption')}"
+                               height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+            <mx:Form paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5" width="100%" height="100%"
+                     verticalGap="8">
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.cert.issuerDN')}:">
+                    <s:TextInput id="encryptionCertIssuerDN" width="400" editable="false"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.cert.subjectDN')}:">
+                    <s:TextInput id="encryptionCertSubjectDN" width="400" editable="false"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.cert.notBefore')}:">
+                    <s:TextInput id="encryptionCertNotBefore" width="400" editable="false"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.cert.notAfter')}:">
+                    <s:TextInput id="encryptionCertNotAfter" width="400" editable="false"/>
+                </mx:FormItem>
+
+            </mx:Form>
+        </utils:TitledBorderBox>
+    </s:HGroup>
+
+</s:VGroup>

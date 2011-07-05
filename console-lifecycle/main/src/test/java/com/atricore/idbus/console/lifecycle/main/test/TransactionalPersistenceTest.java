@@ -1,7 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.test;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.IdentityApplianceDAO;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
@@ -14,16 +13,15 @@ import com.atricore.idbus.console.lifecycle.main.spi.response.AddIdentityApplian
 import com.atricore.idbus.console.lifecycle.main.spi.response.DisposeIdentityApplianceResponse;
 import com.atricore.idbus.console.lifecycle.main.spi.response.RemoveIdentityApplianceResponse;
 import com.atricore.idbus.console.lifecycle.main.spi.response.UpdateIdentityApplianceResponse;
-import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.atricore.idbus.console.lifecycle.main.test.util.ApplianceAssert.*;
+import static com.atricore.idbus.console.lifecycle.main.test.util.ApplianceAssert.assertAppliancesAreEqual;
 
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class TransactionalPersistenceTest {
 

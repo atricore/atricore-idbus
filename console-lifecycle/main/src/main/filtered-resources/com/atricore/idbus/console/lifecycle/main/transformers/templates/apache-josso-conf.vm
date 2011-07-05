@@ -1,0 +1,30 @@
+#set ($apacheDir = $execEnv.getInstallUri())
+#if ($apacheDir.endsWith("/"))
+#set ($apacheDirLength = $apacheDir.length() - 1)
+#set ($apacheDir = $apacheDir.substring(0, $apacheDirLength))
+#end
+#foreach($activation in $execEnv.getActivations())
+#set ($partnerappID = $activation.getPartnerAppId())
+#set ($partnerapp = $activation.getPartnerAppLocation().getContext())
+<Directory "$apacheDir/$partnerapp">
+    AuthType JOSSO
+    AuthName "$partnerapp"
+    #Require role role1
+    GatewayLoginUrl "$gatewayLoginUrl"
+    GatewayLogoutUrl "$gatewayLogoutUrl"
+    GatewayEndpoint "$endpointHost" $endpointPort
+    SessionManagerServicePath "$sessionManagerServicePath"
+    IdentityManagerServicePath "$identityManagerServicePath"
+    IdentityProviderServicePath "$identityProviderServicePath"
+    DefaultResource /$partnerapp
+    PartnerApplicationID "$partnerappID"
+    PHP5SecurityContext On
+
+#if ($transportSecurity.equals("confidential"))
+    GatewayEndpointSSLEnable On
+### Path to server certificate file that stores trusted certificates (needed to verify server)
+    SSLServerCertFile /location/of/the/server/crt
+#end
+</Directory>
+
+#end

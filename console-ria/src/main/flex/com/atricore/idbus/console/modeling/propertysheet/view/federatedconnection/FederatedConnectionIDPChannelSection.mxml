@@ -26,6 +26,14 @@
          xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
          paddingRight="5" paddingTop="5" paddingBottom="5">
 
+    <fx:Declarations>
+        <mx:NumberValidator id="portValidator" source="{idpChannelLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <utils:URLPartValidator id="domainValidator" source="{idpChannelLocationDomain}" required="true" property="text" />
+        <utils:URLPartValidator id="contextValidator" source="{idpChannelLocationContext}" required="true" property="text"/>
+        <utils:URLMultipartValidator id="pathValidator" source="{idpChannelLocationPath}" required="true" property="text"/>
+    </fx:Declarations>
+
     <utils:TitledBorderBox title="Contract" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
                            paddingBottom="5">
         <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
@@ -49,14 +57,35 @@
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
                 </mx:FormItem>
 
-                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:" labelWidth="235">-->
-                    <!--<s:CheckBox id="signAuthRequestCheck"/>-->
-                <!--</mx:FormItem>-->
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:" labelWidth="235">
+                    <s:CheckBox id="signAuthnRequestsCheck"/>
+                </mx:FormItem>
 
-                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:" labelWidth="235">-->
-                    <!--<s:CheckBox id="encryptAuthRequestCheck"/>-->
-                <!--</mx:FormItem>-->
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantAssertionSigned')}:" labelWidth="235">
+                    <s:CheckBox id="wantAssertionSignedCheck"/>
+                </mx:FormItem>
 
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.location')}:"
+                         direction="horizontal" labelWidth="60">
+                    <s:DropDownList id="idpChannelLocationProtocol" width="70" selectedIndex="0">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object label="http" data="http"/>
+                                <fx:Object label="https" data="https"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
+                    <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="idpChannelLocationDomain" width="130"/>
+                    <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="idpChannelLocationPort" width="40"/>
+                    <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="idpChannelLocationContext" width="100"/>
+                    <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="idpChannelLocationPath" width="130"/>
+                </mx:FormItem>
+
+                <s:Button id="btnExportMetadata" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'export.metadata')}" enabled="false"/>
         </mx:Form>
     </utils:TitledBorderBox>
 
@@ -65,20 +94,17 @@
         <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
                  verticalGap="8">
 
-            <s:HGroup width="100%">
+            <!--s:HGroup width="100%"-->
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:" labelWidth="235">
-                    <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0">
-                        <mx:ArrayCollection>
-                            <fx:Object name="Use Theirs" data="theirs"/>
-                            <fx:Object name="Use Ours" data="ours"/>
-                            <fx:Object name="Aggregate" data="aggregate"/>
-                        </mx:ArrayCollection>
-                    </s:DropDownList>
+                    <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
                 </mx:FormItem>
-                <s:Button id="configureAccLinkagePolicy"
-                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
-            </s:HGroup>
+                <!--s:Button id="configureAccLinkagePolicy"
+                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/-->
+            <!--/s:HGroup-->
 
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.identity.mapping.policy')}:" labelWidth="235">
+                <s:DropDownList id="identityMappingPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
+            </mx:FormItem>
 
             <!--<s:HGroup width="100%">-->
                 <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:" labelWidth="235">-->

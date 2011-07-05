@@ -21,7 +21,9 @@
 
 package com.atricore.idbus.console.account.main.view.addgroup {
 import com.atricore.idbus.console.account.main.controller.AddGroupCommand;
-import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
@@ -31,13 +33,20 @@ import com.atricore.idbus.console.services.dto.Group;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.core.UIComponent;
 import mx.events.CloseEvent;
+import mx.events.FlexEvent;
+import mx.managers.IFocusManagerComponent;
+import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
 
+import spark.components.NavigatorContent;
+
 public class AddGroupMediator extends IocFormMediator
 {
-    private var _accountManagementProxy:AccountManagementProxy;
+    private var _schemasManagementProxy:SchemasManagementProxy;
+    private var _extraAttributesMediator:ExtraAttributesMediator;
     private var _newGroup:Group;
 
     private var _processingStarted:Boolean;
@@ -46,18 +55,27 @@ public class AddGroupMediator extends IocFormMediator
         super(name, viewComp);
     }
 
-    public function get accountManagementProxy():AccountManagementProxy {
-        return _accountManagementProxy;
+    public function get schemasManagementProxy():SchemasManagementProxy {
+        return _schemasManagementProxy;
     }
 
-    public function set accountManagementProxy(value:AccountManagementProxy):void {
-        _accountManagementProxy = value;
+    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
+        _schemasManagementProxy = value;
+    }
+
+    public function get extraAttributesMediator():ExtraAttributesMediator {
+        return _extraAttributesMediator;
+    }
+
+    public function set extraAttributesMediator(value:ExtraAttributesMediator):void {
+        _extraAttributesMediator = value;
     }
 
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.cancelAddGroup.removeEventListener(MouseEvent.CLICK, handleCancel);
             view.submitAddGroupButton.removeEventListener(MouseEvent.CLICK, onSubmitAddGroup);
+            view.generalSection.removeEventListener(FlexEvent.SHOW, initGeneralSection);
             if (view.parent != null) {
                 view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
             }
@@ -70,6 +88,16 @@ public class AddGroupMediator extends IocFormMediator
     private function init():void {
         view.cancelAddGroup.addEventListener(MouseEvent.CLICK, handleCancel);
         view.submitAddGroupButton.addEventListener(MouseEvent.CLICK, onSubmitAddGroup);
+        view.generalSection.addEventListener(FlexEvent.SHOW, initGeneralSection);
+
+        if (    schemasManagementProxy.attributesForEntity !=null &&
+                schemasManagementProxy.attributesForEntity.length > 0) {
+            var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
+            view.tabNav.addChild(extraTab);
+            extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
+            extraAttributesMediator.setViewComponent(extraTab);
+        }
+
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         view.focusManager.setFocus(view.groupName);
     }
@@ -107,13 +135,23 @@ public class AddGroupMediator extends IocFormMediator
         newGroupDef.name = view.groupName.text;
         newGroupDef.description = view.groupDescription.text;
 
+        extraAttributesMediator.bindModel();
+        newGroupDef.extraAttributes = extraAttributesMediator.attributesValues;
+
         _newGroup = newGroupDef;
+    }
+
+    private function showTabForComponent(comp:UIComponent):void {
+        for each (var tab:NavigatorContent in view.tabNav.getChildren()) {
+            if (tab.contains(comp))
+                view.tabNav.selectedChild = tab;
+        }
     }
 
     private function onSubmitAddGroup(event:MouseEvent):void {
         _processingStarted = true;
-        
-        if (validate(true)) {
+
+        if (validate(true) && extraAttributesMediator.validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
             sendNotification(ApplicationFacade.ADD_GROUP, _newGroup);
@@ -121,7 +159,29 @@ public class AddGroupMediator extends IocFormMediator
         }
         else {
             event.stopImmediatePropagation();
+
+            for each (var valdator:Validator in _validators) {
+                if (valdator.source.errorString != "") {
+                    showTabForComponent(valdator.source as UIComponent);
+                    view.focusManager.setFocus(valdator.source as IFocusManagerComponent);
+                }
+            }
+            // do same for extra attributes section
+            for each (var valdatorEXtra:Validator in extraAttributesMediator.getValidators) {
+                if (valdatorEXtra.source.errorString != "") {
+                    showTabForComponent(valdatorEXtra.source as UIComponent);
+                    extraAttributesMediator.view.focusManager.setFocus(valdatorEXtra.source as IFocusManagerComponent);
+                }
+            }
         }
+    }
+
+    private function initGeneralSection(event:FlexEvent):void {
+        view.focusManager.setFocus(view.groupName);
+    }
+
+    private function initExtraSection(event:FlexEvent):void {
+
     }
 
     public function handleAddGroupSuccess():void {
@@ -133,7 +193,7 @@ public class AddGroupMediator extends IocFormMediator
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error adding group.");
     }
-    
+
     private function handleCancel(event:MouseEvent):void {
         closeWindow();
     }

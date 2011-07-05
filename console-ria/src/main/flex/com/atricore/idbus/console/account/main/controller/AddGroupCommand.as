@@ -44,6 +44,9 @@ public class AddGroupCommand extends IocSimpleCommand implements IResponder {
     private var _registry:ServiceRegistry;
     private var _accountManagementProxy:AccountManagementProxy;
 
+    public function AddGroupCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }
@@ -65,6 +68,7 @@ public class AddGroupCommand extends IocSimpleCommand implements IResponder {
         var req:AddGroupRequest = new AddGroupRequest();
         req.name = group.name;
         req.description = group.description;
+        req.extraAttributes = group.extraAttributes;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
         var call:Object = service.addGroup(req);

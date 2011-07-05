@@ -1,5 +1,7 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+import com.atricore.idbus.console.lifecycle.main.spi.ExecEnvType;
+
 import java.io.Serializable;
 import java.util.Set;
 
@@ -15,13 +17,18 @@ public class ExecutionEnvironment implements Serializable {
     private String displayName;
     private String description;
     private String installUri;
+    private String location;
     private String platformId;
+    private ExecEnvType type;
     private boolean active;
     private boolean overwriteOriginalSetup;
     private boolean installDemoApps;
 
     private Set<Activation> activations;
 
+    private double x;
+    private double y;
+    
     private static final long serialVersionUID = 175340870033867780L;
 
     public long getId() {
@@ -62,6 +69,22 @@ public class ExecutionEnvironment implements Serializable {
 
     public void setInstallUri(String installUri) {
         this.installUri = installUri;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public ExecEnvType getType() {
+        return type;
+    }
+
+    public void setType(ExecEnvType type) {
+        this.type = type;
     }
 
     public Set<Activation> getActivations() {
@@ -106,6 +129,22 @@ public class ExecutionEnvironment implements Serializable {
 
     public void setInstallDemoApps(boolean installDemoApps) {
         this.installDemoApps = installDemoApps;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     @Override

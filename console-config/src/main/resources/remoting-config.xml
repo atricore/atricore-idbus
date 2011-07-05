@@ -35,6 +35,12 @@
                 <log-property-errors>true</log-property-errors>
             </serialization>
         </channel>
+        <channel ref="my-secure-amf">
+            <serialization>
+                <log-property-errors>true</log-property-errors>
+            </serialization>
+        </channel>
+
     </default-channels>
 
 
@@ -42,6 +48,13 @@
         <properties>
             <factory>spring</factory>
             <source>userProvisioningAjaxServiceBean</source>
+        </properties>
+    </destination>
+
+    <destination id="schemasManagementService">
+        <properties>
+            <factory>spring</factory>
+            <source>schemaManagementAjaxServiceBean</source>
         </properties>
     </destination>
 
@@ -53,10 +66,10 @@
     </destination>
 
     <!--<destination id="identityBusMetadataManager">-->
-        <!--<properties>-->
-            <!--<factory>spring</factory>-->
-            <!--<source>identityBusMetadataManagerBean</source>-->
-        <!--</properties>-->
+    <!--<properties>-->
+    <!--<factory>spring</factory>-->
+    <!--<source>identityBusMetadataManagerBean</source>-->
+    <!--</properties>-->
     <!--</destination>-->
 
     <destination id="signOnService">
@@ -66,18 +79,32 @@
         </properties>
     </destination>
 
-	<destination id="identityApplianceManagementService">
+    <destination id="identityApplianceManagementService">
         <properties>
             <factory>spring</factory>
             <source>identityApplianceManagementAjaxServiceBean</source>
         </properties>
     </destination>
 
+    <destination id="licenseManagementService">
+        <properties>
+            <factory>spring</factory>
+            <source>licenseManagementAjaxServiceBean</source>
+        </properties>
+    </destination>
+
     <!--<destination id="identityApplianceMetadataAjaxService">-->
-        <!--<properties>-->
-            <!--<factory>spring</factory>-->
-            <!--<source>identityApplianceMetadataAjaxServiceBean</source>-->
-        <!--</properties>-->
+    <!--<properties>-->
+    <!--<factory>spring</factory>-->
+    <!--<source>identityApplianceMetadataAjaxServiceBean</source>-->
+    <!--</properties>-->
     <!--</destination>-->
-    
+
+    <destination id="liveUpdateService">
+        <properties>
+            <factory>spring</factory>
+            <source>liveUpdateAjaxService</source>
+        </properties>
+    </destination>
+
 </service>

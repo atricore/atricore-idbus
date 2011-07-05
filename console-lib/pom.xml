@@ -102,7 +102,7 @@
                             </templates>
 
                             <extraOptions>
-                                <as3typefactory>com.atricore.idbus.console.tooling.grainte.ATCConsoleAs3TypeFactory</as3typefactory>
+                                <as3typefactory>com.atricore.idbus.console.tooling.granite.ATCConsoleAs3TypeFactory</as3typefactory>
                             </extraOptions>
 
                         </configuration>
@@ -158,6 +158,8 @@
             <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
             <scope>provided</scope>
         </dependency>
+
+
 
         <dependency>
             <groupId>com.adobe.flex.framework</groupId>

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<mx:Accordion xmlns:mx="library://ns.adobe.com/flex/mx"
+              xmlns:fx="http://ns.adobe.com/mxml/2009"
+              xmlns:s="library://ns.adobe.com/flex/spark"
+              paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" fontWeight="bold"
+>
+    <mx:Repeater id="rptSettingsMenuRoot">
+        <mx:Repeater id="rptSettingsMenuDrawers" dataProvider="{new ArrayList(rptSettingsMenuRoot.currentItem.children)}">
+            <mx:VBox width="100%" height="100%" label="{rptSettingsMenuDrawers.currentItem.label}" fontWeight="normal">
+                <s:List width="100%" height="100%"
+                        dataProvider="{new ArrayList(rptSettingsMenuDrawers.currentItem.children)}">
+                    <s:itemRenderer>
+                        <fx:Component>
+                            <s:ItemRenderer>
+                                <s:states>
+                                    <s:State name="normal" />
+                                    <s:State name="hovered" />
+                                    <s:State name="selected" />
+                                </s:states>
+                                <mx:Image source="{data.icon}" width="22" height="22" left="4" top="2"/>
+                                <mx:Text paddingLeft="30" paddingTop="2" click="dispatchEvent(new SettingsMenuEvent(true, true, data, SettingsMenuEvent.ACTION_MENU_ITEM_CLICKED));"
+                                         text="{data.label}" width="100%" height="25" fontSize="14"
+                                         mouseOver="Mouse.cursor = MouseCursor.BUTTON;" mouseOut="Mouse.cursor = MouseCursor.AUTO;">
+                                    <fx:Script><![CDATA[
+                                        import com.atricore.idbus.console.settings.main.menu.event.SettingsMenuEvent;
+                                        ]]></fx:Script>
+                                </mx:Text>
+                            </s:ItemRenderer>
+                        </fx:Component>
+                    </s:itemRenderer>
+                </s:List>
+            </mx:VBox>
+        </mx:Repeater>
+    </mx:Repeater>
+    <fx:Script><![CDATA[
+        import mx.collections.ArrayList;
+        ]]></fx:Script>
+</mx:Accordion>

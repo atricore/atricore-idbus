@@ -28,11 +28,19 @@
 
     <fx:Declarations>
         <mx:ArrayCollection id="authMechanismColl">
-            <fx:Object label="Simple Authentication" data="basic"/>
-            <fx:Object label="Strong (Digital Sertificate)" data="strong"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.simple')}" data="basic"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.2factor')}" data="2factor"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.bind')}" data="bind"/>
+            <!--fx:Object label="Strong (Digital Sertificate)" data="strong"/>
             <fx:Object label="Windows (NTLM)" data="ntlm"/>
-            <fx:Object label="Remember Me" data="rememberme"/>
+            <fx:Object label="Remember Me" data="rememberme"/-->
         </mx:ArrayCollection>
+
+        <mx:NumberValidator id="portValidator" source="{spChannelLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <utils:URLPartValidator id="domainValidator" source="{spChannelLocationDomain}" required="true" property="text" />
+        <utils:URLPartValidator id="contextValidator" source="{spChannelLocationContext}" required="true" property="text"/>
+        <utils:URLMultipartValidator id="pathValidator" source="{spChannelLocationPath}" required="true" property="text"/>
     </fx:Declarations>
 
     <utils:TitledBorderBox title="Contract" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
@@ -56,13 +64,31 @@
                          label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
             </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:" labelWidth="235">
-                <s:CheckBox id="signAuthAssertionCheck"/>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantAuthnRequestsSigned')}:" labelWidth="235">
+                <s:CheckBox id="wantAuthnRequestsSignedCheck"/>
             </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:" labelWidth="235">
-                <s:CheckBox id="encryptAuthAssertionCheck"/>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.location')}:"
+                         direction="horizontal" labelWidth="60">
+                <s:DropDownList id="spChannelLocationProtocol" width="70" selectedIndex="0">
+                    <s:dataProvider>
+                        <mx:ArrayCollection>
+                            <fx:Object label="http" data="http"/>
+                            <fx:Object label="https" data="https"/>
+                        </mx:ArrayCollection>
+                    </s:dataProvider>
+                </s:DropDownList>
+                <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
+                <s:TextInput id="spChannelLocationDomain" width="130"/>
+                <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
+                <s:TextInput id="spChannelLocationPort" width="40"/>
+                <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+                <s:TextInput id="spChannelLocationContext" width="100"/>
+                <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+                <s:TextInput id="spChannelLocationPath" width="130"/>
             </mx:FormItem>
+
+            <s:Button id="btnExportMetadata" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'export.metadata')}" enabled="false"/>
         </mx:Form>
     </utils:TitledBorderBox>
 
@@ -72,7 +98,7 @@
                  verticalGap="8">
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:" labelWidth="235">
-                    <s:DropDownList id="spChannelAuthContractCombo"  labelField="name" selectedIndex="0" width="180" enabled="false">
+                    <s:DropDownList id="spChannelAuthContractCombo"  labelField="name" selectedIndex="0" width="200" enabled="false">
                         <s:dataProvider>
                             <mx:ArrayCollection>
                                 <fx:Object name="Default" data="default"/>
@@ -85,12 +111,12 @@
                     <s:DropDownList id="spChannelAuthMechanism"
                                     dataProvider="{authMechanismColl}"
                                     selectedIndex="0"
-                                    width="180"
+                                    width="200"
                                     enabled="false"/>
                 </mx:FormItem>
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:" labelWidth="235">
-                    <s:DropDownList id="spChannelAuthAssertionEmissionPolicyCombo" labelField="name" selectedIndex="0" width="180">
+                    <s:DropDownList id="spChannelAuthAssertionEmissionPolicyCombo" labelField="name" selectedIndex="0" width="200">
                         <s:dataProvider>
                             <mx:ArrayCollection>
                                 <fx:Object name="Default" data="default"/>
@@ -98,6 +124,14 @@
                         </s:dataProvider>
                     </s:DropDownList>
                 </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.subjectNameIDPolicy')}:" labelWidth="235">
+                    <s:DropDownList id="subjectNameIdPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" enabled="false"/>
+                </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.ignoreRequestedNameIDPolicy')}:" labelWidth="235">
+                    <s:CheckBox id="ignoreRequestedNameIDPolicy" selected="true" enabled="false"/>
+                </mx:FormItem>
+
         </mx:Form>
     </utils:TitledBorderBox>
 </s:HGroup>

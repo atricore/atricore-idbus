@@ -15,7 +15,7 @@ import org.josso.tooling.gshell.install.installer.Installer;
 import java.util.List;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class SamplesActivator extends ActivatorSupport {
 
@@ -27,7 +27,10 @@ public class SamplesActivator extends ActivatorSupport {
     protected FileObject appDir;
 
 
-    protected SamplesActivator(List<Installer> installers, MessagePrinter printer, AbstractActivationRequest request, AbstractActivationResponse response) {
+    protected SamplesActivator(List<Installer> installers,
+                               MessagePrinter printer,
+                               AbstractActivationRequest request,
+                               AbstractActivationResponse response) {
         super(installers, printer, request, response);
     }
 

@@ -120,6 +120,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.spnego</groupId>
+            <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
+            <version>${idbus.cap.sts.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
         <!-- ================================================================== -->
         <!-- IDBus Connectors -->
         <!-- ================================================================== -->
@@ -220,11 +228,18 @@
                             <artifacts>
 #foreach($resource in $module.getResources())
 #if($resource.getName().startsWith("josso-agent-"))
-                                <artifact>
+#if($resource.getExtension() == "ini")
+#set ( $artifactType = "ini")
+#set ( $artifactClassifier = $resource.getNameSpace().substring(16, $resource.getNameSpace().lastIndexOf("/")))
+#set ( $artifactFile = "target/classes/" + $resource.getNameSpace() + "/" + $resource.getName() + ".ini")
+#else
+#set ( $artifactType = "xml")
 #set ( $artifactFile = "target/classes/META-INF/spring/" + $resource.getNameSpace() + "/" + $resource.getName() + "-config.xml")
-#set ( $artifactClassifier = $resource.getNameSpace().substring(0, $resource.getNameSpace().indexOf("/")))                                    
+#set ( $artifactClassifier = $resource.getNameSpace().substring(0, $resource.getNameSpace().indexOf("/")))
+#end
+                                <artifact>
                                     <file>$artifactFile</file>
-                                    <type>xml</type>
+                                    <type>$artifactType</type>
                                     <classifier>$artifactClassifier</classifier>
                                 </artifact>
 #end
@@ -257,7 +272,7 @@
                         <Private-Package>!*</Private-Package>
 
                         <Export-Package>
-                            $module.getName(); version="${pom.version}"
+                            $module.getName()
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
@@ -306,6 +321,12 @@
                             org.apache.camel.impl,
                             org.osgi.framework,
                             org.apache.derby.jdbc,
+                            org.apache.aries.blueprint,
+                            org.apache.aries.blueprint.ext,
+                            org.osgi.service.blueprint,
+                            org.apache.karaf.jaas.config,
+                            org.apache.karaf.jaas.boot,
+                            org.atricore.idbus.capabilities.spnego.jaas,
                         </Import-Package>
                         <Require-Bundle>
                            org.atricore.idbus.kernel.common.support,
@@ -321,12 +342,14 @@
                            org.atricore.idbus.capabilities.samlr2.support,
                            org.atricore.idbus.capabilities.spmlr2.main,
                            org.atricore.idbus.capabilities.josso.main,
+                           org.atricore.idbus.capabilities.spnego,
                            org.atricore.idbus.connectors.jdoidentityvault,
                            org.atricore.idbus.idojos.dbidentitystore,
                            org.atricore.idbus.idojos.memorysessionstore,
                            org.atricore.idbus.idojos.ehcachesessionstore,
                            org.atricore.idbus.idojos.memoryidentitystore,
                            org.atricore.idbus.idojos.ldapidentitystore,
+                           com.atricore.idbus.console.twofactor.wikid.authscheme; resolution:="optional",
                            org.atricore.idbus.bundles.javax-jdo2-v2_3-ec,
                            org.datanucleus,
                            org.apache.cxf.bundle,

@@ -34,10 +34,12 @@
             <utils:ListItemValueObject label="Remember Me" name="rememberme" isSelected="false" />
         </mx:ArrayCollection-->
         <mx:ArrayCollection id="authMechanismColl">
-            <fx:Object label="Simple Authentication" data="basic"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.simple')}" data="basic"/>
+            <!--fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.2factor')}" data="2factor"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.bind')}" data="bind"/>
             <fx:Object label="Strong (Digital Sertificate)" data="strong"/>
             <fx:Object label="Windows (NTLM)" data="ntlm"/>
-            <fx:Object label="Remember Me" data="rememberme"/>
+            <fx:Object label="Remember Me" data="rememberme"/-->
         </mx:ArrayCollection>
         <utils:NameValidator id="nameValidator" source="{identityProviderName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
@@ -93,10 +95,6 @@
                     <s:TextInput id="idpLocationPath" width="130"/>
                 </mx:FormItem>
 
-                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.user.information.lookup')}:">-->
-                    <!--<s:DropDownList id="userInfoLookupCombo" labelField="name" selectedIndex="0" width="180"/>-->
-                <!--</mx:FormItem>-->
-
                 <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:">
                     <s:DropDownList id="authContract" labelField="name" selectedIndex="0" width="200">
                         <s:dataProvider>
@@ -108,24 +106,14 @@
                 </mx:FormItem>
 
                 <s:HGroup width="100%" horizontalAlign="left">
-                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="240">
+                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:" labelWidth="240">
                         <s:DropDownList id="authMechanism"
                                         dataProvider="{authMechanismColl}"
                                         selectedIndex="0"
                                         width="200"
                                         enabled="false"/>
-                        <!--s:List id="authMechanismCombo"
-                                       dataProvider="{authMechanismColl}"
-                                       itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
-                                       alternatingItemColors="[#EEEEEE, white]"
-                                       width="200">
-                            <s:layout>
-                                <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
-                            </s:layout>
-                        </s:List-->
                     </mx:FormItem>
-                    <!--s:Button id="configureAuthMechanism"
-                       label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/-->
+
                 </s:HGroup>
 
                 <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:">
@@ -138,6 +126,14 @@
                     </s:DropDownList>
                 </mx:FormItem>
 
+
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.subjectNameIDPolicy')}:">
+                    <s:DropDownList id="subjectNameIdPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
+                </mx:FormItem>
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.ignoreRequestedNameIDPolicy')}:">
+                    <s:CheckBox id="ignoreRequestedNameIDPolicy" selected="true"/>
+                </mx:FormItem>
+
             </s:VGroup>
         </s:NavigatorContent>
 
@@ -145,25 +141,29 @@
         <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.tab.contract')}">
             <s:VGroup>
 
-                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal">
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal">
                     <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}" selected="true"/>
                     <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}" selected="true"/>
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal">
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal">
                     <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
                     <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
-                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
+                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}" selected="true"/>
                     <s:CheckBox id="samlBindingSoapCheck"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}" selected="true"/>
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:">
-                    <s:CheckBox id="signAuthAssertionCheck" selected="true"/>
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantAuthnRequestsSigned')}:">
+                    <s:CheckBox id="wantAuthnRequestsSignedCheck" selected="true"/>
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:">
-                    <s:CheckBox id="encryptAuthAssertionCheck"/>
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantSignedRequests')}:">
+                    <s:CheckBox id="wantSignedRequestsCheck" selected="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.signRequests')}:">
+                    <s:CheckBox id="signRequestsCheck" selected="true"/>
                 </mx:FormItem>
 
             </s:VGroup>

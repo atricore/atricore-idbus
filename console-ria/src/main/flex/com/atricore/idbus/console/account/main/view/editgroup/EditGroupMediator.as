@@ -22,6 +22,9 @@
 package com.atricore.idbus.console.account.main.view.editgroup {
 import com.atricore.idbus.console.account.main.controller.EditGroupCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
@@ -31,13 +34,21 @@ import com.atricore.idbus.console.services.dto.Group;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.core.UIComponent;
 import mx.events.CloseEvent;
+import mx.events.FlexEvent;
+import mx.managers.IFocusManagerComponent;
+import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
+
+import spark.components.NavigatorContent;
 
 public class EditGroupMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _schemasManagementProxy:SchemasManagementProxy;
+    private var _extraAttributesMediator:ExtraAttributesMediator;
     private var _editedGroup:Group;
 
     private var _processingStarted:Boolean;
@@ -54,10 +65,27 @@ public class EditGroupMediator extends IocFormMediator
         _accountManagementProxy = value;
     }
 
+    public function get schemasManagementProxy():SchemasManagementProxy {
+        return _schemasManagementProxy;
+    }
+
+    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
+        _schemasManagementProxy = value;
+    }
+
+    public function get extraAttributesMediator():ExtraAttributesMediator {
+        return _extraAttributesMediator;
+    }
+
+    public function set extraAttributesMediator(value:ExtraAttributesMediator):void {
+        _extraAttributesMediator = value;
+    }
+
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.cancelEditGroup.removeEventListener(MouseEvent.CLICK, handleCancel);
             view.submitEditGroupButton.removeEventListener(MouseEvent.CLICK, onSubmitEditGroup);
+            view.generalSection.removeEventListener(FlexEvent.SHOW, initGeneralSection);
             if (view.parent != null) {
                 view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
             }
@@ -70,6 +98,15 @@ public class EditGroupMediator extends IocFormMediator
     private function init():void {
         view.cancelEditGroup.addEventListener(MouseEvent.CLICK, handleCancel);
         view.submitEditGroupButton.addEventListener(MouseEvent.CLICK, onSubmitEditGroup);
+        view.generalSection.addEventListener(FlexEvent.SHOW, initGeneralSection);
+
+        if (    schemasManagementProxy.attributesForEntity !=null &&
+                schemasManagementProxy.attributesForEntity.length > 0) {
+            var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
+            view.tabNav.addChild(extraTab);
+            extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
+            extraAttributesMediator.setViewComponent(extraTab);
+        }
 
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         bindForm();
@@ -100,6 +137,10 @@ public class EditGroupMediator extends IocFormMediator
     override public function bindForm():void {
         view.groupName.text = _accountManagementProxy.currentGroup.name;
         view.groupDescription.text = _accountManagementProxy.currentGroup.description;
+        if (_accountManagementProxy.currentGroup.extraAttributes.length > 0) {
+            extraAttributesMediator.attributesValues = _accountManagementProxy.currentGroup.extraAttributes;
+            extraAttributesMediator.bindForm();
+        }
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -109,14 +150,24 @@ public class EditGroupMediator extends IocFormMediator
         newGroupDef.name = view.groupName.text;
         newGroupDef.description = view.groupDescription.text;
 
+        extraAttributesMediator.bindModel();
+        newGroupDef.extraAttributes = extraAttributesMediator.attributesValues;
+
         _editedGroup = newGroupDef;
         _editedGroup.id = _accountManagementProxy.currentGroup.id;
+    }
+
+    private function showTabForComponent(comp:UIComponent):void {
+        for each (var tab:NavigatorContent in view.tabNav.getChildren()) {
+            if (tab.contains(comp))
+                view.tabNav.selectedChild = tab;
+        }
     }
 
     private function onSubmitEditGroup(event:MouseEvent):void {
         _processingStarted = true;
 
-        if (validate(true)) {
+        if (validate(true) && extraAttributesMediator.validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
             sendNotification(ApplicationFacade.EDIT_GROUP, _editedGroup);
@@ -124,12 +175,33 @@ public class EditGroupMediator extends IocFormMediator
         }
         else {
             event.stopImmediatePropagation();
+
+            for each (var valdator:Validator in _validators) {
+                if (valdator.source.errorString != "") {
+                    showTabForComponent(valdator.source as UIComponent);
+                    view.focusManager.setFocus(valdator.source as IFocusManagerComponent);
+                }
+            }
+            // do same for extra attributes section
+            for each (var valdatorExtra:Validator in extraAttributesMediator.getValidators) {
+                if (valdatorExtra.source.errorString != "") {
+                    showTabForComponent(valdatorExtra.source as UIComponent);
+                    extraAttributesMediator.view.focusManager.setFocus(valdatorExtra.source as IFocusManagerComponent);
+                }
+            }
         }
+    }
+
+    private function initGeneralSection(event:FlexEvent):void {
+        view.focusManager.setFocus(view.groupName);
+    }
+
+    private function initExtraSection(event:FlexEvent):void {
+
     }
 
     public function handleEditGroupSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The the group was successfully updated.");
         sendNotification(ApplicationFacade.LIST_GROUPS);
     }
 

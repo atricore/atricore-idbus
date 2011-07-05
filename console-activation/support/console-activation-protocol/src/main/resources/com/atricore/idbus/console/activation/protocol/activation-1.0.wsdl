@@ -1,0 +1,169 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<wsdl:definitions
+        name="Activation-Service"
+        targetNamespace="urn:com:atricore:idbus:console:activation:1.0:wsdl"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="urn:com:atricore:idbus:console:activation:1.0:wsdl"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:actp="urn:com:atricore:idbus:console:activation:1.0:protocol"
+        xmlns="http://schemas.xmlsoap.org/wsdl/">
+    
+    <wsdl:types>
+        <xsd:schema>
+            <xsd:import namespace="urn:com:atricore:idbus:console:activation:1.0:protocol"
+                        schemaLocation="activation-schema-1.0.xsd"/>
+        </xsd:schema>
+
+    </wsdl:types>
+    
+    <message name="ActivateAgentRequestMessage">
+        <part name="body" element="actp:ActivateAgentRequest"/>
+    </message>
+
+    <message name="ActivateAgentResponseMessage">
+        <part name="body" element="actp:ActivateAgentResponse"/>
+    </message>
+
+    <message name="ActivateSamplesRequestMessage">
+        <part name="body" element="actp:ActivateSamplesRequest"/>
+    </message>
+
+    <message name="ActivateSamplesResponseMessage">
+        <part name="body" element="actp:ActivateSamplesResponse"/>
+    </message>
+
+    <message name="ConfigureAgentRequestMessage">
+        <part name="body" element="actp:ConfigureAgentRequest"/>
+    </message>
+
+    <message name="ConfigureAgentResponseMessage">
+        <part name="body" element="actp:ConfigureAgentResponse"/>
+    </message>
+
+    <message name="PlatformSupportedRequestMessage">
+        <part name="body" element="actp:PlatformSupportedRequest"/>
+    </message>
+
+    <message name="PlatformSupportedResponseMessage">
+        <part name="body" element="actp:PlatformSupportedResponse"/>
+    </message>
+
+    <portType name="ActivationPortType">
+
+        <operation name="ActivateAgent">
+            <input name="ActivateAgentRequestInput"
+                        message="tns:ActivateAgentRequestMessage"/>
+            <output name="ActivateAgentResponseOutput"
+                         message="tns:ActivateAgentResponseMessage"/>
+        </operation>
+
+        <operation name="ActivateSamples">
+            <input name="ActivateSamplesRequestInput"
+                        message="tns:ActivateSamplesRequestMessage"/>
+            <output name="ActivateSamplesResponseOutput"
+                         message="tns:ActivateSamplesResponseMessage"/>
+        </operation>
+
+        <operation name="ConfigureAgent">
+            <input name="ConfigureAgentRequestInput"
+                        message="tns:ConfigureAgentRequestMessage"/>
+            <output name="ConfigureAgentResponseOutput"
+                         message="tns:ConfigureAgentResponseMessage"/>
+        </operation>
+
+        <operation name="PlatformSupported">
+            <input name="PlatformSupportedRequestInput"
+                        message="tns:PlatformSupportedRequestMessage"/>
+            <output name="PlatformSupportedResponseOutput"
+                         message="tns:PlatformSupportedResponseMessage"/>
+        </operation>
+
+    </portType>
+    
+    <binding name="ActivationSoapBinding" type="tns:ActivationPortType">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <operation name="ActivateAgent">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="ActivateAgentRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="ActivateAgentResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+        <operation name="ActivateSamples">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="ActivateSamplesRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="ActivateSamplesResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+        <operation name="ConfigureAgent">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="ConfigureAgentRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="ConfigureAgentResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+
+        </operation>
+        <operation name="PlatformSupported">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="PlatformSupportedRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="PlatformSupportedResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+
+        </operation>
+
+    </binding>    
+    
+    
+    <wsdl:service name="ActivationService">
+        <documentation>Activation-Service</documentation>
+        <port name="soap"
+              binding="tns:ActivationSoapBinding">
+            <soap:address location="http://localhost:8192/ActivationService/"/>
+        </port>
+    </wsdl:service>
+    
+    
+</wsdl:definitions>

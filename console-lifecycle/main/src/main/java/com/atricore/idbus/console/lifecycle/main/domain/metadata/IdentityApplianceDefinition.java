@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class IdentityApplianceDefinition implements Serializable {
 
-	private static final long serialVersionUID = -2497495468272480318L;
+    private static final long serialVersionUID = -2497495468272480318L;
 
     private long id;
 
@@ -37,6 +37,8 @@ public class IdentityApplianceDefinition implements Serializable {
     private String displayName;
 
     private String description;
+
+    private String namespace;
 
     private int revision;
 
@@ -50,12 +52,14 @@ public class IdentityApplianceDefinition implements Serializable {
     // RFU
     private Set<ProviderRole> supportedRoles;
 
-	private Set<Provider> providers;
+    private Set<Provider> providers;
 
     private Set<IdentitySource> identitySources;
-    
+
     private Set<ExecutionEnvironment> executionEnvironments;
 
+    private Set<AuthenticationService> authenticationServices;
+    
     private Keystore keystore;
 
     public long getId() {
@@ -100,7 +104,7 @@ public class IdentityApplianceDefinition implements Serializable {
 
     public Set<ProviderRole> getSupportedRoles() {
         if(supportedRoles == null){
-           supportedRoles = new HashSet<ProviderRole>();
+            supportedRoles = new HashSet<ProviderRole>();
         }
         return supportedRoles;
     }
@@ -137,6 +141,14 @@ public class IdentityApplianceDefinition implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public Set<IdentitySource> getIdentitySources() {
@@ -176,6 +188,17 @@ public class IdentityApplianceDefinition implements Serializable {
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
+    }
+
+    public Set<AuthenticationService> getAuthenticationServices() {
+        if (authenticationServices == null) {
+            authenticationServices = new HashSet<AuthenticationService>();
+        }
+        return authenticationServices;
+    }
+
+    public void setAuthenticationServices(Set<AuthenticationService> authenticationServices) {
+        this.authenticationServices = authenticationServices;
     }
 
     @Override

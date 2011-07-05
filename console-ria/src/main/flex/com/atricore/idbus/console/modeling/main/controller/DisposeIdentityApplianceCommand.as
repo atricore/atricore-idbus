@@ -47,6 +47,9 @@ public class DisposeIdentityApplianceCommand extends IocSimpleCommand implements
     private var _registry:ServiceRegistry;
 
 
+    public function DisposeIdentityApplianceCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

@@ -81,39 +81,13 @@
                     <s:TextInput id="spLocationPath" width="130"/>
                 </mx:FormItem>
 
-                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">-->
-                    <!--<s:CheckBox id="signAuthRequestCheck" selected="true"/>-->
-                <!--</mx:FormItem>-->
+                <mx:FormItem labelWidth="155" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:">
+                    <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
+                </mx:FormItem>
 
-                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:">-->
-                    <!--<s:CheckBox id="encryptAuthRequestCheck"/>-->
-                <!--</mx:FormItem>-->
-
-                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.user.information.lookup')}:">-->
-                    <!--<s:DropDownList id="userInfoLookupCombo" labelField="name" width="180" selectedIndex="0"/>-->
-                <!--</mx:FormItem>-->
-
-                <!--s:HGroup width="100%"-->
-                    <mx:FormItem labelWidth="155" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:">
-                        <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0">
-                            <s:dataProvider>
-                                <mx:ArrayCollection>
-                                    <fx:Object name="Use Theirs" data="theirs"/>
-                                    <fx:Object name="Use Ours" data="ours"/>
-                                    <fx:Object name="Aggregate" data="aggregate"/>
-                                </mx:ArrayCollection>
-                            </s:dataProvider>
-                        </s:DropDownList>
-                    </mx:FormItem>
-                    <!--s:Button id="configureAccLinkagePolicy"
-                       label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/-->
-                <!--/s:HGroup-->
-
-                <!--s:HGroup width="100%">
-                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.contract')}:" labelWidth="185">
-                        <s:DropDownList id="authContractCombo" width="200" labelField="name" selectedIndex="0"/>
-                    </mx:FormItem>
-                </s:HGroup-->
+                <mx:FormItem labelWidth="155" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.identity.mapping.policy')}:">
+                    <s:DropDownList id="identityMappingPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
+                </mx:FormItem>
 
             </s:VGroup>
         </s:NavigatorContent>
@@ -122,19 +96,35 @@
         <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.tab.contract')}">
             <s:VGroup>
 
-                <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.profiles')}:" direction="horizontal">
+                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.profiles')}:" direction="horizontal">
                     <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}" selected="true"/>
                     <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}" selected="true"/>
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.bindings')}:" direction="horizontal">
+                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.bindings')}:" direction="horizontal">
                     <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
                     <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
-                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
+                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}" selected="true"/>
                     <s:CheckBox id="samlBindingSoapCheck"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}" selected="true"/>
                 </mx:FormItem>
 
+                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">
+                    <s:CheckBox id="signAuthnRequestsCheck" selected="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantAssertionSigned')}:">
+                    <s:CheckBox id="wantAssertionSignedCheck" selected="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantSignedRequests')}:">
+                    <s:CheckBox id="wantSignedRequestsCheck" selected="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.signRequests')}:">
+                    <s:CheckBox id="signRequestsCheck" selected="true"/>
+                </mx:FormItem>
+                
             </s:VGroup>
         </s:NavigatorContent>
 

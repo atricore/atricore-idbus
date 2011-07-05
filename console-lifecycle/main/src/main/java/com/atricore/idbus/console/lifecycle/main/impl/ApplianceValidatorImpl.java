@@ -7,10 +7,13 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.spi.ApplianceValidator;
+import com.atricore.idbus.console.lifecycle.main.spi.ExecEnvType;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
+import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -21,9 +24,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         implements ApplianceValidator {
@@ -216,44 +221,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         validateName("SP name", node.getName(), node);
         validateDisplayName("SP display name", node.getDisplayName());
         validateLocation("SP", node.getLocation(), node, true);
-
-        int preferred = 0;
-
-        for (FederatedConnection fcA : node.getFederatedConnectionsA()) {
-
-            if (fcA.getChannelA() instanceof IdentityProviderChannel) {
-                IdentityProviderChannel c = (IdentityProviderChannel) fcA.getChannelA();
-                if (c.isPreferred())
-                    preferred ++;
-            } else {
-                addError("Federated Connection A does not relate this SP with an IDP : " + fcA.getChannelA().getClass().getSimpleName());
-            }
-
-            if (fcA.getRoleA() != node) {
-                addError("Federated Connection A does not point to this provider " + node.getName() + "["+fcA.getRoleA().getName()+"]");
-            }
-        }
-
-        for (FederatedConnection fcB : node.getFederatedConnectionsB()) {
-
-            if (fcB.getChannelB() instanceof IdentityProviderChannel) {
-                IdentityProviderChannel c = (IdentityProviderChannel) fcB.getChannelB();
-                if (c.isPreferred())
-                    preferred ++;
-            } else {
-                addError("Federated Connection B does not relate this SP with an IDP : " + fcB.getChannelB().getClass().getSimpleName());
-            }
-
-            if (fcB.getRoleB() != node) {
-                addError("Federated Connection B does not point to this provider " + node.getName() + "["+fcB.getRoleA().getName()+"]");
-            }
-        }
-
-        if (preferred < 1)
-            addError("No preferred Identity Provider Channel defined for SP " + node.getName());
-
-        if (preferred > 1)
-            addError("Too many preferred IDP Channels defined for SP " + node.getName() + ", found " + preferred);
+        validateIDPChannels(node);
 
         if (node.getConfig() ==null)
             addError("No provider configuration found for SP " + node.getName());
@@ -275,6 +243,52 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.getActivation() == null) {
             addError("Local Serivice Provider requires an activation connection " + node.getName());
         }
+
+        if (node.getAccountLinkagePolicy() == null)
+            addError("No account linkage policy for " + node.getName());
+
+        if (node.getIdentityMappingPolicy() == null)
+            addError("No identity mapping policy for " + node.getName());
+    }
+
+    @Override
+    public void arrive(ExternalIdentityProvider node) throws Exception {
+        validateName("IDP name", node.getName(), node);
+        validateDisplayName("IDP display name", node.getDisplayName());
+        validateMetadata("Metadata", node.getMetadata(), node);
+    }
+
+    @Override
+    public void arrive(ExternalServiceProvider node) throws Exception {
+        validateName("SP name", node.getName(), node);
+        validateDisplayName("SP display name", node.getDisplayName());
+        validateMetadata("Metadata", node.getMetadata(), node);
+        validateIDPChannels(node);
+    }
+
+    @Override
+    public void arrive(SalesforceServiceProvider node) throws Exception {
+        validateName("Salesforce provider name", node.getName(), node);
+        validateDisplayName("Salesforce provider display name", node.getDisplayName());
+        validateIDPChannels(node);
+    }
+
+    @Override
+    public void arrive(GoogleAppsServiceProvider node) throws Exception {
+        validateName("Google Apps provider name", node.getName(), node);
+        validateDisplayName("Google Apps provider display name", node.getDisplayName());
+        validateDomain("Google Apps domain", node.getDomain());
+        validateIDPChannels(node);
+    }
+
+    @Override
+    public void arrive(SugarCRMServiceProvider node) throws Exception {
+        validateName("SugarCRM provider name", node.getName(), node);
+        validateDisplayName("SugarCRM provider display name", node.getDisplayName());
+        if (StringUtils.isBlank(node.getUrl())) {
+            addError("No SugarCRM unique instance URL for " + node.getName());
+        }
+        validateIDPChannels(node);
     }
 
     @Override
@@ -309,7 +323,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
             addError("Identity Lookup " + node.getName() + " Provider cannot be null");
         else {
             if (node.getProvider().getIdentityLookup() != node) {
-                addError("Provider Identity Lookup is not this Identity Lookup" +
+                addError("Provider Identity Lookup is not this Identity Lookup " +
                         node.getName() +
                         " ["+node.getProvider().getIdentityLookup()+"]");
             }
@@ -344,6 +358,22 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
     }
 
+    public void arrive(DelegatedAuthentication node) throws Exception {
+        validateName("Delegated Authentication name", node.getName(), node);
+        validateDisplayName("Delegated Authentication display name", node.getDisplayName());
+
+        if (node.getIdp() == null)
+            addError("Delegated Authentication " + node.getName() + " IDP cannot be null");
+        else if (node.getIdp().getDelegatedAuthentication() != node) {
+            addError("IDP Delegated Authentication is not this Delegated Authentication " +
+                    node.getName() +
+                    " [" +node.getIdp().getDelegatedAuthentication() + "]");
+        }
+
+        if (node.getAuthnService() == null)
+            addError("Delegated Authentication " + node.getName() + " Authentication Service cannot be null");
+    }
+
     @Override
     public void arrive(ExecutionEnvironment node) throws Exception {
 
@@ -353,8 +383,14 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.getPlatformId() == null)
             addError("Execution Environment platform ID cannot be null");
 
-        if (node.getInstallUri() == null)
+        if (node.getType() == null)
+            addError("Execution Environment type cannot be null");
+
+        if (node.getType() == ExecEnvType.LOCAL && node.getInstallUri() == null)
             addError("Execution Environment install URI cannot be null");
+
+        if (node.getType() == ExecEnvType.REMOTE && node.getLocation() == null)
+            addError("Execution Environment location cannot be null");
 
         if (node instanceof JBossExecutionEnvironment) {
             JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) node;
@@ -366,6 +402,90 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 addError("Weblogic Execution Environment domain name cannot be null");
         }
 
+    }
+
+    @Override
+    public void arrive(AuthenticationMechanism node) throws Exception {
+        if (node instanceof BasicAuthentication) {
+
+            BasicAuthentication basicAuthn = (BasicAuthentication) node;
+            validateName("Basic Authentication name", node.getName(), node);
+
+            if (StringUtils.isBlank(basicAuthn.getHashAlgorithm()))
+                addError("Basic Authentication hash algorithm cannot be null or empty");
+
+            if (StringUtils.isBlank(basicAuthn.getHashEncoding()))
+                addError("Basic Authentication hash encoding cannot be null or empty");
+        }
+    }
+
+    @Override
+    public void arrive(AuthenticationService node) throws Exception {
+        validateName("Authentication Service name", node.getName(), node);
+        validateDisplayName("Authentication Service display name", node.getDisplayName());
+
+        if (node.getDelegatedAuthentications() == null || node.getDelegatedAuthentications().size() == 0)
+            addError("Authentication Service [" + node.getName() + "] should have at least one connection to an IDP");
+
+        if (node instanceof WikidAuthenticationService) {
+            WikidAuthenticationService wikidAuthnService = (WikidAuthenticationService) node;
+            if (StringUtils.isBlank(wikidAuthnService.getServerHost()))
+                addError("WiKID Authentication Service [" + node.getName() + "] server host cannot be null");
+            if (wikidAuthnService.getServerPort() < 0 || wikidAuthnService.getServerPort() > 65535)
+                addError("WiKID Authentication Service [" + node.getName() + "] server port must be between 1 and 65535");
+
+            if (StringUtils.isBlank(wikidAuthnService.getServerCode()))
+                addError("WiKID Authentication Service [" + node.getName() + "] server code cannot be null");
+            else {
+                Pattern serverCodePattern = Pattern.compile("\\d{12}");
+                Matcher serverCodeMatcher = serverCodePattern.matcher(wikidAuthnService.getServerCode());
+                if (!serverCodeMatcher.matches())
+                    addError("WiKID Authentication Service [" + node.getName() + "] server code must be a 12 digit string");
+            }
+
+            if (wikidAuthnService.getCaStore() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] CA Store cannot be null");
+            else if (wikidAuthnService.getCaStore().getPassword() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] CA Store Password cannot be null");
+            else if (wikidAuthnService.getCaStore().getStore() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] CA Store Resource cannot be null");
+            
+            if (wikidAuthnService.getWcStore() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] Client Store cannot be null");
+            else if (wikidAuthnService.getWcStore().getPassword() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] Client Store Password cannot be null");
+            else if (wikidAuthnService.getWcStore().getStore() == null)
+                addError("WiKID Authentication Service [" + node.getName() + "] Client Store Resource cannot be null");
+        } else if (node instanceof DirectoryAuthenticationService) {
+            DirectoryAuthenticationService directoryAuthnService = (DirectoryAuthenticationService) node;
+
+            if (StringUtils.isBlank(directoryAuthnService.getInitialContextFactory()))
+                addError("Directory Authentication Service [" + node.getName() + "] Initial Context Factory cannot be null or empty");
+            if (StringUtils.isBlank(directoryAuthnService.getProviderUrl()))
+                addError("Directory Authentication Service [" + node.getName() + "] Provider URL cannot be null or empty");
+            /*
+            if (StringUtils.isBlank(directoryAuthnService.getSecurityPrincipal()))
+                addError("Directory Authentication Service [" + node.getName() + "] Security Principal cannot be null or empty");
+            if (StringUtils.isBlank(directoryAuthnService.getSecurityCredential()))
+                addError("Directory Authentication Service [" + node.getName() + "] Security Credential cannot be null or empty");
+            */
+
+            if (StringUtils.isBlank(directoryAuthnService.getSecurityAuthentication()))
+                addError("Directory Authentication Service [" + node.getName() + "] Security Authentication cannot be null or empty");
+
+        } else if (node instanceof WindowsIntegratedAuthentication) {
+            WindowsIntegratedAuthentication windowsIntegratedAuthn = (WindowsIntegratedAuthentication) node;
+
+            if (StringUtils.isBlank(windowsIntegratedAuthn.getDomain()))
+                addError("Windows Integrated Authentication [" + node.getName() + "] Windows Domain cannot be null or empty");
+
+            if (StringUtils.isBlank(windowsIntegratedAuthn.getHost()))
+                addError("Windows Integrated Authentication [" + node.getName() + "] Service Host cannot be null or empty");
+
+            if (windowsIntegratedAuthn.getPort() < 0 || windowsIntegratedAuthn.getPort() > 65535)
+                addError("Windows Integrated Authentication [" + node.getName() + "] Service Port must be between 1 and 65535");
+
+        }
     }
 
     @Override
@@ -389,6 +509,35 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         validateDisplayName("LDAP Identity Source display name" , node.getDisplayName());
 
         // TODO !
+
+        if (StringUtils.isBlank(node.getInitialContextFactory()))
+            addError("Directory Authentication Service [" + node.getName() + "] Initial Context Factory cannot be null or empty");
+        if (StringUtils.isBlank(node.getProviderUrl()))
+            addError("Directory Authentication Service [" + node.getName() + "] Provider URL cannot be null or empty");
+        if (StringUtils.isBlank(node.getSecurityPrincipal()))
+            addError("Directory Authentication Service [" + node.getName() + "] Security Principal cannot be null or empty");
+        if (StringUtils.isBlank(node.getSecurityCredential()))
+            addError("Directory Authentication Service [" + node.getName() + "] Security Credential cannot be null or empty");
+        if (StringUtils.isBlank(node.getSecurityAuthentication()))
+            addError("Directory Authentication Service [" + node.getName() + "] Security Authentication cannot be null or empty");
+        if (StringUtils.isBlank(node.getLdapSearchScope()))
+            addError("Directory Authentication Service [" + node.getName() + "] LDAP search scope cannot be null or empty");
+        if (StringUtils.isBlank(node.getUsersCtxDN()))
+            addError("Directory Authentication Service [" + node.getName() + "] User DN cannot be null or empty");
+        if (StringUtils.isBlank(node.getPrincipalUidAttributeID()))
+            addError("Directory Authentication Service [" + node.getName() + "] Principal UID attribute ID cannot be null or empty");
+        if (StringUtils.isBlank(node.getRoleMatchingMode()))
+            addError("Directory Authentication Service [" + node.getName() + "] Role Matching Mode cannot be null or empty");
+        if (StringUtils.isBlank(node.getUidAttributeID()))
+            addError("Directory Authentication Service [" + node.getName() + "] UID Attribute ID cannot be null or empty");
+        if (StringUtils.isBlank(node.getRolesCtxDN()))
+            addError("Directory Authentication Service [" + node.getName() + "] Roles DN cannot be null or empty");
+        if (StringUtils.isBlank(node.getRoleAttributeID()))
+            addError("Directory Authentication Service [" + node.getName() + "] Role Attribute ID cannot be null or empty");
+        if (StringUtils.isBlank(node.getCredentialQueryString()))
+            addError("Directory Authentication Service [" + node.getName() + "] Credential Query cannot be null or empty");
+        if (StringUtils.isBlank(node.getUserPropertiesQueryString()))
+            addError("Directory Authentication Service [" + node.getName() + "] User Properties Query cannot be null or empty");
     }
 
     @Override
@@ -414,7 +563,15 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.isOverrideProviderSetup())
             validateLocation("Identity Provider channel ", node.getLocation(), node, true);
 
+        // validate policies only for ServiceProvider (not for ExternalServiceProvider)
+        if ((node.getConnectionA() != null && node.getConnectionA().getRoleA() instanceof ServiceProvider) ||
+                (node.getConnectionB() != null && node.getConnectionB().getRoleB() instanceof ServiceProvider)) {
+            if (node.getAccountLinkagePolicy() == null)
+                addError("No account linkage policy for " + node.getName());
 
+            if (node.getIdentityMappingPolicy() == null)
+                addError("No identity mapping policy for " + node.getName());
+        }
     }
 
     public void arrive(Keystore node) throws Exception {
@@ -432,14 +589,16 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (StringUtils.isBlank(node.getPassword()))
             addError("Keystore password cannot be null or empty");
 
-        if (StringUtils.isBlank(node.getPrivateKeyName()))
-            addError("Keystore private key name cannot be null or empty");
+        if (!node.isKeystorePassOnly()) {
+            if (StringUtils.isBlank(node.getPrivateKeyName()))
+                addError("Keystore private key name cannot be null or empty");
 
-        if (StringUtils.isBlank(node.getPrivateKeyPassword()))
-            addError("Keystore private key password cannot be null or empty");
+            if (StringUtils.isBlank(node.getPrivateKeyPassword()))
+                addError("Keystore private key password cannot be null or empty");
 
-        if (StringUtils.isBlank(node.getCertificateAlias()))
-            addError("Keystore certificate alias cannot be null or empty");
+            if (StringUtils.isBlank(node.getCertificateAlias()))
+                addError("Keystore certificate alias cannot be null or empty");
+        }
 
         Resource ks = node.getStore();
 
@@ -456,13 +615,15 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
             if (ks.getValue() == null) {
                 addError("Keystore file value cannot be null");
-            } else if (node.getType() != null && node.getPassword() != null && node.getCertificateAlias() != null) {
+            } else if (node.getType() != null && node.getPassword() != null) {
                 try {
                     KeyStore keyStore = KeyStore.getInstance("PKCS#12".equals(node.getType()) ? "PKCS12" : "JKS");
                     keyStore.load(new ByteArrayInputStream(ks.getValue()), node.getPassword().toCharArray());
-                    Certificate certificate = keyStore.getCertificate(node.getCertificateAlias());
-                    if (certificate == null)
-                        addError("No certificate associated with alias '" + node.getCertificateAlias() + "'");
+                    if (node.getCertificateAlias() != null) {
+                        Certificate certificate = keyStore.getCertificate(node.getCertificateAlias());
+                        if (certificate == null)
+                            addError("No certificate associated with alias '" + node.getCertificateAlias() + "'");
+                    }
                 } catch (KeyStoreException e) {
                     addError("Keystore type is not available");
                 } catch (NoSuchAlgorithmException e) {
@@ -580,6 +741,97 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
         ctx.get().registerLocation(locationStr, obj);
 
+    }
+
+    protected void validateMetadata(String propertyName, Resource metadata, Object obj) {
+        if (metadata == null) {
+            addError(propertyName + " cannot be null");
+            return;
+        }
+
+        if (metadata.getName() == null)
+            addError(propertyName + " name cannot be null");
+
+        if (metadata.getUri() == null)
+            addError(propertyName + " uri cannot be null");
+
+        if (metadata.getValue() == null)
+            addError(propertyName + " value cannot be null");
+        else {
+            try {
+                // load metadata definition
+                MetadataDefinition md = MetadataUtil.loadMetadataDefinition(metadata.getValue());
+                // find entityID
+                MetadataUtil.findEntityId(md);
+                // find SSODescriptor
+                String descriptorName = null;
+                if (obj instanceof ExternalIdentityProvider) {
+                    descriptorName = "IDPSSODescriptor";
+                } else if (obj instanceof ExternalServiceProvider) {
+                    descriptorName = "SPSSODescriptor";
+                }
+                MetadataUtil.findSSODescriptor(md, descriptorName);
+            } catch (Exception e) {
+                addError(propertyName + " is not valid");
+            }
+        }
+    }
+
+    protected void validateIDPChannels(FederatedProvider node) {
+        int preferred = 0;
+
+        for (FederatedConnection fcA : node.getFederatedConnectionsA()) {
+
+            if (fcA.getChannelA() instanceof IdentityProviderChannel) {
+                IdentityProviderChannel c = (IdentityProviderChannel) fcA.getChannelA();
+                if (c.isPreferred())
+                    preferred ++;
+            } else {
+                addError("Federated Connection A does not relate this SP with an IDP : " + fcA.getChannelA().getClass().getSimpleName());
+            }
+
+            if (fcA.getRoleA() != node) {
+                addError("Federated Connection A does not point to this provider " + node.getName() + "["+fcA.getRoleA().getName()+"]");
+            }
+        }
+
+        for (FederatedConnection fcB : node.getFederatedConnectionsB()) {
+
+            if (fcB.getChannelB() instanceof IdentityProviderChannel) {
+                IdentityProviderChannel c = (IdentityProviderChannel) fcB.getChannelB();
+                if (c.isPreferred())
+                    preferred ++;
+            } else {
+                addError("Federated Connection B does not relate this SP with an IDP : " + fcB.getChannelB().getClass().getSimpleName());
+            }
+
+            if (fcB.getRoleB() != node) {
+                addError("Federated Connection B does not point to this provider " + node.getName() + "["+fcB.getRoleA().getName()+"]");
+            }
+        }
+
+        if (preferred < 1)
+            addError("No preferred Identity Provider Channel defined for SP " + node.getName());
+
+        if (preferred > 1)
+            addError("Too many preferred IDP Channels defined for SP " + node.getName() + ", found " + preferred);
+    }
+
+    protected void validateDomain(String propertyName, String domain) {
+        if (domain == null || domain.length() == 0) {
+            addError(propertyName + " cannot be null or empty");
+            return;
+        }
+
+        for (int i = 0 ; i < domain.length() ; i ++) {
+            char c = domain.charAt(i);
+            if (!Character.isLetterOrDigit(c)) {
+                if (c != '.') {
+                    addError(propertyName + " must contain only letters, numbers and '.' characters. value : " + domain);
+                    return ;
+                }
+            }
+        }
     }
 
     protected boolean isNumeric(String v) {

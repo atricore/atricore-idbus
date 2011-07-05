@@ -42,6 +42,10 @@ public class ListGroupsCommand extends IocSimpleCommand implements IResponder {
     private var _registry:ServiceRegistry;
     private var _accountManagementProxy:AccountManagementProxy;
 
+
+    public function ListGroupsCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

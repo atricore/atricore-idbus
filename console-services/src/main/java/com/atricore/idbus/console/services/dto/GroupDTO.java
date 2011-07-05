@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.services.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class GroupDTO implements Serializable {
 
@@ -30,6 +31,7 @@ public class GroupDTO implements Serializable {
     private long id;
     private String name;
     private String description;
+    private ArrayList extraAttributes;
 
     public long getId() {
         return id;
@@ -54,6 +56,14 @@ public class GroupDTO implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public ArrayList getExtraAttributes() {
+        return extraAttributes;
+    }
+
+    public void setExtraAttributes(ArrayList extraAttributes) {
+        this.extraAttributes = extraAttributes;
     }
 
     @Override

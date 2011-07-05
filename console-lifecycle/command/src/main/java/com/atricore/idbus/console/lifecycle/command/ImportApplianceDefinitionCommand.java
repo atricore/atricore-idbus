@@ -12,8 +12,9 @@ import org.apache.commons.vfs.VFS;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -24,53 +25,54 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
 
     private static Log logger = LogFactory.getLog(ImportApplianceDefinitionCommand.class);
 
-    @Option(name = "-i", aliases = "--input", description = "Identity Appliance descriptor file", required = true, multiValued = false)
+    @Option(name = "-i", aliases = "--input", description = "Identity Appliance export file", required = true, multiValued = false)
     private String input;
-    
+
     @Override
     protected Object doExecute(IdentityApplianceManagementService svc) throws Exception {
-
-
         FileSystemManager fs = VFS.getManager();
+        input.replace("\\", "/");
         FileObject inputFile = fs.resolveFile("file://" + input);
         if (!inputFile.exists())
             throw new FileNotFoundException(inputFile.getURL().toExternalForm());
 
         //System.out.println("Importing from " + inputFile.getURL().toExternalForm());
 
-        InputStream is = inputFile.getContent().getInputStream();
-        StringBuilder descriptor = new StringBuilder();
+        final int BUFFER_SIZE = 2048;
+        int count;
+        InputStream is = null;
 
-        byte[] buff =  new byte[1024];
+       try {
 
-        int read = is.read(buff, 0, 1024);
-        while (read > 0) {
-            descriptor.append(new String(buff, 0, read));
-            read = is.read(buff);
-        }
+            is = inputFile.getContent().getInputStream();
+            ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+            byte[] buff =  new byte[BUFFER_SIZE];
 
-        if (is != null) {
-            try {
-                is.close();
-            } catch (Exception e) {
-                logger.info("Unable to close stream for " + inputFile.getURL() + ". Error:" + e.getMessage());
-                if (logger.isDebugEnabled())
-                    logger.debug("Unable to close stream for " + inputFile.getURL() + ". Error:" + e.getMessage(), e);
+            while ((count = is.read(buff, 0, BUFFER_SIZE)) != -1) {
+                bOut.write(buff, 0, count);
             }
-        }
+            bOut.flush();
 
-        try {
             ImportApplianceDefinitionRequest req = new ImportApplianceDefinitionRequest ();
-            req.setDescriptor(descriptor.toString());
+            req.setBytes(bOut.toByteArray());
+            bOut.close();
 
             // Invoke service
             ImportApplianceDefinitionResponse res = svc.importApplianceDefinition(req);
 
             System.out.println("Created Identity Appliance " + res.getAppliance().getId() + " from " + input);
 
-        } catch (ApplianceValidationException e) {
-            cmdPrinter.printError(e);
-        }
+        } finally {
+
+           if (is != null) {
+               try { is.close();  } catch (IOException e) {
+                   logger.error("Unable to close stream for " + inputFile.getURL() + ". Error:" + e.getMessage());
+                   if (logger.isDebugEnabled())
+                       logger.debug("Unable to close stream for " + inputFile.getURL() + ". Error:" + e.getMessage(), e);
+               }
+           }
+
+       }
 
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

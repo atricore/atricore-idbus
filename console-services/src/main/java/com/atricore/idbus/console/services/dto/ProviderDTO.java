@@ -53,6 +53,9 @@ public class ProviderDTO implements Serializable {
 
     private IdentityApplianceDefinitionDTO identityAppliance;
 
+    private double x;
+    private double y;
+    
     public long getId() {
         return id;
     }
@@ -166,6 +169,22 @@ public class ProviderDTO implements Serializable {
 
     public void setIsRemote(boolean remote) {
         isRemote = remote;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     @Override

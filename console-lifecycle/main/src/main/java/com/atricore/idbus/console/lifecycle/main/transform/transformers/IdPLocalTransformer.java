@@ -19,9 +19,12 @@ import org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder;
+import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
+import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
 import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.IdPSessionEventListener;
 import org.atricore.idbus.capabilities.samlr2.main.idp.SamlR2IDPMediator;
+import org.atricore.idbus.capabilities.samlr2.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
@@ -30,11 +33,9 @@ import org.atricore.idbus.capabilities.samlr2.support.core.encryption.XmlSecurit
 import org.atricore.idbus.capabilities.samlr2.support.core.signature.JSR105SamlR2SignerImpl;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
-import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
-import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
 import org.springframework.beans.factory.InitializingBean;
@@ -45,6 +46,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -166,6 +168,9 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         // errorUrl
         setPropertyValue(idpMediator, "errorUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/error.do");
 
+        // warningUrl
+        setPropertyValue(idpMediator, "warningUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/warn/policy-enforcement.do");
+
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
         Keystore signKs = null;
@@ -218,6 +223,9 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
             setPropertyBean(signer, "keyResolver", keyResolver);
             setPropertyBean(idpMediator, "signer", signer);
 
+            setPropertyValue(idpMediator, "signRequests", provider.isSignRequests());
+            setPropertyValue(idpMediator, "validateRequestsSignature", provider.isWantSignedRequests());
+
             event.getContext().getCurrentModule().addResource(signerResource);
 
             // signer
@@ -263,11 +271,6 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
             throw new TransformException("No Encrypter defined for " + provider.getName());
         }
 
-        Bean idpMd = newBean(idpBeans, idpBean.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
-        setPropertyValue(idpMd, "id", idpMd.getName());
-        setPropertyValue(idpMd, "alias", resolveLocationUrl(provider) + "/SAML2/MD");
-        setPropertyValue(idpMd, "resource", "classpath:" + idauPath + idpBean.getName() + "/" + idpBean.getName() + "-samlr2-metadata.xml");
-
         // ----------------------------------------
         // MBean
         // ----------------------------------------
@@ -291,39 +294,6 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         mBeans.add(mBeanEntry);
 
         setPropertyAsMapEntries(mBeanExporter, "beans", mBeans);
-
-        // plans
-        Bean sloToSamlPlan = newBean(idpBeans, idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);
-        setPropertyRef(sloToSamlPlan, "bpmsManager", "bpms-manager");
-
-        Bean sloToSamlSpSloPlan = newBean(idpBeans, idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan", SamlR2SloRequestToSpSamlR2SloRequestPlan.class);
-        setPropertyRef(sloToSamlSpSloPlan, "bpmsManager", "bpms-manager");
-
-        Bean authnToSamlPlan = newBean(idpBeans, idpBean.getName() + "-samlr2authnreq-to-samlr2resp-plan", SamlR2AuthnRequestToSamlR2ResponsePlan.class);
-        setPropertyRef(authnToSamlPlan, "bpmsManager", "bpms-manager");
-
-        Bean stmtToAssertionPlan = newBean(idpBeans, idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
-        setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
-        setPropertyRef(stmtToAssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
-
-        //Bean authnToSamlResponsePlan = newBean(idpBeans, "samlr2authnreq-to-samlr2response-plan", SamlR2AuthnReqToSamlR2RespPlan.class);
-        //setPropertyRef(authnToSamlResponsePlan, "bpmsManager", "bpms-manager");
-
-
-        // mbean assembler
-        /*Bean mBeanAssembler = newAnonymousBean("org.springframework.jmx.export.assembler.MethodNameBasedMBeanInfoAssembler");
-
-        List<Prop> props = new ArrayList<Prop>();
-
-        Prop prop = new Prop();
-        prop.setKey("org.atricore.idbus." + event.getContext().getCurrentModule().getId() +
-                ":type=IdentityProvider,name=" + idpBean.getName());
-        prop.getContent().add("listSessions,listSessionsAsTable,listUserSessions,listUserSessionsAsTable,invalidateSession,invalidateAllSessions,invalidateUserSessions,getMaxInactiveInterval,listStatesAsTable,listStateEntriesAsTable");
-        props.add(prop);
-        
-        setPropertyValue(mBeanAssembler, "methodMappings", props);
-        
-        setPropertyBean(mBeanExporter, "assembler", mBeanAssembler);*/
 
         // -------------------------------------------------------
         // Session Manager bean
@@ -363,22 +333,6 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
 
         Bean idpBean = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName()).iterator().next();
-
-        // Wire SP Channels (DONE IN FED.CONN. TRANSF.
-        /*
-        List<Bean> bc = new ArrayList<Bean>();
-        Collection<Bean> channels = getBeansOfType(idpBeans, SPChannelImpl.class.getName());
-        for (Bean b : channels) {
-            String channelProvider = getPropertyRef(b, "provider");
-            if (channelProvider != null && !channelProvider.equals(idpBean.getName())) {
-                bc.add(b);
-            } else {
-                setPropertyRef(idpBean, "channel", b.getName());
-            }
-        }
-        if (bc.size() > 0)
-            setPropertyAsRefs(idpBean, "channels", bc);
-        */
 
         // Wire provider to COT
         Collection<Bean> cots = getBeansOfType(baseBeans, CircleOfTrustImpl.class.getName());

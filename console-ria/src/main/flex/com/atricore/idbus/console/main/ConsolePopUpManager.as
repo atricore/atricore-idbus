@@ -24,10 +24,6 @@ import com.atricore.idbus.console.main.view.profile.ChangePasswordMediator;
 import com.atricore.idbus.console.main.view.profile.ChangePasswordView;
 import com.atricore.idbus.console.main.view.setup.SetupWizardView;
 import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
-import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardView;
-import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator;
-import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardView;
-import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
@@ -38,15 +34,14 @@ import org.puremvc.as3.interfaces.INotification;
 public class ConsolePopUpManager extends BasePopUpManager {
 
     private var _setupWizardMediator:SetupWizardViewMediator;
-    private var _simpleSSOWizardMediator:SimpleSSOWizardViewMediator;
-    private var _identityApplianceWizardMediator:IdentityApplianceWizardViewMediator;
     private var _changePasswordMediator:ChangePasswordMediator;
 
     protected var _setupWizardView:SetupWizardView;
-    protected var _simpleSSOWizardView:SimpleSSOWizardView;
-    protected var _identityApplianceWizardView:IdentityApplianceWizardView;
     protected var _changePasswordForm:ChangePasswordView;
 
+    public function ConsolePopUpManager() {
+        super();
+    }
 
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
@@ -54,29 +49,12 @@ public class ConsolePopUpManager extends BasePopUpManager {
 
     }
 
-
     public function get setupWizardMediator():SetupWizardViewMediator {
         return _setupWizardMediator;
     }
 
     public function set setupWizardMediator(value:SetupWizardViewMediator):void {
         _setupWizardMediator = value;
-    }
-
-    public function get simpleSSOWizardMediator():SimpleSSOWizardViewMediator {
-        return _simpleSSOWizardMediator;
-    }
-
-    public function set simpleSSOWizardMediator(value:SimpleSSOWizardViewMediator):void {
-        _simpleSSOWizardMediator = value;
-    }
-
-    public function get identityApplianceWizardMediator():IdentityApplianceWizardViewMediator {
-        return _identityApplianceWizardMediator;
-    }
-
-    public function set identityApplianceWizardMediator(value:IdentityApplianceWizardViewMediator):void {
-        _identityApplianceWizardMediator = value;
     }
 
     public function get changePasswordMediator():ChangePasswordMediator {
@@ -103,42 +81,10 @@ public class ConsolePopUpManager extends BasePopUpManager {
         setupWizardMediator.handleNotification(_lastWindowNotification);
     }
 
-    public function showSimpleSSOWizardWindow(notification:INotification):void {
-        _lastWindowNotification = notification;
-        createSimpleSSOWizardView();
-        showWizard(_simpleSSOWizardView);
-    }
-
-    private function createSimpleSSOWizardView():void {
-        _simpleSSOWizardView = new SimpleSSOWizardView();
-        _simpleSSOWizardView.addEventListener(FlexEvent.CREATION_COMPLETE, handleSimpleSSOWizardViewCreated);
-    }
-
-    private function handleSimpleSSOWizardViewCreated(event:FlexEvent):void {
-        simpleSSOWizardMediator.setViewComponent(_simpleSSOWizardView);
-        simpleSSOWizardMediator.handleNotification(_lastWindowNotification);
-    }
-
-    public function showCreateIdentityApplianceWindow(notification:INotification):void {
-        _lastWindowNotification = notification;
-        createIdentityApplianceWizardView();
-        showWizard(_identityApplianceWizardView);
-    }
-
-    private function createIdentityApplianceWizardView():void {
-        _identityApplianceWizardView = new IdentityApplianceWizardView();
-        _identityApplianceWizardView.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityApplianceWizardViewCreated);
-    }
-
-    private function handleIdentityApplianceWizardViewCreated(event:FlexEvent):void {
-        identityApplianceWizardMediator.setViewComponent(_identityApplianceWizardView);
-        identityApplianceWizardMediator.handleNotification(_lastWindowNotification);
-    }
-
     public function showChangePasswordWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createChangePasswordForm();
-        _popup.title = "Change Password";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "main.menu.user.changePassword");
         _popup.width = 400;
         _popup.height = 180;
         showPopup(_changePasswordForm);

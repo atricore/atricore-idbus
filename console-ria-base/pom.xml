@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>console</artifactId>
+        <groupId>com.atricore.idbus.console</groupId>
+        <version>1.1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>console-ria-base</artifactId>
+    <packaging>swc</packaging>
+
+    <name>Atricore Console :: Rich Internet Application (RIA) Base</name>
+
+
+    <build>
+        <sourceDirectory>src/main/flex</sourceDirectory>
+
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${basedir}/target/generated-resources</directory>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin> <!-- Flex (SWC and SWF) compilation -->
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+            </plugin>
+
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-config</id>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
+                            <includeGroupIds>${project.groupId}</includeGroupIds>
+                            <includeArtifactIds>console-config</includeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-lib</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>flex-framework</artifactId>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.un.cava.birdeye</groupId>
+            <artifactId>ravis</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flexlib</groupId>
+            <artifactId>flexlib</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.puremvc</groupId>
+            <artifactId>puremvc</artifactId>
+            <version>2.0.4</version>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>datavisualization</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>datavisualization</artifactId>
+            <classifier>en_US</classifier>
+            <type>rb.swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springextensions.actionscript</groupId>
+            <artifactId>spring-actionscript-puremvc-standard</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-lang</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-reflect</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-logging</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <!-- Flex 4 Automation
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation_spark</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation_agent</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation_agent</artifactId>
+            <classifier>en_US</classifier>
+            <type>rb.swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation_dmv</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation_flashflexkit</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gorillalogic.</groupId>
+            <artifactId>automation-monkey</artifactId>
+            <version>1.0.0</version>
+            <type>swc</type>
+            <classifier>flex4</classifier>
+        </dependency>
+
+        -->
+
+    </dependencies>
+
+</project>
+

@@ -24,7 +24,6 @@
 <s:Panel xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:comp="com.atricore.idbus.console.components.*"
-         skinClass="com.atricore.idbus.console.branding.heading.AtricoreApplicationSkin"
          width="100%" height="80"
          creationPolicy="all"
         >
@@ -36,4 +35,5 @@
         <s:HorizontalLayout horizontalAlign="right" verticalAlign="bottom"
                             paddingLeft="10" paddingRight="10" paddingBottom="5" paddingTop="5"/>
     </s:layout>
+
 </s:Panel>

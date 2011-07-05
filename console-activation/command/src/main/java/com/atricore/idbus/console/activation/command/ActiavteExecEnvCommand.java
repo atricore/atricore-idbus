@@ -1,11 +1,12 @@
 package com.atricore.idbus.console.activation.command;
 
 import com.atricore.idbus.console.activation.main.spi.ActivationService;
-import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
+import com.atricore.idbus.console.activation._1_0.protocol.ActivateAgentRequestType;
+import com.atricore.idbus.console.activation._1_0.wsdl.ActivationPortType;
 import org.apache.felix.gogo.commands.Command;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "activate", name = "josso-agent", description = "Activates a JOSSO Agent")
 public class ActiavteExecEnvCommand extends ActivationCommandSupport {
@@ -13,11 +14,11 @@ public class ActiavteExecEnvCommand extends ActivationCommandSupport {
     @Override
     protected Object doActivate(ActivationService svc) throws Exception {
         
-        ActivateAgentRequest request = new ActivateAgentRequest();
+        ActivateAgentRequestType request = new ActivateAgentRequestType();
 
         request.setForceInstall(forceInstall);
         request.setIdpHostName(idpHostName);
-        request.setIdpPort(idpPort);
+        request.setIdpPort(Integer.parseInt(idpPort));
         request.setIdpType(idpType);
         request.setJbossInstallDir(jbossInstallDir);
         request.setJbossInstance(jbossInstance);
@@ -28,6 +29,6 @@ public class ActiavteExecEnvCommand extends ActivationCommandSupport {
         request.setUser(user);
         request.setWeblogicDomain(weblogicDomain);
 
-        return svc.activateAgent(request);
+        return null; // TODO : svc.activateAgent(request);
     }
 }

@@ -56,9 +56,6 @@ public class UsersMediator extends IocMediator implements IDisposable{
 
     private var _updatedUserIndex:Number;
 
-    [Bindable]
-
-
     public function UsersMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }
@@ -101,7 +98,6 @@ public class UsersMediator extends IocMediator implements IDisposable{
         view.userList.addEventListener(ListEvent.ITEM_CLICK , userListSelectHandler);
         view.btnClearSearch.addEventListener(MouseEvent.CLICK, handleClearSearch);
 
-        sendNotification(ApplicationFacade.LIST_USERS);
         _userPropertiesMediator.setViewComponent(view.properties);
         popupManager.init(iocFacade, view);
     }
@@ -253,7 +249,7 @@ public class UsersMediator extends IocMediator implements IDisposable{
             var delAlert:Alert = Alert.show(alertBody,
                     resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.delete.title'),
                     3, view,
-                    function (event:CloseEvent) {
+                    function (event:CloseEvent):void {
                         if (event.detail == Alert.YES) {
                             sendNotification(ApplicationFacade.DELETE_USER, _accountManagementProxy.currentUser);
                             sendNotification(ProcessingMediator.START);

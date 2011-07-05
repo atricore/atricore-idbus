@@ -15,7 +15,7 @@ import java.util.Collection;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class JOSSOActivationTransformer extends AbstractTransformer {
 
@@ -64,8 +64,27 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
 
         setPropertyValue(partnerappBean, "partnerAppId", activation.getPartnerAppId());
 
+        ServiceProvider sp = activation.getSp();
+        IdentityProviderChannel preferredIdpChannel = null;
+        for (FederatedConnection fc : sp.getFederatedConnectionsA()) {
+            IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelA();
+            if (idpc.isPreferred()) {
+                preferredIdpChannel = idpc;
+                break;
+            }
+        }
+
+        if (preferredIdpChannel == null) {
+            for (FederatedConnection fc : sp.getFederatedConnectionsB()) {
+                IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelB();
+                if (idpc.isPreferred()) {
+                    preferredIdpChannel = idpc;
+                    break;
+                }
+            }
+        }
         // TODO : Maybe we can get this value from the context ..
-        String spAlias = resolveLocationUrl(activation.getSp()) + "/SAML2/MD";
+        String spAlias = resolveLocationUrl(sp, preferredIdpChannel) + "/SAML2/MD";
         setPropertyValue(partnerappBean, "spAlias", spAlias);
 
         setPropertyValue(partnerappBean, "partnerAppSLO", resolveSLOLocationUrl(activation));
@@ -135,7 +154,8 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
         } else if (execEnv instanceof WindowsIISExecutionEnvironment) {
             return baseLocation + "josso/JOSSOIsapiAgent.dll?josso_security_check";
 
-        } else if (execEnv instanceof PHPExecutionEnvironment) {
+        } else if (execEnv instanceof PHPExecutionEnvironment ||
+                execEnv instanceof PhpBBExecutionEnvironment) {
             return appLocation + "josso-security-check.php";
 
         } else if (execEnv instanceof WeblogicExecutionEnvironment) {

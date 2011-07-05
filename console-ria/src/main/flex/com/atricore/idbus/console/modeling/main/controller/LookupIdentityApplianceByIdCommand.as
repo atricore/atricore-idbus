@@ -44,6 +44,9 @@ public class LookupIdentityApplianceByIdCommand extends IocSimpleCommand impleme
     private var _projectProxy:ProjectProxy;
 
 
+    public function LookupIdentityApplianceByIdCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

@@ -28,17 +28,14 @@
          paddingRight="5" paddingTop="5" paddingBottom="5">
 
     <fx:Declarations>
-        <!--mx:ArrayCollection id="authMechanismColl">
-            <utils:ListItemValueObject label="Form-Based Basic" name="basic" isSelected="false" />
-            <utils:ListItemValueObject label="Strong (Digital Sertificate)" name="strong" isSelected="false" />
-            <utils:ListItemValueObject label="Windows (NTLM)" isSelected="false" name="ntlm" />
-            <utils:ListItemValueObject label="Remember Me" isSelected="false" name="rememberme" />
-        </mx:ArrayCollection-->
         <mx:ArrayCollection id="authMechanismColl">
-            <fx:Object label="Simple Authentication" data="basic"/>
-            <fx:Object label="Strong (Digital Sertificate)" data="strong"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.simple')}" data="basic"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.2factor')}" data="2factor"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.bind')}" data="bind"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.windows')}" data="windows"/>
+            <!--fx:Object label="Strong (Digital Sertificate)" data="strong"/>
             <fx:Object label="Windows (NTLM)" data="ntlm"/>
-            <fx:Object label="Remember Me" data="rememberme"/>
+            <fx:Object label="Remember Me" data="rememberme"/-->
         </mx:ArrayCollection>
         <utils:NameValidator id="nameValidator" source="{identityProviderName}" required="true" property="text"/>
         <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
@@ -140,6 +137,15 @@
                     </s:dataProvider>
                 </s:DropDownList>
             </mx:FormItem>
+
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.subjectNameIDPolicy')}:">
+                <s:DropDownList id="subjectNameIdPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.ignoreRequestedNameIDPolicy')}:">
+                <s:CheckBox id="ignoreRequestedNameIDPolicy" selected="true"/>
+            </mx:FormItem>
+
         </mx:Form>
     </utils:TitledBorderBox>
 </s:HGroup>

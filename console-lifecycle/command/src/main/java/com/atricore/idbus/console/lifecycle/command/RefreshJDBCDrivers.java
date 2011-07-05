@@ -4,7 +4,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagement
 import org.apache.felix.gogo.commands.Command;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class RefreshJDBCDrivers extends ManagementCommandSupport {
 

@@ -21,6 +21,10 @@ public class FoldersExistsCommand extends IocSimpleCommand implements IResponder
 
     private var _registry:ServiceRegistry;
 
+
+    public function FoldersExistsCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

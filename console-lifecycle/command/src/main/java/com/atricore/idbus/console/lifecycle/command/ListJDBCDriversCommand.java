@@ -6,7 +6,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.response.ListAvailableJDBCD
 import org.apache.felix.gogo.commands.Command;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "jdbc", name = "list", description = "List defined JDBC Drivers")
 public class ListJDBCDriversCommand extends ManagementCommandSupport {

@@ -29,12 +29,12 @@ import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
+import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import flash.events.Event;
-
 import flash.utils.Dictionary;
 
 import mx.collections.ArrayCollection;
@@ -44,7 +44,9 @@ import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class BrowserMediator extends IocMediator implements IDisposable {
-    private var _applianceRootNode;
+
+    private var _applianceRootNode:BrowserNode;
+
     private var _identityAppliance:IdentityAppliance;
     private var _projectProxy:ProjectProxy;
 
@@ -133,6 +135,7 @@ public class BrowserMediator extends IocMediator implements IDisposable {
 
             var idSourceConnections:Dictionary = new Dictionary();  //[idSource, array of connections]
             var execEnvConnections:Dictionary = new Dictionary();  //[execEnv, array of connections]
+            var authnServiceConnections:Dictionary = new Dictionary();  //[authnService, array of connections]
 
             if (identityApplianceDefinition.providers != null) {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
@@ -151,8 +154,8 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                                 providerNode.addChild(connectionsNode);
                                 connectionsNodeAdded = true;
                             }
-                            for each (var fedConn:FederatedConnection in locProv.federatedConnectionsA) {
-                                connectionsNode.addChild(BrowserModelFactory.createConnectionNode(fedConn, true, connectionsNode));
+                            for each (var fedConnA:FederatedConnection in locProv.federatedConnectionsA) {
+                                connectionsNode.addChild(BrowserModelFactory.createConnectionNode(fedConnA, true, connectionsNode));
                             }
                         }
                         if (locProv.federatedConnectionsB != null && locProv.federatedConnectionsB.length > 0) {
@@ -161,8 +164,8 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                                 providerNode.addChild(connectionsNode);
                                 connectionsNodeAdded = true;
                             }
-                            for each (var fedConn:FederatedConnection in locProv.federatedConnectionsB) {
-                                connectionsNode.addChild(BrowserModelFactory.createConnectionNode(fedConn, true, connectionsNode));
+                            for each (var fedConnB:FederatedConnection in locProv.federatedConnectionsB) {
+                                connectionsNode.addChild(BrowserModelFactory.createConnectionNode(fedConnB, true, connectionsNode));
                             }
                         }
                         // add identity source to provider node and identity lookup to connections node
@@ -173,20 +176,20 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                                 connectionsNodeAdded = true;
                             }
                             var idSource:IdentitySource = locProv.identityLookup.identitySource;
-                            var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(idSource, true, providerNode);
-                            providerNode.addChild(identityVaultNode);
+                            var newIdentityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(idSource, true, providerNode);
+                            providerNode.addChild(newIdentityVaultNode);
                             // add identityLookup to connections node
                             var identityLookupNode:BrowserNode = BrowserModelFactory.createConnectionNode(locProv.identityLookup, true, connectionsNode);
                             connectionsNode.addChild(identityLookupNode);
                             // add identityLookup to idSourceConnections map
-                            var connections:ArrayCollection = idSourceConnections[idSource];
-                            if (connections == null) {
-                                connections = new ArrayCollection();
+                            var idLookupConnections:ArrayCollection = idSourceConnections[idSource];
+                            if (idLookupConnections == null) {
+                                idLookupConnections = new ArrayCollection();
                             }
-                            connections.addItem(locProv.identityLookup);
-                            idSourceConnections[idSource] = connections;
+                            idLookupConnections.addItem(locProv.identityLookup);
+                            idSourceConnections[idSource] = idLookupConnections;
                         }
-                        // add execution environment to provider node and activation to connections node
+                        // add execution environment to service provider node and activation to connections node
                         if (locProv is ServiceProvider) {
                             var sp:ServiceProvider = locProv as ServiceProvider;
                             if (sp.activation != null && sp.activation.executionEnv != null) {
@@ -196,18 +199,42 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                                     connectionsNodeAdded = true;
                                 }
                                 // add execution environment to provider node
-                                var executionNode:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(sp.activation.executionEnv, true, providerNode);
-                                providerNode.addChild(executionNode);
+                                var executionNode1:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(sp.activation.executionEnv, true, providerNode);
+                                providerNode.addChild(executionNode1);
                                 // add activation to connections node
                                 var activationNode:BrowserNode = BrowserModelFactory.createConnectionNode(sp.activation, true, connectionsNode);
                                 connectionsNode.addChild(activationNode);
                                 // add activation to execEnvConnections map
-                                var connections:ArrayCollection = idSourceConnections[sp.activation.executionEnv];
-                                if (connections == null) {
-                                    connections = new ArrayCollection();
+                                var activationConnections:ArrayCollection = execEnvConnections[sp.activation.executionEnv];
+                                if (activationConnections == null) {
+                                    activationConnections = new ArrayCollection();
                                 }
-                                connections.addItem(sp.activation);
-                                execEnvConnections[sp.activation.executionEnv] = connections;
+                                activationConnections.addItem(sp.activation);
+                                execEnvConnections[sp.activation.executionEnv] = activationConnections;
+                            }
+                        }
+                        // add authentication service to identity provider node and delegated authn. connection to connections node
+                        if (locProv is IdentityProvider) {
+                            var idp:IdentityProvider = locProv as IdentityProvider;
+                            if (idp.delegatedAuthentication != null && idp.delegatedAuthentication.authnService != null) {
+                                // add connections node to provider if not already added
+                                if (!connectionsNodeAdded) {
+                                    providerNode.addChild(connectionsNode);
+                                    connectionsNodeAdded = true;
+                                }
+                                // add authentication service to provider node
+                                var authnServiceNode1:BrowserNode = BrowserModelFactory.createAuthenticationServiceNode(idp.delegatedAuthentication.authnService, true, providerNode);
+                                providerNode.addChild(authnServiceNode1);
+                                // add delegated authn. connection to connections node
+                                var delegatedAuthnNode:BrowserNode = BrowserModelFactory.createConnectionNode(idp.delegatedAuthentication, true, connectionsNode);
+                                connectionsNode.addChild(delegatedAuthnNode);
+                                // add delegated authn. connection to authnServiceConnections map
+                                var delegatedAuthnConnections:ArrayCollection = authnServiceConnections[idp.delegatedAuthentication.authnService];
+                                if (delegatedAuthnConnections == null) {
+                                    delegatedAuthnConnections = new ArrayCollection();
+                                }
+                                delegatedAuthnConnections.addItem(idp.delegatedAuthentication);
+                                authnServiceConnections[idp.delegatedAuthentication.authnService] = delegatedAuthnConnections;
                             }
                         }
                     }
@@ -217,31 +244,46 @@ public class BrowserMediator extends IocMediator implements IDisposable {
 
             if (identityApplianceDefinition.identitySources != null) {
                 for (i = 0; i < identityApplianceDefinition.identitySources.length; i++) {
-                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identitySources[i], true, _applianceRootNode);
-                    _applianceRootNode.addChild(identityVaultNode);
+                    var identityVaultNode1:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identitySources[i], true, _applianceRootNode);
+                    _applianceRootNode.addChild(identityVaultNode1);
                     // set connections
-                    var connections:ArrayCollection = idSourceConnections[identityApplianceDefinition.identitySources[i]];
-                    if (connections != null && connections.length > 0) {
-                        var identitySourceConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false, identityVaultNode);
-                        for each (var connection:Connection in connections) {
-                            identitySourceConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(connection, true, identitySourceConnectionsNode));
+                    var connections1:ArrayCollection = idSourceConnections[identityApplianceDefinition.identitySources[i]];
+                    if (connections1 != null && connections1.length > 0) {
+                        var identitySourceConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false, identityVaultNode1);
+                        for each (var connection1:Connection in connections1) {
+                            identitySourceConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(connection1, true, identitySourceConnectionsNode));
                         }
-                        identityVaultNode.addChild(identitySourceConnectionsNode);
+                        identityVaultNode1.addChild(identitySourceConnectionsNode);
                     }
                 }
             }
             if (identityApplianceDefinition.executionEnvironments != null) {
                 for (var j:int = 0; j < identityApplianceDefinition.executionEnvironments.length; j++) {
-                    var executionNode:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(identityApplianceDefinition.executionEnvironments[j], true, _applianceRootNode);
-                    _applianceRootNode.addChild(executionNode);
+                    var executionNode2:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(identityApplianceDefinition.executionEnvironments[j], true, _applianceRootNode);
+                    _applianceRootNode.addChild(executionNode2);
                     // set connections
-                    var connections:ArrayCollection = execEnvConnections[identityApplianceDefinition.executionEnvironments[j]];
-                    if (connections != null && connections.length > 0) {
-                        var execEnvConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false,executionNode );
-                        for each (var connection:Connection in connections) {
-                            execEnvConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(connection, true, execEnvConnectionsNode));
+                    var connections2:ArrayCollection = execEnvConnections[identityApplianceDefinition.executionEnvironments[j]];
+                    if (connections2 != null && connections2.length > 0) {
+                        var execEnvConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false,executionNode2 );
+                        for each (var connection2:Connection in connections2) {
+                            execEnvConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(connection2, true, execEnvConnectionsNode));
                         }
-                        executionNode.addChild(execEnvConnectionsNode);
+                        executionNode2.addChild(execEnvConnectionsNode);
+                    }
+                }
+            }
+            if (identityApplianceDefinition.authenticationServices != null) {
+                for (var k:int = 0; k < identityApplianceDefinition.authenticationServices.length; k++) {
+                    var authnServiceNode2:BrowserNode = BrowserModelFactory.createAuthenticationServiceNode(identityApplianceDefinition.authenticationServices[k], true, _applianceRootNode);
+                    _applianceRootNode.addChild(authnServiceNode2);
+                    // set connections
+                    var connections3:ArrayCollection = authnServiceConnections[identityApplianceDefinition.authenticationServices[k]];
+                    if (connections3 != null && connections3.length > 0) {
+                        var authnServiceConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false, authnServiceNode2);
+                        for each (var connection3:Connection in connections3) {
+                            authnServiceConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(connection3, true, authnServiceConnectionsNode));
+                        }
+                        authnServiceNode2.addChild(authnServiceConnectionsNode);
                     }
                 }
             }
@@ -268,7 +310,7 @@ public class BrowserMediator extends IocMediator implements IDisposable {
         }
     }
 
-    private function updateNodeData(currentNode:BrowserNode, nodeName:String, newData:Object) {
+    private function updateNodeData(currentNode:BrowserNode, nodeName:String, newData:Object):void {
         if (currentNode.label == nodeName && currentNode.data != null) {
             currentNode.label = newData.name;
             currentNode.data = newData;

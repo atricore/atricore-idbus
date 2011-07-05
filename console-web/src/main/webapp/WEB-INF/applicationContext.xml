@@ -4,12 +4,24 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                     http://www.springframework.org/schema/beans/spring-beans.xsd
                     http://www.springframework.org/schema/context
 	                http://www.springframework.org/schema/context/spring-context.xsd
                     http://www.springframework.org/schema/osgi
-                    http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                    http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+                    http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+
+    <import resource="applicationContextExt.xml"/>
+
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-jaxrs-binding.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+
 
     <!-- ==================================================================== -->
     <!-- Idbus Server Management OSGI Services                                -->
@@ -17,9 +29,12 @@
 
     <osgi:reference id="idApplianceManagementService" cardinality="1..1" timeout="60"
                     interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
-
+                               
     <osgi:reference id="activationServiceBean" cardinality="1..1" timeout="60"
                     interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
+
+    <osgi:reference id="licenseManagementService" cardinality="1..1" timeout="60"
+                    interface="com.atricore.idbus.console.licensing.main.LicenseManager"/>
 
     <osgi:list id="spmlServiceBeans" interface="org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client"
                cardinality="0..N" >
@@ -31,6 +46,7 @@
             <list>
                 <ref bean="userProvisioningAjaxServiceBean"/>
                 <ref bean="profileManagementAjaxServiceBean"/>
+                <ref bean="schemaManagementAjaxServiceBean"/>
             </list>
         </property>
     </bean>
@@ -63,6 +79,11 @@
         <property name="pspTargetId" value="pst-default" />
     </bean>
 
+    <bean id="schemaManagementAjaxServiceBean"
+          class="com.atricore.idbus.console.services.impl.SchemaManagementAjaxServiceImpl">
+        <property name="pspTargetId" value="pst-default" />
+    </bean>
+
     <bean id="applicationServerInitialization" init-method="init"
           class="com.atricore.idbus.console.services.util.ApplicationServerInitialization">
         <property name="usrProvService" ref="userProvisioningAjaxServiceBean" />
@@ -77,6 +98,7 @@
 
     <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">
         <property name="usrProvService" ref="userProvisioningAjaxServiceBean" />
+        <property name="realm" value="atricore" />
     </bean>
 
     <bean id="profileManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ProfileManagementAjaxServiceImpl">
@@ -84,9 +106,31 @@
         <property name="pspTargetId" value="pst-default" />
     </bean>
 
-    <bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">
+    <!--bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">
         <property name="idApplianceManagementService" ref="idApplianceManagementService"/>
+    </bean-->
+
+    <bean id="licenseManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.LicenseManagementAjaxServiceImpl">
+        <property name="licenseManager" ref="licenseManagementService"/>
+        <property name="dozerMapper" ref="dozerMapper" />
     </bean>
+
+
+    <osgi:reference id="activationWService"
+                    interface="com.atricore.idbus.console.activation._1_0.wsdl.ActivationPortType"
+                    cardinality="1..1" timeout="30" />
+
+    <!-- SOAP Services -->
+    <jaxws:server id="activationWServcieServer"
+                  serviceClass="com.atricore.idbus.console.activation._1_0.wsdl.ActivationPortType"
+            address="/activation">
+        <jaxws:serviceBean>
+			<bean class="com.atricore.idbus.console.web.util.ActivationPortTypeWrapper">
+                <property name="wrapped" ref="activationWService"/>
+            </bean>
+		</jaxws:serviceBean>
+    </jaxws:server >
+
 
     <context:component-scan base-package="com.atricore.idbus.console.web" />
 

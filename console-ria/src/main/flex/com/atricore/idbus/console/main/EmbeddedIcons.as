@@ -48,7 +48,7 @@ public class EmbeddedIcons {
     }
 
     [Bindable]
-    [Embed(source="/assets/icons/ui/a3c_logo.jpeg")]
+    [Embed(source="/assets/icons/ui/a3c_logo.png")]
     static public var a3cLogo:Class;
 
     [Bindable]
@@ -84,6 +84,14 @@ public class EmbeddedIcons {
     static public var infoIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/account/add.png")]
+    static public var generalAddIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/account/remove.png")]
+    static public var generalRemoveIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/account/add_group.png")]
     static public var addGroupIcon:Class;
 
@@ -114,6 +122,18 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/account/search_user.png")]
     static public var searchUserIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/account/add_attribute.png")]
+    static public var addAttributeIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/account/edit_attribute.png")]
+    static public var editAttributeIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/account/remove_attribute.png")]
+    static public var removeAttributeIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/ui/arrow-left-double.png")]
@@ -176,6 +196,10 @@ public class EmbeddedIcons {
     static public var groupsIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/account/manage_schema.png")]
+    static public var schemasIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/48x48/identity_appliance.png")]
     static public var busIcon:Class;
 
@@ -186,6 +210,39 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
     public static var spIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/external_identity_provider.png")]
+    public static var externalIdpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/external_service_provider.png")]
+    public static var externalSpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/salesforce.png")]
+    public static var salesforceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/google_apps.png")]
+    public static var googleAppsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/sugarcrm.png")]
+    public static var sugarCRMIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/wikid.png")]
+    public static var wikidIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/directory_service.png")]
+    public static var directoryServiceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/win_integrated_authn.png")]
+    public static var windowsIntegratedAuthnIcon:Class;
+
 
     //TODO add BP icon
     [Bindable]
@@ -228,6 +285,39 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
     public static var spMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
+    public static var externalIdpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
+    public static var externalSpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/salesforce.png")]
+    public static var salesforceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/google_apps.png")]
+    public static var googleAppsMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/sugarcrm.png")]
+    public static var sugarCRMMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/wikid.png")]
+    public static var wikidMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/directory_service.png")]
+    public static var directoryServiceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/win_integrated_authn.png")]
+    public static var windowsIntegratedAuthnMiniIcon:Class;
+
 
     //TODO add BP icon
     [Bindable]
@@ -272,6 +362,10 @@ public class EmbeddedIcons {
     public static var connectionIdentityLookupMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/identity_verification.png")]
+    public static var connectionDelegatedAuthnMiniIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/48x48/connection.png")]
     public static var connectionFederatedIcon:Class;
 
@@ -282,6 +376,10 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/48x48/identity_lookup.png")]
     public static var connectionIdentityLookupIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/identity_verification.png")]
+    public static var connectionDelegatedAuthnIcon:Class;
 
     //Execution environments
     [Bindable]
@@ -306,6 +404,10 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/liferay_execution_environment.png")]
     public static var liferayEnvironmentMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/apache_web_server_execution_environment.png")]
+    public static var phpEnvironmentMiniIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/phpbb_execution_environment.png")]
@@ -355,6 +457,10 @@ public class EmbeddedIcons {
     public static var liferayEnvironmentIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/apache_web_server_execution_environment.png")]
+    public static var phpEnvironmentIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/48x48/phpbb_execution_environment.png")]
     public static var phpbbEnvironmentIcon:Class;
 
@@ -391,8 +497,16 @@ public class EmbeddedIcons {
     public static var accountMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/ui/world_network_22x22.png")]
+    public static var liveUpdateMiniIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/main/setup_22.png")]
     public static var setupMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/main/help_22.png")]
+    public static var helpMiniIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/main/setup.png")]
@@ -409,6 +523,10 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/modeler/save_identity_appliance_22.png")]
     public static var saveApplianceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/modeler/import_identity_appliance_22.png")]
+    public static var importApplianceMiniIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/modeler/export_identity_appliance_22.png")]
@@ -453,5 +571,25 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/style/yflexskin.swf",symbol="Tree_folderClosedIcon")]
     public static var folderClosedIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/license.png")]
+    public static var licenseIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/system_upgrade.png")]
+    public static var liveUpdateIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/security_update.png")]
+    public static var securityUpdateIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/software_package.png")]
+    public static var softwarePackageIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/system_update.png")]
+    public static var systemUpdateIcon:Class;
 }
 }

@@ -172,7 +172,7 @@ mx|ColorPicker {
 //------------------------------
 //  ComboBox
 //------------------------------
-*/
+// Not used
 ComboBox {
     disabledSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_disabledSkin");
     downSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_downSkin");
@@ -183,7 +183,7 @@ ComboBox {
     overSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_overSkin");
     upSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_upSkin");
     dropDownStyleName: "myComboBoxDropDowns";
-}
+}*/
 
 DropDownList {
     disabledSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_disabledSkin");
@@ -293,23 +293,23 @@ mx|Image {
 //------------------------------
 //  LinkButton
 //------------------------------
-*/
+// Not used
 mx|LinkButton {
     disabledSkin: Embed(source = "yflexskin.swf", symbol = "LinkButton_disabledSkin");
     downSkin: Embed(source = "yflexskin.swf", symbol = "LinkButton_downSkin");
     overSkin: Embed(source = "yflexskin.swf", symbol = "LinkButton_overSkin");
     upSkin: Embed(source = "yflexskin.swf", symbol = "LinkButton_upSkin");
-}
+}*/
 
 /*
 //------------------------------
 //  Loader
 //------------------------------
-*/
+// Not used
 mx|Loader {
     brokenImageSkin: Embed(source = "yflexskin.swf", symbol = "Loader_brokenImageSkin");
 
-}
+}*/
 
 /*
 //------------------------------

@@ -71,6 +71,11 @@ public class CustomViewStack extends BorderContainer
      */
     protected var _pendingSelectedIndex:int = -1;
 
+
+    public function CustomViewStack() {
+        // Default constructor
+    }
+
     /**
      * @private
      *

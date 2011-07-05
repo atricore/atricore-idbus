@@ -22,10 +22,7 @@
 package com.atricore.idbus.console.lifecycle.main.exception;
 
 /**
- * User: cdbirge
- * Date: Oct 2, 2009
- * Time: 3:25:11 PM
- * email: cbirge@atricore.org
+ * TODO : Move this to console-services !!!! (maybe add a new exception for local service)
  */
 public class UserProvisioningAjaxException extends Exception{
 

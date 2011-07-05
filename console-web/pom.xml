@@ -32,10 +32,40 @@
     <!--artifactId>idbus-server-web</artifactId-->
     <artifactId>com.atricore.idbus.console.web</artifactId>
     <packaging>war</packaging>
-    <name>Atricore Console :: Web distribution</name>
+    <name>Atricore Console :: Web distribution : ${console.distribution.descr}</name>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/filtered-resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warSourceDirectory>src/main/webapp/</warSourceDirectory>
+                    <webResources>
+                        <resource>
+                            <!-- this is relative to the pom.xml directory -->
+                            <directory>${project.basedir}/src/main/resources-${console.distribution}</directory>
+                        </resource>
+                    </webResources>
+
+                    <archive>
+                        <!-- add the generated manifest to the war -->
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                    <classifier>${console.distribution}</classifier>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -44,18 +74,6 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <warSourceDirectory>src/main/webapp/</warSourceDirectory>
-                    <archive>
-                        <!-- add the generated manifest to the war -->
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-
 
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -67,8 +85,7 @@
                         </goals>
                         <phase>generate-resources</phase>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/flex
-                            </outputDirectory>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/flex</outputDirectory>
                             <includeGroupIds>${project.groupId}</includeGroupIds>
                             <includeArtifactIds>console-config</includeArtifactIds>
                             <includeTypes>zip</includeTypes>
@@ -76,6 +93,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>
@@ -143,7 +161,6 @@
             <plugin>
                 <groupId>org.sonatype.flexmojos</groupId>
                 <artifactId>flexmojos-maven-plugin</artifactId>
-                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -151,6 +168,7 @@
                             <!-- Copy of Flex resource into WAR -->
                         </goals>
                     </execution>
+
                 </executions>
             </plugin>
             <plugin>
@@ -187,7 +205,10 @@
                         </Bundle-ClassPath>
                         <Require-Bundle>
                             com.atricore.idbus.console.lifecycle.main,
-                            com.atricore.idbus.console.activation.main
+                            com.atricore.idbus.console.activation.protocol,
+                            com.atricore.idbus.console.activation.main,
+                            com.atricore.idbus.console.licensing.main,
+                            org.apache.servicemix.bundles.javax.mail
                         </Require-Bundle>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
@@ -197,6 +218,28 @@
                             org.apache.commons.beanutils,
                             org.apache.commons.beanutils.converters,
                             org.apache.xmlbeans,
+                            META-INF.cxf,
+                            org.apache.cxf,
+                            org.apache.cxf.binding,
+                            org.apache.cxf.binding.soap,
+                            org.apache.cxf.binding.soap.spring,
+                            org.apache.cxf.bus,
+                            org.apache.cxf.bus.spring,
+                            org.apache.cxf.bus.resource,
+                            org.apache.cxf.buslifecycle,
+                            org.apache.cxf.catalog,
+                            org.apache.cxf.configuration.spring,
+                            org.apache.cxf.endpoint,
+                            org.apache.cxf.headers,
+                            org.apache.cxf.jaxrs,
+                            org.apache.cxf.phase,
+                            org.apache.cxf.resource,
+                            org.apache.cxf.transport,
+                            org.apache.cxf.transport.http,
+                            org.apache.cxf.transport.http.policy,
+                            org.apache.cxf.workqueue,
+                            org.apache.cxf.wsdl11,
+                            org.apache.cxf.transport.servlet,
                             javax.xml.datatype,
                             javax.management,
                             javax.transaction;resolution:=optional,
@@ -211,6 +254,9 @@
                             javax.xml.transform.dom,
                             javax.xml.transform.stream,
                             javax.xml.validation,
+                            javax.security.auth,
+                            javax.security.auth.callback,
+                            javax.security.auth.login,
                             javax.sql,
                             javax.servlet.http; version="[2.5.0,3.0.0]",
                             javax.servlet; version="[2.5.0,3.0.0]",
@@ -243,22 +289,29 @@
                             com.atricore.idbus.console.lifecycle.main.spi.request,
                             com.atricore.idbus.console.lifecycle.main.spi.response,
                             com.atricore.idbus.console.lifecycle.main.util,
+                            com.atricore.idbus.console.liveservices.liveupdate; resolution:=optional,
+                            com.atricore.idbus.console.liveservices.liveupdate.main; resolution:=optional,
+                            com.atricore.idbus.console.liveservices.liveupdate.main.notifications; resolution:=optional,
+                            com.atricore.liveservices.liveupdate._1_0.md; resolution:=optional,
+                            com.atricore.liveservices.liveupdate._1_0.profile; resolution:=optional,
+                            com.atricore.josso2.licensing._1_0.license,
                             org.springframework.core.io,
-                            org.springframework.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.beans; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.beans.factory; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.beans.factory.config; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.web.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.web.context.support; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.web.servlet; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.orm.jdo; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.osgi.web.context.support; version=["1.2.0,1.2.0"],
-                            org.springframework.osgi.context; version=["1.2.0,1.2.0"],
+                            org.springframework.context; version="[${spring.version},${spring.version}]",
+                            org.springframework.beans; version="[${spring.version},${spring.version}]",
+                            org.springframework.beans.factory; version="[${spring.version},${spring.version}]",
+                            org.springframework.beans.factory.config; version="[${spring.version},${spring.version}]",
+                            org.springframework.web.context; version="[${spring.version},${spring.version}]",
+                            org.springframework.web.context.support; version="[${spring.version},${spring.version}]",
+                            org.springframework.web.servlet; version="[${spring.version},${spring.version}]",
+                            org.springframework.orm.jdo; version="[${spring.version},${spring.version}]",
+                            org.springframework.osgi.web.context.support; version=["${spring.osgi.version},${spring.osgi.version}"],
+                            org.springframework.osgi.context; version=["${spring.osgi.version},${spring.osgi.version}"],
                             org.osgi.framework,
                             org.xml.sax,
                             org.xml.sax.helpers,
                             org.w3c.dom,
                             org.apache.commons.fileupload,
+                            org.apache.karaf.jaas.boot,
                             *
                         </Import-Package>
                         <Webapp-Context>atricore-console</Webapp-Context>
@@ -291,14 +344,22 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>console-ria</artifactId>
-            <type>swf</type>
+            <artifactId>console-services</artifactId>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>console-services</artifactId>
+            <artifactId>console-config</artifactId>
+            <classifier>resources-${console.distribution}</classifier>
+            <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-ria</artifactId>
+            <classifier>${console.distribution}</classifier>
+            <type>swf</type>
+        </dependency>
+
 
         <!--<dependency>-->
         <!--<groupId>${project.groupId}</groupId>-->
@@ -318,6 +379,31 @@
         </dependency>
 
         <dependency>
+            <groupId>com.atricore.idbus.console.activation</groupId>
+            <artifactId>com.atricore.idbus.console.activation.protocol</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+            <artifactId>com.atricore.idbus.console.liveservices.liveupdate.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.licensing</groupId>
+            <artifactId>com.atricore.idbus.console.licensing.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.licensing</groupId>
+            <artifactId>com.atricore.idbus.console.licensing.josso2-license-v1_0</artifactId>
+            <scope>provided</scope>
+        </dependency>            
+
+        <dependency>
             <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
             <artifactId>org.atricore.idbus.capabilities.spmlr2.main</artifactId>
             <scope>provided</scope>
@@ -327,13 +413,6 @@
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
             <version>${idbus.kernel.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>console-config</artifactId>
-            <classifier>resources</classifier>
-            <type>zip</type>
         </dependency>
 
         <dependency>
@@ -381,6 +460,12 @@
             <type>swc</type>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.code.flex-iframe</groupId>
+            <artifactId>flex-iframe</artifactId>
+            <type>swc</type>
+        </dependency>
+        
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -640,16 +725,16 @@
                                     com.atricore.idbus.console.lifecycle.main.spi.response,
                                     com.atricore.idbus.console.lifecycle.main.util,
                                     org.springframework.core.io,
-                                    org.springframework.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                                    org.springframework.beans; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                                    org.springframework.beans.factory; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                                    org.springframework.beans.factory.config; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                                    org.springframework.web.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                                    org.springframework.web.context.support; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                                    org.springframework.web.servlet; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                                    org.springframework.orm.jdo; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                                    org.springframework.osgi.web.context.support; version=["1.2.0,1.2.0"],
-                                    org.springframework.osgi.context; version=["1.2.0,1.2.0"],
+                                    org.springframework.context; version="[${spring.version},${spring.version}]",
+                                    org.springframework.beans; version="[${spring.version},${spring.version}]",
+                                    org.springframework.beans.factory; version="[${spring.version},${spring.version}]",
+                                    org.springframework.beans.factory.config; version="[${spring.version},${spring.version}]",
+                                    org.springframework.web.context; version="[${spring.version},${spring.version}]",
+                                    org.springframework.web.context.support; version="[${spring.version},${spring.version}]",
+                                    org.springframework.web.servlet; version="[${spring.version},${spring.version}]",
+                                    org.springframework.orm.jdo; version="[${spring.version},${spring.version}]",
+                                    org.springframework.osgi.web.context.support; version=["${spring.osgi.version},${spring.osgi.version}"],
+                                    org.springframework.osgi.context; version=[""${spring.osgi.version},"${spring.osgi.version}"],
                                     org.osgi.framework,
                                     org.xml.sax,
                                     org.xml.sax.helpers,
@@ -680,12 +765,6 @@
                     <groupId>org.atricore.idbus.bundles</groupId>
                     <artifactId>org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1</artifactId>
                     <scope>provided</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>console-ria</artifactId>
-                    <type>swf</type>
                 </dependency>
 
                 <dependency>
@@ -795,6 +874,8 @@
 
             </dependencies>
         </profile>
+
+
     </profiles>
 
 

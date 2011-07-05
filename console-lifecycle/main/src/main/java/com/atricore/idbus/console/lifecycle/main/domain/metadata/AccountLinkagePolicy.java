@@ -31,11 +31,9 @@ public class AccountLinkagePolicy implements Serializable {
 	
 	private String name;
 
-    private IdentityMappingType mappingType;
+    private AccountLinkEmitterType linkEmitterType;
 
-    private boolean useLocalId;
-
-    private String customMapper;
+    private String customLinkEmitter;
 
     public long getId() {
         return id;
@@ -53,28 +51,20 @@ public class AccountLinkagePolicy implements Serializable {
 		this.name = name;
 	}
 
-    public IdentityMappingType getMappingType() {
-        return mappingType;
+    public AccountLinkEmitterType getLinkEmitterType() {
+        return linkEmitterType;
     }
 
-    public void setMappingType(IdentityMappingType mappingType) {
-        this.mappingType = mappingType;
+    public void setLinkEmitterType(AccountLinkEmitterType linkEmitterType) {
+        this.linkEmitterType = linkEmitterType;
     }
 
-    public boolean isUseLocalId() {
-        return useLocalId;
+    public String getCustomLinkEmitter() {
+        return customLinkEmitter;
     }
 
-    public void setUseLocalId(boolean useLocalId) {
-        this.useLocalId = useLocalId;
-    }
-
-    public String getCustomMapper() {
-        return customMapper;
-    }
-
-    public void setCustomMapper(String customMapper) {
-        this.customMapper = customMapper;
+    public void setCustomLinkEmitter(String customLinkEmitter) {
+        this.customLinkEmitter = customLinkEmitter;
     }
 
     @Override

@@ -20,19 +20,31 @@
  */
 
 package com.atricore.idbus.console.modeling.main {
+import com.atricore.idbus.console.base.app.BaseAppFacade;
+import com.atricore.idbus.console.base.extensions.appsection.AppSectionMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.browser.BrowserMediator;
 import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDelegatedAuthnElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDirectoryServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalIdentityProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveGoogleAppsElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWikidElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWindowsIntegratedAuthnElementRequest;
+import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceImportCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
@@ -47,28 +59,23 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceState;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
-
-import flash.external.ExternalInterface;
-
+import flash.net.FileFilter;
 import flash.net.FileReference;
 
 import mx.collections.ArrayCollection;
 import mx.controls.Alert;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
-
-import mx.rpc.events.FaultEvent;
-import mx.rpc.events.ResultEvent;
-import mx.rpc.http.HTTPService;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
-import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class ModelerMediator extends IocMediator implements IDisposable {
+public class ModelerMediator extends AppSectionMediator implements IDisposable {
 
-    public static const viewName:String = "ModelerView";
+    //public static const viewName:String = "ModelerView";
 
     public static const BUNDLE:String = "console";
 
@@ -82,6 +89,8 @@ public class ModelerMediator extends IocMediator implements IDisposable {
 
     private var _popupManager:ModelerPopUpManager;
 
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
+
     [Bindable]
     public var _applianceList:Array;
 
@@ -91,7 +100,10 @@ public class ModelerMediator extends IocMediator implements IDisposable {
     private var _paletteMediator:IIocMediator;
     private var _propertySheetMediator:IIocMediator;
 
-    private var _tempSelectedViewIndex:int;
+    private var _appSectionChangeInProgress:Boolean;
+    private var _exportInProgress:Boolean;
+
+    private var _fileRef:FileReference;
 
     public function ModelerMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
@@ -157,9 +169,10 @@ public class ModelerMediator extends IocMediator implements IDisposable {
 
     private function creationCompleteHandler(event:Event):void {
         _created = true;
-        _tempSelectedViewIndex = -1;
+        _appSectionChangeInProgress = false;
+        _exportInProgress = false;
 
-        event.target.removeEventListener(FlexEvent.CREATION_COMPLETE,creationCompleteHandler);
+        event.target.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
         /* Remove unused title in both modeler's and diagram's panel */
         view.titleDisplay.width = 0;
@@ -209,22 +222,28 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
         view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
         view.btnSave.addEventListener(MouseEvent.CLICK, handleSaveClick);
+        view.btnImport.addEventListener(MouseEvent.CLICK, handleImportClick);
         view.btnExport.addEventListener(MouseEvent.CLICK, handleExportClick);
     }
+
     public function dispose():void {
         // Clean up:
         //      - Remove event listeners
         //      - Stop timers
         //      - Set references to null
 
-        _identityAppliance = null;
-        _tempSelectedViewIndex = -1;
-        
-        view.btnSave.enabled = false;
-        view.btnExport.enabled = false;
-        view.appliances.selectedItem = null;
-        (browserMediator as BrowserMediator).dispose();
-        (diagramMediator as DiagramMediator).dispose();
+        if (_created) {
+            _created = false;
+            _identityAppliance = null;
+            _appSectionChangeInProgress = false;
+            _exportInProgress = false;
+
+            view.btnSave.enabled = false;
+            view.btnExport.enabled = false;
+            view.appliances.selectedItem = null;
+            (browserMediator as BrowserMediator).dispose();
+            (diagramMediator as DiagramMediator).dispose();
+        }
     }
 
     private function handleNewClick(event:MouseEvent):void {
@@ -233,10 +252,10 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             var buttonWidth:Number = Alert.buttonWidth;
             Alert.buttonWidth = 80;
             Alert.okLabel = "Continue";
-            Alert.show("There are unsaved changes which will be lost in case you choose to continue.",
-                    "Confirm", Alert.OK | Alert.CANCEL, null, newApplianceConfirmed, null, Alert.OK);
+            Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.unsaveddata"),
+                    resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.confirm"), Alert.OK | Alert.CANCEL, null, newApplianceConfirmed, null, Alert.OK);
             Alert.buttonWidth = buttonWidth;
-            Alert.okLabel = "OK";
+            Alert.okLabel = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.okLabel");
         } else {
             openNewApplianceWizard();
         }
@@ -260,30 +279,57 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         trace("Open Button Click: " + event);
         if (view.appliances.selectedItem != null) {
             var applianceId:String = (view.appliances.selectedItem as IdentityAppliance).id.toString();
-            sendNotification(ProcessingMediator.START, "Opening Identity Appliance...");
+            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.opening.appliance"));
             sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, applianceId);
         }
     }
 
     private function handleSaveClick(event:MouseEvent):void {
         trace("Save Button Click: " + event);
-        sendNotification(ProcessingMediator.START, "Saving Identity Appliance...");
+        sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.saving.appliance"));
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
+    }
+
+    private function handleImportClick(event:MouseEvent):void {
+        trace("Import Button Click: " + event);
+        _fileRef = new FileReference();
+        var appTypes:FileFilter = new FileFilter(resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.appliance.files") + "(*.zip, *.jar)", "*.zip; *.jar");
+        _fileRef.addEventListener(Event.SELECT, selectFileOpenHandler);
+        _fileRef.addEventListener(Event.COMPLETE, completeFileOpenHandler);
+        _fileRef.browse(new Array(appTypes));
     }
 
     private function handleExportClick(event:MouseEvent):void {
         trace("Export Button Click: " + event);
-        sendNotification(ApplicationFacade.EXPORT_IDENTITY_APPLIANCE);
+        if (view.btnSave.enabled) {
+            _exportInProgress = true;
+            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.autosaving.appliance"));
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
+        } else {
+            sendNotification(ApplicationFacade.EXPORT_IDENTITY_APPLIANCE);
+        }
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.MODELER_VIEW_SELECTED,
+        return [
+            BaseAppFacade.APP_SECTION_CHANGE_START,
+            BaseAppFacade.APP_SECTION_CHANGE_END,
             ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT,
             ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.CREATE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_SALESFORCE_ELEMENT,
+            ApplicationFacade.REMOVE_GOOGLE_APPS_ELEMENT,
+            ApplicationFacade.REMOVE_SUGAR_CRM_ELEMENT,
+            ApplicationFacade.CREATE_SALESFORCE_ELEMENT,
+            ApplicationFacade.CREATE_GOOGLE_APPS_ELEMENT,
+            ApplicationFacade.CREATE_SUGAR_CRM_ELEMENT,
             ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT,
             ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT,
@@ -298,9 +344,14 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             ApplicationFacade.CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT,
+            ApplicationFacade.CREATE_JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT,
+            ApplicationFacade.CREATE_PHP_EXECUTION_ENVIRONMENT_ELEMENT,
+            ApplicationFacade.CREATE_PHPBB_EXECUTION_ENVIRONMENT_ELEMENT,
+            ApplicationFacade.CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.REMOVE_ACTIVATION_ELEMENT,
             ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_LOOKUP_ELEMENT,
+            ApplicationFacade.REMOVE_DELEGATED_AUTHENTICATION_ELEMENT,
             ApplicationFacade.REMOVE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_FEDERATED_CONNECTION,
             ApplicationFacade.MANAGE_CERTIFICATE,
@@ -312,22 +363,52 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             ApplicationFacade.LOGOUT,
             ApplicationFacade.AUTOSAVE_IDENTITY_APPLIANCE,
             ApplicationFacade.EXPORT_IDENTITY_APPLIANCE,
+            ApplicationFacade.EXPORT_PROVIDER_CERTIFICATE,
+            ApplicationFacade.EXPORT_METADATA,
+            ApplicationFacade.DISPLAY_ACTIVATION_DIALOG,
+            ApplicationFacade.CREATE_WIKID_ELEMENT,
+            ApplicationFacade.REMOVE_WIKID_ELEMENT,
+            ApplicationFacade.CREATE_DIRECTORY_SERVICE_ELEMENT,
+            ApplicationFacade.REMOVE_DIRECTORY_SERVICE_ELEMENT,
+            ApplicationFacade.CREATE_WINDOWS_INTEGRATED_AUTHN_ELEMENT,
+            ApplicationFacade.REMOVE_WINDOWS_INTEGRATED_AUTHN_ELEMENT,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
+            SimpleSSOWizardViewMediator.RUN,
+            IdentityApplianceWizardViewMediator.RUN,
             LookupIdentityApplianceByIdCommand.SUCCESS,
             LookupIdentityApplianceByIdCommand.FAILURE,
             IdentityApplianceListLoadCommand.SUCCESS,
             IdentityApplianceListLoadCommand.FAILURE,
             IdentityApplianceUpdateCommand.SUCCESS,
             IdentityApplianceUpdateCommand.FAILURE,
+            IdentityApplianceImportCommand.SUCCESS,
+            IdentityApplianceImportCommand.FAILURE,
             JDBCDriversListCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.MODELER_VIEW_SELECTED:
-                projectProxy.currentView = viewName;
-                init();
+            case BaseAppFacade.APP_SECTION_CHANGE_START:
+                var currentView:String = notification.getBody() as String;
+                if (currentView == viewName) {
+                    // check for null because we try to open Modeler after login and the view might not be created yet
+                    if (view != null && view.btnSave != null && view.btnSave.enabled) {
+                        _appSectionChangeInProgress = true;
+                        sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.autosaving.appliance"));
+                        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
+                    } else {
+                        sendNotification(BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED);
+                    }
+                }
+                break;
+            case BaseAppFacade.APP_SECTION_CHANGE_END:
+                var newView:String = notification.getBody() as String;
+                if (newView == viewName) {
+                    projectProxy.currentView = viewName;
+                    init();
+                }
+                _appSectionChangeInProgress = false;
                 break;
             case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
@@ -370,6 +451,41 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             //                //                 TODO: Perform UI handling for confirming removal action
             //                sendNotification(ApplicationFacade.SP_CHANNEL_REMOVE, rspc.spChannel);
             //                break;
+            case ApplicationFacade.CREATE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT:
+                popupManager.showCreateExternalIdentityProviderWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT:
+                var reip:RemoveExternalIdentityProviderElementRequest = RemoveExternalIdentityProviderElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_IDENTITY_PROVIDER_REMOVE, reip.identityProvider);
+                break;
+            case ApplicationFacade.CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:
+                popupManager.showCreateExternalServiceProviderWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:
+                var resp:RemoveExternalServiceProviderElementRequest = RemoveExternalServiceProviderElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, resp.serviceProvider);
+                break;
+            case ApplicationFacade.CREATE_SALESFORCE_ELEMENT:
+                popupManager.showCreateSalesforceWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_SALESFORCE_ELEMENT:
+                var rsf:RemoveSalesforceElementRequest = RemoveSalesforceElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, rsf.salesforceProvider);
+                break;
+            case ApplicationFacade.CREATE_GOOGLE_APPS_ELEMENT:
+                popupManager.showCreateGoogleAppsWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_GOOGLE_APPS_ELEMENT:
+                var rga:RemoveGoogleAppsElementRequest = RemoveGoogleAppsElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, rga.googleAppsProvider);
+                break;
+            case ApplicationFacade.CREATE_SUGAR_CRM_ELEMENT:
+                popupManager.showCreateSugarCRMWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_SUGAR_CRM_ELEMENT:
+                var rscrm:RemoveSugarCRMElementRequest = RemoveSugarCRMElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, rscrm.sugarCRMProvider);
+                break;
             case ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT:
                 popupManager.showCreateIdentityVaultWindow(notification);
                 break;
@@ -414,6 +530,18 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             case ApplicationFacade.CREATE_ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateAlfrescoExecutionEnvironmentWindow(notification);
                 break;
+            case ApplicationFacade.CREATE_JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT:
+                popupManager.showCreateJavaEEExecutionEnvironmentWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_PHP_EXECUTION_ENVIRONMENT_ELEMENT:
+                popupManager.showCreatePHPExecutionEnvironmentWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_PHPBB_EXECUTION_ENVIRONMENT_ELEMENT:
+                popupManager.showCreatePhpBBExecutionEnvironmentWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT:
+                popupManager.showCreateWebserverExecutionEnvironmentWindow(notification);
+                break;
             case ApplicationFacade.CREATE_ACTIVATION:
                 popupManager.showCreateActivationWindow(notification);
                 break;
@@ -431,6 +559,10 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             case ApplicationFacade.REMOVE_IDENTITY_LOOKUP_ELEMENT:
                 var ril:RemoveIdentityLookupElementRequest = RemoveIdentityLookupElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.IDENTITY_LOOKUP_REMOVE, ril.identityLookup);
+                break;
+            case ApplicationFacade.REMOVE_DELEGATED_AUTHENTICATION_ELEMENT:
+                var rda:RemoveDelegatedAuthnElementRequest = RemoveDelegatedAuthnElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.DELEGATED_AUTHENTICATION_REMOVE, rda.delegatedAuthentication);
                 break;
             case ApplicationFacade.REMOVE_EXECUTION_ENVIRONMENT_ELEMENT:
                 var rev:RemoveExecutionEnvironmentElementRequest = RemoveExecutionEnvironmentElementRequest(notification.getBody());
@@ -457,6 +589,12 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             case DeployApplianceMediator.RUN:
                 popupManager.showDeployIdentityApplianceWindow(notification);
                 break;
+            case SimpleSSOWizardViewMediator.RUN:
+                popupManager.showSimpleSSOWizardWindow(notification);
+                break;
+            case IdentityApplianceWizardViewMediator.RUN:
+                popupManager.showCreateIdentityApplianceWindow(notification);
+                break;
             case LookupIdentityApplianceByIdCommand.SUCCESS:
                 var redrawGraph:Boolean = view.btnSave.enabled;
                 view.btnSave.enabled = false;
@@ -471,12 +609,13 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                     view.btnExport.enabled = false;
                 }
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                sendNotification(ApplicationFacade.REFRESH_DIAGRAM, redrawGraph);
+                //sendNotification(ApplicationFacade.REFRESH_DIAGRAM, redrawGraph);
+                sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
                 break;
             case LookupIdentityApplianceByIdCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error opening appliance.");
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.opening.error"));                    
                 break;
             case IdentityApplianceListLoadCommand.SUCCESS:
                 if (projectProxy.identityApplianceList == null) {
@@ -493,29 +632,55 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 break;
             case IdentityApplianceListLoadCommand.FAILURE:
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error retrieving list of appliances.");
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.list.error"));                    
+                break;
+
+            case IdentityApplianceImportCommand.SUCCESS:
+                var appID:String = notification.getBody() as String;
+                sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appID);
+                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+                break;
+            case IdentityApplianceImportCommand.FAILURE:
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.import.error"));
                 break;
             case IdentityApplianceUpdateCommand.SUCCESS:
-                var reopenGraph = view.btnSave.enabled;
-                view.btnSave.enabled = false;
-                sendNotification(ApplicationFacade.APPLIANCE_SAVED);
-                sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                //sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);
-                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);  //appliance name might be changed
-                sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
-                if (_tempSelectedViewIndex != -1) {
-                    sendNotification(ApplicationFacade.DISPLAY_VIEW, _tempSelectedViewIndex);
-                    _tempSelectedViewIndex = -1;
+                var silentUpdate:Boolean = notification.getBody() as Boolean;
+                if (!silentUpdate) {
+                    var reopenGraph:Boolean = view.btnSave.enabled;
+                    view.btnSave.enabled = false;
+                    sendNotification(ApplicationFacade.APPLIANCE_SAVED);
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                    //sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);
+                    sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);  //appliance name might be changed
+                    sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
+                    if (_appSectionChangeInProgress) {
+                        sendNotification(BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED);
+                        _appSectionChangeInProgress = false;
+                    }
+                    if (_exportInProgress) {
+                        sendNotification(ApplicationFacade.EXPORT_IDENTITY_APPLIANCE);
+                        _exportInProgress = false;
+                    }
+                } else {
+                    // TODO: refactor this
+                    // this will cause a diagram refresh (everything will be redrawn)
+                    // but it's necessary if appliance was created using SSO wizard
+                    sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                    sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
                 }
                 break;
             case IdentityApplianceUpdateCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error updating appliance.");
-                if (_tempSelectedViewIndex != -1) {
-                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
-                    _tempSelectedViewIndex = -1;
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.update.error"));                    
+                if (_appSectionChangeInProgress) {
+                    sendNotification(BaseAppFacade.APP_SECTION_CHANGE_REJECTED, viewName);
+                    _appSectionChangeInProgress = false;
+                }
+                if (_exportInProgress) {
+                    _exportInProgress = false;
                 }
                 break;
             case ApplicationFacade.APPLIANCE_VALIDATION_ERRORS:
@@ -529,40 +694,81 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                         }
                         msg += validationError + "\n";
                     }
-                    Alert.show(msg, "Validation Errors");
+                    Alert.show(msg, resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.validation.error"));
                 }
                 projectProxy.identityApplianceValidationErrors = null;
-                if (_tempSelectedViewIndex != -1) {
-                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
-                    _tempSelectedViewIndex = -1;
-                }                
-                break;
-            case ApplicationFacade.AUTOSAVE_IDENTITY_APPLIANCE:
-                var selectedIndex:int = notification.getBody() as int;
-                if (view.btnSave.enabled) {
-                    _tempSelectedViewIndex = selectedIndex;
-                    sendNotification(ProcessingMediator.START, "Autosaving Identity Appliance...");
-                    sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
-                } else {
-                    sendNotification(ApplicationFacade.DISPLAY_VIEW, selectedIndex);
+                if (_appSectionChangeInProgress) {
+                    sendNotification(BaseAppFacade.APP_SECTION_CHANGE_REJECTED, viewName);
+                    _appSectionChangeInProgress = false;
+                }
+                if (_exportInProgress) {
+                    _exportInProgress = false;
                 }
                 break;
             case JDBCDriversListCommand.FAILURE:
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error loading JDBC drivers list.");
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.loading.jdbc.error"));
                 break;
             case ApplicationFacade.EXPORT_IDENTITY_APPLIANCE:
                 if (projectProxy.currentIdentityAppliance != null) {
                     popupManager.showCreateExportIdentityApplianceWindow(notification);
                 }
                 break;
+            case ApplicationFacade.EXPORT_PROVIDER_CERTIFICATE:
+                popupManager.showCreateExportProviderCertificateWindow(notification);
+                break;
+            case ApplicationFacade.EXPORT_METADATA:
+                popupManager.showCreateExportMetadataWindow(notification);
+                break;
+            case ApplicationFacade.DISPLAY_ACTIVATION_DIALOG:
+                popupManager.showActivationWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_WIKID_ELEMENT:
+                popupManager.showCreateWikidWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_WIKID_ELEMENT:
+                var rwikid:RemoveWikidElementRequest = RemoveWikidElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rwikid.wikidAuthnService);
+                break;
+            case ApplicationFacade.CREATE_DIRECTORY_SERVICE_ELEMENT:
+                popupManager.showCreateDirectoryServiceWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_DIRECTORY_SERVICE_ELEMENT:
+                var rdirservice:RemoveDirectoryServiceElementRequest = RemoveDirectoryServiceElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rdirservice.directoryAuthnService);
+                break;
+
+            case ApplicationFacade.CREATE_WINDOWS_INTEGRATED_AUTHN_ELEMENT:
+                popupManager.showCreateWindowsIntegratedAuthnWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_WINDOWS_INTEGRATED_AUTHN_ELEMENT:
+                var rwinauthn:RemoveWindowsIntegratedAuthnElementRequest = RemoveWindowsIntegratedAuthnElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rwinauthn.windowsIntegratedAuthentication);
+                break;
+
+            default:
+                // Let super mediator handle notifications.
+                super.handleNotification(notification);
+                break;
         }
 
     }
 
+
     private function updateIdentityAppliance():void {
         _identityAppliance = projectProxy.currentIdentityAppliance;
         //sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+    }
+
+    private function selectFileOpenHandler(event:Event):void {
+        var file:FileReference = FileReference(event.target);
+        file.load();
+    }
+
+    private function completeFileOpenHandler(event:Event):void {
+        //get the data from the file as a ByteArray
+        var file:FileReference = FileReference(event.target);
+        sendNotification(ApplicationFacade.IMPORT_IDENTITY_APPLIANCE, file.data);
     }
 
     private function enableIdentityApplianceActionButtons():void {
@@ -581,13 +787,11 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         return (item as IdentityAppliance).idApplianceDefinition.name;
     }
 
-    protected function get view():ModelerView
-    {
+    protected function get view():ModelerView {
         return viewComponent as ModelerView;
     }
 
-    protected function set view(md:ModelerView):void
-    {
+    protected function set view(md:ModelerView):void {
         viewComponent = md;
     }
 }

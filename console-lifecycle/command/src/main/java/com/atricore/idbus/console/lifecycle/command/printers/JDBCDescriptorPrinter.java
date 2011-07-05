@@ -6,7 +6,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.JDBCDriverDescriptor;
 import java.util.Collection;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class JDBCDescriptorPrinter extends AbstractCmdPrinter<JDBCDriverDescriptor> {
 

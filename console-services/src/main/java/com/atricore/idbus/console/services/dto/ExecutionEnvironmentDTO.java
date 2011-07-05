@@ -14,13 +14,18 @@ public class ExecutionEnvironmentDTO implements Serializable {
     private String displayName;
     private String description;
     private String installUri;
+    private String location;
     private String platformId;
+    private ExecEnvTypeDTO type;
     private boolean active;
     private boolean overwriteOriginalSetup;
     private boolean installDemoApps;    
 
     private Set<ActivationDTO> activations;
 
+    private double x;
+    private double y;
+    
     private static final long serialVersionUID = 175340870033867780L;
 
     public long getId() {
@@ -53,6 +58,22 @@ public class ExecutionEnvironmentDTO implements Serializable {
 
     public void setInstallUri(String installUri) {
         this.installUri = installUri;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public ExecEnvTypeDTO getType() {
+        return type;
+    }
+
+    public void setType(ExecEnvTypeDTO type) {
+        this.type = type;
     }
 
     public Set<ActivationDTO> getActivations() {
@@ -104,6 +125,22 @@ public class ExecutionEnvironmentDTO implements Serializable {
 
     public void setInstallDemoApps(boolean installDemoApps) {
         this.installDemoApps = installDemoApps;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     @Override

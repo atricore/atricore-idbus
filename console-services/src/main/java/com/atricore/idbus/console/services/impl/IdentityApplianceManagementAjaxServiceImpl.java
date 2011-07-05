@@ -21,16 +21,16 @@
 
 package com.atricore.idbus.console.services.impl;
 
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.JDBCDriverDescriptor;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.impl.ValidationError;
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
+import com.atricore.idbus.console.services.dto.*;
 import com.atricore.idbus.console.services.spi.IdentityApplianceManagementAjaxService;
 import com.atricore.idbus.console.services.spi.IdentityServerException;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-import com.atricore.idbus.console.services.dto.*;
-import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 import org.dozer.DozerBeanMapper;
 
 import java.io.File;
@@ -56,7 +56,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         }
         return dozerMapper.map(beRes, BuildIdentityApplianceResponse.class);
     }
-    
+
     public DeployIdentityApplianceResponse deployIdentityAppliance(DeployIdentityApplianceRequest req) throws IdentityServerException {
         com.atricore.idbus.console.lifecycle.main.spi.request.DeployIdentityApplianceRequest beReq =
                 dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.DeployIdentityApplianceRequest.class);
@@ -122,7 +122,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, DisposeIdentityApplianceResponse.class);
     }
 
-    public ExportIdentityApplianceResponse ExportIdentityAppliance(ExportIdentityApplianceRequest req) throws IdentityServerException {
+    public ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest req) throws IdentityServerException {
         com.atricore.idbus.console.lifecycle.main.spi.request.ExportIdentityApplianceRequest beReq =
                 dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ExportIdentityApplianceRequest.class);
 
@@ -134,6 +134,44 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         }
         return dozerMapper.map(beRes, ExportIdentityApplianceResponse.class);
     }
+
+    public ExportIdentityApplianceProjectResponse exportIdentityApplianceProject(ExportIdentityApplianceProjectRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ExportIdentityApplianceProjectRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ExportIdentityApplianceProjectRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ExportIdentityApplianceProjectResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.exportIdentityApplianceProject(beReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ExportIdentityApplianceProjectResponse.class);
+    }
+
+    public ImportIdentityApplianceResponse importIdentityApplianceProject(ImportIdentityApplianceRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ImportIdentityApplianceRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ImportIdentityApplianceRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ImportIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.importIdentityApplianceProject(beReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            if (e.getCause() instanceof ApplianceValidationException) {
+                ImportIdentityApplianceResponse resp = new ImportIdentityApplianceResponse();
+                List<String> validationErrors = new ArrayList<String>();
+                for (ValidationError error : ((ApplianceValidationException) e.getCause()).getErrors()) {
+                    validationErrors.add(error.getMsg());
+                }
+                resp.setValidationErrors(validationErrors);
+                return resp;
+            } else {
+                throw new IdentityServerException(e);
+            }
+        }
+
+        return dozerMapper.map(beRes, ImportIdentityApplianceResponse.class);
+    }
+
 
     public ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException {
         com.atricore.idbus.console.lifecycle.main.spi.request.ManageIdentityApplianceLifeCycleRequest beReq =
@@ -186,7 +224,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         }
 
         updateExecutionEnvNames(iad);
-        
+
         iad.getProviders().add(idp);
 
         //connect all providers with created identity vault/source
@@ -206,7 +244,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         com.atricore.idbus.console.lifecycle.main.spi.response.AddIdentityApplianceResponse beRes = null;
 
         CreateSimpleSsoResponse response = new CreateSimpleSsoResponse();
-        
+
         try {
             beRes = idApplianceManagementService.addIdentityAppliance(addIdApplianceReq);
             AddIdentityApplianceResponse res = dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
@@ -299,7 +337,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     private UpdateIdentityApplianceResponse updateAppliance(IdentityAppliance appliance) throws IdentityServerException {
         //Prepare Request object for calling BE updateIdentityAppliance method
         com.atricore.idbus.console.lifecycle.main.spi.request.UpdateIdentityApplianceRequest beReq =
-              new com.atricore.idbus.console.lifecycle.main.spi.request.UpdateIdentityApplianceRequest();
+                new com.atricore.idbus.console.lifecycle.main.spi.request.UpdateIdentityApplianceRequest();
 
         beReq.setAppliance(appliance);
 
@@ -416,13 +454,39 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return res;
     }
 
+    public ExportProviderCertificateResponse exportProviderCertificate(ExportProviderCertificateRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ExportProviderCertificateRequest ecReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ExportProviderCertificateRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ExportProviderCertificateResponse ecRes;
+        try {
+            ecRes = idApplianceManagementService.exportProviderCertificate(ecReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(ecRes, ExportProviderCertificateResponse.class);
+    }
+
+    public ExportMetadataResponse exportMetadata(ExportMetadataRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ExportMetadataRequest emReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ExportMetadataRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ExportMetadataResponse emRes;
+        try {
+            emRes = idApplianceManagementService.exportMetadata(emReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(emRes, ExportMetadataResponse.class);
+    }
+    
     /****************************
      * List methods
      ***************************/
 
     public ListAvailableJDBCDriversResponse listAvailableJDBCDrivers(ListAvailableJDBCDriversRequest request) throws IdentityServerException {
         com.atricore.idbus.console.lifecycle.main.spi.request.ListAvailableJDBCDriversRequest beReq =
-           new com.atricore.idbus.console.lifecycle.main.spi.request.ListAvailableJDBCDriversRequest();
+                new com.atricore.idbus.console.lifecycle.main.spi.request.ListAvailableJDBCDriversRequest();
 
         com.atricore.idbus.console.lifecycle.main.spi.response.ListAvailableJDBCDriversResponse beRes = null;
 
@@ -541,6 +605,33 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, ListAuthAssertionEmissionPoliciesResponse.class);
     }
 
+    public ListIdentityMappingPolicyResponse listIdentityMappingPolicies(ListIdentityMappingPolicyRequest req) throws IdentityServerException{
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityMappingPolicyRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityMappingPolicyRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListIdentityMappingPolicyResponse beRes;
+        try {
+            beRes = idApplianceManagementService.listIdentityMappingPolicies(beReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ListIdentityMappingPolicyResponse.class);
+    }
+
+    public ListSubjectNameIDPoliciesResponse listSubjectNameIDPolicies(ListSubjectNameIDPoliciesRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListSubjectNameIDPoliciesRequest beReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.ListSubjectNameIDPoliciesRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListSubjectNameIDPoliciesResponse beRes;
+        try {
+            beRes = idApplianceManagementService.listSubjectNameIDPolicies(beReq);
+        }
+
+        catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ListSubjectNameIDPoliciesResponse.class);
+    }
 
     /****************************
      * Lookup methods
@@ -636,6 +727,31 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, LookupAuthAssertionEmissionPolicyByIdResponse.class);
     }
 
+    public GetMetadataInfoResponse getMetadataInfo(GetMetadataInfoRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.GetMetadataInfoRequest gmiReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.GetMetadataInfoRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.GetMetadataInfoResponse gmiRes = null;
+        try {
+            gmiRes = idApplianceManagementService.getMetadataInfo(gmiReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(gmiRes, GetMetadataInfoResponse.class);
+    }
+
+    public GetCertificateInfoResponse getCertificateInfo(GetCertificateInfoRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.GetCertificateInfoRequest gciReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.GetCertificateInfoRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.GetCertificateInfoResponse gciRes = null;
+        try {
+            gciRes = idApplianceManagementService.getCertificateInfo(gciReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(gciRes, GetCertificateInfoResponse.class);
+    }
 
     /******************************************************
      * Helper methods
@@ -659,7 +775,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             sp.setActiveBindings(new HashSet<BindingDTO>());
         }
         sp.getActiveBindings().add(BindingDTO.SAMLR2_ARTIFACT);
-        sp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
+        sp.getActiveBindings().add(BindingDTO.SAMLR2_SOAP);
         sp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_POST);
 
         // set active profiles
@@ -700,9 +816,20 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
         // set account linkage policy
         AccountLinkagePolicyDTO accountLinkagePolicy = new AccountLinkagePolicyDTO();
-        accountLinkagePolicy.setName("Use Theirs");
-        accountLinkagePolicy.setMappingType(IdentityMappingTypeDTO.REMOTE);
+        accountLinkagePolicy.setName(AccountLinkEmitterTypeDTO.ONE_TO_ONE.getDisplayName());
+        accountLinkagePolicy.setLinkEmitterType(AccountLinkEmitterTypeDTO.ONE_TO_ONE);
         sp.setAccountLinkagePolicy(accountLinkagePolicy);
+
+        // set identity mapping policy
+        IdentityMappingPolicyDTO identityMappingPolicy = new IdentityMappingPolicyDTO();
+        identityMappingPolicy.setName(IdentityMappingTypeDTO.REMOTE.getDisplayName());
+        identityMappingPolicy.setMappingType(IdentityMappingTypeDTO.REMOTE);
+        sp.setIdentityMappingPolicy(identityMappingPolicy);
+
+        sp.setSignAuthenticationRequests(true);
+        sp.setWantAssertionSigned(true);
+        sp.setSignRequests(true);
+        sp.setWantSignedRequests(true);
     }
 
     private void createFederatedConnection(IdentityProviderDTO idp, ServiceProviderDTO sp){
@@ -711,12 +838,29 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idpChannel.setDescription(sp.getName() + " Default Channel");
         idpChannel.setOverrideProviderSetup(false);
         idpChannel.setPreferred(true);
+        LocationDTO idpChannelLocation = new LocationDTO();
+        idpChannelLocation.setProtocol(sp.getLocation().getProtocol());
+        idpChannelLocation.setHost(sp.getLocation().getHost());
+        idpChannelLocation.setPort(sp.getLocation().getPort());
+        idpChannelLocation.setContext(sp.getLocation().getContext());
+        idpChannelLocation.setUri(sp.getLocation().getUri());
+        idpChannel.setLocation(idpChannelLocation);
+        idpChannel.setSignAuthenticationRequests(true);
+        idpChannel.setWantAssertionSigned(true);
 
         ServiceProviderChannelDTO spChannel = new ServiceProviderChannelDTO();
         spChannel.setName(idp.getName() + "-to-" + sp.getName() + "-default-channel");
         spChannel.setDescription(sp.getName() + " Default Channel");
         spChannel.setOverrideProviderSetup(false);
-
+        LocationDTO spChannelLocation = new LocationDTO();
+        spChannelLocation.setProtocol(idp.getLocation().getProtocol());
+        spChannelLocation.setHost(idp.getLocation().getHost());
+        spChannelLocation.setPort(idp.getLocation().getPort());
+        spChannelLocation.setContext(idp.getLocation().getContext());
+        spChannelLocation.setUri(idp.getLocation().getUri());
+        spChannel.setLocation(spChannelLocation);
+        spChannel.setWantAuthnRequestsSigned(true);
+        
         FederatedConnectionDTO fedConnection = new FederatedConnectionDTO();
         fedConnection.setName(idp.getName().toLowerCase() + "-" + sp.getName().toLowerCase());
         //SETTING ROLE A
@@ -725,13 +869,13 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idp.getFederatedConnectionsA().add(fedConnection);
 
         //SETTING ROLE B
-        fedConnection.setRoleB(sp);        
+        fedConnection.setRoleB(sp);
         fedConnection.setChannelB(idpChannel);
         sp.getFederatedConnectionsB().add(fedConnection);
     }
 
     private void createIdentityLookup(IdentityApplianceDefinitionDTO iad, ProviderDTO provider){
-        for(IdentitySourceDTO is : iad.getIdentitySources()){            
+        for(IdentitySourceDTO is : iad.getIdentitySources()){
             IdentityLookupDTO idLookup = new IdentityLookupDTO();
             idLookup.setName(provider.getName() + "-idlookup");
             idLookup.setDescription(provider.getName() + " Identity Lookup Definition");
@@ -750,14 +894,15 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idp.setIdentityAppliance(iad);
 
         idp.getActiveBindings().add(BindingDTO.SAMLR2_ARTIFACT);
-        idp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
         idp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_POST);
         idp.getActiveBindings().add(BindingDTO.SAMLR2_SOAP);
 
         idp.getActiveProfiles().add(ProfileDTO.SSO);
         idp.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
-        idp.setSignAuthenticationAssertions(true);
+        idp.setWantAuthnRequestsSigned(true);
+        idp.setSignRequests(true);
+        idp.setWantSignedRequests(true);
 
         LocationDTO idpLocation = new LocationDTO();
         idpLocation.setProtocol(iad.getLocation().getProtocol());
@@ -807,7 +952,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         authMechanism.setHashAlgorithm("MD5");
         authMechanism.setHashEncoding("HEX");
         authMechanism.setIgnoreUsernameCase(false);
-        
+
         idp.getAuthenticationMechanisms().add(authMechanism);
 
         AuthenticationContractDTO authContract = new AuthenticationContractDTO();
@@ -817,7 +962,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         AuthenticationAssertionEmissionPolicyDTO authAssertionEmissionPolicy = new AuthenticationAssertionEmissionPolicyDTO();
         authAssertionEmissionPolicy.setName("Default");
         idp.setEmissionPolicy(authAssertionEmissionPolicy);
-        
+
         return idp;
     }
 
@@ -829,7 +974,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         if (iad.getExecutionEnvironments() == null) {
             iad.setExecutionEnvironments(new HashSet<ExecutionEnvironmentDTO>());
         }
-        
+
         ExecutionEnvironmentDTO executionEnv = findExecutionEnvironment(iad, activation);
 
         if (executionEnv == null) {
@@ -844,12 +989,12 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         }
 
         executionEnv.getActivations().add(activation);
-        
+
         return activation;
     }
 
     private ExecutionEnvironmentDTO findExecutionEnvironment(IdentityApplianceDefinitionDTO iad,
-                    JOSSOActivationDTO activation) {
+                                                             JOSSOActivationDTO activation) {
         if (iad.getExecutionEnvironments() != null) {
             String execEnvName = createTempExecutionEnvName(activation);
             for (ExecutionEnvironmentDTO executionEnv : iad.getExecutionEnvironments()) {
@@ -905,7 +1050,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
      * @return url safe string
      */
     private String createUrlSafeString(String stringToCheck){
-    	String regex = "[^a-zA-Z0-9-_]";
+        String regex = "[^a-zA-Z0-9-_]";
         return stringToCheck.replaceAll(regex, "-").toLowerCase();
     }
 

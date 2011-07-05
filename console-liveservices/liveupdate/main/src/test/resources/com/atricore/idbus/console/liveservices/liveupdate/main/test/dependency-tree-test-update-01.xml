@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<updatesIndex xmlns="urn:com:atricore:liveservices:liveupdate:1.0:md"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:com:atricore:liveservices:liveupdate:1.0:md
+                    http://www.atricore.com/liveservices/liveupdate/atricore-liveupdate-md-1.0.xsd"
+        ID="id01">
+
+    <updateDescriptor ID="id01.01" description="JOSSO 2 EE 2.0.0" IssueInstant="2010-12-19T19:32:52Z">
+
+        <installableUnit ID="id01.01.01"
+                         group="com.atricore.josso"
+                         name="com.atricore.josso.ee.liveupdate"
+                         version="2.0.0"
+                         description="JOSSO 2 EE"
+                         updateNature="UPGRADE">
+
+            <!-- Set of artifacts required for this install -->
+
+            <!-- JOSSO 2 EE Update (distribution) -->
+            <artifact ID="id01.01.01.01"
+                      group="com.atricore.josso"
+                      name="josso-ee"
+                      version="2.0.0"
+                      type="tar.gz"
+                      classifier="liveupdate"/>
+
+            <!-- JOSSO 2 EE Update (distribution) -->
+            <artifact ID="id01.01.01.02"
+                      group="com.atricore.josso"
+                      name="josso-ee"
+                      version="2.0.0"
+                      type="zip"
+                      classifier="liveupdate"/>
+
+
+            <!-- JOSSO 2 EE Update (liveupdate installer) -->
+            <artifact ID="id01.01.01.03"
+                      group="com.atricore.josso"
+                      name="com.atricore.josso.ee.install"
+                      version="2.0.0"
+                      type="bundle"
+                      classifier="liveupdate"/>
+
+
+            <!-- Required features 
+            <requirement group="com.atricore.josso" name="josso-ee" description="JOSSO 2 EE 2.0.0" >
+                <versionRange Expression="[1.9,2.0)"/>
+            </requirement>
+            -->
+
+        </installableUnit>
+
+    </updateDescriptor>
+    
+    <updateDescriptor ID="id01.02" description="JOSSO 2 EE 2.0.1" IssueInstant="2010-12-21T19:32:52Z">
+
+        <installableUnit ID="id01.02.01"
+                         group="com.atricore.josso"
+                         name="com.atricore.josso.ee.liveupdate"
+                         version="2.0.1"
+                         description="JOSSO 2 EE"
+                         updateNature="UPGRADE">
+
+            <!-- Set of artifacts required for this install -->
+
+            <!-- JOSSO 2 EE Update (distribution) -->
+            <artifact ID="id01.02.01.01"
+                      group="com.atricore.josso"
+                      name="josso-ee"
+                      version="2.0.1"
+                      type="tar.gz"
+                      classifier="liveupdate"/>
+
+            <!-- JOSSO 2 EE Update (distribution) -->
+            <artifact ID="id01.02.01.02"
+                      group="com.atricore.josso"
+                      name="josso-ee"
+                      version="2.0.1"
+                      type="zip"
+                      classifier="liveupdate"/>
+
+
+            <!-- JOSSO 2 EE Update (liveupdate installer) -->
+            <artifact ID="id01.02.01.03"
+                      group="com.atricore.josso"
+                      name="com.atricore.josso.ee.install"
+                      version="2.0.1"
+                      type="bundle"
+                      classifier="liveupdate"/>
+
+
+            <!-- Required features --> 
+            <requirement group="com.atricore.josso" name="com.atricore.josso.ee.liveupdate" description="JOSSO 2 EE 2.0.0" >
+                <versionRange Expression="2.0.0"/>
+            </requirement>
+
+        </installableUnit>
+
+    </updateDescriptor>
+    
+    <updateDescriptor ID="id01.03" description="JOSSO 2 EE 2.0.2" IssueInstant="2010-12-23T19:32:52Z">
+
+        <installableUnit ID="id01.03.01"
+                         group="com.atricore.josso"
+                         name="com.atricore.josso.ee.liveupdate"
+                         version="2.0.2"
+                         description="JOSSO 2 EE"
+                         updateNature="UPGRADE">
+
+            <!-- Set of artifacts required for this install -->
+
+            <!-- JOSSO 2 EE Update (distribution) -->
+            <artifact ID="id01.03.01.01"
+                      group="com.atricore.josso"
+                      name="josso-ee"
+                      version="2.0.2"
+                      type="tar.gz"
+                      classifier="liveupdate"/>
+
+            <!-- JOSSO 2 EE Update (distribution) -->
+            <artifact ID="id01.03.01.02"
+                      group="com.atricore.josso"
+                      name="josso-ee"
+                      version="2.0.2"
+                      type="zip"
+                      classifier="liveupdate"/>
+
+
+            <!-- JOSSO 2 EE Update (liveupdate installer) -->
+            <artifact ID="id01.03.01.03"
+                      group="com.atricore.josso"
+                      name="com.atricore.josso.ee.install"
+                      version="2.0.2"
+                      type="bundle"
+                      classifier="liveupdate"/>
+
+
+            <!-- Required features --> 
+            <requirement group="com.atricore.josso" name="com.atricore.josso.ee.liveupdate" description="JOSSO 2 EE 2.0.1" >
+                <versionRange Expression="2.0.1"/>
+            </requirement>
+
+        </installableUnit>
+
+    </updateDescriptor>
+    
+    <updateDescriptor ID="id01.04" description="JOSSO 2 EE 2.0.3" IssueInstant="2010-12-25T19:32:52Z">
+
+        <installableUnit ID="id01.04.01"
+                         group="com.atricore.josso"
+                         name="com.atricore.josso.ee.liveupdate"
+                         version="2.0.3"
+                         description="JOSSO 2 EE"
+                         updateNature="UPGRADE">
+
+            <!-- Set of artifacts required for this install -->
+
+            <!-- JOSSO 2 EE Update (distribution) -->
+            <artifact ID="id01.04.01.01"
+                      group="com.atricore.josso"
+                      name="josso-ee"
+                      version="2.0.3"
+                      type="tar.gz"
+                      classifier="liveupdate"/>
+
+            <!-- JOSSO 2 EE Update (distribution) -->
+            <artifact ID="id01.04.01.02"
+                      group="com.atricore.josso"
+                      name="josso-ee"
+                      version="2.0.3"
+                      type="zip"
+                      classifier="liveupdate"/>
+
+
+            <!-- JOSSO 2 EE Update (liveupdate installer) -->
+            <artifact ID="id01.04.01.03"
+                      group="com.atricore.josso"
+                      name="com.atricore.josso.ee.install"
+                      version="2.0.3"
+                      type="bundle"
+                      classifier="liveupdate"/>
+
+
+            <!-- Required features --> 
+            <requirement group="com.atricore.josso" name="com.atricore.josso.ee.liveupdate" description="JOSSO 2 EE 2.0.2" >
+                <versionRange Expression="2.0.2"/>
+            </requirement>
+
+        </installableUnit>
+
+    </updateDescriptor>    
+
+</updatesIndex>

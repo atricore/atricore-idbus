@@ -22,6 +22,9 @@ public class JDBCDriversListCommand extends IocSimpleCommand implements IRespond
     private var _registry:ServiceRegistry;
 
 
+    public function JDBCDriversListCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

@@ -1,6 +1,9 @@
 package com.atricore.idbus.console.main {
+
 public final class CommandNames {
     public static const STARTUP_CMD:String = "startupCommand";
+
+    /*
     public static const DELETE_USER_CMD:String = "deleteUserCommand";
     public static const SETUP_SERVER_CMD:String = "setupServerCommand";
     public static const REGISTER_CMD:String = "registerCommand";
@@ -18,7 +21,7 @@ public final class CommandNames {
     public static const DEPLOY_IDENTITY_APPLIANCE_CMD:String = "deployIdentityApplianceCommand";
     public static const EDIT_IDENTITY_APPLIANCE_CMD:String = "editIdentityApplianceCommand";
     public static const UPLOAD_CMD:String = "uploadCommand";
-
+ */
 
     public final function CommandNames() {
         throw new Error("This class is only constants container. It can't be instantiated.");

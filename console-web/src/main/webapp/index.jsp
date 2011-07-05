@@ -1,3 +1,5 @@
+<%@ page import="java.util.Properties" %>
+<%@ page import="java.io.InputStream" %>
 <%@page contentType="text/html; charset=UTF-8" language="java" session="true" %>
 <%--
   ~ Atricore IDBus
@@ -19,6 +21,16 @@
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   --%>
+<%
+    // Get app name from configuration :
+    InputStream is = getClass().getResourceAsStream("/console-web.properties");
+    Properties p = new Properties();
+    p.load(is);
+
+    String consoleRiaSwf = p.getProperty("console-ria-swf");
+
+
+%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -45,13 +57,14 @@
                 quality: "high",
                 allowscriptaccess: "always",
                 menu: "false",
-                scale: "noScale"
+                scale: "noScale",
+                wmode: "opaque"
             };
             var attributes = {
                 id: "atricore-console",
                 name: "atricore-console"
             };
-            swfobject.embedSWF("<%=request.getContextPath()%>/console-ria-1.1.0-SNAPSHOT.swf", "flashcontent", "100%", "100%", "10.0.0", "<%=request.getContextPath()%>/js/swf/expressInstall.swf", flashvars, params, attributes);
+            swfobject.embedSWF("<%=request.getContextPath()%>/<%=consoleRiaSwf%>", "flashcontent", "100%", "100%", "10.0.0", "<%=request.getContextPath()%>/js/swf/expressInstall.swf", flashvars, params, attributes);
 
             function init() {
                 var fl = document.getElementById("atricore-console");

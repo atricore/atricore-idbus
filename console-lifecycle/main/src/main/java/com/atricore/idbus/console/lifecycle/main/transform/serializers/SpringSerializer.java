@@ -3,7 +3,6 @@ package com.atricore.idbus.console.lifecycle.main.transform.serializers;
 import com.atricore.idbus.console.lifecycle.main.transform.*;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Import;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.util.XmlApplicationContextEnhancer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;

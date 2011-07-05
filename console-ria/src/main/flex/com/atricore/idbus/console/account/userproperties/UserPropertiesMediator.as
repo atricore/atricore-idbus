@@ -20,6 +20,8 @@
  */
 
 package com.atricore.idbus.console.account.userproperties {
+import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
+import com.atricore.idbus.console.account.propertysheet.extraattributes.ExtraAttributesSection;
 import com.atricore.idbus.console.account.propertysheet.user.UserGeneralSection;
 import com.atricore.idbus.console.account.propertysheet.user.UserGroupsSection;
 import com.atricore.idbus.console.account.propertysheet.user.UserPasswordSection;
@@ -28,10 +30,16 @@ import com.atricore.idbus.console.account.propertysheet.user.UserSecuritySection
 import com.atricore.idbus.console.components.CustomViewStack;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.services.dto.User;
+import com.atricore.idbus.console.services.dto.schema.Attribute;
+import com.atricore.idbus.console.services.dto.schema.AttributeValue;
+import com.atricore.idbus.console.services.dto.schema.TypeDTOEnum;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
+import mx.containers.FormItem;
+import mx.controls.List;
 import mx.events.FlexEvent;
 import mx.formatters.DateFormatter;
 import mx.resources.IResourceManager;
@@ -40,8 +48,9 @@ import mx.resources.ResourceManager;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
+import spark.components.ButtonBar;
 import spark.components.Group;
-import spark.components.TabBar;
+import spark.components.Label;
 import spark.events.IndexChangeEvent;
 
 public class UserPropertiesMediator extends IocMediator {
@@ -50,15 +59,18 @@ public class UserPropertiesMediator extends IocMediator {
 
     private var resMan:IResourceManager = ResourceManager.getInstance();
 
-    private var _userPropertiesTabBar:TabBar;
+    private var _schemasManagementProxy:SchemasManagementProxy;
+
+    private var _userPropertiesTabBar:ButtonBar;
     private var _userPropertiesSheetsViewStack:CustomViewStack;
     private var _userGeneralSection:UserGeneralSection;
     private var _userPreferencesSection:UserPreferencesSection;
     private var _userGroupsSection:UserGroupsSection;
     private var _userSecuritySection:UserSecuritySection;
     private var _userPasswordSection:UserPasswordSection;
+    private var _extraAttributesSection:ExtraAttributesSection;
 
-    private var _currentUser:com.atricore.idbus.console.services.dto.User;
+    private var _currentUser:User;
 
     public function UserPropertiesMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
@@ -93,19 +105,20 @@ public class UserPropertiesMediator extends IocMediator {
             case ApplicationFacade.DISPLAY_USER_PROPERTIES:
                 _userPropertiesSheetsViewStack.removeAllChildren();
                 enablePropertyTabs();
-                _currentUser = notification.getBody() as com.atricore.idbus.console.services.dto.User;
+                _currentUser = notification.getBody() as User;
                 showUserGeneralPropertiresTab();
                 showUserPreferencesPropertiresTab();
                 showUserGroupsPropertiresTab();
                 showUserSecurityPropertiresTab();
                 showUserPasswordPropertiresTab();
+                showUserExtraAttributesTab();
                 _userPropertiesTabBar.selectedIndex = 0;
                 break;
         }
     }
 
     protected function showUserGeneralPropertiresTab():void {
-        var userGeneralTab:spark.components.Group = new spark.components.Group();
+        var userGeneralTab:Group = new Group();
         userGeneralTab.id = "userPropertiesSheetsGeneralSection";
         userGeneralTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.general');
         userGeneralTab.width = Number("100%");
@@ -136,7 +149,7 @@ public class UserPropertiesMediator extends IocMediator {
     }
 
     protected function showUserPreferencesPropertiresTab():void {
-        var userPreferencesTab:spark.components.Group = new spark.components.Group();
+        var userPreferencesTab:Group = new Group();
         userPreferencesTab.id = "userPropertiesSheetsPreferencesSection";
         userPreferencesTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.preferences');
         userPreferencesTab.width = Number("100%");
@@ -160,7 +173,7 @@ public class UserPropertiesMediator extends IocMediator {
     }
 
     protected function showUserGroupsPropertiresTab():void {
-        var userGroupsTab:spark.components.Group = new spark.components.Group();
+        var userGroupsTab:Group = new Group();
         userGroupsTab.id = "userPropertiesSheetsGroupsSection";
         userGroupsTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.groups');
         userGroupsTab.width = Number("100%");
@@ -184,7 +197,7 @@ public class UserPropertiesMediator extends IocMediator {
     }
 
     protected function showUserSecurityPropertiresTab():void {
-        var userSecurityTab:spark.components.Group = new spark.components.Group();
+        var userSecurityTab:Group = new Group();
         userSecurityTab.id = "userPropertiesSheetsSecuritySection";
         userSecurityTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.security');
         userSecurityTab.width = Number("100%");
@@ -227,7 +240,7 @@ public class UserPropertiesMediator extends IocMediator {
     }
 
     protected function showUserPasswordPropertiresTab():void {
-        var userPasswordTab:spark.components.Group = new spark.components.Group();
+        var userPasswordTab:Group = new Group();
         userPasswordTab.id = "userPropertiesSheetsPaswordSection";
         userPasswordTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.password');
         userPasswordTab.width = Number("100%");
@@ -267,6 +280,86 @@ public class UserPropertiesMediator extends IocMediator {
         trace(e);
     }
 
+    private function showUserExtraAttributesTab():void {
+        var extraAttrTab:Group = new Group();
+        extraAttrTab.id = "extraAttributesSectionUser";
+        extraAttrTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.extraattributes');
+        extraAttrTab.width = Number("100%");
+        extraAttrTab.height = Number("100%");
+        extraAttrTab.setStyle("borderStyle", "solid");
+
+        _extraAttributesSection = new ExtraAttributesSection();
+        extraAttrTab.addElement(_extraAttributesSection);
+        _userPropertiesSheetsViewStack.addNewChild(extraAttrTab);
+
+        _extraAttributesSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExtraAttributesTabCreationComplete);
+        _extraAttributesSection.addEventListener(MouseEvent.ROLL_OUT, handleExtraAttributesTabRollOut);
+    }
+
+    private function handleExtraAttributesTabCreationComplete(event:Event):void {
+        var attributesValues:Object = new Object();
+        for each (var aVal:AttributeValue in _currentUser.extraAttributes) {
+            var aName:String = aVal.name;
+            var arr:Array = attributesValues[aName];
+            if (arr == null)
+                arr = new Array();
+            arr.push(aVal.value);
+            attributesValues[aName] = arr;
+        }
+
+        if (attributesValues != null) {
+            for each (var attVal:AttributeValue in _currentUser.extraAttributes) {
+                var attrDef:Attribute = schemasManagementProxy.getAttributeByName(attVal.name);
+                var formItem:FormItem = new FormItem();
+                var valueLabel:Label = new Label();
+                var multiList:List;
+
+                formItem.label = attVal.name+":";
+
+                if (attrDef != null && attrDef.multivalued) {
+                    var multiArr:Array = attributesValues[attVal.name];
+                    if (multiArr !=null) {
+                        multiList = new List();
+                        multiList.width = 600;
+                        multiList.percentHeight = 50;
+                        multiList.dataProvider = new ArrayCollection();
+                        for (var i:int=0; i<multiArr.length; i++)
+                            multiList.dataProvider.addItem(multiArr[i]);
+                        formItem.addElement(multiList);
+                        attributesValues[attVal.name] = null;
+                        _extraAttributesSection.extraAttrTab.addElement(formItem);
+                    }
+                }
+                else {
+                    valueLabel.text = formatString(attrDef,attVal);
+                    formItem.addElement(valueLabel);
+                    _extraAttributesSection.extraAttrTab.addElement(formItem);
+                }
+            }
+        }
+    }
+
+    private function formatString(attrDef:Attribute,attVal:AttributeValue):String {
+        var formatedValueString:String = "";
+
+        switch (attrDef.type.toString()) {
+            case TypeDTOEnum.INT.toString():
+                formatedValueString = formatFieldNumber(attVal.value as Number);
+                break;
+            case TypeDTOEnum.DATE.toString():
+                formatedValueString = formatFieldDate(attVal.value as Date);
+                break;
+            default:
+                formatedValueString = formatFieldString(attVal.value);
+                break;
+        }
+        return formatedValueString;
+    }
+
+    private function handleExtraAttributesTabRollOut(e:Event):void {
+        trace(e);
+    }
+
     protected function enablePropertyTabs():void {
         _userPropertiesTabBar.visible = true;
         _userPropertiesSheetsViewStack.visible = true;
@@ -302,6 +395,14 @@ public class UserPropertiesMediator extends IocMediator {
             return resMan.getString(AtricoreConsole.BUNDLE, 'boolean.yes');
         else
             return resMan.getString(AtricoreConsole.BUNDLE, 'boolean.no');
+    }
+
+    public function get schemasManagementProxy():SchemasManagementProxy {
+        return _schemasManagementProxy;
+    }
+
+    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
+        _schemasManagementProxy = value;
     }
 
     protected function get view():UserPropertiesView

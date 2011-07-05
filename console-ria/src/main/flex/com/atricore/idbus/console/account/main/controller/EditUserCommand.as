@@ -43,7 +43,11 @@ public class EditUserCommand extends IocSimpleCommand implements IResponder {
 
     private var _registry:ServiceRegistry;
     private var _accountManagementProxy:AccountManagementProxy;
-    private var user:User; 
+    private var user:User;
+
+
+    public function EditUserCommand() {
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;
@@ -103,6 +107,7 @@ public class EditUserCommand extends IocSimpleCommand implements IResponder {
         req.streetAddress = user.streetAddress;
         req.telephoneNumber = user.telephoneNumber;
         req.userCertificate = user.userCertificate;
+        req.extraAttributes = user.extraAttributes;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
         var call:Object = service.updateUser(req);

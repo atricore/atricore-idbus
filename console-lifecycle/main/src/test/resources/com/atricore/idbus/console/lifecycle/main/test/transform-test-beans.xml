@@ -33,9 +33,15 @@
     <bean name="idauBaseComponentsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
-    <bean name="idpTransformer"
+    <bean name="idpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer"/>
 
+    <bean name="idpExternalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPExternalTransformer"/>
+
+    <bean name="idpDefaultSPChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPDefaultSPChannelTransformer"/>
+    
     <bean name="idpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
@@ -47,14 +53,35 @@
     </bean>
 
     <bean name="claimsChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ClaimsChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationClaimsChannelTransformer"/>
 
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.STSTransformer"/>
 
-    <bean name="spTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer"/>
+    <bean name="basicAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationTransformer"/>
 
+    <bean name="twoFactorAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WiKIDAuthenticationTransformer"/>
+    
+    <bean name="spLocalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPLocalTransformer"/>
+
+    <bean name="spExternalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPExternalTransformer"/>
+
+    <bean name="salesforceTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SalesforceTransformer"/>
+
+    <bean name="googleAppsTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.GoogleAppsTransformer"/>
+
+    <bean name="sugarCRMTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SugarCRMTransformer"/>
+
+    <bean name="spDefaultIdPChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPDefaultIdPChannelTransformer"/>
+    
     <bean name="spFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
@@ -197,17 +224,26 @@
                                         <ref bean="idauBaseComponentsTransformer"/>
 
                                         <!-- IDP Transformers -->
-                                        <ref bean="idpTransformer"/>
+                                        <ref bean="idpLocalTransformer"/>
+                                        <ref bean="idpExternalTransformer"/>
                                         <ref bean="samlr2IdPTransformer"/>
 
+                                        <ref bean="idpDefaultSPChannelTransformer"/>
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
 
                                         <ref bean="claimsChannelTransformer"/>
                                         <ref bean="stsTransformer"/>
+                                        <ref bean="basicAuthenticationTransformer"/>
+                                        <ref bean="twoFactorAuthenticationTransformer"/>
 
                                         <!-- SP Transformers -->
-                                        <ref bean="spTransformer"/>
+                                        <ref bean="spLocalTransformer"/>
+                                        <ref bean="salesforceTransformer"/>
+                                        <ref bean="googleAppsTransformer"/>
+                                        <ref bean="sugarCRMTransformer"/>
+                                        <ref bean="spExternalTransformer"/>
+                                        <ref bean="spDefaultIdPChannelTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
                                         <ref bean="spJOSSOActivationTransformer"/>

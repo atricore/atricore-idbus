@@ -30,10 +30,16 @@
     <bean name="idauBaseComponentsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
-    <bean name="idpTransformer"
+    <bean name="idpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer">
         <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
+
+    <bean name="idpExternalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPExternalTransformer"/>
+
+    <bean name="idpDefaultSPChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPDefaultSPChannelTransformer"/>
 
     <bean name="idpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
@@ -45,17 +51,50 @@
         <property name="roleA" value="false"/>
     </bean>
 
-    <bean name="claimsChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ClaimsChannelTransformer"/>
+    <bean name="basicAuthnClaimsChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationClaimsChannelTransformer"/>
+
+    <bean name="2faAuthnClaimsChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.TwoFactorAuthenticationClaimsChannelTransformer"/>
+
+    <bean name="wiaAuthnClaimsChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WindowsIntegratedAuthenticationClaimsChannelTransformer"/>
 
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.STSTransformer"/>
 
-    <bean name="spTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer">
+    <bean name="basicAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationTransformer"/>
+
+    <bean name="twoFactorAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WiKIDAuthenticationTransformer"/>
+
+    <bean name="directoryServiceAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.DirectoryServiceAuthenticationTransformer"/>
+
+    <bean name="windowsIntegratedAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WindowsIntegratedAuthenticationTransformer"/>
+
+    <bean name="spLocalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPLocalTransformer">
         <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
 
+    <bean name="spExternalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPExternalTransformer"/>
+
+    <bean name="salesforceTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SalesforceTransformer"/>
+
+    <bean name="googleAppsTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.GoogleAppsTransformer"/>
+
+    <bean name="sugarCRMTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SugarCRMTransformer"/>
+
+    <bean name="spDefaultIdPChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPDefaultIdPChannelTransformer"/>
+    
     <bean name="spFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
@@ -98,6 +137,13 @@
                     </bean>
                 </entry>
 
+                <entry key="tc70">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="tc70"/>
+                        <property name="javaAgentClass" value="org.josso.tc70.agent.CatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
                 <!-- JBoss Family -->
                 <entry key="jb32">
                     <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
@@ -120,14 +166,15 @@
                     </bean>
                 </entry>
 
-                <!-- TODO : Agent class is wrong !
+                <!-- TODO : Agent class is wrong !-->
                 <entry key="jb5">
                     <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
                         <property name="platformId" value="jb5"/>
-                        <property name="javaAgentClass" value="org.josso.jb5.agent.JBossCatalinaSSOAgent"/>
+                        <!--<property name="javaAgentClass" value="org.josso.jb5.agent.JBossCatalinaSSOAgent"/>-->
+                        <property name="javaAgentClass" value="org.josso.agent.http.JaasHttpSSOAgent"/>
                     </bean>
                 </entry>
-                -->
+                <!---->
 
                 <!-- Weblogic Family -->
                 <entry key="wl81">
@@ -163,6 +210,36 @@
                         <property name="platformId" value="liferay"/>
                         <property name="enableAutoLogin" value="false"/>
                         <property name="javaAgentClass" value="org.josso.liferay.agent.LiferaySSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="apache">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="apache"/>
+                    </bean>
+                </entry>
+
+                <entry key="php">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="php"/>
+                    </bean>
+                </entry>
+
+                <entry key="phpBB">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="phpBB"/>
+                    </bean>
+                </entry>
+
+                <entry key="iis">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="iis"/>
+                    </bean>
+                </entry>
+
+                <entry key="iis64">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="iis64"/>
                     </bean>
                 </entry>
             </map>
@@ -258,17 +335,31 @@
                                         <ref bean="idauBaseComponentsTransformer"/>
 
                                         <!-- IDP Transformers -->
-                                        <ref bean="idpTransformer"/>
+                                        <ref bean="idpLocalTransformer"/>
+                                        <ref bean="idpExternalTransformer"/>
                                         <ref bean="samlr2IdPTransformer"/>
 
+                                        <ref bean="idpDefaultSPChannelTransformer"/>
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
 
-                                        <ref bean="claimsChannelTransformer"/>
+                                        <ref bean="basicAuthnClaimsChannelTransformer"/>
+                                        <ref bean="2faAuthnClaimsChannelTransformer"/>
+                                        <ref bean="wiaAuthnClaimsChannelTransformer"/>
+
                                         <ref bean="stsTransformer"/>
+                                        <ref bean="basicAuthenticationTransformer"/>
+                                        <ref bean="twoFactorAuthenticationTransformer"/>
+                                        <ref bean="directoryServiceAuthenticationTransformer"/>
+                                        <ref bean="windowsIntegratedAuthenticationTransformer"/>
 
                                         <!-- SP Transformers -->
-                                        <ref bean="spTransformer"/>
+                                        <ref bean="spLocalTransformer"/>
+                                        <ref bean="salesforceTransformer"/>
+                                        <ref bean="googleAppsTransformer"/>
+                                        <ref bean="sugarCRMTransformer"/>
+                                        <ref bean="spExternalTransformer"/>
+                                        <ref bean="spDefaultIdPChannelTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
                                         <ref bean="spJOSSOActivationTransformer"/>

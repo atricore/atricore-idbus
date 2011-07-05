@@ -3,6 +3,7 @@ package com.atricore.idbus.console.lifecycle.main.domain.dao;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public interface IdentityApplianceDAO extends GenericDAO<IdentityAppliance, Long> {
@@ -14,4 +15,6 @@ public interface IdentityApplianceDAO extends GenericDAO<IdentityAppliance, Long
     IdentityAppliance findByNamespace(String namespace) throws ApplianceNotFoundException;
 
     boolean namespaceExists(long applianceId, String namespace);
+
+    IdentityAppliance unmarshall(IdentityAppliance a) throws IOException, ClassNotFoundException;
 }

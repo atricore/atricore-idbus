@@ -18,6 +18,9 @@ public class FederatedConnectionRemoveCommand extends IocSimpleCommand {
     private var _projectProxy:ProjectProxy;
 
 
+    public function FederatedConnectionRemoveCommand() {
+    }
+
     public function get projectProxy():ProjectProxy {
         return _projectProxy;
     }

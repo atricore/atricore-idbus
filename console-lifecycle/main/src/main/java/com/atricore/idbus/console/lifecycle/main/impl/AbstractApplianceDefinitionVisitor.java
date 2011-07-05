@@ -4,7 +4,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionVisitor;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public abstract class AbstractApplianceDefinitionVisitor implements IdentityApplianceDefinitionVisitor {
     
@@ -42,6 +42,66 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
 
     public boolean walkNextChild(IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;  
+    }
+
+    public void arrive(ExternalServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(ExternalServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(ExternalServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(ExternalIdentityProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(ExternalIdentityProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(ExternalIdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(SalesforceServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(SalesforceServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(SalesforceServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(GoogleAppsServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(GoogleAppsServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(GoogleAppsServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(SugarCRMServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(SugarCRMServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(SugarCRMServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
     }
 
     public void arrive(IdentityProviderChannel node) throws Exception {
@@ -177,6 +237,18 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;  
     }
 
+    public void arrive(DelegatedAuthentication node) throws Exception {
+
+    }
+
+    public Object[] leave(DelegatedAuthentication node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(DelegatedAuthentication node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
     public void arrive(ExecutionEnvironment node) throws Exception {
         
     }
@@ -187,6 +259,18 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
 
     public boolean walkNextChild(ExecutionEnvironment node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;  
+    }
+
+    public void arrive(AuthenticationService node) throws Exception {
+
+    }
+
+    public Object[] leave(AuthenticationService node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(AuthenticationService node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
     }
 
     public void arrive(Activation node) throws Exception {
@@ -224,4 +308,17 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
     public boolean walkNextChild(Keystore node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
+
+    public void arrive(AuthenticationMechanism node) throws Exception {
+
+    }
+
+    public Object[] leave(AuthenticationMechanism node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(AuthenticationMechanism node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
 }

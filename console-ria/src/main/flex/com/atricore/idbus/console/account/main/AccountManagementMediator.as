@@ -23,7 +23,10 @@ package com.atricore.idbus.console.account.main {
 import com.atricore.idbus.console.account.groups.GroupsView;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
+import com.atricore.idbus.console.account.schema.SchemasView;
 import com.atricore.idbus.console.account.users.UsersView;
+import com.atricore.idbus.console.base.app.BaseAppFacade;
+import com.atricore.idbus.console.base.extensions.appsection.AppSectionMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 
 import flash.events.Event;
@@ -35,21 +38,22 @@ import mx.resources.ResourceManager;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
-import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 import spark.components.Group;
 import spark.events.IndexChangeEvent;
 
-public class AccountManagementMediator extends IocMediator implements IDisposable{
+public class AccountManagementMediator extends AppSectionMediator implements IDisposable{
 
     public static const BUNDLE:String = "console";
     private var resMan:IResourceManager = ResourceManager.getInstance();
 
     private var _popupManager:AccountManagementPopUpManager;
-    private var _accountManagementProxy:AccountManagementProxy;
 
     private var _groupsMediator:IIocMediator;
     private var _usersMediator:IIocMediator;
+    private var _schemasMediator:IIocMediator;
+
+    private var _accountManagementProxy:AccountManagementProxy;
 
     private var _created:Boolean;
 
@@ -59,14 +63,6 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
 
     public function get popupManager():AccountManagementPopUpManager {
         return _popupManager;
-    }
-
-    public function get accountManagementProxy():AccountManagementProxy {
-        return _accountManagementProxy;
-    }
-
-    public function set accountManagementProxy(value:AccountManagementProxy):void {
-        _accountManagementProxy = value;
     }
 
     public function set popupManager(value:AccountManagementPopUpManager):void {
@@ -89,6 +85,22 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
         _usersMediator = value;
     }
 
+    public function get schemasMediator():IIocMediator {
+        return _schemasMediator;
+    }
+
+    public function set schemasMediator(value:IIocMediator):void {
+        _schemasMediator = value;
+    }
+
+    public function get accountManagementProxy():AccountManagementProxy {
+        return _accountManagementProxy;
+    }
+
+    public function set accountManagementProxy(value:AccountManagementProxy):void {
+        _accountManagementProxy = value;
+    }
+
     override public function setViewComponent(p_viewComponent:Object):void {
         if (getViewComponent() != null) {
         }
@@ -109,8 +121,10 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
         if (_created) {
             var groupsTab:Group = new Group();
             var usersTab:Group = new Group();
+            var schemasTab:Group = new Group();
             var gView:GroupsView  = new GroupsView();
             var uView:UsersView  = new UsersView();
+            var sView:SchemasView  = new SchemasView();
 
             /* Remove unused title in account management panel */
             view.titleDisplay.width = 0;
@@ -129,15 +143,26 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
             usersTab.height = Number("100%");
             usersTab.addElement(uView);
 
+            schemasTab.id = "schemasTab";
+            schemasTab.width = Number("100%");
+            schemasTab.height = Number("100%");
+            schemasTab.addElement(sView);
+
             groupsMediator.setViewComponent(gView);
             usersMediator.setViewComponent(uView);
+            schemasMediator.setViewComponent(sView);
 
             view.vsAccountMng.addNewChild(uView);
             view.vsAccountMng.addNewChild(gView);
+            view.vsAccountMng.addNewChild(sView);
 
             view.accountManagementTabBar.selectedIndex = 0;
             view.vsAccountMng.selectedIndex = 0;
             view.accountManagementTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
+
+            // dispatch index change. (select Users tab)
+            view.accountManagementTabBar.dispatchEvent(
+                    new IndexChangeEvent( IndexChangeEvent.CHANGE, false, false, 0, 0 ) )
         }
     }
 
@@ -147,23 +172,59 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
         //      - Stop timers
         //      - Set references to null
 
-        view.accountManagementTabBar.removeEventListener(IndexChangeEvent.CHANGE, stackChanged);
-        view = null;
+        accountManagementProxy.dispose();
+
+        if (_created) {
+            _created = false;
+            view.accountManagementTabBar.removeEventListener(IndexChangeEvent.CHANGE, stackChanged);
+            view = null;
+        }
     }
 
     private function stackChanged(event:IndexChangeEvent):void {
         view.vsAccountMng.selectedIndex = view.accountManagementTabBar.selectedIndex;
+        if (view.vsAccountMng.selectedIndex==0) {
+            sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"User");
+        } else if (view.vsAccountMng.selectedIndex==1) {
+            sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"Group");
+        } else if (view.vsAccountMng.selectedIndex==2)
+            sendNotification(ApplicationFacade.DISPLAY_SCHEMA_ATTRIBUTES);
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.ACCOUNT_VIEW_SELECTED
+        return [BaseAppFacade.APP_SECTION_CHANGE_START,
+            BaseAppFacade.APP_SECTION_CHANGE_END,
+            ApplicationFacade.LOGOUT,
+            ApplicationFacade.LIST_SCHEMA_ATTRIBUTES
         ];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.ACCOUNT_VIEW_SELECTED:
-                init();
+            case BaseAppFacade.APP_SECTION_CHANGE_START:
+                var currentView:String = notification.getBody() as String;
+                if (currentView == viewName) {
+                    sendNotification(BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED);
+                }
+                break;
+            case BaseAppFacade.APP_SECTION_CHANGE_END:
+                var newView:String = notification.getBody() as String;
+                if (newView == viewName) {
+                    init();
+                }
+                break;
+            case ApplicationFacade.LOGOUT:
+                this.dispose();
+                break;
+            case ApplicationFacade.LIST_SCHEMA_ATTRIBUTES:
+                // in case attributes were changed/deleted
+                if (view.vsAccountMng.selectedIndex==0)
+                    sendNotification(ApplicationFacade.LIST_USERS);
+                else if (view.vsAccountMng.selectedIndex==1)
+                    sendNotification(ApplicationFacade.LIST_GROUPS);
+                break;
+            default:
+                super.handleNotification(notification);
                 break;
         }
     }

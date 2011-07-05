@@ -31,7 +31,7 @@
 
     <bean id="idbusLifecyclePmf"
         class="org.atricore.idbus.bundles.datanucleus.core.OsgiJDOPersistenceManagerFactoryBean">
-        <property name="jdoProperties" ref="lifecycleProps"/>
+        <property name="jdoProperties" ref="lifecycleJdoProps"/>
     </bean>
 
     <!--- DAOs -->

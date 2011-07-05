@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+       xmlns:ctx="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context.xsd
+                    http://www.springframework.org/schema/osgi-compendium
+                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+    <!-- LiveUpdate service -->
+    <bean name="liveUpdateMgr" init-method="init" destroy-method="shutdown"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.service.LiveUpdateManagerImpl">
+
+        <property name="config" ref="liveUpdateProps"/>
+        <property name="metadataRepositoryManager" ref="mdRepositoriesManager"/>
+        <property name="artifactRepositoryManager" ref="artRepositoriesManager"/>
+        <property name="profileManager" ref="profileManager"/>
+        <property name="engine" ref="updateEngine"/>
+        <property name="updatesCheckInterval" value="${updatesCheckInterval}"/>
+        <property name="startupCheckInterval" value="${startupCheckInterval}"/>
+        <property name="startupRunLevel" value="${maintenanceRunLevel}"/>
+        <property name="dataFolder" value="${karaf.data}"/>
+        <property name="notificationHandlers">
+            <list>
+                <ref bean="emailNotificationHandler"/>
+            </list>
+        </property>
+        <property name="notificationStores">
+            <list>
+                <ref bean="emailNotificationStore"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="liveUpdateSigner" class="com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateSigner" init-method="init"/>
+    
+    <!-- Metadta Repository Manager -->
+    <bean name="mdRepositoriesManager"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.MetadataRepositoryManagerImpl">
+        <property name="transports">
+            <list>
+                <ref bean="httpRepositoryTransport"/>
+                <ref bean="fileRepositoryTransport"/>
+            </list>
+        </property>
+        <property name="liveUpdateSigner" ref="liveUpdateSigner"/>
+    </bean>
+
+    <!-- Artifact Repository Manager -->
+    <bean name="artRepositoriesManager"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.ArtifactRepositoryManagerImpl">
+        <property name="transports">
+            <list>
+                <ref bean="httpRepositoryTransport"/>
+                <ref bean="fileRepositoryTransport"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Repository Transports -->
+    <bean name="httpRepositoryTransport"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.HttpRepositoryTransport"/>
+
+    <bean name="fileRepositoryTransport"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.FileRepositoryTransport"/>
+
+    <!-- Notification Handlers -->
+    <bean name="emailNotificationHandler"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.notifications.EMailNotificationHandler">
+        <property name="store" ref="emailNotificationStore"/>
+        <property name="mailer" ref="mailer"/>
+        <property name="messageSource" ref="messageSource"/>
+    </bean>
+
+    <!-- Notification Stores -->
+    <bean name="emailNotificationStore"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.notifications.PropertiesEMailNotificationSchemeStore"
+          init-method="init"/>
+
+    <!-- Profile Manager -->
+    <bean name="profileManager" class="com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl.ProfileManagerImpl">
+
+    </bean>
+
+    <!-- Update Engine -->
+    <bean name="updateEngine" init-method="init"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.UpdateEngineImpl">
+        <property name="operationsRegistry" ref="installOperationsRegistry"/>
+        <property name="store" ref="processStateStore"/>
+        <property name="plans">
+            <set>
+                <ref bean="defaultUpdatePlan"/>
+            </set>
+        </property>
+    </bean>
+
+    <bean name="processStateStore" init-method="init"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.PropertiesProcessStateStore"/>
+
+    <!-- Default update plan -->
+    <bean name="defaultUpdatePlan"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdatePlan">
+
+        <property name="name" value="defaultUpdatePlan"/>
+        
+        <property name="steps">
+            <set>
+
+                <!-- Download and install installers -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="download-installers"/>
+                </bean>
+
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="install-installers"/>
+                </bean>
+
+                <!-- Prepare install, system is still running -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="prepare-install-start"/>
+                </bean>
+
+                <!-- Download required artifacts -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="download-updates-start"/>
+                </bean>
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="download-updates-end"/>
+                </bean>
+
+                <!-- Prepare install end -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="prepare-install-end"/>
+                </bean>
+
+                <!-- Install updates, system is still running -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="install-updates-start"/>
+                </bean>
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="install-updates-end"/>
+                </bean>
+
+                <!-- Update system, system is in maintenance mode-->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="update-system-start"/>
+                </bean>
+
+                <!-- Install updates start, system is in maintenance mode -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="update-system-end"/>
+                </bean>
+
+
+                <!-- Clean up stuff, system is in maintenance mode-->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="cleanup-start"/>
+                </bean>
+
+                <!-- Cleanup stuff, start, system is set to operational mode  -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="cleanup-end"/>
+                </bean>
+
+            </set>
+        </property>
+    </bean>
+
+    <bean name="installOperationsRegistry" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.InstallOperationsRegistryImpl"/>
+
+    <!-- Mailer -->
+    <bean name="mailer" class="com.atricore.idbus.console.liveservices.liveupdate.main.notifications.Mailer" init-method="init">
+        <property name="mailSender" ref="mailSender" />
+		<property name="velocityEngine" ref="velocityEngine" />
+    </bean>
+
+    <bean id="mailPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:mail.properties" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+    
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${mail.host}" />
+		<property name="username" value="${mail.username}" />
+		<property name="password" value="${mail.password}" />
+		<property name="port" value="${mail.port}" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.timeout">25000</prop>
+				<!--
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+				<prop key="mail.smtp.socketFactory.fallback">false</prop>
+				-->
+			</props>
+		</property>
+	</bean>
+
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <property name="velocityProperties">
+            <value>
+                resource.loader=class
+                class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+            </value>
+        </property>
+    </bean>
+
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="messages/messages"/>
+		<property name="fileEncodings" value="UTF-8" />
+		<property name="defaultEncoding" value="UTF-8" />
+    </bean>
+
+    <!-- Export LiveUpdate service using OSGi -->
+    <osgi:service id="liveUpdateMgrOsgi" ref="liveUpdateMgr"
+                  interface="com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager"/>
+
+
+    <!-- License Manger -->
+    <osgi:reference id="osgiLicenseManager"
+                  interface="com.atricore.idbus.console.licensing.main.LicenseManager"/>
+
+    <bean name="liveUpdateFeature" class="com.atricore.idbus.console.licensing.main.ProductFeature">
+        <property name="id" value="atricore-liveupdate"/>
+        <property name="group" value="com.atricore.idbus.console"/>
+        <property name="name" value="liveupdate"/>
+        <property name="version" value="1.1.0-SNAPSHOT"/>
+    </bean>
+    <osgi:service id="osgiConsoleEEFeature" ref="liveUpdateFeature"
+                    interface="com.atricore.idbus.console.licensing.main.ProductFeature"/>
+
+    <!-- Expose LiveUpdate configuration properties -->
+    <osgix:cm-properties id="liveUpdateProps" persistent-id="com.atricore.idbus.console.liveservices.liveupdate">
+
+        <prop key="repo.md.primary.id">md-primary</prop>
+        <prop key="repo.md.primary.name">LiveUpdate MD Primary Repository</prop>
+        <prop key="repo.md.primary.enabled">true</prop>
+        <prop key="repo.md.primary.validateSignature">false</prop>
+
+        <prop key="repo.md.primary.location">http://liveupdate:atricore@liveupdate.atricore.com/primary/md/liveupdate-1.0.xml</prop>
+        <!-- TODO :
+        <prop key="repo.md.primary.certificate">file:${karaf.data}/liveservices/liveupdate/repos/md-primary/md-primary-cert</prop>
+        -->
+
+        <!--
+        <prop key="repo.md.primary.location">file:${karaf.data}/liveservices/liveupdate/repos/md-primary/liveupdate-1.0.xml</prop>
+        -->
+
+        <prop key="repo.art.primary.id">art-primary</prop>
+        <prop key="repo.art.primary.name">LiveUpdate Artifacts Primary Repository</prop>
+        <prop key="repo.art.primary.enabled">true</prop>
+        <prop key="repo.art.primary.validateSignature">false</prop>
+        <prop key="repo.art.primary.location">http://liveupdate:atricore@liveupdate.atricore.com/primary/art/</prop>
+        <!-- TODO :
+        <prop key="repo.art.primary.certificate">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/art-primary-cert</prop>
+        -->
+        <!--
+        <prop key="repo.art.primary.location">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/</prop>
+        -->
+
+        <!-- In Seconds, default : daily -->
+        <prop key="updatesCheckInterval">86400</prop>
+
+        <prop key="startupCheckInterval">5</prop>
+
+        <prop key="maintenanceRunLevel">35</prop>
+        <!-- TODO : Take this from environment -->
+        <prop key="defaultRunLevel">100</prop>
+
+    </osgix:cm-properties>
+
+    <ctx:property-placeholder properties-ref="liveUpdateProps"/>
+
+</beans>

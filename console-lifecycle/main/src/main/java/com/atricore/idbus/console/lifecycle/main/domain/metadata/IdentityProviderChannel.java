@@ -29,18 +29,32 @@ public class IdentityProviderChannel extends FederatedChannel {
 
     private AccountLinkagePolicy accountLinkagePolicy;
 
+    private IdentityMappingPolicy identityMappingPolicy;
+
     // RFU
     private AuthenticationContract authenticationContract;
 
     // RFU
     private AuthenticationMechanism authenticationMechanism;
 
+    private boolean signAuthenticationRequests;
+
+    private boolean wantAssertionSigned;
+    
     public AccountLinkagePolicy getAccountLinkagePolicy() {
         return accountLinkagePolicy;
     }
 
     public void setAccountLinkagePolicy(AccountLinkagePolicy accountLinkagePolicy) {
         this.accountLinkagePolicy = accountLinkagePolicy;
+    }
+
+    public IdentityMappingPolicy getIdentityMappingPolicy() {
+        return identityMappingPolicy;
+    }
+
+    public void setIdentityMappingPolicy(IdentityMappingPolicy identityMappingPolicy) {
+        this.identityMappingPolicy = identityMappingPolicy;
     }
 
     public AuthenticationContract getAuthenticationContract() {
@@ -69,5 +83,21 @@ public class IdentityProviderChannel extends FederatedChannel {
 
     public void setPreferred(boolean preferred) {
         this.preferred = preferred;
+    }
+
+    public boolean isSignAuthenticationRequests() {
+        return signAuthenticationRequests;
+    }
+
+    public void setSignAuthenticationRequests(boolean signAuthenticationRequests) {
+        this.signAuthenticationRequests = signAuthenticationRequests;
+    }
+
+    public boolean isWantAssertionSigned() {
+        return wantAssertionSigned;
+    }
+
+    public void setWantAssertionSigned(boolean wantAssertionSigned) {
+        this.wantAssertionSigned = wantAssertionSigned;
     }
 }

@@ -51,6 +51,8 @@ import flash.utils.ByteArray;
 import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 import mx.utils.ObjectProxy;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -63,6 +65,8 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     private var _projectProxy:ProjectProxy;
 
     private var _wizardDataModel:ObjectProxy = new ObjectProxy();
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     // keystore
 
@@ -182,15 +186,15 @@ public class SimpleSSOWizardViewMediator extends IocMediator
             case FolderExistsCommand.FOLDER_EXISTS:
                 var envName:String = notification.getBody() as String;
                 if(envName == "SSO_WIZARD_MADE_ENV"){
-                    var ssoEvent:SsoEvent = new SsoEvent(SsoEvent.DIRECTORY_EXISTS);
-                    view.dispatchEvent(ssoEvent);
+                    var ssoEvent1:SsoEvent = new SsoEvent(SsoEvent.DIRECTORY_EXISTS);
+                    view.dispatchEvent(ssoEvent1);
                 }
                 break;
             case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
                 envName = notification.getBody() as String;
                 if(envName == "SSO_WIZARD_MADE_ENV"){
-                    var ssoEvent:SsoEvent = new SsoEvent(SsoEvent.DIRECTORY_DOESNT_EXIST);
-                    view.dispatchEvent(ssoEvent);
+                    var ssoEvent2:SsoEvent = new SsoEvent(SsoEvent.DIRECTORY_DOESNT_EXIST);
+                    view.dispatchEvent(ssoEvent2);
                 }
                 break;
             case JDBCDriversListCommand.SUCCESS:
@@ -202,7 +206,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     private function onSimpleSSOWizardComplete(event:WizardEvent):void {
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 
-        sendNotification(ProcessingMediator.START, "Saving Identity Appliance...");
+        sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.wizard.saving"));
 
         var config:SamlR2SPConfig = _wizardDataModel.certificateData.config as SamlR2SPConfig;
         if (!config.useSampleStore && _selectedFiles != null && _selectedFiles.length > 0) {
@@ -284,14 +288,15 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     public function handleSSOSetupSuccess():void {
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-        sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
+        sendNotification(ApplicationFacade.REFRESH_DIAGRAM, true);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
     }
 
     public function handleSSOSetupFailure():void {
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                "There was an error creating simple SSO appliance.");
+                resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.wizard.simple.creation.error"));
+
     }
 
     private function handleDriverChange(event:Event):void {
@@ -327,7 +332,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.steps[1].certificateKeyPair.prompt = "Browse Key Pair";
+        view.steps[1].certificateKeyPair.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair");
 
         //if (_selectedDriverFiles != null && _selectedDriverFiles.length > 0) {
         //    _driverFileRef.load();
@@ -341,7 +346,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         _uploadedFile = null;
         _uploadedFileName = null;
         _selectedFiles = new ArrayCollection();
-        view.steps[1].certificateKeyPair.prompt = "Browse Key Pair";
+        view.steps[1].certificateKeyPair.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair");
     }
     
     /*

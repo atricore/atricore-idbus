@@ -6,6 +6,10 @@ public class CreateFederatedConnectionElementRequest {
     private var _roleA:FederatedProvider;
     private var _roleB:FederatedProvider;
 
+
+    public function CreateFederatedConnectionElementRequest() {
+    }
+
     public function get roleA():FederatedProvider {
         return _roleA;
     }

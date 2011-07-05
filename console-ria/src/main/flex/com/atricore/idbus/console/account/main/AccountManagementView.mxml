@@ -21,23 +21,14 @@
   -->
 
 
-<s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
+<AppSectionView xmlns="com.atricore.idbus.console.base.extensions.appsection.*"
+         xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:components="com.atricore.idbus.console.components.*"
-         xmlns:browser="com.atricore.idbus.console.modeling.browser.*"
-         xmlns:diagram="com.atricore.idbus.console.modeling.diagram.*"
-         xmlns:palette="com.atricore.idbus.console.modeling.palette.*"
-         xmlns:propertysheet="com.atricore.idbus.console.modeling.propertysheet.*"
          xmlns:comp="com.atricore.idbus.console.components.*"
-         xmlns:ravis="org.un.cava.birdeye.ravis.graphLayout.visual.*"
-         xmlns:graph-ctrl="com.atricore.idbus.console.modeling.diagram.ui.control.*"
-         xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
-         xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
-         xmlns:group="com.atricore.idbus.console.account.groups.*"
-         xmlns:user="com.atricore.idbus.console.account.users.*"
          width="100%" height="100%"
          skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
+         name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.accountTab.name')}"
         >
 
     <fx:Metadata>
@@ -47,7 +38,9 @@
     <fx:Script>
         <![CDATA[
         import com.atricore.idbus.console.main.EmbeddedIcons;
+
         import mx.collections.ArrayCollection;
+
         public var icon:Class = EmbeddedIcons.accountMiniIcon;
         ]]>
     </fx:Script>
@@ -61,4 +54,4 @@
                               width="100%" height="100%" />
     </s:VGroup>
 
-</s:Panel>
+</AppSectionView>

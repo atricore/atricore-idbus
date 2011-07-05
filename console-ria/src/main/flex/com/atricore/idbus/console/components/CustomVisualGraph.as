@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.components {
 import com.atricore.idbus.console.modeling.diagram.event.VEdgeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeCreationEvent;
+import com.atricore.idbus.console.modeling.diagram.event.VNodeMovedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
@@ -11,6 +12,7 @@ import flash.events.MouseEvent;
 import flash.geom.Point;
 
 import mx.managers.CursorManager;
+import mx.resources.ResourceManager;
 
 import org.un.cava.birdeye.ravis.enhancedGraphLayout.event.VGEdgeEvent;
 import org.un.cava.birdeye.ravis.enhancedGraphLayout.visual.EnhancedVisualGraph;
@@ -27,6 +29,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     private static var FEDERATED_CONNECTION_MODE:uint = 1;
     private static var ACTIVATION_MODE:uint = 2;
     private static var IDENTITY_LOOKUP_MODE:uint = 3;
+    private static var DELEGATED_AUTHENTICATION_MODE:uint = 4;
     
     private var _isConnectionMode:Boolean;
     private var _connectionMode:uint;
@@ -46,6 +49,9 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     private var _nodeCreationPosition:Point;
     private var _nodeCreationElementIcon:Class;
 
+    private var _nodeMoved:Boolean;
+    private var _allNodesMoved:Boolean;
+
     public function CustomVisualGraph() {
         super();
         _nodeCreationElementType = -1;
@@ -53,6 +59,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     }
 
     override protected function dragBegin(event:MouseEvent):void {
+        _nodeMoved = false;
+        _allNodesMoved = false;
         super.dragBegin(event);
         if (event.currentTarget is NodeDetailedRenderer && _isConnectionMode) {
             _connectionDragInProgress = true;
@@ -60,6 +68,21 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
             _connectionStartPoint = new Point(_canvas.contentMouseX, _canvas.contentMouseY);
             _canvas.addEventListener(MouseEvent.MOUSE_UP, dragEnd);
         }
+    }
+
+    protected override function handleDrag(event:MouseEvent):void {
+        super.handleDrag(event);
+        _nodeMoved = true;
+    }
+
+    protected override function backgroundDragBegin(event:MouseEvent):void {
+        super.backgroundDragBegin(event);
+        _allNodesMoved = false;
+    }
+
+    override protected function backgroundDragContinue(event:MouseEvent):void {
+        super.backgroundDragContinue(event);
+        _allNodesMoved = true;
     }
 
     override protected function dragEnd(event:MouseEvent):void {
@@ -78,6 +101,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
                         dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.ACTIVATION_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
                     } else if(_connectionMode == IDENTITY_LOOKUP_MODE){
                         dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.IDENTITY_LOOKUP_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
+                    } else if(_connectionMode == DELEGATED_AUTHENTICATION_MODE){
+                        dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.DELEGATED_AUTHENTICATION_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
                     }
                     exitConnectionMode();
                     CursorManager.removeAllCursors();
@@ -85,7 +110,16 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
             }
             resetConnectionModeParameters();
             _canvas.removeEventListener(MouseEvent.MOUSE_UP, dragEnd);
+        } else {
+            var draggedNode:IVisualNode = data as IVisualNode;
+            if (draggedNode != null && _nodeMoved) {
+                dispatchEvent(new VNodeMovedEvent(VNodeMovedEvent.VNODE_MOVED, draggedNode.node.stringid, true, false, 0));
+            } else if (_allNodesMoved) {
+                dispatchEvent(new VNodeMovedEvent(VNodeMovedEvent.ALL_VNODES_MOVED, null, true, false, 0));
+            }
         }
+        _nodeMoved = false;
+        _allNodesMoved = false;
     }
 
     override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
@@ -151,6 +185,12 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         enterConnectionMode();
     }
 
+    public function enterDelegatedAuthenticationMode():void {
+        exitNodeCreationMode();
+        _connectionMode = DELEGATED_AUTHENTICATION_MODE;
+        enterConnectionMode();
+    }
+
     public function enterNodeCreationMode(elementType:int):void {
         exitConnectionMode();
         _isNodeCreationMode = true;
@@ -203,6 +243,10 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         (document as DisplayObject).removeEventListener(MouseEvent.CLICK, mouseClickHandler);
         (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
         (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
+    }
+
+    public function resetGraph():void {
+        _nodeCreationPosition = null;
     }
 
     private function mouseClickHandler(event:MouseEvent):void {
@@ -262,6 +306,12 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
                 //vnode.viewY = _nodeCreationPosition.y - vnode.view.height / 2;
                 vnode.viewX = _nodeCreationPosition.x - 32;
                 vnode.viewY = _nodeCreationPosition.y - 22;
+                _nodeCreationPosition = null;
+                node.data.x = vnode.viewX;
+                node.data.y = vnode.viewY;
+            } else {
+                vnode.viewX = node.data.x;
+                vnode.viewY = node.data.y;
             }
         }
         return vnode;
@@ -292,7 +342,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         tmpEdge = graph.link(parentNode,node, edgeData);
 
         if (tmpEdge == null) {
-            throw Error("Could not create or find Graph edge!!!");
+            throw Error(ResourceManager.getInstance().getString(AtricoreConsole.BUNDLE, "graph.createEdge.error"));
         } else {
             if (tmpEdge.vedge == null) {
                 /* we have a new edge, so we create a new VEdge */
@@ -344,6 +394,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         } else if (_connectionMode == ACTIVATION_MODE && DiagramUtil.nodesCanBeLinkedWithActivation(sourceNode, targetNode)){
             canConnect = true;
         } else if (_connectionMode == IDENTITY_LOOKUP_MODE && DiagramUtil.nodesCanBeLinkedWithIdentityLookup(sourceNode, targetNode)){
+            canConnect = true;
+        } else if (_connectionMode == DELEGATED_AUTHENTICATION_MODE && DiagramUtil.nodesCanBeLinkedWithDelegatedAuthentication(sourceNode, targetNode)){
             canConnect = true;
         }
         return canConnect;

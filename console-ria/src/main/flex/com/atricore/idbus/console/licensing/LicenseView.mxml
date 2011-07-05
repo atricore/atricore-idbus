@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:comp="com.atricore.idbus.console.components.*"
+         width="100%" height="100%"
+         skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
+        >
+
+    <fx:Metadata>
+        [ResourceBundle("console")]
+    </fx:Metadata>
+
+    <fx:Declarations>
+        <mx:DateFormatter id="dateFormatter" formatString="J:NN A MM/DD/YYYY"/>
+    </fx:Declarations>
+
+    <fx:Script>
+        <![CDATA[
+        public var icon:Class = null;
+        ]]>
+    </fx:Script>    
+
+    <s:VGroup width="100%" height="100%" paddingRight="5">
+
+        <s:HGroup id="updateLicenseBox" paddingBottom="10" width="100%" height="10%" visible="false" includeInLayout="false">
+            <mx:Form defaultButton="{btnUpdateLicense}">
+                <mx:FormItem>
+                    <mx:Button id="btnUpdateLicense" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.update')}"/>
+                </mx:FormItem>
+            </mx:Form>
+        </s:HGroup>
+        
+        <s:VGroup paddingLeft="25" paddingTop="15" id="licenseInfo" width="100%" height="90%">
+
+            <!--  current license information  -->
+            <s:HGroup paddingBottom="5">
+                <s:Label paddingBottom="10" width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.currentLicense')}" styleName="h2"/>
+            </s:HGroup>
+
+            <s:HGroup id="licenseOwnerBox" paddingBottom="5" visible="false" includeInLayout="false">
+                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.owner')}:" />
+                <s:Label id="licenseOwner"/>
+            </s:HGroup>
+
+            <s:HGroup id="licenseOrganizationBox" paddingBottom="5" visible="false" includeInLayout="false">
+                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.organization')}:" />
+                <s:Label id="licenseOrganization"/>
+            </s:HGroup>
+
+            <s:HGroup paddingBottom="5">
+                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.issueInstant')}:" />
+                <s:Label id="licenseIssueDate"/>
+            </s:HGroup>
+
+            <s:HGroup paddingBottom="15">
+                <s:Label width="150" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.expiresOn')}:" />
+                <s:Label id="licenseExpirationDate"/>
+            </s:HGroup>
+
+            <s:VGroup paddingBottom="15" width="80%">
+                <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.generaleula')}:" />
+                <s:TextArea id="generalEula" width="100%" height="100" editable="false"/>
+            </s:VGroup>
+
+            <s:VGroup width="80%" height="35%">
+                <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.licensedFeatures')}:" />
+                <comp:ScalableDataGrid id="features" width="100%" height="100%" columnWidths="{['30%', '45%', '25%', '135', '135', '105']}">
+                    <comp:columns>
+                        <mx:DataGridColumn dataField="name" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.name')}"/>
+                        <mx:DataGridColumn dataField="description" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.description')}"/>
+                        <mx:DataGridColumn dataField="version" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.version')}"/>
+                        <mx:DataGridColumn dataField="issueInstant" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.issueInstant')}">
+                            <mx:itemRenderer>
+                                <fx:Component>
+                                    <mx:HBox paddingLeft="5" paddingTop="5" horizontalScrollPolicy="off">
+                                        <fx:Script>
+                                        <![CDATA[
+                                            import mx.formatters.DateFormatter;
+
+                                            private function formatFieldDate(date:Date):String {
+                                                var formatter:DateFormatter = new DateFormatter();
+                                                formatter.formatString = "J:NN A MM/DD/YYYY";
+                                                return formatter.format(date);
+                                            }
+                                            ]]>
+                                        </fx:Script>
+                                        <s:Label text="{formatFieldDate(data.issueInstant)}" />
+                                    </mx:HBox>
+                                </fx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn dataField="expiresOn" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.expiresOn')}">
+                            <mx:itemRenderer>
+                                <fx:Component>
+                                    <mx:HBox paddingLeft="5" paddingTop="5" horizontalScrollPolicy="off">
+                                        <fx:Script>
+                                        <![CDATA[
+                                            import mx.formatters.DateFormatter;
+
+                                            private function formatFieldDate(date:Date):String {
+                                                if (date != null) {
+                                                    var formatter:DateFormatter = new DateFormatter();
+                                                    formatter.formatString = "J:NN A MM/DD/YYYY";
+                                                    return formatter.format(date);
+                                                } else {
+                                                    return "Perpetual";
+                                                }
+                                            }
+                                            ]]>
+                                        </fx:Script>
+                                        <s:Label text="{formatFieldDate(data.expiresOn)}" />
+                                    </mx:HBox>
+                                </fx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn id="groupColumn" dataField="group" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'licensing.feature.details')}">
+                            <mx:itemRenderer>
+                                <fx:Component>
+                                    <s:MXDataGridItemRenderer click="clickHandler(event)">
+                                        <s:states>
+                                            <s:State name="normal" />
+                                            <s:State name="hovered" />
+                                            <s:State name="selected" />
+                                        </s:states>
+                                        <fx:Script>
+                                            <![CDATA[
+
+                                            import com.atricore.idbus.console.licensing.main.event.DataGridButtonEvent;
+
+                                            protected function clickHandler(event:Event):void {
+                                                dispatchEvent ( new DataGridButtonEvent ( DataGridButtonEvent.BUTTON_CLICKED, data.group + data.name ) );
+                                            }
+                                            ]]>
+                                        </fx:Script>
+                                        <s:HGroup horizontalAlign="center" textAlign="center" paddingLeft="3">
+
+                                            <s:Button width="100%" click="clickHandler(event)" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.viewlicense')}" />
+
+                                        </s:HGroup>
+                                    </s:MXDataGridItemRenderer>
+                                </fx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                    </comp:columns>
+                </comp:ScalableDataGrid>
+            </s:VGroup>
+
+        </s:VGroup>
+    </s:VGroup>
+</s:Panel>

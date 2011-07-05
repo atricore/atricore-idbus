@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
+         paddingRight="5" paddingTop="5" paddingBottom="5">
+
+    <fx:Declarations>
+        <utils:NameValidator id="nameValidator" source="{directoryName}" required="true" property="text"/>
+        <mx:StringValidator id="initialContextFactoryValidator" source="{initialContextFactory}" required="true" property="text"/>
+        <mx:StringValidator id="providerUrlValidator" source="{providerUrl}" required="true" property="text"/>
+        <mx:StringValidator id="securityPrincipalValidator" source="{securityPrincipal}" required="true" property="text"/>
+        <mx:StringValidator id="securityCredentialValidator" source="{securityCredential}" required="true" property="text"/>
+    </fx:Declarations>
+
+    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+             verticalGap="8" labelWidth="140">
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.name')}:" required="true">
+            <s:TextInput id="directoryName" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.description')}:">
+            <s:TextInput id="description" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.initialContextFactory')}:"
+                     required="true">
+            <s:TextInput id="initialContextFactory" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.providerUrl')}:"
+                     required="true">
+            <s:TextInput id="providerUrl" width="300"/>
+        </mx:FormItem>
+
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.performDnSearch')}:"
+                     required="false">
+            <s:CheckBox id="performDnSearch" />
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.passwordPolicy')}:"
+                     required="true">
+            <s:DropDownList id="passwordPolicy" selectedIndex="0" width="180">
+                <s:dataProvider>
+                    <mx:ArrayCollection>
+                        <fx:Object label="None" data="none"/>
+                        <fx:Object label="RFC Draft" data="ldap-rfc-draft"/>
+                    </mx:ArrayCollection>
+                </s:dataProvider>
+            </s:DropDownList>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityPrincipal')}:"
+                     required="false">
+            <s:TextInput id="securityPrincipal" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'directoryService.securityCredential')}:"
+                     required="false">
+            <s:TextInput id="securityCredential" width="300" displayAsPassword="true"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.securityAuthentication')}:"
+                     required="true">
+            <s:DropDownList id="securityAuthentication" selectedIndex="0" width="180">
+                <s:dataProvider>
+                    <mx:ArrayCollection>
+                        <fx:Object label="None" data="none"/>
+                        <fx:Object label="Simple" data="simple"/>
+                        <fx:Object label="Strong" data="strong"/>
+                    </mx:ArrayCollection>
+                </s:dataProvider>
+            </s:DropDownList>
+        </mx:FormItem>
+
+    </mx:Form>
+</s:HGroup>

@@ -7,6 +7,11 @@ public class ActivateExecutionEnvironmentRequest {
     private var _reactivate:Boolean;
     private var _replaceConfFiles:Boolean;
     private var _installSamples:Boolean;
+    private var _username:String;
+    private var _password:String;
+
+    public function ActivateExecutionEnvironmentRequest() {
+    }
 
     public function get executionEnvironment():ExecutionEnvironment {
         return _executionEnvironment;
@@ -38,6 +43,22 @@ public class ActivateExecutionEnvironmentRequest {
 
     public function set installSamples(value:Boolean):void {
         _installSamples = value;
+    }
+
+    public function get username():String {
+        return _username;
+    }
+
+    public function set username(value:String):void {
+        _username = value;
+    }
+
+    public function get password():String {
+        return _password;
+    }
+
+    public function set password(value:String):void {
+        _password = value;
     }
 }
 }

@@ -24,8 +24,10 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
+import com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicyListCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
-import com.atricore.idbus.console.services.dto.AccountLinkagePolicy;
+import com.atricore.idbus.console.services.dto.AccountLinkEmitterType;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.IdentityMappingType;
 import com.atricore.idbus.console.services.dto.Keystore;
@@ -45,6 +47,8 @@ import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 import mx.events.ItemClickEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -55,6 +59,8 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
     private var _uploadedFile:ByteArray;
     private var _uploadedFileName:String;
 
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
+
     private var _idaURI:String;
 
     [Bindable]
@@ -62,6 +68,12 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
 
     [Bindable]
     public var _selectedFiles:ArrayCollection;
+
+    [Bindable]
+    public var _accountLinkagePolicies:ArrayCollection;
+
+    [Bindable]
+    public var _identityMappingPolicies:ArrayCollection;
 
     public function ServiceProviderCreateMediator(name : String = null, viewComp:ServiceProviderCreateForm = null) {
         super(name, viewComp);
@@ -106,6 +118,12 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         //view.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         BindingUtils.bindProperty(view.certificateKeyPair, "dataProvider", this, "_selectedFiles");
 
+        BindingUtils.bindProperty(view.accountLinkagePolicyCombo, "dataProvider", this, "_accountLinkagePolicies");
+        sendNotification(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES);
+
+        BindingUtils.bindProperty(view.identityMappingPolicyCombo, "dataProvider", this, "_identityMappingPolicies");
+        sendNotification(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES);
+
         initLocation();
         view.focusManager.setFocus(view.serviceProvName);
     }
@@ -118,19 +136,22 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.spLocationPort.text = "";
         view.spLocationContext.text = "";
         view.spLocationPath.text = "";
-//        view.signAuthRequestCheck.selected = true;
-//        view.encryptAuthRequestCheck.selected = false;
+        view.signAuthnRequestsCheck.selected = false;
+        view.wantAssertionSignedCheck.selected = false;
+        view.signRequestsCheck.selected = false;
+        view.wantSignedRequestsCheck.selected = false;
         view.samlBindingHttpPostCheck.selected = true;
         view.samlBindingArtifactCheck.selected = false;
-        view.samlBindingHttpRedirectCheck.selected = false;
-        view.samlBindingSoapCheck.selected = false;
+        view.samlBindingHttpRedirectCheck.selected = true;
+        view.samlBindingSoapCheck.selected = true;
         view.samlProfileSSOCheck.selected = true;
         view.samlProfileSLOCheck.selected = true;
         view.accountLinkagePolicyCombo.selectedIndex = 0;
+        view.identityMappingPolicyCombo.selectedIndex = 0;
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.certificateKeyPair.prompt = "Browse Key Pair";
+        view.certificateKeyPair.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair");
 
         view.certificateAlias.text = "";
         view.keyAlias.text = "";
@@ -152,6 +173,9 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         _uploadedFile = null;
         _uploadedFileName = null;
 
+        _accountLinkagePolicies = new ArrayCollection();
+        _identityMappingPolicies = new ArrayCollection();
+        
         registerValidators();
 
         FormUtility.clearValidationErrors(_validators);
@@ -191,8 +215,10 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         loc.uri = view.spLocationPath.text;
         serviceProvider.location = loc;
 
-//        serviceProvider.signAuthenticationRequest = view.signAuthRequestCheck.selected;
-//        serviceProvider.encryptAuthenticationRequest = view.encryptAuthRequestCheck.selected;
+        serviceProvider.signAuthenticationRequests = view.signAuthnRequestsCheck.selected;
+        serviceProvider.wantAssertionSigned = view.wantAssertionSignedCheck.selected;
+        serviceProvider.signRequests = view.signRequestsCheck.selected;
+        serviceProvider.wantSignedRequests = view.wantSignedRequestsCheck.selected;
 
         serviceProvider.activeBindings = new ArrayCollection();
         if(view.samlBindingHttpPostCheck.selected){
@@ -216,18 +242,9 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
             serviceProvider.activeProfiles.addItem(Profile.SSO_SLO);
         }
 
-        var accountLinkagePolicy:AccountLinkagePolicy = new AccountLinkagePolicy();
-        accountLinkagePolicy.name = view.accountLinkagePolicyCombo.selectedItem.name;
-        var selectedPolicy:String = view.accountLinkagePolicyCombo.selectedItem.data;
-        if (selectedPolicy == "theirs") {
-            accountLinkagePolicy.mappingType = IdentityMappingType.REMOTE;
-        } else if (selectedPolicy == "ours") {
-            accountLinkagePolicy.mappingType = IdentityMappingType.LOCAL;
-        } else if (selectedPolicy == "aggregate") {
-            accountLinkagePolicy.mappingType = IdentityMappingType.MERGED;
-        }
-        serviceProvider.accountLinkagePolicy = accountLinkagePolicy;
-
+        serviceProvider.accountLinkagePolicy = view.accountLinkagePolicyCombo.selectedItem;
+        serviceProvider.identityMappingPolicy = view.identityMappingPolicyCombo.selectedItem;
+        
         // set saml config
         var spSamlConfig:SamlR2SPConfig = new SamlR2SPConfig();
         spSamlConfig.name = serviceProvider.name.toLowerCase().replace(/\s+/g, "-") + "-samlr2-config";
@@ -268,7 +285,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
             }
             */
             if (view.uploadKeystore.selected && (_selectedFiles == null || _selectedFiles.length == 0)) {
-                view.lblUploadMsg.text = "You must select a keystore!!!";
+                view.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair.error");
                 view.lblUploadMsg.setStyle("color", "Red");
                 view.lblUploadMsg.visible = true;
                 event.stopImmediatePropagation();
@@ -373,7 +390,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         //sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.certificateKeyPair.prompt = "Browse Key Pair";
+        view.certificateKeyPair.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair");
         //view.btnUpload.enabled = false;
 
         saveServiceProvider();
@@ -399,11 +416,37 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return super.listNotificationInterests();
+        return [AccountLinkagePolicyListCommand.SUCCESS,
+            AccountLinkagePolicyListCommand.FAILURE,
+            IdentityMappingPolicyListCommand.SUCCESS,
+            IdentityMappingPolicyListCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
-        super.handleNotification(notification);
+        switch (notification.getName()) {
+            case AccountLinkagePolicyListCommand.SUCCESS:
+                if (view != null && view.parent != null) {
+                    _accountLinkagePolicies = projectProxy.accountLinkagePolicies;
+                    for (var i:int=0; i < view.accountLinkagePolicyCombo.dataProvider.length; i++) {
+                        if (view.accountLinkagePolicyCombo.dataProvider[i].linkEmitterType.toString() == AccountLinkEmitterType.ONE_TO_ONE.toString()) {
+                            view.accountLinkagePolicyCombo.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                break;
+            case IdentityMappingPolicyListCommand.SUCCESS:
+                if (view != null && view.parent != null) {
+                    _identityMappingPolicies = projectProxy.identityMappingPolicies;
+                    for (var j:int=0; j < view.identityMappingPolicyCombo.dataProvider.length; j++) {
+                        if (view.identityMappingPolicyCombo.dataProvider[j].mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
+                            view.identityMappingPolicyCombo.selectedIndex = j;
+                            break;
+                        }
+                    }
+                }
+                break;
+        }
     }
 }
 }

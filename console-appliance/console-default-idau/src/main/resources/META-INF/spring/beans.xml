@@ -37,11 +37,34 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <property name="cxfBus" ref="cxf"/>
     </bean>
 
+    <!-- ===================================================================== -->
+    <!-- Define a JDBC Default DS and export it as OSGi service                -->
+    <!-- ===================================================================== -->
+
+    <!--
+    <bean id="josso-ds" class="org.apache.derby.jdbc.ClientDataSource">
+        <property name="serverName" value="${jdbc.host}"/>
+        <property name="portNumber" value="${jdbc.port}"/>
+        <property name="databaseName" value="${jdbc.name}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    -->
+
+    <!-- TODO : Find a better place for this -->
+    <bean id="josso-ds" class="org.atricore.idbus.kernel.common.support.jdbc.DriverManagerDataSource" >
+        <constructor-arg value="${jdbc.ConnectionDriverName}"/>
+        <constructor-arg value="${jdbc.ConnectionURL}"/>
+        <constructor-arg value="${jdbc.ConnectionUserName}"/>
+        <constructor-arg value="${jdbc.ConnectionPassword}"/>
+        <constructor-arg ref="jdbcDriverManager"/>
+    </bean>
+
 
 
     <!-- ================================================================== -->
     <!--                                                                    -->
-    <!-- Identity Mediators Registry                                        -->
+    <!-- Provisioning Service Provider (default)                            -->
     <!--                                                                    -->
     <!-- ================================================================== -->
 
@@ -55,16 +78,38 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- Configuration beans                                                    -->
     <!-- ====================================================================== -->
 
+    <!-- Use spring bean setup, to allow multiple config sources -->
+    <!--ctx:property-placeholder properties-ref="idau-default-jdo-properties" /-->
+    <bean id="myBundleConfigurer"
+                class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+
+        <property name="propertiesArray">
+            <list>
+                <ref bean="idau-default-jdo-properties"/>
+                <ref bean="idau-default-properties"/>
+            </list>
+        </property>
+    </bean>
+
     <osgix:cm-properties id="idau-default-jdo-properties"
-                         persistent-id="com.atricore.idbus.console.appliance.default.idau.jdo">
+                         persistent-id="com.atricore.idbus.console.db">
 
         <prop key="javax.jdo.option.Mapping">default</prop>
         <prop key="javax.jdo.PersistenceManagerFactoryClass">org.datanucleus.jdo.JDOPersistenceManagerFactory</prop>
 
-        <prop key="javax.jdo.option.ConnectionURL">jdbc:derby://localhost:1527/idbus-console;create=true</prop>
+        <prop key="jdbc.dataSourceUrl">osgi:javax.sql.DataSource/(&amp;(jdbcDS=default-ds))</prop>
+        <prop key="jdbc.ConnectionURL">jdbc:derby://localhost:1527/atricore-console;create=true</prop>
+        <prop key="jdbc.ConnectionUserName">atricore</prop>
+        <prop key="jdbc.ConnectionPassword">admin</prop>
+        <prop key="jdbc.ConnectionDriverName">org.apache.derby.jdbc.ClientDriver</prop>
+
+ <!--   We're using a datasource now :
+        <prop key="javax.jdo.option.ConnectionURL">jdbc:derby://localhost:1527/atricore-console;create=true</prop>
         <prop key="javax.jdo.option.ConnectionUserName">atricore</prop>
         <prop key="javax.jdo.option.ConnectionPassword">admin</prop>
         <prop key="javax.jdo.option.ConnectionDriverName">org.apache.derby.jdbc.ClientDriver</prop>
+-->
 
         <prop key="datanucleus.storeManagerType">rdbms</prop>
 
@@ -80,8 +125,13 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
         <prop key="datanucleus.metadata.autoregistration">false</prop>
 
+
+
+
     </osgix:cm-properties>
 
-    <ctx:property-placeholder properties-ref="idau-default-jdo-properties" />
+    <osgix:cm-properties id="idau-default-properties" persistent-id="com.atricore.idbus.console.appliance.default.idau"/>
+
+
 
 </beans>

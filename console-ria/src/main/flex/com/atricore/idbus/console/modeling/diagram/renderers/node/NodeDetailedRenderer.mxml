@@ -43,23 +43,35 @@
         import com.atricore.idbus.console.services.dto.BindingProvider;
         import com.atricore.idbus.console.services.dto.Channel;
         import com.atricore.idbus.console.services.dto.DbIdentitySource;
+        import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
         import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
+        import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
+        import com.atricore.idbus.console.services.dto.GoogleAppsServiceProvider;
         import com.atricore.idbus.console.services.dto.IdentityAppliance;
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnit;
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitType;
         import com.atricore.idbus.console.services.dto.IdentityProvider;
         import com.atricore.idbus.console.services.dto.IdentitySource;
         import com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.LdapIdentitySource;
         import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
         import com.atricore.idbus.console.services.dto.ServiceProvider;
 
+        import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
         import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
+        import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
         import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
         import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
         import mx.controls.Alert;
@@ -97,81 +109,106 @@
                 var bus:IdentityAppliance = obj as IdentityAppliance;
                 _linkLabel = bus.idApplianceDefinition.name;
                 _linkIcon = EmbeddedIcons.busIcon;
-            } else {
-                if (obj is IdentityProvider) {
-                    var idp:IdentityProvider = obj as IdentityProvider;
-                    _linkLabel = idp.name;
-                    _linkIcon = EmbeddedIcons.idpIcon;
+            } else if (obj is IdentityProvider) {
+                var idp:IdentityProvider = obj as IdentityProvider;
+                _linkLabel = idp.name;
+                _linkIcon = EmbeddedIcons.idpIcon;
+            } else if (obj is ServiceProvider) {
+                var sp:ServiceProvider = obj as ServiceProvider;
+                _linkLabel = sp.name;
+                _linkIcon = EmbeddedIcons.spIcon;
+            } else if (obj is ExternalIdentityProvider) {
+                var eidp:ExternalIdentityProvider = obj as ExternalIdentityProvider;
+                _linkLabel = eidp.name;
+                _linkIcon = EmbeddedIcons.externalIdpIcon;
+            } else if (obj is SalesforceServiceProvider) {
+                var sf:SalesforceServiceProvider = obj as SalesforceServiceProvider;
+                _linkLabel = sf.name;
+                _linkIcon = EmbeddedIcons.salesforceIcon;
+            } else if (obj is GoogleAppsServiceProvider) {
+                var ga:GoogleAppsServiceProvider = obj as GoogleAppsServiceProvider;
+                _linkLabel = ga.name;
+                _linkIcon = EmbeddedIcons.googleAppsIcon;
+            } else if (obj is SugarCRMServiceProvider) {
+                var scrm:SugarCRMServiceProvider = obj as SugarCRMServiceProvider;
+                _linkLabel = scrm.name;
+                _linkIcon = EmbeddedIcons.sugarCRMIcon;
+            } else if (obj is ExternalServiceProvider) {
+                var esp:ExternalServiceProvider = obj as ExternalServiceProvider;
+                _linkLabel = esp.name;
+                _linkIcon = EmbeddedIcons.externalSpIcon;
+            } else if (obj is BindingProvider) {
+                var bp:BindingProvider = obj as BindingProvider;
+                _linkLabel = bp.name;
+                _linkIcon = EmbeddedIcons.bpIcon;
+            } else if (obj is WikidAuthenticationService) {
+                var wikid:WikidAuthenticationService = obj as WikidAuthenticationService;
+                _linkLabel = wikid.name;
+                _linkIcon = EmbeddedIcons.wikidIcon;
+            } else if (obj is DirectoryAuthenticationService) {
+                var directoryService:DirectoryAuthenticationService = obj as DirectoryAuthenticationService;
+                _linkLabel = directoryService.name;
+                _linkIcon = EmbeddedIcons.directoryServiceIcon;
+            } else if (obj is WindowsIntegratedAuthentication) {
+                var winIntegratedAuthn:WindowsIntegratedAuthentication = obj as WindowsIntegratedAuthentication;
+                _linkLabel = winIntegratedAuthn.name;
+                _linkIcon = EmbeddedIcons.windowsIntegratedAuthnIcon;
+            } else if (obj is Channel) {
+                 _linkLabel = (obj as Channel).name;
+            } else if (obj is IdentitySource) {
+                var identitySource:IdentitySource = obj as IdentitySource;
+                _linkLabel = identitySource.name;
+                if(obj is DbIdentitySource){
+                    _linkIcon = EmbeddedIcons.dbIdentitySourceIcon;
+                } else if(obj is LdapIdentitySource){
+                    _linkIcon = EmbeddedIcons.ldapIdentitySourceIcon;
+                } else if(obj is XmlIdentitySource){
+                    _linkIcon = EmbeddedIcons.xmlIdentitySourceIcon;
                 } else {
-                    if (obj is ServiceProvider) {
-                        var sp:ServiceProvider = obj as ServiceProvider;
-                        _linkLabel = sp.name;
-                        _linkIcon = EmbeddedIcons.spIcon;
-                    } else {
-                        if (obj is BindingProvider) {
-                            var bp:BindingProvider = obj as BindingProvider;
-                            _linkLabel = bp.name;
-                            _linkIcon = EmbeddedIcons.bpIcon;
-                        } else {
-                            if (obj is Channel) {
-                                _linkLabel = (obj as Channel).name;
-                            } else {
-
-                                if (obj is IdentitySource) {
-                                    var identitySource:IdentitySource = obj as IdentitySource;
-                                    _linkLabel = identitySource.name;
-                                    if(obj is DbIdentitySource){
-                                        _linkIcon = EmbeddedIcons.dbIdentitySourceIcon;
-                                    } else if(obj is LdapIdentitySource){
-                                        _linkIcon = EmbeddedIcons.ldapIdentitySourceIcon;
-                                    } else if(obj is XmlIdentitySource){
-                                        _linkIcon = EmbeddedIcons.xmlIdentitySourceIcon;
-                                    } else {
-                                        _linkIcon = EmbeddedIcons.vaultIcon;
-                                    }
-                                } else {
-                                    if (obj is IdentityApplianceUnit) {
-                                        var applianceUnit:IdentityApplianceUnit = obj as IdentityApplianceUnit;
-                                        _linkLabel = applianceUnit.name;
-                                        var type:IdentityApplianceUnitType = applianceUnit.type;
-                                        if (type.equals(IdentityApplianceUnitType.FEDERATION_UNIT)) {
-                                            _linkIcon = EmbeddedIcons.spIcon;
-                                        } else if (type.equals(IdentityApplianceUnitType.PROVISIONING_UNIT)) {
-                                            _linkIcon = EmbeddedIcons.vaultIcon;
-                                        }
-                                    } else {
-                                        if(obj is ExecutionEnvironment){ //check execution environment
-                                            var execEnvirnoment:ExecutionEnvironment = obj as ExecutionEnvironment;
-                                            _linkLabel = execEnvirnoment.name;                                            
-                                            if(obj is JbossExecutionEnvironment){
-                                                _linkIcon = EmbeddedIcons.jbossEnvironmentIcon;
-                                            } else if(obj is WeblogicExecutionEnvironment){
-                                                _linkIcon = EmbeddedIcons.weblogicEnvironmentIcon;
-                                            } else if (obj is TomcatExecutionEnvironment){
-                                                _linkIcon = EmbeddedIcons.tomcatEnvironmentIcon;
-                                            } else if (obj is JBossPortalExecutionEnvironment){
-                                                _linkIcon = EmbeddedIcons.jbossEnvironmentIcon;
-                                            } else if (obj is LiferayExecutionEnvironment){
-                                                _linkIcon = EmbeddedIcons.liferayEnvironmentIcon;
-                                            } else if (obj is WASCEExecutionEnvironment){
-                                                _linkIcon = EmbeddedIcons.websphereEnvironmentIcon;
-                                            } else if (obj is ApacheExecutionEnvironment){
-                                                _linkIcon = EmbeddedIcons.apacheEnvironmentIcon;
-                                            } else if (obj is WindowsIISExecutionEnvironment){
-                                                _linkIcon = EmbeddedIcons.windowsEnvironmentIcon;
-                                            } else if (obj is AlfrescoExecutionEnvironment){
-                                                _linkIcon = EmbeddedIcons.alfrescoEnvironmentIcon
-                                            } else {
-                                                _linkIcon = EmbeddedIcons.executionEnvironmentIcon;
-                                            }
-                                            //TODO add other envirnoments
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    _linkIcon = EmbeddedIcons.vaultIcon;
                 }
+            } else if (obj is IdentityApplianceUnit) {
+                var applianceUnit:IdentityApplianceUnit = obj as IdentityApplianceUnit;
+                _linkLabel = applianceUnit.name;
+                var type:IdentityApplianceUnitType = applianceUnit.type;
+                if (type.equals(IdentityApplianceUnitType.FEDERATION_UNIT)) {
+                    _linkIcon = EmbeddedIcons.spIcon;
+                } else if (type.equals(IdentityApplianceUnitType.PROVISIONING_UNIT)) {
+                    _linkIcon = EmbeddedIcons.vaultIcon;
+                }
+            } else if(obj is ExecutionEnvironment){ //check execution environment
+                var execEnvirnoment:ExecutionEnvironment = obj as ExecutionEnvironment;
+                _linkLabel = execEnvirnoment.name;
+                if(obj is JbossExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.jbossEnvironmentIcon;
+                } else if(obj is WeblogicExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.weblogicEnvironmentIcon;
+                } else if (obj is TomcatExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.tomcatEnvironmentIcon;
+                } else if (obj is JBossPortalExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.jbossEnvironmentIcon;
+                } else if (obj is LiferayExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.liferayEnvironmentIcon;
+                } else if (obj is WASCEExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.websphereEnvironmentIcon;
+                } else if (obj is ApacheExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.apacheEnvironmentIcon;
+                } else if (obj is WindowsIISExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.windowsEnvironmentIcon;
+                } else if (obj is AlfrescoExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.alfrescoEnvironmentIcon
+                } else if (obj is JEEExecutionEnvironment) {
+                    _linkIcon = EmbeddedIcons.javaEnvironmentIcon;
+                } else if (obj is PHPExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.phpEnvironmentIcon;
+                } else if (obj is PhpBBExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.phpbbEnvironmentIcon;
+                } else if (obj is WebserverExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.webEnvironmentIcon;
+                } else {
+                    _linkIcon = EmbeddedIcons.executionEnvironmentIcon;
+                }
+                //TODO add other envirnoments
             }
         }
 
@@ -180,7 +217,9 @@
         }
 
         private function confirmNodeRemove(e:MouseEvent):void {
-            Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, nodeRemoveConfirmed, null, Alert.YES);
+
+            Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "modelling.noderenderer.deletequestion"),
+                    resourceManager.getString(AtricoreConsole.BUNDLE, "modelling.noderenderer.confirm"), Alert.YES | Alert.NO, null, nodeRemoveConfirmed, null, Alert.YES);
         }
 
         private function nodeRemoveConfirmed(event:CloseEvent):void {

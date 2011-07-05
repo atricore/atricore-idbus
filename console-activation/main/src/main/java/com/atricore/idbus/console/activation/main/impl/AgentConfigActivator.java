@@ -2,9 +2,11 @@ package com.atricore.idbus.console.activation.main.impl;
 
 import com.atricore.idbus.console.activation.main.exception.ActivationException;
 import com.atricore.idbus.console.activation.main.spi.request.AbstractActivationRequest;
-import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
 import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequest;
+import com.atricore.idbus.console.activation.main.spi.request.AbstractActivationRequest;
+import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentResource;
 import com.atricore.idbus.console.activation.main.spi.response.AbstractActivationResponse;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
@@ -15,10 +17,12 @@ import org.josso.tooling.gshell.core.support.MessagePrinter;
 import org.josso.tooling.gshell.install.JOSSOScope;
 import org.josso.tooling.gshell.install.installer.Installer;
 
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class AgentConfigActivator extends ActivatorSupport {
 
@@ -32,7 +36,10 @@ public class AgentConfigActivator extends ActivatorSupport {
     protected FileObject jossoDistDir;
     protected FileObject confDir;
 
-    protected AgentConfigActivator(List<Installer> installers, MessagePrinter printer, AbstractActivationRequest request, AbstractActivationResponse response) {
+    protected AgentConfigActivator(List<Installer> installers,
+                                   MessagePrinter printer,
+                                   AbstractActivationRequest request,
+                                   AbstractActivationResponse response) {
         super(installers, printer, request, response);
     }
 
@@ -42,6 +49,8 @@ public class AgentConfigActivator extends ActivatorSupport {
     public void doActivate() throws ActivationException {
 
         try {
+
+            // TODO : Support activation resources provided in the request. To minimize security issues, try to validate names!
 
             init();
 
@@ -140,12 +149,43 @@ public class AgentConfigActivator extends ActivatorSupport {
         if (ar.getJossoAgentConfigUri() != null) {
             FileObject agentCfg = appliancesDir.resolveFile(ar.getJossoAgentConfigUri());
             if (agentCfg.exists()) {
+
                 // Rename file
-                FileObject finalAgentCfg = tmpDir.resolveFile("josso-agent-config.xml");
+                String agentCfgFileName = "josso-agent-config.xml";
+
+                if (ar.getTargetPlatformId().startsWith("iis"))
+                    agentCfgFileName = "josso-agent-config.ini";
+                FileObject finalAgentCfg = tmpDir.resolveFile(agentCfgFileName);
                 FileUtil.copyContent(agentCfg, finalAgentCfg);
-                getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, "josso-agent-config.xml"), ar.isReplaceConfig());
+                getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, agentCfgFileName), ar.isReplaceConfig());
                 finalAgentCfg.delete();
             }
+        }
+
+        if (ar.getReosurces().size() > 0) {
+            // We have embedded resources ...
+
+            for (ConfigureAgentResource r : ar.getReosurces()) {
+                if (r.getName().startsWith("josso-agent-config")) {
+                    // Write resource to tmp dir:
+
+                    FileObject agentCfg = tmpDir.resolveFile(r.getName());
+                    if (!agentCfg.exists())
+                        agentCfg.createFile();
+
+                    OutputStream out = null;
+                    try {
+                        out = agentCfg.getContent().getOutputStream(false);
+                        IOUtils.copy(new ByteArrayInputStream(r.getResource().getBytes()), out);
+
+                    } finally {
+                        IOUtils.closeQuietly(out);
+                    }
+
+                    getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, r.getName()), ar.isReplaceConfig());
+                }
+            }
+
         }
     }
 

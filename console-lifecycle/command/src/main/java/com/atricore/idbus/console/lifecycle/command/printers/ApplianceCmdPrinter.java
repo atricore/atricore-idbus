@@ -8,10 +8,11 @@ import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationEx
 import com.atricore.idbus.console.lifecycle.main.impl.ValidationError;
 
 import java.util.Collection;
+import java.util.Map;
 
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
 
@@ -176,6 +177,15 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
                         sb.append("\n");
                         sb.append("            ");
                         sb.append(getNameString(idl.getIdentitySource().getName(), 10));
+
+                        if (idp.getAuthenticationMechanisms() != null) {
+                            for (AuthenticationMechanism authn : idp.getAuthenticationMechanisms()) {
+                                sb.append("\n");
+                                sb.append("            ");
+                                sb.append(getNameString(authn.getName()));
+                                sb.append(" [").append(authn.getClass().getSimpleName()).append("]");
+                            }
+                        }
                     }
                 }
                 sb.append("\n");

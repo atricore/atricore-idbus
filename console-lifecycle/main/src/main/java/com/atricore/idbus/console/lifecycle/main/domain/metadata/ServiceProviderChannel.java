@@ -25,6 +25,11 @@ public class ServiceProviderChannel extends FederatedChannel {
 
 	private static final long serialVersionUID = 6144244229951343612L;
 
+    private boolean ignoreRequestedNameIDPolicy = true;
+
+    // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
+    private SubjectNameIdentifierPolicy subjectNameIDPolicy;
+
     // RFU
     private AttributeProfile attributeProfile;
 
@@ -37,6 +42,8 @@ public class ServiceProviderChannel extends FederatedChannel {
     // RFU
     private AuthenticationAssertionEmissionPolicy emissionPolicy;
 
+    private boolean wantAuthnRequestsSigned;
+    
     public AttributeProfile getAttributeProfile() {
         return attributeProfile;
     }
@@ -67,5 +74,29 @@ public class ServiceProviderChannel extends FederatedChannel {
 
     public void setEmissionPolicy(AuthenticationAssertionEmissionPolicy emissionPolicy) {
         this.emissionPolicy = emissionPolicy;
+    }
+
+    public boolean isWantAuthnRequestsSigned() {
+        return wantAuthnRequestsSigned;
+    }
+
+    public void setWantAuthnRequestsSigned(boolean wantAuthnRequestsSigned) {
+        this.wantAuthnRequestsSigned = wantAuthnRequestsSigned;
+    }
+
+    public boolean isIgnoreRequestedNameIDPolicy() {
+        return ignoreRequestedNameIDPolicy;
+    }
+
+    public void setIgnoreRequestedNameIDPolicy(boolean ignoreRequestedNameIDPolicy) {
+        this.ignoreRequestedNameIDPolicy = ignoreRequestedNameIDPolicy;
+    }
+
+    public SubjectNameIdentifierPolicy getSubjectNameIDPolicy() {
+        return subjectNameIDPolicy;
+    }
+
+    public void setSubjectNameIDPolicy(SubjectNameIdentifierPolicy subjectNameIDPolicy) {
+        this.subjectNameIDPolicy = subjectNameIDPolicy;
     }
 }

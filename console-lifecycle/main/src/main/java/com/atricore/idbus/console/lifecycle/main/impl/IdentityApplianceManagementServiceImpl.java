@@ -21,6 +21,9 @@
 
 package com.atricore.idbus.console.lifecycle.main.impl;
 
+import com.atricore.idbus.console.activation._1_0.protocol.*;
+import com.atricore.idbus.console.activation.main.client.ActivationClient;
+import com.atricore.idbus.console.activation.main.client.ActivationClientFactory;
 import com.atricore.idbus.console.activation.main.exception.ActivationException;
 import com.atricore.idbus.console.activation.main.spi.ActivationService;
 import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
@@ -43,25 +46,51 @@ import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerExcepti
 import com.atricore.idbus.console.lifecycle.main.spi.*;
 import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
+import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
+import oasis.names.tc.saml._2_0.metadata.*;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.VFS;
+import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
+import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3._2000._09.xmldsig_.X509DataType;
+import sun.security.provider.X509Factory;
 
 import javax.jdo.FetchPlan;
+import javax.xml.bind.JAXBElement;
+import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class IdentityApplianceManagementServiceImpl implements
         IdentityApplianceManagementService,
         InitializingBean,
         IdentityServiceLifecycle {
 
-	private static final Log logger = LogFactory.getLog(IdentityApplianceManagementServiceImpl.class);
+    private static final Log logger = LogFactory.getLog(IdentityApplianceManagementServiceImpl.class);
 
+    // For local activations (faster)
     private ActivationService activationService;
+
+    // For remote activations
+    private ActivationClientFactory activationClientFactory;
 
     private ApplianceBuilder builder;
 
@@ -109,8 +138,28 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private boolean enableDebugValidation = false;
 
-    public void afterPropertiesSet() throws Exception {
+    private Keystore sampleKeystore;
 
+    private AccountLinkagePolicyRegistry accountLinkagePolicyRegistry;
+
+    private IdentityMappingPolicyRegistry identityMappingPolicyRegistry;
+
+    private SubjectNameIdentifierPolicyRegistry  subjectNameIdentifierPolicyRegistry;
+
+    public void afterPropertiesSet() throws Exception {
+        if (sampleKeystore.getStore() != null &&
+                (sampleKeystore.getStore().getValue() == null ||
+                        sampleKeystore.getStore().getValue().length == 0)) {
+            resolveResource(sampleKeystore.getStore());
+        }
+
+        if (sampleKeystore.getStore() == null &&
+                sampleKeystore.getStore().getValue() == null ||
+                sampleKeystore.getStore().getValue().length == 0) {
+            logger.debug("Sample Keystore invalid or not found!");
+        } else {
+            logger.debug("Sample Keystore size " + sampleKeystore.getStore());
+        }
     }
 
 
@@ -118,6 +167,47 @@ public class IdentityApplianceManagementServiceImpl implements
     public void boot() throws IdentityServerException {
         logger.info("Initializing Identity Appliance Management serivce ....");
         syncAppliances();
+
+        // Register buil-in Subject NameID Policies
+
+        // Principal name
+        SubjectNameIdentifierPolicy principalPolicy =
+                new SubjectNameIdentifierPolicy ("samlr2-unspecified-nameidpolicy",
+                        "Principal",
+                        "samlr2.principal",
+                        SubjectNameIDPolicyType.PRINCIPAL);
+        this.subjectNameIdentifierPolicyRegistry.register(principalPolicy, null);
+
+        // Email
+        SubjectNameIdentifierPolicy emailPolicy =
+                new SubjectNameIdentifierPolicy ("samlr2-email-nameidpolicy",
+                        "Email Address",
+                        "samlr2.email",
+                        SubjectNameIDPolicyType.EMAIL);
+        this.subjectNameIdentifierPolicyRegistry.register(emailPolicy, null);
+
+        // Register built-in Account Linkage policies
+        for (IdentityMappingType type : IdentityMappingType.values()) {
+            if (type != IdentityMappingType.CUSTOM) {
+                IdentityMappingPolicy policy = new IdentityMappingPolicy();
+                policy.setName(type.getDisplayName());
+                policy.setMappingType(type);
+
+                this.identityMappingPolicyRegistry.register(policy, null);
+            }
+        }
+
+        for (AccountLinkEmitterType type : AccountLinkEmitterType.values()) {
+            if (type != AccountLinkEmitterType.CUSTOM) {
+                AccountLinkagePolicy policy = new AccountLinkagePolicy();
+                policy.setName(type.getDisplayName());
+                policy.setLinkEmitterType(type);
+
+                this.accountLinkagePolicyRegistry.register(policy, null);
+            }
+        }
+
+
     }
 
     @Transactional
@@ -128,14 +218,14 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = buildAppliance(appliance, request.isDeploy());
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new BuildIdentityApplianceResponse(appliance);
-	    } catch (Exception e){
-	        logger.error("Error building identity appliance", e);
-	        throw new IdentityServerException(e);
+        } catch (Exception e){
+            logger.error("Error building identity appliance", e);
+            throw new IdentityServerException(e);
         }
     }
 
     /**
-     * Deploys an already existing Identity Appliance.  
+     * Deploys an already existing Identity Appliance.
      * The appliance was previously created or imported and can by found in the list of appliances.
      */
     @Transactional
@@ -143,17 +233,20 @@ public class IdentityApplianceManagementServiceImpl implements
         try {
             syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(req.getApplianceId()));
-            appliance = deployAppliance(appliance, req.getConfigureExecEnvs() != null ? req.getConfigureExecEnvs() : true);
+            appliance = deployAppliance(appliance,
+                    req.getUsername(),
+                    req.getPassword(),
+                    req.getConfigureExecEnvs() != null ? req.getConfigureExecEnvs() : true);
 
             if (req.getStartAppliance()) {
                 appliance = startAppliance(appliance);
             }
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new DeployIdentityApplianceResponse(appliance, true);
-	    } catch (Exception e){
-	        logger.error("Error deploying identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+        } catch (Exception e){
+            logger.error("Error deploying identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     /**
@@ -168,10 +261,10 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = undeployAppliance(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new UndeployIdentityApplianceResponse (appliance);
-	    } catch (Exception e){
-	        logger.error("Error undeploying identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+        } catch (Exception e){
+            logger.error("Error undeploying identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -182,10 +275,10 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = startAppliance(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new StartIdentityApplianceResponse (appliance);
-	    } catch (Exception e){
-	        logger.error("Error starting identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+        } catch (Exception e){
+            logger.error("Error starting identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -196,10 +289,10 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = stopAppliance(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new StopIdentityApplianceResponse (appliance);
-	    } catch (Exception e){
-	        logger.error("Error stopping identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+        } catch (Exception e){
+            logger.error("Error stopping identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -210,10 +303,10 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = disposeAppliance(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new DisposeIdentityApplianceResponse(appliance);
-	    } catch (Exception e){
-	        logger.error("Error disposing identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+        } catch (Exception e){
+            logger.error("Error disposing identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -250,51 +343,122 @@ public class IdentityApplianceManagementServiceImpl implements
                     appliance.getIdApplianceDefinition().getRevision(),
                     zip);
 
-	    } catch (Exception e){
-	        logger.error("Error exporting identity appliance project", e);
-	        throw new IdentityServerException(e);
+        } catch (Exception e){
+            logger.error("Error exporting identity appliance project", e);
+            throw new IdentityServerException(e);
         }
     }
 
     @Transactional
-    public ImportApplianceDefinitionResponse importApplianceDefinition(ImportApplianceDefinitionRequest request) throws IdentityServerException {
+    public ImportIdentityApplianceResponse importIdentityApplianceProject(ImportIdentityApplianceRequest request) throws IdentityServerException {
 
         try {
-
             syncAppliances();
 
             if (logger.isTraceEnabled())
-                logger.trace("Importing appliance definition \n" + request.getDescriptor() + "\n");
+                logger.trace("Importing appliance definition from zip file \n");
+
+            final int BUFFER_SIZE = 2048;
+            ByteArrayInputStream bIn = new ByteArrayInputStream(request.getBinaryAppliance());
+            ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+            ZipInputStream zin = new ZipInputStream(bIn);
+            ZipEntry entry;
+            String appStr="";
+
+            while((entry = zin.getNextEntry()) != null) {
+                if (entry.getName() != null && entry.getName().endsWith("appliance.bin")) {
+                    int count;
+                    byte data[] = new byte[BUFFER_SIZE];
+                    while ((count = zin.read(data, 0, BUFFER_SIZE)) != -1) {
+                        bOut.write(data, 0, count);
+                    }
+                    bOut.flush();
+                    appStr = bOut.toString();
+
+                    bOut.close();
+                    zin.close();
+                    break;
+                }
+            }
 
             // 1. Unmarshall appliance
-            IdentityAppliance appliance = marshaller.unmarshall(request.getDescriptor().getBytes());
-            IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
+            IdentityAppliance appliance = new IdentityAppliance();
+            appliance.setIdApplianceDefinitionBin(appStr);
+            appliance = identityApplianceDAO.unmarshall(appliance);
 
+            appliance.setNamespace(appliance.getIdApplianceDefinition().getNamespace());
+            appliance.setDisplayName(appliance.getIdApplianceDefinition().getDisplayName());
+            appliance.setDescription(appliance.getIdApplianceDefinition().getDescription());
+            appliance.setState(IdentityApplianceState.PROJECTED.toString());
             validateAppliance(appliance, ApplianceValidator.Operation.IMPORT);
             debugAppliance(appliance, ApplianceValidator.Operation.IMPORT);
-
-            if (logger.isDebugEnabled())
-                    logger.debug("Received Identity Appliance Definition : [" +
-                            applianceDef.getId() + "] " +
-                    applianceDef.getName() + ":" +
-                    applianceDef.getDescription());
-
-            applianceDef.setRevision(1);
-            applianceDef.setLastModification(new Date());
-
-            // 2. Create Identity Appliance
-
-            if (logger.isTraceEnabled())
-                logger.trace("Creating Identity Appliance");
-
-            appliance.setState(IdentityApplianceState.PROJECTED.toString());
             appliance = identityApplianceDAO.save(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
 
             if (logger.isTraceEnabled())
                 logger.trace("Created Identity Appliance " + appliance.getId());
 
+            // 4. Return the appliance
+            ImportIdentityApplianceResponse response = new ImportIdentityApplianceResponse();
+            response.setAppliance(appliance);
 
+            return response;
+
+        } catch (Exception e) {
+            logger.error("Error importing identity appliance project from file", e);
+            throw new IdentityServerException(e);
+        }
+    }
+
+    @Deprecated
+    @Transactional
+    public ImportApplianceDefinitionResponse importApplianceDefinition(ImportApplianceDefinitionRequest request) throws IdentityServerException {
+
+       try {
+            syncAppliances();
+
+            if (logger.isTraceEnabled())
+                logger.trace("Importing appliance (console) definition from zip file \n");
+
+            final int BUFFER_SIZE = 2048;
+            ByteArrayInputStream bIn = new ByteArrayInputStream(request.getBytes());
+            ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+            ZipInputStream zin = new ZipInputStream(bIn);
+            ZipEntry entry;
+            String appStr="";
+
+            while((entry = zin.getNextEntry()) != null) {
+                if (entry.getName() != null && entry.getName().endsWith("appliance.bin")) {
+                    int count;
+                    byte data[] = new byte[BUFFER_SIZE];
+                    while ((count = zin.read(data, 0, BUFFER_SIZE)) != -1) {
+                        bOut.write(data, 0, count);
+                    }
+                    bOut.flush();
+                    appStr = bOut.toString();
+
+                    bOut.close();
+                    zin.close();
+                    break;
+                }
+            }
+
+            // 1. Unmarshall appliance
+            IdentityAppliance appliance = new IdentityAppliance();
+            appliance.setIdApplianceDefinitionBin(appStr);
+            appliance = identityApplianceDAO.unmarshall(appliance);
+
+            appliance.setNamespace(appliance.getIdApplianceDefinition().getNamespace());
+            appliance.setDisplayName(appliance.getIdApplianceDefinition().getDisplayName());
+            appliance.setDescription(appliance.getIdApplianceDefinition().getDescription());
+            appliance.setState(IdentityApplianceState.PROJECTED.toString());
+            validateAppliance(appliance, ApplianceValidator.Operation.IMPORT);
+            debugAppliance(appliance, ApplianceValidator.Operation.IMPORT);
+            appliance = identityApplianceDAO.save(appliance);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
+
+            if (logger.isTraceEnabled())
+                logger.trace("Created Identity Appliance " + appliance.getId());
 
             // 4. Return the appliance
             ImportApplianceDefinitionResponse response = new ImportApplianceDefinitionResponse();
@@ -305,9 +469,9 @@ public class IdentityApplianceManagementServiceImpl implements
         } catch(ApplianceValidationException e) {
             throw e;
         } catch (Exception e) {
-	        logger.error("Error importing identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error importing identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -346,9 +510,9 @@ public class IdentityApplianceManagementServiceImpl implements
             response.setStatusCode(StatusCode.STS_OK);
             return response;
         } catch (Exception e){
-	        logger.error("Error processing identity appliance lifecycle action", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error processing identity appliance lifecycle action", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -381,7 +545,7 @@ public class IdentityApplianceManagementServiceImpl implements
             execEnv.setInstallDemoApps(request.isActivateSamples());
             execEnv.setOverwriteOriginalSetup(request.isReplace());
 
-            activateExecEnv(appliance, execEnv, request.isReactivate());
+            activateExecEnv(appliance, execEnv, request.isReactivate(), request.getUsername(), request.getPassword());
             debugAppliance(appliance, ApplianceValidator.Operation.ANY);
 
             return response;
@@ -484,9 +648,9 @@ public class IdentityApplianceManagementServiceImpl implements
             res = new AddIdentityApplianceResponse();
             res.setAppliance(appliance);
         } catch (Exception e){
-	        logger.error("Error adding identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error adding identity appliance", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -529,9 +693,9 @@ public class IdentityApplianceManagementServiceImpl implements
             res = new UpdateIdentityApplianceResponse(appliance);
 
         } catch (Exception e){
-	        logger.error("Error updating identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error updating identity appliance", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -545,9 +709,9 @@ public class IdentityApplianceManagementServiceImpl implements
             res = new LookupIdentityApplianceByIdResponse();
             res.setIdentityAppliance(appliance);
         } catch (Exception e){
-	        logger.error("Error looking for identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error looking for identity appliance", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -564,9 +728,9 @@ public class IdentityApplianceManagementServiceImpl implements
             RemoveIdentityApplianceResponse res = new RemoveIdentityApplianceResponse();
             return res;
         } catch (Exception e){
-	        logger.error("Error removing identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error removing identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -582,9 +746,9 @@ public class IdentityApplianceManagementServiceImpl implements
             res = new ListIdentityAppliancesResponse();
             res.setIdentityAppliances(appliances);
         } catch (Exception e){
-	        logger.error("Error listing identity appliances", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error listing identity appliances", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -604,11 +768,11 @@ public class IdentityApplianceManagementServiceImpl implements
             iad = identityApplianceDefinitionDAO.detachCopy(iad, FetchPlan.FETCH_SIZE_GREEDY);  //fetching providers and channels as well
             res = new LookupIdentityApplianceDefinitionByIdResponse();
             res.setIdentityApplianceDefinition(iad);
-	    } catch (Exception e){
-	        logger.error("Error retrieving identity appliance definition with id : " + request.getIdentityApplianceDefinitionId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving identity appliance definition with id : " + request.getIdentityApplianceDefinitionId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -620,9 +784,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = identityApplianceDefinitionDAO.findAll();
             res.getIdentityApplianceDefinitions().addAll(identityApplianceDefinitionDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));  //fetching providers and channels as well
         } catch (Exception e){
-	        logger.error("Error retrieving identity appliance definitions!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving identity appliance definitions!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -658,9 +822,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = identitySourceDAO.findAll();
             res.getIdentityVaults().addAll(identitySourceDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));  //fetching user lookup information as well
         } catch (Exception e){
-	        logger.error("Error retrieving identity vaults!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving identity vaults!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -673,24 +837,23 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = userInformationLookupDAO.findAll();
             res.getUserInfoLookups().addAll(userInformationLookupDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
-	        logger.error("Error retrieving user information lookups!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving user information lookups!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
     @Transactional
     public ListAccountLinkagePoliciesResponse listAccountLinkagePolicies(ListAccountLinkagePoliciesRequest req) throws IdentityServerException {
         ListAccountLinkagePoliciesResponse res = new ListAccountLinkagePoliciesResponse();
-        try {
-            syncAppliances();
-            logger.debug("Listing all account linkage policies");
-            Collection result = accountLinkagePolicyDAO.findAll();
-            res.getAccountLinkagePolicies().addAll(accountLinkagePolicyDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
-        } catch (Exception e){
-	        logger.error("Error retrieving account linkage policies!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+
+        logger.debug("Listing all account linkage policies");
+
+        // Add policies to response
+        for (AccountLinkagePolicy policy : accountLinkagePolicyRegistry.getPolicies()) {
+            res.getAccountLinkagePolicies().add(policy);
+        }
+
         return res;
     }
 
@@ -703,9 +866,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = authenticationContractDAO.findAll();
             res.getAuthContracts().addAll(authenticationContractDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
-	        logger.error("Error retrieving authentication contracts!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving authentication contracts!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -718,9 +881,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = authenticationMechanismDAO.findAll();
             res.getAuthMechanisms().addAll(authenticationMechanismDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
-	        logger.error("Error retrieving authentication mechanisms!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving authentication mechanisms!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -733,9 +896,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = attributeProfileDAO.findAll();
             res.getAttributeProfiles().addAll(attributeProfileDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
-	        logger.error("Error retrieving attribute profiles!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving attribute profiles!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -748,9 +911,35 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = authenticationAssertionEmissionPolicyDAO.findAll();
             res.getAuthEmissionPolicies().addAll(authenticationAssertionEmissionPolicyDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
-	        logger.error("Error retrieving authentication assertion emission policies!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving authentication assertion emission policies!!!", e);
+            throw new IdentityServerException(e);
+        }
+        return res;
+    }
+
+    @Transactional
+    public ListIdentityMappingPolicyResponse listIdentityMappingPolicies(ListIdentityMappingPolicyRequest req) throws IdentityServerException {
+        ListIdentityMappingPolicyResponse res = new ListIdentityMappingPolicyResponse();
+
+        logger.debug("Listing all identity mapping policies");
+
+        // Add policies to response
+        for (IdentityMappingPolicy policy : identityMappingPolicyRegistry.getPolicies()) {
+            res.getIdentityMappingPolicies().add(policy);
+        }
+
+
+        return res;
+    }
+
+    @Transactional
+    public ListSubjectNameIDPoliciesResponse listSubjectNameIDPolicies(ListSubjectNameIDPoliciesRequest req) throws IdentityServerException {
+        ListSubjectNameIDPoliciesResponse res = new ListSubjectNameIDPoliciesResponse();
+
+        for (SubjectNameIdentifierPolicy policy : subjectNameIdentifierPolicyRegistry.getPolicies()) {
+            res.getPolicies().add(policy);
+        }
+
         return res;
     }
 
@@ -767,11 +956,11 @@ public class IdentityApplianceManagementServiceImpl implements
             IdentitySource identitySource = identitySourceDAO.findById(req.getIdentityVaultId());
             res = new LookupIdentityVaultByIdResponse();
             res.setIdentityVault(identitySourceDAO.detachCopy(identitySource, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving identity vault with id : " + req.getIdentityVaultId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving identity vault with id : " + req.getIdentityVaultId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -783,11 +972,11 @@ public class IdentityApplianceManagementServiceImpl implements
             UserInformationLookup userInformationLookup = userInformationLookupDAO.findById(req.getUserInformationLookupId());
             res = new LookupUserInformationLookupByIdResponse();
             res.setUserInfoLookup(userInformationLookupDAO.detachCopy(userInformationLookup, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving user information lookup with id : " + req.getUserInformationLookupId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving user information lookup with id : " + req.getUserInformationLookupId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -799,11 +988,11 @@ public class IdentityApplianceManagementServiceImpl implements
             AccountLinkagePolicy policy = accountLinkagePolicyDAO.findById(req.getAccountLinkagePolicyId());
             res = new LookupAccountLinkagePolicyByIdResponse();
             res.setAccountLinkagePolicy(accountLinkagePolicyDAO.detachCopy(policy, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving account linkage policy with id : " + req.getAccountLinkagePolicyId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving account linkage policy with id : " + req.getAccountLinkagePolicyId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -815,11 +1004,11 @@ public class IdentityApplianceManagementServiceImpl implements
             AuthenticationContract authenticationContract = authenticationContractDAO.findById(req.getAuthenticationContactId());
             res = new LookupAuthenticationContractByIdResponse();
             res.setAuthenticationContract(authenticationContractDAO.detachCopy(authenticationContract, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving authentication contract with id : " + req.getAuthenticationContactId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving authentication contract with id : " + req.getAuthenticationContactId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -831,11 +1020,11 @@ public class IdentityApplianceManagementServiceImpl implements
             AuthenticationMechanism authenticationMechanism = authenticationMechanismDAO.findById(req.getAuthMechanismId());
             res = new LookupAuthenticationMechanismByIdResponse();
             res.setAuthenticationMechanism(authenticationMechanismDAO.detachCopy(authenticationMechanism, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving authentication mechanism with id : " + req.getAuthMechanismId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving authentication mechanism with id : " + req.getAuthMechanismId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -847,11 +1036,11 @@ public class IdentityApplianceManagementServiceImpl implements
             AttributeProfile attributeProfile = attributeProfileDAO.findById(req.getAttributeProfileId());
             res = new LookupAttributeProfileByIdResponse();
             res.setAttributeProfile(attributeProfileDAO.detachCopy(attributeProfile, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving attribute profile with id : " + req.getAttributeProfileId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving attribute profile with id : " + req.getAttributeProfileId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -863,11 +1052,11 @@ public class IdentityApplianceManagementServiceImpl implements
             AuthenticationAssertionEmissionPolicy policy = authenticationAssertionEmissionPolicyDAO.findById(req.getAuthAssertionEmissionPolicyId());
             res = new LookupAuthAssertionEmissionPolicyByIdResponse();
             res.setPolicy(authenticationAssertionEmissionPolicyDAO.detachCopy(policy, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving authentication assertion emission policy with id : " + req.getAuthAssertionEmissionPolicyId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving authentication assertion emission policy with id : " + req.getAuthAssertionEmissionPolicyId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -879,11 +1068,11 @@ public class IdentityApplianceManagementServiceImpl implements
             Resource resource = resourceDAO.save(req.getResource());
             res = new AddResourceResponse();
             res.setResource(resourceDAO.detachCopy(resource, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error adding resource", e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error adding resource", e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -897,11 +1086,290 @@ public class IdentityApplianceManagementServiceImpl implements
             res = new LookupResourceByIdResponse();
             res.setResource(resource);
         } catch (Exception e){
-	        logger.error("Error looking for resource", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error looking for resource", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
+
+    @Transactional
+    public LookupIdentityMappingPolicyByIdResponse lookupIdentityMappingPolicyById(LookupIdentityMappingPolicyByIdRequest req) throws IdentityServerException {
+        // TODO : Implement me!
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    //
+
+    public GetMetadataInfoResponse getMetadataInfo(GetMetadataInfoRequest req) throws IdentityServerException {
+        GetMetadataInfoResponse res = null;
+        try {
+            MetadataDefinition md = MetadataUtil.loadMetadataDefinition(req.getMetadata());
+            res = new GetMetadataInfoResponse();
+            // entity id
+            String entityId = MetadataUtil.findEntityId(md);
+            res.setEntityId(entityId);
+            SSODescriptorType ssoDescriptor = MetadataUtil.findSSODescriptor(md, req.getRole() + "Descriptor");
+            if (ssoDescriptor != null) {
+                // profiles
+                if (ssoDescriptor.getSingleLogoutService().size() > 0) {
+                    res.setSloEnabled(true);
+                }
+                if (ssoDescriptor instanceof IDPSSODescriptorType &&
+                        ((IDPSSODescriptorType)ssoDescriptor).getSingleSignOnService().size() > 0) {
+                    res.setSsoEnabled(true);
+                }
+
+                // bindings
+                List<EndpointType> endpoints = new ArrayList<EndpointType>();
+                endpoints.addAll(ssoDescriptor.getArtifactResolutionService());
+                endpoints.addAll(ssoDescriptor.getSingleLogoutService());
+                endpoints.addAll(ssoDescriptor.getManageNameIDService());
+                if (ssoDescriptor instanceof IDPSSODescriptorType) {
+                    endpoints.addAll(((IDPSSODescriptorType)ssoDescriptor).getSingleSignOnService());
+                    endpoints.addAll(((IDPSSODescriptorType)ssoDescriptor).getAssertionIDRequestService());
+                    endpoints.addAll(((IDPSSODescriptorType)ssoDescriptor).getNameIDMappingService());
+                    if (((IDPSSODescriptorType)ssoDescriptor).isWantAuthnRequestsSigned() != null)
+                        res.setWantAuthnRequestsSigned(((IDPSSODescriptorType)ssoDescriptor).isWantAuthnRequestsSigned());
+                } else if (ssoDescriptor instanceof SPSSODescriptorType) {
+                    endpoints.addAll(((SPSSODescriptorType)ssoDescriptor).getAssertionConsumerService());
+                    if (((SPSSODescriptorType)ssoDescriptor).isWantAssertionsSigned() != null)
+                        res.setWantAssertionSigned(((SPSSODescriptorType)ssoDescriptor).isWantAssertionsSigned());
+                    if (((SPSSODescriptorType)ssoDescriptor).isAuthnRequestsSigned() != null)
+                        res.setSignAuthnRequests(((SPSSODescriptorType)ssoDescriptor).isAuthnRequestsSigned());
+                }
+                for (EndpointType endpoint : endpoints) {
+                    if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_POST.getValue())) {
+                        res.setPostEnabled(true);
+                    } else if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_REDIRECT.getValue())) {
+                        res.setRedirectEnabled(true);
+                    } else if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue())) {
+                        res.setArtifactEnabled(true);
+                    } else if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_SOAP.getValue())) {
+                        res.setSoapEnabled(true);
+                    }
+                    if (res.isPostEnabled() && res.isRedirectEnabled() &&
+                            res.isArtifactEnabled() && res.isSoapEnabled()) {
+                        break;
+                    }
+                }
+
+                // certificates
+                for (KeyDescriptorType keyMd : ssoDescriptor.getKeyDescriptor()) {
+                    X509Certificate x509Cert = getCertificate(keyMd);
+                    if (x509Cert != null) {
+                        if (KeyTypes.SIGNING.equals(keyMd.getUse())) {
+                            res.setSigningCertIssuerDN(x509Cert.getIssuerX500Principal().getName());
+                            res.setSigningCertSubjectDN(x509Cert.getSubjectX500Principal().getName());
+                            res.setSigningCertNotBefore(x509Cert.getNotBefore());
+                            res.setSigningCertNotAfter(x509Cert.getNotAfter());
+                        } else if (KeyTypes.ENCRYPTION.equals(keyMd.getUse())) {
+                            res.setEncryptionCertIssuerDN(x509Cert.getIssuerX500Principal().getName());
+                            res.setEncryptionCertSubjectDN(x509Cert.getSubjectX500Principal().getName());
+                            res.setEncryptionCertNotBefore(x509Cert.getNotBefore());
+                            res.setEncryptionCertNotAfter(x509Cert.getNotAfter());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e){
+            logger.error("Error retrieving metadata info", e);
+            throw new IdentityServerException(e);
+        }
+        return res;
+    }
+
+    public GetCertificateInfoResponse getCertificateInfo(GetCertificateInfoRequest req) throws IdentityServerException {
+        GetCertificateInfoResponse res = new GetCertificateInfoResponse();
+        try {
+            SamlR2ProviderConfig config = req.getConfig();
+
+            // signing certificate
+            Keystore signer = config.getSigner();
+            if (signer == null && config.isUseSampleStore()) {
+                signer = sampleKeystore;
+            }
+            if (signer != null) {
+                byte[] keystore = signer.getStore().getValue();
+                KeyStore jks = KeyStore.getInstance("PKCS#12".equals(signer.getType()) ? "PKCS12" : "JKS");
+                jks.load(new ByteArrayInputStream(keystore), signer.getPassword().toCharArray());
+                X509Certificate signerCertificate = (X509Certificate) jks.getCertificate(signer.getCertificateAlias());
+                res.setSigningCertIssuerDN(signerCertificate.getIssuerX500Principal().getName());
+                res.setSigningCertSubjectDN(signerCertificate.getSubjectX500Principal().getName());
+                res.setSigningCertNotBefore(signerCertificate.getNotBefore());
+                res.setSigningCertNotAfter(signerCertificate.getNotAfter());
+            }
+
+            // encryption certificate
+            Keystore encrypter = config.getEncrypter();
+            if (encrypter == null && config.isUseSampleStore()) {
+                encrypter = sampleKeystore;
+            }
+            if (encrypter != null) {
+                byte[] keystore = encrypter.getStore().getValue();
+                KeyStore jks = KeyStore.getInstance("PKCS#12".equals(encrypter.getType()) ? "PKCS12" : "JKS");
+                jks.load(new ByteArrayInputStream(keystore), encrypter.getPassword().toCharArray());
+                X509Certificate encrypterCertificate = (X509Certificate) jks.getCertificate(encrypter.getCertificateAlias());
+                res.setEncryptionCertIssuerDN(encrypterCertificate.getIssuerX500Principal().getName());
+                res.setEncryptionCertSubjectDN(encrypterCertificate.getSubjectX500Principal().getName());
+                res.setEncryptionCertNotBefore(encrypterCertificate.getNotBefore());
+                res.setEncryptionCertNotAfter(encrypterCertificate.getNotAfter());
+            }
+        } catch (Exception e){
+            logger.error("Error retrieving certificate info", e);
+            throw new IdentityServerException(e);
+        }
+        return res;
+    }
+
+    public ExportProviderCertificateResponse exportProviderCertificate(ExportProviderCertificateRequest request) throws IdentityServerException {
+        ExportProviderCertificateResponse response = new ExportProviderCertificateResponse();
+        try {
+            SamlR2ProviderConfig config = request.getConfig();
+
+            // signer and encrypter are the same
+            Keystore signer = config.getSigner();
+            if (signer == null && config.isUseSampleStore()) {
+                signer = sampleKeystore;
+            }
+            if (signer != null) {
+                byte[] keystore = signer.getStore().getValue();
+                KeyStore jks = KeyStore.getInstance("PKCS#12".equals(signer.getType()) ? "PKCS12" : "JKS");
+                jks.load(new ByteArrayInputStream(keystore), signer.getPassword().toCharArray());
+                X509Certificate signerCertificate = (X509Certificate) jks.getCertificate(signer.getCertificateAlias());
+                if (signerCertificate != null) {
+                    StringWriter stringWriter = new StringWriter();
+                    BufferedWriter bufWriter = new BufferedWriter(stringWriter);
+
+                    // write header
+                    bufWriter.write(X509Factory.BEGIN_CERT);
+                    bufWriter.newLine();
+
+                    // write encoded
+                    char[]  buf = new char[64];
+                    byte[] encoded = Base64.encodeBase64(signerCertificate.getEncoded());
+
+                    for (int i = 0; i < encoded.length; i += buf.length) {
+                        int index = 0;
+
+                        while (index != buf.length) {
+                            if ((i + index) >= encoded.length) {
+                                break;
+                            }
+                            buf[index] = (char) encoded[i + index];
+                            index++;
+                        }
+                        bufWriter.write(buf, 0, index);
+                        bufWriter.newLine();
+                    }
+
+                    // write footer
+                    bufWriter.write(X509Factory.END_CERT);
+                    bufWriter.newLine();
+
+                    // flush and close
+                    bufWriter.flush();
+                    stringWriter.close();
+                    bufWriter.close();
+
+                    // set response
+                    response.setCertificate(stringWriter.toString().getBytes());
+                }
+            }
+        } catch (Exception e){
+            logger.error("Error exporting provider certificate", e);
+            throw new IdentityServerException(e);
+        }
+        return response;
+    }
+
+    public ExportMetadataResponse exportMetadata(ExportMetadataRequest request) throws IdentityServerException {
+        ExportMetadataResponse response = new ExportMetadataResponse();
+        try {
+            syncAppliances();
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
+            response.setMetadata(builder.exportMetadata(appliance, request.getProviderName(), request.getChannelName()));
+        } catch (Exception e){
+            logger.error("Error exporting SAML metadata", e);
+            throw new IdentityServerException(e);
+        }
+        return response;
+    }
+
+    private X509Certificate getCertificate(KeyDescriptorType keyMd) {
+        X509Certificate x509Cert = null;
+        byte[] x509CertificateBin = null;
+
+        if (keyMd.getKeyInfo() != null) {
+
+            // Get inside Key Info
+            List contentMd = keyMd.getKeyInfo().getContent();
+            if (contentMd != null && contentMd.size() > 0) {
+
+                for (Object o : contentMd) {
+
+                    if (o instanceof JAXBElement) {
+                        JAXBElement e = (JAXBElement) o;
+                        if (e.getValue() instanceof X509DataType) {
+
+                            X509DataType x509Data = (X509DataType) e.getValue();
+
+                            for (Object x509Content : x509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName()) {
+                                if (x509Content instanceof JAXBElement) {
+                                    JAXBElement x509Certificate = (JAXBElement) x509Content;
+
+                                    if (x509Certificate.getName().getNamespaceURI().equals("http://www.w3.org/2000/09/xmldsig#") &&
+                                            x509Certificate.getName().getLocalPart().equals("X509Certificate")) {
+
+                                        x509CertificateBin = (byte[]) x509Certificate.getValue();
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                    if (x509CertificateBin != null)
+                        break;
+                }
+            }
+        } else {
+            logger.debug("Metadata Key Descriptor does not have KeyInfo " + keyMd.toString());
+        }
+
+        if (x509CertificateBin != null) {
+            try {
+                CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                x509Cert = (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(x509CertificateBin));
+            } catch (CertificateException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        return x509Cert;
+    }
+
+    protected void resolveResource(Resource resource) throws IOException {
+
+        InputStream is = getClass().getResourceAsStream(resource.getUri());
+        if (is != null) {
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
+                byte[] buff = new byte[4096];
+                int read = is.read(buff, 0, 4096);
+                while (read > 0) {
+                    baos.write(buff, 0, read);
+                    read = is.read(buff, 0, 4096);
+                }
+                resource.setValue(baos.toByteArray());
+
+            } finally {
+                if (is != null) try { is.close(); } catch (IOException e) {/**/}
+            }
+        }
+
+    }
+
 
 // -------------------------------------------------< Properties >
 
@@ -943,6 +1411,30 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setMarshaller(ApplianceMarshaller marshaller) {
         this.marshaller = marshaller;
+    }
+
+    public AccountLinkagePolicyRegistry getAccountLinkagePolicyRegistry() {
+        return accountLinkagePolicyRegistry;
+    }
+
+    public void setAccountLinkagePolicyRegistry(AccountLinkagePolicyRegistry accountLinkagePolicyRegistry) {
+        this.accountLinkagePolicyRegistry = accountLinkagePolicyRegistry;
+    }
+
+    public SubjectNameIdentifierPolicyRegistry getSubjectNameIdentifierPolicyRegistry() {
+        return subjectNameIdentifierPolicyRegistry;
+    }
+
+    public void setSubjectNameIdentifierPolicyRegistry(SubjectNameIdentifierPolicyRegistry subjectNameIdentifierPolicyRegistry) {
+        this.subjectNameIdentifierPolicyRegistry = subjectNameIdentifierPolicyRegistry;
+    }
+
+    public IdentityMappingPolicyRegistry getIdentityMappingPolicyRegistry() {
+        return identityMappingPolicyRegistry;
+    }
+
+    public void setIdentityMappingPolicyRegistry(IdentityMappingPolicyRegistry identityMappingPolicyRegistry) {
+        this.identityMappingPolicyRegistry = identityMappingPolicyRegistry;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {
@@ -1081,6 +1573,14 @@ public class IdentityApplianceManagementServiceImpl implements
         this.activationService = activationService;
     }
 
+    public ActivationClientFactory getActivationClientFactory() {
+        return activationClientFactory;
+    }
+
+    public void setActivationClientFactory(ActivationClientFactory activationClientFactory) {
+        this.activationClientFactory = activationClientFactory;
+    }
+
     public JDBCDriverManager getJdbcDriverManager() {
         return jdbcDriverManager;
     }
@@ -1089,7 +1589,14 @@ public class IdentityApplianceManagementServiceImpl implements
         this.jdbcDriverManager = jdbcDriverManager;
     }
 
-    // -------------------------------------------------< Protected Utils , they need transactional context !>
+    public Keystore getSampleKeystore() {
+        return sampleKeystore;
+    }
+
+    public void setSampleKeystore(Keystore sampleKeystore) {
+        this.sampleKeystore = sampleKeystore;
+    }
+// -------------------------------------------------< Protected Utils , they need transactional context !>
 
     protected void validateAppliance(IdentityAppliance appliance, ApplianceValidator.Operation operation) throws ApplianceValidationException {
 
@@ -1140,7 +1647,9 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     protected void configureExecEnv(IdentityAppliance appliance,
-                                                   ExecutionEnvironment execEnv) throws IdentityServerException {
+                                    ExecutionEnvironment execEnv,
+                                    String username,
+                                    String password) throws IdentityServerException {
 
         try {
 
@@ -1155,7 +1664,12 @@ public class IdentityApplianceManagementServiceImpl implements
 
             String agentCfgName = appliance.getNamespace() + "." +
                     appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
-                    appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase() + ".xml";
+                    appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase();
+
+            if (execEnv.getPlatformId().startsWith("iis"))
+                agentCfgName += ".ini";
+            else
+                agentCfgName += ".xml";
 
             String agentCfg = agentCfgLocation + "/" + agentCfgName;
             agentCfg = agentCfg.toLowerCase();
@@ -1163,11 +1677,64 @@ public class IdentityApplianceManagementServiceImpl implements
             if (logger.isDebugEnabled())
                 logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
 
-            ConfigureAgentRequest activationReq = doMakeConfigureAgentRequest(execEnv);
-            activationReq.setJossoAgentConfigUri(agentCfg);
-            activationReq.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
+            switch (execEnv.getType()) {
+                case LOCAL:
+                    ConfigureAgentRequest activationReq = doMakeConfigureAgentRequest(execEnv);
+                    activationReq.setJossoAgentConfigUri(agentCfg);
+                    activationReq.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
 
-            ConfigureAgentResponse actiationResponse = activationService.configureAgent(activationReq);
+                    ConfigureAgentResponse actiationResponse = activationService.configureAgent(activationReq);
+                    break;
+
+                case REMOTE:
+
+                    if (username != null && password != null) {
+                        ConfigureAgentRequestType wsActivationReq = doMakeWsConfigureAgentRequest(execEnv, username, password);
+                        ActivationClient wsClient = activationClientFactory.newActivationClient(execEnv.getLocation());
+
+                        InputStream is = null;
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
+
+                        try {
+
+                            FileSystemManager fs = VFS.getManager();
+                            FileObject homeDir = fs.resolveFile(getHomeDir());
+                            FileObject appliancesDir = homeDir.resolveFile("appliances");
+                            FileObject agentCfgFile = appliancesDir.resolveFile(agentCfg);
+
+                            is = agentCfgFile.getContent().getInputStream();
+                            IOUtils.copy(is, baos);
+
+                            //  Attach activation resources to request
+                            AgentConfigResourceType agentCfgResource = new AgentConfigResourceType ();
+
+                            // Force resource name to josso-agent-config.
+                            agentCfgResource.setName("josso-agent-config." + (execEnv.getPlatformId().startsWith("iis") ? "ini" : "xml"));
+                            agentCfgResource.setConfigResourceContent(baos.toString());
+                            agentCfgResource.setReplaceOriginal(execEnv.isOverwriteOriginalSetup());
+
+                            wsActivationReq.getAgentConfigResource().add(agentCfgResource);
+
+                        } catch (IOException e) {
+                            logger.error("Cannot configure JOSSO agent : " + e.getMessage(), e);
+                            IOUtils.closeQuietly(is);
+                        }
+
+                        wsActivationReq.setJossoAgentConfigUri(null);
+                        wsActivationReq.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
+                        wsActivationReq.setUser(username);
+                        wsActivationReq.setPassword(password);
+
+                        ConfigureAgentResponseType wsActiationResponse = wsClient.configureAgent(wsActivationReq);
+                    } else {
+                        logger.warn("Cannot configure Agent for " + execEnv.getName() + ". No authentication information available");
+                    }
+
+                    break;
+                default:
+                    throw new IdentityServerException("Unknown Execution Environment type " + execEnv.getType().name());
+            }
+
         } catch (ActivationException e) {
             throw new IdentityServerException(e);
         }
@@ -1176,8 +1743,10 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     protected void activateExecEnv(IdentityAppliance appliance,
-                                                   ExecutionEnvironment execEnv,
-                                                   boolean reactivate) throws IdentityServerException {
+                                   ExecutionEnvironment execEnv,
+                                   boolean reactivate,
+                                   String username,
+                                   String password) throws IdentityServerException {
 
 
 
@@ -1192,23 +1761,60 @@ public class IdentityApplianceManagementServiceImpl implements
 
         try {
 
-            ActivateAgentRequest activationRequest = doMakeAgentActivationRequest(execEnv);
-            ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
+            switch (execEnv.getType()) {
 
-            // Only configure the appliance if we have deployment information
-            if (execEnv.isOverwriteOriginalSetup() && appliance.getIdApplianceDeployment() != null)
-                configureExecEnv(appliance, execEnv);
+                case LOCAL:
+                    ActivateAgentRequest activationRequest = doMakeAgentActivationRequest(execEnv);
+                    ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
 
-            if (execEnv.isInstallDemoApps()) {
+                    // Only configure the appliance if we have deployment information
+                    if (execEnv.isOverwriteOriginalSetup() && appliance.getIdApplianceDeployment() != null)
+                        configureExecEnv(appliance, execEnv, username, password);
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Activating Samples in Execution Environment " + execEnv.getName());
+                    if (execEnv.isInstallDemoApps()) {
 
-                ActivateSamplesRequest samplesActivationRequest =
-                        doMakeAgentSamplesActivationRequest(execEnv);
+                        if (logger.isDebugEnabled())
+                            logger.debug("Activating Samples in Execution Environment " + execEnv.getName());
 
-                ActivateSamplesResponse samplesActivationResponse =
-                        activationService.activateSamples(samplesActivationRequest);
+                        ActivateSamplesRequest samplesActivationRequest =
+                                doMakeAgentSamplesActivationRequest(execEnv);
+
+                        ActivateSamplesResponse samplesActivationResponse =
+                                activationService.activateSamples(samplesActivationRequest);
+                    }
+                    break;
+                case REMOTE:
+
+                    if (username != null && password != null) {
+                        ActivationClient wsClient = activationClientFactory.newActivationClient(execEnv.getLocation());
+                        ActivateAgentRequestType wsActivationRequest = doMakeWsAgentActivationRequest(execEnv, username, password);
+
+
+                        ActivateAgentResponseType wsResponse = wsClient.activateAgent(wsActivationRequest);
+
+                        // Only configure the appliance if we have deployment information
+                        if (execEnv.isOverwriteOriginalSetup() && appliance.getIdApplianceDeployment() != null)
+                            configureExecEnv(appliance, execEnv, username, password);
+
+
+                        if (execEnv.isInstallDemoApps()) {
+
+                            if (logger.isDebugEnabled())
+                                logger.debug("Activating Samples in Execution Environment " + execEnv.getName());
+
+                            ActivateSamplesRequestType wsSamplesActivationRequest =
+                                    doMakeWsAgentSamplesActivationRequest(execEnv, username, password);
+
+                            ActivateSamplesResponseType wsSamplesActivationResponse =
+                                    wsClient.activateSamples(wsSamplesActivationRequest);
+                        }
+                    } else {
+                        logger.warn("Cannot activate Agent for " + execEnv.getName() + ". No authentication information available");
+                    }
+
+                    break;
+                default:
+                    throw new IdentityServerException("Unknown execution environment type :  " + execEnv.getType());
             }
 
             // Mark activation as activated and save appliance.
@@ -1235,7 +1841,7 @@ public class IdentityApplianceManagementServiceImpl implements
             return false;
         }
     }
-    
+
     protected IdentityAppliance startAppliance(IdentityAppliance appliance) throws IdentityServerException {
         if (logger.isDebugEnabled())
             logger.debug("Starting Identity Appliance " + appliance.getId());
@@ -1354,8 +1960,8 @@ public class IdentityApplianceManagementServiceImpl implements
 
             identityApplianceDAO.delete(appliance.getId());
 
-            identityApplianceUnitDAO.deleteUnitsByGroup(unitsGroup);
-            
+            // identityApplianceUnitDAO.deleteUnitsByGroup(unitsGroup);
+
             /*for (Long idauID : idauIDs) {
                 identityApplianceUnitDAO.delete(idauID);
             }*/
@@ -1367,7 +1973,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
     }
 
-    protected IdentityAppliance deployAppliance(IdentityAppliance appliance, boolean configureExecEnvs) throws IdentityServerException {
+    protected IdentityAppliance deployAppliance(IdentityAppliance appliance, String username, String password, boolean configureExecEnvs) throws IdentityServerException {
 
         if (logger.isDebugEnabled())
             logger.debug("Deploying Identity Appliance " + appliance.getId());
@@ -1390,7 +1996,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
                 if (execEnv.isActive()) {
                     logger.debug("Execution environment is active, configuring " + execEnv.getName());
-                    configureExecEnv(appliance, execEnv);
+                    configureExecEnv(appliance, execEnv, username, password);
                 } else {
                     logger.debug("Execution environment is not active, skip configuration " + execEnv.getName());
                 }
@@ -1434,7 +2040,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
         // Install it
         if (deploy)
-            appliance = deployAppliance(appliance, false);
+            appliance = deployAppliance(appliance, null, null, false);
 
         // Store it
         appliance = identityApplianceDAO.save(appliance);
@@ -1493,7 +2099,7 @@ public class IdentityApplianceManagementServiceImpl implements
                         appliance = identityApplianceDAO.save(appliance);
 
                         logger.debug("Automatically Starting appliance ... " + appliance.getId());
-                        this.deployAppliance(appliance, false);
+                        this.deployAppliance(appliance, null, null, false);
 
                     }
 
@@ -1533,6 +2139,37 @@ public class IdentityApplianceManagementServiceImpl implements
         return req;
     }
 
+    protected ActivateAgentRequestType doMakeWsAgentActivationRequest(ExecutionEnvironment execEnv,
+                                                                      String username, String password ) {
+
+        ActivateAgentRequestType req = new ActivateAgentRequestType();
+        req.setTarget(execEnv.getInstallUri());
+        req.setTargetPlatformId(execEnv.getPlatformId());
+        req.setUser(username);
+        req.setPassword(password);
+
+        if (execEnv instanceof JBossExecutionEnvironment) {
+            JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) execEnv;
+            req.setJbossInstance(jbExecEnv.getInstance());
+        } else if (execEnv instanceof WeblogicExecutionEnvironment) {
+            WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
+            req.setWeblogicDomain(wlExecEnv.getDomain());
+        } else if (execEnv instanceof AlfrescoExecutionEnvironment){
+            AlfrescoExecutionEnvironment alfExecEnv = (AlfrescoExecutionEnvironment)execEnv;
+            req.setTomcatInstallDir(alfExecEnv.getTomcatInstallDir());
+        } else if (execEnv instanceof LiferayExecutionEnvironment) {
+            LiferayExecutionEnvironment liferayExecEnv = (LiferayExecutionEnvironment) execEnv;
+            if ("tomcat".equals(liferayExecEnv.getContainerType())) {
+                req.setTomcatInstallDir(liferayExecEnv.getContainerPath());
+            } else if ("jboss".equals(liferayExecEnv.getContainerType())) {
+                req.setJbossInstallDir(liferayExecEnv.getContainerPath());
+            }
+        } // TODO : Add support for JBPortal, PHP, PHPBB, etc ...
+
+        return req;
+    }
+
+
     protected ConfigureAgentRequest doMakeConfigureAgentRequest(ExecutionEnvironment execEnv ) {
 
         ConfigureAgentRequest req = new ConfigureAgentRequest();
@@ -1557,6 +2194,36 @@ public class IdentityApplianceManagementServiceImpl implements
 
         return req;
     }
+
+    protected ConfigureAgentRequestType doMakeWsConfigureAgentRequest(ExecutionEnvironment execEnv,
+                                                                      String username,
+                                                                      String password ) {
+
+        ConfigureAgentRequestType req = new ConfigureAgentRequestType();
+        req.setTarget(execEnv.getInstallUri());
+        req.setTargetPlatformId(execEnv.getPlatformId());
+        req.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
+        req.setUser(username);
+        req.setPassword(password);
+
+        if (execEnv instanceof JBossExecutionEnvironment) {
+            JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) execEnv;
+            req.setJbossInstance(jbExecEnv.getInstance());
+        } else if (execEnv instanceof WeblogicExecutionEnvironment) {
+            WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
+            req.setWeblogicDomain(wlExecEnv.getDomain());
+        } else if (execEnv instanceof LiferayExecutionEnvironment) {
+            LiferayExecutionEnvironment liferayExecEnv = (LiferayExecutionEnvironment) execEnv;
+            if ("tomcat".equals(liferayExecEnv.getContainerType())) {
+                req.setTomcatInstallDir(liferayExecEnv.getContainerPath());
+            } else if ("jboss".equals(liferayExecEnv.getContainerType())) {
+                req.setJbossInstallDir(liferayExecEnv.getContainerPath());
+            }
+        } // TODO : Add support for JBPortal, Alfresco, PHP, PHPBB, etc ...
+
+        return req;
+    }
+
 
 
     protected ActivateSamplesRequest doMakeAgentSamplesActivationRequest(ExecutionEnvironment execEnv) {
@@ -1583,6 +2250,34 @@ public class IdentityApplianceManagementServiceImpl implements
         return req;
     }
 
+    protected ActivateSamplesRequestType doMakeWsAgentSamplesActivationRequest(ExecutionEnvironment execEnv,
+                                                                               String username, String password) {
+
+        ActivateSamplesRequestType req = new ActivateSamplesRequestType ();
+        req.setTarget(execEnv.getInstallUri());
+        req.setTargetPlatformId(execEnv.getPlatformId());
+        req.setUser(username);
+        req.setPassword(password);
+
+        if (execEnv instanceof JBossExecutionEnvironment) {
+            JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) execEnv;
+            req.setJbossInstance(jbExecEnv.getInstance());
+        } else if (execEnv instanceof WeblogicExecutionEnvironment) {
+            WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
+            req.setWeblogicDomain(wlExecEnv.getDomain());
+        } else if (execEnv instanceof LiferayExecutionEnvironment) {
+            LiferayExecutionEnvironment liferayExecEnv = (LiferayExecutionEnvironment) execEnv;
+            if ("tomcat".equals(liferayExecEnv.getContainerType())) {
+                req.setTomcatInstallDir(liferayExecEnv.getContainerPath());
+            } else if ("jboss".equals(liferayExecEnv.getContainerType())) {
+                req.setJbossInstallDir(liferayExecEnv.getContainerPath());
+            }
+        } // TODO : Add support for JBPortal, Alfresco, PHP, PHPBB, etc ...
+
+        return req;
+    }
+
+
     public class ServiceProviderComparator implements Comparator<Provider> {
         public int compare(Provider sp1, Provider sp2) {
 
@@ -1596,5 +2291,9 @@ public class IdentityApplianceManagementServiceImpl implements
         }
     }
 
+
+    protected String getHomeDir() {
+        return System.getProperty("karaf.base");
+    }
 
 }

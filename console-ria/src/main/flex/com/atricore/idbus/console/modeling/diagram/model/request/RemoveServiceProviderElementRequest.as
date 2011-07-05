@@ -25,8 +25,8 @@ import com.atricore.idbus.console.services.dto.ServiceProvider;
 public class RemoveServiceProviderElementRequest {
     private var _serviceProvider:ServiceProvider;
 
-    public function RemoveServiceProviderElementRequest(identityProvider:ServiceProvider) {
-        _serviceProvider = identityProvider;
+    public function RemoveServiceProviderElementRequest(serviceProvider:ServiceProvider) {
+        _serviceProvider = serviceProvider;
     }
 
     public function get serviceProvider():ServiceProvider {

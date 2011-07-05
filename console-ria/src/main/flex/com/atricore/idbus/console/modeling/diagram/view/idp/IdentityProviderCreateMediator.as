@@ -20,11 +20,11 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.idp {
-import com.atricore.idbus.console.components.NameValidator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
+import com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPolicy;
 import com.atricore.idbus.console.services.dto.AuthenticationContract;
@@ -36,6 +36,7 @@ import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.Resource;
 import com.atricore.idbus.console.services.dto.SamlR2IDPConfig;
+import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -47,6 +48,8 @@ import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 import mx.events.ItemClickEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -59,11 +62,16 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
     private var _idaURI:String;
 
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
+
     [Bindable]
     private var _fileRef:FileReference;
 
     [Bindable]
     public var _selectedFiles:ArrayCollection;
+
+    [Bindable]
+    public var _subjectNameIdPolicies:ArrayCollection;
 
     public function IdentityProviderCreateMediator(name:String = null, viewComp:IdentityProviderCreateForm = null) {
         super(name, viewComp);
@@ -107,7 +115,10 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
         //view.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         BindingUtils.bindProperty(view.certificateKeyPair, "dataProvider", this, "_selectedFiles");
-        
+
+        BindingUtils.bindProperty(view.subjectNameIdPolicyCombo, "dataProvider", this, "_subjectNameIdPolicies");
+        sendNotification(ApplicationFacade.LIST_NAMEID_POLICIES);
+
         initLocation();
         view.focusManager.setFocus(view.identityProviderName);
     }
@@ -121,20 +132,24 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.idpLocationPort.text = "";
         view.idpLocationContext.text = "";
         view.idpLocationPath.text = "";
-        view.signAuthAssertionCheck.selected = true;
-        view.encryptAuthAssertionCheck.selected = false;
+        view.wantAuthnRequestsSignedCheck.selected = false;
+        view.signRequestsCheck.selected = false;
+        view.wantSignedRequestsCheck.selected = false;
         view.samlBindingHttpPostCheck.selected = true;
         view.samlBindingArtifactCheck.selected = false;
-        view.samlBindingHttpRedirectCheck.selected = false;
-        view.samlBindingSoapCheck.selected = false;
+        view.samlBindingHttpRedirectCheck.selected = true;
+        view.samlBindingSoapCheck.selected = true;
         view.samlProfileSSOCheck.selected = true;
         view.samlProfileSLOCheck.selected = true;
         view.authContract.selectedIndex = 0;
         view.authAssertionEmissionPolicy.selectedIndex = 0;
+        view.authMechanism.selectedIndex = 0;
+        view.subjectNameIdPolicyCombo.selectedIndex = 0;
+        view.ignoreRequestedNameIDPolicy.selected = true;
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.certificateKeyPair.prompt = "Browse Key Pair";
+        view.certificateKeyPair.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair");
 
         view.certificateAlias.text = "";
         view.keyAlias.text = "";
@@ -152,13 +167,11 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.lblUploadMsg.visible = false;
         //view.btnUpload.enabled = false;
 
-        /*for each(var liv:ListItemValueObject in  view.authMechanism.dataProvider){
-            liv.isSelected = false;
-        }*/
-
         _idaURI = "";
         _uploadedFile = null;
         _uploadedFileName = null;
+
+        _subjectNameIdPolicies = new ArrayCollection();
 
         FormUtility.clearValidationErrors(_validators);
 //        registerValidators();
@@ -198,8 +211,12 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         loc.uri = view.idpLocationPath.text;
         identityProvider.location = loc;
 
-        identityProvider.signAuthenticationAssertions = view.signAuthAssertionCheck.selected;
-        identityProvider.encryptAuthenticationAssertions = view.encryptAuthAssertionCheck.selected;
+        identityProvider.wantAuthnRequestsSigned = view.wantAuthnRequestsSignedCheck.selected;
+        identityProvider.signRequests = view.signRequestsCheck.selected;
+        identityProvider.wantSignedRequests = view.wantSignedRequestsCheck.selected;
+
+        identityProvider.ignoreRequestedNameIDPolicy = view.ignoreRequestedNameIDPolicy.selected;
+        identityProvider.subjectNameIDPolicy = view.subjectNameIdPolicyCombo.selectedItem;
 
         identityProvider.activeBindings = new ArrayCollection();
         if (view.samlBindingHttpPostCheck.selected) {
@@ -235,28 +252,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             basicAuth.ignoreUsernameCase = false;
             identityProvider.authenticationMechanisms.addItem(basicAuth);
         }
-/*
-        for each(var liv:ListItemValueObject in  view.authMechanism.dataProvider){
-            if(liv.isSelected){
-                if(identityProvider.authenticationMechanisms == null){
-                    identityProvider.authenticationMechanisms = new ArrayCollection();
-                }
-                switch(liv.name){
-                    case "basic":
-                        var basicAuth:BasicAuthentication = new BasicAuthentication();
-                        basicAuth.name = identityProvider.name + "-basic-authn";
-                        //TODO MAKE CONFIGURABLE
-                        basicAuth.hashAlgorithm = "MD5";
-                        basicAuth.hashEncoding = "HEX";
-                        basicAuth.ignoreUsernameCase = false;
-                        identityProvider.authenticationMechanisms.addItem(basicAuth);
-                        break;
-                    case "strong":
-                        break;
-                }
-            }
-        }
-*/
+
         if (view.authContract.selectedItem.data == "default") {
             var authContract:AuthenticationContract = new AuthenticationContract();
             authContract.name = "Default";
@@ -309,7 +305,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             }
             */
             if (view.uploadKeystore.selected && (_selectedFiles == null || _selectedFiles.length == 0)) {
-                view.lblUploadMsg.text = "You must select a keystore!!!";
+                view.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair.error");
                 view.lblUploadMsg.setStyle("color", "Red");
                 view.lblUploadMsg.visible = true;
                 event.stopImmediatePropagation();
@@ -414,7 +410,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         //sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.certificateKeyPair.prompt = "Browse Key Pair";
+        view.certificateKeyPair.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair");
         //view.btnUpload.enabled = false;
 
         saveIdentityProvider();
@@ -425,16 +421,11 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     }
 
     override public function registerValidators():void {
-        FormUtility.clearValidationErrors(_validators);
         _validators = [];
         _validators.push(view.nameValidator);
-        view.portValidator.source = view.idpLocationPort;
         _validators.push(view.portValidator);
-        view.domainValidator.source = view.idpLocationDomain;
         _validators.push(view.domainValidator);
-        view.contextValidator.source = view.idpLocationContext;
         _validators.push(view.contextValidator);
-        view.pathValidator.source = view.idpLocationPath;
         _validators.push(view.pathValidator);
         if (view.uploadKeystore.selected) {
             _validators.push(view.certificateAliasValidator);
@@ -445,13 +436,32 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return super.listNotificationInterests();
+        return [SubjectNameIDPolicyListCommand.SUCCESS,
+            SubjectNameIDPolicyListCommand.FAILURE];
     }
 
+
     override public function handleNotification(notification:INotification):void {
-        super.handleNotification(notification);
-        initLocation();
-//        registerValidators();
+        switch (notification.getName()) {
+            case SubjectNameIDPolicyListCommand.SUCCESS:
+                if (view != null && view.parent != null) {
+                    _subjectNameIdPolicies = projectProxy.subjectNameIdentifierPolicies;
+                    for (var i:int=0; i < view.subjectNameIdPolicyCombo.dataProvider.length; i++) {
+                        // hard-coded saml format string ...
+                        if (view.subjectNameIdPolicyCombo.dataProvider[i].type.toString() == SubjectNameIDPolicyType.PRINCIPAL.toString()) {
+                            view.subjectNameIdPolicyCombo.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                break;
+            default:
+                initLocation();
+                break;
+        }
+
+
+
     }
 
 }

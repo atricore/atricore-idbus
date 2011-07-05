@@ -12,16 +12,40 @@
     <!-- Activation componentes                                                -->
     <!-- ===================================================================== -->
 
+    <osgi:reference id="jaasAuthenticator" cardinality="1..1" timeout="60"
+                    interface="com.atricore.idbus.console.appliance.jaas.JaasAuthenticator"/>
+
+    <bean name="activationClientFactory"
+          class="com.atricore.idbus.console.activation.main.client.impl.ActivationClientFactoryImpl"/>
+
+    <!-- Contribute Service using Spring DM -->
+    <osgi:service id="osgiActivationClientFactory"
+                  ref="activationClientFactory"
+            interface="com.atricore.idbus.console.activation.main.client.ActivationClientFactory"/>
+
+
+    <!-- WS Wrapper for Activation Service. Contributed through OSGi so that others can publish it as WS endpoint -->
+    <bean id="activationWService"
+          class="com.atricore.idbus.console.activation.main.impl.JOSSOActivationWServiceImpl">
+        <property name="activationService" ref="activationService"/>
+        <property name="authenticator" ref="jaasAuthenticator"/>
+    </bean>
+    <!-- Contribute Service using Spring DM -->
+    <osgi:service id="osgiActivationWService"
+                  ref="activationWService"
+            interface="com.atricore.idbus.console.activation._1_0.wsdl.ActivationPortType"/>
+
     <!-- Define a DB Server for IDBus Server application                       -->
     <bean id="activationService"
           class="com.atricore.idbus.console.activation.main.impl.JOSSOActivationServiceImpl" >
 
         <!-- TODO : Improve -->
-        <property name="jossoVersion" value="1.8.3"/>
+        <property name="jossoVersion" value="1.8.4"/>
         <property name="printer" ref="printerServiceBean"/>
         <property name="installers">
             <list>
-                
+
+                <ref bean="tc70-installer"/>
                 <ref bean="tc60-installer"/>
                 <ref bean="tc55-installer"/>
                 <ref bean="tc50-installer"/>
@@ -34,21 +58,53 @@
                 <ref bean="wc21-installer"/>
                 <ref bean="liferay-installer"/>
                 <ref bean="alfresco-installer"/>
+                <ref bean="iis-installer-32"/>
+                <ref bean="iis-installer-64"/>
+                <ref bean="phpbb-installer"/>
                 
             </list>
         </property>
     </bean>
 
-    <!-- Contribute the DB Server Descriptor using Spring DM -->
+    <!-- Contribute Service using Spring DM -->
     <osgi:service id="osgiActivationService"
                   ref="activationService"
             interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
+
     
     <bean name="printerServiceBean" class="com.atricore.idbus.console.activation.main.impl.MessagePrinterService"/>
 
     <!-- ============================================== -->
     <!-- Install Platforms                              -->
     <!-- ============================================== -->
+
+    <!-- Apache Tomcat 7.0.x -->
+
+    <bean name="tc70-installer" class="org.josso.tooling.gshell.install.installer.TomcatInstaller">
+        <constructor-arg index="0" ref="tc70"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="tc70" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="tc70"/>
+        <property name="family" value="tomcat"/>
+        <property name="platformName" value="Apache Tomcat"/>
+        <property name="version" value="7.0.x"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/lib"/>
+        <property name="configDir" value="${target}/conf"/>
+        <property name="deployDir" value="${target}/webapps"/>
+        <property name="endorsedLibDir" value="${target}/lib"/>
+
+        <property name="JOSSOConfDir" value="${target}/lib"/>
+        <property name="JOSSOLibDir" value="${target}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/lib"/>
+
+        <property name="JOSSOWarName" value="josso"/>
+        <property name="JOSSOWarExploded" value="true"/>
+
+    </bean>
 
     <!-- Apache Tomcat 6.0.x -->
 
@@ -360,4 +416,49 @@
         <property name="JOSSOConfDir" value="${target}/WEB-INF/classes"/>
     </bean>
 
+    <!-- IIS installer  -->
+    <bean name="iis-installer-32" class="org.josso.tooling.gshell.install.installer.IISInstaller">
+        <constructor-arg index="0" ref="iis"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="iis" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="iis"/>
+        <property name="family" value="non-java"/>
+        <property name="platformName" value="IIS agent 32bit version"/>
+        <property name="version" value="5.x-7.x"/>
+        
+        <property name="binDir" value="${target}/bin"/>
+        <property name="configDir" value="${target}/config"/>
+        <property name="JOSSOSharedLibDir" value="${target}/log"/>
+    </bean>
+
+    <bean name="iis-installer-64" class="org.josso.tooling.gshell.install.installer.IISInstaller">
+        <constructor-arg index="0" ref="iis64"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="iis64" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="iis64"/>
+        <property name="family" value="non-java"/>
+        <property name="platformName" value="IIS agent 64bit version"/>
+        <property name="version" value="5.x-7.x"/>
+        
+        <property name="binDir" value="${target}/bin"/>
+        <property name="configDir" value="${target}/config"/>
+        <property name="JOSSOSharedLibDir" value="${target}/log"/>
+    </bean>
+
+    <!-- phpBB installer  -->
+    <bean name="phpbb-installer" class="org.josso.tooling.gshell.install.installer.PhpBBInstaller">
+        <constructor-arg index="0" ref="phpBB"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="phpBB" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="phpBB"/>
+        <property name="family" value="non-java"/>
+        <property name="platformName" value="PHP"/>
+        <property name="version" value="3.x"/>
+    </bean>
 </beans>

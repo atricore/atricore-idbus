@@ -44,6 +44,10 @@ public class DeleteUserCommand extends IocSimpleCommand implements IResponder {
     private var _registry:ServiceRegistry;
     private var _accountManagementProxy:AccountManagementProxy;
 
+
+    public function DeleteUserCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

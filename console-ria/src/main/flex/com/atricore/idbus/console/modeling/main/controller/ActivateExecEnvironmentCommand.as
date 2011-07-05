@@ -11,6 +11,8 @@ import com.atricore.idbus.console.services.spi.request.ActivateExecEnvRequest;
 import com.atricore.idbus.console.services.spi.response.ActivateExecEnvResponse;
 import com.atricore.idbus.console.services.spi.response.CreateSimpleSsoResponse;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 import mx.rpc.Fault;
 
 import mx.rpc.IResponder;
@@ -28,6 +30,10 @@ public class ActivateExecEnvironmentCommand extends IocSimpleCommand implements 
     private var _projectProxy:ProjectProxy;
     private var _registry:ServiceRegistry;
 
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
+
+    public function ActivateExecEnvironmentCommand() {
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;
@@ -58,7 +64,10 @@ public class ActivateExecEnvironmentCommand extends IocSimpleCommand implements 
         req.activateSamples = activateExecutionEnvRequest.installSamples;
         req.replace = activateExecutionEnvRequest.replaceConfFiles;
 
-        sendNotification(ProcessingMediator.START, "Activating execution environment...");
+        req.username = activateExecutionEnvRequest.username;
+        req.password = activateExecutionEnvRequest.password;
+
+        sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "activating.exec.environment"));
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
 
@@ -72,7 +81,8 @@ public class ActivateExecEnvironmentCommand extends IocSimpleCommand implements 
         trace(msg);
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-            "Execution environment activation failed.");
+                         resourceManager.getString(AtricoreConsole.BUNDLE, "activating.exec.environment.error")
+                );
         sendNotification(FAILURE, msg);
     }
 

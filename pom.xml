@@ -34,85 +34,95 @@
 
     <properties>
 
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <atricore.idbus.version>1.1.0-SNAPSHOT</atricore.idbus.version>
-        <idbus.kernel.version>1.1.0-SNAPSHOT</idbus.kernel.version>
-        <idbus.cap.saml2.version>1.1.0-SNAPSHOT</idbus.cap.saml2.version>
-        <idbus.cap.spml2.version>1.1.0-SNAPSHOT</idbus.cap.spml2.version>
-        <idbus.cap.josso.version>1.1.0-SNAPSHOT</idbus.cap.josso.version>
-        <idbus.cap.sts.version>1.1.0-SNAPSHOT</idbus.cap.sts.version>
+        <atricore.idbus.version>1.2.0-SNAPSHOT</atricore.idbus.version>
+        <idbus.kernel.version>1.2.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.cap.saml2.version>1.2.0-SNAPSHOT</idbus.cap.saml2.version>
+        <idbus.cap.spnego.version>1.2.0-SNAPSHOT</idbus.cap.spnego.version>
+        <idbus.cap.spml2.version>1.2.0-SNAPSHOT</idbus.cap.spml2.version>
+        <idbus.cap.josso.version>1.2.0-SNAPSHOT</idbus.cap.josso.version>
+        <idbus.cap.sts.version>1.2.0-SNAPSHOT</idbus.cap.sts.version>
 
-        <idbus.connector.jdoidentityvault.version>1.1.0-SNAPSHOT</idbus.connector.jdoidentityvault.version>
+        <idbus.connector.jdoidentityvault.version>1.2.0-SNAPSHOT</idbus.connector.jdoidentityvault.version>
 
-        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.1.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.1.0-SNAPSHOT
+        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.2.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.2.0-SNAPSHOT
         </idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.1.0-SNAPSHOT
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.2.0-SNAPSHOT
         </idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.datanucleus-v2_1_2.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-v2_1_2.version>
-        <idbus.bundle.apache-maven-v3_0.version>1.1.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
-        <idbus.bundle.josso-ws-v1_2.version>1.1.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
+        <idbus.bundle.datanucleus-v2_1_2.version>1.2.0-SNAPSHOT</idbus.bundle.datanucleus-v2_1_2.version>
+        <idbus.bundle.apache-maven-v3_0.version>1.2.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
+        <idbus.bundle.josso-ws-v1_2.version>1.2.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
 
-        <idbus.idojo.dbidentitystore.version>1.1.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
+        <idbus.idojo.dbidentitystore.version>1.2.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
 
-        <idbus.idojo.ldapidentitystore.version>1.1.0-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
-        <idbus.idojo.memoryidentitystore.version>1.1.0-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
+        <idbus.idojo.ldapidentitystore.version>1.2.0-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
+        <idbus.idojo.memoryidentitystore.version>1.2.0-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
 
-        <idbus.idojo.memorysessionstore.version>1.1.0-SNAPSHOT</idbus.idojo.memorysessionstore.version>
-        <idbus.idojo.dbsessionstore.version>1.1.0-SNAPSHOT</idbus.idojo.dbsessionstore.version>
-        <idbus.idojo.serializedsessionstore.version>1.1.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
-        <idbus.idojo.ehcachesessionstore.version>1.1.0-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
+        <idbus.idojo.memorysessionstore.version>1.2.0-SNAPSHOT</idbus.idojo.memorysessionstore.version>
+        <idbus.idojo.dbsessionstore.version>1.2.0-SNAPSHOT</idbus.idojo.dbsessionstore.version>
+        <idbus.idojo.serializedsessionstore.version>1.2.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
+        <idbus.idojo.ehcachesessionstore.version>1.2.0-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
 
-        <idbus.idojo.strongauthscheme.version>1.1.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
+        <idbus.idojo.strongauthscheme.version>1.2.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
 
+        <!-- 3rd party -->
         <apache.derby.version>10.5.3.0_1</apache.derby.version>
         <apache.tiles.version>2.0.6</apache.tiles.version>
         <apache.xmlbeans.version>2.4.0</apache.xmlbeans.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
+        <as3commons-reflect.version>1.3</as3commons-reflect.version>
+        <as3commons-lang.version>0.2.1</as3commons-lang.version>
+        <as3commons-logging.version>1.1.1</as3commons-logging.version>
         <blazeds.version>3.0</blazeds.version>
-        <commons-vfs.version>1.0_1</commons-vfs.version>
-        <commons-lang.version>2.4</commons-lang.version>
+        <camel.version>1.6.1</camel.version>
+        <commons-codec.version>1.3</commons-codec.version>
+        <commons-compress.version>1.1</commons-compress.version>
         <commons-fileupload.version>1.2.1</commons-fileupload.version>
+        <commons-io.version>1.3.2</commons-io.version>
+        <commons-lang.version>2.4</commons-lang.version>
+        <commons-logging.version>1.0.4</commons-logging.version>
+        <commons-vfs.version>1.0_1</commons-vfs.version>
+        <cxf.version>2.2.2</cxf.version>
         <datanucleus.version>2.1.2</datanucleus.version>
         <dozer.version>5.2.2_1</dozer.version>
-        <camel.version>1.6.1</camel.version>
-
+        <felix.karaf.version>2.2.1</felix.karaf.version>
+        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <felix.osgi.version>1.4.0</felix.osgi.version>
         <!--
         <flex.framework.version>3.2.0.3958</flex.framework.version>
-        -->
-        <!--
         <flex.framework.version>3.3.0.4852</flex.framework.version>
         -->
         <flex.framework.version>4.0.0.14159</flex.framework.version>
         <flash.version>10.0.0</flash.version>
         <flexlib.version>2.4.0</flexlib.version>
-        <josso1.version>1.8.3</josso1.version>
-
-        <!-- AS3Commons -->
-        <as3commons-reflect.version>1.3</as3commons-reflect.version>
-        <as3commons-lang.version>0.2.1</as3commons-lang.version>
-        <as3commons-logging.version>1.1.1</as3commons-logging.version>
-
+        <flexiframe.version>1.4.6</flexiframe.version>
+        <geronimo.wsmetadata.version>1.1.2</geronimo.wsmetadata.version>
         <hsqldb.version>1.8.0.9</hsqldb.version>
         <javax.jdo2.version>2.3-ec</javax.jdo2.version>
+        <javax.jaxws-api.version>2.1-1</javax.jaxws-api.version>
         <javax.portlet.version>1.0.0</javax.portlet.version>
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
+        <jaxws.api.version>2.1</jaxws.api.version>
+        <josso1.version>1.8.5-SNAPSHOT</josso1.version>
         <junit.version>4.4</junit.version>
-        <felix.karaf.version>2.1.0</felix.karaf.version>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
-        <felix.osgi.version>1.4.0</felix.osgi.version>
         <log4j.version>1.2.14</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
         <ravis.version>1.0.0.RC2-20100628</ravis.version>
+        <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <spring.security.version>2.0.4</spring.security.version>
-        <spring.version>3.0.3.RELEASE</spring.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <spring.version>3.0.5.RELEASE</spring.version>
+        <spring.osgi.version>1.2.1</spring.osgi.version>
         <velocity.version>1.6.2</velocity.version>
         <xbean.version>3.7</xbean.version>
         <xalan.version>2.7.1</xalan.version>
         <xercesImpl.version>2.9.1</xercesImpl.version>
+        <xmlsec.version>1.4.3_2</xmlsec.version>
+        <javax.mail.version>1.4.1_2</javax.mail.version>
 
+        <!-- Other props -->
         <compiler.fork>false</compiler.fork>
         <bnd.version.policy>[$(version;==;$(@)),$(version;+;$(@)))</bnd.version.policy>
 
@@ -133,7 +143,6 @@
                 <artifactId>org.atricore.idbus.bundles.apache-derby-client-v10_5_3_0_1</artifactId>
                 <version>${idbus.bundle.apache-derby-client-v10_5_3_0_1.version}</version>
             </dependency>
-
 
             <dependency>
                 <groupId>org.atricore.idbus.kernel.common</groupId>
@@ -172,9 +181,21 @@
             </dependency>
 
             <dependency>
+                <groupId>org.atricore.idbus.capabilities.sts</groupId>
+                <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
+                <version>${idbus.cap.sts.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.atricore.idbus.kernel.common</groupId>
                 <artifactId>org.atricore.idbus.kernel.common.spml</artifactId>
-                <version>${idbus.cap.spml2.version}</version>
+                <version>${idbus.kernel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.kernel.common</groupId>
+                <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
+                <version>${idbus.kernel.version}</version>
             </dependency>
 
             <dependency>
@@ -195,7 +216,6 @@
                 <version>${idbus.cap.josso.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
@@ -208,25 +228,57 @@
                 <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-config</artifactId>
                 <version>${pom.version}</version>
+                <type>zip</type>
+                <classifier>resources-${console.distribution}</classifier>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-lib</artifactId>
                 <version>${pom.version}</version>
+                <type>swc</type>
             </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>console-ria-base</artifactId>
+                <version>${pom.version}</version>
+                <type>swc</type>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>console-ce-branding</artifactId>
+                <version>${pom.version}</version>
+                <type>swc</type>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>console-ee-branding</artifactId>
+                <version>${pom.version}</version>
+                <type>swc</type>
+            </dependency>
+
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-ria</artifactId>
                 <version>${pom.version}</version>
+                <classifier>${console.distribution}</classifier>
                 <type>swf</type>
             </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.activation</groupId>
+                <artifactId>com.atricore.idbus.console.activation.protocol</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>com.atricore.idbus.console.lifecycle</groupId>
@@ -240,6 +292,41 @@
                 <version>${pom.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.atricore.idbus.console.licensing</groupId>
+                <artifactId>com.atricore.idbus.console.licensing.josso2-license-v1_0</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.licensing</groupId>
+                <artifactId>com.atricore.idbus.console.licensing.main</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.licensing</groupId>
+                <artifactId>com.atricore.idbus.console.licensing.command</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+                <artifactId>com.atricore.idbus.console.liveservices.liveupdate.atricore-liveupdate-v1_0</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+                <artifactId>com.atricore.idbus.console.liveservices.liveupdate.main</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+                <artifactId>com.atricore.idbus.console.liveservices.liveupdate.command</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -251,6 +338,18 @@
                 <groupId>com.atricore.idbus.console.lifecycle</groupId>
                 <artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>
                 <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.karaf.features</groupId>
+                <artifactId>org.apache.karaf.features.core</artifactId>
+                <version>${felix.karaf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${felix.osgi.version}</version>
             </dependency>
 
             <dependency>
@@ -293,14 +392,6 @@
                 <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
                 <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>console-config</artifactId>
-                <version>${project.version}</version>
-                <classifier>resources</classifier>
-                <type>zip</type>
             </dependency>
 
             <dependency>
@@ -387,7 +478,7 @@
             </dependency>
 
             -->
-            
+
             <dependency>
                 <groupId>com.adobe.flex.framework</groupId>
                 <artifactId>datavisualization</artifactId>
@@ -410,6 +501,13 @@
                 <type>swc</type>
             </dependency>
 
+            <dependency>
+                <groupId>com.google.code.flex-iframe</groupId>
+                <artifactId>flex-iframe</artifactId>
+                <version>${flexiframe.version}</version>
+                <type>swc</type>
+            </dependency>
+            
             <dependency>
                 <groupId>org.springextensions.actionscript</groupId>
                 <artifactId>spring-actionscript-puremvc-standard</artifactId>
@@ -560,6 +658,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.atricore.idbus.kernel.common</groupId>
+                <artifactId>org.atricore.idbus.kernel.common.xmldsig</artifactId>
+                <version>${idbus.kernel.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-core</artifactId>
                 <version>${datanucleus.version}</version>
@@ -610,6 +714,25 @@
                 <version>2.1</version>
                 <scope>provided</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.servicemix.specs</groupId>
+                <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.servicemix.specs</groupId>
+                <artifactId>org.apache.servicemix.specs.jaxws-api-${jaxws.api.version}</artifactId>
+                <version>${servicemix.specs.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-ws-metadata_2.0_spec</artifactId>
+                <version>${geronimo.wsmetadata.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>org.springframework.osgi</groupId>
@@ -752,9 +875,33 @@
             </dependency>
 
             <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.commons-vfs</artifactId>
+                <version>${commons-vfs.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
-                <version>1.0.4</version>
+                <version>${commons-logging.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.xmlsec</artifactId>
+                <version>${xmlsec.version}</version>
             </dependency>
 
             <dependency>
@@ -794,6 +941,12 @@
                 <version>${commons-fileupload.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress.version}</version>
+            </dependency>
+
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
@@ -807,12 +960,6 @@
                 <artifactId>spring-security-core</artifactId>
                 <version>${spring.security.version}</version>
                 <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.servicemix.bundles</groupId>
-                <artifactId>org.apache.servicemix.bundles.commons-vfs</artifactId>
-                <version>${commons-vfs.version}</version>
             </dependency>
 
             <dependency>
@@ -839,6 +986,12 @@
                 <version>${camel.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.javax.mail</artifactId>
+                <version>${javax.mail.version}</version>
+            </dependency>
+            
         </dependencies>
     </dependencyManagement>
 
@@ -846,6 +999,13 @@
         <pluginManagement>
 
             <plugins>
+
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${felix.plugin.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -911,6 +1071,7 @@
                         </compiledLocales>
                         <configurationReport>true</configurationReport>
                         <keepGeneratedActionscript>false</keepGeneratedActionscript>
+                        <argLine>-Xmx512M</argLine>
                         <targetplayer>${flash.version}</targetplayer>
                         <licenses>
                             <flexbuilder3>1377-4004-5203-8817-7220-1547</flexbuilder3>
@@ -970,22 +1131,6 @@
         </plugins>
 
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>atricore-m2-repo</id>
-            <name>Atricore Release Distribution Repository</name>
-            <url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-release-repository</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>atricore-m2-snapshot-repo</id>
-            <name>Atricore Development Snapshot Repository</name>
-            <url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-snapshot-repository</url>
-        </snapshotRepository>
-
-    </distributionManagement>
-
 
     <repositories>
         <!-- JOSSO Releases Repository -->
@@ -1063,6 +1208,46 @@
             </snapshots>
 
         </repository>
+
+
+        <!-- Dependencies not on central repo -->
+        <repository>
+
+            <id>atricore-m2-commercial-repo</id>
+            <name>Atricore.com Maven2 Repository</name>
+            <url>http://repository.atricore.com/m2-release-repository</url>
+
+            <releases>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>true</enabled>
+            </releases>
+
+            <snapshots>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>false</enabled>
+            </snapshots>
+
+        </repository>
+
+        <!-- Dependencies not on central repo -->
+        <repository>
+
+            <id>atricore-com-m2-snapshot-repo</id>
+            <name>Atricore.com Maven2 SanpshotsRepository</name>
+            <url>http://repository.atricore.com/m2-snapshot-repository</url>
+
+            <releases>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>false</enabled>
+            </releases>
+
+            <snapshots>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>true</enabled>
+            </snapshots>
+
+        </repository>
+
 
         <!-- Apache -->
         <repository>
@@ -1348,26 +1533,182 @@
 
     </pluginRepositories>
 
-
-    <modules>
-        <module>console-tooling</module>
-        <module>console-lifecycle</module>
-        <module>console-activation</module>
-        <module>console-config</module>
-        <module>console-services</module>
-        <module>console-lib</module>
-        <module>console-ria</module>
-        <module>console-web</module>
-        <module>console-appliance/console-default-idau</module>
-    </modules>
-
     <profiles>
+
         <profile>
             <id>qa</id>
             <modules>
                 <module>console-qa</module>
             </modules>
         </profile>
+
+        <profile>
+            <id>ee</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <properties>
+                <console.distribution>ee</console.distribution>
+                <console.distribution.descr>EE</console.distribution.descr>
+            </properties>
+
+            <repositories>
+                <!-- Dependencies not on central repo -->
+                <repository>
+
+                    <id>atricore-m2-commercial-repo</id>
+                    <name>Atricore Maven2 Repository</name>
+                    <url>http://repository.atricore.com/m2-release-repository</url>
+
+                    <releases>
+                        <checksumPolicy>fail</checksumPolicy>
+                        <enabled>true</enabled>
+                    </releases>
+
+                    <snapshots>
+                        <checksumPolicy>fail</checksumPolicy>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+
+            <distributionManagement>
+
+                <repository>
+                    <id>atricore-m2-deploy-commercial-repo</id>
+                    <name>Atricore Release Distribution Repository</name>
+                    <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-release-repository</url>
+                </repository>
+
+                <snapshotRepository>
+                    <id>atricore-m2-snapshot-deploy-commercial-repo</id>
+                    <name>Atricore Development Snapshot Repository</name>
+                    <url>scp://repository.atricore.com/var/www/repository.atricore.com/m2-snapshot-repository</url>
+                </snapshotRepository>
+
+            </distributionManagement>
+
+            <modules>
+                <!-- TODO : Move this to other project -->
+                <module>console-tooling</module>
+                <module>console-licensing</module>
+                <module>console-liveservices/liveupdate</module>
+                <module>console-lifecycle</module>
+                <module>console-activation</module>
+                <module>console-2factor</module>
+
+                <!-- Flex specific modules -->
+                <module>console-config</module>
+                <module>console-services</module>
+                <module>console-lib</module>
+                <module>console-ria-base</module>
+                <module>console-branding/console-ee-branding</module>
+                <module>console-ria</module>
+                <module>console-web</module>
+                <module>console-docs</module>
+
+                <!-- IDAU for Console -->
+                <module>console-appliance/console-default-idau</module>
+                <module>console-appliance/console-jaas</module>
+
+            </modules>
+
+        </profile>
+
+        <profile>
+            <id>ce</id>
+            <properties>
+                <console.distribution>ce</console.distribution>
+                <console.distribution.descr>CE</console.distribution.descr>
+            </properties>
+
+            <distributionManagement>
+                <repository>
+                    <id>atricore-m2-deploy-community-repo</id>
+                    <name>Atricore Release Distribution Repository</name>
+                    <url>scp://repository.atricore.org/var/www/repository.atricore.com/m2-release-repository</url>
+                </repository>
+
+                <snapshotRepository>
+                    <id>atricore-m2-snapshot-deploy-community-repo</id>
+                    <name>Atricore Development Snapshot Repository</name>
+                    <url>scp://repository.atricore.org/var/www/repository.atricore.com/m2-snapshot-repository</url>
+                </snapshotRepository>
+
+            </distributionManagement>
+
+            <modules>
+                <!-- TODO : Move this to other project -->
+                <module>console-tooling</module>
+                <module>console-licensing</module>
+                <module>console-liveservices/liveupdate</module>
+                <module>console-lifecycle</module>
+                <module>console-activation</module>
+                <module>console-2factor</module>
+
+                <!-- Flex specific modules -->
+                <module>console-config</module>
+                <module>console-services</module>
+                <module>console-lib</module>
+                <module>console-ria-base</module>
+                <module>console-branding/console-ce-branding</module>
+                <module>console-ria</module>
+                <module>console-web</module>
+                <module>console-docs</module>
+
+                <!-- IDAU for Console -->
+                <module>console-appliance/console-default-idau</module>
+                <module>console-appliance/console-jaas</module>
+
+            </modules>
+
+        </profile>
+
+        <profile>
+            <id>ee-web</id>
+            <properties>
+                <console.distribution>ee</console.distribution>
+                <console.distribution.descr>EE</console.distribution.descr>
+            </properties>
+
+            <modules>
+                <!-- Flex specific modules -->
+                <module>console-config</module>
+                <module>console-services</module>
+                <module>console-lib</module>
+                <module>console-ria-base</module>
+                <module>console-branding/console-ee-branding</module>
+                <module>console-ria</module>
+                <module>console-web</module>
+                <module>console-docs</module>
+
+            </modules>
+
+        </profile>
+
+        <profile>
+            <id>ce-web</id>
+            <properties>
+                <console.distribution>ce</console.distribution>
+                <console.distribution.descr>CE</console.distribution.descr>
+            </properties>
+
+            <modules>
+                <!-- Flex specific modules -->
+                <module>console-config</module>
+                <module>console-services</module>
+                <module>console-lib</module>
+                <module>console-ria-base</module>
+                <module>console-branding/console-ce-branding</module>
+                <module>console-ria</module>
+                <module>console-web</module>
+                <module>console-docs</module>
+            </modules>
+
+        </profile>
+
+
     </profiles>
 </project>
 

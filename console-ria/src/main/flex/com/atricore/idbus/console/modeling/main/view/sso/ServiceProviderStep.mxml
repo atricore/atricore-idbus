@@ -34,18 +34,19 @@
         <fx:Script>
         <![CDATA[
 
-            import com.atricore.idbus.console.services.dto.Location;
-            import com.atricore.idbus.console.services.dto.ServiceProvider;
-            import com.atricore.idbus.console.services.dto.JOSSOActivation;
-            import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
-            import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
             import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
             import com.atricore.idbus.console.modeling.main.view.sso.event.SsoEvent;
-            import com.atricore.idbus.console.services.dto.IdentityAppliance;
+            import com.atricore.idbus.console.services.dto.ExecEnvType;
+            import com.atricore.idbus.console.services.dto.JOSSOActivation;
+            import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
+            import com.atricore.idbus.console.services.dto.Location;
+            import com.atricore.idbus.console.services.dto.ServiceProvider;
+            import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 
             [Bindable]
             private var validators:Array;
 
+            [Bindable]
             private var labelWidth:Number = 165;
 
             private var lastSPCreated:Boolean;
@@ -129,7 +130,7 @@
             }
 
             public function handleDirectoryDoesntExists(event:Event):void {
-                homeDir.errorString = "Directory doesn't exist";
+                homeDir.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                 isValid = false;
             }
 
@@ -138,7 +139,7 @@
                 sp.name = jossoSPName.text;
 
                 // temporary location
-                var spLoc = new Location();
+                var spLoc:Location = new Location();
                 spLoc.protocol = "";
                 spLoc.host = "";
                 spLoc.port = 80;
@@ -166,6 +167,7 @@
                     sp.activation.executionEnv = new TomcatExecutionEnvironment();
                 }
                 sp.activation.executionEnv.name = jossoSPPlatform.selectedItem.@data + "-execenv";
+                sp.activation.executionEnv.type = ExecEnvType.LOCAL;
                 sp.activation.executionEnv.installUri = homeDir.text;
 
                 sp.activation.executionEnv.platformId = jossoSPPlatform.selectedItem.@data;
@@ -173,16 +175,16 @@
             }
 
             private function addSPToReadableArray():void {
-                readableResultArray.push("JOSSO Service Provider's Name: " + jossoSPName.text);
-                readableResultArray.push("JOSSO Service Provider's Platform: " + jossoSPPlatform.labelDisplay.text);
-                readableResultArray.push("JOSSO Service Provider's Location: " + composeLocation());
+                readableResultArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "idApplianceWiz.spLocalStep.josso.spname") + ": " + jossoSPName.text);
+                readableResultArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "idApplianceWiz.spLocalStep.platform") + ": " + jossoSPPlatform.labelDisplay.text);
+                readableResultArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "idApplianceWiz.spLocalStep.josso.sp.location") + ": " + composeLocation());
             }
 
             private function addNewSPProvider():void {
                 addSPToArray();
                 addSPToReadableArray();
 
-                creationStatusLbl.text = "JOSSO Service Provider successfully added";
+                creationStatusLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, "idApplianceWiz.spLocalStep.creation.status");
                 fadeFx.play([creationStatusLbl]);
                 clearTheForm();
 
@@ -218,7 +220,7 @@
             private function composeLocation():String {
                 var port:String = ( partnerappLocationPort.text == "" ? "" : ":" + partnerappLocationPort.text );
                 return partnerappLocationProtocol.labelDisplay.text + '://' + partnerappLocationDomain.text + port + '/' +
-                       partnerappLocationContext.text;
+                        partnerappLocationContext.text;
             }
         ]]>
     </fx:Script>

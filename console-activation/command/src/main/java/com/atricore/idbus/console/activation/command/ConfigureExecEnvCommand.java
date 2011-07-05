@@ -1,11 +1,10 @@
 package com.atricore.idbus.console.activation.command;
 
 import com.atricore.idbus.console.activation.main.spi.ActivationService;
-import com.atricore.idbus.console.activation.main.spi.request.ActivateSamplesRequest;
 import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequest;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class ConfigureExecEnvCommand extends ActivationCommandSupport {
 

@@ -30,12 +30,21 @@ public class ServiceProviderDTO extends FederatedProviderDTO {
 
     private AccountLinkagePolicyDTO accountLinkagePolicy;
 
+    private IdentityMappingPolicyDTO identityMappingPolicy;
+
     // RFU
     private AuthenticationContractDTO authenticationContract;
 
     // RFU
     private AuthenticationMechanismDTO authenticationMechanism;
 
+    private boolean signAuthenticationRequests;
+
+    private boolean wantAssertionSigned;
+
+    private boolean signRequests;
+
+    private boolean wantSignedRequests;
 
     @Override
     public ProviderRoleDTO getRole() {
@@ -63,6 +72,14 @@ public class ServiceProviderDTO extends FederatedProviderDTO {
         this.accountLinkagePolicy = accountLinkagePolicy;
     }
 
+    public IdentityMappingPolicyDTO getIdentityMappingPolicy() {
+        return identityMappingPolicy;
+    }
+
+    public void setIdentityMappingPolicy(IdentityMappingPolicyDTO identityMappingPolicy) {
+        this.identityMappingPolicy = identityMappingPolicy;
+    }
+
     public AuthenticationContractDTO getAuthenticationContract() {
         return authenticationContract;
     }
@@ -77,5 +94,37 @@ public class ServiceProviderDTO extends FederatedProviderDTO {
 
     public void setAuthenticationMechanism(AuthenticationMechanismDTO authenticationMechanism) {
         this.authenticationMechanism = authenticationMechanism;
+    }
+
+    public boolean isSignAuthenticationRequests() {
+        return signAuthenticationRequests;
+    }
+
+    public void setSignAuthenticationRequests(boolean signAuthenticationRequests) {
+        this.signAuthenticationRequests = signAuthenticationRequests;
+    }
+
+    public boolean isWantAssertionSigned() {
+        return wantAssertionSigned;
+    }
+
+    public void setWantAssertionSigned(boolean wantAssertionSigned) {
+        this.wantAssertionSigned = wantAssertionSigned;
+    }
+
+    public boolean isSignRequests() {
+        return signRequests;
+    }
+
+    public void setSignRequests(boolean signRequests) {
+        this.signRequests = signRequests;
+    }
+
+    public boolean isWantSignedRequests() {
+        return wantSignedRequests;
+    }
+
+    public void setWantSignedRequests(boolean wantSignedRequests) {
+        this.wantSignedRequests = wantSignedRequests;
     }
 }

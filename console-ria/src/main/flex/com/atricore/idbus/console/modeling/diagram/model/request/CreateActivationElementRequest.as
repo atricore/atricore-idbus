@@ -9,6 +9,9 @@ public class CreateActivationElementRequest {
     private var _notationalElementId:String;
 
 
+    public function CreateActivationElementRequest() {
+    }
+
     public function get sp():ServiceProvider {
         return _sp;
     }

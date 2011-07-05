@@ -21,15 +21,17 @@
 
 package com.atricore.idbus.console.main
 {
-import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
-import org.springextensions.actionscript.puremvc.patterns.facade.IocFacade;
+import com.atricore.idbus.console.base.app.BaseAppFacade;
 
-public class ApplicationFacade extends IocFacade implements IIocFacade {
+public class ApplicationFacade extends BaseAppFacade {
 
     public static const USER_PROVISIONING_SERVICE:String = "userProvisioningService";
     public static const IDENTITY_APPLIANCE_MANAGEMENT_SERVICE:String = "identityApplianceManagementService";
     public static const PROFILE_MANAGEMENT_SERVICE:String = "profileManagementService";
     public static const SIGN_ON_SERVICE:String = "signOnService";
+    public static const LICENSE_MANAGEMENT_SERVICE:String = "licenseManagementService";
+    public static const LIVE_UPDATE_SERVICE:String = "liveUpdateService";
+    public static const SCHEMAS_MANAGEMENT_SERVICE:String = "schemasManagementService";
 
     public static const ADMIN_GROUP:String = "Administrators";
 
@@ -37,6 +39,9 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
 
     // command-backed notifications
     public static const STARTUP:String = "startup";
+
+    public static const CHECK_LICENSE:String = "checkLicense";
+    
     public static const SETUP_SERVER:String = "Note.SetupServer";
     public static const REGISTER:String = "Note.Register";
     public static const CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE:String = "createSimpleSSOIdentityAppliance";
@@ -46,13 +51,17 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const IDENTITY_APPLIANCE_REMOVE:String = "identityApplianceRemove";
     public static const IDENTITY_PROVIDER_REMOVE:String = "identityProviderRemove";
     public static const SERVICE_PROVIDER_REMOVE:String = "serviceProviderRemove";
+    public static const EXTERNAL_IDENTITY_PROVIDER_REMOVE:String = "externalIdentityProviderRemove";
+    public static const EXTERNAL_SERVICE_PROVIDER_REMOVE:String = "externalServiceProviderRemove";
 //    public static const IDP_CHANNEL_REMOVE:String = "idpChannelRemove";
 //    public static const SP_CHANNEL_REMOVE:String = "spChannelRemove";
     public static const IDENTITY_SOURCE_REMOVE:String = "identitySourceRemove";
     public static const ACTIVATION_REMOVE:String = "activationRemove";
     public static const FEDERATED_CONNECTION_REMOVE:String = "federatedConnectionRemove";
     public static const IDENTITY_LOOKUP_REMOVE:String = "identityLookupRemove";
+    public static const DELEGATED_AUTHENTICATION_REMOVE:String = "delegatedAuthenticationRemove";
     public static const EXECUTION_ENVIRONMENT_REMOVE:String = "executionEnvironmentRemove";
+    public static const AUTHENTICATION_SERVICE_REMOVE:String = "authenticationServiceRemove";
     public static const IDENTITY_APPLIANCE_UPDATE:String = "identityApplianceUpdate";
     public static const UPLOAD:String = "upload";
     public static const BUILD_IDENTITY_APPLIANCE:String = "buildIdentityAppliance";
@@ -61,7 +70,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const START_IDENTITY_APPLIANCE:String = "startIdentityAppliance";
     public static const STOP_IDENTITY_APPLIANCE:String = "stopIdentityAppliance";
     public static const DISPOSE_IDENTITY_APPLIANCE:String = "disposeIdentityAppliance";
-    public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
+    public static const IMPORT_IDENTITY_APPLIANCE:String = "importIdentityAppliance";
     public static const ADD_GROUP:String = "addGroup";
     public static const ADD_USER:String = "addUser";
     public static const DELETE_GROUP:String = "deleteGroup";
@@ -72,13 +81,39 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const LIST_USERS:String = "listUsers";
     public static const SEARCH_GROUPS:String = "searchGroups";
     public static const SEARCH_USERS:String = "searchUsers";
+    public static const LIST_SCHEMA_ATTRIBUTES:String = "listSchemaAttributes";
+    public static const ADD_SCHEMA_ATTRIBUTE:String ="addAttribute";
+    public static const EDIT_SCHEMA_ATTRIBUTE:String ="editAttribute";
+    public static const DELETE_SCHEMA_ATTRIBUTE:String ="deleteAttribute";
     public static const CREATE_ACTIVATION:String = "createActivation";
     public static const CREATE_FEDERATED_CONNECTION:String = "createFederatedConnection";
     public static const CREATE_IDENTITY_LOOKUP:String = "createIdentityLookup";
+    public static const CREATE_DELEGATED_AUTHENTICATION:String = "createDelegatedAuthentication";
     public static const ACTIVATE_EXEC_ENVIRONMENT:String = "activateExecEnvironment";
+    public static const RESET_EXEC_ENV_ACTIVATION:String = "resetExecEnvActivation";
     public static const CHECK_INSTALL_FOLDER_EXISTENCE:String = "checkInstallFolderExistence";
     public static const CHECK_FOLDERS_EXISTENCE:String = "checkFoldersExistence";
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
+    public static const GET_METADATA_INFO:String = "getMetadataInfo";
+    public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
+    public static const ACTIVATE_LICENSE:String = "activateLicense";
+    public static const UPDATE_LICENSE:String = "updateLicense";
+    public static const GET_LICENSE:String = "getLicense";
+    
+    public static const LIST_UPDATES:String = "listUpdates";
+    public static const CHECK_FOR_UPDATES:String = "checkForUpdates";
+    public static const APPLY_UPDATE:String = "applyUpdate";
+    public static const GET_UPDATE_PROFILE:String = "getUpdateProfile";
+    public static const LOAD_UPDATE_SCHEME:String = "loadUpdateScheme";
+    public static const SAVE_UPDATE_SCHEME:String = "saveUpdateScheme";
+
+    public static const IDENTITY_APPLIANCE_EXPORT:String = "identityApplianceExport";
+    public static const PROVIDER_CERTIFICATE_EXPORT:String = "providerCertificateExport";
+    public static const METADATA_EXPORT:String = "metadataExport";
+
+    public static const LIST_ACCOUNT_LINKAGE_POLICIES:String = "listAccountLinkagePolicies";
+    public static const LIST_IDENTITY_MAPPING_POLICIES:String = "listIdentityMappingPolicies";
+    public static const LIST_NAMEID_POLICIES:String = "listNameIDPolicies";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
@@ -96,6 +131,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const DISPLAY_APPLIANCE_MODELER:String = "displayApplianceModeler";
     public static const DISPLAY_APPLIANCE_LIFECYCLE:String = "displayApplianceLifecycle";
     public static const DISPLAY_APPLIANCE_ACCOUNT:String = "displayApplianceAccount";
+    public static const DISPLAY_LIVE_UPDATE:String = "displayLiveUpdate";
+    public static const DISPLAY_LICENSING:String = "displayLicensing";
     public static const DISPLAY_VIEW:String = "displayView";
     public static const PALETTE_ELEMENT_SELECTED:String = "paletteElementSelected";
     public static const REFRESH_DIAGRAM:String = "refreshDiagram";
@@ -104,12 +141,21 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CREATE_DIAGRAM_ELEMENT:String = "createDiagramElement";
     public static const CREATE_IDENTITY_PROVIDER_ELEMENT:String = "createIdentityProviderElement";
     public static const CREATE_SERVICE_PROVIDER_ELEMENT:String = "createServiceProviderElement";
+    public static const CREATE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT:String = "createExternalIdentityProviderElement";
+    public static const CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:String = "createExternalServiceProviderElement";
+    public static const CREATE_SALESFORCE_ELEMENT:String = "createSalesforceElement";
+    public static const CREATE_GOOGLE_APPS_ELEMENT:String = "createGoogleAppsElement";
+    public static const CREATE_SUGAR_CRM_ELEMENT:String = "createSugarCRMElement";
+    public static const CREATE_WIKID_ELEMENT:String = "createWikidElement";
+    public static const CREATE_DIRECTORY_SERVICE_ELEMENT:String = "createDirectoryServiceElement";
+    public static const CREATE_WINDOWS_INTEGRATED_AUTHN_ELEMENT:String = "createWindowsIntegratedAuthnElement";
     public static const DIAGRAM_ELEMENT_CREATION_COMPLETE:String = "diagramElementCreationComplete";
     public static const DIAGRAM_ELEMENT_SELECTED:String = "diagramElementSelected";
     public static const DIAGRAM_ELEMENT_UPDATED:String = "diagramElementUpdated";
     public static const DIAGRAM_ELEMENT_REMOVE:String = "diagramElementRemove";
     public static const REMOVE_IDENTITY_APPLIANCE_ELEMENT:String = "removeIdentityApplianceElement";
     public static const REMOVE_IDENTITY_PROVIDER_ELEMENT:String = "removeIdentityProviderElement";
+    public static const REMOVE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT:String = "removeExternalIdentityProviderElement";
 //    public static const CREATE_IDP_CHANNEL_ELEMENT:String = "createIdpChannelElement";
 //    public static const REMOVE_IDP_CHANNEL_ELEMENT:String = "removeIdpChannelElement";
 //    public static const CREATE_SP_CHANNEL_ELEMENT:String = "createSpChannelElement";
@@ -120,6 +166,13 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CREATE_XML_IDENTITY_SOURCE_ELEMENT:String = "createXmlIdentitySourceElement";
     public static const CREATE_IDENTITY_VAULT_ELEMENT:String = "createIdentityVaultElement";
     public static const REMOVE_SERVICE_PROVIDER_ELEMENT:String = "removeServiceProviderElement";
+    public static const REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:String = "removeExternalServiceProviderElement";
+    public static const REMOVE_SALESFORCE_ELEMENT:String = "removeSalesforceElement";
+    public static const REMOVE_GOOGLE_APPS_ELEMENT:String = "removeGoogleAppsElement";
+    public static const REMOVE_SUGAR_CRM_ELEMENT:String = "removeSugarCRMElement";
+    public static const REMOVE_WIKID_ELEMENT:String = "removeWikidElement";
+    public static const REMOVE_DIRECTORY_SERVICE_ELEMENT:String = "removeDirectoryServiceElement";
+    public static const REMOVE_WINDOWS_INTEGRATED_AUTHN_ELEMENT:String = "removeWindowsIntegratedAuthnElement";
     public static const CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJbossExecutionEnvironmentElement";
     public static const CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWeblogicExecutionEnvironmentElement";
     public static const CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT:String = "createTomcatExecutionEnvironmentElement";
@@ -129,28 +182,46 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createApacheExecutionEnvironmentElement";
     public static const CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWindowsIISExecutionEnvironmentElement";
     public static const CREATE_ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT:String = "createAlfrescoExecutionEnvironmentElement";
+    public static const CREATE_JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJavaEEExecutionEnvironmentElement";
+    public static const CREATE_PHP_EXECUTION_ENVIRONMENT_ELEMENT:String = "createPHPExecutionEnvironmentElement";
+    public static const CREATE_PHPBB_EXECUTION_ENVIRONMENT_ELEMENT:String = "createPhpBBExecutionEnvironmentElement";
+    public static const CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWebcontainerExecutionEnvironmentElement";
     public static const REMOVE_ACTIVATION_ELEMENT:String = "removeActivationElement";
     public static const REMOVE_FEDERATED_CONNECTION_ELEMENT:String = "removeFederatedConnectionElement";
     public static const REMOVE_IDENTITY_LOOKUP_ELEMENT:String = "removeIdentityLookupElement";
+    public static const REMOVE_DELEGATED_AUTHENTICATION_ELEMENT:String = "removeDelegatedAuthenticationElement";
     public static const REMOVE_EXECUTION_ENVIRONMENT_ELEMENT:String = "removeExecutionEnvironmentElement";
     public static const MANAGE_CERTIFICATE:String = "manageCertificate";
     public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";
     public static const DISPLAY_ADD_NEW_GROUP:String = "displayAddNewGroup";
     public static const DISPLAY_ADD_NEW_USER:String = "displayAddNewUser";
+    public static const DISPLAY_ADD_NEW_ATTRIBUTE:String = "displayAddNewAttribute";
     public static const DISPLAY_EDIT_GROUP:String = "displayEditGroup";
     public static const DISPLAY_EDIT_USER:String = "displayEditUser";
+    public static const DISPLAY_EDIT_ATTRIBUTE:String = "displayEditAttribute";
     public static const DISPLAY_SEARCH_GROUPS:String = "displaySearchGroup";
     public static const DISPLAY_SEARCH_USERS:String = "displaySearchUser";
-    public static const DISPLAY_SEARCH_RESULTS_USERS = "displaySearchResultUsers";
-    public static const DISPLAY_SEARCH_RESULTS_GROUPS = "displaySearchResultGroups";
-    public static const DISPLAY_GROUP_PROPERTIES = "displayGroupProperties";
-    public static const DISPLAY_USER_PROPERTIES = "displayUserProperties";
-    public static const DISPLAY_CHANGE_PASSWORD = "displayChangePassword";
-    public static const MODELER_VIEW_SELECTED:String = "modelerViewSelected";
-    public static const LIFECYCLE_VIEW_SELECTED:String = "lifecycleViewSelected";
-    public static const ACCOUNT_VIEW_SELECTED:String = "accountViewSelected";
+    public static const DISPLAY_SEARCH_RESULTS_USERS:String = "displaySearchResultUsers";
+    public static const DISPLAY_SEARCH_RESULTS_GROUPS:String = "displaySearchResultGroups";
+    public static const DISPLAY_GROUP_PROPERTIES:String = "displayGroupProperties";
+    public static const DISPLAY_USER_PROPERTIES:String = "displayUserProperties";
+    public static const DISPLAY_SCHEMA_PROPERTIES:String = "displaySchemaProperties";
+    public static const DISPLAY_SCHEMA_ATTRIBUTES:String = "displaySchemaAttributes";
+    public static const DISPLAY_CHANGE_PASSWORD:String = "displayChangePassword";
     public static const APPLIANCE_VALIDATION_ERRORS:String = "applianceValidationErrors";
     public static const APPLIANCE_SAVED:String = "applianceSaved";
+    public static const DISPLAY_ACTIVATE_LICENSE:String = "displayActivateLicense";
+    public static const DISPLAY_UPDATE_LICENSE:String = "displayUpdateLicense";
+    public static const DISPLAY_EULA_TEXT:String = "displayEulaText";
+    public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
+    public static const EXPORT_PROVIDER_CERTIFICATE:String = "exportProviderCertificate";
+    public static const EXPORT_METADATA:String = "exportMetadata";
+    public static const DISPLAY_UPDATE_NOTIFICATIONS:String = "displayUpdateNotifications";
+    public static const SETTINGS_MENU_ELEMENT_SELECTED:String = "settingsMenuElementSelected";
+    public static const DISPLAY_ACTIVATION_DIALOG:String = "displayActivationDialog";
+
+    // TODO: remove this?
+    public static const LICENSE_VIEW_SELECTED:String = "licenseViewSelected";
 
 
     public function ApplicationFacade(p_configuration:* = null) {
@@ -162,7 +233,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
      */
     public static function getInstance(p_configSource:* = null):ApplicationFacade {
         if (instance == null) {
-            new ApplicationFacade(p_configSource);
+            instance = new ApplicationFacade(p_configSource);
         }
 
         return instance as ApplicationFacade;
@@ -174,6 +245,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     override protected function initializeController():void {
         super.initializeController();
 
+        // Startup Command should listen for notification STARTUP
         registerCommandByConfigName(STARTUP, CommandNames.STARTUP_CMD);
     }
 

@@ -41,6 +41,8 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     private String description;
 
+    private String namespace;
+
     private int revision;
 
     private Date lastModification;
@@ -54,7 +56,9 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
     private List<IdentitySourceDTO> identitySources;
 
     private Set<ExecutionEnvironmentDTO> executionEnvironments;
-    
+
+    private Set<AuthenticationServiceDTO> authenticationServices;
+
     private KeystoreDTO keystore;
 
     public long getId() {
@@ -87,6 +91,14 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public int getRevision() {
@@ -174,6 +186,17 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     public void setExecutionEnvironments(Set<ExecutionEnvironmentDTO> executionEnvironments) {
         this.executionEnvironments = executionEnvironments;
+    }
+
+    public Set<AuthenticationServiceDTO> getAuthenticationServices() {
+        if (authenticationServices == null) {
+            authenticationServices = new HashSet<AuthenticationServiceDTO>();
+        }
+        return authenticationServices;
+    }
+
+    public void setAuthenticationServices(Set<AuthenticationServiceDTO> authenticationServices) {
+        this.authenticationServices = authenticationServices;
     }
 
     @Override

@@ -1,0 +1,109 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+
+<s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:comp="com.atricore.idbus.console.components.*"
+         width="100%" height="100%"
+         skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
+        >
+
+    <fx:Metadata>
+        [ResourceBundle("console")]
+    </fx:Metadata>
+
+    <fx:Script>
+        <![CDATA[
+        import com.atricore.idbus.console.main.EmbeddedIcons;
+
+        public var icon:Class = EmbeddedIcons.liveUpdateMiniIcon;
+        ]]>
+    </fx:Script>
+
+    <s:VGroup id="updatesVBox" width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+        <comp:ScalableDataGrid id="updatesList" width="100%" rowCount="10" resizeEffect="Resize" verticalAlign="middle"
+                columnWidths="{['5%', '40%', '15%', '10%', '15%', '15%']}">
+            <comp:columns>
+                <mx:DataGridColumn dataField="updateNature" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.updateNature')}">
+                    <mx:itemRenderer>
+                        <fx:Component>
+                            <mx:VBox paddingLeft="5">
+                                <fx:Script>
+                                <![CDATA[
+                                    import com.atricore.idbus.console.main.EmbeddedIcons;
+
+                                    private function getUpdateIcon(nature:String):Class {
+                                        var updateIcon:Class = EmbeddedIcons.softwarePackageIcon;
+                                        if (nature == "SECURITY") {
+                                            updateIcon = EmbeddedIcons.securityUpdateIcon;
+                                        } else if (nature == "UPGRADE") {
+                                            updateIcon = EmbeddedIcons.systemUpdateIcon;
+                                        }
+                                        return updateIcon;
+                                    }
+                                    ]]>
+                                </fx:Script>
+                                <mx:Image source="{getUpdateIcon(data.updateNature)}" width="22" height="22" left="4" top="2" toolTip="{data.updateNature}" />
+                            </mx:VBox>
+                        </fx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+                <mx:DataGridColumn dataField="group" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.group')}"/>
+                <mx:DataGridColumn dataField="name" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.name')}"/>
+                <mx:DataGridColumn dataField="version" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.version')}"/>
+                <mx:DataGridColumn dataField="description" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.description')}"/>
+                <mx:DataGridColumn dataField="issueInstant" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.releaseDate')}">
+                    <mx:itemRenderer>
+                        <fx:Component>
+                            <mx:VBox paddingLeft="5">
+                                <fx:Script>
+                                <![CDATA[
+                                    import mx.formatters.DateFormatter;
+
+                                    private function formatFieldDate(date:Date):String {
+                                        var formatter:DateFormatter = new DateFormatter();
+                                        formatter.formatString = "MM/DD/YYYY - J:NN";
+                                        return formatter.format(date);
+                                    }
+                                    ]]>
+                                </fx:Script>
+                                <s:Label text="{formatFieldDate(data.issueInstant)}" />
+                            </mx:VBox>
+                        </fx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+            </comp:columns>
+        </comp:ScalableDataGrid>
+
+        <s:HGroup paddingLeft="10" paddingRight="10">
+            <s:Button id="btnInstallUpdate" enabled="false"
+                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.installUpdateBtn')}" />
+            <s:Button id="btnCheckForUpdates" enabled="true"
+                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.checkForUpdatesBtn')}" />
+            <s:Button id="btnUpdateNofification" enabled="true"
+                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.updateNofificationBtn')}" />
+        </s:HGroup>
+    </s:VGroup>
+
+</s:Panel>

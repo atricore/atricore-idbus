@@ -49,11 +49,9 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>org.apache.karaf.features.core</artifactId>
-            <version>${felix.karaf.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -88,6 +86,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.spnego</groupId>
+            <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.apache-maven-v3_0</artifactId>
             <scope>provided</scope>
@@ -96,6 +101,12 @@
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.xmldsig</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -117,6 +128,11 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.atricore.idbus.console.activation</groupId>
+            <artifactId>com.atricore.idbus.console.activation.protocol</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
@@ -176,6 +192,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>
+            <version>${pom.version}</version>
         </dependency>
 
         <dependency>
@@ -234,6 +251,9 @@
 
 
         <plugins>
+
+
+
             
             <plugin>
                 <groupId>org.datanucleus</groupId>
@@ -330,19 +350,19 @@
                             org.apache.derby.jdbc,
                             org.hsqldb,
                             org.aopalliance.aop,
-                            org.springframework.aop; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.aop.framework; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
+                            org.springframework.aop; version="[${spring.version},${spring.version}]",
+                            org.springframework.aop.framework; version="[${spring.version},${spring.version}]",
                             org.springframework.core.io,
-                            org.springframework.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.beans; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.beans.factory; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.beans.factory.config; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.web.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.web.context.support; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.orm.jdo; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.orm.jdo.support; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
-                            org.springframework.osgi.web.context.support; version=["1.2.0,1.2.0"],
-                            org.springframework.osgi.context; version=["1.2.0,1.2.0"],
+                            org.springframework.context; version="[${spring.version},${spring.version}]",
+                            org.springframework.beans; version="[${spring.version},${spring.version}]",
+                            org.springframework.beans.factory; version="[${spring.version},${spring.version}]",
+                            org.springframework.beans.factory.config; version="[${spring.version},${spring.version}]",
+                            org.springframework.web.context; version="[${spring.version},${spring.version}]",
+                            org.springframework.web.context.support; version="[${spring.version},${spring.version}]",
+                            org.springframework.orm.jdo; version="[${spring.version},${spring.version}]",
+                            org.springframework.orm.jdo.support; version="[${spring.version},${spring.version}]",
+                            org.springframework.osgi.web.context.support; version=["${spring.osgi.version},${spring.osgi.version}"],
+                            org.springframework.osgi.context; version=["${spring.osgi.version},${spring.osgi.version}"],
                             org.osgi.framework,
                             org.xml.sax,
                             org.xml.sax.helpers,

@@ -20,6 +20,9 @@ public class IdentityLookupRemoveCommand extends IocSimpleCommand {
     private var _projectProxy:ProjectProxy;
 
 
+    public function IdentityLookupRemoveCommand() {
+    }
+
     public function get projectProxy():ProjectProxy {
         return _projectProxy;
     }

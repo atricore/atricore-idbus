@@ -36,7 +36,7 @@
     <name>Atricore Console :: Lifecycle Spring MD</name>
 
     <properties>
-        <spring.version>3.0.3.RELEASE</spring.version>
+        <spring.version>3.0.5.RELEASE</spring.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
         <xbean.version>3.7</xbean.version>
