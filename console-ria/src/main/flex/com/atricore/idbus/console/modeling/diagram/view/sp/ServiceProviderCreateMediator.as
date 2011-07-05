@@ -136,12 +136,12 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.spLocationPort.text = "";
         view.spLocationContext.text = "";
         view.spLocationPath.text = "";
-        view.signAuthnRequestsCheck.selected = true;
-        view.wantAssertionSignedCheck.selected = true;
-        view.signRequestsCheck.selected = true;
-        view.wantSignedRequestsCheck.selected = true;
+        view.signAuthnRequestsCheck.selected = false;
+        view.wantAssertionSignedCheck.selected = false;
+        view.signRequestsCheck.selected = false;
+        view.wantSignedRequestsCheck.selected = false;
         view.samlBindingHttpPostCheck.selected = true;
-        view.samlBindingArtifactCheck.selected = true;
+        view.samlBindingArtifactCheck.selected = false;
         view.samlBindingHttpRedirectCheck.selected = false;
         view.samlBindingSoapCheck.selected = true;
         view.samlProfileSSOCheck.selected = true;

@@ -333,6 +333,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                 params.put("execEnv", execEnv);
                 params.put("gatewayLoginUrl", location + "/JOSSO/SSO/REDIR");
                 params.put("gatewayLogoutUrl", location + "/JOSSO/SLO/REDIR");
+                params.put("gatewayBaseUrl", location);
                 params.put("endpointHost", applianceDef.getLocation().getHost());
                 params.put("endpointPort", applianceDef.getLocation().getPort());
                 params.put("sessionManagerServicePath",

@@ -132,12 +132,12 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.idpLocationPort.text = "";
         view.idpLocationContext.text = "";
         view.idpLocationPath.text = "";
-        view.wantAuthnRequestsSignedCheck.selected = true;
-        view.signRequestsCheck.selected = true;
-        view.wantSignedRequestsCheck.selected = true;
+        view.wantAuthnRequestsSignedCheck.selected = false;
+        view.signRequestsCheck.selected = false;
+        view.wantSignedRequestsCheck.selected = false;
         view.samlBindingHttpPostCheck.selected = true;
-        view.samlBindingArtifactCheck.selected = true;
-        view.samlBindingHttpRedirectCheck.selected = false;
+        view.samlBindingArtifactCheck.selected = false;
+        view.samlBindingHttpRedirectCheck.selected = true;
         view.samlBindingSoapCheck.selected = true;
         view.samlProfileSSOCheck.selected = true;
         view.samlProfileSLOCheck.selected = true;

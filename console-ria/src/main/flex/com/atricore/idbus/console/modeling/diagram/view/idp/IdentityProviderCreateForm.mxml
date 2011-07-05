@@ -148,22 +148,22 @@
 
                 <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal">
                     <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
-                    <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
-                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}" selected="true"/>
+                    <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}" selected="true"/>
+                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}" selected="false"/>
                     <s:CheckBox id="samlBindingSoapCheck"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}" selected="true"/>
                 </mx:FormItem>
 
                 <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantAuthnRequestsSigned')}:">
-                    <s:CheckBox id="wantAuthnRequestsSignedCheck" selected="true"/>
+                    <s:CheckBox id="wantAuthnRequestsSignedCheck" selected="false"/>
                 </mx:FormItem>
 
                 <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantSignedRequests')}:">
-                    <s:CheckBox id="wantSignedRequestsCheck" selected="true"/>
+                    <s:CheckBox id="wantSignedRequestsCheck" selected="false"/>
                 </mx:FormItem>
 
                 <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.signRequests')}:">
-                    <s:CheckBox id="signRequestsCheck" selected="true"/>
+                    <s:CheckBox id="signRequestsCheck" selected="false"/>
                 </mx:FormItem>
 
             </s:VGroup>
