@@ -142,7 +142,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.wantSignedRequestsCheck.selected = false;
         view.samlBindingHttpPostCheck.selected = true;
         view.samlBindingArtifactCheck.selected = false;
-        view.samlBindingHttpRedirectCheck.selected = true;
+        view.samlBindingHttpRedirectCheck.selected = false;
         view.samlBindingSoapCheck.selected = true;
         view.samlProfileSSOCheck.selected = true;
         view.samlProfileSLOCheck.selected = true;
