@@ -26,12 +26,12 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.0.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
     <artifactId>spmlr2</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.0.1-SNAPSHOT</version>
     <name>Atricore IDBus :: Capability : SPML R2 POM</name>
     <packaging>pom</packaging>
 
@@ -43,8 +43,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <idbus.kernel.version>1.2.0</idbus.kernel.version>
-        <idbus.sts.version>1.2.0</idbus.sts.version>
+        <idbus.kernel.version>1.2.0.1-SNAPSHOT</idbus.kernel.version>
+        <idbus.sts.version>1.2.0.1-SNAPSHOT</idbus.sts.version>
 
         <apache.jasper.version>5.5.9</apache.jasper.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
