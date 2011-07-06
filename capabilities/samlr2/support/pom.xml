@@ -27,12 +27,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
         <artifactId>samlr2</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.0</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
     <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.0</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : SAML R2 Support</name>
 
