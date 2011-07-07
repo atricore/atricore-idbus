@@ -16,9 +16,8 @@ import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityT
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
-import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
+import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.EmailNameIDBuilder;
 import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.UnspecifiedNameIDBuiler;
