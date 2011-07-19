@@ -24,14 +24,14 @@
             </X509Data>
         </KeyInfo>
     </ns2:Signature>
-    <updateDescriptor IssueInstant="2010-12-25T19:32:52Z" description="JOSSO 2 EE 1.1.0-SNAPSHOT" ID="id0000000400">
-        <installableUnit description="JOSSO 2 EE" updateNature="UPGRADE" version="1.1.0-SNAPSHOT"
+    <updateDescriptor IssueInstant="2010-12-25T19:32:52Z" description="JOSSO 2 EE 1.1.1-SNAPSHOT" ID="id0000000400">
+        <installableUnit description="JOSSO 2 EE" updateNature="UPGRADE" version="1.1.1-SNAPSHOT"
                          name="com.atricore.josso.ee.install" group="com.atricore.josso" ID="id0000000110">
-            <artifact type="tar.gz" classifier="liveupdate" version="1.1.0-SNAPSHOT" name="josso-ee"
+            <artifact type="tar.gz" classifier="liveupdate" version="1.1.1-SNAPSHOT" name="josso-ee"
                       group="com.atricore.josso" ID="id0000000111"/>
-            <artifact type="zip" classifier="liveupdate" version="1.1.0-SNAPSHOT" name="josso-ee"
+            <artifact type="zip" classifier="liveupdate" version="1.1.1-SNAPSHOT" name="josso-ee"
                       group="com.atricore.josso" ID="id0000000112"/>
-            <artifact type="bundle" classifier="liveupdate" version="1.1.0-SNAPSHOT"
+            <artifact type="bundle" classifier="liveupdate" version="1.1.1-SNAPSHOT"
                       name="com.atricore.josso.ee.install" group="com.atricore.josso" ID="id0000000113"/>
             <requirement name="josso-ee" group="com.atricore.josso" description="JOSSO 2 EE 2.0.0">
                 <versionRange Expression="[1.9,2.0)"/>
