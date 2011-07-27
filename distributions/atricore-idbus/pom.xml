@@ -928,11 +928,13 @@
             <artifactId>xbean-finder-shaded</artifactId>
             <version>${xbean.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>tanukisoft</groupId>
             <artifactId>wrapper</artifactId>
             <version>${jsw.version}</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.commons-codec</artifactId>
