@@ -188,11 +188,11 @@ public class EmbeddedIcons {
     static public var worldIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/account/search_user.png")]
+    [Embed(source="/assets/icons/account/manage_users.png")]
     static public var usersIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/account/search_group.png")]
+    [Embed(source="/assets/icons/account/manage_groups.png")]
     static public var groupsIcon:Class;
 
     [Bindable]
