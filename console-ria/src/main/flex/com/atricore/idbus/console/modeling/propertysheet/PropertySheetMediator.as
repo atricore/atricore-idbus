@@ -1208,11 +1208,13 @@ public class PropertySheetMediator extends IocMediator {
                     }
                 }
                 _basicAuthenticationSection.ignoreUsernameCase.selected = basicAuthentication.ignoreUsernameCase;
+                _basicAuthenticationSection.ignorePasswordCase.selected = basicAuthentication.ignorePasswordCase;
 
                 _basicAuthenticationSection.authName.addEventListener(Event.CHANGE, handleSectionChange);
                 _basicAuthenticationSection.hashAlgorithm.addEventListener(Event.CHANGE, handleSectionChange);
                 _basicAuthenticationSection.hashEncoding.addEventListener(Event.CHANGE, handleSectionChange);
                 _basicAuthenticationSection.ignoreUsernameCase.addEventListener(Event.CHANGE, handleSectionChange);
+                _basicAuthenticationSection.ignorePasswordCase.addEventListener(Event.CHANGE, handleSectionChange);
 
                 //clear all existing validators and add basic auth. section validators
                 //_validators = [];
@@ -1239,6 +1241,7 @@ public class PropertySheetMediator extends IocMediator {
                 basicAuthentication.hashAlgorithm = _basicAuthenticationSection.hashAlgorithm.selectedItem.data;
                 basicAuthentication.hashEncoding = _basicAuthenticationSection.hashEncoding.selectedItem.data;
                 basicAuthentication.ignoreUsernameCase = _basicAuthenticationSection.ignoreUsernameCase.selected;
+                basicAuthentication.ignorePasswordCase = _basicAuthenticationSection.ignorePasswordCase.selected;
 
                 sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
