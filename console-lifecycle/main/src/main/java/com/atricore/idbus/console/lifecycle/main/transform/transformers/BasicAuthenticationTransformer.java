@@ -55,8 +55,9 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
         if (!basicAuthn.getHashEncoding().equalsIgnoreCase("none"))
             setPropertyValue(basicAuthnBean, "hashEncoding", basicAuthn.getHashEncoding());
 
-        setPropertyValue(basicAuthnBean, "ignorePasswordCase", false); // Dangerous
+        setPropertyValue(basicAuthnBean, "ignorePasswordCase", basicAuthn.isIgnorePasswordCase()); // Dangerous
         setPropertyValue(basicAuthnBean, "ignoreUserCase", basicAuthn.isIgnoreUsernameCase());
+
 
         setPropertyRef(basicAuthnBean, "credentialStore", idpBean.getName() + "-identity-store");
         setPropertyBean(basicAuthnBean, "credentialStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));

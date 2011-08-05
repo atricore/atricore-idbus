@@ -64,5 +64,10 @@
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.ignoreUsernameCase')}:">
             <s:CheckBox id="ignoreUsernameCase"/>
         </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.ignorePasswordCase')}:">
+            <s:CheckBox id="ignorePasswordCase"/>
+        </mx:FormItem>
+
     </mx:Form>
 </s:Group>

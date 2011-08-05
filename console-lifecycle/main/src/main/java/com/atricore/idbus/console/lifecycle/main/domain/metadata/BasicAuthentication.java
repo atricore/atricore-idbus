@@ -13,6 +13,8 @@ public class BasicAuthentication extends AuthenticationMechanism {
 
     private boolean ignoreUsernameCase = false;
 
+    private boolean ignorePasswordCase = false;
+
     public String getHashAlgorithm() {
         return hashAlgorithm;
     }
@@ -35,5 +37,13 @@ public class BasicAuthentication extends AuthenticationMechanism {
 
     public void setIgnoreUsernameCase(boolean ignoreUsernameCase) {
         this.ignoreUsernameCase = ignoreUsernameCase;
+    }
+
+    public boolean isIgnorePasswordCase() {
+        return ignorePasswordCase;
+    }
+
+    public void setIgnorePasswordCase(boolean ignorePasswordCase) {
+        this.ignorePasswordCase = ignorePasswordCase;
     }
 }

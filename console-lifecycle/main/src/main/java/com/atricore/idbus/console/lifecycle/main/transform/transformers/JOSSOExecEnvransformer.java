@@ -471,6 +471,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
     private String toWindowsPath(String uri) {
         String path = uri;
         path = path.replace("file:///", "");
+        path = path.replaceAll("\\\\", "\\\\\\\\");
         path = path.replaceAll("/", "\\\\\\\\");
         return path;
     }

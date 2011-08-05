@@ -10,6 +10,8 @@ public class BasicAuthenticationDTO extends AuthenticationMechanismDTO {
 
     private boolean ignoreUsernameCase = false;
 
+    private boolean ignorePasswordCase = false;
+
     public String getHashAlgorithm() {
         return hashAlgorithm;
     }
@@ -32,5 +34,13 @@ public class BasicAuthenticationDTO extends AuthenticationMechanismDTO {
 
     public void setIgnoreUsernameCase(boolean ignoreUsernameCase) {
         this.ignoreUsernameCase = ignoreUsernameCase;
+    }
+
+    public boolean isIgnorePasswordCase() {
+        return ignorePasswordCase;
+    }
+
+    public void setIgnorePasswordCase(boolean ignorePasswordCase) {
+        this.ignorePasswordCase = ignorePasswordCase;
     }
 }
