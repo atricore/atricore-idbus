@@ -47,11 +47,19 @@ public class IdentityDAO {
 
     private Connection _conn;
     private CredentialProvider _cp;
+
     private String _userQueryString;
+    private int _userQueryVariables;
+
     private String _rolesQueryString;
+    private int _rolesQueryVariables = 0;
+
     private String _credentialsQueryString;
+    private int _credentialsQueryVariables;
+
     private String _userPropertiesQueryString;
     private int _userPropertiesQueryVariables = 0; // This will be calcultated when setting _userPropertiesQueryString
+
     private String _resetCredentialDml;
     private String _relayCredentialQueryString;
 
@@ -66,9 +74,16 @@ public class IdentityDAO {
 
         _conn = conn;
         _cp = cp;
+
         _userQueryString = userQueryString;
+        _userQueryVariables = countQueryVariables(userQueryString);
+
         _rolesQueryString = rolesQueryString;
+        _rolesQueryVariables = countQueryVariables(rolesQueryString);
+
         _credentialsQueryString = credentialsQueryString;
+        _credentialsQueryVariables = countQueryVariables(credentialsQueryString);
+
         _resetCredentialDml = resetCredentialDml;
         _relayCredentialQueryString = relayCredentialQueryString;
 
@@ -86,7 +101,10 @@ public class IdentityDAO {
         try {
 
             stmt = createPreparedStatement(_userQueryString);
-            stmt.setString(1, key.getId());
+            // We don't jave JDBC 3.0 drivers, so ... bind all variables manually
+            for (int i = 1; i <= _userQueryVariables; i++) {
+                stmt.setString(i, key.getId());
+            }
             result = stmt.executeQuery();
 
             BaseUser user = fetchUser(result);
@@ -117,7 +135,10 @@ public class IdentityDAO {
         try {
 
             stmt = createPreparedStatement(_rolesQueryString);
-            stmt.setString(1, key.getId());
+            // We don't jave JDBC 3.0 drivers, so ... bind all variables manually
+            for (int i = 1; i <= _rolesQueryVariables; i++) {
+                stmt.setString(i, key.getId());
+            }
             result = stmt.executeQuery();
 
             BaseRole[] roles = fetchRoles(result);
