@@ -47,10 +47,11 @@
         <s:DropDownList id="platform" width="300" selectedIndex="2">
             <s:dataProvider>
                 <mx:ArrayCollection>
-                    <utils:ListItemValueObject label="3.2.6+" data="jb32"/>
-                    <utils:ListItemValueObject label="4.0.x" data="jb40"/>
-                    <utils:ListItemValueObject label="4.2.x" data="jb42"/>
-                    <utils:ListItemValueObject label="5.x" data="jb5"/>
+                    <utils:ListItemValueObject label="3.2.6" data="jb32"/>
+                    <utils:ListItemValueObject label="4.0" data="jb40"/>
+                    <utils:ListItemValueObject label="4.2" data="jb42"/>
+                    <utils:ListItemValueObject label="5" data="jb5"/>
+                    <utils:ListItemValueObject label="6" data="jb6"/>
                 </mx:ArrayCollection>
             </s:dataProvider>
         </s:DropDownList>
