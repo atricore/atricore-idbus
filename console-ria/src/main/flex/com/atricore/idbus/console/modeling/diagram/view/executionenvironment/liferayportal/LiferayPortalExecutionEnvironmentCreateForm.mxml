@@ -76,7 +76,7 @@
         </s:DropDownList>
     </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.container.path')}:" required="true">
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.container.home')}:" required="true">
         <s:TextInput id="containerPath" width="300"/>
     </mx:FormItem>
 

@@ -49,6 +49,7 @@
                 <ref bean="tc60-installer"/>
                 <ref bean="tc55-installer"/>
                 <ref bean="tc50-installer"/>
+                <ref bean="jb6-installer"/>
                 <ref bean="jb5-installer"/>
                 <ref bean="jb42-installer"/>
                 <ref bean="jb40-installer"/>
@@ -186,6 +187,33 @@
         <property name="JOSSOSharedLibDir" value="${target}/common/lib"/>
 
         <property name="JOSSOWarName" value="josso"/>
+        <property name="JOSSOWarExploded" value="true"/>
+
+    </bean>
+
+    <!-- JBoss 6.x -->
+    <bean name="jb6-installer" class="org.josso.tooling.gshell.install.installer.JBossInstaller">
+        <constructor-arg index="0" ref="jb6"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="jb6" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="jb6"/>
+        <property name="family" value="jboss"/>
+        <property name="platformName" value="JBoss AS"/>
+        <property name="version" value="6.x"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/server/${instance}/lib"/>
+        <property name="configDir" value="${target}/server/${instance}/conf"/>
+        <property name="deployDir" value="${target}/server/${instance}/deploy"/>
+        <property name="endorsedLibDir" value="${target}/lib/endorsed"/>
+
+        <property name="JOSSOConfDir" value="${target}/server/${instance}/conf"/>
+        <property name="JOSSOLibDir" value="${target}/server/${instance}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/server/${instance}/lib"/>
+
+        <property name="JOSSOWarName" value="josso.war"/>
         <property name="JOSSOWarExploded" value="true"/>
 
     </bean>
