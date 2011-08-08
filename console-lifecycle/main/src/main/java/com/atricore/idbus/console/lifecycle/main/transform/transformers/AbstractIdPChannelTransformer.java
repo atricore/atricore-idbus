@@ -269,6 +269,11 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(sloHttpPost, "name", sloHttpPost.getName());
                 setPropertyValue(sloHttpPost, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
                 setPropertyValue(sloHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
+                List<Ref> plansList = new ArrayList<Ref>();
+                Ref plan = new Ref();
+                plan.setBean(sloToSamlPlan.getName());
+                plansList.add(plan);
+                setPropertyRefs(sloHttpPost, "identityPlans", plansList);
                 endpoints.add(sloHttpPost);
             }
 
@@ -279,6 +284,11 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(sloHttpArtifact, "name", sloHttpArtifact.getName());
                 setPropertyValue(sloHttpArtifact, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
                 setPropertyValue(sloHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+                List<Ref> plansList = new ArrayList<Ref>();
+                Ref plan = new Ref();
+                plan.setBean(sloToSamlPlan.getName());
+                plansList.add(plan);
+                setPropertyRefs(sloHttpArtifact, "identityPlans", plansList);
                 endpoints.add(sloHttpArtifact);
             }
 
@@ -289,6 +299,11 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 setPropertyValue(sloHttpRedirect, "name", sloHttpRedirect.getName());
                 setPropertyValue(sloHttpRedirect, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
                 setPropertyValue(sloHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
+                List<Ref> plansList = new ArrayList<Ref>();
+                Ref plan = new Ref();
+                plan.setBean(sloToSamlPlan.getName());
+                plansList.add(plan);
+                setPropertyRefs(sloHttpRedirect, "identityPlans", plansList);
                 endpoints.add(sloHttpRedirect);
             }
 
