@@ -171,12 +171,15 @@ public class IdentityDAO {
             if (logger.isDebugEnabled())
                 logger.debug("[selectCredemtiasl()]]: key=" + key.getId());
             stmt = createPreparedStatement(_credentialsQueryString);
-            stmt.setString(1, key.getId());
+            // We don't jave JDBC 3.0 drivers, so ... bind all variables manually
+            for (int i = 1; i <= _credentialsQueryVariables; i++) {
+                stmt.setString(i, key.getId());
+            }
             result = stmt.executeQuery();
 
             Credential[] creds = fetchCredentials(result);
 
-            return creds;
+                return creds;
         } catch (SQLException sqlE) {
             logger.error("SQLException while listing credentials", sqlE);
             throw new SSOIdentityException("During credentials listing: " + sqlE.getMessage());
