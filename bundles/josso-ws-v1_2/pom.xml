@@ -40,7 +40,7 @@
     <name>Atricore IDBus :: Bundle : JOSSO 1.8.3+ WS v1.2 OSGi</name>
 
     <properties>
-        <josso.version>1.8.5</josso.version>
+        <josso.version>1.8.6-SNAPSHOT</josso.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
     </properties>
