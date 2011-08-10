@@ -1,6 +1,7 @@
 [agent]
 gatewayEndpoint=$endpointHost:$endpointPort
 gatewayLoginUrl=$gatewayLoginUrl
+gatewayLogoutUrl=$gatewayLogoutUrl
 
 sessionManagerServicePath=$sessionManagerServicePath
 identityManagerServicePath=$identityManagerServicePath
