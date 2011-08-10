@@ -8,15 +8,20 @@ import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.core.util.StringSource;
 import org.atricore.idbus.kernel.main.databinding.JAXBUtils;
 import org.springframework.util.StopWatch;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Holder;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
@@ -39,9 +44,27 @@ public class XmlUtils {
 
     static {
         ssoContextPackages.add(JossoConstants.JOSSO_PROTOCOL_PKG);
+
+        javax.xml.parsers.DocumentBuilderFactory dbf =
+                javax.xml.parsers.DocumentBuilderFactory.newInstance();
+
+        javax.xml.parsers.SAXParserFactory saxf =
+                SAXParserFactory.newInstance();
+
+        try {
+            logger.debug("DocumentBuilder = " + dbf.newDocumentBuilder());
+            logger.debug("SAXParser = " + saxf.newSAXParser());
+            logger.debug("XMLEventReader = " + staxIF.createXMLEventReader(new StringSource("<a>Hello</a>")));
+            logger.debug("XMLEventWriter = " + staxOF.createXMLEventWriter(new ByteArrayOutputStream()));
+        } catch (ParserConfigurationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (SAXException e) {
+            logger.error(e.getMessage(), e);
+        } catch (XMLStreamException e) {
+            logger.error(e.getMessage(), e);
+        }
+
     }
-
-
 
     public static String marshall(Object content , boolean encode) throws Exception {
         String type = content.getClass().getSimpleName();

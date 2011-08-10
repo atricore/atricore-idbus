@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.atricore.idbus.kernel.common</groupId>
         <artifactId>common</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.kernel.common</groupId>

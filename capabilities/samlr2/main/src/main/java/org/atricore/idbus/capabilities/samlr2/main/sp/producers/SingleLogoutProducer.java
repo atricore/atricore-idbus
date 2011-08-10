@@ -51,6 +51,7 @@ import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
@@ -81,27 +82,48 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
     @Override
     protected void doProcess ( CamelMediationExchange exchange) throws Exception {
-        
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         logger.debug("Processing SLO Message : " + in.getMessage().getContent());
+        Object content = in.getMessage().getContent();
 
-        if (in.getMessage().getContent() instanceof StatusResponseType) {
 
-            // A response to a previous Logout Request
-            StatusResponseType samlResponse = (StatusResponseType) in.getMessage().getContent();
-            if (logger.isDebugEnabled())
-                logger.debug("Received SAML2 SLO Response " + samlResponse.getID());
-            doProcessStatusResponse(exchange, samlResponse);
+        try {
 
-        } else if (in.getMessage().getContent() instanceof LogoutRequestType) {
-            LogoutRequestType samlSloRequest = (LogoutRequestType) in.getMessage().getContent();
-            if (logger.isDebugEnabled())
-                logger.debug("Received SSO SLO Request " + samlSloRequest.getID());
+            if (content instanceof StatusResponseType) {
 
-            doProcessLogoutRequest(exchange, samlSloRequest);
+                // A response to a previous Logout Request
+                StatusResponseType samlResponse = (StatusResponseType) in.getMessage().getContent();
+                if (logger.isDebugEnabled())
+                    logger.debug("Received SAML2 SLO Response " + samlResponse.getID());
+                doProcessStatusResponse(exchange, samlResponse);
 
-        } else {
-            throw new SamlR2Exception("Unsupported message type " + in.getMessage().getContent());
+            } else if (content instanceof LogoutRequestType) {
+                LogoutRequestType samlSloRequest = (LogoutRequestType) in.getMessage().getContent();
+                if (logger.isDebugEnabled())
+                    logger.debug("Received SSO SLO Request " + samlSloRequest.getID());
+
+                doProcessLogoutRequest(exchange, samlSloRequest);
+
+            } else {
+                throw new SamlR2Exception("Unsupported message type " + content);
+            }
+        } catch (SamlR2RequestException e) {
+
+            throw new IdentityMediationFault(
+                    e.getTopLevelStatusCode() != null ? e.getTopLevelStatusCode().getValue() : StatusCode.TOP_RESPONDER.getValue(),
+                    e.getSecondLevelStatusCode() != null ? e.getSecondLevelStatusCode().getValue() : null,
+                    e.getStatusDtails() != null ? e.getStatusDtails().getValue() : StatusDetails.UNKNOWN_REQUEST.getValue(),
+                    e.getErrorDetails() != null ? e.getErrorDetails() : content.getClass().getName(),
+                    e);
+
+        } catch (SamlR2Exception e) {
+
+            throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                    null,
+                    StatusDetails.UNKNOWN_REQUEST.getValue(),
+                    content.getClass().getName(),
+                    e);
         }
 
 

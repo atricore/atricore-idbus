@@ -115,7 +115,7 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
         this.localRepositoryDirectory = localRepositoryDirectory;
     }
 
-    public void doExecute() throws Exception {
+    public MavenRuntimeExecutionOutcome doExecute() throws Exception {
 
         // logging( cliRequest );
         // properties( cliRequest );
@@ -123,7 +123,7 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
         // settings( );
         // populateRequest( );
         // encryption( );
-        executeMaven();
+        return executeMaven();
 
     }
 
@@ -332,8 +332,9 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
         }
     }
 
-    protected void executeMaven() throws Exception {
+    protected MavenRuntimeExecutionOutcome executeMaven() throws Exception {
 
+        MavenRuntimeExecutionOutcome outcome = new MavenRuntimeExecutionOutcomeImpl();
         MavenExecutionRequest request = new DefaultMavenExecutionRequest();
 
         // TODO : Listen for upload events when deploying the artifacts ?
@@ -437,13 +438,14 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
             logger.error("Maven build has errors ...");
             int i = 1;
             for (Throwable t : result.getExceptions()) {
+                outcome.addException(t);
                 logger.error(i + ":" + t.getMessage(), t);
                 i++;
             }
 
-            return;
         }
 
+        return outcome;
     }
 
 
