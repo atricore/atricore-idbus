@@ -25,6 +25,7 @@ import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoAuthenticationAssertion;
+import org.atricore.idbus.capabilities.josso.main.JossoAuthnContext;
 import org.atricore.idbus.capabilities.josso.main.JossoMediator;
 import org.atricore.idbus.capabilities.josso.main.binding.JossoBinding;
 import org.atricore.idbus.kernel.main.authn.SSONameValuePair;
@@ -106,9 +107,8 @@ public class IdentityManagerProducer extends AbstractJossoProducer {
         if (logger.isDebugEnabled())
             logger.debug("Find user in requester/session " + request.getRequester()+ "/" + ssoSessionId);
 
-        JossoAuthenticationAssertion aa =
-                (JossoAuthenticationAssertion) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:AuthenticationAsssertion");
-
+        JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+        JossoAuthenticationAssertion aa = authnCtx != null ? authnCtx.getAuthnAssertion() : null;
         if (aa == null) {
             logger.error("No Authentication Assertion found for requester/session " + request.getRequester()+ "/" + ssoSessionId);
             throw new RuntimeException("No Authentication Assertion found for requester/session " + request.getRequester()+ "/" + ssoSessionId);
@@ -136,7 +136,7 @@ public class IdentityManagerProducer extends AbstractJossoProducer {
 
         try {
             JossoAuthenticationAssertion aa =
-                    (JossoAuthenticationAssertion) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:AuthenticationAsssertion");
+                    ((JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx")).getAuthnAssertion();
             
             Subject subject = aa.getSubject();
             Collection<SSORole> roles = toSSORoles(subject);

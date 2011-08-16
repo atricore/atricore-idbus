@@ -24,6 +24,7 @@ package org.atricore.idbus.capabilities.josso.main.producers;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.josso.main.JossoAuthnContext;
 import org.atricore.idbus.capabilities.josso.main.JossoConstants;
 import org.atricore.idbus.capabilities.josso.main.JossoException;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
@@ -72,6 +73,15 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         String idpAliasB64 = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_IDPALIAS_VAR);
         String idpAlias = null;
 
+        // This may be an authentication request that provides user credentials for BASIC authentication
+        String username = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_USERNAME_VAR);
+        String password = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_PASSWORD_VAR);
+
+        // TODO : Store credentials in authnCtx ... (encrypt them in the future!)
+
+        JossoAuthnContext authnCtx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+
+
         // Decode IDP Alias, if any
         if (idpAliasB64 != null) {
             idpAlias = URLDecoder.decode(new String(CipherUtil.decodeBase64(idpAliasB64)), "UTF-8");
@@ -81,7 +91,7 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         }
 
         if (idpAlias == null) {
-            idpAlias = (String) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:idpAlias");
+            idpAlias = authnCtx != null ? authnCtx.getIdpAlias() : null;
 
             if (logger.isDebugEnabled())
                 logger.debug("Using previous idp alias " + idpAlias);
@@ -99,11 +109,14 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         // TODO : Support on_error ?
         SPInitiatedAuthnRequestType request = buildAuthnRequest(exchange, idpAlias);
 
+        authnCtx = new JossoAuthnContext();
+        authnCtx.setAppId(appId);
+        authnCtx.setSsoBackTo(backTo);
+        authnCtx.setIdpAlias(idpAlias);
+        authnCtx.setAuthnRequest(request);
+
         // Store state
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:backTo", backTo);
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnRequest", request);
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:appId", appId);
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:idpAlias", idpAlias);
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx", authnCtx);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(request.getID(),

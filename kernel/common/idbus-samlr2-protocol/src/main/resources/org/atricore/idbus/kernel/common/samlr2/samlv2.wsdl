@@ -42,6 +42,7 @@
             <xsd:import namespace="urn:oasis:names:tc:SAML:2.0:metadata"
                         schemaLocation="saml-schema-metadata-2.0.xsd"/>
         </xsd:schema>
+
     </wsdl:types>
 
     <!-- protocol message definitions -->

@@ -47,10 +47,27 @@
     <complexType name="SPInitiatedAuthnRequestType">
         <complexContent>
             <extension base="ssop:SSORequestAbstractType">
+                <sequence>
+                    <element name="Credentials" type="ssop:CredentialType" maxOccurs="unbounded"/>
+                </sequence>
                 <attribute name="Passive" type="boolean" use="required"/>
             </extension>
         </complexContent>
     </complexType>
+
+
+    <!--
+    <element name="SPInitiatedAuthnRequest" type="ssop:SPInitiatedAuthnRequestType"/>
+    <complexType name="SPInitiatedAuthnRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <sequence>
+                    <element name="Credentials" type="ssop:CredentialType" maxOccurs="unbounded"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    -->
 
     <element name="IDPInitiatedAuthnRequest" type="ssop:IDPInitiatedAuthnRequestType"/>
     <complexType name="IDPInitiatedAuthnRequestType">
@@ -226,5 +243,12 @@
         <attribute name="name" type="string" use="required"/>
         <attribute name="value" type="string" use="optional"/>
     </complexType>
+    
+    <element name='Credential' type='ssop:CredentialType'/>
+    <complexType name='CredentialType'>
+        <sequence>
+            <any namespace='##any' processContents='lax'/>
+        </sequence>
+    </complexType>    
 
 </schema>

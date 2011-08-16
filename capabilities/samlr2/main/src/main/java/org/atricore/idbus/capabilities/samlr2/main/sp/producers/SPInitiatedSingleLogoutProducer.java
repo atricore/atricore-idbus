@@ -127,8 +127,6 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
 
             // Look for SPInitiatedLogoutRequest
             SPInitiatedLogoutRequestType ssoLogoutRequest = (SPInitiatedLogoutRequestType) in.getMessage().getContent();
-            in.getMessage().getState().setLocalVariable(
-                    "urn:org:atricore:idbus:capabilities:josso:SPInitiatedLogoutRequest", ssoLogoutRequest);
 
             // ------------------------------------------------------
             // Send SLO Request to IdP
