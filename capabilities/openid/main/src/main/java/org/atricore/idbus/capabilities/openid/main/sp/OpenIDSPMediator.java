@@ -32,6 +32,7 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.openid4java.consumer.ConsumerManager;
 
 import java.util.Collection;
 
@@ -45,6 +46,8 @@ import java.util.Collection;
 public class OpenIDSPMediator extends AbstractOpenIDMediator {
 
     private static final Log logger = LogFactory.getLog(OpenIDSPMediator.class);
+
+    private ConsumerManager consumerManager;
 
     @Override
     protected RouteBuilder createSPRoutes(final IdPChannel idpChannel) throws Exception {
@@ -121,5 +124,13 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
 
     public EndpointDescriptor resolveEndpoint(Channel channel, IdentityMediationEndpoint endpoint) throws IdentityMediationException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public ConsumerManager getConsumerManager() {
+        return consumerManager;
+    }
+
+    public void setConsumerManager(ConsumerManager consumerManager) {
+        this.consumerManager = consumerManager;
     }
 }
