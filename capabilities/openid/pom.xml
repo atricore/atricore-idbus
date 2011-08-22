@@ -45,6 +45,7 @@
     <properties>
 
         <openid4java.version>0.9.6</openid4java.version>
+        <openxri.version>1.2.0</openxri.version>
 
         <idbus.kernel.version>1.2.1-SNAPSHOT</idbus.kernel.version>
         <idbus.sts.version>1.2.1-SNAPSHOT</idbus.sts.version>
@@ -88,6 +89,28 @@
               <type>pom</type>
              </dependency>
 
+            <dependency>
+              <groupId>org.openxri</groupId>
+              <artifactId>openxri-syntax</artifactId>
+              <version>${openxri.version}</version>
+              <exclusions>
+                <exclusion>
+                  <groupId>log4j</groupId>
+                  <artifactId>log4j</artifactId>
+                </exclusion>
+              </exclusions>
+            </dependency>
+            <dependency>
+              <groupId>org.openxri</groupId>
+              <artifactId>openxri-client</artifactId>
+              <version>${openxri.version}</version>
+              <exclusions>
+                <exclusion>
+                  <groupId>log4j</groupId>
+                  <artifactId>log4j</artifactId>
+                </exclusion>
+              </exclusions>
+            </dependency>
             <dependency>
                 <groupId>org.atricore.idbus.kernel</groupId>
                 <artifactId>org.atricore.idbus.kernel.main</artifactId>
