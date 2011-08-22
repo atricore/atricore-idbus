@@ -38,12 +38,23 @@
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : OpenID Main Component</name>
 
+    <properties>
+        <idbus.cap.saml2.version>1.2.1-SNAPSHOT</idbus.cap.saml2.version>
+    </properties>
+
     <dependencies>
 
         <dependency>
           <groupId>org.openid4java</groupId>
           <artifactId>openid4java-consumer</artifactId>
           <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
+            <version>${idbus.cap.saml2.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

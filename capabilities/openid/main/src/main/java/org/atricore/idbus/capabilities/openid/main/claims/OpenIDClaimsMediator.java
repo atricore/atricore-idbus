@@ -84,8 +84,7 @@ public class OpenIDClaimsMediator extends AbstractOpenIDMediator {
 
                     switch (binding) {
                         case SSO_ARTIFACT:
-                        case SSO_POST:
-                        case SS0_REDIRECT:
+                        case SSO_REDIRECT:
 
                             // HTTP Bindings are handled with Camel
 

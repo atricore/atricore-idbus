@@ -48,6 +48,7 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
     private static final Log logger = LogFactory.getLog(OpenIDSPMediator.class);
 
     private ConsumerManager consumerManager;
+    private String spBindingACS;
 
     @Override
     protected RouteBuilder createSPRoutes(final IdPChannel idpChannel) throws Exception {
@@ -74,8 +75,7 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
 
                     switch (binding) {
                         // All HTTP Endpoint routes are created the same way
-                        case SS0_REDIRECT:
-
+                        case SSO_REDIRECT:
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
                             // ==> idbus-http ==> idbus-bind ==> openid-sp
@@ -132,5 +132,13 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
 
     public void setConsumerManager(ConsumerManager consumerManager) {
         this.consumerManager = consumerManager;
+    }
+
+    public String getSpBindingACS() {
+        return spBindingACS;
+    }
+
+    public void setSpBindingACS(String spBindingACS) {
+        this.spBindingACS = spBindingACS;
     }
 }

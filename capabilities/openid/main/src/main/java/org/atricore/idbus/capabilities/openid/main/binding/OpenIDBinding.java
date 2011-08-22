@@ -21,28 +21,18 @@
 
 package org.atricore.idbus.capabilities.openid.main.binding;
 
+import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.springframework.expression.common.LiteralExpression;
+
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SamlR2Binding.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
 public enum OpenIDBinding {
 
-    // TODO: GB/Refactor - Factor out to SSO capability
-
-    /** URI for IDBUS HTTP Artifact binding, this is NOT SAML Normative*/
-    SSO_ARTIFACT("urn:org:atricore:idbus:sso:bindings:HTTP-Artifact", true),
-
-    /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
-    SS0_REDIRECT("urn:org:atricore:idbus:sso:bindings:HTTP-Redirect", true),
-
-    /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
-    SSO_POST("urn:org:atricore:idbus:sso:bindings:HTTP-POST", true),
-
-    /** URI for IDBUS SOAP binding, this is NOT SAML Normtive */
-    SSO_SOAP("urn:org:atricore:idbus:sso:bindings:SOAP", false),
-
-    SSO_LOCAL("urn:org:atricore:idbus:sso:bindings:LOCAL", false),
-
+    OPENID_HTTP_RELAY("urn:org:atricore:idbus:openid:bindings:HTTP-RELAY-REQUEST", true),
+    SSO_REDIRECT(SamlR2Binding.SS0_REDIRECT.getValue(), SamlR2Binding.SS0_REDIRECT.isFrontChannel()),
+    SSO_ARTIFACT(SamlR2Binding.SSO_ARTIFACT.getValue(), SamlR2Binding.SSO_ARTIFACT.isFrontChannel())
     ;
 
     private String binding;
@@ -57,13 +47,10 @@ public enum OpenIDBinding {
         return binding;
     }
 
+
     @Override
     public String toString() {
         return binding;
-    }
-
-    public boolean isFrontChannel() {
-        return frontChannel;
     }
 
     public static OpenIDBinding asEnum(String binding) {
