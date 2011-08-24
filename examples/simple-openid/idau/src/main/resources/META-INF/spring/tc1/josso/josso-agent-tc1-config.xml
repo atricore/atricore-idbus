@@ -8,15 +8,15 @@
             <value>true</value>
         </property>
         <property name="gatewayLoginUrl">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/TC1/JOSSO/SSO/REDIR</value>
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/TC1/JOSSO/SSO/REDIR</value>
         </property>
         <property name="gatewayLogoutUrl">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/TC1/JOSSO/SLO/REDIR</value>
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/TC1/JOSSO/SLO/REDIR</value>
         </property>
         <property name="gatewayServiceLocator">
             <bean class="org.josso.gateway.WebserviceGatewayServiceLocator">
                 <property name="endpoint">
-                    <value>wsdev1.w2k3dev.atricore.com:8081</value>
+                    <value>localhost:8081</value>
                 </property>
                 <property name="sessionManagerServicePath">
                     <value>IDBUS/SIMPLE-OPENID/TC1/JOSSO/SSOSessionManager/SOAP</value>
@@ -42,7 +42,7 @@
                     </property>
                     <property name="ignoredReferrers">
                         <list>
-                            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID</value>
+                            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID</value>
                         </list>
                     </property>
                 </bean>

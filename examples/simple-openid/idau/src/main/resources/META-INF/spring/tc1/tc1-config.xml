@@ -52,7 +52,7 @@
             <ref bean="tc1"/>
         </property>
         <property name="location">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/TC1</value>
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/TC1</value>
         </property>
         <property name="unitContainer">
             <ref bean="simple-openid-container"/>
@@ -174,7 +174,7 @@
             <ref bean="simple-openid-aqm"/>
         </property>
         <property name="errorUrl">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/idbus-ui/error.do</value>
+            <value>http://localhost:8081/idbus-ui/error.do</value>
         </property>
         <property name="logger">
             <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger" name="tc1-mediation-logger">
@@ -201,7 +201,7 @@
                             <value>SP1</value>
                         </property>
                         <property name="spAlias">
-                            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/SP1/OPENID/MD</value>
+                            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/OPENID/MD</value>
                         </property>
                         <property name="partnerAppSLO">
                             <value>http://localhost:8080/</value>

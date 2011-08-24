@@ -26,7 +26,7 @@
     </bean>
     <bean class="org.atricore.idbus.capabilities.openid.main.sp.OpenIDSPMediator" name="sp1-openid-mediator">
         <property name="spBindingACS">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/TC1/SSO/ACS/ARTIFACT</value>
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/TC1/SSO/ACS/ARTIFACT</value>
         </property>
         <property name="logMessages">
             <value>true</value>
@@ -52,7 +52,7 @@
             </bean>
         </property>
         <property name="errorUrl">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/idbus-ui/error.do</value>
+            <value>http://localhost:8081/idbus-ui/error.do</value>
         </property>
     </bean>
     <bean class="org.atricore.idbus.kernel.main.federation.metadata.InlineCircleOfTrustMemberDescriptor" name="sp1-md">
@@ -60,7 +60,7 @@
             <value>Nonb1Tafo4FIXOsUPcDPnEWxv34=</value>
         </property>
         <property name="alias">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MD</value>
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MD</value>
         </property>
         <property name="metadataDefinition">
             <bean class="org.atricore.idbus.capabilities.openid.main.metadata.OpenIDMetadataDefinition"/>
@@ -77,7 +77,7 @@
             <value>SP1</value>
         </property>
         <property name="location">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/SP1</value>
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1</value>
         </property>
         <property name="provider">
             <ref bean="sp1"/>
@@ -118,7 +118,7 @@
             <ref bean="sp1"/>
         </property>
         <property name="location">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/SP1/SP1</value>
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SP1</value>
         </property>
         <property name="identityMediator">
             <ref bean="sp1-openid-mediator"/>
