@@ -24,21 +24,9 @@
             <ref bean="sp1-tc1-activation"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator" name="sp1-samlr2-mediator">
-        <property name="preferredIdpAlias">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/IDP1/SAML2/MD</value>
-        </property>
-        <property name="preferredIdpSSOBinding">
-            <value>urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</value>
-        </property>
-        <property name="preferredIdpSLOBinding">
-            <value>urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</value>
-        </property>
+    <bean class="org.atricore.idbus.capabilities.openid.main.sp.OpenIDSPMediator" name="sp1-openid-mediator">
         <property name="spBindingACS">
             <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/TC1/SSO/ACS/ARTIFACT</value>
-        </property>
-        <property name="spBindingSLO">
-            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/TC1/SSO/SLO/ARTIFACT</value>
         </property>
         <property name="logMessages">
             <value>true</value>
@@ -47,7 +35,7 @@
             <ref bean="simple-openid-aqm"/>
         </property>
         <property name="bindingFactory">
-            <bean class="org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory"/>
+            <bean class="org.atricore.idbus.capabilities.openid.main.binding.OpenIDBindingFactory"/>
         </property>
         <property name="logger">
             <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger" name="sp1-mediation-logger">
@@ -56,8 +44,7 @@
                 </property>
                 <property name="messageBuilders">
                     <list>
-                        <bean class="org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder"/>
-                        <bean class="org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder"/>
+                        <!-- TODO: add OpenID message logger -->
                         <bean class="org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder"/>
                         <bean class="org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder"/>
                     </list>
@@ -67,155 +54,19 @@
         <property name="errorUrl">
             <value>http://wsdev1.w2k3dev.atricore.com:8081/idbus-ui/error.do</value>
         </property>
-        <property name="signer">
-            <ref bean="sp1-samlr2-signer"/>
-        </property>
-        <property name="signRequests">
-            <value>true</value>
-        </property>
-        <property name="validateRequestsSignature">
-            <value>true</value>
-        </property>
-        <property name="encrypter">
-            <ref bean="sp1-samlr2-encrypter"/>
-        </property>
     </bean>
-    <bean init-method="init" class="org.atricore.idbus.capabilities.samlr2.support.core.signature.JSR105SamlR2SignerImpl" name="sp1-samlr2-signer">
-        <description/>
-        <property name="keyResolver">
-            <bean class="org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeystoreKeyResolver">
-                <property name="keystoreType">
-                    <value>JKS</value>
-                </property>
-                <property name="keystoreFile">
-                    <value>classpath:org/atricore/idbus/examples/idau/sp1/idp1-keystore.jks</value>
-                </property>
-                <property name="keystorePass">
-                    <value>ATRICORE</value>
-                </property>
-                <property name="privateKeyAlias">
-                    <value>josso-sp1</value>
-                </property>
-                <property name="privateKeyPass">
-                    <value>ATRICORE</value>
-                </property>
-                <property name="certificateAlias">
-                    <value>josso-sp1</value>
-                </property>
-            </bean>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.support.core.encryption.XmlSecurityEncrypterImpl" name="sp1-samlr2-encrypter">
-        <property name="symmetricKeyAlgorithmURI">
-            <value>http://www.w3.org/2001/04/xmlenc#aes128-cbc</value>
-        </property>
-        <property name="kekAlgorithmURI">
-            <value>http://www.w3.org/2001/04/xmlenc#rsa-1_5</value>
-        </property>
-        <property name="keyResolver">
-            <bean class="org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeystoreKeyResolver">
-                <property name="keystoreType">
-                    <value>JKS</value>
-                </property>
-                <property name="keystoreFile">
-                    <value>classpath:org/atricore/idbus/examples/idau/sp1/idp1-keystore.jks</value>
-                </property>
-                <property name="keystorePass">
-                    <value>ATRICORE</value>
-                </property>
-                <property name="privateKeyAlias">
-                    <value>josso-sp1</value>
-                </property>
-                <property name="privateKeyPass">
-                    <value>ATRICORE</value>
-                </property>
-                <property name="certificateAlias">
-                    <value>josso-sp1</value>
-                </property>
-            </bean>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.kernel.main.federation.AccountLinkLifecycleImpl" name="sp1-account-link-lifecycle"/>
-    <bean class="org.atricore.idbus.capabilities.samlr2.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan" name="sp1-spsso-samlr2sloreq-to-samlr2resp-plan">
-        <property name="bpmsManager">
-            <ref bean="bpms-manager"/>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan" name="sp1-idpunsolicitedresponse-to-subject-plan">
-        <property name="bpmsManager">
-            <ref bean="bpms-manager"/>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan" name="sp1-samlr2artresolve-to-samlr2artresponse-plan">
-        <property name="bpmsManager">
-            <ref bean="bpms-manager"/>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan" name="sp1-samlr2art-to-samlr2artresolve-plan">
-        <property name="bpmsManager">
-            <ref bean="bpms-manager"/>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.management.internal.ServiceProviderMBeanImpl" name="sp1-mbean">
-        <property name="serviceProvider">
-            <ref bean="sp1"/>
-        </property>
-    </bean>
-    <bean class="org.springframework.jmx.export.MBeanExporter" name="sp1-mbean-exporter">
-        <property name="server">
-            <ref bean="mBeanServer"/>
-        </property>
-        <property name="beans">
-            <map>
-                <entry value-ref="sp1-mbean" key-ref="sp1-mbean-key"/>
-            </map>
-        </property>
-    </bean>
-    <bean class="java.lang.String" name="sp1-mbean-key">
-        <constructor-arg type="java.lang.String" index="0">
-            <value>org.atricore.idbus.examples.idau:type=ServiceProvider,name=simple-openid.sp1</value>
-        </constructor-arg>
-    </bean>
-    <bean class="org.atricore.idbus.kernel.main.session.service.SSOSessionManagerImpl" name="sp1-session-manager">
-        <property name="maxInactiveInterval">
-            <value>30</value>
-        </property>
-        <property name="maxSessionsPerUser">
-            <value>-1</value>
-        </property>
-        <property name="invalidateExceedingSessions">
-            <value>false</value>
-        </property>
-        <property name="sessionMonitorInterval">
-            <value>10000</value>
-        </property>
-        <property name="sessionIdGenerator">
-            <bean class="org.atricore.idbus.kernel.main.session.service.SessionIdGeneratorImpl">
-                <property name="algorithm">
-                    <value>MD5</value>
-                </property>
-            </bean>
-        </property>
-        <property name="sessionStore">
-            <bean init-method="init" class="org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStore">
-                <property name="cacheManager">
-                    <ref bean="simple-openid-cache-manager"/>
-                </property>
-                <property name="cacheName">
-                    <value>simple-openid-sp1-sessionsCache</value>
-                </property>
-            </bean>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl" name="sp1-md">
+    <bean class="org.atricore.idbus.kernel.main.federation.metadata.InlineCircleOfTrustMemberDescriptor" name="sp1-md">
         <property name="id">
             <value>Nonb1Tafo4FIXOsUPcDPnEWxv34=</value>
         </property>
         <property name="alias">
             <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MD</value>
         </property>
-        <property name="resource">
-            <value>classpath:org/atricore/idbus/examples/idau/sp1/sp1-samlr2-metadata.xml</value>
+        <property name="metadataDefinition">
+            <bean class="org.atricore.idbus.capabilities.openid.main.metadata.OpenIDMetadataDefinition"/>
+        </property>
+        <property name="metadataIntrospector">
+            <bean class="org.atricore.idbus.capabilities.openid.main.metadata.OpenIDMetadataDefinitionIntrospector"/>
         </property>
     </bean>
     <bean class="org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl" name="sp1-default-idp-channel">
@@ -231,156 +82,29 @@
         <property name="provider">
             <ref bean="sp1"/>
         </property>
-        <property name="sessionManager">
-            <ref bean="sp1-session-manager"/>
-        </property>
         <property name="member">
             <ref bean="sp1-md"/>
         </property>
         <property name="identityMediator">
-            <ref bean="sp1-samlr2-mediator"/>
-        </property>
-        <property name="accountLinkLifecycle">
-            <ref bean="sp1-account-link-lifecycle"/>
-        </property>
-        <property name="accountLinkEmitter">
-            <ref bean="sp1-account-link-emitter"/>
-        </property>
-        <property name="identityMapper">
-            <ref bean="sp1-identity-mapper"/>
+            <ref bean="sp1-openid-mediator"/>
         </property>
         <property name="endpoints">
             <list>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-default-idp-channel-saml2-slo-http-post">
-                    <property name="name">
-                        <value>sp1-default-idp-channel-saml2-slo-http-post</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:oasis:names:tc:SAML:2.0:metadata}SingleLogoutService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST</value>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-default-idp-channel-saml2-slo-http-artifact">
-                    <property name="name">
-                        <value>sp1-default-idp-channel-saml2-slo-http-artifact</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:oasis:names:tc:SAML:2.0:metadata}SingleLogoutService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</value>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-default-idp-channel-saml2-slo-soap">
-                    <property name="name">
-                        <value>sp1-default-idp-channel-saml2-slo-soap</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:oasis:names:tc:SAML:2.0:metadata}SingleLogoutService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:oasis:names:tc:SAML:2.0:bindings:SOAP</value>
-                    </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-spsso-samlr2sloreq-to-samlr2resp-plan"/>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-default-idp-channel-saml2-slo-local">
-                    <property name="name">
-                        <value>sp1-default-idp-channel-saml2-slo-local</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:oasis:names:tc:SAML:2.0:metadata}SingleLogoutService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:oasis:names:tc:SAML:2.0:bindings:LOCAL</value>
-                    </property>
-                    <property name="location">
-                        <value>local://SIMPLE-OPENID/SP1/SLO/LOCAL</value>
-                    </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-spsso-samlr2sloreq-to-samlr2resp-plan"/>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-default-idp-channel-saml2-ac-http-post">
+                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-default-idp-channel-openid-ac-http-post">
                     <property name="name">
                         <value>sp1-default-idp-channel-saml2-ac-http-post</value>
                     </property>
                     <property name="type">
-                        <value>{urn:oasis:names:tc:SAML:2.0:metadata}AssertionConsumerService</value>
+                        <value>{urn:OPENID:2.0:metadata}RelyingPartyService</value>
                     </property>
                     <property name="binding">
-                        <value>urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST</value>
+                        <value>urn:OPENID:2.0:bindings:HTTP-POST</value>
                     </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-idpunsolicitedresponse-to-subject-plan"/>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-default-idp-channel-saml2-ac-http-artifact">
-                    <property name="name">
-                        <value>sp1-default-idp-channel-saml2-ac-http-artifact</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:oasis:names:tc:SAML:2.0:metadata}AssertionConsumerService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</value>
-                    </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-idpunsolicitedresponse-to-subject-plan"/>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-default-idp-channel-saml2-ar-soap">
-                    <property name="name">
-                        <value>sp1-default-idp-channel-saml2-ar-soap</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:oasis:names:tc:SAML:2.0:metadata}ArtifactResolutionService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:oasis:names:tc:SAML:2.0:bindings:SOAP</value>
-                    </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-samlr2artresolve-to-samlr2artresponse-plan"/>
-                            <ref bean="sp1-samlr2art-to-samlr2artresolve-plan"/>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-default-idp-channel-saml2-ar-local">
-                    <property name="name">
-                        <value>sp1-default-idp-channel-saml2-ar-local</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:oasis:names:tc:SAML:2.0:metadata}ArtifactResolutionService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:oasis:names:tc:SAML:2.0:bindings:LOCAL</value>
-                    </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-samlr2artresolve-to-samlr2artresponse-plan"/>
-                            <ref bean="sp1-samlr2art-to-samlr2artresolve-plan"/>
-                        </list>
+                    <property name="location">
+                        <value>/OPENID/RP</value>
                     </property>
                 </bean>
             </list>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.support.federation.OneToOneAccountLinkEmitter" name="sp1-account-link-emitter"/>
-    <bean class="org.atricore.idbus.capabilities.samlr2.support.federation.RemoteSubjectIdentityMapper" name="sp1-identity-mapper">
-        <property name="useLocalId">
-            <value>false</value>
         </property>
     </bean>
     <bean class="org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl" name="sp1-tc1-activation">
@@ -397,7 +121,7 @@
             <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/SP1/SP1</value>
         </property>
         <property name="identityMediator">
-            <ref bean="sp1-samlr2-mediator"/>
+            <ref bean="sp1-openid-mediator"/>
         </property>
         <property name="endpoints">
             <list>
@@ -414,11 +138,6 @@
                     <property name="location">
                         <value>/SSO/SSO/REDIR</value>
                     </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-spinitiatedauthnreq-to-samlr2autnreq-plan"/>
-                        </list>
-                    </property>
                 </bean>
                 <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-sso-sso-http-artifact">
                     <property name="name">
@@ -433,134 +152,8 @@
                     <property name="location">
                         <value>/SSO/SSO/ARTIFACT</value>
                     </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-spinitiatedauthnreq-to-samlr2autnreq-plan"/>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-sso-slo-http-redirect">
-                    <property name="name">
-                        <value>sp1-sso-slo-http-redirect</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:org:atricore:idbus:sso:metadata}SPInitiatedSingleLogoutService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:org:atricore:idbus:sso:bindings:HTTP-Redirect</value>
-                    </property>
-                    <property name="location">
-                        <value>/SSO/SLO/REDIR</value>
-                    </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-spinitiatedsloreq-to-samlr2sloreq-plan"/>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-sso-slo-http-artifact">
-                    <property name="name">
-                        <value>sp1-sso-slo-http-artifact</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:org:atricore:idbus:sso:metadata}SPInitiatedSingleLogoutService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:org:atricore:idbus:sso:bindings:HTTP-Artifact</value>
-                    </property>
-                    <property name="location">
-                        <value>/SSO/SLO/ARTIFACT</value>
-                    </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-spinitiatedsloreq-to-samlr2sloreq-plan"/>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-sso-aisauth-soap">
-                    <property name="name">
-                        <value>sp1-sso-aisauth-soap</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:org:atricore:idbus:sso:metadata}AssertIdentityWithSimpleAuthenticationService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:org:atricore:idbus:sso:bindings:SOAP</value>
-                    </property>
-                    <property name="location">
-                        <value>/SSO/IAAUTHN/SOAP</value>
-                    </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-spinitiatedsloreq-to-samlr2sloreq-plan"/>
-                            <ref bean="sp1-spsessionheartbeatreq-to-samlr2autnreq-plan"/>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-sso-aisauth-local">
-                    <property name="name">
-                        <value>sp1-sso-aisauth-local</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:org:atricore:idbus:sso:metadata}AssertIdentityWithSimpleAuthenticationService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:org:atricore:idbus:sso:bindings:LOCAL</value>
-                    </property>
-                    <property name="location">
-                        <value>local://SIMPLE-OPENID/SP1/SSO/IAAUTHN/LOCAL</value>
-                    </property>
-                    <property name="identityPlans">
-                        <list>
-                            <ref bean="sp1-spinitiatedsloreq-to-samlr2sloreq-plan"/>
-                            <ref bean="sp1-spsessionheartbeatreq-to-samlr2autnreq-plan"/>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-sso-shb-soap">
-                    <property name="name">
-                        <value>sp1-sso-shb-soap</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:org:atricore:idbus:sso:metadata}SPSessionHeartBeatService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:org:atricore:idbus:sso:bindings:SOAP</value>
-                    </property>
-                    <property name="location">
-                        <value>/SSO/SSHB/SOAP</value>
-                    </property>
-                </bean>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-sso-shb-local">
-                    <property name="name">
-                        <value>sp1-sso-shb-local</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:org:atricore:idbus:sso:metadata}SPSessionHeartBeatService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:org:atricore:idbus:sso:bindings:LOCAL</value>
-                    </property>
-                    <property name="location">
-                        <value>local://SIMPLE-OPENID/SP1/SSO/SSHB/LOCAL</value>
-                    </property>
                 </bean>
             </list>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan" name="sp1-spinitiatedauthnreq-to-samlr2autnreq-plan">
-        <property name="bpmsManager">
-            <ref bean="bpms-manager"/>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedLogoutReqToSamlR2LogoutReqPlan" name="sp1-spinitiatedsloreq-to-samlr2sloreq-plan">
-        <property name="bpmsManager">
-            <ref bean="bpms-manager"/>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPSessionHeartBeatReqToSamlR2AuthnReqPlan" name="sp1-spsessionheartbeatreq-to-samlr2autnreq-plan">
-        <property name="bpmsManager">
-            <ref bean="bpms-manager"/>
         </property>
     </bean>
 </beans>

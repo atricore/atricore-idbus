@@ -329,7 +329,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
                     }
 
                     if (a.getName().equals("atricore_sp_alias")) {
-                        spDescr = cotManager.loolkupMemberByAlias(a.getValue());
+                        spDescr = cotManager.lookupMemberByAlias(a.getValue());
                         break;
                     }
 
@@ -338,7 +338,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
             }
 
             if (spDescr == null)
-                spDescr = cotManager.loolkupMemberByAlias(spAlias);
+                spDescr = cotManager.lookupMemberByAlias(spAlias);
 
             if (logger.isTraceEnabled())
                 logger.trace("Using Preferred SP Alias " + spAlias);

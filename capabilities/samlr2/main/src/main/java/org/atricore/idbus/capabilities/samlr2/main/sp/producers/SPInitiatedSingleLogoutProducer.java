@@ -241,7 +241,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
     }
 
     protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange, String idpAlias) throws SamlR2Exception {
-        return getCotManager().loolkupMemberByAlias(idpAlias);
+        return getCotManager().lookupMemberByAlias(idpAlias);
     }
 
     /**
@@ -334,7 +334,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
     protected void destroySPSecurityContext(CamelMediationExchange exchange,
                                             SPSecurityContext secCtx) throws SamlR2Exception {
 
-        CircleOfTrustMemberDescriptor idp = getCotManager().loolkupMemberByAlias(secCtx.getIdpAlias());
+        CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(secCtx.getIdpAlias());
         IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
         SSOSessionManager ssoSessionManager = idpChannel.getSessionManager();
         secCtx.clear();

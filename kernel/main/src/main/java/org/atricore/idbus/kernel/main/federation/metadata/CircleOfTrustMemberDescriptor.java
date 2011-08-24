@@ -36,4 +36,8 @@ public interface CircleOfTrustMemberDescriptor extends Serializable {
 
     MetadataEntry getMetadata();
 
+    void setMetadata(MetadataEntry metadata);
+
+    MetadataDefinitionIntrospector getMetadataIntrospector();
+
 }

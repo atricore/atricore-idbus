@@ -28,6 +28,7 @@ import org.atricore.idbus.capabilities.openid.main.OpenIDException;
 import org.atricore.idbus.capabilities.openid.main.binding.OpenIDBinding;
 import org.atricore.idbus.capabilities.openid.main.common.AbstractOpenIDMediator;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
@@ -76,6 +77,7 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
                     switch (binding) {
                         // All HTTP Endpoint routes are created the same way
                         case SSO_REDIRECT:
+                        case OPENID_HTTP_POST:
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
                             // ==> idbus-http ==> idbus-bind ==> openid-sp
@@ -123,7 +125,57 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
     }
 
     public EndpointDescriptor resolveEndpoint(Channel channel, IdentityMediationEndpoint endpoint) throws IdentityMediationException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        String type = null;
+        String location;
+        String responseLocation;
+        OpenIDBinding binding = null;
+
+            logger.debug("Creating OpenID Endpoint Descriptor : " + endpoint.getName());
+
+            // ---------------------------------------------
+            // Resolve Endpoint binding
+            // ---------------------------------------------
+            if (endpoint.getBinding() != null)
+                binding = OpenIDBinding.asEnum(endpoint.getBinding());
+            else
+                logger.warn("No OpenID Binding found in endpoint " + endpoint.getName());
+
+            // ---------------------------------------------
+            // Resolve Endpoint location
+            // ---------------------------------------------
+            location = endpoint.getLocation();
+            if (location == null)
+                throw new IdentityMediationException("Endpoint location cannot be null.  " + endpoint);
+
+            if (location.startsWith("/"))
+                location = channel.getLocation() + location;
+
+            // ---------------------------------------------
+            // Resolve Endpoint response location
+            // ---------------------------------------------
+            responseLocation = endpoint.getResponseLocation();
+            if (responseLocation != null && responseLocation.startsWith("/"))
+                responseLocation = channel.getLocation() + responseLocation;
+
+            // ---------------------------------------------
+            // Resolve Endpoint type
+            // ---------------------------------------------
+
+            // Remove qualifier, format can be :
+            // 1 - {qualifier}type
+            // 2 - qualifier:type
+            int bracketPos = endpoint.getType().lastIndexOf("}");
+            if (bracketPos > 0)
+                type = endpoint.getType().substring(bracketPos + 1);
+            else
+                type = endpoint.getType().substring(endpoint.getType().lastIndexOf(":") + 1);
+
+
+        return new EndpointDescriptorImpl(endpoint.getName(),
+                type,
+                binding.getValue(),
+                location,
+                responseLocation);
     }
 
     public ConsumerManager getConsumerManager() {

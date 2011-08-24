@@ -127,6 +127,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.openid</groupId>
+            <artifactId>org.atricore.idbus.capabilities.openid.main</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- ================================================================== -->
         <!-- IDBus Connectors -->
         <!-- ================================================================== -->
@@ -260,8 +267,8 @@
                             org.apache.karaf.jaas.config,
                             org.apache.karaf.jaas.boot,
                             org.springframework.instrument; resolution:=optional; version="3.0.5.RELEASE",
-                            org.springframework.osgi; version="1.2.1-SNAPSHOT",
-                            org.springframework.osgi.context; version="1.2.1-SNAPSHOT",
+                            org.springframework.osgi; version="1.2.1",
+                            org.springframework.osgi.context; version="1.2.1",
                             org.springframework.core; version="3.0.5.RELEASE",
                             org.springframework.context; version="3.0.5.RELEASE",
                             org.springframework.context.support; version="3.0.5.RELEASE",
@@ -319,6 +326,7 @@
                            org.atricore.idbus.capabilities.spmlr2.main,
                            org.atricore.idbus.capabilities.josso.main,
                            org.atricore.idbus.capabilities.spnego,
+                           org.atricore.idbus.capabilities.openid.main,
                            org.atricore.idbus.connectors.jdoidentityvault,
                            org.atricore.idbus.idojos.dbidentitystore,
                            org.atricore.idbus.idojos.memorysessionstore,

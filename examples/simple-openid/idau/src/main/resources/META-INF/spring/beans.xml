@@ -12,9 +12,9 @@
             <list>
                 <!--
                 <ref bean="idp1-claims-channel"/>
-                -->
                 <ref bean="idp1-spnego-claims-channel"/>
                 <ref bean="idp1-default-sp-channel"/>
+                -->
                 <ref bean="sp1-tc1-activation"/>
                 <ref bean="sp1-default-idp-channel"/>
                 <ref bean="tc1-josso-binding-channel"/>
@@ -29,32 +29,23 @@
             <ref bean="cxf"/>
         </property>
     </bean>
-    <bean depends-on="idp1,sp1" class="org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl" name="simple-openid-cot">
+    <bean depends-on="sp1" class="org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl" name="simple-openid-cot">
         <property name="name">
             <value>simple-openid-cot</value>
         </property>
         <property name="providers">
             <set>
+                <!--
                 <ref bean="idp1"/>
+                -->
                 <ref bean="sp1"/>
                 <ref bean="tc1"/>
             </set>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager" name="simple-openid-cot-manager">
+    <bean class="org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerImpl" name="simple-openid-cot-manager">
         <property name="cot">
             <ref bean="simple-openid-cot"/>
-        </property>
-    </bean>
-    <bean factory-method="getInstance" class="org.atricore.idbus.kernel.main.session.SSOSessionEventManager" name="session-event-manager">
-        <property name="listeners">
-            <list>
-                <bean class="org.atricore.idbus.capabilities.samlr2.main.idp.IdPSessionEventListener">
-                    <property name="identityProvider">
-                        <ref bean="idp1"/>
-                    </property>
-                </bean>
-            </list>
         </property>
     </bean>
     <bean factory-bean="cache-manager-factory" factory-method="getCacheManager" class="net.sf.ehcache.CacheManager" name="simple-openid-cache-manager"/>
@@ -77,7 +68,9 @@
             <value>true</value>
         </property>
     </bean>
+    <!-- No need to realize IdP since it's external
     <import resource="idp1/idp1-config.xml"/>
+    -->
     <import resource="sp1/sp1-config.xml"/>
     <import resource="tc1/tc1-config.xml"/>
 </beans>

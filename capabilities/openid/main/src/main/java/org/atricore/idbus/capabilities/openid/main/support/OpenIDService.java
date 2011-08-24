@@ -31,10 +31,8 @@ import javax.xml.namespace.QName;
  */
 public enum OpenIDService {
 
-    /**
-     * This service is an extension to SAML
-     */
-    SPInitiatedSingleSignOnService(OpenIDConstants.SPInitiatedSingleSignOnService_QNAME);
+    SPInitiatedSingleSignOnService(OpenIDConstants.SPInitiatedSingleSignOnService_QNAME),
+    RelyingPartyService(OpenIDConstants.RelyingPartyService_QNAME);
 
     private QName qname;
 

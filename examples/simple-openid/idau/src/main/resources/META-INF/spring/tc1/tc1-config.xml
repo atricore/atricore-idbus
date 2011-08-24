@@ -201,7 +201,7 @@
                             <value>SP1</value>
                         </property>
                         <property name="spAlias">
-                            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MD</value>
+                            <value>http://wsdev1.w2k3dev.atricore.com:8081/IDBUS/SIMPLE-OPENID/SP1/OPENID/MD</value>
                         </property>
                         <property name="partnerAppSLO">
                             <value>http://localhost:8080/</value>

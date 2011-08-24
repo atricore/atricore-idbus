@@ -37,6 +37,7 @@ public interface OpenIDConstants {
     static final String OPENID2_VERSION = "http://specs.openid.net/auth/2.0/signon";
 
     static final QName SPInitiatedSingleSignOnService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleSignOnService");
+    static final QName RelyingPartyService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "RelyingPartyService");
 
     static final String SSOUSER_PROPERTY_NS= "urn:org:atricore:idbus:user:property";
 

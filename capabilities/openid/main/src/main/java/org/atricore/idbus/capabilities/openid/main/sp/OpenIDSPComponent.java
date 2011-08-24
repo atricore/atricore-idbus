@@ -61,6 +61,9 @@ public class OpenIDSPComponent extends DefaultComponent {
             case SPInitiatedSingleSignOnService:
                 endpoint = new SPInitiatedSingleSignOnEndpoint(uri, this, parameters);
                 break;
+            case RelyingPartyService:
+                endpoint = new RelyingPartyEndpoint(uri, this, parameters);
+                break;
             default:
                 throw new IllegalArgumentException( "Unsupported OpenID endpoint " + remaining );
         }
