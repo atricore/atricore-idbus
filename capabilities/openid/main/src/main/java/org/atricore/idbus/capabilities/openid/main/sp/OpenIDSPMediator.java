@@ -31,6 +31,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.openid4java.consumer.ConsumerManager;
@@ -66,7 +67,7 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
                 Collection<IdentityMediationEndpoint> endpoints = idpChannel.getEndpoints();
 
                 if (endpoints == null)
-                    throw new IdentityMediationException("No endpoits defined for idpChannel : " + idpChannel.getName());
+                    throw new IdentityMediationException("No endpoints defined for idpChannel : " + idpChannel.getName());
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 
@@ -75,8 +76,6 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
                     EndpointDescriptor ed = resolveEndpoint(idpChannel, endpoint);
 
                     switch (binding) {
-                        // All HTTP Endpoint routes are created the same way
-                        case SSO_REDIRECT:
                         case OPENID_HTTP_POST:
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
@@ -104,7 +103,7 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
                                         process(new LoggerProcessor(getLogger())).
                                         to("direct:" + ed.getName() + "-response");
 
-                                // FROM samlr-bind TO openid-sp
+                                // FROM idbus-bind TO openid-sp
                                 from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + idpChannel.getName()).
@@ -120,6 +119,81 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
                             throw new OpenIDException("Unsupported OpenIDBinding " + binding.getValue());
                     }
                 }
+            }
+        };
+    }
+
+    @Override
+    protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) throws Exception {
+
+        return new RouteBuilder() {
+
+            @Override
+            public void configure() throws Exception {
+
+                // --------------------------------------------------
+                // Process configured endpoints for this channel
+                // --------------------------------------------------
+                Collection<IdentityMediationEndpoint> endpoints = bindingChannel.getEndpoints();
+
+                if (endpoints == null)
+                    throw new IdentityMediationException("No endpoints defined for bindingChannel : " + bindingChannel.getName());
+
+                for (IdentityMediationEndpoint endpoint : endpoints) {
+
+                    OpenIDBinding binding = OpenIDBinding.asEnum(endpoint.getBinding());
+                    // HTTP Bindings are handled with Camel
+                    EndpointDescriptor ed = resolveEndpoint(bindingChannel, endpoint);
+
+                    switch (binding) {
+                        case SSO_REDIRECT:
+
+                            // ----------------------------------------------------------
+                            // HTTP Incomming messages:
+                            // ==> idbus-http ==> idbus-bind ==> samlr2-sp
+                            // ----------------------------------------------------------
+
+                            // FROM idbus-http TO samlr2-binding (through direct component)
+                            from("idbus-http:" + ed.getLocation()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("direct:" + ed.getName());
+
+                            // FROM samlr-bind TO samlr2-sp
+                            from("idbus-bind:camel://direct:" + ed.getName() +
+                                "?binding=" + ed.getBinding() +
+                                "&channelRef=" + bindingChannel.getName()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("openid-sp:" + ed.getType() +
+                                            "?channelRef=" + bindingChannel.getName() +
+                                            "&endpointRef=" + endpoint.getName());
+
+                            if (ed.getResponseLocation() != null) {
+
+                                // FROM idbus-http TO samlr2-binding (through direct component)
+                                from("idbus-http:" + ed.getResponseLocation()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("direct:" + ed.getName() + "-response");
+
+                                // FROM samlr-bind TO samlr2-sp
+                                from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
+                                    "?binding=" + ed.getBinding() +
+                                    "&channelRef=" + bindingChannel.getName()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("openid-sp:" + ed.getType() +
+                                                "?channelRef=" + bindingChannel.getName() +
+                                                "&endpointRef=" + endpoint.getName() +
+                                                "&response=true");
+                            }
+
+                            break;
+
+                        default:
+                            throw new OpenIDException("Unsupported OpenID Binding " + binding.getValue());
+                    }
+
+
+                }
+
             }
         };
     }

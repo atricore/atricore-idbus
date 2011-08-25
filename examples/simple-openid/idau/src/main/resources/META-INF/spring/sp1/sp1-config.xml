@@ -60,7 +60,7 @@
             <value>Nonb1Tafo4FIXOsUPcDPnEWxv34=</value>
         </property>
         <property name="alias">
-            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MD</value>
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/OPENID/MD</value>
         </property>
         <property name="metadataDefinition">
             <bean class="org.atricore.idbus.capabilities.openid.main.metadata.OpenIDMetadataDefinition"/>
@@ -139,6 +139,7 @@
                         <value>/SSO/SSO/REDIR</value>
                     </property>
                 </bean>
+                <!--
                 <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-sso-sso-http-artifact">
                     <property name="name">
                         <value>sp1-sso-sso-http-artifact</value>
@@ -153,6 +154,7 @@
                         <value>/SSO/SSO/ARTIFACT</value>
                     </property>
                 </bean>
+                -->
             </list>
         </property>
     </bean>

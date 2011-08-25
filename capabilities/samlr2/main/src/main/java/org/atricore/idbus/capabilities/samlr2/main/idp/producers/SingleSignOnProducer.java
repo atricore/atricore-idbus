@@ -501,7 +501,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
      * If an error occures, the procedure will decide to retry collecting claims with the las
      * claims endpoint selected or collect claims using a new claims endpoint.
      * <p/>
-     * If no more claim endpoits are available, this will send an satus error response to the SP.
+     * If no more claim endpoints are available, this will send an satus error response to the SP.
      *
      * @param exchange
      * @param claimsResponse

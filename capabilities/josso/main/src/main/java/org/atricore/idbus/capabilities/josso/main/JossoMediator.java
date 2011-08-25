@@ -67,7 +67,7 @@ public class JossoMediator extends AbstractCamelMediator {
                 Collection<IdentityMediationEndpoint> endpoints = bindingChannel.getEndpoints();
 
                 if (endpoints == null)
-                    throw new IdentityMediationException("No endpoits defined for bindingChannel : " + bindingChannel.getName());
+                    throw new IdentityMediationException("No endpoints defined for bindingChannel : " + bindingChannel.getName());
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 
