@@ -35,9 +35,6 @@ import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
  */
 public class SPChannelImpl extends AbstractFederationChannel implements SPChannel {
 
-    // Specifies the clamis provider used when requests are processed for this SP.
-    private ClaimChannel claimsProvider;
-
     // Specifies the STS Service to be used when generating Security Tokens for this SP.
     private transient SecurityTokenService securityTokenService;
 
@@ -47,19 +44,10 @@ public class SPChannelImpl extends AbstractFederationChannel implements SPChanne
     // SSO Identity manager service used to retrieve identity for this SP.
     private transient SSOIdentityManager identityManager;
 
-    public ClaimChannel getClaimsProvider() {
-        return claimsProvider;
-    }
-
-    public void setClaimsProvider(ClaimChannel claimsProvider) {
-        this.claimsProvider = claimsProvider;
-    }
-
 
     public SecurityTokenService getSecurityTokenService() {
         return securityTokenService;
     }
-
 
     public void setSecurityTokenService(SecurityTokenService securityTokenService) {
         this.securityTokenService = securityTokenService;

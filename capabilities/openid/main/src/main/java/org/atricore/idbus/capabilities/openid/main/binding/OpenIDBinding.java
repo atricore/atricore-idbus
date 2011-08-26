@@ -34,7 +34,6 @@ public enum OpenIDBinding {
     OPENID_HTTP_POST("urn:OPENID:2.0:bindings:HTTP-POST", true),
 
     // Binding URIs for non-native openid endpoints
-    OPENID_HTTP_RELAY("urn:org:atricore:idbus:openid:bindings:HTTP-RELAY-REQUEST", true),
     SSO_REDIRECT(SamlR2Binding.SS0_REDIRECT.getValue(), SamlR2Binding.SS0_REDIRECT.isFrontChannel()),
     SSO_ARTIFACT(SamlR2Binding.SSO_ARTIFACT.getValue(), SamlR2Binding.SSO_ARTIFACT.isFrontChannel())
     ;

@@ -61,6 +61,18 @@
         </dependency>
 
         <dependency>
+          <groupId>eu.cedarsoft</groupId>
+          <artifactId>guice-annotations</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
+            <version>${idbus.cap.saml2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
             <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
             <version>${idbus.cap.saml2.version}</version>
@@ -333,7 +345,7 @@
                         <Export-Package>org.atricore.idbus.capabilities.openid.main.*;version=${pom.version}
                         </Export-Package>
                         <Import-Package>
-                               com.google.inject; resolution:=optional,
+                               com.google.inject.internal.asm.util; resolution:=optional,
                                org.apache.axiom.om; resolution:=optional,
                                org.apache.axiom.om.util; resolution:=optional,
                                net.jcip.annotations;resolution:=optional,
@@ -349,6 +361,8 @@
                         <Embed-Transitive>true</Embed-Transitive>
                         <Embed-Dependency>
                             openid4java-nodeps; scope=compile; type=!pom; inline=false,
+                            guice; scope=compile; type=!pom; inline=false,
+                            guice-annotations; scope=compile; type=!pom; inline=false,
                             httpcore; scope=compile; type=!pom; inline=false,
                             httpclient; scope=compile; type=!pom; inline=false,
                             nekohtml; scope=compile; type=!pom; inline=false,

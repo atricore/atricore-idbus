@@ -1,5 +1,8 @@
 package org.atricore.idbus.capabilities.openid.main.binding;
 
+import org.atricore.idbus.capabilities.samlr2.main.binding.SsoHttpRedirectBinding;
+import org.atricore.idbus.capabilities.samlr2.main.binding.SsoHttpArtifactBinding;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -39,8 +42,15 @@ public class OpenIDBindingFactory extends MediationBindingFactory implements App
         
         MediationBinding mb = null;
         switch (b) {
-            case OPENID_HTTP_RELAY:
-                mb = new OpenIDHttpRelayBinding(channel);
+            // TODO: Factor out SSO binding to SSO capability
+            case SSO_REDIRECT:
+                mb = new SsoHttpRedirectBinding(channel);
+                break;
+            case SSO_ARTIFACT:
+                mb = new SsoHttpArtifactBinding(channel);
+                break;
+            case OPENID_HTTP_POST:
+                mb = new OpenIDHttpPostBinding(channel);
                 break;
             default:
         }

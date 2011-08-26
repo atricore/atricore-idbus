@@ -8,7 +8,7 @@ public class CircleOfTrustMemberDescriptorImpl implements CircleOfTrustMemberDes
     // The springmetadata entry that represents this COT member.
     private MetadataEntry metadata;
 
-    private MetadataDefinitionIntrospector metadataIntrospector;
+    private transient MetadataDefinitionIntrospector metadataIntrospector;
 
     public String getId() {
         return id;

@@ -29,6 +29,7 @@ import org.atricore.idbus.capabilities.openid.main.common.plans.OpenIDPlanningCo
 import org.atricore.idbus.capabilities.openid.main.common.producers.OpenIDProducer;
 import org.atricore.idbus.capabilities.openid.main.support.OpenIDConstants;
 import org.atricore.idbus.capabilities.openid.main.binding.OpenIDBinding;
+import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsRequest;
 import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -71,7 +72,7 @@ public class OpenIDClaimsProducer extends OpenIDProducer
         // -------------------------------------------------------------------------
         if (logger.isDebugEnabled())
             logger.debug("Starting to collect password claims");
-        org.atricore.idbus.capabilities.openid.main.claims.OpenIDClaimsRequest claimsRequest = (org.atricore.idbus.capabilities.openid.main.claims.OpenIDClaimsRequest) in.getMessage().getContent();
+        SamlR2ClaimsRequest claimsRequest = (SamlR2ClaimsRequest) in.getMessage().getContent();
 
         if (logger.isDebugEnabled())
             logger.debug("Storing claims request as local variable, id:" + claimsRequest.getId());

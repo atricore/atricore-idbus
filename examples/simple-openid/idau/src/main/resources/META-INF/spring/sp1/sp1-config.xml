@@ -88,24 +88,6 @@
         <property name="identityMediator">
             <ref bean="sp1-openid-mediator"/>
         </property>
-        <property name="endpoints">
-            <list>
-                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-default-idp-channel-openid-ac-http-post">
-                    <property name="name">
-                        <value>sp1-default-idp-channel-saml2-ac-http-post</value>
-                    </property>
-                    <property name="type">
-                        <value>{urn:OPENID:2.0:metadata}RelyingPartyService</value>
-                    </property>
-                    <property name="binding">
-                        <value>urn:OPENID:2.0:bindings:HTTP-POST</value>
-                    </property>
-                    <property name="location">
-                        <value>/OPENID/RP</value>
-                    </property>
-                </bean>
-            </list>
-        </property>
     </bean>
     <bean class="org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl" name="sp1-tc1-activation">
         <property name="name">
@@ -123,8 +105,12 @@
         <property name="identityMediator">
             <ref bean="sp1-openid-mediator"/>
         </property>
+        <property name="claimsProvider">
+            <ref bean="sp1-claims-channel"/>
+        </property>
         <property name="endpoints">
             <list>
+                <!-- JOSSO-facing channels -->
                 <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-sso-sso-http-redirect">
                     <property name="name">
                         <value>sp1-sso-sso-http-redirect</value>
@@ -139,7 +125,6 @@
                         <value>/SSO/SSO/REDIR</value>
                     </property>
                 </bean>
-                <!--
                 <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-sso-sso-http-artifact">
                     <property name="name">
                         <value>sp1-sso-sso-http-artifact</value>
@@ -154,8 +139,110 @@
                         <value>/SSO/SSO/ARTIFACT</value>
                     </property>
                 </bean>
-                -->
+                <!-- OpenID IDP facing channels -->
+                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-openid-rp-http-post">
+                    <property name="name">
+                        <value>sp1-openid-rp-http-post</value>
+                    </property>
+                    <property name="type">
+                        <value>{urn:org:atricore:idbus:sso:metadata}SPInitiatedSingleSignOnService</value>
+                    </property>
+                    <property name="binding">
+                        <value>urn:OPENID:2.0:bindings:HTTP-POST</value>
+                    </property>
+                    <property name="location">
+                        <value>/OPENID/RP</value>
+                    </property>
+                </bean>
             </list>
+        </property>
+    </bean>
+
+    <bean class="org.atricore.idbus.kernel.main.mediation.claim.ClaimChannelImpl" name="sp1-claims-channel">
+        <property name="name">
+            <value>sp1-claims-channel</value>
+        </property>
+        <property name="location">
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/IDP1/CC</value>
+        </property>
+        <property name="endpoints">
+            <list>
+                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-cc-pwd-artifact">
+                    <property name="name">
+                        <value>sp1-cc-pwd-artifact</value>
+                    </property>
+                    <property name="binding">
+                        <value>urn:org:atricore:idbus:sso:bindings:HTTP-Artifact</value>
+                    </property>
+                    <property name="location">
+                        <value>/PWD/ARTIFACT</value>
+                    </property>
+                    <property name="responseLocation">
+                        <value>/PWD/POST-RESP</value>
+                    </property>
+                    <property name="type">
+                        <value>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</value>
+                    </property>
+                </bean>
+                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-cc-pwd-post">
+                    <property name="name">
+                        <value>sp1-cc-pwd-post</value>
+                    </property>
+                    <property name="binding">
+                        <value>urn:org:atricore:idbus:sso:bindings:HTTP-POST</value>
+                    </property>
+                    <property name="location">
+                        <value>/PWD/POST</value>
+                    </property>
+                    <property name="type">
+                        <value>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</value>
+                    </property>
+                </bean>
+            </list>
+        </property>
+        <property name="identityMediator">
+            <ref bean="sp1-openid-claims-mediator"/>
+        </property>
+        <property name="provider">
+            <ref bean="sp1"/>
+        </property>
+        <property name="unitContainer">
+            <ref bean="simple-openid-container"/>
+        </property>
+    </bean>
+
+    <bean class="org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsMediator" name="sp1-openid-claims-mediator">
+        <property name="logMessages">
+            <value>true</value>
+        </property>
+        <property name="basicAuthnUILocation">
+            <value>http://localhost:8081/idbus-ui/claims/username-password.do</value>
+        </property>
+        <property name="twoFactorAuthnUILocation">
+            <value>http://localhost:8081/idbus-ui/claims/username-passcode.do</value>
+        </property>
+        <property name="artifactQueueManager">
+            <ref bean="simple-openid-aqm"/>
+        </property>
+        <property name="bindingFactory">
+            <bean class="org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory"/>
+        </property>
+        <property name="logger">
+            <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger" name="sp1-cc-mediation-logger">
+                <property name="category">
+                    <value>org.atricore.idbus.examples.simple-openid.wire.cc1</value>
+                </property>
+                <property name="messageBuilders">
+                    <list>
+                        <bean class="org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder"/>
+                        <bean class="org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder"/>
+                        <bean class="org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+        <property name="errorUrl">
+            <value>http://localhost:8081/idbus-ui/error.do</value>
         </property>
     </bean>
 </beans>

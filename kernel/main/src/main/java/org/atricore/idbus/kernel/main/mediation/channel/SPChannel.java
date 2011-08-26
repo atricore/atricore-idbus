@@ -32,8 +32,6 @@ import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
  * @version $Id: IDPChannel.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
 public interface SPChannel extends FederationChannel {
-    
-    ClaimChannel getClaimsProvider();
 
     SecurityTokenService getSecurityTokenService();
 

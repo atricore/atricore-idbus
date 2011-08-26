@@ -1,5 +1,18 @@
 package org.atricore.idbus.capabilities.openid.main.messaging;
 
-public interface OpenIDMessage extends java.io.Serializable {
+public class OpenIDMessage {
+
+    private String version;
+
+    protected OpenIDMessage(String version) {
+        this.version = version;
+    }
+
+    private OpenIDMessage() {
+    }
+
+    public String getVersion() {
+        return version;
+    }
 
 }

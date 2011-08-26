@@ -10,6 +10,7 @@
         </property>
         <property name="channels">
             <list>
+                <ref bean="sp1-claims-channel"/>
                 <ref bean="sp1-tc1-activation"/>
                 <ref bean="sp1-default-idp-channel"/>
                 <ref bean="tc1-josso-binding-channel"/>

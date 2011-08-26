@@ -24,7 +24,7 @@ package org.atricore.idbus.kernel.main.federation.metadata;
 /**
  *
  */
-public class MetadataDefinition<E> {
+public class MetadataDefinition<E> implements java.io.Serializable {
 
     private String id;
 
