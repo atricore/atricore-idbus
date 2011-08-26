@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.capabilities.samlr2.support.auth;
 
+import sun.font.TrueTypeFont;
+
 /**
  * TODO : Check correct values for 'passive' attribute.
  *
@@ -102,7 +104,12 @@ public enum AuthnCtxClass {
     TIME_SYNC_TOKEN_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken", false),
 
     /** URI for unspecified authentication context. */
-    UNSPECIFIED_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified", true);
+    UNSPECIFIED_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified", true),
+
+    // Non-normative authentication contexts
+
+    /** URI for OpenID authentication context. */
+    OPENID_AUTHN_CTX("urn:org:atricore:idbus:ac:classes:OpenID", true);
 
     private String ac;
     private boolean isPassive;

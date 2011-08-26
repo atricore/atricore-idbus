@@ -40,6 +40,10 @@
         <put-attribute name="content" value="/WEB-INF/templates/claims/username-passcode.jsp" type="template"/>
     </definition>
 
+    <definition name="openid" extends="layout-default">
+        <put-attribute name="content" value="/WEB-INF/templates/claims/openid.jsp" type="template"/>
+    </definition>
+
     <definition name="policy-enforcement" extends="layout-default">
         <put-attribute name="content" value="/WEB-INF/templates/warns/policy-enforcement.jsp" type="template"/>
     </definition>

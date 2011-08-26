@@ -181,7 +181,7 @@
                         <value>/PWD/POST-RESP</value>
                     </property>
                     <property name="type">
-                        <value>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</value>
+                        <value>urn:org:atricore:idbus:ac:classes:OpenID</value>
                     </property>
                 </bean>
                 <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-cc-pwd-post">
@@ -195,7 +195,7 @@
                         <value>/PWD/POST</value>
                     </property>
                     <property name="type">
-                        <value>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</value>
+                        <value>urn:org:atricore:idbus:ac:classes:OpenID</value>
                     </property>
                 </bean>
             </list>
@@ -220,6 +220,9 @@
         </property>
         <property name="twoFactorAuthnUILocation">
             <value>http://localhost:8081/idbus-ui/claims/username-passcode.do</value>
+        </property>
+        <property name="openIDUILocation">
+            <value>http://localhost:8081/idbus-ui/claims/openid.do</value>
         </property>
         <property name="artifactQueueManager">
             <ref bean="simple-openid-aqm"/>
