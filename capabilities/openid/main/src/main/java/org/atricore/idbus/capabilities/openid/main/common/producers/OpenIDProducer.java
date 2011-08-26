@@ -23,8 +23,7 @@ package org.atricore.idbus.capabilities.openid.main.common.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openid.main.OpenIDException;
-import org.atricore.idbus.capabilities.openid.main.common.plans.OpenIDPlanningConstants;
+import org.atricore.idbus.capabilities.openid.main.common.OpenIDException;
 import org.atricore.idbus.capabilities.openid.main.support.OpenIDConstants;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -46,7 +45,7 @@ import java.util.Collection;
  * @version $Id: OpenIDProducer.java 1359 2009-07-19 16:57:57Z gbrigand $
  */
 public abstract class OpenIDProducer extends AbstractCamelProducer<CamelMediationExchange>
-        implements OpenIDConstants, OpenIDPlanningConstants {
+        implements OpenIDConstants {
 
     private static final Log logger = LogFactory.getLog(OpenIDProducer.class);
 
@@ -69,49 +68,6 @@ public abstract class OpenIDProducer extends AbstractCamelProducer<CamelMediatio
         } else {
             throw new IllegalStateException("Configured channel does not support Federated Provider : " + channel);
         }
-    }
-
-    protected IdentityPlan findIdentityPlanOfType(Class planClass) throws OpenIDException {
-
-        Collection<IdentityPlan> plans = this.endpoint.getIdentityPlans();
-        if (plans != null) {
-            for (IdentityPlan plan : plans) {
-                if (planClass.isInstance(plan))
-                    return plan;
-            }
-        }
-
-        logger.warn("No identity plan of class " + planClass.getName() + " was found for endpoint " + endpoint.getName());
-        return null;
-
-    }
-
-    protected Collection<IdentityPlan> findIdentityPlansOfType(Class planClass) throws OpenIDException {
-
-        java.util.List<IdentityPlan> found = new java.util.ArrayList<IdentityPlan>();
-
-        Collection<IdentityPlan> plans = this.endpoint.getIdentityPlans();
-        for (IdentityPlan plan : plans) {
-            if (planClass.isInstance(plan))
-                found.add(plan);
-        }
-
-        return found;
-
-    }
-
-    protected IdentityPlanExecutionExchange createIdentityPlanExecutionExchange() {
-
-        IdentityPlanExecutionExchange ex = new IdentityPlanExecutionExchangeImpl();
-
-        // Publish some important attributes:
-        // Circle of trust will allow actions to access identity configuration
-
-        ex.setProperty(VAR_CHANNEL, this.channel);
-        ex.setProperty(VAR_ENDPOINT, this.endpoint);
-
-        return ex;
-
     }
 
 }

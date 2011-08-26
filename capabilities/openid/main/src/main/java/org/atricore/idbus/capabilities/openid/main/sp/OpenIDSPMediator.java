@@ -24,7 +24,7 @@ package org.atricore.idbus.capabilities.openid.main.sp;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openid.main.OpenIDException;
+import org.atricore.idbus.capabilities.openid.main.common.OpenIDException;
 import org.atricore.idbus.capabilities.openid.main.binding.OpenIDBinding;
 import org.atricore.idbus.capabilities.openid.main.common.AbstractOpenIDMediator;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -32,7 +32,6 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
-import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.openid4java.consumer.ConsumerManager;
 

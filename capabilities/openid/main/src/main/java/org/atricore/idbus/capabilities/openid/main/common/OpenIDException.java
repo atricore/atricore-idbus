@@ -19,27 +19,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.capabilities.openid.main.claims.endpoints;
-
-import org.apache.camel.Component;
-import org.apache.camel.Producer;
-import org.atricore.idbus.capabilities.openid.main.claims.producers.OpenIDClaimsProducer;
-import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
-
-import java.util.Map;
+package org.atricore.idbus.capabilities.openid.main.common;
 
 /**
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
- * @version $Id$
+ * @version $Id: OpenIDException.java 1245 2009-06-05 19:32:53Z gbrigand $
  */
-public class OpenIDClaimsEndpoint extends AbstractCamelEndpoint<CamelMediationExchange> {
+public class OpenIDException extends Exception {
 
-    public OpenIDClaimsEndpoint(String uri, Component component, Map parameters) throws Exception {
-        super(uri, component, parameters);
+    public OpenIDException() {
+        super();
     }
 
-    public Producer<CamelMediationExchange> createProducer () throws Exception {
-        return new OpenIDClaimsProducer( this );
+    public OpenIDException(String message) {
+        super(message);
+    }
+
+    public OpenIDException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public OpenIDException(Throwable cause) {
+        super(cause);
     }
 }
