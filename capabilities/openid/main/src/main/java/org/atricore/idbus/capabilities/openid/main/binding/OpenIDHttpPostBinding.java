@@ -71,7 +71,7 @@ public class OpenIDHttpPostBinding extends AbstractMediationHttpBinding {
             if (logger.isDebugEnabled()) {
                 Map<String, Object> h = httpMsg.getHeaders();
                 for (String key : h.keySet()) {
-                    logger.debug("CAMEL Header:" + key + ":"+ h.get(key));
+                    logger.debug("CAMEL Header:" + key + ":" + h.get(key));
                 }
             }
 
@@ -81,13 +81,13 @@ public class OpenIDHttpPostBinding extends AbstractMediationHttpBinding {
         MediationState state = createMediationState(exchange);
 
         // extract the receiving URL from the HTTP request
-        StringBuffer receivingURL =  new StringBuffer((String)httpMsg.getHeader("org.atricore.idbus.http.RequestURL"));
-        String queryString = (String)httpMsg.getHeader("org.atricore.idbus.http.QueryString");
+        StringBuffer receivingURL = new StringBuffer((String) httpMsg.getHeader("org.atricore.idbus.http.RequestURL"));
+        String queryString = (String) httpMsg.getHeader("org.atricore.idbus.http.QueryString");
         if (queryString != null && queryString.length() > 0)
             receivingURL.append("?").append(queryString);
 
         // set relaying request's http parameters from transient variables
-        HashMap<String,String> parametersMap = new HashMap<String,String>();
+        HashMap<String, String> parametersMap = new HashMap<String, String>();
         for (String tvarName : state.getTransientVarNames()) {
             String tvarValue = state.getTransientVariable(tvarName);
             parametersMap.put(tvarName, tvarValue);
@@ -97,11 +97,11 @@ public class OpenIDHttpPostBinding extends AbstractMediationHttpBinding {
         sm.setReceivingUrl(receivingURL.toString());
 
         return new MediationMessageImpl(message.getMessageId(),
-                        sm,
-                        null,
-                        null,
-                        null,
-                        state);
+                sm,
+                null,
+                null,
+                null,
+                state);
     }
 
     public void copyMessageToExchange(CamelMediationMessage openIdOut, Exchange exchange) {
@@ -115,53 +115,50 @@ public class OpenIDHttpPostBinding extends AbstractMediationHttpBinding {
 
         copyBackState(out.getState(), exchange);
 
-        try { 
-        Html post = null;
-        if (sm instanceof SubmitOpenIDV2AuthnRequest) {
+        try {
+            Html post = null;
+            if (sm instanceof SubmitOpenIDV2AuthnRequest) {
 
-            if (((SubmitOpenIDV2AuthnRequest) sm).getVersion().equals(OpenIDConstants.OPENID2_VERSION)) {
+                    SubmitOpenIDV2AuthnRequest soar = (SubmitOpenIDV2AuthnRequest) sm;
+                    logger.debug("Submitting Authentication Request to OpenID 2.0 Identity Provider at " +
+                            soar.getOpEndpoint());
 
-                SubmitOpenIDV2AuthnRequest soar = (SubmitOpenIDV2AuthnRequest) sm;
-                logger.debug("Submitting Authentication Request to OpenID 2.0 Identity Provider at " +
-                        soar.getOpEndpoint());
+                    post = createHtmlPostMessage(soar.getOpEndpoint(), soar.getParameterMap());
 
-                post = createHtmlPostMessage(soar.getOpEndpoint(), soar.getParameterMap());
+                    String marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "html",
+                            new String[]{"org.w3._1999.xhtml"});
 
-                String marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "html",
-                        new String[]{"org.w3._1999.xhtml"});
+                    // ------------------------------------------------------------
+                    // Prepare HTTP Resposne
+                    // ------------------------------------------------------------
+                    copyBackState(out.getState(), exchange);
 
-                // ------------------------------------------------------------
-                // Prepare HTTP Resposne
-                // ------------------------------------------------------------
-                copyBackState(out.getState(), exchange);
+                    httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                    httpOut.getHeaders().put("Pragma", "no-cache");
+                    httpOut.getHeaders().put("http.responseCode", 200);
+                    httpOut.getHeaders().put("Content-Type", "text/html");
 
-                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-                httpOut.getHeaders().put("Pragma", "no-cache");
-                httpOut.getHeaders().put("http.responseCode", 200);
-                httpOut.getHeaders().put("Content-Type", "text/html");
-
-                ByteArrayInputStream baos = new ByteArrayInputStream (marshalledHttpResponseBody.getBytes());
-                httpOut.setBody(baos);
-
+                    ByteArrayInputStream baos = new ByteArrayInputStream(marshalledHttpResponseBody.getBytes());
+                    httpOut.setBody(baos);
             } else {
-                // assume openid v1
-                SubmitOpenIDV1AuthnRequest soar = (SubmitOpenIDV1AuthnRequest) sm;
+                    // assume openid v1
+                    SubmitOpenIDV1AuthnRequest soar = (SubmitOpenIDV1AuthnRequest) sm;
 
-                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-                httpOut.getHeaders().put("Pragma", "no-cache");
-                httpOut.getHeaders().put("http.responseCode", 302);
-                httpOut.getHeaders().put("Content-Type", "text/html");
-                httpOut.getHeaders().put("Location", soar.getDestinationUrl());
+                    logger.debug("Submitting Authentication Request to OpenID 2.0 Identity Provider at " +
+                            soar.getDestinationUrl());
+
+                    httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                    httpOut.getHeaders().put("Pragma", "no-cache");
+                    httpOut.getHeaders().put("http.responseCode", 302);
+                    httpOut.getHeaders().put("Content-Type", "text/html");
+                    httpOut.getHeaders().put("Location", soar.getDestinationUrl());
             }
-        } else {
-            // TODO: error handling for unsupported message types
-        }
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
-    
+
     protected Html createHtmlPostMessage(String url,
                                          Map parametersMap) throws Exception {
 
@@ -192,16 +189,15 @@ public class OpenIDHttpPostBinding extends AbstractMediationHttpBinding {
             // Div with form fields
             Div divFields = new Div();
 
-            Iterator keyit=parametersMap.keySet().iterator();
+            Iterator keyit = parametersMap.keySet().iterator();
 
             String key;
             String value;
 
-            while (keyit.hasNext())
-            {
-                key=(String)keyit.next();
-                value=(String)parametersMap.get(key);
-            
+            while (keyit.hasNext()) {
+                key = (String) keyit.next();
+                value = (String) parametersMap.get(key);
+
                 Input input = new Input();
                 input.setType(InputType.HIDDEN);
                 input.setName(key);
@@ -209,7 +205,7 @@ public class OpenIDHttpPostBinding extends AbstractMediationHttpBinding {
 
                 divFields.getContent().add(input);
             }
-                
+
             // Add first filds to form
             form.getPOrH1OrH2().add(divFields);
         }
@@ -237,7 +233,6 @@ public class OpenIDHttpPostBinding extends AbstractMediationHttpBinding {
 
         return html;
     }
-    
-    
-    
+
+
 }
