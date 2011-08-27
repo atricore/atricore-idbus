@@ -5,6 +5,11 @@ import org.springframework.core.io.Resource;
 
 import java.util.Collection;
 
+/**
+ * Exposes the OpenID metadata of the provider inline, from the definition itself.
+ *
+ * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
+ */
 public class OpenIDMetadataDefinitionIntrospector extends InlineMetadataDefinitionIntrospector {
     public MetadataDefinition load(CircleOfTrustMemberDescriptor member, Resource resource) throws CircleOfTrustManagerException {
         throw new UnsupportedOperationException("OpenID metadata is not resource-backed");

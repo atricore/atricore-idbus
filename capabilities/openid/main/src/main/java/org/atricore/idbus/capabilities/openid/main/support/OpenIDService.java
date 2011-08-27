@@ -24,10 +24,9 @@ package org.atricore.idbus.capabilities.openid.main.support;
 import javax.xml.namespace.QName;
 
 /**
- * SAML 2.0 Services realized by several roles.
+ * OpenID Services
  *
- * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: SamlR2Service.java 1372 2009-07-23 15:03:28Z chromy96 $
+ * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
 public enum OpenIDService {
 

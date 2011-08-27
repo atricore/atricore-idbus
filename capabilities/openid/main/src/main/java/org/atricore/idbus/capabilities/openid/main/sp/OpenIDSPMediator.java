@@ -38,10 +38,9 @@ import org.openid4java.consumer.ConsumerManager;
 import java.util.Collection;
 
 /**
- * Saml v2.0 SP Mediator realizing SP SSO Role for Single SignOn profiles.
+ * OpenID 1 and 2 Mediator realizing SP SSO Role for Single SignOn profiles.
  *
- * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
- * @version $Id: OpenIDSPMediator.java 1359 2009-07-19 16:57:57Z gbrigand $
+ * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  * @org.apache.xbean.XBean element="sp-mediator"
  */
 public class OpenIDSPMediator extends AbstractOpenIDMediator {

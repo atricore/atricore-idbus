@@ -33,10 +33,9 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import java.util.Map;
 
 /**
- * OpenID Camel component.
+ * OpenID Service Provider Camel component.
  *
- * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
- * @version $Id: OpenIDComponent.java 1246 2009-06-05 20:30:58Z gbrigand $
+ * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
 public class OpenIDSPComponent extends DefaultComponent {
 

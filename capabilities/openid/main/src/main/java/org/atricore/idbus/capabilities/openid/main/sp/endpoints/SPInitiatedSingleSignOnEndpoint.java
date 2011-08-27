@@ -30,7 +30,9 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import java.util.Map;
 
 /**
+ * Endpoint for handling SSO SP-Initiated Requests.
  *
+ * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
 public class SPInitiatedSingleSignOnEndpoint<E> extends AbstractCamelEndpoint<CamelMediationExchange> {
 

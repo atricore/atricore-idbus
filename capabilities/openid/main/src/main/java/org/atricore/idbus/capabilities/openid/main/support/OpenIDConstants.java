@@ -24,25 +24,13 @@ package org.atricore.idbus.capabilities.openid.main.support;
 import javax.xml.namespace.QName;
 
 /**
+ * OpenID Constants
  *
- * TODO: GB/Refactor - Generic Constants need to live in the SSO module
- *
- * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: SAMLR2Constants.java 1287 2009-06-16 19:19:31Z sgonzalez $
+ * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
 public interface OpenIDConstants {
 
-    static final String OPENID10_VERSION = "http://openid.net/signon/1.0";
-    static final String OPENID11_VERSION = "http://openid.net/signon/1.1";
-    static final String OPENID2_VERSION = "http://specs.openid.net/auth/2.0/signon";
-
     static final QName SPInitiatedSingleSignOnService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleSignOnService");
     static final QName RelyingPartyService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "RelyingPartyService");
-
-    static final String SSOUSER_PROPERTY_NS= "urn:org:atricore:idbus:user:property";
-
-    static final String SSO_COMMON_PKG = "org.atricore.idbus.common.sso._1_0.protocol";
-
-    static final String XHTML_PKG = "org.w3._1999.xhtml";
 
 }

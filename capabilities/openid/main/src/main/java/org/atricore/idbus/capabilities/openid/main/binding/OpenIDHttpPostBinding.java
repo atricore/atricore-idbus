@@ -47,8 +47,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id$
+ * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
 public class OpenIDHttpPostBinding extends AbstractMediationHttpBinding {
 

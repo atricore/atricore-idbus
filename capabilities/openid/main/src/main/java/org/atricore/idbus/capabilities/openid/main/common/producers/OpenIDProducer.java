@@ -42,7 +42,6 @@ import java.util.Collection;
  * TODO: GB/Refactor - Factor out to kernel
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
- * @version $Id: OpenIDProducer.java 1359 2009-07-19 16:57:57Z gbrigand $
  */
 public abstract class OpenIDProducer extends AbstractCamelProducer<CamelMediationExchange>
         implements OpenIDConstants {

@@ -61,7 +61,9 @@ import org.openid4java.message.ParameterList;
 import java.util.List;
 
 /**
+ * Producer for handling SSO SP-Initiated Requests.
  *
+ * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
 public class SPInitiatedSingleSignOnProducer extends OpenIDProducer {
 

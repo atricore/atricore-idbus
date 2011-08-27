@@ -28,7 +28,6 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 
 /**
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
- * @version $Id: AbstractOpenIDMediator.java 1245 2009-06-05 19:32:53Z gbrigand $
  */
 public abstract class AbstractOpenIDMediator extends AbstractCamelMediator {
 

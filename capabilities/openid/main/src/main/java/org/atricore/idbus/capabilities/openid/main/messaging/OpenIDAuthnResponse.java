@@ -4,6 +4,11 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 
+/**
+ * Message type for representing OpenID Authentication Responses
+ *
+ * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
+ */
 public class OpenIDAuthnResponse implements Serializable {
     private HashMap parameterMap = new HashMap<String,String>();
     private String receivingUrl;

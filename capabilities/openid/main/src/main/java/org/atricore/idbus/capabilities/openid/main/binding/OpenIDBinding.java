@@ -25,8 +25,7 @@ import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.springframework.expression.common.LiteralExpression;
 
 /**
- * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: SamlR2Binding.java 1359 2009-07-19 16:57:57Z sgonzalez $
+ * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
 public enum OpenIDBinding {
 

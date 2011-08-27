@@ -23,7 +23,6 @@ package org.atricore.idbus.capabilities.openid.main.common;
 
 /**
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
- * @version $Id: OpenIDException.java 1245 2009-06-05 19:32:53Z gbrigand $
  */
 public class OpenIDException extends Exception {
 

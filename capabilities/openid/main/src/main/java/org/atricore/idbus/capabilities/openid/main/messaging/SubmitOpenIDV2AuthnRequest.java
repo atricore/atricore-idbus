@@ -3,6 +3,11 @@ package org.atricore.idbus.capabilities.openid.main.messaging;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Message type for representing Authentication requests for an OpenID version 1 identity provider
+ *
+ * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
+ */
 public class SubmitOpenIDV2AuthnRequest extends OpenIDMessage {
 
     private String opEndpoint;
