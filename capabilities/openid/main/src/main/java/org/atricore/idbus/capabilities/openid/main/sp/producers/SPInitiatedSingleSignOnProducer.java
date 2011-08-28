@@ -28,13 +28,12 @@ import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDAuthnResponse
 import org.atricore.idbus.capabilities.openid.main.binding.OpenIDBinding;
 import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDMessage;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV2AuthnRequest;
-import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsRequest;
-import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsResponse;
 import org.atricore.idbus.capabilities.openid.main.common.producers.OpenIDProducer;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV1AuthnRequest;
 import org.atricore.idbus.capabilities.openid.main.sp.OpenIDSPMediator;
-import org.atricore.idbus.capabilities.samlr2.support.core.StatusCode;
-import org.atricore.idbus.capabilities.samlr2.support.core.StatusDetails;
+import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
+import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -145,8 +144,8 @@ public class SPInitiatedSingleSignOnProducer extends OpenIDProducer {
         logger.debug("Selected claims endpoint : " + claimsEndpoint);
 
         // Create Claims Request
-        org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsRequest claimsRequest =
-                new org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsRequest(authnRequest.getID(),
+        org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsRequest claimsRequest =
+                new org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsRequest(authnRequest.getID(),
                 channel,
                 endpoint,
                 channel.getClaimsProvider(),

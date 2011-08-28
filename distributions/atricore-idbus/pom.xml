@@ -114,7 +114,7 @@
         <atricore.console.version>1.2.1-SNAPSHOT</atricore.console.version>
 
         <idbus.cap.josso.version>1.2.1-SNAPSHOT</idbus.cap.josso.version>
-        <idbus.cap.saml2.version>1.2.1-SNAPSHOT</idbus.cap.saml2.version>
+        <idbus.cap.sso.version>1.2.1-SNAPSHOT</idbus.cap.sso.version>
         <idbus.cap.spml2.version>1.2.1-SNAPSHOT</idbus.cap.spml2.version>
         <idbus.cap.sts.version>1.2.1-SNAPSHOT</idbus.cap.sts.version>
         <idbus.cap.spnego.version>1.2.1-SNAPSHOT</idbus.cap.spnego.version>
@@ -1399,44 +1399,44 @@
 
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
+            <version>${idbus.cap.sso.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
+            <version>${idbus.cap.sso.version}</version>
             <type>pom</type>
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.management</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.management</artifactId>
+            <version>${idbus.cap.sso.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.management</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.management</artifactId>
+            <version>${idbus.cap.sso.version}</version>
             <type>pom</type>
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
+            <version>${idbus.cap.sso.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
+            <version>${idbus.cap.sso.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>samlr2</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>sso</artifactId>
+            <version>${idbus.cap.sso.version}</version>
             <type>pom</type>
         </dependency>
 

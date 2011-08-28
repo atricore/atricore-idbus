@@ -22,7 +22,7 @@
 package org.atricore.idbus.capabilities.josso.main.binding;
 
 import org.atricore.idbus.capabilities.josso.main.JossoConstants;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

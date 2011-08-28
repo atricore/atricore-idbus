@@ -24,7 +24,7 @@ package org.atricore.idbus.capabilities.spnego;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;

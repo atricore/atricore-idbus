@@ -23,8 +23,8 @@ package org.atricore.idbus.capabilities.josso.main.binding;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.binding.SsoHttpArtifactBinding;
-import org.atricore.idbus.capabilities.samlr2.main.binding.SsoHttpRedirectBinding;
+import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
+import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpRedirectBinding;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationBinding;
 import org.atricore.idbus.kernel.main.mediation.MediationBindingFactory;

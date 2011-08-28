@@ -48,7 +48,7 @@
 
     </bean>
 
-    <bean name="bp1-mbean" class="org.atricore.idbus.capabilities.samlr2.management.internal.BindingProviderMBeanImpl">
+    <bean name="bp1-mbean" class="org.atricore.idbus.capabilities.sso.management.internal.BindingProviderMBeanImpl">
         <property name="bindingProvider" ref="bp1-josso"/>
     </bean>
 

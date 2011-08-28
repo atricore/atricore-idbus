@@ -29,7 +29,7 @@ import org.atricore.idbus.capabilities.josso.main.JossoAuthenticationAssertionIm
 import org.atricore.idbus.capabilities.josso.main.JossoException;
 import org.atricore.idbus.capabilities.josso.main.JossoMediator;
 import org.atricore.idbus.capabilities.josso.main.binding.JossoBinding;
-import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+        >
+
+    <!-- Saml R2 Signer -->
+
+    <bean init-method="init"
+          class="org.atricore.idbus.capabilities.sso.support.core.signature.JSR105SamlR2SignerImpl"
+          name="test-samlr2-signer">
+        <description/>
+        <property name="keyResolver">
+            <bean class="org.atricore.idbus.capabilities.sso.support.core.SamlR2KeystoreKeyResolver">
+                <property name="keystoreType">
+                    <value>JKS</value>
+                </property>
+                <property name="keystoreFile">
+                    <value>classpath:idp1/idp1-keystore.jks</value>
+                </property>
+                <property name="keystorePass">
+                    <value>ATRICORE</value>
+                </property>
+                <property name="privateKeyAlias">
+                    <value>josso-sp1</value>
+                </property>
+                <property name="privateKeyPass">
+                    <value>ATRICORE</value>
+                </property>
+                <property name="certificateAlias">
+                    <value>josso-sp1</value>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+
+</s:beans>

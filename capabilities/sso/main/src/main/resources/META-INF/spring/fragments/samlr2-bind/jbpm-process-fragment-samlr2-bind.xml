@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+      http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+        >
+    <!-- ====================================================================== -->
+    <!--                                                                        -->
+    <!-- Bind Related JBPM fragments                                            -->
+    <!--                                                                        -->
+    <!-- ====================================================================== -->
+
+    <!-- ====================================================================== -->
+    <!-- Bind SamlR2 Artifact to SamlR2 ArtifactResolve                         -->
+    <!-- ====================================================================== -->
+    <bean name="samlr2-samlr2art-to-samlr2artresolve-process-fragment"
+          class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
+        <property name="name" value="samlr2-samlr2art-to-samlr2artresolve-process-fragment"/>
+        <property name="processFragmentDescriptor"
+                  value="classpath:org/atricore/idbus/capabilities/sso/main/binding/plans/bind-samlr2art-to-samlr2artresolve.jpdl"/>
+    </bean>
+
+    <osgi:service id="osgi-samlr2-samlr2art-to-samlr2artresolve-process-fragment"
+                  ref="samlr2-samlr2art-to-samlr2artresolve-process-fragment"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
+
+    <!-- SamlR2 ArtifactResolve init -->
+    <bean name="samlr2-init-artresolve-process-fragment"
+          class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
+        <property name="name" value="samlr2-init-artresolve-process-fragment"/>
+        <property name="lifecycle" value="generate-artifactresolve"/>
+        <property name="phase" value="initialize"/>
+        <property name="processFragmentDescriptor"
+                  value="classpath:org/atricore/idbus/capabilities/sso/main/binding/plans/artresolve/initialize-artresolve-request.jpdl"/>
+    </bean>
+
+    <osgi:service id="osgi-samlr2-init-artresolve-process-fragment"
+                  ref="samlr2-init-artresolve-process-fragment"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
+
+    <!-- SamlR2 Add Artifact to Artifact resolve request -->
+    <bean name="samlr2-add-artifact-to-artresolve-process-fragment"
+          class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
+        <property name="name" value="samlr2-add-artifact-to-artresolve-process-fragment"/>
+        <property name="lifecycle" value="generate-artifactresolve"/>
+        <property name="phase" value="provide-content"/>
+        <property name="processFragmentDescriptor"
+                  value="classpath:org/atricore/idbus/capabilities/sso/main/binding/plans/artresolve/add-artifact.jpdl"/>
+    </bean>
+
+    <osgi:service id="osgi-samlr2-add-artifact-to-artresolve-process-fragment"
+                  ref="samlr2-add-artifact-to-artresolve-process-fragment"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
+
+
+    <!-- ====================================================================== -->
+    <!-- Bind SamlR2 ArtifactResolve to SamlR2 ArtifactResponse                 -->
+    <!-- ====================================================================== -->
+    <bean name="samlr2-samlr2artresolve-to-samlr2artresponse-process-fragment"
+          class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
+        <property name="name" value="samlr2-samlr2artresolve-to-samlr2artresponse-process-fragment"/>
+        <property name="processFragmentDescriptor"
+                  value="classpath:org/atricore/idbus/capabilities/sso/main/binding/plans/bind-samlr2artresolve-to-samlr2artresponse.jpdl"/>
+    </bean>
+
+    <osgi:service id="osgi-samlr2-samlr2artresolve-to-samlr2artresponse-process-fragment"
+                  ref="samlr2-samlr2artresolve-to-samlr2artresponse-process-fragment"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
+
+    <!-- SamlR2 ArtifactResolve init -->
+    <bean name="samlr2-init-artresponse-process-fragment"
+          class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
+        <property name="name" value="samlr2-init-artresponse-process-fragment"/>
+        <property name="lifecycle" value="generate-artifactresponse"/>
+        <property name="phase" value="initialize"/>
+        <property name="processFragmentDescriptor"
+                  value="classpath:org/atricore/idbus/capabilities/sso/main/binding/plans/artresponse/initialize-artresponse.jpdl"/>
+    </bean>
+
+    <osgi:service id="osgi-samlr2-init-artresponse-process-fragment"
+                  ref="samlr2-init-artresponse-process-fragment"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
+
+
+    <!-- SamlR2 Add Artifact to Artifact resolve request -->
+    <bean name="samlr2-add-content-to-artresponse-process-fragment"
+          class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
+        <property name="name" value="samlr2-add-content-to-artresponse-process-fragment"/>
+        <property name="lifecycle" value="generate-artifactresponse"/>
+        <property name="phase" value="provide-content"/>
+        <property name="processFragmentDescriptor"
+                  value="classpath:org/atricore/idbus/capabilities/sso/main/binding/plans/artresponse/add-content.jpdl"/>
+    </bean>
+
+    <osgi:service id="osgi-samlr2-content-to-artresponse-process-fragment"
+                  ref="samlr2-add-content-to-artresponse-process-fragment"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
+
+    
+
+</s:beans>

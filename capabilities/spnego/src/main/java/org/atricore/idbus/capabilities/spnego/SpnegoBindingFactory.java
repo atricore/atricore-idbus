@@ -2,7 +2,7 @@ package org.atricore.idbus.capabilities.spnego;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
+import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationBinding;

@@ -83,9 +83,9 @@
     </feature>
 
     <feature name="atricore-saml2" version="${version}">
-        <bundle>mvn:org.atricore.idbus.capabilities.samlr2/org.atricore.idbus.capabilities.samlr2.main/${idbus.cap.saml2.version}</bundle>
-        <bundle>mvn:org.atricore.idbus.capabilities.samlr2/org.atricore.idbus.capabilities.samlr2.support/${idbus.cap.saml2.version}</bundle>
-        <bundle>mvn:org.atricore.idbus.capabilities.samlr2/org.atricore.idbus.capabilities.samlr2.management/${idbus.cap.saml2.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.main/${idbus.cap.sso.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.support/${idbus.cap.sso.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.management/${idbus.cap.sso.version}</bundle>
     </feature>
 
     <feature name="atricore-spml2" version="${version}">

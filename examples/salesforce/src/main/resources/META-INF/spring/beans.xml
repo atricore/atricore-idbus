@@ -75,7 +75,7 @@
     </bean>
 
     <!-- We use a SAMLR2 Cricle of Trust manager implementation -->
-    <bean name="sfidau-samlr2-cot-mgr" class="org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager">
+    <bean name="sfidau-samlr2-cot-mgr" class="org.atricore.idbus.capabilities.sso.main.SamlR2CircleOfTrustManager">
         <property name="cot" ref="sfidau-cot"/>
     </bean>
 

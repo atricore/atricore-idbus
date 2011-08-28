@@ -56,7 +56,7 @@
 
     </bean>
 
-    <bean name="sp2-mbean" class="org.atricore.idbus.capabilities.samlr2.management.internal.ServiceProviderMBeanImpl">
+    <bean name="sp2-mbean" class="org.atricore.idbus.capabilities.sso.management.internal.ServiceProviderMBeanImpl">
         <property name="serviceProvider" ref="sp2"/>
     </bean>
 
@@ -346,7 +346,7 @@
 
     </bean>
 
-    <bean name="sp2-samlr2-mediator" class="org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator">
+    <bean name="sp2-samlr2-mediator" class="org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator">
 
         <property name="preferredIdpAlias"  value="http://localhost:8081/IDBUS/IDP-1/SAML2/MD" />
 
@@ -361,7 +361,7 @@
         <property name="errorUrl" value="http://localhost:8081/idbus-ui/error.do"/>
 
         <property name="bindingFactory">
-            <bean class="org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory"/>
+            <bean class="org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory"/>
         </property>
 
         <property name="artifactQueueManager" ref="idau1-aqm"/>
@@ -369,9 +369,9 @@
         <property name="signer">
             <bean name="sp2-samlr2-signer"
                   init-method="init"
-                  class="org.atricore.idbus.capabilities.samlr2.support.core.signature.JSR105SamlR2SignerImpl" >
+                  class="org.atricore.idbus.capabilities.sso.support.core.signature.JSR105SamlR2SignerImpl" >
                 <property name="keyResolver">
-                    <bean class="org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeystoreKeyResolver">
+                    <bean class="org.atricore.idbus.capabilities.sso.support.core.SamlR2KeystoreKeyResolver">
                         <property name="keystoreType" value="JKS"/>
                         <property name="keystoreFile" value="classpath:org/atricore/idbus/examples/simplefederation/idau/sp2/sp2-keystore.jks"/>
                         <property name="keystorePass" value="ATRICORE"/>
@@ -384,11 +384,11 @@
         </property>
 
         <property name="encrypter">
-            <bean name="sp2-samlr2-encrypter" class="org.atricore.idbus.capabilities.samlr2.support.core.encryption.XmlSecurityEncrypterImpl">
+            <bean name="sp2-samlr2-encrypter" class="org.atricore.idbus.capabilities.sso.support.core.encryption.XmlSecurityEncrypterImpl">
                 <property name="symmetricKeyAlgorithmURI" value="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
                 <property name="kekAlgorithmURI" value="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/>
                 <property name="keyResolver">
-                    <bean class="org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeystoreKeyResolver">
+                    <bean class="org.atricore.idbus.capabilities.sso.support.core.SamlR2KeystoreKeyResolver">
                          <property name="keystoreType" value="JKS"/>
                          <property name="keystoreFile" value="classpath:org/atricore/idbus/examples/simplefederation/idau/sp2/sp2-keystore.jks"/>
                          <property name="keystorePass" value="ATRICORE"/>
@@ -405,8 +405,8 @@
                   class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger">
                 <property name="messageBuilders">
                     <list>
-                        <bean class="org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder"/>
-                        <bean class="org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder"/>
+                        <bean class="org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder"/>
+                        <bean class="org.atricore.idbus.capabilities.sso.main.binding.logging.SSOLogMessageBuilder"/>
                         <bean class="org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder"/>
                         <bean class="org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder"/>
                     </list>
@@ -422,10 +422,10 @@
     </bean>
 
     <bean name="sp2-account-link-emitter"
-          class="org.atricore.idbus.capabilities.samlr2.support.federation.OneToOneAccountLinkEmitter"/>
+          class="org.atricore.idbus.capabilities.sso.support.federation.OneToOneAccountLinkEmitter"/>
 
     <bean name="sp2-identity-mapper"
-          class="org.atricore.idbus.capabilities.samlr2.support.federation.OneToOneIdentityMapper"/>
+          class="org.atricore.idbus.capabilities.sso.support.federation.OneToOneIdentityMapper"/>
 
     <!-- ================================================================== -->
     <!-- SSO Session Manager Service                                        -->
@@ -507,27 +507,27 @@
     <!-- ================================================================== -->
 
     <bean name="sp2-spsessionheartbeatreq-to-samlr2autnreq-plan"
-          class="org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPSessionHeartBeatReqToSamlR2AuthnReqPlan">
+          class="org.atricore.idbus.capabilities.sso.main.sp.plans.SPSessionHeartBeatReqToSamlR2AuthnReqPlan">
         <property name="bpmsManager" ref="bpms-manager"/>
     </bean>
 
     <bean name="sp2-spinitiatedauthnreq-to-samlr2autnreq-plan"
-          class="org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan">
+          class="org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan">
         <property name="bpmsManager" ref="bpms-manager"/>
     </bean>
 
     <bean name="sp2-spinitiatedsloreq-to-samlr2sloreq-plan"
-          class="org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedLogoutReqToSamlR2LogoutReqPlan">
+          class="org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedLogoutReqToSamlR2LogoutReqPlan">
         <property name="bpmsManager" ref="bpms-manager"/>
     </bean>
 
     <bean name="sp2-spsso-samlr2sloreq-to-samlr2resp-plan"
-          class="org.atricore.idbus.capabilities.samlr2.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan">
+          class="org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan">
         <property name="bpmsManager" ref="bpms-manager"/>
     </bean>
 
     <bean name="sp2-idpunsolicitedresponse-to-subject-plan"
-          class="org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan">
+          class="org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan">
         <property name="bpmsManager" ref="bpms-manager"/>
     </bean>
 

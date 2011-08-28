@@ -4,10 +4,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoConstants;
-import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.samlr2.support.core.util.StringSource;
+import org.atricore.idbus.capabilities.sso.support.core.util.StringSource;
 import org.atricore.idbus.kernel.main.databinding.JAXBUtils;
-import org.springframework.util.StopWatch;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.*;
@@ -20,11 +18,9 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Holder;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.TreeSet;
 

@@ -23,13 +23,12 @@ package org.atricore.idbus.capabilities.spnego.producers;
 
 import org.apache.camel.Endpoint;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.HexDump;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsRequest;
-import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsResponse;
-import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsResponse;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
+import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.spnego.*;
 import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -42,13 +41,9 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
-import org.ietf.jgss.*;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 
-import javax.security.auth.Subject;
 import javax.xml.namespace.QName;
-import java.io.ByteArrayOutputStream;
-import java.security.PrivilegedAction;
 
 
 /**

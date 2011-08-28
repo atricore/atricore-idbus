@@ -21,8 +21,7 @@
 
 package org.atricore.idbus.capabilities.openid.main.binding;
 
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.springframework.expression.common.LiteralExpression;
+import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
 
 /**
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
