@@ -27,11 +27,8 @@ import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
-<<<<<<< HEAD
 import org.atricore.idbus.capabilities.samlr2.main.claims.endpoints.SpUsernamePasswordClaimsEndpoint;
-=======
 import org.atricore.idbus.capabilities.samlr2.main.claims.endpoints.OpenIDClaimsEndpoint;
->>>>>>> 609493a99495e2426dc95cc4f70540a13333fe78
 import org.atricore.idbus.capabilities.samlr2.main.claims.endpoints.UsernamePasscodeClaimsEndpoint;
 import org.atricore.idbus.capabilities.samlr2.main.claims.endpoints.UsernamePasswordClaimsEndpoint;
 import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
