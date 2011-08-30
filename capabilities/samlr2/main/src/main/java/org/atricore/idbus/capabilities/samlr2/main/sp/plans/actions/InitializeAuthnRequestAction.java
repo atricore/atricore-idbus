@@ -27,11 +27,13 @@ import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
+import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.samlr2.main.common.plans.actions.AbstractSamlR2Action;
 import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
@@ -59,16 +61,35 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
             return;
 
         boolean passive = false;
+
+        RequestedAuthnContextType reqAuthnCtx = null;
         if (in.getContent() instanceof SPInitiatedAuthnRequestType) {
 
             SPInitiatedAuthnRequestType ssoAuthnReq = (SPInitiatedAuthnRequestType) in.getContent();
             passive = ssoAuthnReq.isPassive();
 
-            if (logger.isDebugEnabled() && passive)
-                logger.debug("Generating PASSIVE Authn Request (SPInitiatedAuthnRequest received)");
 
-            if (logger.isDebugEnabled() && !passive)
-                logger.debug("Generating NON-PASSIVE Authn Request (SPInitiatedAuthnRequest received)");
+            // If credentials are present, request a special authnctx
+            if (ssoAuthnReq.getCredentials() != null &&
+                    ssoAuthnReq.getCredentials().size() > 0) {
+
+                reqAuthnCtx = new RequestedAuthnContextType();
+                reqAuthnCtx.getAuthnContextClassRef().add(AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue());
+
+                if (logger.isDebugEnabled() && passive)
+                    logger.debug("Generating NON-PASSIVE Authn Request (SPInitiatedAuthnRequest w/credentials received)");
+                // Set this to non-passive, JOSSO Login will handle subsequent errors.
+                passive = false;
+            } else {
+
+                if (logger.isDebugEnabled() && passive)
+                    logger.debug("Generating PASSIVE Authn Request (SPInitiatedAuthnRequest received)");
+
+
+                if (logger.isDebugEnabled() && !passive)
+                    logger.debug("Generating NON-PASSIVE Authn Request (SPInitiatedAuthnRequest received)");
+
+            }
 
 
         } else if (in.getContent() instanceof SPSessionHeartBeatRequestType) {
@@ -102,6 +123,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
         // saml:Conditions [optional]
 
         // RequestedAuthnContext [optional]
+        authn.setRequestedAuthnContext(reqAuthnCtx);
 
         // Scoping [optional]
 

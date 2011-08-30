@@ -101,8 +101,14 @@ public enum AuthnCtxClass {
     /** URI for Time Synchornized Token authentication context. */
     TIME_SYNC_TOKEN_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken", false),
 
+    /** URI for Secure SP Provided credentials. */
+    ATC_SP_PASSWORD_AUTHN_CTX("urn:org:atricore:idbus:SAML:2.0:ac:classes:SpSecurePassword", true),
+
     /** URI for unspecified authentication context. */
     UNSPECIFIED_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified", true);
+
+
+
 
     private String ac;
     private boolean isPassive;

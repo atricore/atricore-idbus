@@ -20,15 +20,24 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<jxb:bindings version="1.0" wsdlLocation="samlv2.wsdl"
+<jxb:bindings version="1.0"
+        wsdlLocation="samlv2.wsdl"
         xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
         xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-        <jxb:bindings schemaLocation="saml-schema-idbus-2.0.xsd" node="/xs:schema">
-                <jxb:globalBindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
-                        xmlns:xs="http://www.w3.org/2001/XMLSchema">
-                        <jxb:serializable/>
-                </jxb:globalBindings>
+
+        <jxb:globalBindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <jxb:serializable/>
+        </jxb:globalBindings>
+
+<!--
+        <jxb:bindings schemaLocation="saml-schema-authn-context-types-2.0.xsd"  node="/xs:schema">
+            <jxb:schemaBindings>
+                <jxb:package name="oasis.names.tc.SAML._2_0.ac"/>
+            </jxb:schemaBindings>
         </jxb:bindings>
+
+-->
 </jxb:bindings>

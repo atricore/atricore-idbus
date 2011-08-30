@@ -30,6 +30,7 @@
         xmlns:samli="urn:oasis:names:tc:SAML:2.0:idbus"
         xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
         xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns:samlac="urn:oasis:names:tc:SAML:2.0:ac"
         xmlns="http://schemas.xmlsoap.org/wsdl/">
 
     <wsdl:types>
@@ -42,7 +43,12 @@
             <xsd:import namespace="urn:oasis:names:tc:SAML:2.0:metadata"
                         schemaLocation="saml-schema-metadata-2.0.xsd"/>
         </xsd:schema>
-
+<!--
+        <xsd:schema>
+            <xsd:import namespace="urn:oasis:names:tc:SAML:2.0:ac:classes:Password"
+                        schemaLocation="saml-schema-authn-context-pword-2.0.xsd"/>
+        </xsd:schema>
+-->
     </wsdl:types>
 
     <!-- protocol message definitions -->

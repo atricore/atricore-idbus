@@ -257,7 +257,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
                         case SAMLR2_LOCAL:
 
-                             from("direct:" + ed.getLocation()).
+                            from("direct:" + ed.getLocation()).
                                      to("direct:" + ed.getName() + "-local");
 
                             from("idbus-bind:camel://direct:" + ed.getName() + "-local" +
@@ -274,7 +274,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
                         case SSO_LOCAL:
 
-                             from("direct:" + ed.getLocation()).
+                            from("direct:" + ed.getLocation()).
                                      to("direct:" + ed.getName() + "-local");
 
                             from("idbus-bind:camel://direct:" + ed.getName() + "-local" +

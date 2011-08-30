@@ -29,8 +29,10 @@ import org.atricore.idbus.capabilities.josso.main.JossoConstants;
 import org.atricore.idbus.capabilities.josso.main.JossoException;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
+import org.atricore.idbus.common.sso._1_0.protocol.CredentialType;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
+import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
@@ -40,7 +42,10 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
+import javax.xml.namespace.QName;
 import java.net.URLDecoder;
 
 /**
@@ -77,10 +82,7 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         String username = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_USERNAME_VAR);
         String password = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_PASSWORD_VAR);
 
-        // TODO : Store credentials in authnCtx ... (encrypt them in the future!)
-
         JossoAuthnContext authnCtx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
-
 
         // Decode IDP Alias, if any
         if (idpAliasB64 != null) {
@@ -109,6 +111,26 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         // TODO : Support on_error ?
         SPInitiatedAuthnRequestType request = buildAuthnRequest(exchange, idpAlias);
 
+        if (username != null && password != null) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Initializing Authnentiation request w/credentials");
+
+            // Send credentials with authn request:
+            UsernameTokenType usernameToken = new UsernameTokenType ();
+            AttributedString usernameString = new AttributedString();
+            usernameString.setValue( username );
+
+            usernameToken.setUsername( usernameString );
+            usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password );
+
+            CredentialType ct = new CredentialType();
+            ct.setAny(usernameToken);
+
+            request.getCredentials().add(ct);
+        }
+
+        // Create context information
         authnCtx = new JossoAuthnContext();
         authnCtx.setAppId(appId);
         authnCtx.setSsoBackTo(backTo);

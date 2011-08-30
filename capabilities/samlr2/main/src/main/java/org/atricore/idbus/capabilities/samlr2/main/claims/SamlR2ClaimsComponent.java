@@ -27,6 +27,7 @@ import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
+import org.atricore.idbus.capabilities.samlr2.main.claims.endpoints.SpUsernamePasswordClaimsEndpoint;
 import org.atricore.idbus.capabilities.samlr2.main.claims.endpoints.UsernamePasscodeClaimsEndpoint;
 import org.atricore.idbus.capabilities.samlr2.main.claims.endpoints.UsernamePasswordClaimsEndpoint;
 import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
@@ -63,6 +64,10 @@ public class SamlR2ClaimsComponent extends DefaultComponent {
 
             case TIME_SYNC_TOKEN_AUTHN_CTX:
                 endpoint = new UsernamePasscodeClaimsEndpoint(uri, this, parameters);
+                break;
+
+            case ATC_SP_PASSWORD_AUTHN_CTX:
+                endpoint = new SpUsernamePasswordClaimsEndpoint(uri, this, parameters);
                 break;
             default:
                 throw new SamlR2Exception("Unsupported endpoint type " + remaining);

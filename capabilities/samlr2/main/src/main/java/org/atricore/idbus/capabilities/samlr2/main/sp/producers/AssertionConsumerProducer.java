@@ -136,8 +136,8 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                 StatusCode.asEnum(response.getStatus().getStatusCode().getStatusCode().getValue()) : null;
 
         if (logger.isDebugEnabled())
-                logger.debug("Received status code " + status.getValue() +
-                        (secStatus != null ? "/" + secStatus.getValue() : ""));
+            logger.debug("Received status code " + status.getValue() +
+                (secStatus != null ? "/" + secStatus.getValue() : ""));
 
         if (status.equals(StatusCode.TOP_RESPONDER) &&
             secStatus != null &&

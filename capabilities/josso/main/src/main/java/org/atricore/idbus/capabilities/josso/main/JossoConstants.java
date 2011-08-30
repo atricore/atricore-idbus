@@ -47,9 +47,9 @@ public interface JossoConstants {
 
     public static final String JOSSO_APPHOST_VAR = "josso_partnerapp_vhost";
 
-    public static final String JOSSO_USERNAME_VAR = "josso_password";
+    public static final String JOSSO_USERNAME_VAR = "josso_username";
 
-    public static final String JOSSO_PASSWORD_VAR = "josso_username";
+    public static final String JOSSO_PASSWORD_VAR = "josso_password";
 
     public static final String XHTML_PKG = "org.w3._1999.xhtml";
 

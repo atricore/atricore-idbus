@@ -36,10 +36,7 @@ import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqT
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
-import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
-import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
-import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
-import org.atricore.idbus.common.sso._1_0.protocol.SubjectType;
+import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -50,10 +47,13 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimSetImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
 import javax.xml.namespace.QName;
 
@@ -82,14 +82,21 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
             // ------------------------------------------------------------------------------------------
 
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-            String relayState = in.getMessage().getRelayState();
+
+            SPInitiatedAuthnRequestType ssoAuthnReq =
+                    (SPInitiatedAuthnRequestType) in.getMessage().getContent();
+
+            // Use local state ID as our relay state,
+            String relayState = in.getMessage().getState().getLocalState().getId();
 
             SPSecurityContext secCtx =
                     (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
+
             if (secCtx != null && secCtx.getSessionIndex() != null) {
 
-                // TODO ! Check that the session belongs to the IdP associated with this request 
+
+                // TODO ! Check that the session belongs to the IdP associated with this request
 
                 logger.debug("SSO Session found " + secCtx.getSessionIndex());
 
@@ -139,7 +146,6 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
                     idpSsoEndpoint.getLocation(),
                     idpSsoEndpoint.getResponseLocation());
 
-
             // ------------------------------------------------------
             // Create AuthnRequest using identity plan
             // ------------------------------------------------------
@@ -152,9 +158,6 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
             // ------------------------------------------------------
             // Send Authn Request to IDP
             // ------------------------------------------------------
-            
-            SPInitiatedAuthnRequestType ssoAuthnReq =
-                    (SPInitiatedAuthnRequestType) in.getMessage().getContent();
 
             in.getMessage().getState().setLocalVariable(
                     "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", ssoAuthnReq);

@@ -5,6 +5,7 @@ import org.apache.camel.Message;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsRequest;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -64,12 +65,37 @@ public class SsoLocalBinding extends AbstractMediationBinding {
             } catch (NoSuchMethodException e) {
                 // Ignore this ...
                 if (logger.isTraceEnabled())
-                    logger.trace("SSO Request does not have session index : " + e.getMessage(), e);
+                    logger.trace("SSO Request does not have session index : " + e.getMessage());
 
             } catch (InvocationTargetException e) {
                 logger.error("Cannot recover local state : " + e.getMessage(), e);
             } catch (IllegalAccessException e) {
                 logger.error("Cannot recover local state : " + e.getMessage(), e);
+            }
+
+            if (lState == null) {
+                try {
+
+                    Method getRelayStateReference = ssoRequestAbstracType.getClass().getMethod("getRelayStateReference");
+                    String relayStateReference = (String) getRelayStateReference.invoke(ssoRequestAbstracType);
+
+                    ProviderStateContext ctx = createProviderStateContext();
+                    lState = ctx.retrieve(relayStateReference);
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for relayStateReference " + relayStateReference);
+
+                } catch (NoSuchMethodException e) {
+                    // Ignore this ...
+                    if (logger.isTraceEnabled())
+                        logger.trace("SSO Request does not have session index : " + e.getMessage());
+
+                } catch (InvocationTargetException e) {
+                    logger.error("Cannot recover local state : " + e.getMessage(), e);
+                } catch (IllegalAccessException e) {
+                    logger.error("Cannot recover local state : " + e.getMessage(), e);
+                }
+
             }
 
             if (lState == null) {
@@ -90,8 +116,36 @@ public class SsoLocalBinding extends AbstractMediationBinding {
                     state);
 
             return body;
+        } else if (in.getBody() instanceof SamlR2ClaimsRequest) {
+            MediationState state = null;
+            LocalState lState = null;
+            MediationMessage body;
 
-        } else {
+            SamlR2ClaimsRequest samlr2ClaimRequest = (SamlR2ClaimsRequest) in.getBody();
+
+            ProviderStateContext ctx = createProviderStateContext();
+            lState = ctx.retrieve(samlr2ClaimRequest.getTargetRelayState());
+
+            if (lState == null) {
+                // Create a new local state instance ?
+                state = createMediationState(exchange);
+            } else {
+                state = new MediationStateImpl(lState);
+
+            }
+
+            // Process Saml Response in SOAP Channel
+            body = new MediationMessageImpl(
+                    in.getMessageId(),
+                    in.getBody(),
+                    null,
+                    null,
+                    null,
+                    state);
+
+            return body;
+
+        }else {
             throw new IllegalArgumentException("Unknown message type " + in.getBody());
         }
 

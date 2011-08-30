@@ -46,6 +46,8 @@ public interface SAMLR2MetadataConstants {
 
     final static QName SPBindingAssertionConsumerService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "AssertionConsumerService");
 
+    final static QName SPCredentialsCallbackService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "CredentialsCallbackService");
+
 
     final static QName ManageNameIDService_QNAME = new QName("urn:oasis:names:tc:SAML:2.0:metadata", "ManageNameIDService");
     final static QName AssertionConsumerService_QNAME = new QName("urn:oasis:names:tc:SAML:2.0:metadata", "AssertionConsumerService");

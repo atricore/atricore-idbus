@@ -131,6 +131,35 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
 
 
                             break;
+                        case SAMLR2_LOCAL:
+                        case SSO_LOCAL:
+
+                            from("direct:" + ed.getLocation()).
+                                     to("direct:" + ed.getName() + "-local");
+
+                            from("idbus-bind:camel://direct:" + ed.getName() + "-local" +
+                                "?binding=" + ed.getBinding() +
+                                "&channelRef=" + claimChannel.getName()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("samlr2-claim:" + ed.getType() +
+                                            "?channelRef=" + claimChannel.getName() +
+                                            "&endpointRef=" + endpoint.getName());
+
+                            if (ed.getResponseLocation() != null) {
+                                from("direct:" + ed.getLocation()).
+                                     to("direct:" + ed.getName() + "-local-resp");
+
+                                from("idbus-bind:camel://direct:" + ed.getName() + "-local-resp" +
+                                    "?binding=" + ed.getBinding() +
+                                    "&channelRef=" + claimChannel.getName()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("samlr2-claim:" + ed.getType() +
+                                                "?channelRef=" + claimChannel.getName() +
+                                                "&endpointRef=" + endpoint.getName() +
+                                                "&response=true");
+                            }
+                            break;
+
                         default:
                             throw new SamlR2Exception("Unsupported SamlR2Binding " + binding.getValue());
                     }
