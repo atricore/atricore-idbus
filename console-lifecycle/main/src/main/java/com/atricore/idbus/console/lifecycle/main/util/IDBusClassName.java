@@ -29,7 +29,6 @@ public enum IDBusClassName {
 	SAMLR2_IDP_PROVIDER_CHANNEL("org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl"),
 	SAMLR2_SP_PROVIDER_CHANNEL("org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl"),
 	CIRCLE_OF_TRUST("org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl"),
-	SAMLR2_COT_MANAGER("org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager"),
 	SAMLR2_ENDPOINT("org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl"),
 	SAMLR2_COT_MEMBER("org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl");
 	private String fullClassName;

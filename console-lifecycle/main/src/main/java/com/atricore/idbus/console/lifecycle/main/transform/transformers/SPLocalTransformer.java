@@ -13,7 +13,6 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Descrip
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder;
@@ -29,6 +28,7 @@ import org.atricore.idbus.capabilities.samlr2.support.core.signature.JSR105SamlR
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.federation.AccountLinkLifecycleImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
@@ -158,7 +158,7 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         setPropertyRef(sp, "unitContainer", provider.getIdentityAppliance().getName() + "-container");
 
         // COT Manager
-        Collection<Bean> cotMgrs = getBeansOfType(baseBeans, SamlR2CircleOfTrustManager.class.getName());
+        Collection<Bean> cotMgrs = getBeansOfType(baseBeans, CircleOfTrustManagerImpl.class.getName());
         if (cotMgrs.size() == 1) {
             Bean cotMgr = cotMgrs.iterator().next();
             setPropertyRef(sp, "cotManager", cotMgr.getName());

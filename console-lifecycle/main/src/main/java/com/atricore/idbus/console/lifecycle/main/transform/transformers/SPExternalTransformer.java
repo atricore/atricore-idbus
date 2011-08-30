@@ -14,6 +14,7 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Description;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.SamlR2MetadataDefinitionIntrospector;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
@@ -107,6 +108,8 @@ public class SPExternalTransformer extends AbstractTransformer {
         }
         setPropertyValue(spMd, "alias", alias);
         setPropertyValue(spMd, "resource", "classpath:" + idauPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
+        Bean mdIntrospector = newAnonymousBean(SamlR2MetadataDefinitionIntrospector.class);
+        setPropertyBean(spMd, "metadataIntrospector", mdIntrospector);
 
         // members
         addPropertyBeansAsRefs(sp, "members", spMd);

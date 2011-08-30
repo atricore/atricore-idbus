@@ -106,6 +106,7 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
             // Bind authn is a variant of basic authn
             if (authnMechanism instanceof BasicAuthentication ||
                 authnMechanism instanceof BindAuthentication) {
+
                 Bean ccPwdArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 ccPwdArtifact.setName(idpBean.getName() + "-cc-pwd-artifact");
                 setPropertyValue(ccPwdArtifact, "name", ccPwdArtifact.getName());
@@ -122,6 +123,15 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 setPropertyValue(ccPwdPost, "location", "/PWD/POST");
                 setPropertyValue(ccPwdPost, "type", AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue());
                 ccEndpoints.add(ccPwdPost);
+
+                Bean ccSpPwdLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                ccSpPwdLocal.setName(idpBean.getName() + "-cc-sppwd-local");
+                setPropertyValue(ccSpPwdLocal, "name", ccSpPwdLocal.getName());
+                setPropertyValue(ccSpPwdLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
+                setPropertyValue(ccSpPwdLocal, "location",  "local://" + claimsChannelBean.getName().toUpperCase() + "/CC/SPPWD/LOCAL");
+                setPropertyValue(ccSpPwdLocal, "type", AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue());
+                ccEndpoints.add(ccSpPwdLocal);
+
             }
         }
 

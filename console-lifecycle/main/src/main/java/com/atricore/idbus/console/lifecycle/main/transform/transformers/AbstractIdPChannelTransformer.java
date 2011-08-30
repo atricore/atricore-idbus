@@ -10,6 +10,7 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.SamlR2MetadataDefinitionIntrospector;
 import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
 import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
 import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
@@ -109,6 +110,9 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             resourceName = normalizeBeanName(idpChannel.getName());
         }
         setPropertyValue(spMd, "resource", "classpath:" + idauPath + spBean.getName() + "/" + resourceName + "-samlr2-metadata.xml");
+
+        Bean mdIntrospector = newAnonymousBean(SamlR2MetadataDefinitionIntrospector.class);
+        setPropertyBean(spMd, "metadataIntrospector", mdIntrospector);
 
         // -------------------------------------------------------
         // IDP Channel
@@ -416,6 +420,20 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             plansList.add(plan2);
             setPropertyRefs(arLocal, "identityPlans", plansList);
             endpoints.add(arLocal);
+        }
+
+        // Internal credentials callback
+        {
+            Bean credCallbackLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            credCallbackLocal.setName(idpChannelBean.getName() + "-sso-cc-local");
+            setPropertyValue(credCallbackLocal, "name", credCallbackLocal.getName());
+            setPropertyValue(credCallbackLocal, "type", SAMLR2MetadataConstants.SPCredentialsCallbackService_QNAME.toString());
+            setPropertyValue(credCallbackLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
+            setPropertyValue(credCallbackLocal, "location",
+                    "local://" + (idpChannel != null ? idpChannel.getLocation().getUri().toUpperCase() : sp.getLocation().getUri().toUpperCase()) + "/CCBACK/LOCAL");
+
+            endpoints.add(credCallbackLocal);
+
         }
 
         setPropertyAsBeans(idpChannelBean, "endpoints", endpoints);

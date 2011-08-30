@@ -18,10 +18,10 @@ import org.atricore.idbus.capabilities.josso.main.JossoService;
 import org.atricore.idbus.capabilities.josso.main.binding.JossoBinding;
 import org.atricore.idbus.capabilities.josso.main.binding.JossoBindingFactory;
 import org.atricore.idbus.capabilities.josso.main.binding.logging.JossoLogMessageBuilder;
-import org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerImpl;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
@@ -88,7 +88,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         setPropertyRef(bpBean, "unitContainer", applianceDef.getName() + "-container");
 
         // COT Manager
-        Collection<Bean> cotMgrs = getBeansOfType(baseBeans, SamlR2CircleOfTrustManager.class.getName());
+        Collection<Bean> cotMgrs = getBeansOfType(baseBeans, CircleOfTrustManagerImpl.class.getName());
         if (cotMgrs.size() == 1) {
             Bean cotMgr = cotMgrs.iterator().next();
             setPropertyRef(bpBean, "cotManager", cotMgr.getName());

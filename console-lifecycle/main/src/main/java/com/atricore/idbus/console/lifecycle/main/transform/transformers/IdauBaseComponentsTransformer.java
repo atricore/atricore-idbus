@@ -31,8 +31,8 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Re
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerImpl;
 import org.atricore.idbus.kernel.planning.IdentityPlanRegistryImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.OsgiCamelIdentityMediationUnitContainerImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
@@ -122,7 +122,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // Define Circle Of Trust Manager bean
         // -------------------------------------------------------
 
-        Bean cotMgr = newBean(idauBeans, idauName + "-cot-manager", SamlR2CircleOfTrustManager.class.getName());
+        Bean cotMgr = newBean(idauBeans, idauName + "-cot-manager", CircleOfTrustManagerImpl.class.getName());
 
         // Properties
         setPropertyRef(cotMgr, "cot", cot.getName());

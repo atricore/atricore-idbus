@@ -10,6 +10,7 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.SamlR2MetadataDefinitionIntrospector;
 import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
 import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
 import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
@@ -124,6 +125,10 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             resourceName = normalizeBeanName(spChannel.getName());
         }
         setPropertyValue(idpMd, "resource", "classpath:" + idauPath + idpBean.getName() + "/" + resourceName + "-samlr2-metadata.xml");
+
+        Bean mdIntrospector = newAnonymousBean(SamlR2MetadataDefinitionIntrospector.class);
+        setPropertyBean(idpMd, "metadataIntrospector", mdIntrospector);
+
 
         // -------------------------------------------------------
         // SP Channel
