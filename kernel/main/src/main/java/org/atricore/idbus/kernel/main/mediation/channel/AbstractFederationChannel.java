@@ -29,6 +29,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDes
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.mediation.AbstractChannel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitContainer;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 
@@ -129,6 +130,7 @@ public abstract class AbstractFederationChannel extends AbstractChannel implemen
         throw new UnsupportedOperationException("Set mediation engine in provider!");
     }
 
+
     @Override
     public String toString() {
         return super.toString() +
@@ -138,6 +140,7 @@ public abstract class AbstractFederationChannel extends AbstractChannel implemen
                 ",targetProvider="+ (targetProvider != null ? targetProvider.getName():null)
                 +"]";
     }
+
 }
 
 

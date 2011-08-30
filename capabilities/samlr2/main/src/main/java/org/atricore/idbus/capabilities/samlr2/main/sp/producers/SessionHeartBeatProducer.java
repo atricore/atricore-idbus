@@ -186,7 +186,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
     }
 
     protected CircleOfTrustMemberDescriptor resolveIdp(String idpAlias) {
-        return getCotManager().loolkupMemberByAlias(idpAlias);
+        return getCotManager().lookupMemberByAlias(idpAlias);
     }
 
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {

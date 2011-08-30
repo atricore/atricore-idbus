@@ -140,7 +140,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
         validateRequest(sloRequest, in.getMessage().getRawContent());
 
-        CircleOfTrustMemberDescriptor idp = getProvider().getCotManager().loolkupMemberByAlias(sloRequest.getIssuer().getValue());
+        CircleOfTrustMemberDescriptor idp = getProvider().getCotManager().lookupMemberByAlias(sloRequest.getIssuer().getValue());
         if (secCtx == null || !idp.getAlias().equals(secCtx.getIdpAlias())) {
             // We're gettingn an SLO from an IDP that is not the one that created the current session, reject the request.
             logger.warn("Unexpected SLO Request received from IDP " + sloRequest.getIssuer().getValue());
@@ -563,7 +563,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
     protected void destroySPSecurityContext(CamelMediationExchange exchange,
                                             SPSecurityContext secCtx) throws SamlR2Exception {
 
-        CircleOfTrustMemberDescriptor idp = getCotManager().loolkupMemberByAlias(secCtx.getIdpAlias());
+        CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(secCtx.getIdpAlias());
         IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
         SSOSessionManager ssoSessionManager = idpChannel.getSessionManager();
         secCtx.clear();

@@ -521,7 +521,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
      * If an error occures, the procedure will decide to retry collecting claims with the las
      * claims endpoint selected or collect claims using a new claims endpoint.
      * <p/>
-     * If no more claim endpoits are available, this will send an satus error response to the SP.
+     * If no more claim endpoints are available, this will send an satus error response to the SP.
      *
      * @param exchange
      * @param claimsResponse
@@ -1255,7 +1255,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             return null;
         }
 
-        return getCotManager().loolkupMemberByAlias(issuer.getValue());
+        return getCotManager().lookupMemberByAlias(issuer.getValue());
     }
 
     protected MetadataEntry resolveSpMetadata() {
@@ -1374,7 +1374,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             if (logger.isDebugEnabled())
                 logger.debug("Using IdP alias from request attribute " + idpAlias);
 
-            idp = getCotManager().loolkupMemberByAlias(idpAlias);
+            idp = getCotManager().lookupMemberByAlias(idpAlias);
             if (idp == null) {
                 throw new SamlR2Exception("No IDP found in circle of trust for received alias [" + idpAlias + "], verify your setup.");
             }
@@ -1392,7 +1392,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             if (logger.isDebugEnabled())
                 logger.debug("Using preferred IdP alias " + idpAlias);
 
-            idp = getCotManager().loolkupMemberByAlias(idpAlias);
+            idp = getCotManager().lookupMemberByAlias(idpAlias);
             if (idp == null) {
                 throw new SamlR2Exception("No IDP found in circle of trust for preferred alias [" + idpAlias + "], verify your setup.");
             }

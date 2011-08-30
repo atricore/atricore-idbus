@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.kernel.main.mediation;
 
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.planning.IdentityPlan;
 
@@ -40,6 +41,7 @@ public abstract class AbstractChannel implements Channel, Serializable {
     private transient IdentityMediator identityMediator;
     private transient IdentityMediationUnitContainer identityMediationUnitContainer;
     private transient Collection<IdentityPlan> identityPlans;
+    private transient ClaimChannel claimsProvider;
 
     public String getName() {
         return name;
@@ -107,6 +109,13 @@ public abstract class AbstractChannel implements Channel, Serializable {
         this.identityPlans = identityPlans;
     }
 
+    public ClaimChannel getClaimsProvider() {
+        return claimsProvider;
+    }
+
+    public void setClaimsProvider(ClaimChannel claimsProvider) {
+        this.claimsProvider = claimsProvider;
+    }
 
     @Override
     public String toString() {
@@ -114,4 +123,5 @@ public abstract class AbstractChannel implements Channel, Serializable {
                 "[name="+name+
                 ",location="+location+"]";
     }
+
 }

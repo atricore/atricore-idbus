@@ -55,6 +55,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         logger.debug("Reading HTTP Servlet Request");
         super.readRequest(httpServletRequest, httpMessage);
 
+
         if (httpServletRequest.getCookies() != null) {
             for (Cookie cookie : httpServletRequest.getCookies()) {
                 logger.debug("Setting IDBus Cookie header for " + cookie.getName() + "=" + cookie.getValue());
@@ -62,6 +63,9 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
             }
         }
         
+        httpMessage.getHeaders().put("org.atricore.idbus.http.RequestURL", httpServletRequest.getRequestURL().toString());
+        httpMessage.getHeaders().put("org.atricore.idbus.http.QueryString", httpServletRequest.getQueryString());
+
         // TODO : This must be removed once we use the relay state!
         logger.debug("Publishing HTTP Session as Camel header org.atricore.idbus.http.HttpSession");
         httpMessage.getHeaders().put("org.atricore.idbus.http.HttpSession", httpServletRequest.getSession(true));

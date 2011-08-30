@@ -76,7 +76,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                 Collection<IdentityMediationEndpoint> endpoints = idpChannel.getEndpoints();
 
                 if (endpoints == null)
-                    throw new IdentityMediationException("No endpoits defined for idpChannel : " + idpChannel.getName());
+                    throw new IdentityMediationException("No endpoints defined for idpChannel : " + idpChannel.getName());
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 
@@ -313,7 +313,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                 Collection<IdentityMediationEndpoint> endpoints = bindingChannel.getEndpoints();
 
                 if (endpoints == null)
-                    throw new IdentityMediationException("No endpoits defined for bindingChannel : " + bindingChannel.getName());
+                    throw new IdentityMediationException("No endpoints defined for bindingChannel : " + bindingChannel.getName());
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 

@@ -1185,7 +1185,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
         if (idpAlias == null) {
             throw new SamlR2Exception("No IDP available");
         }
-        CircleOfTrustMemberDescriptor idp = this.getCotManager().loolkupMemberByAlias(idpAlias);
+        CircleOfTrustMemberDescriptor idp = this.getCotManager().lookupMemberByAlias(idpAlias);
         if (idp == null) {
             throw new SamlR2Exception("No IDP Member descriptor available for " + idpAlias);
         }

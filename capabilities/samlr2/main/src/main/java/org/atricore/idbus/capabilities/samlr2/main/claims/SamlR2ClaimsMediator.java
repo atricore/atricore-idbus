@@ -48,6 +48,7 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
 
     private String twoFactorAuthnUILocation;
 
+    private String openIDUILocation;
     /**
      * @org.apache.xnean.Property alias="login-form-location"
      */
@@ -65,6 +66,14 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
 
     public void setTwoFactorAuthnUILocation(String twoFactorAuthnUILocation) {
         this.twoFactorAuthnUILocation = twoFactorAuthnUILocation;
+    }
+
+    public String getOpenIDUILocation() {
+        return openIDUILocation;
+    }
+
+    public void setOpenIDUILocation(String openIDUILocation) {
+        this.openIDUILocation = openIDUILocation;
     }
 
     @Override
@@ -171,4 +180,5 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
         };
 
     }
+
 }

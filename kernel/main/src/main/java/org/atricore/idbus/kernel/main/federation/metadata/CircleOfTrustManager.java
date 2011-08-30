@@ -89,7 +89,7 @@ public interface CircleOfTrustManager {
      * @param memberAlias
      * @return
      */
-    CircleOfTrustMemberDescriptor loolkupMemberByAlias(String memberAlias);
+    CircleOfTrustMemberDescriptor lookupMemberByAlias(String memberAlias);
 
     CircleOfTrustMemberDescriptor loolkupMemberById(String hash);
 
