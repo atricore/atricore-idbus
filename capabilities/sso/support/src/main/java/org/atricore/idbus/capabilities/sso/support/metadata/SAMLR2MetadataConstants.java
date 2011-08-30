@@ -46,6 +46,7 @@ public interface SAMLR2MetadataConstants {
 
     final static QName SPBindingAssertionConsumerService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "AssertionConsumerService");
 
+    final static QName SPInitiatedSingleSignOnServiceProxy_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleSignOnServiceProxy");
 
     final static QName ManageNameIDService_QNAME = new QName("urn:oasis:names:tc:SAML:2.0:metadata", "ManageNameIDService");
     final static QName AssertionConsumerService_QNAME = new QName("urn:oasis:names:tc:SAML:2.0:metadata", "AssertionConsumerService");
@@ -87,5 +88,6 @@ public interface SAMLR2MetadataConstants {
     final static QName AttributeProfile_QNAME = new QName("urn:oasis:names:tc:SAML:2.0:metadata", "AttributeProfile");
     final static QName AuthnAuthorityDescriptor_QNAME = new QName("urn:oasis:names:tc:SAML:2.0:metadata", "AuthnAuthorityDescriptor");
     final static QName AttributeService_QNAME = new QName("urn:oasis:names:tc:SAML:2.0:metadata", "AttributeService");
+
 
 }

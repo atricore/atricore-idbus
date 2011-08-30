@@ -1,1 +1,1 @@
-class=org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPComponent
+class=org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPComponent

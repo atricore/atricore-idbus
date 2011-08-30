@@ -35,6 +35,7 @@ import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
@@ -44,18 +45,23 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDes
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
+import org.atricore.idbus.kernel.main.mediation.Channel;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
+import java.util.Iterator;
 
 /**
  *
@@ -67,7 +73,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
     protected UUIDGenerator uuidGenerator = new UUIDGenerator();
 
     public SPInitiatedSingleSignOnProducer( AbstractCamelEndpoint<CamelMediationExchange> endpoint ) throws Exception {
-        super( endpoint );
+        super(endpoint);
     }
 
     @Override
@@ -152,7 +158,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
             // ------------------------------------------------------
             // Send Authn Request to IDP
             // ------------------------------------------------------
-            
+
             SPInitiatedAuthnRequestType ssoAuthnReq =
                     (SPInitiatedAuthnRequestType) in.getMessage().getContent();
 
@@ -160,7 +166,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
                     "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", ssoAuthnReq);
 
             in.getMessage().getState().setLocalVariable(
-                    SAMLR2Constants.SAML_PROTOCOL_NS + ":AuthnRequest", authnRequest);            
+                    SAMLR2Constants.SAML_PROTOCOL_NS + ":AuthnRequest", authnRequest);
 
             // Send SAMLR2 Message back
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();

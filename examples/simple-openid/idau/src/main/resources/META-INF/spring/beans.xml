@@ -10,7 +10,9 @@
         </property>
         <property name="channels">
             <list>
-                <ref bean="sp1-claims-channel"/>
+                <ref bean="proxy1-idp1-binding-channel"/>
+                <ref bean="proxy1-claims-channel"/>
+                <ref bean="idp1-default-sp-channel"/>
                 <ref bean="sp1-tc1-activation"/>
                 <ref bean="sp1-default-idp-channel"/>
                 <ref bean="tc1-josso-binding-channel"/>
@@ -31,6 +33,8 @@
         </property>
         <property name="providers">
             <set>
+                <ref bean="proxy1"/>
+                <ref bean="idp1"/>
                 <ref bean="sp1"/>
                 <ref bean="tc1"/>
             </set>
@@ -61,6 +65,7 @@
             <value>true</value>
         </property>
     </bean>
+    <import resource="idp1/idp1-config.xml"/>
     <import resource="sp1/sp1-config.xml"/>
     <import resource="tc1/tc1-config.xml"/>
 </beans>

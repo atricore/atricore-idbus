@@ -58,9 +58,11 @@ import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
+import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.*;
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
@@ -301,69 +303,94 @@ public class SingleSignOnProducer extends SamlR2Producer {
         authnState.setResponseFormat(responseFormat);
 
         if (!isSsoSessionValid) {
-            // ------------------------------------------------------------------------------
-            // Handle Invalid SSO Session
-            // ------------------------------------------------------------------------------
 
-            // Ask for credentials, use claims channel
-            logger.debug("No SSO Session found, asking for credentials");
+            SPChannel spChannel = (SPChannel) channel;
+            // ------------------------------------------------------
+            // Handle proxy mode
+            // ------------------------------------------------------
+            if (spChannel.isProxyModeEnabled()) {
+                BindingChannel proxyChannel = spChannel.getProxy();
 
-            // TODO : Verify max sessions per user!
+                EndpointDescriptor proxyEndpoint = resolveSPInitiatedSSOProxyEndpointDescriptor(exchange, proxyChannel);
 
-            IdentityMediationEndpoint claimsEndpoint = selectNextClaimsEndpoint(authnState);
+                logger.debug("Proxying SP-Initiated SSO Request to " + proxyChannel.getLocation() +
+                        proxyEndpoint.getLocation());
 
-            if (claimsEndpoint == null) {
-                // Auth failed, no more endpoints available
-                if (logger.isDebugEnabled())
-                    logger.debug("No claims endpoint found for authn request : " + authnRequest.getID());
+                SPInitiatedAuthnRequestType authnProxyRequest = buildAuthnProxyRequest(authnRequest);
 
-                // Send failure response
-                CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(authnRequest.getIssuer());
-                EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
-
-                ResponseType response = buildSamlResponse(exchange, authnState, null, sp, ed);
-
-                out.setMessage(new MediationMessageImpl(response.getID(),
-                        response, "Response", relayState, ed, in.getMessage().getState()));
+                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                        authnProxyRequest,
+                        "AuthnProxyRequest",
+                        relayState,
+                        proxyEndpoint,
+                        in.getMessage().getState()));
 
                 exchange.setOut(out);
-                return;
+                // TODO: determine ACS for proxy responses (e.g. inline with authn proxy request, specified in target binding channel)
+                // TODO: handle proxy response
+            } else {
+                // ------------------------------------------------------------------------------
+                // Handle Invalid SSO Session
+                // ------------------------------------------------------------------------------
 
+                // Ask for credentials, use claims channel
+                logger.debug("No SSO Session found, asking for credentials");
+
+                // TODO : Verify max sessions per user!
+
+                IdentityMediationEndpoint claimsEndpoint = selectNextClaimsEndpoint(authnState);
+
+                if (claimsEndpoint == null) {
+                    // Auth failed, no more endpoints available
+                    if (logger.isDebugEnabled())
+                        logger.debug("No claims endpoint found for authn request : " + authnRequest.getID());
+
+                    // Send failure response
+                    CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(authnRequest.getIssuer());
+                    EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
+
+                    ResponseType response = buildSamlResponse(exchange, authnState, null, sp, ed);
+
+                    out.setMessage(new MediationMessageImpl(response.getID(),
+                            response, "Response", relayState, ed, in.getMessage().getState()));
+
+                    exchange.setOut(out);
+                    return;
+
+                }
+
+                // TODO : Use a plan authnreq to claimsreq
+                logger.debug("Selected claims endpoint : " + claimsEndpoint);
+
+                // Create Claims Request
+                SamlR2ClaimsRequest claimsRequest = new SamlR2ClaimsRequest(authnRequest.getID(),
+                        channel,
+                        endpoint,
+                        ((SPChannel) channel).getClaimsProvider(),
+                        uuidGenerator.generateId());
+
+                claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
+
+                // --------------------------------------------------------------------
+                // Send claims request
+                // --------------------------------------------------------------------
+                IdentityMediationEndpoint claimEndpoint = authnState.getCurrentClaimsEndpoint();
+                ClaimChannel claimChannel = claimsRequest.getClaimsChannel();
+
+                EndpointDescriptor ed = new EndpointDescriptorImpl(claimEndpoint.getBinding(),
+                        claimEndpoint.getType(),
+                        claimEndpoint.getBinding(),
+                        claimChannel.getLocation() + claimEndpoint.getLocation(),
+                        claimEndpoint.getResponseLocation());
+
+                logger.debug("Collecting claims using endpoint " + claimEndpoint);
+
+                out.setMessage(new MediationMessageImpl(claimsRequest.getId(),
+                        claimsRequest, "ClaimsRequest", null, ed, in.getMessage().getState()));
+
+
+                exchange.setOut(out);
             }
-
-            // TODO : Use a plan authnreq to claimsreq
-            logger.debug("Selected claims endpoint : " + claimsEndpoint);
-
-            // Create Claims Request
-            SamlR2ClaimsRequest claimsRequest = new SamlR2ClaimsRequest(authnRequest.getID(),
-                    channel,
-                    endpoint,
-                    ((SPChannel) channel).getClaimsProvider(),
-                    uuidGenerator.generateId());
-
-            claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
-
-            // --------------------------------------------------------------------
-            // Send claims request
-            // --------------------------------------------------------------------
-            IdentityMediationEndpoint claimEndpoint = authnState.getCurrentClaimsEndpoint();
-            ClaimChannel claimChannel = claimsRequest.getClaimsChannel();
-
-            EndpointDescriptor ed = new EndpointDescriptorImpl(claimEndpoint.getBinding(),
-                    claimEndpoint.getType(),
-                    claimEndpoint.getBinding(),
-                    claimChannel.getLocation() + claimEndpoint.getLocation(),
-                    claimEndpoint.getResponseLocation());
-
-            logger.debug("Collecting claims using endpoint " + claimEndpoint);
-
-            out.setMessage(new MediationMessageImpl(claimsRequest.getId(),
-                    claimsRequest, "ClaimsRequest", null, ed, in.getMessage().getState()));
-
-
-            exchange.setOut(out);
-
-
         } else {
             // ------------------------------------------------------------------------------
             // Handle Valid SSO Session
@@ -416,7 +443,6 @@ public class SingleSignOnProducer extends SamlR2Producer {
             }
 
             exchange.setOut(out);
-
         }
 
     }
@@ -875,7 +901,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
                 // Only use endpoints that are 'passive' when 'passive' was requested.
                 if (status.getAuthnRequest().isIsPassive() != null &&
-                    status.getAuthnRequest().isIsPassive()) {
+                        status.getAuthnRequest().isIsPassive()) {
                     AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(endpoint.getType());
                     if (!authnCtxClass.isPassive())
                         continue;
@@ -1376,7 +1402,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 location, null);
 
         if (logger.isTraceEnabled())
-                logger.trace("Resolved IDP SSO 'Continue' endpoint to " + ed);
+            logger.trace("Resolved IDP SSO 'Continue' endpoint to " + ed);
 
         return ed;
 
@@ -1691,6 +1717,47 @@ public class SingleSignOnProducer extends SamlR2Producer {
         logger.warn("No STS plan found for endpoint : " + endpoint.getName());
         return null;
     }
+
+    private EndpointDescriptor resolveSPInitiatedSSOProxyEndpointDescriptor(CamelMediationExchange exchange,
+                                                                            BindingChannel bc) throws SamlR2Exception {
+
+      try {
+
+            logger.debug("Looking for " + SamlR2Service.SPInitiatedSingleSignOnServiceProxy.toString());
+
+            for (IdentityMediationEndpoint endpoint : bc.getEndpoints()) {
+
+                logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
+
+                if (endpoint.getType().equals(SamlR2Service.SPInitiatedSingleSignOnServiceProxy.toString())) {
+
+                    if (endpoint.getBinding().equals(SamlR2Binding.SSO_ARTIFACT.getValue())) {
+                        // This is the endpoint we're looking for
+                        return  bc.getIdentityMediator().resolveEndpoint(bc, endpoint);
+                    }
+                }
+            }
+        } catch (IdentityMediationException e) {
+            throw new SamlR2Exception(e);
+        }
+
+        throw new SamlR2Exception("No SP Initiated SSO Proxy endpoint found for SP Initiated SSO using SSO Artifact binding");
+    }
+
+    /**
+     * Creates an Authentication Proxy Request which is essentially - at least as the current release -
+     * @return
+     */
+    protected SPInitiatedAuthnRequestType buildAuthnProxyRequest(AuthnRequestType source) {
+
+        SPInitiatedAuthnRequestType target = new SPInitiatedAuthnRequestType();
+        target.setID(uuidGenerator.generateId());
+        target.setPassive(source.isIsPassive());
+
+        return target;
+    }
+
+
 
 
 }

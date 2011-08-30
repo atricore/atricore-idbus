@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.capabilities.sso.support.metadata;
 
+import sun.font.TrueTypeFont;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -64,7 +66,9 @@ public enum SamlR2Service {
     
     ManageNameIDService(SAMLR2MetadataConstants.ManageNameIDService_QNAME),
     
-    SPInitiatedManageNameIDService(SAMLR2MetadataConstants.SPInitiatedManageNameIDService_QNAME);
+    SPInitiatedManageNameIDService(SAMLR2MetadataConstants.SPInitiatedManageNameIDService_QNAME),
+
+    SPInitiatedSingleSignOnServiceProxy(SAMLR2MetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME);
 
     private QName qname;
 
