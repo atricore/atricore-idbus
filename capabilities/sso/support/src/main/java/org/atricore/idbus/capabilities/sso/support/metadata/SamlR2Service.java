@@ -68,7 +68,9 @@ public enum SamlR2Service {
     
     SPInitiatedManageNameIDService(SAMLR2MetadataConstants.SPInitiatedManageNameIDService_QNAME),
 
-    SPInitiatedSingleSignOnServiceProxy(SAMLR2MetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME);
+    SPInitiatedSingleSignOnServiceProxy(SAMLR2MetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME),
+
+    ProxyAssertionConsumerService(SAMLR2MetadataConstants.ProxyAssertionConsumerService_QName);
 
     private QName qname;
 

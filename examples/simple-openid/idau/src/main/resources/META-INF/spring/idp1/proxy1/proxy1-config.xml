@@ -17,9 +17,9 @@
             <ref bean="proxy1-idp1-binding-channel"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.openid.main.sp.OpenIDSPMediator" name="proxy1-openid-mediator">
-        <property name="spBindingACS">
-            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/PROXY1/SSO/ACS/ARTIFACT</value>
+    <bean class="org.atricore.idbus.capabilities.openid.main.sp.OpenIDProxySPMediator" name="proxy1-openid-mediator">
+        <property name="spProxyACS">
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/PROXY1/ACS/ARTIFACT</value>
         </property>
         <property name="logMessages">
             <value>true</value>
@@ -94,7 +94,7 @@
                         <value>proxy1-idp1-sso-sso-http-redirect</value>
                     </property>
                     <property name="type">
-                        <value>{urn:org:atricore:idbus:sso:metadata}SPInitiatedSingleSignOnService</value>
+                        <value>{urn:org:atricore:idbus:sso:metadata}SPInitiatedSingleSignOnServiceProxy</value>
                     </property>
                     <property name="binding">
                         <value>urn:org:atricore:idbus:sso:bindings:HTTP-Redirect</value>
@@ -108,7 +108,7 @@
                         <value>proxy1-idp1-sso-sso-http-artifact</value>
                     </property>
                     <property name="type">
-                        <value>{urn:org:atricore:idbus:sso:metadata}SPInitiatedSingleSignOnService</value>
+                        <value>{urn:org:atricore:idbus:sso:metadata}SPInitiatedSingleSignOnServiceProxy</value>
                     </property>
                     <property name="binding">
                         <value>urn:org:atricore:idbus:sso:bindings:HTTP-Artifact</value>
@@ -123,7 +123,7 @@
                         <value>proxy1-idp1-openid-rp-http-post</value>
                     </property>
                     <property name="type">
-                        <value>{urn:org:atricore:idbus:sso:metadata}SPInitiatedSingleSignOnService</value>
+                        <value>{urn:org:atricore:idbus:sso:metadata}SPInitiatedSingleSignOnServiceProxy</value>
                     </property>
                     <property name="binding">
                         <value>urn:OPENID:2.0:bindings:HTTP-POST</value>

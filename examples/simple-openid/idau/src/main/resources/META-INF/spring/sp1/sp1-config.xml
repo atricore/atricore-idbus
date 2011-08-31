@@ -377,6 +377,20 @@
                         </list>
                     </property>
                 </bean>
+                <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="sp1-default-idp-channel-ssop-proxy1-acs-artifact">
+                    <property name="name">
+                        <value>sp1-default-idp-channel-ssop-proxy1-acs-artifact</value>
+                    </property>
+                    <property name="type">
+                        <value>{urn:org:atricore:idbus:sso:metadata}ProxyAssertionConsumerService</value>
+                    </property>
+                    <property name="binding">
+                        <value>urn:org:atricore:idbus:sso:bindings:HTTP-Artifact</value>
+                    </property>
+                    <property name="location">
+                        <value>/PROXY1/ACS/ARTIFACT</value>
+                    </property>
+                </bean>
             </list>
         </property>
     </bean>

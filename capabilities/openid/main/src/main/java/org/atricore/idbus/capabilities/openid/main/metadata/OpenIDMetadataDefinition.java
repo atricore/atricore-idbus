@@ -5,6 +5,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import java.io.Serializable;
 
 /**
+ * TODO: deprecate
  * Placeholder for OpenID metadata. The only purpose of this class is to fulfil the requirements
  * for a provider to become a member of a circle of trust.
  *

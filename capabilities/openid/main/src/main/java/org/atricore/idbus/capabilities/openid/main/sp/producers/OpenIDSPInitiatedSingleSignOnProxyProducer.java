@@ -28,25 +28,31 @@ import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDAuthnResponse
 import org.atricore.idbus.capabilities.openid.main.binding.OpenIDBinding;
 import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDMessage;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV2AuthnRequest;
+import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
+import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsMediator;
 import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsResponse;
 import org.atricore.idbus.capabilities.openid.main.common.producers.OpenIDProducer;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV1AuthnRequest;
-import org.atricore.idbus.capabilities.openid.main.sp.OpenIDSPMediator;
+import org.atricore.idbus.capabilities.openid.main.sp.OpenIDProxySPMediator;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
+import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
+import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-import org.atricore.idbus.kernel.main.mediation.claim.Claim;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
+import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 import org.openid4java.consumer.*;
 import org.openid4java.discovery.DiscoveryException;
@@ -57,6 +63,7 @@ import org.openid4java.message.AuthSuccess;
 import org.openid4java.message.MessageException;
 import org.openid4java.message.ParameterList;
 
+import javax.xml.namespace.QName;
 import java.util.List;
 
 /**
@@ -64,13 +71,13 @@ import java.util.List;
  *
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
-public class SPInitiatedSingleSignOnProducer extends OpenIDProducer {
+public class OpenIDSPInitiatedSingleSignOnProxyProducer extends OpenIDProducer {
 
-    private static final Log logger = LogFactory.getLog(SPInitiatedSingleSignOnProducer.class);
+    private static final Log logger = LogFactory.getLog(OpenIDSPInitiatedSingleSignOnProxyProducer.class);
 
     protected UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    public SPInitiatedSingleSignOnProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
+    public OpenIDSPInitiatedSingleSignOnProxyProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
     }
 
@@ -185,7 +192,7 @@ public class SPInitiatedSingleSignOnProducer extends OpenIDProducer {
 
         logger.debug("Processing SP Initiated Single SingOn on HTTP Redirect");
 
-        OpenIDSPMediator mediator = (OpenIDSPMediator) channel.getIdentityMediator();
+        OpenIDProxySPMediator mediator = (OpenIDProxySPMediator) channel.getIdentityMediator();
         /* TODO: setup declaratively using spring -- needs to be a prototype (singleton=false) */
         ConsumerManager consumerManager = new ConsumerManager();
         ConsumerManager manager=new ConsumerManager();
@@ -360,7 +367,7 @@ public class SPInitiatedSingleSignOnProducer extends OpenIDProducer {
                 ssoResponse.setSessionIndex(uuidGenerator.generateId());
                 ssoResponse.setSubject(st);
 
-                String destinationLocation = resolveSpBindingACS();
+                String destinationLocation = resolveSpProxyACS();
 
                 EndpointDescriptor destination =
                         new EndpointDescriptorImpl("EmbeddedSPAcs",
@@ -381,6 +388,79 @@ public class SPInitiatedSingleSignOnProducer extends OpenIDProducer {
         }
 
     }
+
+    protected void doProcessReceivedClaims(CamelMediationExchange exchange,
+                                           ClaimsRequest claimsRequest,
+                                           ClaimSet receivedClaims) throws Exception {
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        SamlR2ClaimsMediator mediator = ((SamlR2ClaimsMediator ) channel.getIdentityMediator());
+
+        // This is the binding we're using to send the response
+        SamlR2Binding binding = SamlR2Binding.SSO_ARTIFACT;
+        Channel issuer = claimsRequest.getIssuerChannel();
+
+        IdentityMediationEndpoint claimsProcessingEndpoint = null;
+
+        // Look for an endpoint to send the response
+        for (IdentityMediationEndpoint endpoint : issuer.getEndpoints()) {
+            if (endpoint.getType().equals(claimsRequest.getIssuerEndpoint().getType()) &&
+                    endpoint.getBinding().equals(binding.getValue())) {
+                claimsProcessingEndpoint = endpoint;
+                break;
+            }
+        }
+
+        if (claimsProcessingEndpoint == null) {
+            throw new SamlR2Exception("No endpoint supporting " + binding + " of type " +
+                    claimsRequest.getIssuerEndpoint().getType() + " found in channel " + claimsRequest.getIssuerChannel().getName());
+        }
+
+        EndpointDescriptor ed = mediator.resolveEndpoint(claimsRequest.getIssuerChannel(),
+                claimsProcessingEndpoint);
+
+        String password = null;
+        String username = null;
+
+        // Addapt received simple claims to SAMLR Required token
+        for (Claim c : receivedClaims.getClaims()) {
+
+            if (c.getQualifier().equalsIgnoreCase("username"))
+                username = (String) c.getValue();
+
+            if (c.getQualifier().equalsIgnoreCase("password"))
+                password = (String) c.getValue();
+        }
+
+        // Build a SAMLR2 Compatible Security token
+        UsernameTokenType usernameToken = new UsernameTokenType ();
+        AttributedString usernameString = new AttributedString();
+        usernameString.setValue( username );
+
+        usernameToken.setUsername( usernameString );
+        usernameToken.getOtherAttributes().put( new QName( Constants.PASSWORD_NS), password );
+        usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+
+        Claim claim = new ClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+        ClaimSet claims = new ClaimSetImpl();
+        claims.addClaim(claim);
+
+        SamlR2ClaimsResponse claimsResponse = new SamlR2ClaimsResponse (claimsRequest.getId() /* TODO : Generate new ID !*/,
+                channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
+
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+        out.setMessage(new MediationMessageImpl(claimsResponse.getId(),
+                claimsResponse,
+                "ClaimsResponse",
+                null,
+                ed,
+                in.getMessage().getState()));
+
+        exchange.setOut(out);
+
+    }
+
 
     protected IdentityMediationEndpoint selectClaimsEndpoint() {
 
@@ -416,8 +496,8 @@ public class SPInitiatedSingleSignOnProducer extends OpenIDProducer {
         return foundEndpoint;
     }
 
-    protected String resolveSpBindingACS() {
-        return ((OpenIDSPMediator)channel.getIdentityMediator()).getSpBindingACS();
+    protected String resolveSpProxyACS() {
+        return ((OpenIDProxySPMediator)channel.getIdentityMediator()).getSpProxyACS();
     }
 
 }

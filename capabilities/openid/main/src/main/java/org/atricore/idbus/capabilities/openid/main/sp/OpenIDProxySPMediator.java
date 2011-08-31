@@ -43,12 +43,12 @@ import java.util.Collection;
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  * @org.apache.xbean.XBean element="sp-mediator"
  */
-public class OpenIDSPMediator extends AbstractOpenIDMediator {
+public class OpenIDProxySPMediator extends AbstractOpenIDMediator {
 
-    private static final Log logger = LogFactory.getLog(OpenIDSPMediator.class);
+    private static final Log logger = LogFactory.getLog(OpenIDProxySPMediator.class);
 
     private ConsumerManager consumerManager;
-    private String spBindingACS;
+    private String spProxyACS;
 
     @Override
     protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) throws Exception {
@@ -79,7 +79,7 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
 
                             // ----------------------------------------------------------
                             // HTTP Incoming messages:
-                            // ==> idbus-http ==> idbus-bind ==> openid-sp
+                            // ==> idbus-http ==> idbus-bind ==> openid-proxy
                             // ----------------------------------------------------------
 
                             // FROM idbus-http TO samlr2-binding (through direct component)
@@ -92,7 +92,7 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + bindingChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("openid-sp:" + ed.getType() +
+                                    to("openid-proxy:" + ed.getType() +
                                             "?channelRef=" + bindingChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -108,7 +108,7 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + bindingChannel.getName()).
                                         process(new LoggerProcessor(getLogger())).
-                                        to("openid-sp:" + ed.getType() +
+                                        to("openid-proxy:" + ed.getType() +
                                                 "?channelRef=" + bindingChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");
@@ -189,11 +189,11 @@ public class OpenIDSPMediator extends AbstractOpenIDMediator {
         this.consumerManager = consumerManager;
     }
 
-    public String getSpBindingACS() {
-        return spBindingACS;
+    public String getSpProxyACS() {
+        return spProxyACS;
     }
 
-    public void setSpBindingACS(String spBindingACS) {
-        this.spBindingACS = spBindingACS;
+    public void setSpProxyACS(String spBindingACS) {
+        this.spProxyACS = spBindingACS;
     }
 }

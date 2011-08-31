@@ -37,14 +37,14 @@ import java.util.Map;
  *
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
-public class OpenIDSPComponent extends DefaultComponent {
+public class OpenIDProxySPComponent extends DefaultComponent {
 
-    private static final Log logger = LogFactory.getLog( OpenIDSPComponent.class );
+    private static final Log logger = LogFactory.getLog( OpenIDProxySPComponent.class );
 
-    public OpenIDSPComponent() {
+    public OpenIDProxySPComponent() {
     }
 
-    public OpenIDSPComponent( CamelContext context ) {
+    public OpenIDProxySPComponent(CamelContext context) {
         super( context );
     }
 
@@ -57,8 +57,8 @@ public class OpenIDSPComponent extends DefaultComponent {
         OpenIDService e = getOpenIDService( remaining );
 
         switch ( e ) {
-            case SPInitiatedSingleSignOnService:
-                endpoint = new SPInitiatedSingleSignOnEndpoint(uri, this, parameters);
+            case SPInitiatedSingleSignOnServiceProxy:
+                endpoint = new OpenIDSPInitiatedSingleSignOnProxyEndpoint(uri, this, parameters);
                 break;
             default:
                 throw new IllegalArgumentException( "Unsupported OpenID endpoint " + remaining );

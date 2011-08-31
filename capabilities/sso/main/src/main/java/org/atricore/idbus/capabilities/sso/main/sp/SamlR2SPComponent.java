@@ -86,6 +86,9 @@ public class SamlR2SPComponent extends DefaultComponent {
             case SPSessionHeartBeatService:
                 endpoint = new SessionHeartBeatEndpoint(uri, this, parameters);
                 break;
+            case ProxyAssertionConsumerService:
+                endpoint = new ProxyAssertionConsumerEndpoint(uri, this, parameters);
+                break;
             default:
                 throw new IllegalArgumentException( "Unsupported SAMLR 2.0 endpoint " + remaining );
         }

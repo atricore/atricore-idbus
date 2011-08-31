@@ -201,7 +201,7 @@
                             <value>SP1</value>
                         </property>
                         <property name="spAlias">
-                            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/OPENID/MD</value>
+                            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MD</value>
                         </property>
                         <property name="partnerAppSLO">
                             <value>http://localhost:8080/</value>

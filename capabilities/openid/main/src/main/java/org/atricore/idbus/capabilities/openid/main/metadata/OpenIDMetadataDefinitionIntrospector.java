@@ -6,6 +6,7 @@ import org.springframework.core.io.Resource;
 import java.util.Collection;
 
 /**
+ * TODO: deprecate
  * Exposes the OpenID metadata of the provider inline, from the definition itself.
  *
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>

@@ -23,7 +23,7 @@ package org.atricore.idbus.capabilities.openid.main.sp.endpoints;
 
 import org.apache.camel.Component;
 import org.apache.camel.Producer;
-import org.atricore.idbus.capabilities.openid.main.sp.producers.SPInitiatedSingleSignOnProducer;
+import org.atricore.idbus.capabilities.openid.main.sp.producers.OpenIDSPInitiatedSingleSignOnProxyProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 
@@ -34,13 +34,13 @@ import java.util.Map;
  *
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
-public class SPInitiatedSingleSignOnEndpoint<E> extends AbstractCamelEndpoint<CamelMediationExchange> {
+public class OpenIDSPInitiatedSingleSignOnProxyEndpoint<E> extends AbstractCamelEndpoint<CamelMediationExchange> {
 
-    public SPInitiatedSingleSignOnEndpoint(String uri, Component component, Map parameters ) throws Exception {
+    public OpenIDSPInitiatedSingleSignOnProxyEndpoint(String uri, Component component, Map parameters) throws Exception {
         super(uri, component, parameters);
     }
 
     public Producer createProducer () throws Exception {
-        return new SPInitiatedSingleSignOnProducer( this );
+        return new OpenIDSPInitiatedSingleSignOnProxyProducer( this );
     }
 }

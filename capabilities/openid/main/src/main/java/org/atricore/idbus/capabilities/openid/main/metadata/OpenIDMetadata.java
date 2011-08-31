@@ -1,6 +1,7 @@
 package org.atricore.idbus.capabilities.openid.main.metadata;
 
 /**
+ * TODO: deprecate
  * Placeholder for OpenID metadata. The only purpose of this class is to fulfil the requirements
  * for a provider to become a member of a circle of trust.
  *

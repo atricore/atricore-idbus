@@ -30,7 +30,4 @@ import javax.xml.namespace.QName;
  */
 public interface OpenIDConstants {
 
-    static final QName SPInitiatedSingleSignOnService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleSignOnService");
-    static final QName RelyingPartyService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "RelyingPartyService");
-
 }
