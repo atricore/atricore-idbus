@@ -1,5 +1,6 @@
 package org.atricore.idbus.capabilities.sso.main.common.producers;
 
+import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -8,6 +9,7 @@ import org.atricore.idbus.capabilities.sso.main.common.Request;
 import org.atricore.idbus.capabilities.sso.main.common.RequestImpl;
 import org.atricore.idbus.capabilities.sso.main.common.Response;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
+import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
@@ -78,11 +80,11 @@ public abstract class AbstractAssertionConsumerProducer extends SamlR2Producer {
 
         // Originally received Authn request from binding channel
         // When using IdP initiated SSO, this will be null!
-        SPInitiatedAuthnRequestType ssoRequest =
-                (SPInitiatedAuthnRequestType) state.getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
-        state.removeLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
+        AuthnRequestType authnRequest =
+                (AuthnRequestType) state.getLocalVariable(SAMLR2Constants.SAML_PROTOCOL_NS + ":AuthnRequest");
+        state.removeLocalVariable(SAMLR2Constants.SAML_PROTOCOL_NS + ":AuthnRequest");
 
-        return new RequestImpl<SPInitiatedAuthnRequestType>(ssoRequest.getID(), ssoRequest);
+        return new RequestImpl<AuthnRequestType>(authnRequest.getID(), authnRequest);
     }
 
 

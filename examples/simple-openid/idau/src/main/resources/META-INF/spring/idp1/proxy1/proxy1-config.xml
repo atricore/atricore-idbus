@@ -19,7 +19,7 @@
     </bean>
     <bean class="org.atricore.idbus.capabilities.openid.main.sp.OpenIDProxySPMediator" name="proxy1-openid-mediator">
         <property name="spProxyACS">
-            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/PROXY1/ACS/ARTIFACT</value>
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/IDP1/PROXY1/ACS/ARTIFACT</value>
         </property>
         <property name="logMessages">
             <value>true</value>

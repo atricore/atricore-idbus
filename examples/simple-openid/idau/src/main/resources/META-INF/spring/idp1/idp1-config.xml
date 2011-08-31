@@ -257,6 +257,15 @@
         <property name="proxy">
             <ref bean="proxy1-idp1-binding-channel"/>
         </property>
+        <property name="accountLinkLifecycle">
+            <ref bean="idp1-account-link-lifecycle"/>
+        </property>
+        <property name="accountLinkEmitter">
+            <ref bean="idp1-account-link-emitter"/>
+        </property>
+        <property name="identityMapper">
+            <ref bean="idp1-identity-mapper"/>
+        </property>
         <property name="endpoints">
             <list>
                 <bean class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl" name="idp1-default-sp-channel-saml2-slo-http-post">
@@ -556,6 +565,14 @@
             <ref bean="idp1-sts"/>
         </property>
     </bean>
+    <bean class="org.atricore.idbus.kernel.main.federation.AccountLinkLifecycleImpl" name="idp1-account-link-lifecycle"/>
+    <bean class="org.atricore.idbus.capabilities.sso.support.federation.OneToOneAccountLinkEmitter" name="idp1-account-link-emitter"/>
+    <bean class="org.atricore.idbus.capabilities.sso.support.federation.RemoteSubjectIdentityMapper" name="idp1-identity-mapper">
+        <property name="useLocalId">
+            <value>false</value>
+        </property>
+    </bean>
+
     <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger" name="idp1-cc-mediation-logger">
         <property name="category">
             <value>org.atricore.idbus.examples.simple-openid.wire.cc1</value>

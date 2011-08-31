@@ -22,17 +22,21 @@
 package org.atricore.idbus.capabilities.sso.main.sp.producers;
 
 import oasis.names.tc.saml._2_0.assertion.*;
+import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.sso.main.common.Request;
+import org.atricore.idbus.capabilities.sso.main.common.RequestImpl;
 import org.atricore.idbus.capabilities.sso.main.common.Response;
 import org.atricore.idbus.capabilities.sso.main.common.ResponseImpl;
 import org.atricore.idbus.capabilities.sso.main.common.producers.AbstractAssertionConsumerProducer;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -63,10 +67,21 @@ public class ProxyAssertionConsumerProducer extends AbstractAssertionConsumerPro
         super(endpoint);
     }
 
+    protected Request extractOriginalRequest(CamelMediationExchange exchange) throws Exception {
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+       MediationState state = in.getMessage().getState();
+
+        SPInitiatedAuthnRequestType ssoRequest = (SPInitiatedAuthnRequestType) state.getLocalVariable(
+                "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
+
+        state.removeLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
+
+        return new RequestImpl<SPInitiatedAuthnRequestType>(ssoRequest.getID(), ssoRequest);
+    }
+
     @Override
     protected Response processResponse(CamelMediationExchange exchange, Request request) throws Exception {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-        SamlR2SPMediator mediator = ((SamlR2SPMediator) channel.getIdentityMediator());
 
         // TODO : Validate inReplyTo, destination, etc
         SPInitiatedAuthnRequestType req =
@@ -103,7 +118,7 @@ public class ProxyAssertionConsumerProducer extends AbstractAssertionConsumerPro
 
                 outSubject.getPrincipals().add(
                         new SubjectNameID(nameId.getName(),
-                                nameId.getFormat(),
+                                NameIDFormat.TRANSIENT.getValue(),
                                 nameId.getNameQualifier(),
                                 nameId.getLocalNameQualifier()));
 

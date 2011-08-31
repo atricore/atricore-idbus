@@ -79,7 +79,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws SamlR2Exception {
 
-        logger.debug("Processing SP Initiated Single SingOn on HTTP Redirect");
+        logger.debug("Processing SP Initiated Single Sign-On on HTTP Redirect");
 
         try {
 

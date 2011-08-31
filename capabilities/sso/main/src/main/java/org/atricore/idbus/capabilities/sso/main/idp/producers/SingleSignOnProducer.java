@@ -311,12 +311,16 @@ public class SingleSignOnProducer extends SamlR2Producer {
             if (spChannel.isProxyModeEnabled()) {
                 BindingChannel proxyChannel = spChannel.getProxy();
 
+
                 EndpointDescriptor proxyEndpoint = resolveSPInitiatedSSOProxyEndpointDescriptor(exchange, proxyChannel);
 
                 logger.debug("Proxying SP-Initiated SSO Request to " + proxyChannel.getLocation() +
                         proxyEndpoint.getLocation());
 
                 SPInitiatedAuthnRequestType authnProxyRequest = buildAuthnProxyRequest(authnRequest);
+
+                in.getMessage().getState().setLocalVariable(
+                        "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", authnProxyRequest);
 
                 out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                         authnProxyRequest,

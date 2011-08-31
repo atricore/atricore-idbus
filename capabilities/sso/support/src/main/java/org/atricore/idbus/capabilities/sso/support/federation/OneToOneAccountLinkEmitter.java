@@ -46,13 +46,13 @@ public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
 
         Set<SubjectNameID> subjectNameIDs = subject.getPrincipals( SubjectNameID.class );
         if ( logger.isDebugEnabled() )
-            logger.debug( "Pricipals found: " + subjectNameIDs.size() );
+            logger.debug( "Principals found: " + subjectNameIDs.size() );
 
         for ( SubjectNameID subjectNameID : subjectNameIDs ) {
 
             if ( logger.isDebugEnabled()) {
-                logger.debug( "Pricipal Name: " + subjectNameID.getName() );
-                logger.debug( "Pricipal Format: " + subjectNameID.getFormat() );
+                logger.debug( "Principal Name: " + subjectNameID.getName() );
+                logger.debug( "Principal Format: " + subjectNameID.getFormat() );
             }
             
             if ( subjectNameID.getFormat() != null ) {
