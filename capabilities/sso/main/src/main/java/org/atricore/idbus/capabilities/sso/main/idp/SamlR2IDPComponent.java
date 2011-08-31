@@ -30,6 +30,7 @@ import org.atricore.idbus.capabilities.sso.main.binding.endpoints.ArtifactResolu
 import org.atricore.idbus.capabilities.sso.main.idp.endpoints.SessionHeartBeatEndpoint;
 import org.atricore.idbus.capabilities.sso.main.idp.endpoints.SingleLogoutEndpoint;
 import org.atricore.idbus.capabilities.sso.main.idp.endpoints.SingleSignOnEndpoint;
+import org.atricore.idbus.capabilities.sso.main.sp.endpoints.ProxyAssertionConsumerEndpoint;
 import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 
@@ -76,6 +77,9 @@ public class SamlR2IDPComponent extends DefaultComponent {
                 break;
             case IDPSessionHeartBeatService:
                 endpoint = new SessionHeartBeatEndpoint(uri, this, parameters);
+                break;
+            case ProxyAssertionConsumerService:
+                endpoint = new ProxyAssertionConsumerEndpoint(uri, this, parameters);
                 break;
             default:
                 throw new IllegalArgumentException( "Invalid SAMLR2 endpoint specified for endpoint " + remaining );
