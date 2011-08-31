@@ -85,23 +85,13 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
 
         // Retrieve and clear local variables:
 
-        SPInitiatedLogoutRequestType ssoReq =
-                (SPInitiatedLogoutRequestType) in.getMessage().getState().
-                        getLocalVariable("urn:org:atricore:idbus:capabilities:josso:SPInitiatedLogoutRequest");
-        in.getMessage().getState().
-                        removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:SPInitiatedLogoutRequest");
+        JossoAuthnContext authnContext = (JossoAuthnContext) in.getMessage().getState().
+                        getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
 
-        String receivedBackTo =
-                (String) in.getMessage().getState().
-                        getLocalVariable("urn:org:atricore:idbus:capabilities:josso:backTo");
-        in.getMessage().getState().
-                        removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:backTo");
 
-        String appId =
-                (String) in.getMessage().getState().
-                        getLocalVariable("urn:org:atricore:idbus:capabilities:josso:appId");
-        in.getMessage().getState().
-                        removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:appId");
+        SPInitiatedLogoutRequestType sloReq = authnContext.getSloRequest();
+        String receivedBackTo = authnContext.getSloBackTo();
+        String appId = authnContext.getAppId();
 
         // Process response
         PartnerAppMapping mapping = resolveAppMapping((BindingChannel) channel, appId);
@@ -125,6 +115,8 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
                 in.getMessage().getState()));
 
         exchange.setOut(out);
+
+        in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
     }
 
     protected void doProcessJossoSloRequest(CamelMediationExchange exchange) throws IdentityMediationException, JossoException {
@@ -132,12 +124,10 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
         BindingChannel bChannel = (BindingChannel) channel;
 
         String appId = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_APPID_VAR);
+        String backTo = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_BACK_TO_VAR);
 
         // This producer just redirects the user to the configured target IDP.
         BindingChannel spBinding = resolveSpBindingChannel(bChannel, appId);
-
-        String backTo = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_BACK_TO_VAR);
-
         EndpointDescriptor destination = resolveSPInitiatedSSOEndpointDescriptor(exchange, spBinding);
 
         // Create SP AuthnRequest
@@ -145,8 +135,10 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
         SPInitiatedLogoutRequestType request = buildSLORequest(exchange);
 
         // Store state
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:backTo", backTo);
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:SPInitiatedLogoutRequest", request);
+        JossoAuthnContext authnCtx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+
+        authnCtx.setSloBackTo(backTo);
+        authnCtx.setSloRequest(request);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(request.getID(),
@@ -157,6 +149,8 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
                 in.getMessage().getState()));
 
         exchange.setOut(out);
+
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx", authnCtx);
 
     }
 

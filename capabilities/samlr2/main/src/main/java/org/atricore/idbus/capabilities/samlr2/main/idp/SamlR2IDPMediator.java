@@ -318,7 +318,7 @@ public class SamlR2IDPMediator extends AbstractSamlR2Mediator {
                             break;
                         case SSO_LOCAL:
 
-                             from("direct:" + ed.getLocation()).
+                            from("direct:" + ed.getLocation()).
                                      to("direct:" + ed.getName() + "-local");
 
                             from("idbus-bind:camel://direct:" + ed.getName() + "-local" +

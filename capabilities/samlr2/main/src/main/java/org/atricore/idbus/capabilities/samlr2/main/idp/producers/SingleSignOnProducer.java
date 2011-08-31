@@ -26,6 +26,7 @@ import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.idbus.SecTokenAuthnRequestType;
 import oasis.names.tc.saml._2_0.metadata.*;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
+import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -308,7 +309,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             // Ask for credentials, use claims channel
             logger.debug("No SSO Session found, asking for credentials");
 
-            // TODO : Verify max sessions per user!
+            // TODO : Verify max sessions per user, etc!
 
             IdentityMediationEndpoint claimsEndpoint = selectNextClaimsEndpoint(authnState);
 
@@ -341,7 +342,16 @@ public class SingleSignOnProducer extends SamlR2Producer {
                     ((SPChannel) channel).getClaimsProvider(),
                     uuidGenerator.generateId());
 
+            // Send our state ID as relay
+            claimsRequest.setRelayState(mediationState.getLocalState().getId());
+
+            // Send SP relay state
+            claimsRequest.setTargetRelayState(in.getMessage().getRelayState());
+            claimsRequest.setSpAlias(authnRequest.getIssuer().getValue());
+
+            // Set requested authn class
             claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
+
 
             // --------------------------------------------------------------------
             // Send claims request
@@ -352,16 +362,26 @@ public class SingleSignOnProducer extends SamlR2Producer {
             EndpointDescriptor ed = new EndpointDescriptorImpl(claimEndpoint.getBinding(),
                     claimEndpoint.getType(),
                     claimEndpoint.getBinding(),
-                    claimChannel.getLocation() + claimEndpoint.getLocation(),
+                    claimEndpoint.getLocation().startsWith("/") ?
+                            claimChannel.getLocation() + claimEndpoint.getLocation() :
+                            claimEndpoint.getLocation(),
                     claimEndpoint.getResponseLocation());
 
             logger.debug("Collecting claims using endpoint " + claimEndpoint);
 
-            out.setMessage(new MediationMessageImpl(claimsRequest.getId(),
-                    claimsRequest, "ClaimsRequest", null, ed, in.getMessage().getState()));
+            SamlR2Binding edBinding = SamlR2Binding.asEnum(ed.getBinding());
+            if (!edBinding.isFrontChannel()) {
+                SamlR2ClaimsResponse cr = (SamlR2ClaimsResponse) channel.getIdentityMediator().sendMessage(claimsRequest, ed, claimChannel);
 
+                // TODO : in and out may not be what doProcessClaimsResponse is expecting!
+                doProcessClaimsResponse(exchange, cr);
+            } else {
 
-            exchange.setOut(out);
+                out.setMessage(new MediationMessageImpl(claimsRequest.getId(),
+                        claimsRequest, "ClaimsRequest", null, ed, in.getMessage().getState()));
+
+                exchange.setOut(out);
+            }
 
 
         } else {
@@ -501,7 +521,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
      * If an error occures, the procedure will decide to retry collecting claims with the las
      * claims endpoint selected or collect claims using a new claims endpoint.
      * <p/>
-     * If no more claim endpoits are available, this will send an satus error response to the SP.
+     * If no more claim endpoints are available, this will send an satus error response to the SP.
      *
      * @param exchange
      * @param claimsResponse
@@ -832,64 +852,155 @@ public class SingleSignOnProducer extends SamlR2Producer {
     }
 
     /**
+     *
+     * TODO : Use a strategy here
      * This has the logic to select endpoings for claims collecting.
      */
     protected IdentityMediationEndpoint selectNextClaimsEndpoint(AuthenticationState status) {
 
         ClaimChannel claimChannel = ((SPChannel) channel).getClaimsProvider();
+        RequestedAuthnContextType reqAuthnCtx = null;
 
         if (status.getAuthnRequest() != null && status.getAuthnRequest().getRequestedAuthnContext() != null) {
-            // TODO !
-            logger.warn("<RequestedAuthnContext> element not supported! Ignoring : " +
-                    status.getAuthnRequest().getRequestedAuthnContext());
+            reqAuthnCtx = status.getAuthnRequest().getRequestedAuthnContext();
         }
 
-        // Passive endpoints are only tryed out once!
+        // Keep using current enpdoint until we reach the MAX TRY COUNT for it
         if (status.getCurrentClaimsEndpoint() != null) {
 
+            // Current authn ctcx.
             AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(status.getCurrentClaimsEndpoint().getType());
 
-            // Passive auth schemese endpoints are tested only once!
+
             // TODO : Make configurable, per authctx
             if (authnCtxClass.isPassive() || status.getCurrentClaimsEndpointTryCount() >= 5) {
+
+                // Passive endpoints are only tried out once. Clear current endpoint so we select a new one.
                 status.getUsedClaimsEndpoints().add(status.getCurrentClaimsEndpoint().getName());
                 status.setCurrentClaimsEndpoint(null);
                 status.setCurrentClaimsEndpointTryCount(0);
+
             } else {
                 status.setCurrentClaimsEndpointTryCount(status.getCurrentClaimsEndpointTryCount() + 1);
             }
 
         }
 
-        if (status.getCurrentClaimsEndpoint() == null) {
+        if (status.getCurrentClaimsEndpoint() != null) {
+            // We have a valid endpoint
 
-            for (IdentityMediationEndpoint endpoint : claimChannel.getEndpoints()) {
+            if (logger.isDebugEnabled())
+                logger.debug("Retry current claims endpoint : " + status.getCurrentClaimsEndpoint());
 
-                // Ignore used endpoints
-                if (status.getUsedClaimsEndpoints().contains(endpoint.getName()))
-                    continue;
-
-                // As a work around, ignore endpoints not using artifact binding
-                if (!endpoint.getBinding().equals(SamlR2Binding.SSO_ARTIFACT.getValue()))
-                    continue;
-
-                // Only use endpoints that are 'passive' when 'passive' was requested.
-                if (status.getAuthnRequest().isIsPassive() != null &&
-                    status.getAuthnRequest().isIsPassive()) {
-                    AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(endpoint.getType());
-                    if (!authnCtxClass.isPassive())
-                        continue;
-                }
-
-                logger.debug("Selecting next claims endpoint : " + endpoint.getName());
-                status.setCurrentClaimsEndpoint(endpoint);
-                status.setCurrentClaimsEndpointTryCount(0);
-                break;
-
-            }
+            return status.getCurrentClaimsEndpoint();
         }
 
+        if (logger.isTraceEnabled())
+            logger.trace("Starting to select next claims endpoint ...");
+
+        IdentityMediationEndpoint requestedEndpoint = null;
+        IdentityMediationEndpoint availableEndpoint = null;
+
+        for (IdentityMediationEndpoint endpoint : claimChannel.getEndpoints()) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Processing claims endpoint " + endpoint);
+
+            // As a work around, ignore endpoints not using artifact or local binding
+            if (!endpoint.getBinding().equals(SamlR2Binding.SSO_ARTIFACT.getValue()) &&
+                !endpoint.getBinding().equals(SamlR2Binding.SSO_LOCAL.getValue())) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Skip claims endpoint. Unsupported binding " + endpoint);
+                continue;
+            }
+
+            // Ignore used endpoints
+            if (status.getUsedClaimsEndpoints().contains(endpoint.getName())) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Skip claims endpoint. Already used " + endpoint);
+                continue;
+            }
+
+            // Found requested authn context, use it to filter endpoints if not used before!
+
+            if (reqAuthnCtx != null) {
+
+                for (String reqAuthnCtxClass : reqAuthnCtx.getAuthnContextClassRef()) {
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Requested AuthnCtxClass for claiming " + reqAuthnCtxClass);
+
+                    // TODO : Support comparison method, for now If Requested, use only matching authn context
+                    // reqAuthnCtx.getComparison()
+                    if (reqAuthnCtxClass.equals(endpoint.getType())) {
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Found requested AuthnCtxClass for claiming " + reqAuthnCtxClass);
+
+                        requestedEndpoint = endpoint;
+                        break;
+                    }
+                }
+
+            }
+
+            AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(endpoint.getType());
+
+            // Only use endpoints that are 'passive' when 'passive' was requested.
+            if (status.getAuthnRequest().isIsPassive() != null &&
+                status.getAuthnRequest().isIsPassive()) {
+
+
+                if (!authnCtxClass.isPassive()) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Skip claims endpoint. Non-passive " + endpoint);
+
+                    continue;
+                }
+            }
+
+            if (availableEndpoint == null) {
+
+                if (reqAuthnCtx == null && !endpoint.getBinding().equals(SamlR2Binding.SSO_ARTIFACT.getValue())) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Unsupported binding for non-requested endpoint : " + endpoint.getBinding());
+                    continue;
+                }
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Selecting available endpoint : " + endpoint.getName());
+
+                availableEndpoint = endpoint;
+            }
+
+        }
+
+        if (requestedEndpoint != null) {
+            if (logger.isTraceEnabled())
+                logger.trace("Selecting requested endpoint : " + requestedEndpoint);
+
+            status.setCurrentClaimsEndpoint(requestedEndpoint);
+            status.setCurrentClaimsEndpointTryCount(0);
+
+        } else if (availableEndpoint != null) {
+            if (logger.isTraceEnabled())
+                logger.trace("Selecting available endpoint : " + requestedEndpoint);
+
+            status.setCurrentClaimsEndpoint(availableEndpoint);
+            status.setCurrentClaimsEndpointTryCount(0);
+
+        } else {
+            if (logger.isDebugEnabled())
+                logger.debug("No available claims endpoint!");
+
+            return null;
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Current claims endpoint : " + status.getCurrentClaimsEndpoint());
+
         return status.getCurrentClaimsEndpoint();
+
     }
 
     protected SamlR2SecurityTokenEmissionContext emitAssertionFromPreviousSession(CamelMediationExchange exchange,
@@ -1144,7 +1255,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             return null;
         }
 
-        return getCotManager().loolkupMemberByAlias(issuer.getValue());
+        return getCotManager().lookupMemberByAlias(issuer.getValue());
     }
 
     protected MetadataEntry resolveSpMetadata() {
@@ -1263,7 +1374,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             if (logger.isDebugEnabled())
                 logger.debug("Using IdP alias from request attribute " + idpAlias);
 
-            idp = getCotManager().loolkupMemberByAlias(idpAlias);
+            idp = getCotManager().lookupMemberByAlias(idpAlias);
             if (idp == null) {
                 throw new SamlR2Exception("No IDP found in circle of trust for received alias [" + idpAlias + "], verify your setup.");
             }
@@ -1281,7 +1392,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             if (logger.isDebugEnabled())
                 logger.debug("Using preferred IdP alias " + idpAlias);
 
-            idp = getCotManager().loolkupMemberByAlias(idpAlias);
+            idp = getCotManager().lookupMemberByAlias(idpAlias);
             if (idp == null) {
                 throw new SamlR2Exception("No IDP found in circle of trust for preferred alias [" + idpAlias + "], verify your setup.");
             }

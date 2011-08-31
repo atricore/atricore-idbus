@@ -127,8 +127,6 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
 
             // Look for SPInitiatedLogoutRequest
             SPInitiatedLogoutRequestType ssoLogoutRequest = (SPInitiatedLogoutRequestType) in.getMessage().getContent();
-            in.getMessage().getState().setLocalVariable(
-                    "urn:org:atricore:idbus:capabilities:josso:SPInitiatedLogoutRequest", ssoLogoutRequest);
 
             // ------------------------------------------------------
             // Send SLO Request to IdP
@@ -241,7 +239,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
     }
 
     protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange, String idpAlias) throws SamlR2Exception {
-        return getCotManager().loolkupMemberByAlias(idpAlias);
+        return getCotManager().lookupMemberByAlias(idpAlias);
     }
 
     /**
@@ -334,7 +332,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
     protected void destroySPSecurityContext(CamelMediationExchange exchange,
                                             SPSecurityContext secCtx) throws SamlR2Exception {
 
-        CircleOfTrustMemberDescriptor idp = getCotManager().loolkupMemberByAlias(secCtx.getIdpAlias());
+        CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(secCtx.getIdpAlias());
         IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
         SSOSessionManager ssoSessionManager = idpChannel.getSessionManager();
         secCtx.clear();

@@ -46,7 +46,6 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.planning.IdentityPlan;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchangeImpl;
-import org.hibernate.tuple.entity.EntityMetamodel;
 
 import javax.security.auth.Subject;
 import java.util.Collection;
@@ -170,7 +169,7 @@ public abstract class SamlR2Producer extends AbstractCamelProducer<CamelMediatio
             return null;
         }
 
-        return getCotManager().loolkupMemberByAlias(issuer.getValue());
+        return getCotManager().lookupMemberByAlias(issuer.getValue());
     }
 
     protected EndpointDescriptor resolveSpSloEndpoint(String spAlias,

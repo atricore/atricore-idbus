@@ -24,10 +24,7 @@ package org.atricore.idbus.capabilities.josso.main.producers;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.josso.main.JossoAuthenticationAssertion;
-import org.atricore.idbus.capabilities.josso.main.JossoAuthenticationAssertionImpl;
-import org.atricore.idbus.capabilities.josso.main.JossoException;
-import org.atricore.idbus.capabilities.josso.main.JossoMediator;
+import org.atricore.idbus.capabilities.josso.main.*;
 import org.atricore.idbus.capabilities.josso.main.binding.JossoBinding;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
@@ -155,7 +152,10 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
         }
 
         // Store Authentication Assertion :
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:AuthenticationAsssertion", aa);
+        JossoAuthnContext ctx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");;
+        ctx.setAuthnAssertion(aa);
+
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx", ctx);
 
         // Build JOSSO Response and send it back
         AssertIdentityWithSimpleAuthenticationResponseType response = new AssertIdentityWithSimpleAuthenticationResponseType ();
@@ -174,14 +174,21 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
             logger.debug("Processing ResolveAuthenticationAssertionRequest for assertion " + assertionId);
 
         AbstractCamelMediator mediator = (AbstractCamelMediator) channel.getIdentityMediator();
-        JossoAuthenticationAssertion assertion = (JossoAuthenticationAssertion)
-                state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:AuthenticationAsssertion");
+
+        JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+        JossoAuthenticationAssertion assertion = authnCtx != null ? authnCtx.getAuthnAssertion() : null;
 
         if (assertion == null) {
             logger.warn("No JOSSO Authentication Assertion found for ID " + assertionId);
         } else {
             if (logger.isDebugEnabled())
                 logger.debug("Found JOSSO Authentication Assertion " + assertion.getId());
+
+            if (!assertionId.equals(assertion.getId())) {
+                logger.error("Assertion ID " + assertionId + " does not match stored assertion : " + assertion.getId());
+                assertion = null;
+            }
+
         }
 
         String ssoSessionId = assertion != null ? assertion.getSSOSessionId() : null;

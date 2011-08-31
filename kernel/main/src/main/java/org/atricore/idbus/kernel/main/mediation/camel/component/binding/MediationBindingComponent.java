@@ -47,7 +47,7 @@ public class MediationBindingComponent extends DefaultComponent<CamelMediationEx
 
     protected Endpoint<CamelMediationExchange> createEndpoint(String uri, String remaining, Map parameters) throws Exception {
         String binding = (String) parameters.get("binding");
-        logger.debug("Creating endpoint for SAMLR2 Binding " + binding);
+        logger.debug("Creating endpoint for Binding " + binding);
         return createEndpoint(binding, remaining, uri);
     }
 

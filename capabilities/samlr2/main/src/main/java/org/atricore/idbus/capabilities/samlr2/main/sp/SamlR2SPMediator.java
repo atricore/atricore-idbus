@@ -76,7 +76,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                 Collection<IdentityMediationEndpoint> endpoints = idpChannel.getEndpoints();
 
                 if (endpoints == null)
-                    throw new IdentityMediationException("No endpoits defined for idpChannel : " + idpChannel.getName());
+                    throw new IdentityMediationException("No endpoints defined for idpChannel : " + idpChannel.getName());
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 
@@ -257,7 +257,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
                         case SAMLR2_LOCAL:
 
-                             from("direct:" + ed.getLocation()).
+                            from("direct:" + ed.getLocation()).
                                      to("direct:" + ed.getName() + "-local");
 
                             from("idbus-bind:camel://direct:" + ed.getName() + "-local" +
@@ -274,7 +274,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
                         case SSO_LOCAL:
 
-                             from("direct:" + ed.getLocation()).
+                            from("direct:" + ed.getLocation()).
                                      to("direct:" + ed.getName() + "-local");
 
                             from("idbus-bind:camel://direct:" + ed.getName() + "-local" +
@@ -313,7 +313,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                 Collection<IdentityMediationEndpoint> endpoints = bindingChannel.getEndpoints();
 
                 if (endpoints == null)
-                    throw new IdentityMediationException("No endpoits defined for bindingChannel : " + bindingChannel.getName());
+                    throw new IdentityMediationException("No endpoints defined for bindingChannel : " + bindingChannel.getName());
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 

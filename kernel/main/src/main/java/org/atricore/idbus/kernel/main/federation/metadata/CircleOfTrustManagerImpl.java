@@ -35,11 +35,11 @@ import java.util.*;
  *
  *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: AbstractCircleOfTrustManager.java 1359 2009-07-19 16:57:57Z sgonzalez $
+ * @version $Id: CircleOfTrustManagerImpl.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManager, InitializingBean, DisposableBean  {
+public class CircleOfTrustManagerImpl implements CircleOfTrustManager, InitializingBean, DisposableBean  {
 
-    private static final Log logger = LogFactory.getLog(AbstractCircleOfTrustManager.class);
+    private static final Log logger = LogFactory.getLog(CircleOfTrustManagerImpl.class);
 
     private CircleOfTrust cot;
 
@@ -112,30 +112,35 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
         if (logger.isDebugEnabled())
             logger.debug("Registering COT Member descriptor " + member);
 
+        MetadataDefinition def;
+        // resource-based metadata
         if (member instanceof ResourceCircleOfTrustMemberDescriptorImpl) {
 
             // Resolve Metadata Definition
             ResourceCircleOfTrustMemberDescriptorImpl m = (ResourceCircleOfTrustMemberDescriptorImpl) member;
             if (logger.isDebugEnabled())
-                logger.debug("Loading metadata for member " + member.getId() + " [" + member.getAlias() + "]");
+                logger.debug("Loading resource-based metadata for member " + member.getId() + " [" + member.getAlias() + "]");
             
-            MetadataDefinition def = loadMetadataDefinition(member, m.getResource());
-            MetadataDefinition old = definitions.put(member.getAlias(), def);
+            def = loadMetadataDefinition(member, m.getResource());
 
-            MetadataEntry md = findEntityMetadata(member.getAlias());
-            if (md == null)
-                logger.warn("No metadata found for COT Member " + member.getAlias());
-            
-            m.setMetadata(md);
+        } else { // non-resource-based metadata
+            if (logger.isDebugEnabled())
+                logger.debug("Loading non resource-based metadata for member " + member.getId() + " [" + member.getAlias() + "]");
 
-            if (old != null)
-                throw new CircleOfTrustManagerException("Duplicated COT Member descriptor for alias : " +
-                        member.getAlias());
-
-        } else {
-            // TODO : Local providers should create their own springmetadata, can we do it here?
-            logger.error("Unsupported COT Member descriptor type " + member);
+            def = loadMetadataDefinition(member);
         }
+
+        MetadataDefinition old = definitions.put(member.getAlias(), def);
+
+        MetadataEntry md = findEntityMetadata(member.getAlias());
+        if (md == null)
+            logger.warn("No metadata found for COT Member " + member.getAlias());
+
+        member.setMetadata(md);
+
+        if (old != null)
+            throw new CircleOfTrustManagerException("Duplicated COT Member descriptor for alias : " +
+                    member.getAlias());
 
     }
 
@@ -230,7 +235,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
                 }
             }
         }
-        throw new CircleOfTrustManagerException("Unknonw entity " + alias);
+        throw new CircleOfTrustManagerException("Unknown entity " + alias);
     }
 
     public Collection<CircleOfTrustMemberDescriptor> lookupMembersForProvider(Provider provider, String role)
@@ -278,7 +283,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
         return members;
     }
 
-    public CircleOfTrustMemberDescriptor loolkupMemberByAlias(String alias) {
+    public CircleOfTrustMemberDescriptor lookupMemberByAlias(String alias) {
 
         for (FederatedProvider provider : cot.getProviders()) {
 
@@ -327,13 +332,13 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
         if (memberAlias == null)
             throw new NullPointerException("Member Alias cannot be null");
 
-        CircleOfTrustMemberDescriptor member = loolkupMemberByAlias(memberAlias);
+        CircleOfTrustMemberDescriptor member = lookupMemberByAlias(memberAlias);
         if (member == null) {
             throw new CircleOfTrustManagerException("Entity ID is not a COT member alias : " + memberAlias + " in COT " + cot.getName());
         }
 
         MetadataDefinition md = definitions.get(member.getAlias());
-        return this.searchEntityDefinition(md, memberAlias);
+        return this.searchEntityDefinition(member, md, memberAlias);
     }
 
     public MetadataEntry findEntityRoleMetadata(String memberAlias, String entityRole) throws CircleOfTrustManagerException {
@@ -343,7 +348,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
         if (entityRole == null)
             throw new NullPointerException("Entity Role cannot be null");
 
-        CircleOfTrustMemberDescriptor member = loolkupMemberByAlias(memberAlias);
+        CircleOfTrustMemberDescriptor member = lookupMemberByAlias(memberAlias);
         if (member == null) {
             throw new CircleOfTrustManagerException("Entity ID is not a COT member alias : " + memberAlias + " in COT " + cot.getName());
         }
@@ -354,7 +359,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
             return null;
         }
 
-        return this.searchEntityRoleDefinition(md, memberAlias, entityRole);
+        return this.searchEntityRoleDefinition(member, md, memberAlias, entityRole);
     }
 
     public MetadataEntry findEndpointMetadata(String memberAlias, String entityRole, EndpointDescriptor endpoint) throws CircleOfTrustManagerException {
@@ -365,7 +370,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
         if (endpoint == null)
             throw new NullPointerException("IdentityMediationEndpoint cannot be null");
 
-        CircleOfTrustMemberDescriptor member = loolkupMemberByAlias(memberAlias);
+        CircleOfTrustMemberDescriptor member = lookupMemberByAlias(memberAlias);
         if (member == null) {
             throw new CircleOfTrustManagerException("Entity ID is not a COT member alias : " + memberAlias + " in COT " + cot.getName());
         }
@@ -378,7 +383,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
             return null;
         }
 
-        return this.searchEndpointDescriptor(md, memberAlias, entityRole, endpoint);
+        return this.searchEndpointDescriptor(member, md, memberAlias, entityRole, endpoint);
     }
 
     public Collection<MetadataEntry> findEndpointsMetadata(String memberAlias, String entityRole, EndpointDescriptor endpoint) throws CircleOfTrustManagerException {
@@ -389,7 +394,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
         if (endpoint == null)
             throw new NullPointerException("IdentityMediationEndpoint cannot be null");
         
-        CircleOfTrustMemberDescriptor member = loolkupMemberByAlias(memberAlias);
+        CircleOfTrustMemberDescriptor member = lookupMemberByAlias(memberAlias);
         if (member == null) {
             throw new CircleOfTrustManagerException("Entity ID is not a COT member alias : " + memberAlias + " in COT " + cot.getName());
         }
@@ -402,38 +407,68 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
             return null;
         }
 
-        return this.searchEndpointDescriptors(md, memberAlias, entityRole, endpoint);
+        return this.searchEndpointDescriptors(member, md, memberAlias, entityRole, endpoint);
     }
 
-    // --------------------------------------------------------------------------------------------
-    // Abstracts Primitives, in the future this could be a different component,
-    // associated to COT member somehow
-    // --------------------------------------------------------------------------------------------
+    protected MetadataDefinition loadMetadataDefinition(CircleOfTrustMemberDescriptor member)
+            throws CircleOfTrustManagerException {
 
-    protected abstract MetadataDefinition loadMetadataDefinition(CircleOfTrustMemberDescriptor member,
-                                                                 Resource resource)
-            throws CircleOfTrustManagerException;
+        return member.getMetadataIntrospector().load(member);
+    }
 
-    protected abstract MetadataEntry searchEntityDefinition(MetadataDefinition metadataDefinition,
+    protected MetadataDefinition loadMetadataDefinition(CircleOfTrustMemberDescriptor member,
+                                                        Resource resource)
+            throws CircleOfTrustManagerException {
+
+        return member.getMetadataIntrospector().load(member, resource);
+    }
+
+    protected MetadataEntry searchEntityDefinition(CircleOfTrustMemberDescriptor member,
+                                                   MetadataDefinition metadataDefinition,
                                                             String memberAlias)
-            throws CircleOfTrustManagerException;
+            throws CircleOfTrustManagerException {
 
-    protected abstract MetadataEntry searchEntityRoleDefinition(MetadataDefinition metadataDefinition, 
+            return member.getMetadataIntrospector().searchEntityDefinition(metadataDefinition, memberAlias);
+
+    }
+
+    protected MetadataEntry searchEntityRoleDefinition(CircleOfTrustMemberDescriptor member,
+                                                                MetadataDefinition metadataDefinition,
                                                                 String memberAlias,
                                                                 String roleType)
-            throws CircleOfTrustManagerException;
+            throws CircleOfTrustManagerException {
 
-    protected abstract MetadataEntry searchEndpointDescriptor(MetadataDefinition metadataDefinition,
+            return member.getMetadataIntrospector().searchEntityRoleDefinition(metadataDefinition, memberAlias, roleType);
+    }
+
+    protected MetadataEntry searchEndpointDescriptor(CircleOfTrustMemberDescriptor member,
+                                                     MetadataDefinition metadataDefinition,
+                                                      String memberAlias,
+                                                      String roleType,
+                                                      EndpointDescriptor endpoint)
+            throws CircleOfTrustManagerException {
+
+            return member.getMetadataIntrospector().searchEndpointDescriptor(
+                                                            metadataDefinition,
+                                                            memberAlias,
+                                                            roleType,
+                                                            endpoint);
+    }
+
+    protected Collection<MetadataEntry> searchEndpointDescriptors(CircleOfTrustMemberDescriptor member,
+                                                                  MetadataDefinition metadataDefinition,
                                                                   String memberAlias,
                                                                   String roleType,
                                                                   EndpointDescriptor endpoint)
-            throws CircleOfTrustManagerException;
+            throws CircleOfTrustManagerException {
 
-    protected abstract Collection<MetadataEntry> searchEndpointDescriptors(MetadataDefinition metadataDefinition,
-                                                                  String memberAlias,
-                                                                  String roleType,
-                                                                  EndpointDescriptor endpoint)
-            throws CircleOfTrustManagerException;;
+        return member.getMetadataIntrospector().searchEndpointDescriptors(
+                metadataDefinition,
+                memberAlias,
+                roleType,
+                endpoint);
+
+    }
 
 
 }

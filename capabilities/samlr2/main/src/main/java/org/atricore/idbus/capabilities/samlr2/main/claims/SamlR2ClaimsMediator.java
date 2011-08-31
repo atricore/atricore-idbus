@@ -48,6 +48,7 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
 
     private String twoFactorAuthnUILocation;
 
+    private String openIDUILocation;
     /**
      * @org.apache.xnean.Property alias="login-form-location"
      */
@@ -65,6 +66,14 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
 
     public void setTwoFactorAuthnUILocation(String twoFactorAuthnUILocation) {
         this.twoFactorAuthnUILocation = twoFactorAuthnUILocation;
+    }
+
+    public String getOpenIDUILocation() {
+        return openIDUILocation;
+    }
+
+    public void setOpenIDUILocation(String openIDUILocation) {
+        this.openIDUILocation = openIDUILocation;
     }
 
     @Override
@@ -131,6 +140,35 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
 
 
                             break;
+                        case SAMLR2_LOCAL:
+                        case SSO_LOCAL:
+
+                            from("direct:" + ed.getLocation()).
+                                     to("direct:" + ed.getName() + "-local");
+
+                            from("idbus-bind:camel://direct:" + ed.getName() + "-local" +
+                                "?binding=" + ed.getBinding() +
+                                "&channelRef=" + claimChannel.getName()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("samlr2-claim:" + ed.getType() +
+                                            "?channelRef=" + claimChannel.getName() +
+                                            "&endpointRef=" + endpoint.getName());
+
+                            if (ed.getResponseLocation() != null) {
+                                from("direct:" + ed.getLocation()).
+                                     to("direct:" + ed.getName() + "-local-resp");
+
+                                from("idbus-bind:camel://direct:" + ed.getName() + "-local-resp" +
+                                    "?binding=" + ed.getBinding() +
+                                    "&channelRef=" + claimChannel.getName()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("samlr2-claim:" + ed.getType() +
+                                                "?channelRef=" + claimChannel.getName() +
+                                                "&endpointRef=" + endpoint.getName() +
+                                                "&response=true");
+                            }
+                            break;
+
                         default:
                             throw new SamlR2Exception("Unsupported SamlR2Binding " + binding.getValue());
                     }
@@ -142,4 +180,5 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
         };
 
     }
+
 }

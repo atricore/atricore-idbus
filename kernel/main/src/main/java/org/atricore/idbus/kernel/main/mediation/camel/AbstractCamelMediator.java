@@ -168,7 +168,7 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
         try {
 
-            logger.info("Setting up Binding endpoints for channel : " + bindingChannel.getName());
+            logger.info("Mediator " + this.getClass().getName() + " setting up Binding endpoints for channel : " + bindingChannel.getName());
 
             RouteBuilder bindingRoutes = createBindingRoutes(bindingChannel);
             context.addRoutes(bindingRoutes);

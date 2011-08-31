@@ -136,8 +136,8 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                 StatusCode.asEnum(response.getStatus().getStatusCode().getStatusCode().getValue()) : null;
 
         if (logger.isDebugEnabled())
-                logger.debug("Received status code " + status.getValue() +
-                        (secStatus != null ? "/" + secStatus.getValue() : ""));
+            logger.debug("Received status code " + status.getValue() +
+                (secStatus != null ? "/" + secStatus.getValue() : ""));
 
         if (status.equals(StatusCode.TOP_RESPONDER) &&
             secStatus != null &&
@@ -1185,7 +1185,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
         if (idpAlias == null) {
             throw new SamlR2Exception("No IDP available");
         }
-        CircleOfTrustMemberDescriptor idp = this.getCotManager().loolkupMemberByAlias(idpAlias);
+        CircleOfTrustMemberDescriptor idp = this.getCotManager().lookupMemberByAlias(idpAlias);
         if (idp == null) {
             throw new SamlR2Exception("No IDP Member descriptor available for " + idpAlias);
         }

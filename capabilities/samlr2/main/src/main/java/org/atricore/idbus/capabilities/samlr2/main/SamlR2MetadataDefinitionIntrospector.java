@@ -1,24 +1,3 @@
-/*
- * Atricore IDBus
- *
- * Copyright (c) 2009, Atricore Inc.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
 package org.atricore.idbus.capabilities.samlr2.main;
 
 import oasis.names.tc.saml._2_0.metadata.EndpointType;
@@ -30,6 +9,7 @@ import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -44,23 +24,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @org.apache.xbean.XBean element="cot-manager"
- *
- * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: SamlR2CircleOfTrustManager.java 1337 2009-06-25 13:18:38Z sgonzalez $
- */
-public class SamlR2CircleOfTrustManager extends AbstractCircleOfTrustManager {
+public class SamlR2MetadataDefinitionIntrospector implements MetadataDefinitionIntrospector, InitializingBean {
 
-    private static final Log logger = LogFactory.getLog(SamlR2CircleOfTrustManager.class);
-    
+    private static final Log logger = LogFactory.getLog(SamlR2MetadataDefinitionIntrospector.class);
+
     private static final String SAMLR2_MD_LOCAL_NS = "md";
 
     private static JAXBContext jaxbCtx;
 
-    @Override
     public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
         jaxbCtx = createJAXBContext();
     }
 
@@ -77,7 +49,12 @@ public class SamlR2CircleOfTrustManager extends AbstractCircleOfTrustManager {
 
     }
 
-    protected MetadataDefinition loadMetadataDefinition(CircleOfTrustMemberDescriptor memberDescriptor, Resource resource) throws CircleOfTrustManagerException {
+    public MetadataDefinition load(CircleOfTrustMemberDescriptor memberDescriptor) throws CircleOfTrustManagerException {
+
+            throw new CircleOfTrustManagerException("SAMLR2 Metadata Definition needs to be stored in an external resource");
+    }
+
+    public MetadataDefinition load(CircleOfTrustMemberDescriptor memberDescriptor, Resource resource) throws CircleOfTrustManagerException {
 
         try {
 
@@ -109,7 +86,7 @@ public class SamlR2CircleOfTrustManager extends AbstractCircleOfTrustManager {
         }
     }
 
-    protected MetadataEntry searchEntityDefinition(MetadataDefinition def, String entityId)
+    public MetadataEntry searchEntityDefinition(MetadataDefinition def, String entityId)
             throws CircleOfTrustManagerException {
         try {
 
@@ -135,7 +112,7 @@ public class SamlR2CircleOfTrustManager extends AbstractCircleOfTrustManager {
         }
     }
 
-    protected MetadataEntry searchEntityRoleDefinition(MetadataDefinition def, String entityId, String roleType)
+    public MetadataEntry searchEntityRoleDefinition(MetadataDefinition def, String entityId, String roleType)
             throws CircleOfTrustManagerException {
 
         try {
@@ -167,7 +144,7 @@ public class SamlR2CircleOfTrustManager extends AbstractCircleOfTrustManager {
         }
     }
 
-    protected Collection<MetadataEntry> searchEndpointDescriptors(MetadataDefinition def,
+    public Collection<MetadataEntry> searchEndpointDescriptors(   MetadataDefinition def,
                                                                   String entityId,
                                                                   String roleType,
                                                                   EndpointDescriptor endpoint)
@@ -198,7 +175,7 @@ public class SamlR2CircleOfTrustManager extends AbstractCircleOfTrustManager {
     }
 
 
-    protected MetadataEntry searchEndpointDescriptor(MetadataDefinition def, String entityId, String roleType,
+    public MetadataEntry searchEndpointDescriptor(MetadataDefinition def, String entityId, String roleType,
                                                        EndpointDescriptor endpoint) throws CircleOfTrustManagerException {
         try {
             Document doc = (Document) def.getDefinition();
@@ -293,7 +270,7 @@ public class SamlR2CircleOfTrustManager extends AbstractCircleOfTrustManager {
         XPathExpression expr = xpath.compile(expression);
 
         NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
-        
+
         return nl;
     }
 
@@ -331,7 +308,7 @@ public class SamlR2CircleOfTrustManager extends AbstractCircleOfTrustManager {
         // Prefix can be:
         // 1- {prefix}value
         // 2- prefix:value
-        
+
         int pos = str.lastIndexOf("}");
         if (pos >= 0)
             return str.substring(pos + 1);

@@ -28,15 +28,38 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequestImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 /**
+ * TODO : Rename to SSOClaimsRequest
+ *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
+ *
  * @version $Id$
  */
 public class SamlR2ClaimsRequest extends ClaimsRequestImpl {
 
     private RequestedAuthnContextType requestedAuthnCtxClass;
 
+    private String targetRelayState;
+
+    private String spAlias;
+
     public SamlR2ClaimsRequest(String id, Channel issuer, IdentityMediationEndpoint endpoint, ClaimChannel provider, String relayState) {
         super(id, issuer, endpoint, provider, relayState);
+    }
+
+    public String getTargetRelayState() {
+        return targetRelayState;
+    }
+
+    public void setTargetRelayState(String targetRelayState) {
+        this.targetRelayState = targetRelayState;
+    }
+
+    public String getSpAlias() {
+        return spAlias;
+    }
+
+    public void setSpAlias(String spAlias) {
+        this.spAlias = spAlias;
     }
 
     public RequestedAuthnContextType getRequestedAuthnCtxClass() {

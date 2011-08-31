@@ -109,6 +109,18 @@
 
     </bean>
 
+    <bean name="/claims/openid.do"
+          class="org.atricore.idbus.applications.server.ui.claims.OpenIDClaimsController">
+
+        <property name="artifactQueueManager" ref="artifactQueueManager"/>
+        <property name="idauRegistry" ref="idsuRegistry"/>
+        <property name="sessionForm" value="true"/>
+        <property name="commandName" value="collectOpenID"/>
+        <property name="commandClass" value="org.atricore.idbus.applications.server.ui.claims.CollectOpenIDClaims"/>
+        <!-- Refer to tiles -->
+        <property name="formView" value="openid"/>
+    </bean>
+
     <bean name="/error.do"
           class="org.atricore.idbus.applications.server.ui.error.DisplayErrorController">
         <property name="artifactQueueManager" ref="artifactQueueManager"/>

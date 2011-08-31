@@ -103,7 +103,8 @@ public class SpmlR2LocalBinding extends AbstractMediationBinding {
 
         } else {
             throw new IllegalArgumentException("Unknown message type " + in.getBody());
-        }    }
+        }
+    }
 
     public void copyMessageToExchange(CamelMediationMessage message, Exchange exchange) {
         if (logger.isDebugEnabled())

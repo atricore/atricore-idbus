@@ -160,7 +160,7 @@ public class UsernamePasscodeClaimsProducer extends SamlR2Producer
         usernameString.setValue( username );
 
         usernameToken.setUsername( usernameString );
-        usernameToken.getOtherAttributes().put( new QName( Constants.PASSCODE_NS), passcode);
+        usernameToken.getOtherAttributes().put(new QName( Constants.PASSCODE_NS), passcode);
         usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue()), "TRUE");
 
         Claim claim = new ClaimImpl(AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue(), usernameToken);

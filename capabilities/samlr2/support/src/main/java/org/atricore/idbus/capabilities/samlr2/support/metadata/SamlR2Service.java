@@ -64,7 +64,10 @@ public enum SamlR2Service {
     
     ManageNameIDService(SAMLR2MetadataConstants.ManageNameIDService_QNAME),
     
-    SPInitiatedManageNameIDService(SAMLR2MetadataConstants.SPInitiatedManageNameIDService_QNAME);
+    SPInitiatedManageNameIDService(SAMLR2MetadataConstants.SPInitiatedManageNameIDService_QNAME),
+
+    SPCredentialsCallbackService(SAMLR2MetadataConstants.SPCredentialsCallbackService_QNAME);
+
 
     private QName qname;
 

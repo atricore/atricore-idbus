@@ -33,7 +33,7 @@ public class SpmlR2PSPMediator extends AbstractSpmlR2Mediator {
                 Collection<IdentityMediationEndpoint> endpoints = pspChannel.getEndpoints();
 
                 if (endpoints == null)
-                    throw new IdentityMediationException("No endpoits defined for idpChannel : " + pspChannel.getName());
+                    throw new IdentityMediationException("No endpoints defined for idpChannel : " + pspChannel.getName());
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 
