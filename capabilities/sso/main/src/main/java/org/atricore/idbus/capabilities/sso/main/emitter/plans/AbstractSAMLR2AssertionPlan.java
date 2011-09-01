@@ -24,7 +24,6 @@ package org.atricore.idbus.capabilities.sso.main.emitter.plans;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.planning.jbpm.AbstractJbpmIdentityPlan;
 
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -35,26 +34,25 @@ import java.util.Set;
  */
 public abstract class AbstractSAMLR2AssertionPlan extends AbstractJbpmIdentityPlan {
 
+    private SSOIdentityManager identityManager;
+
     private Set<SubjectNameIDBuilder> nameIDBuilders;
 
     private SubjectNameIDBuilder defaultNameIDBuilder;
 
     private boolean ignoreRequestedNameIDPolicy = false;
 
-    private Collection<SSOIdentityManager> identityManagers;
-
-
     /**
-     * @org.apache.xbean.Property alias="identity-managers"
+     * @org.apache.xbean.Property alias="identity-manager"
      *
      * @return
      */
-    public Collection<SSOIdentityManager> getIdentityManagers() {
-        return identityManagers;
+    public SSOIdentityManager getIdentityManager() {
+        return identityManager;
     }
 
-    public void setIdentityManagers(Collection<SSOIdentityManager> identityManagers) {
-        this.identityManagers = identityManagers;
+    public void setIdentityManager(SSOIdentityManager identityManager) {
+        this.identityManager = identityManager;
     }
 
     public Set<SubjectNameIDBuilder> getNameIDBuilders() {
