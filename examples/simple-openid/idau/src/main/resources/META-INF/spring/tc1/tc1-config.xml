@@ -207,7 +207,7 @@
                             <value>http://localhost:8080/</value>
                         </property>
                         <property name="partnerAppACS">
-                            <value>http://localhost:8080/josso_security_check</value>
+                            <value>http://localhost:8080/partnerapp/josso_security_check</value>
                         </property>
                     </bean>
                 </entry>
