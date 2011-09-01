@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.capabilities.openid.main.sp.producers;
+package org.atricore.idbus.capabilities.openid.main.proxy.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,12 +28,12 @@ import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDAuthnResponse
 import org.atricore.idbus.capabilities.openid.main.binding.OpenIDBinding;
 import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDMessage;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV2AuthnRequest;
+import org.atricore.idbus.capabilities.openid.main.proxy.OpenIDProxyMediator;
 import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsMediator;
 import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsResponse;
 import org.atricore.idbus.capabilities.openid.main.common.producers.OpenIDProducer;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV1AuthnRequest;
-import org.atricore.idbus.capabilities.openid.main.sp.OpenIDProxySPMediator;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
@@ -71,13 +71,13 @@ import java.util.List;
  *
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
-public class OpenIDSPInitiatedSingleSignOnProxyProducer extends OpenIDProducer {
+public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
 
-    private static final Log logger = LogFactory.getLog(OpenIDSPInitiatedSingleSignOnProxyProducer.class);
+    private static final Log logger = LogFactory.getLog(OpenIDSingleSignOnProxyProducer.class);
 
     protected UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    public OpenIDSPInitiatedSingleSignOnProxyProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
+    public OpenIDSingleSignOnProxyProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
     }
 
@@ -192,7 +192,7 @@ public class OpenIDSPInitiatedSingleSignOnProxyProducer extends OpenIDProducer {
 
         logger.debug("Processing SP Initiated Single SingOn on HTTP Redirect");
 
-        OpenIDProxySPMediator mediator = (OpenIDProxySPMediator) channel.getIdentityMediator();
+        OpenIDProxyMediator mediator = (OpenIDProxyMediator) channel.getIdentityMediator();
         /* TODO: setup declaratively using spring -- needs to be a prototype (singleton=false) */
         ConsumerManager consumerManager = new ConsumerManager();
         ConsumerManager manager=new ConsumerManager();
@@ -497,7 +497,7 @@ public class OpenIDSPInitiatedSingleSignOnProxyProducer extends OpenIDProducer {
     }
 
     protected String resolveSpProxyACS() {
-        return ((OpenIDProxySPMediator)channel.getIdentityMediator()).getSpProxyACS();
+        return ((OpenIDProxyMediator)channel.getIdentityMediator()).getSpProxyACS();
     }
 
 }

@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.capabilities.openid.main.sp;
+package org.atricore.idbus.capabilities.openid.main.proxy;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
@@ -43,9 +43,9 @@ import java.util.Collection;
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  * @org.apache.xbean.XBean element="sp-mediator"
  */
-public class OpenIDProxySPMediator extends AbstractOpenIDMediator {
+public class OpenIDProxyMediator extends AbstractOpenIDMediator {
 
-    private static final Log logger = LogFactory.getLog(OpenIDProxySPMediator.class);
+    private static final Log logger = LogFactory.getLog(OpenIDProxyMediator.class);
 
     private ConsumerManager consumerManager;
     private String spProxyACS;

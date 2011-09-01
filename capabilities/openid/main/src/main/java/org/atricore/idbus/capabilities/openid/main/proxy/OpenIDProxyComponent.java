@@ -19,14 +19,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.capabilities.openid.main.sp;
+package org.atricore.idbus.capabilities.openid.main.proxy;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openid.main.sp.endpoints.*;
+import org.atricore.idbus.capabilities.openid.main.proxy.endpoints.*;
 import org.atricore.idbus.capabilities.openid.main.support.OpenIDService;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 
@@ -37,14 +37,14 @@ import java.util.Map;
  *
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
-public class OpenIDProxySPComponent extends DefaultComponent {
+public class OpenIDProxyComponent extends DefaultComponent {
 
-    private static final Log logger = LogFactory.getLog( OpenIDProxySPComponent.class );
+    private static final Log logger = LogFactory.getLog( OpenIDProxyComponent.class );
 
-    public OpenIDProxySPComponent() {
+    public OpenIDProxyComponent() {
     }
 
-    public OpenIDProxySPComponent(CamelContext context) {
+    public OpenIDProxyComponent(CamelContext context) {
         super( context );
     }
 
@@ -58,7 +58,7 @@ public class OpenIDProxySPComponent extends DefaultComponent {
 
         switch ( e ) {
             case SPInitiatedSingleSignOnServiceProxy:
-                endpoint = new OpenIDSPInitiatedSingleSignOnProxyEndpoint(uri, this, parameters);
+                endpoint = new OpenIDSingleSignOnProxyEndpoint(uri, this, parameters);
                 break;
             default:
                 throw new IllegalArgumentException( "Unsupported OpenID endpoint " + remaining );

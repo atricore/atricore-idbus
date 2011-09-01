@@ -17,7 +17,7 @@
             <ref bean="proxy1-idp1-binding-channel"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.openid.main.sp.OpenIDProxySPMediator" name="proxy1-openid-mediator">
+    <bean class="org.atricore.idbus.capabilities.openid.main.proxy.OpenIDProxyMediator" name="proxy1-openid-mediator">
         <property name="spProxyACS">
             <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/IDP1/PROXY1/ACS/ARTIFACT</value>
         </property>
