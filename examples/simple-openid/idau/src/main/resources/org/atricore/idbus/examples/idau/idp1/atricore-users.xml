@@ -1,4 +1,4 @@
-idp1-keystore.jks<?xml version="1.0" encoding="ISO-8859-1" ?>
+<?xml version="1.0" encoding="ISO-8859-1" ?>
 <!--
   ~ Atricore IDBus
   ~
@@ -26,16 +26,16 @@ IdentityMemoryStore user definitions.
 <josso-users>
     <users>
         <user>
-            <name>Administrator@W2K3DEV.ATRICORE.COM</name>
+            <name>http://gbrigand.myopenid.com/</name>
             <!-- Optionally, define some properties for this user -->
             <properties>
                 <property>
                     <name>user.name</name>
-                    <value>W2K3DEV Administrator</value>
+                    <value>Gianluca</value>
                 </property>
                 <property>
                     <name>user.lastName</name>
-                    <value>W2K3DEV Administrator</value>
+                    <value>Brigandi</value>
                 </property>
                 <property>
                     <name>user.registrationDate</name>
@@ -43,7 +43,7 @@ IdentityMemoryStore user definitions.
                 </property>
                 <property>
                     <name>email</name>
-                    <value>admin@acme.com</value>
+                    <value>gbrigandi@atricore.org</value>
                 </property>
             </properties>
             <!-- Optional comma sepparated set of roles, must be defined below -->

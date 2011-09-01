@@ -159,6 +159,12 @@
         </property>
     </bean>
     <bean class="org.atricore.idbus.capabilities.sso.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan" name="idp1-samlr2authnstmt-to-samlr2assertion-plan">
+        <property name="defaultNameIDBuilder">
+            <bean class="org.atricore.idbus.capabilities.sso.main.emitter.plans.UnspecifiedNameIDBuiler"/>
+        </property>
+        <property name="nameIDBuilders">
+            <bean class="org.atricore.idbus.capabilities.sso.main.emitter.plans.UnspecifiedNameIDBuiler"/>
+        </property>
         <property name="bpmsManager">
             <ref bean="bpms-manager"/>
         </property>
@@ -598,6 +604,9 @@
                     <property name="id">
                         <value>idp1-samlr2-assertion-emitter</value>
                     </property>
+                    <property name="identityPlanRegistry">
+                        <bean class="org.atricore.idbus.kernel.planning.IdentityPlanRegistryImpl"/>
+                    </property>
                     <!-- TODO: Remove - Identity Plans are dynamically pushed to STS context
                     <property name="identityPlan">
                         <ref bean="idp1-samlr2-sectoken-to-authnassertion-plan"/>
@@ -611,79 +620,32 @@
         </property>
         <property name="authenticators">
             <list>
-                <bean class="org.atricore.idbus.capabilities.sts.main.DefaultSecurityTokenAuthenticator">
-                    <property name="authenticator">
-                        <ref bean="authenticator"/>
-                    </property>
-                </bean>
+                <bean class="org.atricore.idbus.capabilities.sts.main.authenticators.PassthruSecurityTokenAuthenticator"/>
             </list>
         </property>
         <property name="artifactQueueManager">
             <ref bean="simple-openid-aqm"/>
         </property>
     </bean>
+    <!-- Remove
     <bean class="org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmitter" name="idp1-samlr2-assertion-emitter">
         <property name="id">
             <value>idp1-samlr2-assertion-emitter</value>
         </property>
-        <!-- TODO: Remove - Identity Plans are dynamically pushed to STS context
-        <property name="identityPlan">
-            <ref bean="idp1-samlr2-sectoken-to-authnassertion-plan"/>
+        <property name="identityPlanRegistry">
+            <bean class="org.atricore.idbus.kernel.planning.IdentityPlanRegistryImpl"/>
         </property>
-        -->
         <property name="signer">
             <ref bean="idp1-samlr2-signer"/>
         </property>
     </bean>
+    -->
     <bean class="org.atricore.idbus.capabilities.sso.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan" name="idp1-samlr2-sectoken-to-authnassertion-plan">
         <property name="identityManager">
             <ref bean="idp1-identity-manager"/>
         </property>
         <property name="bpmsManager">
             <ref bean="bpms-manager"/>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.kernel.main.authn.AuthenticatorImpl" name="authenticator">
-        <property name="authenticationSchemes">
-            <list>
-                <ref bean="idp1-basic-authn"/>
-                <ref bean="idp1-spnego-authn"/>
-            </list>
-        </property>
-    </bean>
-
-    <bean class="org.atricore.idbus.kernel.main.authn.scheme.UsernamePasswordAuthScheme" name="idp1-basic-authn">
-        <property name="name">
-            <value>basic-authentication</value>
-        </property>
-        <property name="hashAlgorithm">
-            <value>MD5</value>
-        </property>
-        <property name="hashEncoding">
-            <value>HEX</value>
-        </property>
-        <property name="ignorePasswordCase">
-            <value>false</value>
-        </property>
-        <property name="ignoreUserCase">
-            <value>false</value>
-        </property>
-        <property name="credentialStore">
-            <ref bean="idp1-identity-store"/>
-        </property>
-        <property name="credentialStoreKeyAdapter">
-            <bean class="org.atricore.idbus.kernel.main.store.identity.SimpleIdentityStoreKeyAdapter"/>
-        </property>
-    </bean>
-    <bean class="org.atricore.idbus.capabilities.spnego.SpnegoAuthenticationScheme" name="idp1-spnego-authn">
-        <property name="name">
-            <value>spnego-authentication</value>
-        </property>
-        <property name="realm">
-            <value>spnego</value>
-        </property>
-        <property name="principalName">
-            <value>HTTP/localhost@W2K3DEV.ATRICORE.COM</value>
         </property>
     </bean>
 

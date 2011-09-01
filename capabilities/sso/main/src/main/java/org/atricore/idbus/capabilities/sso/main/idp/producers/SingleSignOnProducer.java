@@ -786,10 +786,10 @@ public class SingleSignOnProducer extends SamlR2Producer {
         String responseFormat = authnState.getResponseFormat();
 
         if (responseMode != null && responseMode.equalsIgnoreCase("unsolicited")) {
-            logger.debug("Response Mode for Claim Response " + authnRequest.getID() + " is unsolicited");
-            logger.debug("Response Format for Claim Response " + authnRequest.getID() + " is " + responseFormat);
+            logger.debug("Response Mode for Proxy Response " + authnRequest.getID() + " is unsolicited");
+            logger.debug("Response Format for Proxy Response " + authnRequest.getID() + " is " + responseFormat);
         } else {
-            logger.debug("Response Mode for Claim Response " + authnRequest.getID() + " is NOT unsolicited");
+            logger.debug("Response Mode for Proxy Response " + authnRequest.getID() + " is NOT unsolicited");
         }
 
         // ----------------------------------------------------
@@ -939,65 +939,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         } catch (SecurityTokenAuthenticationFailure e) {
 
-            // Set of policies enforced during authentication
-            Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = e.getSsoPolicyEnforcements();
-
             if (logger.isDebugEnabled())
                 logger.debug("Security Token authentication failure : " + e.getMessage(), e);
-
-            // Ask for more claims, using other auth schemes ?!
-            IdentityMediationEndpoint claimsEndpoint = selectNextClaimsEndpoint(authnState);
-
-            if (claimsEndpoint == null) {
-                // Authentication failure, no more endpoints available, consider proxying to another IDP.
-                logger.error("No claims endpoint found for authn request : " + authnRequest.getID());
-
-                // Send failure response
-                EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
-                ResponseType response = buildSamlResponse(exchange, authnState, null, sp, ed);
-
-                out.setMessage(new MediationMessageImpl(response.getID(),
-                        response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
-
-                exchange.setOut(out);
-                return;
-            }
-
-            logger.debug("Selecting claims endpoint : " + endpoint.getName());
-            SamlR2ClaimsRequest claimsRequest = new SamlR2ClaimsRequest(authnRequest.getID(),
-                    channel,
-                    endpoint,
-                    ((SPChannel) channel).getClaimsProvider(),
-                    uuidGenerator.generateId());
-
-            claimsRequest.setLastErrorId("AUTHN_FAILED");
-            claimsRequest.setLastErrorMsg(e.getMessage());
-            claimsRequest.getSsoPolicyEnforcements().addAll(ssoPolicyEnforcements);
-
-            // Update authentication state
-            claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
-            authnState.setAuthnRequest(authnRequest);
-
-            // --------------------------------------------------------------------
-            // Send claims request
-            // --------------------------------------------------------------------
-            IdentityMediationEndpoint claimEndpoint = authnState.getCurrentClaimsEndpoint();
-            ClaimChannel claimChannel = claimsRequest.getClaimsChannel();
-
-            EndpointDescriptor ed = new EndpointDescriptorImpl(claimEndpoint.getBinding(),
-                    claimEndpoint.getType(),
-                    claimEndpoint.getBinding(),
-                    claimChannel.getLocation() + claimEndpoint.getLocation(),
-                    claimEndpoint.getResponseLocation());
-
-            logger.debug("Collecting claims using endpoint " + claimEndpoint.getName() + " [" + ed.getLocation() + "]");
-
-            out.setMessage(new MediationMessageImpl(claimsRequest.getId(),
-                    claimsRequest, "ClaimsRequest", null, ed, in.getMessage().getState()));
-
-            exchange.setOut(out);
-
-
         }
 
 

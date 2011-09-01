@@ -124,7 +124,7 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
         // Lookup identityplan sent by SAML Producers
         SamlR2SecurityTokenEmissionContext samlr2EmissionCtx = (SamlR2SecurityTokenEmissionContext) context.getProperty(WSTConstants.RST_CTX);
         String identityPlanName = (String) samlr2EmissionCtx.getIdentityPlanName();
-        identityPlan.set(getIdentityPlansRegistry().lookup(identityPlanName));
+        identityPlan.set(getIdentityPlanRegistry().lookup(identityPlanName));
 
         // Emit, now that the plan is in place
         SecurityToken st = super.emit(context, requestToken, tokenType);
