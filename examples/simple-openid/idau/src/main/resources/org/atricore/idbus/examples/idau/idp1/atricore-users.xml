@@ -26,9 +26,13 @@ IdentityMemoryStore user definitions.
 <josso-users>
     <users>
         <user>
-            <name>http://gbrigand.myopenid.com/</name>
+            <name>gbrigand</name>
             <!-- Optionally, define some properties for this user -->
             <properties>
+                <property>
+                    <name>openid</name>
+                    <value>http://gbrigand.myopenid.com/</value>
+                </property>
                 <property>
                     <name>user.name</name>
                     <value>Gianluca</value>

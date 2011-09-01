@@ -168,8 +168,11 @@
         <property name="bpmsManager">
             <ref bean="bpms-manager"/>
         </property>
-        <property name="identityManager">
-            <ref bean="idp1-identity-manager"/>
+        <property name="identityManagers">
+            <list>
+                <ref bean="idp1-identity-manager"/>
+                <ref bean="idp1-proxy1-identity-manager"/>
+            </list>
         </property>
     </bean>
     <bean class="org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan" name="idp1-samlr2artresolve-to-samlr2artresponse-plan">
@@ -641,8 +644,11 @@
     </bean>
     -->
     <bean class="org.atricore.idbus.capabilities.sso.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan" name="idp1-samlr2-sectoken-to-authnassertion-plan">
-        <property name="identityManager">
-            <ref bean="idp1-identity-manager"/>
+        <property name="identityManagers">
+            <list>
+                <ref bean="idp1-identity-manager"/>
+                <ref bean="idp1-proxy1-identity-manager"/>
+            </list>
         </property>
         <property name="bpmsManager">
             <ref bean="bpms-manager"/>
@@ -658,13 +664,33 @@
         </property>
     </bean>
 
+    <bean class="org.atricore.idbus.kernel.main.store.SSOIdentityManagerImpl" name="idp1-proxy1-identity-manager">
+        <property name="identityStore">
+            <ref bean="idp1-proxy1-identity-store"/>
+        </property>
+        <property name="identityStoreKeyAdapter">
+            <bean class="org.atricore.idbus.kernel.main.store.identity.SimpleIdentityStoreKeyAdapter"/>
+        </property>
+    </bean>
+
     <!-- ================================================================== -->
-    <!-- Memory Identity Store with non-bind authentication                 -->
+    <!-- Memory Identity Store fetching users given their username          -->
     <!-- ================================================================== -->
     <bean name="idp1-identity-store"
             class="org.atricore.idbus.idojos.memoryidentitystore.MemoryIdentityStore">
         <property name="usersFileName" value="classpath:org/atricore/idbus/examples/idau/idp1/atricore-users.xml"/>
         <property name="credentialsFileName" value="classpath:org/atricore/idbus/examples/idau/idp1/atricore-credentials.xml"/>
     </bean>
+
+    <!-- ================================================================== -->
+    <!-- Memory Identity Store fetching users by their OpenID URI           -->
+    <!-- ================================================================== -->
+    <bean name="idp1-proxy1-identity-store"
+            class="org.atricore.idbus.idojos.memoryidentitystore.MemoryIdentityStore">
+        <property name="usersFileName" value="classpath:org/atricore/idbus/examples/idau/idp1/atricore-users.xml"/>
+        <property name="credentialsFileName" value="classpath:org/atricore/idbus/examples/idau/idp1/atricore-credentials.xml"/>
+        <property name="principalUidAttributeID" value="openid"/>
+    </bean>
+
 </beans>
 

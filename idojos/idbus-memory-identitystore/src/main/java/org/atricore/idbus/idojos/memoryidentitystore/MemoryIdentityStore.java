@@ -76,6 +76,8 @@ public class MemoryIdentityStore extends AbstractStore {
     private Resource _credentialsFileName;
     private Resource _usersFileName;
 
+    private String _principalUidAttributeID;
+
     public MemoryIdentityStore () {
         super();
 
@@ -86,6 +88,7 @@ public class MemoryIdentityStore extends AbstractStore {
         _roles = new HashMap<String, Element>( 11 );
         _principalCredentials = new HashMap<String, Element>( 11 );
         _initialized = false;
+        _principalUidAttributeID = "name";
     }
 
     /**
@@ -250,7 +253,45 @@ public class MemoryIdentityStore extends AbstractStore {
             throw new SSOIdentityException( "Unsupported key type : " + key.getClass().getName() );
         }
 
-        Element domUser = _users.get( ( (SimpleUserKey) key ).getId() );
+        Element domUser = null;
+
+        // select the user by the supplied property name
+        if (_principalUidAttributeID != null) {
+            Collection<Element> domUsers = _users.values();
+
+            for (Iterator<Element> iterator = domUsers.iterator(); iterator.hasNext();) {
+                Element currUser = iterator.next();
+
+                NodeList propertiesLst = ( (Element) currUser ).getElementsByTagName( "property" );
+                for ( int i = 0; i < propertiesLst.getLength(); i++ ) {
+                    Element domProperty = (Element) propertiesLst.item( i );
+
+                    Node domName = ( (Element) domProperty ).getElementsByTagName( "name" ).item( 0 );
+                    if ( domName.getNodeType() != Node.ELEMENT_NODE ||
+                            !domName.getNodeName().equals( "name" ) )
+                        throw new SSOIdentityException( "Property definitions need a 'name' and 'value' element" );
+
+                    Node domValue = ( (Element) domProperty ).getElementsByTagName( "value" ).item( 0 );
+                    if ( domValue.getNodeType() != Node.ELEMENT_NODE ||
+                            !domValue.getNodeName().equals( "value" ) )
+                        throw new SSOIdentityException( "Property definitions need a 'name' and 'value' element" );
+
+                    String name = getTextContent( domName );
+                    String value = getTextContent( domValue );
+
+                    if (name.equals(_principalUidAttributeID) &&  value.equals(((SimpleUserKey) key).getId() )) {
+                        domUser = currUser;
+                        break;
+                    }
+
+                }
+
+            }
+
+        } else {
+            domUser = _users.get( ( (SimpleUserKey) key ).getId() );
+        }
+
         if ( domUser == null )
             throw new NoSuchUserException( key );
 
@@ -276,7 +317,14 @@ public class MemoryIdentityStore extends AbstractStore {
         List<BaseRole> roles = new ArrayList<BaseRole>();
 
         SimpleUserKey simpleKey = (SimpleUserKey) key;
-        Set<String> roleNames = _userRoles.get( simpleKey.getId() );
+
+        String username = simpleKey.getId();
+        if (_principalUidAttributeID != null) {
+            BaseUser user = loadUser( key );
+            username = user.getName();
+        }
+
+        Set<String> roleNames = _userRoles.get( username );
         if ( roleNames != null ) {
             Iterator it = roleNames.iterator();
             while ( it.hasNext() ) {
@@ -528,6 +576,13 @@ public class MemoryIdentityStore extends AbstractStore {
         return _usersFileName;
     }
 
+    public String getPrincipalUidAttributeID() {
+        return _principalUidAttributeID;
+    }
+
+    public void setPrincipalUidAttributeID(String principalUidAttributeID) {
+        _principalUidAttributeID = principalUidAttributeID;
+    }
 
     // Some utils ...
 

@@ -93,20 +93,26 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
 
                 // All principals that will be added to the subject
                 Set<Principal> principals = new HashSet<Principal>();
-                SSOIdentityManager idMgr = getIdentityManager();
-                if (idMgr == null)
-                    throw new IllegalStateException("SSOIdentityManager not configured for plan " + getClass().getSimpleName());
 
-                if (logger.isTraceEnabled())
-                    logger.trace("Resolving SSOUser for " + username);
+                if (getIdentityManagers() == null )
+                    throw new IllegalStateException("No SSOIdentityManager configured for plan " + getClass().getSimpleName());
 
-                // Find SSOUser principal
-                SSOUser ssoUser = idMgr.findUser(username);
-                principals.add(ssoUser);
+                for (SSOIdentityManager idMgr : getIdentityManagers()) {
+                    try {
+                        if (logger.isTraceEnabled())
+                            logger.trace("Resolving SSOUser for " + username);
 
-                // Find SSORole principals
-                SSORole[] ssoRoles = getIdentityManager().findRolesByUsername(username);
-                principals.addAll(Arrays.asList(ssoRoles));
+                        SSOUser ssoUser = idMgr.findUser(username);
+                        principals.add(ssoUser);
+
+                        // Find SSORole principals
+                        SSORole[] ssoRoles = idMgr.findRolesByUsername(username);
+                        principals.addAll(Arrays.asList(ssoRoles));
+
+                    } catch (NoSuchUserException e) {
+                        logger.debug("User " + username + " not found in identity store" + ". Falling back to next one");
+                    }
+                }
 
                 // Use existing SSOPolicyEnforcement principals
                 Set<SSOPolicyEnforcementStatement> ssoPolicies = s.getPrincipals(SSOPolicyEnforcementStatement.class);

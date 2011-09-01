@@ -390,7 +390,7 @@
 
     <bean name="samlr2authnstmt-to-samlr2assertion-plan"
           class="org.atricore.idbus.capabilities.sso.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan">
-        <property name="identityManager" ref="idp1-identity-manager"/>
+        <property name="identityManagers" ref="idp1-identity-manager"/>
         <property name="bpmsManager" ref="bpms-manager"/>
     </bean>
 
@@ -642,7 +642,7 @@
 
     <bean name="samlr2-sectoken-to-authnassertion-plan"
           class="org.atricore.idbus.capabilities.sso.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan">
-        <property name="identityManager" ref="idp1-identity-manager"/>
+        <property name="identityManagers" ref="idp1-identity-manager"/>
         <property name="bpmsManager" ref="bpms-manager"/>
     </bean>
 
