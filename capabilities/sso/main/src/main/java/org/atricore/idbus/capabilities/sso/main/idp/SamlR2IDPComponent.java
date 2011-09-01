@@ -79,7 +79,7 @@ public class SamlR2IDPComponent extends DefaultComponent {
                 endpoint = new SessionHeartBeatEndpoint(uri, this, parameters);
                 break;
             case ProxyAssertionConsumerService:
-                endpoint = new ProxyAssertionConsumerEndpoint(uri, this, parameters);
+                endpoint = new SingleSignOnEndpoint(uri, this, parameters);
                 break;
             default:
                 throw new IllegalArgumentException( "Invalid SAMLR2 endpoint specified for endpoint " + remaining );

@@ -558,6 +558,12 @@
                      <property name="location">
                          <value>/PROXY1/ACS/ARTIFACT</value>
                      </property>
+                    <property name="identityPlans">
+                        <list>
+                            <ref bean="idp1-samlr2authnreq-to-samlr2resp-plan"/>
+                            <ref bean="idp1-samlr2authnstmt-to-samlr2assertion-plan"/>
+                        </list>
+                    </property>
                  </bean>
             </list>
         </property>
