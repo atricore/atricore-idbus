@@ -22,7 +22,7 @@
 package org.atricore.idbus.capabilities.sso.main.common.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
-import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSAMLR2AssertionAction;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSSOAssertionAction;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
@@ -30,7 +30,7 @@ import org.jbpm.graph.exe.ExecutionContext;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: EncryptAssertionAttributesAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class EncryptAssertionAttributesAction extends AbstractSAMLR2AssertionAction {
+public class EncryptAssertionAttributesAction extends AbstractSSOAssertionAction {
 
     protected void doExecute ( IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext ) throws Exception {
         // TODO : Implement Assertion Attribute Encryption

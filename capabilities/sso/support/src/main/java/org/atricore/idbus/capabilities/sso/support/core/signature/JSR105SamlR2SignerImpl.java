@@ -29,8 +29,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.SAMLR11Constants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2KeyResolver;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2KeyResolverException;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sso.support.core.util.NamespaceFilterXMLStreamWriter;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.w3._2000._09.xmldsig_.X509DataType;
@@ -96,7 +96,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
      */
     private Provider provider;
 
-    private SamlR2KeyResolver keyResolver;
+    private SSOKeyResolver keyResolver;
 
     public Provider getProvider() {
         return provider;
@@ -106,14 +106,14 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         this.provider = provider;
     }
 
-    public SamlR2KeyResolver getKeyResolver() {
+    public SSOKeyResolver getKeyResolver() {
         return keyResolver;
     }
 
     /**
      * @org.apache.xbean.Property alias="key-resolver"
      */
-    public void setKeyResolver(SamlR2KeyResolver keyResolver) {
+    public void setKeyResolver(SSOKeyResolver keyResolver) {
         this.keyResolver = keyResolver;
     }
 
@@ -748,7 +748,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             throw new SamlR2SignatureException(e.getMessage(), e);
         } catch (MarshalException e) {
             throw new SamlR2SignatureException(e.getMessage(), e);
-        } catch (SamlR2KeyResolverException e) {
+        } catch (SSOKeyResolverException e) {
             throw new SamlR2SignatureException(e.getMessage(), e);
         }
     }

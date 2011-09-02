@@ -2,9 +2,9 @@ package org.atricore.idbus.capabilities.sso.main.idp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -103,7 +103,7 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
 
     }
 
-    protected void triggerIdPInitiatedSLO(IdPSecurityContext secCtx) throws SamlR2Exception, IdentityMediationException {
+    protected void triggerIdPInitiatedSLO(IdPSecurityContext secCtx) throws SSOException, IdentityMediationException {
 
         if (logger.isTraceEnabled())
             logger.trace("Triggering IDP Initiated SLO from IDP Session Listener for Security Context " + secCtx);
@@ -136,16 +136,16 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
 
     }
 
-    protected EndpointDescriptor resolveIdpInitiatedSloEndpoint(IdentityProvider idp) throws SamlR2Exception {
+    protected EndpointDescriptor resolveIdpInitiatedSloEndpoint(IdentityProvider idp) throws SSOException {
         // User default channel to signal SLO
         Channel defaultChannel = idp.getChannel();
 
         IdentityMediationEndpoint e = null;
         for (IdentityMediationEndpoint endpoint : defaultChannel.getEndpoints()) {
 
-            if (endpoint.getType().equals(SamlR2Service.IDPInitiatedSingleLogoutService.toString())) {
+            if (endpoint.getType().equals(SSOService.IDPInitiatedSingleLogoutService.toString())) {
 
-                if (endpoint.getBinding().equals(SamlR2Binding.SSO_LOCAL.getValue())) {
+                if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
                     // We need to build an endpoint descriptor descriptor now ...
 
                     String location = endpoint.getLocation().startsWith("/") ?
@@ -153,11 +153,11 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
                             endpoint.getLocation();
 
                     return new EndpointDescriptorImpl(identityProvider.getName() + "-sso-slo-soap",
-                            SamlR2Service.IDPInitiatedSingleLogoutService.toString(),
-                            SamlR2Binding.SSO_LOCAL.toString(),
+                            SSOService.IDPInitiatedSingleLogoutService.toString(),
+                            SSOBinding.SSO_LOCAL.toString(),
                             location,
                             null);
-                } else if (endpoint.getBinding().equals(SamlR2Binding.SSO_LOCAL.getValue())) {
+                } else if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
                     e = endpoint;
                 }
             }
@@ -169,12 +169,12 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
                     e.getLocation();
 
             return new EndpointDescriptorImpl(identityProvider.getName() + "-sso-slo-soap",
-                    SamlR2Service.IDPInitiatedSingleLogoutService.toString(),
+                    SSOService.IDPInitiatedSingleLogoutService.toString(),
                     e.getBinding(),
                     location,
                     null);
         }
 
-        throw new SamlR2Exception("No IDP Initiated SLO endpoint using SOAP binding found!");
+        throw new SSOException("No IDP Initiated SLO endpoint using SOAP binding found!");
     }
 }

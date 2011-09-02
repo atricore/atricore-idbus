@@ -25,9 +25,9 @@ import javax.xml.namespace.QName;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: SAMLR2MetadataConstants.java 1372 2009-07-23 15:03:28Z chromy96 $
+ * @version $Id: SSOMetadataConstants.java 1372 2009-07-23 15:03:28Z chromy96 $
  */
-public interface SAMLR2MetadataConstants {
+public interface SSOMetadataConstants {
 
 
     final static QName SPInitiatedSingleSignOnService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleSignOnService");

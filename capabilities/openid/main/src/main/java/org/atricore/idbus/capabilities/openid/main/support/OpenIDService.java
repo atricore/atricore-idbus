@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.capabilities.openid.main.support;
 
-import org.atricore.idbus.capabilities.sso.support.metadata.SAMLR2MetadataConstants;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 
 import javax.xml.namespace.QName;
 
@@ -32,7 +32,7 @@ import javax.xml.namespace.QName;
  */
 public enum OpenIDService {
 
-    SPInitiatedSingleSignOnServiceProxy(SAMLR2MetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME);
+    SPInitiatedSingleSignOnServiceProxy(SSOMetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME);
 
     private QName qname;
 

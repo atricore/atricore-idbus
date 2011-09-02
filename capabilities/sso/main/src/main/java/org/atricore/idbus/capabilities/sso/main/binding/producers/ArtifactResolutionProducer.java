@@ -6,17 +6,17 @@ import oasis.names.tc.saml._2_0.protocol.ArtifactResolveType;
 import oasis.names.tc.saml._2_0.protocol.ArtifactResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.binding.SamlArtifact;
 import org.atricore.idbus.capabilities.sso.main.binding.SamlArtifactEncoder;
 import org.atricore.idbus.capabilities.sso.main.binding.SamlR11HttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SamlR2HttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
-import org.atricore.idbus.capabilities.sso.main.common.AbstractSamlR2Mediator;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.support.SAMLR11Constants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -41,7 +41,7 @@ import javax.xml.namespace.QName;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class ArtifactResolutionProducer extends SamlR2Producer {
+public class ArtifactResolutionProducer extends SSOProducer {
 
     private static final Log logger = LogFactory.getLog( ArtifactResolutionProducer.class );
 
@@ -167,7 +167,7 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
     protected ResponseType buildSaml11ArtifactResponse(
             CamelMediationExchange exchange,
             EndpointDescriptor ed,
-            java.lang.Object samlMsg) throws IdentityPlanningException, SamlR2Exception {
+            java.lang.Object samlMsg) throws IdentityPlanningException, SSOException {
 
         // Let's do it simple for now ...
         /*
@@ -216,7 +216,7 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
     protected ArtifactResponseType buildSaml2ArtifactResponse(
             CamelMediationExchange exchange,
             EndpointDescriptor ed,
-            java.lang.Object samlMsg) throws IdentityPlanningException, SamlR2Exception {
+            java.lang.Object samlMsg) throws IdentityPlanningException, SSOException {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
@@ -251,32 +251,32 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
         identityPlan.perform(idPlanExchange);
 
         if (!idPlanExchange.getStatus().equals(IdentityPlanExecutionStatus.SUCCESS)) {
-            throw new SamlR2Exception("Identity plan returned : " + idPlanExchange.getStatus());
+            throw new SSOException("Identity plan returned : " + idPlanExchange.getStatus());
         }
 
         if (idPlanExchange.getOut() == null)
-            throw new SamlR2Exception("Plan Exchange OUT must not be null!");
+            throw new SSOException("Plan Exchange OUT must not be null!");
 
         return (ArtifactResponseType) idPlanExchange.getOut().getContent();
     }
 
     protected MessageQueueManager getArtifactQueueManager() {
-        AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         return mediator.getArtifactQueueManager();
     }
 
 
     protected SamlArtifactEncoder getSaml2ArtifactEncoder() {
-        AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         SamlR2HttpArtifactBinding b =
-                (SamlR2HttpArtifactBinding) mediator.getBindingFactory().createBinding(SamlR2Binding.SAMLR2_ARTIFACT.getValue(), channel);
+                (SamlR2HttpArtifactBinding) mediator.getBindingFactory().createBinding(SSOBinding.SAMLR2_ARTIFACT.getValue(), channel);
         return b.getArtifactEncoder();
     }
 
     protected SamlArtifactEncoder getSaml11ArtifactEncoder() {
-        AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         SamlR11HttpArtifactBinding b =
-                (SamlR11HttpArtifactBinding) mediator.getBindingFactory().createBinding(SamlR2Binding.SAMLR11_ARTIFACT.getValue(), channel);
+                (SamlR11HttpArtifactBinding) mediator.getBindingFactory().createBinding(SSOBinding.SAMLR11_ARTIFACT.getValue(), channel);
         return b.getArtifactEncoder();
     }
 

@@ -34,7 +34,7 @@
           name="test-samlr2-signer">
         <description/>
         <property name="keyResolver">
-            <bean class="org.atricore.idbus.capabilities.sso.support.core.SamlR2KeystoreKeyResolver">
+            <bean class="org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver">
                 <property name="keystoreType">
                     <value>JKS</value>
                 </property>

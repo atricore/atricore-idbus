@@ -31,15 +31,15 @@ import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.AbstractSamlR2Mediator;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2ResponseException;
+import org.atricore.idbus.capabilities.sso.support.core.SSOResponseException;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
@@ -78,7 +78,7 @@ import java.util.*;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class AssertionConsumerProducer extends SamlR2Producer {
+public class AssertionConsumerProducer extends SSOProducer {
 
     private static final Log logger = LogFactory.getLog(AssertionConsumerProducer.class);
 
@@ -106,12 +106,12 @@ public class AssertionConsumerProducer extends SamlR2Producer {
         // Destination, where to respond the above referred request
         String destinationLocation = ((SamlR2SPMediator) channel.getIdentityMediator()).getSpBindingACS();
         if (destinationLocation == null)
-            throw new SamlR2Exception("SP Mediator does not have resource location!");
+            throw new SSOException("SP Mediator does not have resource location!");
 
         EndpointDescriptor destination =
                 new EndpointDescriptorImpl("EmbeddedSPAcs",
                         "AssertionConsumerService",
-                        SamlR2Binding.SSO_ARTIFACT.getValue(),
+                        SSOBinding.SSO_ARTIFACT.getValue(),
                         destinationLocation, null);
 
         // ------------------------------------------------------
@@ -149,7 +149,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 
             // if This is  SP initiated SSO or  we did not requested passive authentication
             if (authnRequest == null || authnRequest.isForceAuthn()) {
-                throw new SamlR2Exception("IDP Sent " + StatusCode.NO_PASSIVE + " but passive was not requested.");
+                throw new SSOException("IDP Sent " + StatusCode.NO_PASSIVE + " but passive was not requested.");
             }
 
             // Send a 'no-passive' status response
@@ -161,7 +161,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                 if (ssoRequest.getReplyTo() != null) {
                     destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
                             "AssertionConsumerService",
-                            SamlR2Binding.SSO_ARTIFACT.getValue(),
+                            SSOBinding.SSO_ARTIFACT.getValue(),
                             ssoRequest.getReplyTo(), null);
                 }
             }
@@ -175,7 +175,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 
 
         } else if (!status.equals(StatusCode.TOP_SUCCESS)) {
-            throw new SamlR2Exception("Unexpected IDP Status Code " + status.getValue() +
+            throw new SSOException("Unexpected IDP Status Code " + status.getValue() +
                     (secStatus != null ? "/" + secStatus.getValue() : ""));
 
         }
@@ -188,7 +188,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
             // cannot map subject to local account, terminate
             logger.error("No Account Lifecycle configured for Channel [" + fChannel.getName() + "] " +
                     " Response [" + response.getID() + "]");
-            throw new SamlR2Exception("No Account Lifecycle configured for Channel [" + fChannel.getName() + "] " +
+            throw new SSOException("No Account Lifecycle configured for Channel [" + fChannel.getName() + "] " +
                     " Response [" + response.getID() + "]");
         }
 
@@ -308,7 +308,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
             if (ssoRequest.getReplyTo() != null) {
                 destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
                         "AssertionConsumerService",
-                        SamlR2Binding.SSO_ARTIFACT.getValue(),
+                        SSOBinding.SSO_ARTIFACT.getValue(),
                         ssoRequest.getReplyTo(), null);
             }
         }
@@ -660,9 +660,9 @@ public class AssertionConsumerProducer extends SamlR2Producer {
     protected ResponseType validateResponse(AuthnRequestType request,
                                             ResponseType response,
                                             String originalResponse)
-            throws SamlR2ResponseException, SamlR2Exception {
+            throws SSOResponseException, SSOException {
 
-        AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
         SamlR2Encrypter encrypter = mediator.getEncrypter();
 
@@ -676,7 +676,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 			endpointDesc = channel.getIdentityMediator().resolveEndpoint(channel, endpoint);
 
 		} catch (IdentityMediationException e1) {
-			throw new SamlR2ResponseException(response,
+			throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.RESOURCE_NOT_RECOGNIZED,
                     StatusDetails.INTERNAL_ERROR,
@@ -696,7 +696,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
             }
 
         } catch (CircleOfTrustManagerException e) {
-            throw new SamlR2ResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.NO_SUPPORTED_IDP,
                     null,
@@ -709,7 +709,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 
             logger.debug("No IDP Metadata found");
             // Unknown IDP!
-            throw new SamlR2ResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.NO_SUPPORTED_IDP,
                     null, idpAlias);
@@ -730,19 +730,19 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 
 
     		if(!response.getDestination().equals(location)){
-    			throw new SamlR2ResponseException(response,
+    			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_DESTINATION);
     		}
 
     	} else if(response.getSignature() != null &&
-                (!endpointDesc.getBinding().equals(SamlR2Binding.SAMLR2_LOCAL.getValue()) &&
-                 !endpointDesc.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue()))) {
+                (!endpointDesc.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue()) &&
+                 !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()))) {
 
             // If message is signed, the destination is mandatory!
             //saml2 binding, sections 3.4.5.2 & 3.5.5.2
-    		throw new SamlR2ResponseException(response,
+    		throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.NO_DESTINATION);
@@ -755,7 +755,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 		   -  check that time difference is not bigger than X
 		   */
     	if(response.getIssueInstant() == null){
-    		throw new SamlR2ResponseException(response,
+    		throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.NO_ISSUE_INSTANT);
@@ -763,7 +763,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
     	} else if(request != null) {
 
            	if(response.getIssueInstant().compare(request.getIssueInstant()) <= 0){
-    			throw new SamlR2ResponseException(response,
+    			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_ISSUE_INSTANT,
@@ -785,7 +785,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
     			if(ttl > 0 && response.getIssueInstant().toGregorianCalendar().getTime().getTime()
     					- request.getIssueInstant().toGregorianCalendar().getTime().getTime() > ttl) {
 
-    				throw new SamlR2ResponseException(response,
+    				throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                             StatusDetails.INVALID_ISSUE_INSTANT,
@@ -797,7 +797,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 
         // Version, saml2 core, section 3.2.2
     	if(response.getVersion() == null) {
-    		throw new SamlR2ResponseException(response,
+    		throw new SSOResponseException(response,
                     StatusCode.TOP_VERSION_MISSMATCH,
                     null,
                     StatusDetails.INVALID_VERSION);
@@ -805,7 +805,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 
         if (!response.getVersion().equals(SAML_VERSION)){
 
-            throw new SamlR2ResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_VERSION_MISSMATCH,
                     null, // TODO : Check version!
                     StatusDetails.UNSUPPORTED_VERSION,
@@ -818,13 +818,13 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 
     	if(request != null) {
             if (response.getInResponseTo() == null) {
-                throw new SamlR2ResponseException(response,
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         null,
                         StatusDetails.NO_IN_RESPONSE_TO);
 
             } else if (!request.getID().equals(response.getInResponseTo())) {
-                throw new SamlR2ResponseException(response,
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         null,
                         StatusDetails.INVALID_RESPONSE_ID,
@@ -840,20 +840,20 @@ public class AssertionConsumerProducer extends SamlR2Producer {
     			if(StringUtils.isEmpty(response.getStatus().getStatusCode().getValue()) 
     					|| !isStatusCodeValid(response.getStatus().getStatusCode().getValue())){
 
-    				throw new SamlR2ResponseException(response,
+    				throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                             StatusDetails.INVALID_STATUS_CODE,
                             response.getStatus().getStatusCode().getValue());
     			}
     		} else {
-    			throw new SamlR2ResponseException(response,
+    			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NO_STATUS_CODE);
     		}
     	} else {
-    		throw new SamlR2ResponseException(response,
+    		throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.NO_STATUS);
@@ -864,9 +864,9 @@ public class AssertionConsumerProducer extends SamlR2Producer {
         if (response.getSignature() == null) {
 
             // Redirect binding does not have signature elements!
-            if (!endpoint.getBinding().equals(SamlR2Binding.SAMLR2_REDIRECT.getValue())) {
+            if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
 
-                throw new SamlR2ResponseException(response,
+                throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_RESPONSE_SIGNATURE);
@@ -882,13 +882,13 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                 signer.validate(idpMd, response);
 
         } catch (SamlR2SignatureValidationException e) {
-            throw new SamlR2ResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
         } catch (SamlR2SignatureException e) {
             //other exceptions like JAXB, xml parser...
-            throw new SamlR2ResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
@@ -910,7 +910,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 					assertion = encrypter.decryptAssertion((EncryptedElementType)assertionObject);
 				} catch (SamlR2EncrypterException e) {
 
-					throw new SamlR2ResponseException(response,
+					throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_ASSERTION_ENCRYPTION, e);
@@ -927,7 +927,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                 saml2SpMd = (SPSSODescriptorType) spMd.getEntry();
             } catch (CircleOfTrustManagerException e) {
                 //other exceptions like JAXB, xml parser...
-                throw new SamlR2ResponseException(response,
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INTERNAL_ERROR, e);
@@ -936,7 +936,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
             if(saml2SpMd.isWantAssertionsSigned() != null && saml2SpMd.isWantAssertionsSigned()){
 
                 if (assertion.getSignature() == null) {
-                    throw new SamlR2ResponseException(response,
+                    throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_ASSERTION_SIGNATURE);
@@ -950,12 +950,12 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 					    signer.validate(idpMd, assertion);
 
 				} catch (SamlR2SignatureValidationException e) {
-					throw new SamlR2ResponseException(response,
+					throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_ASSERTION_SIGNATURE, e);
 				} catch (SamlR2SignatureException e) {
-					throw new SamlR2ResponseException(response,
+					throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_ASSERTION_SIGNATURE, e);
@@ -975,7 +975,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 					if(subjectContent instanceof SubjectConfirmationType){
 						SubjectConfirmationType subConf = (SubjectConfirmationType)subjectContent;
 						if(subConf.getMethod() == null){
-							throw new SamlR2ResponseException(response,
+							throw new SSOResponseException(response,
                                     StatusCode.TOP_REQUESTER,
                                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                                     StatusDetails.NO_METHOD);
@@ -990,20 +990,20 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 								if(scData.getNotBefore() != null && assertion.getConditions().getNotBefore() != null
 										&& scData.getNotBefore().normalize().compare(assertion.getConditions().getNotBefore().normalize()) < 0){
                                     logger.warn("SubjectConfirmationData.NotBefore value SHOULD not be earlier than Conditions.NotBefore.");
-									// TODO : Should be configurable : throw new SamlR2ResponseException("SubjectConfirmationData.NotBefore value SHOULD not be earlier than Conditions.NotBefore.");
+									// TODO : Should be configurable : throw new SSOResponseException("SubjectConfirmationData.NotBefore value SHOULD not be earlier than Conditions.NotBefore.");
 								}
 								logger.debug("scData.getNotOnOrAfter(): " + scData.getNotOnOrAfter());
 								logger.debug("assertion.getConditions().getNotOnOrAfter()" + assertion.getConditions().getNotOnOrAfter());
 								if(scData.getNotOnOrAfter() != null && assertion.getConditions().getNotOnOrAfter() != null
 										&& scData.getNotOnOrAfter().normalize().compare(assertion.getConditions().getNotOnOrAfter().normalize()) > 0){
-									// TODO : Should be configurable : throw new SamlR2ResponseException("SubjectConfirmationData.NotOnOrAfter value SHOULD not be later than Conditions.NotOnOrAfter.");
+									// TODO : Should be configurable : throw new SSOResponseException("SubjectConfirmationData.NotOnOrAfter value SHOULD not be later than Conditions.NotOnOrAfter.");
                                     logger.warn("SubjectConfirmationData.NotOnOrAfter value SHOULD not be later than Conditions.NotOnOrAfter.");
 
 								}
 							}
 							if(scData.getNotBefore() != null && scData.getNotOnOrAfter() != null
 									&& scData.getNotOnOrAfter().normalize().compare(scData.getNotBefore().normalize()) < 0){
-								// TODO : Should be configurable : throw new SamlR2ResponseException("SubjectConfirmationData.NotBefore value SHOULD be earlier than SubjectConfirmationData.NotOnOrAfter.");
+								// TODO : Should be configurable : throw new SSOResponseException("SubjectConfirmationData.NotBefore value SHOULD be earlier than SubjectConfirmationData.NotOnOrAfter.");
                                 logger.warn("SubjectConfirmationData.NotBefore value SHOULD be earlier than SubjectConfirmationData.NotOnOrAfter.");
 								
 							}
@@ -1014,12 +1014,12 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 								
 			} else if (assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement() == null 
 						|| assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().size() == 0){
-				throw new SamlR2ResponseException(response,
+				throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NO_SUBJECT);
 			} else if (getAuthnStatements(assertion).size() != 0){
-				throw new SamlR2ResponseException(response,
+				throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NO_SUBJECT);
@@ -1030,13 +1030,13 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 	        if(authnStatementList.size() != 0){
 				for (AuthnStatementType statement : authnStatementList) {
 					if(statement.getAuthnInstant() == null){
-						throw new SamlR2ResponseException(response,
+						throw new SSOResponseException(response,
                                 StatusCode.TOP_REQUESTER,
                                 StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                                 StatusDetails.NO_AUTHN_INSTANT);
 					}
 					if(statement.getAuthnContext() == null){
-                        throw new SamlR2ResponseException(response,
+                        throw new SSOResponseException(response,
                                 StatusCode.TOP_REQUESTER,
                                 StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                                 StatusDetails.NO_AUTHN_CONTEXT);
@@ -1050,7 +1050,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
     /*
      * Saml2 core, section 2.5.1
      */
-    private void validateAssertionConditions(ResponseType response, ConditionsType conditions) throws SamlR2Exception, SamlR2ResponseException {
+    private void validateAssertionConditions(ResponseType response, ConditionsType conditions) throws SSOException, SSOResponseException {
 
         if (conditions == null)
             return;
@@ -1074,12 +1074,12 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 			logger.debug("Conditions.NotBefore normalized: " + notBeforeUTC.toString());
 			
 			if(!notBeforeUTC.isValid()){
-				throw new SamlR2ResponseException(response,
+				throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_UTC_VALUE, notBeforeUTC.toString());
 			} else if(!notBeforeUTC.toGregorianCalendar().getTime().before(utcCalendar.getTime())){
-                throw new SamlR2ResponseException(response,
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NOT_BEFORE_VIOLATED,
@@ -1093,13 +1093,13 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 			notOnOrAfterUTC = conditions.getNotOnOrAfter().normalize();
 			logger.debug("Conditions.NotOnOrAfter normalized: " + notOnOrAfterUTC.toString());
 			if(!notOnOrAfterUTC.isValid()){
-                throw new SamlR2ResponseException(response,
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_UTC_VALUE, notOnOrAfterUTC.toString());
 
 			} else if(!notOnOrAfterUTC.toGregorianCalendar().getTime().after(utcCalendar.getTime())){
-                throw new SamlR2ResponseException(response,
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NOT_ONORAFTER_VIOLATED, notOnOrAfterUTC.toString());
@@ -1108,7 +1108,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 		
 		if(notBeforeUTC != null && notOnOrAfterUTC != null 
 				&& notOnOrAfterUTC.compare(notBeforeUTC) <= 0){
-            throw new SamlR2ResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.INVALID_CONDITION, "'Not On or After' earlier that 'Not Before'");
@@ -1119,13 +1119,13 @@ public class AssertionConsumerProducer extends SamlR2Producer {
         MetadataEntry spMd = sp.getMetadata();
 
         if (spMd == null || spMd.getEntry() == null)
-            throw new SamlR2Exception("No metadata descriptor found for SP " + sp);
+            throw new SSOException("No metadata descriptor found for SP " + sp);
 
         EntityDescriptorType md = null;
         if (spMd.getEntry() instanceof EntityDescriptorType) {
             md = (EntityDescriptorType) spMd.getEntry();
         } else
-            throw new SamlR2Exception("Unsupported Metadata type " + md + ", SAML 2 Metadata expected");
+            throw new SSOException("Unsupported Metadata type " + md + ", SAML 2 Metadata expected");
 
 		if(conditions.getConditionOrAudienceRestrictionOrOneTimeUse() != null){
 			boolean audienceRestrictionValid = false;
@@ -1150,7 +1150,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 			}
 			if(!audienceRestrictionValid){
 				logger.error("SP is not in Audience list.");
-                throw new SamlR2ResponseException(response,
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NOT_IN_AUDIENCE);
@@ -1173,7 +1173,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
     	return statementsList;
     }
 
-    protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SamlR2Exception {
+    protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SSOException {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         ResponseType response = (ResponseType) in.getMessage().getContent();
@@ -1183,11 +1183,11 @@ public class AssertionConsumerProducer extends SamlR2Producer {
             logger.debug("IdP alias received " + idpAlias);
 
         if (idpAlias == null) {
-            throw new SamlR2Exception("No IDP available");
+            throw new SSOException("No IDP available");
         }
         CircleOfTrustMemberDescriptor idp = this.getCotManager().lookupMemberByAlias(idpAlias);
         if (idp == null) {
-            throw new SamlR2Exception("No IDP Member descriptor available for " + idpAlias);
+            throw new SSOException("No IDP Member descriptor available for " + idpAlias);
         }
 
         return idp;
@@ -1200,7 +1200,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                                                         AccountLink acctLink,
                                                         Subject federatedSubject,
                                                         Subject idpSubject)
-            throws SamlR2Exception {
+            throws SSOException {
 
         if (logger.isDebugEnabled())
             logger.debug("Creating new SP Security Context for subject " + federatedSubject);
@@ -1226,7 +1226,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                     logger.debug("Invalidating already expired sso session " + secCtx.getSessionIndex());
 
             } catch (SSOSessionException e) {
-                throw new SamlR2Exception(e);
+                throw new SSOException(e);
             }
 
         }
@@ -1250,7 +1250,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 
         if (nameId == null) {
             logger.error("No suitable Subject Name Identifier (SubjectNameID) found");
-            throw new SamlR2Exception("No suitable Subject Name Identifier (SubjectNameID) found");
+            throw new SSOException("No suitable Subject Name Identifier (SubjectNameID) found");
         }
 
         String idpSessionIndex = null;
@@ -1311,7 +1311,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
             
             return secCtx;
         } catch (SSOSessionException e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
 
     }

@@ -38,8 +38,8 @@ import org.apache.xml.security.exceptions.Base64DecodingException;
 import org.apache.xml.security.utils.Base64;
 import org.apache.xml.security.utils.EncryptionConstants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2KeyResolver;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2KeyResolverException;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.w3._2001._04.xmlenc_.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -65,7 +65,7 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
     private String jceProviderName;
     private String symmetricKeyAlgorithmURI;
     private String kekAlgorithmURI;
-    private SamlR2KeyResolver keyResolver;
+    private SSOKeyResolver keyResolver;
 
     public void setJceProviderName ( String jceProviderName ) {
         this.jceProviderName = jceProviderName;
@@ -90,14 +90,14 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         this.kekAlgorithmURI = kekAlgorithmURI;
     }
 
-    public SamlR2KeyResolver getKeyResolver () {
+    public SSOKeyResolver getKeyResolver () {
         return keyResolver;
     }
 
     /**
-     * @org.apache.xbean.Property alias="key-resolver" nestedType="org.atricore.idbus.capabilities.sso.SamlR2KeyResolver"
+     * @org.apache.xbean.Property alias="key-resolver" nestedType="org.atricore.idbus.capabilities.sso.SSOKeyResolver"
      */
-    public void setKeyResolver ( SamlR2KeyResolver keyResolver ) {
+    public void setKeyResolver ( SSOKeyResolver keyResolver ) {
         this.keyResolver = keyResolver;
     }
 
@@ -109,10 +109,10 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         if( keyResolver != null )
             return encrypt( assertion, keyResolver );
 
-        throw new SamlR2EncrypterException( "No SamlR2KeyResolver found in configuration" );
+        throw new SamlR2EncrypterException( "No SSOKeyResolver found in configuration" );
     }
 
-    public EncryptedElementType encrypt ( AssertionType assertion, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException {
+    public EncryptedElementType encrypt ( AssertionType assertion, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
         // Marshall the Assertion object as a DOM tree:
         if ( logger.isDebugEnabled() )
             logger.debug( "Marshalling SAMLR2 Assertion to DOM Tree [" + assertion.getID() + "]" );
@@ -144,10 +144,10 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         if( keyResolver != null )
             return decryptAssertion( encryptedAssertion, keyResolver );
 
-        throw new SamlR2EncrypterException( "No SamlR2KeyResolver found in configuration" );
+        throw new SamlR2EncrypterException( "No SSOKeyResolver found in configuration" );
     }
 
-    public AssertionType decryptAssertion ( EncryptedElementType encryptedAssertion, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException {
+    public AssertionType decryptAssertion ( EncryptedElementType encryptedAssertion, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
         org.w3c.dom.Document doc = createNewDocument();
 
         JAXBElement<EncryptedElementType> jaxbAssertion =
@@ -169,10 +169,10 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         if( keyResolver != null )
             return encrypt( request, keyResolver );
 
-        throw new SamlR2EncrypterException( "No SamlR2KeyResolver found in configuration" );
+        throw new SamlR2EncrypterException( "No SSOKeyResolver found in configuration" );
     }
 
-    public EncryptedElementType encrypt ( RequestAbstractType request, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException {
+    public EncryptedElementType encrypt ( RequestAbstractType request, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
         throw new UnsupportedOperationException( "Not implemented!" );
     }
 
@@ -180,10 +180,10 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         if( keyResolver != null )
             return encrypt( response, keyResolver );
 
-        throw new SamlR2EncrypterException( "No SamlR2KeyResolver found in configuration" );
+        throw new SamlR2EncrypterException( "No SSOKeyResolver found in configuration" );
     }
 
-    public EncryptedElementType encrypt ( StatusResponseType response, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException {
+    public EncryptedElementType encrypt ( StatusResponseType response, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
         throw new UnsupportedOperationException( "Not implemented!" );
     }
 
@@ -222,7 +222,7 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         return encElement.getValue();
     }
 
-    protected EncryptedKeyType encryptKey ( Document doc, Key symmetricKey, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException {
+    protected EncryptedKeyType encryptKey ( Document doc, Key symmetricKey, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
         EncryptedKey encKey;
         try {
             XMLCipher keyCipher = XMLCipher.getInstance( getKekAlgorithmURI() );
@@ -230,7 +230,7 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
             encKey = keyCipher.encryptKey( doc, symmetricKey );
         } catch ( XMLEncryptionException e ) {
             throw new SamlR2EncrypterException( "Encryption Error generating encrypted key", e );
-        } catch ( SamlR2KeyResolverException e ) {
+        } catch ( SSOKeyResolverException e ) {
             throw new SamlR2EncrypterException( "Encryption Error retrieving private key", e );
         }
 
@@ -272,7 +272,7 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         return ekt;
     }
 
-    protected Node decryptAssertion ( Document document, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException {
+    protected Node decryptAssertion ( Document document, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
         try {
             org.w3c.dom.Element encryptedDataElement =
                     (org.w3c.dom.Element) document.getElementsByTagNameNS(
@@ -347,7 +347,7 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         return null;
     }
 
-    private Key loadKeyEncryptionKey ( Document document, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException {
+    private Key loadKeyEncryptionKey ( Document document, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
         try {
             org.w3c.dom.Element encryptedKeyElement =
                     (org.w3c.dom.Element) document.getElementsByTagNameNS(
@@ -386,10 +386,10 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         if( keyResolver != null )
             return decryptNameID( encryptedNameID, keyResolver );
 
-        throw new SamlR2EncrypterException( "No SamlR2KeyResolver found in configuration" );
+        throw new SamlR2EncrypterException( "No SSOKeyResolver found in configuration" );
     }    
     
-    public NameIDType decryptNameID ( EncryptedElementType encryptedNameID, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException {
+    public NameIDType decryptNameID ( EncryptedElementType encryptedNameID, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
         org.w3c.dom.Document doc = createNewDocument();
 
         JAXBElement<EncryptedElementType> jaxbNameID =
@@ -407,7 +407,7 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         return nameID.getValue();
     }
 
-    protected Node decryptNameID(Document document, SamlR2KeyResolver keyResolver) throws SamlR2EncrypterException {
+    protected Node decryptNameID(Document document, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
         try {
             org.w3c.dom.Element encryptedDataElement =
                     (org.w3c.dom.Element) document.getElementsByTagNameNS(

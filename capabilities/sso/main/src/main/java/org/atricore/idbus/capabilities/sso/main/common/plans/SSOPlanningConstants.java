@@ -31,7 +31,7 @@ import org.atricore.idbus.capabilities.sts.main.WSTConstants;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SamlR2PlansConstants.java 1342 2009-06-26 16:21:27Z sgonzalez $
  */
-public interface SamlR2PlanningConstants {
+public interface SSOPlanningConstants {
 
     static final String VAR_COT_MEMBER = "urn:org:atricore:idbus:cot-member";
 

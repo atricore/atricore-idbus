@@ -29,9 +29,9 @@ import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.AbstractSamlR2Mediator;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.idp.IdentityProviderConstants;
 import org.atricore.idbus.capabilities.sso.main.idp.ProviderSecurityContext;
@@ -39,9 +39,9 @@ import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2SloRequestToSaml
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2RequestException;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2ResponseException;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.core.SSORequestException;
+import org.atricore.idbus.capabilities.sso.support.core.SSOResponseException;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
@@ -73,7 +73,7 @@ import javax.xml.namespace.QName;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: IDPSingleSignOnServiceProducer.java 1246 2009-06-05 20:30:58Z sgonzalez $
  */
-public class SingleLogoutProducer extends SamlR2Producer {
+public class SingleLogoutProducer extends SSOProducer {
 
     private static final Log logger = LogFactory.getLog( SingleLogoutProducer.class );
 
@@ -99,7 +99,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
                         content.getClass().getName(),
                         null);
             }
-        } catch (SamlR2RequestException e) {
+        } catch (SSORequestException e) {
 
             throw new IdentityMediationFault(
                     e.getTopLevelStatusCode() != null ? e.getTopLevelStatusCode().getValue() : StatusCode.TOP_RESPONDER.getValue(),
@@ -108,7 +108,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
                     e.getErrorDetails() != null ? e.getErrorDetails() : content.getClass().getName(),
                     e);
 
-        } catch (SamlR2Exception e) {
+        } catch (SSOException e) {
 
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
@@ -157,14 +157,14 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
         boolean partialLogout = performSlo(exchange, secCtx, sloRequest);
 
-        SamlR2Binding binding = SamlR2Binding.asEnum(endpoint.getBinding());
+        SSOBinding binding = SSOBinding.asEnum(endpoint.getBinding());
         // Send status response!
         if (logger.isDebugEnabled())
             logger.debug("Building SLO Response for SSO Session "  + (secCtx != null ? secCtx.getSessionIndex() : "<NONE>"));
 
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(sloRequest.getIssuer());
 
-        EndpointDescriptor ed = resolveSpSloEndpoint(sloRequest.getIssuer(), new SamlR2Binding [] { binding } , true);
+        EndpointDescriptor ed = resolveSpSloEndpoint(sloRequest.getIssuer(), new SSOBinding[] { binding } , true);
 
         // TODO : Send partialLogout status code if required
         ResponseType response = buildSamlResponse(exchange, sloRequest, sp, ed);
@@ -220,7 +220,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
     // TODO : Reuse basic SAML response validations ....
     protected void validateResponse(LogoutRequestType spSloRequest, StatusResponseType spSloResponse, String originalSloResponse)
-            throws SamlR2ResponseException{
+            throws SSOResponseException {
         SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
         SamlR2Encrypter encrypter = mediator.getEncrypter();
@@ -241,7 +241,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
             }
 
         } catch (CircleOfTrustManagerException e) {
-            throw new SamlR2ResponseException(spSloResponse,
+            throw new SSOResponseException(spSloResponse,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     null,
@@ -253,7 +253,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
         // If no signature is present, throw an exception. We always require signed responses ...
         if (spSloResponse.getSignature() == null)
-            throw new SamlR2ResponseException(spSloResponse,
+            throw new SSOResponseException(spSloResponse,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_RESPONSE_SIGNATURE);
@@ -265,13 +265,13 @@ public class SingleLogoutProducer extends SamlR2Producer {
                 signer.validate(spMd, spSloResponse);
 
         } catch (SamlR2SignatureValidationException e) {
-            throw new SamlR2ResponseException(spSloResponse,
+            throw new SSOResponseException(spSloResponse,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
         } catch (SamlR2SignatureException e) {
             //other exceptions like JAXB, xml parser...
-            throw new SamlR2ResponseException(spSloResponse,
+            throw new SSOResponseException(spSloResponse,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
@@ -281,9 +281,9 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
     // TODO : Reuse basic SAML request validations ....
     protected void validateRequest(LogoutRequestType request, String originalRequest)
-            throws SamlR2RequestException, SamlR2Exception {
+            throws SSORequestException, SSOException {
 
-        AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
         SamlR2Encrypter encrypter = mediator.getEncrypter();
 
@@ -303,7 +303,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
             }
 
         } catch (CircleOfTrustManagerException e) {
-            throw new SamlR2RequestException(request,
+            throw new SSORequestException(request,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     null,
@@ -316,7 +316,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
             // If no signature is present, throw an exception!
             if (request.getSignature() == null)
-                throw new SamlR2RequestException(request,
+                throw new SSORequestException(request,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_RESPONSE_SIGNATURE);
@@ -328,13 +328,13 @@ public class SingleLogoutProducer extends SamlR2Producer {
                     signer.validate(spMd, request);
 
             } catch (SamlR2SignatureValidationException e) {
-                throw new SamlR2RequestException(request,
+                throw new SSORequestException(request,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
             } catch (SamlR2SignatureException e) {
                 //other exceptions like JAXB, xml parser...
-                throw new SamlR2RequestException(request,
+                throw new SSORequestException(request,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
@@ -378,7 +378,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
                     // Try to send back channel requests, otherwise try http bindings (post, artifact, redirect)
                     EndpointDescriptor ed = resolveSpSloEndpoint(pSecCtx.getProviderId(),
-                            new SamlR2Binding[] { SamlR2Binding.SAMLR2_LOCAL, SamlR2Binding.SAMLR2_SOAP }, true);
+                            new SSOBinding[] { SSOBinding.SAMLR2_LOCAL, SSOBinding.SAMLR2_SOAP }, true);
 
                     CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(pSecCtx.getProviderId());
 

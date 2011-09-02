@@ -25,7 +25,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
@@ -53,7 +53,7 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
     public static final String SSO_ARTIFACT_ID = "SSOArt";
 
     public SsoHttpArtifactBinding(Channel channel) {
-        super(SamlR2Binding.SSO_ARTIFACT.getValue(), channel);
+        super(SSOBinding.SSO_ARTIFACT.getValue(), channel);
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {

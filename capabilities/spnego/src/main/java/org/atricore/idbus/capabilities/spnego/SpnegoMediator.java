@@ -24,7 +24,7 @@ package org.atricore.idbus.capabilities.spnego;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -207,15 +207,15 @@ public class SpnegoMediator extends AbstractCamelMediator {
             String type = null;
             String location;
             String responseLocation;
-            SamlR2Binding binding = null;
+            SSOBinding binding = null;
 
             // ---------------------------------------------
             // Resolve Endpoint binding
             // ---------------------------------------------
             if (endpoint.getBinding() != null)
-                binding = SamlR2Binding.asEnum(endpoint.getBinding());
+                binding = SSOBinding.asEnum(endpoint.getBinding());
             else
-                logger.warn("No SamlR2Binding found in endpoint " + endpoint.getName());
+                logger.warn("No SSOBinding found in endpoint " + endpoint.getName());
 
             // ---------------------------------------------
             // Resolve Endpoint location

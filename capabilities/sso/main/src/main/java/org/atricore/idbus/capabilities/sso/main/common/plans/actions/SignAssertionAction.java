@@ -24,7 +24,7 @@ package org.atricore.idbus.capabilities.sso.main.common.plans.actions;
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSAMLR2AssertionAction;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSSOAssertionAction;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
@@ -33,7 +33,7 @@ import org.jbpm.graph.exe.ExecutionContext;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SignAssertionAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class SignAssertionAction extends AbstractSAMLR2AssertionAction {
+public class SignAssertionAction extends AbstractSSOAssertionAction {
 
     private static final Log logger = LogFactory.getLog(SignAssertionAction .class);
 

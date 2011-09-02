@@ -28,7 +28,7 @@ import org.apache.camel.Message;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -52,7 +52,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
     private static final Log logger = LogFactory.getLog(SamlR2HttpRedirectBinding.class);
 
     public SamlR2HttpRedirectBinding(Channel channel) {
-        super(SamlR2Binding.SAMLR2_REDIRECT.getValue(), channel);
+        super(SSOBinding.SAMLR2_REDIRECT.getValue(), channel);
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {
@@ -73,7 +73,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             // HTTP Request Parameters from HTTP Request body
             MediationState state = createMediationState(exchange);
 
-            // HTTP Redirect SamlR2Binding supports the following parameters
+            // HTTP Redirect SSOBinding supports the following parameters
             String base64SAMLRequest = state.getTransientVariable("SAMLRequest");
             String base64SAMLResponse = state.getTransientVariable("SAMLResponse");
             String relayState = state.getTransientVariable("RelayState");

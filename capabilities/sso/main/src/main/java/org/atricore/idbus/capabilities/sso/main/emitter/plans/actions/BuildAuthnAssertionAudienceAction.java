@@ -33,7 +33,7 @@ import org.jbpm.graph.exe.ExecutionContext;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: BuildAuthnAssertionAudienceAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class BuildAuthnAssertionAudienceAction extends AbstractSAMLR2AssertionAction {
+public class BuildAuthnAssertionAudienceAction extends AbstractSSOAssertionAction {
 
     private static final Log logger = LogFactory.getLog(BuildAuthnAssertionAudienceAction.class);
     

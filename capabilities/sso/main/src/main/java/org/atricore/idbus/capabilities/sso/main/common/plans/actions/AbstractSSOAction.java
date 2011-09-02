@@ -19,11 +19,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions;
+package org.atricore.idbus.capabilities.sso.main.common.plans.actions;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.common.plans.SamlR2PlanningConstants;
+import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2MessagingConstants;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.planning.jbpm.AbstractIdentityPlanActionHandler;
@@ -31,14 +31,14 @@ import org.jbpm.graph.exe.ExecutionContext;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: AbstractSAMLR2AssertionAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
+ * @version $Id: AbstractSSOAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public abstract class AbstractSAMLR2AssertionAction extends AbstractIdentityPlanActionHandler implements
-        SAMLR2MessagingConstants, WSTConstants, SamlR2PlanningConstants {
+public abstract class AbstractSSOAction extends AbstractIdentityPlanActionHandler implements
+        SAMLR2MessagingConstants, WSTConstants, SSOPlanningConstants {
 
-    private static final Log logger = LogFactory.getLog(AbstractSAMLR2AssertionAction.class);
+    private static final Log logger = LogFactory.getLog(AbstractSSOAction.class);
 
-    public AbstractSAMLR2AssertionAction() {
+    public AbstractSSOAction() {
         if (logger.isDebugEnabled())
             logger.debug("Creating Identity Plan SAMLR2 Action Handler instance.");
     }
@@ -46,5 +46,6 @@ public abstract class AbstractSAMLR2AssertionAction extends AbstractIdentityPlan
     protected void doInit(ExecutionContext executionContext) throws Exception {
 
     }
+
 
 }

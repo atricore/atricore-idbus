@@ -23,7 +23,7 @@ package org.atricore.idbus.capabilities.sso.main.sp.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
-import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSamlR2Action;
+import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
@@ -43,7 +43,7 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class InitializeLogoutRequestAction extends AbstractSamlR2Action {
+public class InitializeLogoutRequestAction extends AbstractSSOAction {
 
     protected void doExecute ( IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext ) throws Exception {
 

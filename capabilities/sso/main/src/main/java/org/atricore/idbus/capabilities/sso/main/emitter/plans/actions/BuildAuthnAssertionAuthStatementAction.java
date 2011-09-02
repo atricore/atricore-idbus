@@ -42,7 +42,7 @@ import java.util.Date;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: BuildAuthnAssertionAuthStatementAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class BuildAuthnAssertionAuthStatementAction extends AbstractSAMLR2AssertionAction {
+public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertionAction {
 
     private static final Log logger = LogFactory.getLog(BuildAuthnAssertionAuthStatementAction.class);
 

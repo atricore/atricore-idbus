@@ -25,15 +25,15 @@ import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.plans.SamlR2PlanningConstants;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2MessagingConstants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.util.ProtocolUtils;
-import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectType;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
@@ -53,14 +53,14 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: SamlR2Producer.java 1359 2009-07-19 16:57:57Z sgonzalez $
+ * @version $Id: SSOProducer.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public abstract class SamlR2Producer extends AbstractCamelProducer<CamelMediationExchange>
-        implements SAMLR2Constants, SAMLR2MessagingConstants, SamlR2PlanningConstants {
+public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationExchange>
+        implements SAMLR2Constants, SAMLR2MessagingConstants, SSOPlanningConstants {
 
-    private static final Log logger = LogFactory.getLog(SamlR2Producer.class);
+    private static final Log logger = LogFactory.getLog(SSOProducer.class);
 
-    protected SamlR2Producer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) {
+    protected SSOProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) {
         super(endpoint);
     }
 
@@ -81,7 +81,7 @@ public abstract class SamlR2Producer extends AbstractCamelProducer<CamelMediatio
         }
     }
 
-    protected IdentityPlan findIdentityPlanOfType(Class planClass) throws SamlR2Exception {
+    protected IdentityPlan findIdentityPlanOfType(Class planClass) throws SSOException {
 
         Collection<IdentityPlan> plans = this.endpoint.getIdentityPlans();
         if (plans != null) {
@@ -96,7 +96,7 @@ public abstract class SamlR2Producer extends AbstractCamelProducer<CamelMediatio
 
     }
 
-    protected Collection<IdentityPlan> findIdentityPlansOfType(Class planClass) throws SamlR2Exception {
+    protected Collection<IdentityPlan> findIdentityPlansOfType(Class planClass) throws SSOException {
 
         java.util.List<IdentityPlan> found = new java.util.ArrayList<IdentityPlan>();
 
@@ -173,9 +173,9 @@ public abstract class SamlR2Producer extends AbstractCamelProducer<CamelMediatio
     }
 
     protected EndpointDescriptor resolveSpSloEndpoint(String spAlias,
-                                                      SamlR2Binding[] preferredBindings,
+                                                      SSOBinding[] preferredBindings,
                                                       boolean onlyPreferredBinding)
-            throws SamlR2Exception {
+            throws SSOException {
 
         try {
 
@@ -187,31 +187,31 @@ public abstract class SamlR2Producer extends AbstractCamelProducer<CamelMediatio
             SPSSODescriptorType samlr2sp = (SPSSODescriptorType) md.getEntry();
 
             EndpointDescriptor ed = resolveEndpoint(samlr2sp.getSingleLogoutService(),
-                    preferredBindings, SamlR2Service.SingleLogoutService, true);
+                    preferredBindings, SSOService.SingleLogoutService, true);
             if (ed == null)
-                throw new SamlR2Exception("No SLO Endpoint found for SP " + spAlias);
+                throw new SSOException("No SLO Endpoint found for SP " + spAlias);
 
             return ed;
 
         } catch (CircleOfTrustManagerException e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
 
     }
 
     protected EndpointDescriptor resolveSpSloEndpoint(NameIDType spId,
-                                                      SamlR2Binding[] preferredBindings,
+                                                      SSOBinding[] preferredBindings,
                                                       boolean onlyPreferredBinding)
-            throws SamlR2Exception {
+            throws SSOException {
 
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(spId);
         return resolveSpSloEndpoint(sp.getAlias(), preferredBindings, onlyPreferredBinding);
     }
 
     protected EndpointDescriptor resolveIdPSloEndpoint(NameIDType idpId,
-                                                      SamlR2Binding[] preferredBindings,
+                                                      SSOBinding[] preferredBindings,
                                                       boolean onlyPreferredBinding)
-            throws SamlR2Exception {
+            throws SSOException {
 
         CircleOfTrustMemberDescriptor idp = resolveProviderDescriptor(idpId);
         return resolveIdPSloEndpoint(idp.getAlias(), preferredBindings, onlyPreferredBinding);
@@ -219,9 +219,9 @@ public abstract class SamlR2Producer extends AbstractCamelProducer<CamelMediatio
 
 
     protected EndpointDescriptor resolveIdPSloEndpoint(String idpAlias,
-                                                      SamlR2Binding[] preferredBindings,
+                                                      SSOBinding[] preferredBindings,
                                                       boolean onlyPreferredBinding)
-            throws SamlR2Exception {
+            throws SSOException {
 
         try {
 
@@ -233,30 +233,30 @@ public abstract class SamlR2Producer extends AbstractCamelProducer<CamelMediatio
             IDPSSODescriptorType samlr2idp = (IDPSSODescriptorType) md.getEntry();
 
             EndpointDescriptor ed = resolveEndpoint(samlr2idp.getSingleLogoutService(),
-                    preferredBindings, SamlR2Service.SingleLogoutService, true);
+                    preferredBindings, SSOService.SingleLogoutService, true);
 
             if (ed == null)
-                throw new SamlR2Exception("No SLO Endpoint found for IDP " + idpAlias);
+                throw new SSOException("No SLO Endpoint found for IDP " + idpAlias);
 
             return ed;
 
         } catch (CircleOfTrustManagerException e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
 
     }
 
 
     protected EndpointDescriptor resolveEndpoint(List<EndpointType> endpointTypes,
-                                                 SamlR2Binding[] preferredBindings,
-                                                 SamlR2Service service,
+                                                 SSOBinding[] preferredBindings,
+                                                 SSOService service,
                                                  boolean onlyPreferredBinding) {
 
         EndpointType endpointType = null;
         EndpointType preferredEndpointType = null;
 
         // Preferred bindings are in preference order
-        for (SamlR2Binding preferredBinding : preferredBindings) {
+        for (SSOBinding preferredBinding : preferredBindings) {
 
             for (EndpointType currentSloEndpoint : endpointTypes) {
 

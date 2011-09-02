@@ -24,9 +24,9 @@ package org.atricore.idbus.capabilities.sso.main.sp;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.AbstractSamlR2Mediator;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
@@ -42,7 +42,7 @@ import java.util.Collection;
  * @version $Id: SamlR2SPMediator.java 1359 2009-07-19 16:57:57Z sgonzalez $
  * @org.apache.xbean.XBean element="sp-mediator"
  */
-public class SamlR2SPMediator extends AbstractSamlR2Mediator {
+public class SamlR2SPMediator extends AbstractSSOMediator {
 
     private static final Log logger = LogFactory.getLog(SamlR2SPMediator.class);
 
@@ -50,9 +50,9 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
     private String preferredNameIdPolicy;
 
-    private SamlR2Binding preferredIdpSSOBinding = SamlR2Binding.SAMLR2_ARTIFACT;
+    private SSOBinding preferredIdpSSOBinding = SSOBinding.SAMLR2_ARTIFACT;
 
-    private SamlR2Binding preferredIdpSLOBinding = SamlR2Binding.SAMLR2_ARTIFACT;
+    private SSOBinding preferredIdpSLOBinding = SSOBinding.SAMLR2_ARTIFACT;
 
     private String spBindingACS;
 
@@ -80,7 +80,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 
-                    SamlR2Binding binding = SamlR2Binding.asEnum(endpoint.getBinding());
+                    SSOBinding binding = SSOBinding.asEnum(endpoint.getBinding());
                     // HTTP Bindings are handled with Camel
                     EndpointDescriptor ed = resolveEndpoint(idpChannel, endpoint);
 
@@ -92,7 +92,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
-                            // ==> idbus-http ==> idbus-bind ==> samlr2-sp
+                            // ==> idbus-http ==> idbus-bind ==> sso-sp
                             // ----------------------------------------------------------
 
                             // FROM idbus-http TO samlr2-binding (through direct component)
@@ -100,12 +100,12 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                     process(new LoggerProcessor(getLogger())).
                                     to("direct:" + ed.getName());
 
-                            // FROM samlr-bind TO samlr2-sp
+                            // FROM samlr-bind TO sso-sp
                             from("idbus-bind:camel://direct:" + ed.getName() +
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + idpChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("samlr2-sp:" + ed.getType() +
+                                    to("sso-sp:" + ed.getType() +
                                             "?channelRef=" + idpChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -116,12 +116,12 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                         process(new LoggerProcessor(getLogger())).
                                         to("direct:" + ed.getName() + "-response");
 
-                                // FROM samlr-bind TO samlr2-sp
+                                // FROM samlr-bind TO sso-sp
                                 from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + idpChannel.getName()).
                                         process(new LoggerProcessor(getLogger())).
-                                        to("samlr2-sp:" + ed.getType() +
+                                        to("sso-sp:" + ed.getType() +
                                                 "?channelRef=" + idpChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");
@@ -133,7 +133,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
                             // ----------------------------------------------------------
                             // SOAP Incomming messages:
-                            // ==> idbus-http ==> cxf ==> idbus-bind ==> samlr2-sp
+                            // ==> idbus-http ==> cxf ==> idbus-bind ==> sso-sp
                             // ----------------------------------------------------------
 
                             // FROM idbus-http TO cxf (through direct component)
@@ -151,12 +151,12 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                     to("direct:" + ed.getName());
 
 
-                            // FROM samlr-bind TO samlr2-sp
+                            // FROM samlr-bind TO sso-sp
                             from("idbus-bind:camel://direct:" + ed.getName() +
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + idpChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("samlr2-sp:" + ed.getType() +
+                                    to("sso-sp:" + ed.getType() +
                                             "?channelRef=" + idpChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -178,12 +178,12 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                         process(new LoggerProcessor(getLogger())).
                                         to("direct:" + ed.getName() + "-response");
 
-                                // FROM SAMLR2 SamlR2Binding TO SAMLR2-SP
+                                // FROM SAMLR2 SSOBinding TO SAMLR2-SP
                                 from("idbus-bind:camel://" + ed.getName() + "-response" +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + idpChannel.getName()).
                                         process(new LoggerProcessor(getLogger())).
-                                        to("samlr2-sp:" + ed.getType() +
+                                        to("sso-sp:" + ed.getType() +
                                                 "?channelRef=" + idpChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");
@@ -194,7 +194,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
                             // ----------------------------------------------------------
                             // SOAP Incomming messages:
-                            // ==> idbus-http ==> cxf ==> idbus-bind ==> samlr2-sp
+                            // ==> idbus-http ==> cxf ==> idbus-bind ==> sso-sp
                             // ----------------------------------------------------------
 
                             // FROM idbus-http TO cxf (through direct component)
@@ -212,12 +212,12 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                     to("direct:" + ed.getName());
 
 
-                            // FROM samlr-bind TO samlr2-sp
+                            // FROM samlr-bind TO sso-sp
                             from("idbus-bind:camel://direct:" + ed.getName() +
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + idpChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("samlr2-sp:" + ed.getType() +
+                                    to("sso-sp:" + ed.getType() +
                                             "?channelRef=" + idpChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -239,12 +239,12 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                         process(new LoggerProcessor(getLogger())).
                                         to("direct:" + ed.getName() + "-response");
 
-                                // FROM SAMLR2 SamlR2Binding TO SAMLR2-SP
+                                // FROM SAMLR2 SSOBinding TO SAMLR2-SP
                                 from("idbus-bind:camel://" + ed.getName() + "-response" +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + idpChannel.getName()).
                                         process(new LoggerProcessor(getLogger())).
-                                        to("samlr2-sp:" + ed.getType() +
+                                        to("sso-sp:" + ed.getType() +
                                                 "?channelRef=" + idpChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");
@@ -252,8 +252,8 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                             break;
 
                         case SAMLR2_PAOS:
-                            // TODO : Implement SAMLR2 PAOS SamlR2Binding
-                            throw new SamlR2Exception("Unsupported SamlR2Binding " + binding.getValue());
+                            // TODO : Implement SAMLR2 PAOS SSOBinding
+                            throw new SSOException("Unsupported SSOBinding " + binding.getValue());
 
                         case SAMLR2_LOCAL:
 
@@ -264,7 +264,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + idpChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("samlr2-sp:" + ed.getType() +
+                                    to("sso-sp:" + ed.getType() +
                                             "?channelRef=" + idpChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -281,14 +281,14 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + idpChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("samlr2-sp:" + ed.getType() +
+                                    to("sso-sp:" + ed.getType() +
                                             "?channelRef=" + idpChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
 
                             break;
                         default:
-                            throw new SamlR2Exception("Unsupported SamlR2Binding " + binding.getValue());
+                            throw new SSOException("Unsupported SSOBinding " + binding.getValue());
                     }
 
 
@@ -317,7 +317,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 
-                    SamlR2Binding binding = SamlR2Binding.asEnum(endpoint.getBinding());
+                    SSOBinding binding = SSOBinding.asEnum(endpoint.getBinding());
                     // HTTP Bindings are handled with Camel
                     EndpointDescriptor ed = resolveEndpoint(bindingChannel, endpoint);
 
@@ -328,7 +328,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
-                            // ==> idbus-http ==> idbus-bind ==> samlr2-sp
+                            // ==> idbus-http ==> idbus-bind ==> sso-sp
                             // ----------------------------------------------------------
 
                             // FROM idbus-http TO samlr2-binding (through direct component)
@@ -336,12 +336,12 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                     process(new LoggerProcessor(getLogger())).
                                     to("direct:" + ed.getName());
 
-                            // FROM samlr-bind TO samlr2-sp
+                            // FROM samlr-bind TO sso-sp
                             from("idbus-bind:camel://direct:" + ed.getName() +
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + bindingChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("samlr2-sp:" + ed.getType() +
+                                    to("sso-sp:" + ed.getType() +
                                             "?channelRef=" + bindingChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -352,12 +352,12 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                         process(new LoggerProcessor(getLogger())).
                                         to("direct:" + ed.getName() + "-response");
 
-                                // FROM samlr-bind TO samlr2-sp
+                                // FROM samlr-bind TO sso-sp
                                 from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + bindingChannel.getName()).
                                         process(new LoggerProcessor(getLogger())).
-                                        to("samlr2-sp:" + ed.getType() +
+                                        to("sso-sp:" + ed.getType() +
                                                 "?channelRef=" + bindingChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");
@@ -370,7 +370,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
                             // ----------------------------------------------------------
                             // SOAP Incomming messages:
-                            // ==> idbus-http ==> cxf ==> idbus-bind ==> samlr2-sp
+                            // ==> idbus-http ==> cxf ==> idbus-bind ==> sso-sp
                             // ----------------------------------------------------------
 
                             // FROM idbus-http TO cxf (through direct component)
@@ -388,12 +388,12 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                     to("direct:" + ed.getName());
 
 
-                            // FROM samlr-bind TO samlr2-sp
+                            // FROM samlr-bind TO sso-sp
                             from("idbus-bind:camel://direct:" + ed.getName() +
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + bindingChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("samlr2-sp:" + ed.getType() +
+                                    to("sso-sp:" + ed.getType() +
                                             "?channelRef=" + bindingChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -415,12 +415,12 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                         process(new LoggerProcessor(getLogger())).
                                         to("direct:" + ed.getName() + "-response");
 
-                                // FROM SAMLR2 SamlR2Binding TO SAMLR2-SP
+                                // FROM SAMLR2 SSOBinding TO SAMLR2-SP
                                 from("idbus-bind:camel://" + ed.getName() + "-response" +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + bindingChannel.getName()).
                                         process(new LoggerProcessor(getLogger())).
-                                        to("samlr2-sp:" + ed.getType() +
+                                        to("sso-sp:" + ed.getType() +
                                                 "?channelRef=" + bindingChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");
@@ -435,7 +435,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + bindingChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("samlr2-sp:" + ed.getType() +
+                                    to("sso-sp:" + ed.getType() +
                                             "?channelRef=" + bindingChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -443,7 +443,7 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
                             break;
 
                         default:
-                            throw new SamlR2Exception("Unsupported SamlR2Binding " + binding.getValue());
+                            throw new SSOException("Unsupported SSOBinding " + binding.getValue());
                     }
 
 
@@ -474,10 +474,10 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
     }
 
     public void setPreferredIdpSSOBinding(String binding) {
-        this.preferredIdpSSOBinding = SamlR2Binding.asEnum(binding);
+        this.preferredIdpSSOBinding = SSOBinding.asEnum(binding);
     }
 
-    public SamlR2Binding getPreferredIdpSSOBindingValue() {
+    public SSOBinding getPreferredIdpSSOBindingValue() {
         return preferredIdpSSOBinding;
     }
 
@@ -486,10 +486,10 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
     }
 
     public void setPreferredIdpSLOBinding(String binding) {
-        this.preferredIdpSLOBinding = SamlR2Binding.asEnum(binding);
+        this.preferredIdpSLOBinding = SSOBinding.asEnum(binding);
     }
 
-    public SamlR2Binding getPreferredIdpSLOBindingValue() {
+    public SSOBinding getPreferredIdpSLOBindingValue() {
         return preferredIdpSLOBinding;
     }
 

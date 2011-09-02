@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.capabilities.sso.main.emitter.plans;
 
-import org.atricore.idbus.capabilities.sso.main.common.plans.SamlR2PlanningConstants;
+import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
@@ -45,7 +45,7 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SamlR2SecurityTokenToAuthnAssertionPlan.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2AssertionPlan {
+public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertionPlan {
 
     public IdentityPlanExecutionExchange prepare(IdentityPlanExecutionExchange ex) throws IdentityPlanningException {
         
@@ -53,9 +53,9 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
 
         try {
 
-            ex.setTransientProperty(SamlR2PlanningConstants.VAR_IGNORE_REQUESTED_NAMEID_POLICY, new Boolean(this.isIgnoreRequestedNameIDPolicy()));
-            ex.setTransientProperty(SamlR2PlanningConstants.VAR_DEFAULT_NAMEID_BUILDER, getDefaultNameIDBuilder());
-            ex.setTransientProperty(SamlR2PlanningConstants.VAR_NAMEID_BUILDERS, getNameIDBuilders());
+            ex.setTransientProperty(SSOPlanningConstants.VAR_IGNORE_REQUESTED_NAMEID_POLICY, new Boolean(this.isIgnoreRequestedNameIDPolicy()));
+            ex.setTransientProperty(SSOPlanningConstants.VAR_DEFAULT_NAMEID_BUILDER, getDefaultNameIDBuilder());
+            ex.setTransientProperty(SSOPlanningConstants.VAR_NAMEID_BUILDERS, getNameIDBuilders());
 
             if (logger.isTraceEnabled())
                 logger.trace("Using default SubjectNameID builder : " + getDefaultNameIDBuilder());

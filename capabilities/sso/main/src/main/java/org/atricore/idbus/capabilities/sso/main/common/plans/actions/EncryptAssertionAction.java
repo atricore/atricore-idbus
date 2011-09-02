@@ -24,7 +24,7 @@ package org.atricore.idbus.capabilities.sso.main.common.plans.actions;
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.Samlr2AssertionEmissionException;
-import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSAMLR2AssertionAction;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSSOAssertionAction;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
@@ -35,7 +35,7 @@ import java.util.Map;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: EncryptAssertionAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class EncryptAssertionAction extends AbstractSAMLR2AssertionAction {
+public class EncryptAssertionAction extends AbstractSSOAssertionAction {
 
     protected void doExecute ( IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext ) throws Exception {
 

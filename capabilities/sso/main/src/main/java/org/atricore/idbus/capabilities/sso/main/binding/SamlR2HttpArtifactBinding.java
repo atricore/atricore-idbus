@@ -9,10 +9,10 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -31,7 +31,7 @@ import javax.xml.namespace.QName;
 
 import java.io.ByteArrayInputStream;
 
-import static org.atricore.idbus.capabilities.sso.main.common.plans.SamlR2PlanningConstants.*;
+import static org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants.*;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -46,7 +46,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
     private SamlArtifactEncoder artifactEncoder;
 
     public SamlR2HttpArtifactBinding(Channel channel) {
-        super(SamlR2Binding.SAMLR2_ARTIFACT.getValue(), channel);
+        super(SSOBinding.SAMLR2_ARTIFACT.getValue(), channel);
         artifactEncoder = new SamlR2ArtifactEncoderImpl();
     }
 
@@ -65,7 +65,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             // HTTP Request Parameters from HTTP Request body
             MediationState state = createMediationState(exchange);
 
-            // HTTP-Artifact SamlR2Binding supports the following parameters
+            // HTTP-Artifact SSOBinding supports the following parameters
             String samlArtStr = state.getTransientVariable(artifactParameterName);
             String relayState = state.getTransientVariable("RelayState");
 
@@ -79,7 +79,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             if (resolverMemberDescr == null) {
                 /* Unknown SOURCE ID! */
                 logger.warn("Unkonw SAML Artifact SourceID ["+sourceId+"]");
-                throw new SamlR2Exception("Unkonw SAML Artifact SourceID ["+sourceId+"]");
+                throw new SSOException("Unkonw SAML Artifact SourceID ["+sourceId+"]");
             }
 
 
@@ -307,8 +307,8 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
 
                     if (samlIdxEndpoint.isIsDefault() != null &&
                             samlIdxEndpoint.isIsDefault() &&
-                            (samlIdxEndpoint.getBinding().equals(SamlR2Binding.SAMLR2_LOCAL.getValue())
-                            || samlIdxEndpoint.getBinding().equals(SamlR2Binding.SAMLR2_SOAP.getValue()))) {
+                            (samlIdxEndpoint.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue())
+                            || samlIdxEndpoint.getBinding().equals(SSOBinding.SAMLR2_SOAP.getValue()))) {
 
                         defaultSamlEndpoint = samlIdxEndpoint;
                     }
@@ -322,11 +322,11 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
 
                     } else {
 
-                        if (samlIdxEndpoint.getBinding().equals(SamlR2Binding.SAMLR2_LOCAL.getValue())) {
+                        if (samlIdxEndpoint.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue())) {
                             localSamlEndpoint = samlIdxEndpoint;
                         }
 
-                        if (samlIdxEndpoint.getBinding().equals(SamlR2Binding.SAMLR2_SOAP.getValue())) {
+                        if (samlIdxEndpoint.getBinding().equals(SSOBinding.SAMLR2_SOAP.getValue())) {
                             soapSamlEndpoint = samlIdxEndpoint;
                         }
                     }
@@ -369,7 +369,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
                                                  String samlArtEnc,
                                                  EndpointDescriptor ed,
                                                  FederationChannel channel
-    ) throws IdentityPlanningException, SamlR2Exception {
+    ) throws IdentityPlanningException, SSOException {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2ArtifactToSamlR2ArtifactResolvePlan.class);
         IdentityPlanExecutionExchange idPlanExchange = new IdentityPlanExecutionExchangeImpl();
@@ -411,17 +411,17 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
         identityPlan.perform(idPlanExchange);
 
         if (!idPlanExchange.getStatus().equals(IdentityPlanExecutionStatus.SUCCESS)) {
-            throw new SamlR2Exception("Identity plan returned : " + idPlanExchange.getStatus());
+            throw new SSOException("Identity plan returned : " + idPlanExchange.getStatus());
         }
 
         if (idPlanExchange.getOut() == null)
-            throw new SamlR2Exception("Plan Exchange OUT must not be null!");
+            throw new SSOException("Plan Exchange OUT must not be null!");
 
         return (ArtifactResolveType) idPlanExchange.getOut().getContent();
 
     }
 
-    protected IdentityPlan findIdentityPlanOfType(Class planClass) throws SamlR2Exception {
+    protected IdentityPlan findIdentityPlanOfType(Class planClass) throws SSOException {
 
         for (IdentityMediationEndpoint e : channel.getEndpoints()) {
             if (e.getIdentityPlans() == null)
@@ -440,7 +440,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
 
     }
 
-    protected CircleOfTrustMemberDescriptor getCotMember(String destAlias) throws SamlR2Exception {
+    protected CircleOfTrustMemberDescriptor getCotMember(String destAlias) throws SSOException {
         FederationChannel fc = getFederationChannel(destAlias);
         return fc.getMember();
     }
@@ -448,7 +448,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
     /**
      * Gest the FederationChannel that is used to send a message using HTTP-Artifact binding.
      */
-    protected FederationChannel getFederationChannel(String destAlias) throws SamlR2Exception {
+    protected FederationChannel getFederationChannel(String destAlias) throws SSOException {
 
         // We're bound to a FederationChannel, return it
         if (channel instanceof FederationChannel) {
@@ -478,9 +478,9 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
     /**
      * Returns the FederatedLocalProvider used to send a SAML Message using HTTP-Artifact Binding
      * @return
-     * @throws SamlR2Exception
+     * @throws org.atricore.idbus.capabilities.sso.main.SSOException
      */
-    protected FederatedLocalProvider getFederatedProvider() throws SamlR2Exception {
+    protected FederatedLocalProvider getFederatedProvider() throws SSOException {
         if (channel instanceof FederationChannel) {
             // The binding is working with a FC
             FederationChannel fChannel = (FederationChannel) channel;
@@ -493,7 +493,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             return provider;
         }
 
-        throw new SamlR2Exception("Unsupported channel type : " + channel);
+        throw new SSOException("Unsupported channel type : " + channel);
 
     }
 

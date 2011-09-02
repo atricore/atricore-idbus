@@ -23,7 +23,7 @@ package org.atricore.idbus.capabilities.sso.main.binding;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationBinding;
 import org.atricore.idbus.kernel.main.mediation.MediationBindingFactory;
@@ -57,9 +57,9 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
 
     public MediationBinding createBinding(String binding, Channel channel) {
         
-        SamlR2Binding b = null;
+        SSOBinding b = null;
         try {
-            b = SamlR2Binding.asEnum(binding);
+            b = SSOBinding.asEnum(binding);
         } catch (IllegalArgumentException e) {
                 return null;
         }

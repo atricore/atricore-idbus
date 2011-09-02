@@ -2,7 +2,7 @@ package org.atricore.idbus.capabilities.sso.main.idp.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
@@ -25,7 +25,7 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SessionHeartBeatProducer extends SamlR2Producer {
+public class SessionHeartBeatProducer extends SSOProducer {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 

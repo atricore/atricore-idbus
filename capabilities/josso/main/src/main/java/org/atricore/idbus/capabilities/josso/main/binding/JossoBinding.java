@@ -22,7 +22,7 @@
 package org.atricore.idbus.capabilities.josso.main.binding;
 
 import org.atricore.idbus.capabilities.josso.main.JossoConstants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -30,13 +30,13 @@ import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
  */
 public enum JossoBinding {
 
-    SSO_ARTIFACT(SamlR2Binding.SSO_ARTIFACT.getValue(), SamlR2Binding.SSO_ARTIFACT.isFrontChannel()),
+    SSO_ARTIFACT(SSOBinding.SSO_ARTIFACT.getValue(), SSOBinding.SSO_ARTIFACT.isFrontChannel()),
 
-    SSO_REDIRECT(SamlR2Binding.SS0_REDIRECT.getValue(), SamlR2Binding.SS0_REDIRECT.isFrontChannel()),
+    SSO_REDIRECT(SSOBinding.SS0_REDIRECT.getValue(), SSOBinding.SS0_REDIRECT.isFrontChannel()),
 
-    SSO_SOAP(SamlR2Binding.SSO_SOAP.getValue(), SamlR2Binding.SSO_SOAP.isFrontChannel()),
+    SSO_SOAP(SSOBinding.SSO_SOAP.getValue(), SSOBinding.SSO_SOAP.isFrontChannel()),
 
-    SSO_LOCAL(SamlR2Binding.SSO_LOCAL.getValue(), SamlR2Binding.SSO_LOCAL.isFrontChannel()),
+    SSO_LOCAL(SSOBinding.SSO_LOCAL.getValue(), SSOBinding.SSO_LOCAL.isFrontChannel()),
 
     JOSSO_REDIRECT(JossoConstants.JOSSO_BINDING_BASE_URI + ":HTTP-Redirect", true),
 

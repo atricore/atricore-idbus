@@ -30,8 +30,7 @@ import org.atricore.idbus.capabilities.sso.main.binding.endpoints.ArtifactResolu
 import org.atricore.idbus.capabilities.sso.main.idp.endpoints.SessionHeartBeatEndpoint;
 import org.atricore.idbus.capabilities.sso.main.idp.endpoints.SingleLogoutEndpoint;
 import org.atricore.idbus.capabilities.sso.main.idp.endpoints.SingleSignOnEndpoint;
-import org.atricore.idbus.capabilities.sso.main.sp.endpoints.ProxyAssertionConsumerEndpoint;
-import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 
 import java.util.Map;
@@ -40,16 +39,16 @@ import java.util.Map;
  * SAMLR2 Camel component.
  *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: SamlR2IDPComponent.java 1359 2009-07-19 16:57:57Z sgonzalez $
+ * @version $Id: SSOIDPComponent.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public class SamlR2IDPComponent extends DefaultComponent {
+public class SSOIDPComponent extends DefaultComponent {
 
-    private static final Log logger = LogFactory.getLog( SamlR2IDPComponent.class );
+    private static final Log logger = LogFactory.getLog( SSOIDPComponent.class );
 
-    public SamlR2IDPComponent() {
+    public SSOIDPComponent() {
     }
 
-    public SamlR2IDPComponent( CamelContext context ) {
+    public SSOIDPComponent(CamelContext context) {
         super( context );
     }
 
@@ -60,7 +59,7 @@ public class SamlR2IDPComponent extends DefaultComponent {
         logger.debug("Creating Camel Endpoint for [" + uri + "] [" + remaining + "]");
         
         AbstractCamelEndpoint endpoint;
-        SamlR2Service e = getSamlR2Service( remaining );
+        SSOService e = getSamlR2Service( remaining );
 
         switch ( e ) {
             case SingleSignOnService:
@@ -91,9 +90,9 @@ public class SamlR2IDPComponent extends DefaultComponent {
         return endpoint;
     }
 
-    protected SamlR2Service getSamlR2Service(String remaining) {
+    protected SSOService getSamlR2Service(String remaining) {
 
-        for (SamlR2Service et : SamlR2Service.values()) {
+        for (SSOService et : SSOService.values()) {
             if (et.getQname().getLocalPart().equals(remaining))
                 return et;
         }

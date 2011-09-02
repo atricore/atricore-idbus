@@ -2,16 +2,16 @@ package org.atricore.idbus.capabilities.sso.main.claims.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsMediator;
-import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsRequest;
-import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsResponse;
-import org.atricore.idbus.capabilities.sso.main.common.plans.SamlR2PlanningConstants;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2MessagingConstants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -31,8 +31,8 @@ import java.io.IOException;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class UsernamePasscodeClaimsProducer extends SamlR2Producer
-        implements SAMLR2Constants, SAMLR2MessagingConstants, SamlR2PlanningConstants {
+public class UsernamePasscodeClaimsProducer extends SSOProducer
+        implements SAMLR2Constants, SAMLR2MessagingConstants, SSOPlanningConstants {
 
     private static final Log logger = LogFactory.getLog(UsernamePasscodeClaimsProducer.class);
 
@@ -53,7 +53,7 @@ public class UsernamePasscodeClaimsProducer extends SamlR2Producer
         // -------------------------------------------------------------------------
         if (logger.isDebugEnabled())
             logger.debug("Starting to collect passcode claims");
-        SamlR2ClaimsRequest claimsRequest = (SamlR2ClaimsRequest) in.getMessage().getContent();
+        SSOClaimsRequest claimsRequest = (SSOClaimsRequest) in.getMessage().getContent();
 
         if (logger.isDebugEnabled())
             logger.debug("Storing claims request as local variable, id:" + claimsRequest.getId());
@@ -86,13 +86,13 @@ public class UsernamePasscodeClaimsProducer extends SamlR2Producer
 
     protected void doProcessClaimsRequest(CamelMediationExchange exchange, ClaimsRequest claimsRequest) throws IOException {
 
-        SamlR2ClaimsMediator mediator = (SamlR2ClaimsMediator)channel.getIdentityMediator();
+        SSOClaimsMediator mediator = (SSOClaimsMediator)channel.getIdentityMediator();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
         EndpointDescriptor ed = new EndpointDescriptorImpl(
                 "BasicAuthnLoginForm",
                 "BasicAuthnLoginForm",
-                SamlR2Binding.SSO_ARTIFACT.getValue(),
+                SSOBinding.SSO_ARTIFACT.getValue(),
                 mediator.getTwoFactorAuthnUILocation(),
                 null);
 
@@ -116,10 +116,10 @@ public class UsernamePasscodeClaimsProducer extends SamlR2Producer
                                            ClaimSet receivedClaims) throws Exception {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-        SamlR2ClaimsMediator mediator = ((SamlR2ClaimsMediator ) channel.getIdentityMediator());
+        SSOClaimsMediator mediator = ((SSOClaimsMediator) channel.getIdentityMediator());
 
         // This is the binding we're using to send the response
-        SamlR2Binding binding = SamlR2Binding.SSO_ARTIFACT;
+        SSOBinding binding = SSOBinding.SSO_ARTIFACT;
         Channel issuer = claimsRequest.getIssuerChannel();
 
         IdentityMediationEndpoint claimsProcessingEndpoint = null;
@@ -134,7 +134,7 @@ public class UsernamePasscodeClaimsProducer extends SamlR2Producer
         }
 
         if (claimsProcessingEndpoint == null) {
-            throw new SamlR2Exception("No endpoint supporting " + binding + " of type " +
+            throw new SSOException("No endpoint supporting " + binding + " of type " +
                     claimsRequest.getIssuerEndpoint().getType() + " found in channel " + claimsRequest.getIssuerChannel().getName());
         }
 
@@ -167,7 +167,7 @@ public class UsernamePasscodeClaimsProducer extends SamlR2Producer
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(claim);
 
-        SamlR2ClaimsResponse claimsResponse = new SamlR2ClaimsResponse (claimsRequest.getId() /* TODO : Generate new ID !*/,
+        SSOClaimsResponse claimsResponse = new SSOClaimsResponse(claimsRequest.getId() /* TODO : Generate new ID !*/,
                 channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();

@@ -26,8 +26,8 @@ import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsRequest;
-import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.LogMessageBuilder;
@@ -62,9 +62,9 @@ public class SamlR2LogMessageBuilder implements LogMessageBuilder {
             return true;
         } else if (content instanceof StatusResponseType) {
             return true;
-        } else if (content instanceof SamlR2ClaimsRequest) {
+        } else if (content instanceof SSOClaimsRequest) {
             return true;
-        } else if (content instanceof SamlR2ClaimsResponse) {
+        } else if (content instanceof SSOClaimsResponse) {
             return true;
         } else if (content instanceof oasis.names.tc.saml._1_0.protocol.ResponseType) {
             return true;
@@ -97,17 +97,17 @@ public class SamlR2LogMessageBuilder implements LogMessageBuilder {
             } else if (content instanceof StatusResponseType) {
                 logMsg.append(XmlUtils.marshalSamlR2Response((StatusResponseType) content, false));
 
-            } else if (content instanceof SamlR2ClaimsRequest) {
+            } else if (content instanceof SSOClaimsRequest) {
 
-                logMsg.append("<SamlR2ClaimsRequest>\n");
+                logMsg.append("<SSOClaimsRequest>\n");
                 logMsg.append(content.toString());
-                logMsg.append("\n</SamlR2ClaimsRequest>");
+                logMsg.append("\n</SSOClaimsRequest>");
 
 
-            } else if (content instanceof SamlR2ClaimsResponse) {
-                logMsg.append("<SamlR2ClaimsResponse>\n");
+            } else if (content instanceof SSOClaimsResponse) {
+                logMsg.append("<SSOClaimsResponse>\n");
                 logMsg.append(content.toString());
-                logMsg.append("\n</SamlR2ClaimsResponse>");
+                logMsg.append("\n</SSOClaimsResponse>");
 
             } else if (content instanceof oasis.names.tc.saml._1_0.protocol.ResponseType) {
                 logMsg.append(XmlUtils.marshalSamlR11Response((oasis.names.tc.saml._1_0.protocol.ResponseType) content, false));

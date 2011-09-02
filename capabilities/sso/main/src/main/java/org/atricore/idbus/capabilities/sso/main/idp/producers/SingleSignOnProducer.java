@@ -30,31 +30,30 @@ import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.cxf.configuration.security.ProxyAuthorizationPolicy;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsRequest;
-import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsResponse;
-import org.atricore.idbus.capabilities.sso.main.common.AbstractSamlR2Mediator;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.idp.IdentityProviderConstants;
-import org.atricore.idbus.capabilities.sso.main.idp.SamlR2IDPMediator;
+import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2RequestException;
+import org.atricore.idbus.capabilities.sso.support.core.SSORequestException;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureValidationException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
-import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
@@ -99,7 +98,7 @@ import java.util.*;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SingleSignOnProducer.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public class SingleSignOnProducer extends SamlR2Producer {
+public class SingleSignOnProducer extends SSOProducer {
 
     private static final Log logger = LogFactory.getLog(SingleSignOnProducer.class);
 
@@ -132,10 +131,10 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 // New SP Initiated Single SignOn
                 doProcessAuthnRequest(exchange, (AuthnRequestType) content, in.getMessage().getRelayState());
 
-            } else if (content instanceof SamlR2ClaimsResponse) {
+            } else if (content instanceof SSOClaimsResponse) {
 
                 // Processing Claims to create authn resposne
-                doProcessClaimsResponse(exchange, (SamlR2ClaimsResponse) content);
+                doProcessClaimsResponse(exchange, (SSOClaimsResponse) content);
 
             } else if (content instanceof PolicyEnforcementResponse) {
 
@@ -154,7 +153,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                         content.getClass().getName(),
                         null);
             }
-        } catch (SamlR2RequestException e) {
+        } catch (SSORequestException e) {
 
             throw new IdentityMediationFault(
                     e.getTopLevelStatusCode() != null ? e.getTopLevelStatusCode().getValue() : StatusCode.TOP_RESPONDER.getValue(),
@@ -163,7 +162,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                     e.getErrorDetails() != null ? e.getErrorDetails() : content.getClass().getName(),
                     e);
 
-        } catch (SamlR2Exception e) {
+        } catch (SSOException e) {
 
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
@@ -177,7 +176,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
     /**
      * This procedure will handle an IdP-initiated (aka IdP unsolicited response) request.
      */
-    protected void doProcessIDPInitiantedSSO(CamelMediationExchange exchange, IDPInitiatedAuthnRequestType idpInitiatedAuthnRequest) throws SamlR2Exception {
+    protected void doProcessIDPInitiantedSSO(CamelMediationExchange exchange, IDPInitiatedAuthnRequestType idpInitiatedAuthnRequest) throws SSOException {
 
 
         logger.debug("Processing IDP Initiated Single Sign-On with " +
@@ -235,7 +234,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             exchange.setOut(out);
 
         } catch (Exception e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
 
     }
@@ -372,7 +371,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 logger.debug("Selected claims endpoint : " + claimsEndpoint);
 
                 // Create Claims Request
-                SamlR2ClaimsRequest claimsRequest = new SamlR2ClaimsRequest(authnRequest.getID(),
+                SSOClaimsRequest claimsRequest = new SSOClaimsRequest(authnRequest.getID(),
                         channel,
                         endpoint,
                         ((SPChannel) channel).getClaimsProvider(),
@@ -543,7 +542,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
      * @throws Exception
      */
     protected void doProcessClaimsResponse(CamelMediationExchange exchange,
-                                           SamlR2ClaimsResponse claimsResponse) throws Exception {
+                                           SSOClaimsResponse claimsResponse) throws Exception {
 
         //------------------------------------------------------------
         // Process a claims response
@@ -629,7 +628,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
-                SamlR2Signer signer = ((SamlR2IDPMediator) channel.getIdentityMediator()).getSigner();
+                SamlR2Signer signer = ((SSOIDPMediator) channel.getIdentityMediator()).getSigner();
                 saml11Response = signer.sign(saml11Response);
             }
 
@@ -658,7 +657,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 // 2. Send artifact to warning endpoint w/ policies
                 EndpointDescriptor pweEd = new EndpointDescriptorImpl("PolicyEnforcementWarningService",
                         "PolicyEnforcementWarningService",
-                        SamlR2Binding.SSO_ARTIFACT.getValue(),
+                        SSOBinding.SSO_ARTIFACT.getValue(),
                         channel.getIdentityMediator().getWarningUrl(),
                         null);
 
@@ -717,7 +716,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             }
 
             logger.debug("Selecting claims endpoint : " + endpoint.getName());
-            SamlR2ClaimsRequest claimsRequest = new SamlR2ClaimsRequest(authnRequest.getID(),
+            SSOClaimsRequest claimsRequest = new SSOClaimsRequest(authnRequest.getID(),
                     channel,
                     endpoint,
                     ((SPChannel) channel).getClaimsProvider(),
@@ -876,7 +875,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
-                SamlR2Signer signer = ((SamlR2IDPMediator) channel.getIdentityMediator()).getSigner();
+                SamlR2Signer signer = ((SSOIDPMediator) channel.getIdentityMediator()).getSigner();
                 saml11Response = signer.sign(saml11Response);
             }
 
@@ -905,7 +904,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 // 2. Send artifact to warning endpoint w/ policies
                 EndpointDescriptor pweEd = new EndpointDescriptorImpl("PolicyEnforcementWarningService",
                         "PolicyEnforcementWarningService",
-                        SamlR2Binding.SSO_ARTIFACT.getValue(),
+                        SSOBinding.SSO_ARTIFACT.getValue(),
                         channel.getIdentityMediator().getWarningUrl(),
                         null);
 
@@ -984,9 +983,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
     // -----------------------------------------------------------------------------------
 
     protected void validateRequest(AuthnRequestType request, String originalRequest)
-            throws SamlR2RequestException, SamlR2Exception {
+            throws SSORequestException, SSOException {
 
-        AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
         SamlR2Encrypter encrypter = mediator.getEncrypter();
 
@@ -1008,7 +1007,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             saml2IdpMd = (IDPSSODescriptorType) idpMd.getEntry();
 
         } catch (CircleOfTrustManagerException e) {
-            throw new SamlR2RequestException(request,
+            throw new SSORequestException(request,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     null,
@@ -1026,7 +1025,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             // If no signature is present, throw an exception!
             if (request.getSignature() == null)
-                throw new SamlR2RequestException(request,
+                throw new SSORequestException(request,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_REQUEST_SIGNATURE);
@@ -1038,13 +1037,13 @@ public class SingleSignOnProducer extends SamlR2Producer {
                     signer.validate(saml2SpMd, request);
 
             } catch (SamlR2SignatureValidationException e) {
-                throw new SamlR2RequestException(request,
+                throw new SSORequestException(request,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
             } catch (SamlR2SignatureException e) {
                 //other exceptions like JAXB, xml parser...
-                throw new SamlR2RequestException(request,
+                throw new SSORequestException(request,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
@@ -1095,7 +1094,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                     continue;
 
                 // As a work around, ignore endpoints not using artifact binding
-                if (!endpoint.getBinding().equals(SamlR2Binding.SSO_ARTIFACT.getValue()))
+                if (!endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue()))
                     continue;
 
                 // Only use endpoints that are 'passive' when 'passive' was requested.
@@ -1131,8 +1130,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
         ex.setProperty(VAR_DESTINATION_COT_MEMBER, sp);
         ex.setProperty(WSTConstants.RST_CTX, ctx);
 
-        ex.setTransientProperty(VAR_SAMLR2_SIGNER, ((SamlR2IDPMediator) channel.getIdentityMediator()).getSigner());
-        ex.setTransientProperty(VAR_SAMLR2_ENCRYPTER, ((SamlR2IDPMediator) channel.getIdentityMediator()).getEncrypter());
+        ex.setTransientProperty(VAR_SAMLR2_SIGNER, ((SSOIDPMediator) channel.getIdentityMediator()).getSigner());
+        ex.setTransientProperty(VAR_SAMLR2_ENCRYPTER, ((SSOIDPMediator) channel.getIdentityMediator()).getEncrypter());
 
         // Build Subject for SSOUser
         Set<Principal> principals = new HashSet<Principal>();
@@ -1248,7 +1247,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         }
 
         if (authnStmt == null)
-            throw new SamlR2Exception("Assertion MUST contain an AuthnStatement");
+            throw new SSOException("Assertion MUST contain an AuthnStatement");
 
         // Create session security token, use the sesionIndex as token ID
         SecurityToken<AuthnStatementType> st = new SecurityTokenImpl<AuthnStatementType>(authnStmt.getSessionIndex(), authnStmt);
@@ -1319,7 +1318,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                                                              CircleOfTrustMemberDescriptor idp,
                                                              EndpointDescriptor ed,
                                                              FederationChannel spChannel
-    ) throws IdentityPlanningException, SamlR2Exception {
+    ) throws IdentityPlanningException, SSOException {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(IDPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
@@ -1378,7 +1377,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
     }
 
     protected EndpointDescriptor resolveSpAcsEndpoint(CamelMediationExchange exchange,
-                                                      AuthnRequestType authnRequest) throws SamlR2Exception {
+                                                      AuthnRequestType authnRequest) throws SSOException {
 
         try {
 
@@ -1421,10 +1420,10 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 if (ac.isIsDefault() != null && ac.isIsDefault())
                     defaultAcEndpoint = ac;
 
-                if (ac.getBinding().equals(SamlR2Binding.SAMLR2_POST.getValue()))
+                if (ac.getBinding().equals(SSOBinding.SAMLR2_POST.getValue()))
                     postAcEndpoint = ac;
 
-                if (ac.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue()))
+                if (ac.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()))
                     artifactAcEndpoint = ac;
 
                 if (requestedBinding != null && ac.getBinding().equals(requestedBinding)) {
@@ -1444,7 +1443,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 acEndpoint = postAcEndpoint;
 
             if (acEndpoint == null)
-                throw new SamlR2Exception("Cannot resolve response SP SSO endpoint for " + sp.getAlias());
+                throw new SSOException("Cannot resolve response SP SSO endpoint for " + sp.getAlias());
 
             if (logger.isTraceEnabled())
                 logger.trace("Resolved ACS endpoint " +
@@ -1452,18 +1451,18 @@ public class SingleSignOnProducer extends SamlR2Producer {
                         acEndpoint.getBinding());
 
             return new EndpointDescriptorImpl(acEndpoint.getBinding(),
-                    SamlR2Service.AssertionConsumerService.toString(),
+                    SSOService.AssertionConsumerService.toString(),
                     acEndpoint.getBinding(),
                     acEndpoint.getLocation(),
                     acEndpoint.getResponseLocation());
 
         } catch (CircleOfTrustManagerException e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
 
     }
 
-    protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SamlR2Exception {
+    protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SSOException {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         IDPInitiatedAuthnRequestType ssoAuthnReq =
@@ -1490,7 +1489,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             idp = getCotManager().lookupMemberByAlias(idpAlias);
             if (idp == null) {
-                throw new SamlR2Exception("No IDP found in circle of trust for received alias [" + idpAlias + "], verify your setup.");
+                throw new SSOException("No IDP found in circle of trust for received alias [" + idpAlias + "], verify your setup.");
             }
         }
         if (idp != null)
@@ -1499,7 +1498,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         // --------------------------------------------------------------
         // Try with the preferred idp alias, if any
         // --------------------------------------------------------------
-        SamlR2IDPMediator mediator = (SamlR2IDPMediator) channel.getIdentityMediator();
+        SSOIDPMediator mediator = (SSOIDPMediator) channel.getIdentityMediator();
         idpAlias = mediator.getPreferredIdpAlias();
         if (idpAlias != null) {
 
@@ -1508,7 +1507,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             idp = getCotManager().lookupMemberByAlias(idpAlias);
             if (idp == null) {
-                throw new SamlR2Exception("No IDP found in circle of trust for preferred alias [" + idpAlias + "], verify your setup.");
+                throw new SSOException("No IDP found in circle of trust for preferred alias [" + idpAlias + "], verify your setup.");
             }
         }
         if (idp != null)
@@ -1545,14 +1544,14 @@ public class SingleSignOnProducer extends SamlR2Producer {
         return idpChannel;
     }
 
-    protected EndpointType resolveIdpSsoEndpoint(CircleOfTrustMemberDescriptor idp) throws SamlR2Exception {
+    protected EndpointType resolveIdpSsoEndpoint(CircleOfTrustMemberDescriptor idp) throws SSOException {
 
-        SamlR2IDPMediator mediator = (SamlR2IDPMediator) channel.getIdentityMediator();
-        SamlR2Binding preferredBinding = mediator.getPreferredIdpSSOBindingValue();
+        SSOIDPMediator mediator = (SSOIDPMediator) channel.getIdentityMediator();
+        SSOBinding preferredBinding = mediator.getPreferredIdpSSOBindingValue();
         MetadataEntry idpMd = idp.getMetadata();
 
         if (idpMd == null || idpMd.getEntry() == null)
-            throw new SamlR2Exception("No metadata descriptor found for IDP " + idp);
+            throw new SSOException("No metadata descriptor found for IDP " + idp);
 
         if (idpMd.getEntry() instanceof EntityDescriptorType) {
             EntityDescriptorType md = (EntityDescriptorType) idpMd.getEntry();
@@ -1566,11 +1565,11 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
                     for (EndpointType idpSsoEndpoint : idpSsoRole.getSingleSignOnService()) {
 
-                        SamlR2Binding b = SamlR2Binding.asEnum(idpSsoEndpoint.getBinding());
+                        SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
                         if (b.equals(preferredBinding))
                             return idpSsoEndpoint;
 
-                        if (b.equals(SamlR2Binding.SAMLR2_ARTIFACT))
+                        if (b.equals(SSOBinding.SAMLR2_ARTIFACT))
                             defaultEndpoint = idpSsoEndpoint;
 
                         if (defaultEndpoint == null)
@@ -1580,11 +1579,11 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 }
             }
         } else {
-            throw new SamlR2Exception("Unknown metadata descriptor type " + idpMd.getEntry().getClass().getName());
+            throw new SSOException("Unknown metadata descriptor type " + idpMd.getEntry().getClass().getName());
         }
 
         logger.debug("No IDP Endpoint supporting binding : " + preferredBinding);
-        throw new SamlR2Exception("IDP does not support preferred binding " + preferredBinding);
+        throw new SSOException("IDP does not support preferred binding " + preferredBinding);
     }
 
     protected EndpointDescriptor resolveIdpSsoContinueEndpoint() {
@@ -1597,7 +1596,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         EndpointDescriptor ed = new EndpointDescriptorImpl(endpoint.getName(),
                 endpoint.getType(),
-                SamlR2Binding.SSO_ARTIFACT.getValue(),
+                SSOBinding.SSO_ARTIFACT.getValue(),
                 location, null);
 
         if (logger.isTraceEnabled())
@@ -1636,7 +1635,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             } else if (claimObj instanceof BinarySecurityTokenType) {
                 rstRequest.getAny().add(ofwss.createBinarySecurityToken((BinarySecurityTokenType) claim.getValue()));
             } else {
-                throw new SamlR2Exception("Claim type not supported " + claimObj.getClass().getName());
+                throw new SSOException("Claim type not supported " + claimObj.getClass().getName());
             }
 
         }
@@ -1649,7 +1648,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
     }
 
     protected MessageQueueManager getArtifactQueueManager() {
-        SamlR2IDPMediator mediator = (SamlR2IDPMediator) channel.getIdentityMediator();
+        SSOIDPMediator mediator = (SSOIDPMediator) channel.getIdentityMediator();
         return mediator.getArtifactQueueManager();
     }
 
@@ -1887,7 +1886,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         return policyStatements;
     }
 
-    protected String getSTSPlanName() throws SamlR2Exception {
+    protected String getSTSPlanName() throws SSOException {
 
         Map<String, SamlR2SecurityTokenToAuthnAssertionPlan> stsPlans = applicationContext.getBeansOfType(SamlR2SecurityTokenToAuthnAssertionPlan.class);
         SamlR2SecurityTokenToAuthnAssertionPlan stsPlan = null;
@@ -1900,7 +1899,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
         }
 
         if (stsPlan == null)
-            throw new SamlR2Exception("No valid STS Plan found, looking for SamlR2SecurityTokenToAuthnAssertionPlan instances");
+            throw new SSOException("No valid STS Plan found, looking for SamlR2SecurityTokenToAuthnAssertionPlan instances");
 
         for (String planName : stsPlans.keySet()) {
             SamlR2SecurityTokenToAuthnAssertionPlan registeredStsPlan = stsPlans.get(planName);
@@ -1918,29 +1917,29 @@ public class SingleSignOnProducer extends SamlR2Producer {
     }
 
     private EndpointDescriptor resolveSPInitiatedSSOProxyEndpointDescriptor(CamelMediationExchange exchange,
-                                                                            BindingChannel bc) throws SamlR2Exception {
+                                                                            BindingChannel bc) throws SSOException {
 
       try {
 
-            logger.debug("Looking for " + SamlR2Service.SPInitiatedSingleSignOnServiceProxy.toString());
+            logger.debug("Looking for " + SSOService.SPInitiatedSingleSignOnServiceProxy.toString());
 
             for (IdentityMediationEndpoint endpoint : bc.getEndpoints()) {
 
                 logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
 
-                if (endpoint.getType().equals(SamlR2Service.SPInitiatedSingleSignOnServiceProxy.toString())) {
+                if (endpoint.getType().equals(SSOService.SPInitiatedSingleSignOnServiceProxy.toString())) {
 
-                    if (endpoint.getBinding().equals(SamlR2Binding.SSO_ARTIFACT.getValue())) {
+                    if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
                         // This is the endpoint we're looking for
                         return  bc.getIdentityMediator().resolveEndpoint(bc, endpoint);
                     }
                 }
             }
         } catch (IdentityMediationException e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
 
-        throw new SamlR2Exception("No SP Initiated SSO Proxy endpoint found for SP Initiated SSO using SSO Artifact binding");
+        throw new SSOException("No SP Initiated SSO Proxy endpoint found for SP Initiated SSO using SSO Artifact binding");
     }
 
     /**

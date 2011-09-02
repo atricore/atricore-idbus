@@ -27,7 +27,7 @@
             <ref bean="idp1-default-sp-channel"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.sso.main.idp.SamlR2IDPMediator" name="idp1-samlr2-mediator">
+    <bean class="org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator" name="idp1-samlr2-mediator">
         <property name="logMessages">
             <value>true</value>
         </property>
@@ -71,7 +71,7 @@
     <bean init-method="init" class="org.atricore.idbus.capabilities.sso.support.core.signature.JSR105SamlR2SignerImpl" name="idp1-samlr2-signer">
         <description/>
         <property name="keyResolver">
-            <bean class="org.atricore.idbus.capabilities.sso.support.core.SamlR2KeystoreKeyResolver">
+            <bean class="org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver">
                 <property name="keystoreType">
                     <value>JKS</value>
                 </property>
@@ -101,7 +101,7 @@
             <value>http://www.w3.org/2001/04/xmlenc#rsa-1_5</value>
         </property>
         <property name="keyResolver">
-            <bean class="org.atricore.idbus.capabilities.sso.support.core.SamlR2KeystoreKeyResolver">
+            <bean class="org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver">
                 <property name="keystoreType">
                     <value>JKS</value>
                 </property>

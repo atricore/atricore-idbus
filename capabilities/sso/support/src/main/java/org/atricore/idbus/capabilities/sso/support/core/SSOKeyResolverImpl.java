@@ -30,36 +30,36 @@ import java.security.cert.Certificate;
  *         User: ajadzinsky
  *         Date: Jun 9, 2009
  */
-public class SamlR2KeyResolverImpl implements SamlR2KeyResolver {
+public class SSOKeyResolverImpl implements SSOKeyResolver {
     protected Certificate certificate;
     protected PrivateKey privateKey;
     protected PublicKey publicKey;
 
-    protected SamlR2KeyResolverImpl () {
+    protected SSOKeyResolverImpl() {
     }
 
-    public SamlR2KeyResolverImpl ( Certificate cert, PrivateKey key ) {
+    public SSOKeyResolverImpl(Certificate cert, PrivateKey key) {
         certificate = cert;
         privateKey = key;
     }
 
-    public SamlR2KeyResolverImpl ( Certificate cert ) {
+    public SSOKeyResolverImpl(Certificate cert) {
         this( cert, null );
     }
 
-    public SamlR2KeyResolverImpl ( PrivateKey key ) {
+    public SSOKeyResolverImpl(PrivateKey key) {
         this( null, key );
     }
 
-    public Certificate getCertificate () throws SamlR2KeyResolverException {
+    public Certificate getCertificate () throws SSOKeyResolverException {
         return certificate;
     }
 
-    public PrivateKey getPrivateKey () throws SamlR2KeyResolverException {
+    public PrivateKey getPrivateKey () throws SSOKeyResolverException {
         return privateKey;
     }
 
-    public PublicKey getPublicKey() throws SamlR2KeyResolverException {
+    public PublicKey getPublicKey() throws SSOKeyResolverException {
         return publicKey;
     }
 

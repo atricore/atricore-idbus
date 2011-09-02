@@ -28,14 +28,13 @@ import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
@@ -45,28 +44,23 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDes
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
-import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
-import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
-import java.util.Iterator;
 
 /**
  *
  */
-public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
+public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
     private static final Log logger = LogFactory.getLog( SPInitiatedSingleSignOnProducer.class );
 
@@ -77,7 +71,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
     }
 
     @Override
-    protected void doProcess(CamelMediationExchange exchange) throws SamlR2Exception {
+    protected void doProcess(CamelMediationExchange exchange) throws SSOException {
 
         logger.debug("Processing SP Initiated Single Sign-On on HTTP Redirect");
 
@@ -118,7 +112,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
                 EndpointDescriptor destination =
                         new EndpointDescriptorImpl("EmbeddedSPAcs",
                                 "AssertionConsumerService",
-                                SamlR2Binding.SSO_ARTIFACT.getValue(),
+                                SSOBinding.SSO_ARTIFACT.getValue(),
                                 destinationLocation, null);
 
                 CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
@@ -181,7 +175,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
             exchange.setOut(out);
 
         } catch (Exception e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
 
     }
@@ -190,7 +184,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
                                                  CircleOfTrustMemberDescriptor idp,
                                                  EndpointDescriptor ed,
                                                  FederationChannel idpChannel
-    ) throws IdentityPlanningException, SamlR2Exception {
+    ) throws IdentityPlanningException, SSOException {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(SPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
@@ -232,7 +226,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
 
     }
 
-    protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SamlR2Exception {
+    protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SSOException {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         SPInitiatedAuthnRequestType ssoAuthnReq =
@@ -260,7 +254,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
 
             idp = getCotManager().lookupMemberByAlias(idpAlias);
             if (idp == null) {
-                throw new SamlR2Exception("No IDP found in circle of trust for received alias ["+idpAlias+"], verify your setup.");
+                throw new SSOException("No IDP found in circle of trust for received alias ["+idpAlias+"], verify your setup.");
             }
         }
         if (idp != null)
@@ -278,7 +272,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
 
             idp = getCotManager().lookupMemberByAlias(idpAlias);
             if (idp == null) {
-                throw new SamlR2Exception("No IDP found in circle of trust for preferred alias ["+idpAlias+"], verify your setup.");
+                throw new SSOException("No IDP found in circle of trust for preferred alias ["+idpAlias+"], verify your setup.");
             }
         }
         if (idp != null)
@@ -287,7 +281,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
         // --------------------------------------------------------------
         // TODO : In the future, we could discover IdPs from COT Manager, based on COT Member role and user intervention
 
-        throw new SamlR2Exception("Cannot resolve IDP, try to configure a preferred IdP for this SP");
+        throw new SSOException("Cannot resolve IDP, try to configure a preferred IdP for this SP");
 
     }
 
@@ -319,14 +313,14 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
     }
 
 
-    protected EndpointType resolveIdpSsoEndpoint(CircleOfTrustMemberDescriptor idp) throws SamlR2Exception {
+    protected EndpointType resolveIdpSsoEndpoint(CircleOfTrustMemberDescriptor idp) throws SSOException {
 
         SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
-        SamlR2Binding preferredBinding = mediator.getPreferredIdpSSOBindingValue();
+        SSOBinding preferredBinding = mediator.getPreferredIdpSSOBindingValue();
         MetadataEntry idpMd = idp.getMetadata();
 
         if (idpMd == null || idpMd.getEntry() == null)
-            throw new SamlR2Exception("No metadata descriptor found for IDP " + idp);
+            throw new SSOException("No metadata descriptor found for IDP " + idp);
 
         if (idpMd.getEntry() instanceof EntityDescriptorType ) {
             EntityDescriptorType md = (EntityDescriptorType) idpMd.getEntry();
@@ -340,11 +334,11 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
 
                     for (EndpointType idpSsoEndpoint : idpSsoRole.getSingleSignOnService()) {
 
-                        SamlR2Binding b = SamlR2Binding.asEnum(idpSsoEndpoint.getBinding());
+                        SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
                         if (b.equals(preferredBinding))
                             return idpSsoEndpoint;
 
-                        if (b.equals(SamlR2Binding.SAMLR2_ARTIFACT))
+                        if (b.equals(SSOBinding.SAMLR2_ARTIFACT))
                             defaultEndpoint = idpSsoEndpoint;
 
                         if (defaultEndpoint == null)
@@ -354,11 +348,11 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
                 }
             }
         } else {
-            throw new SamlR2Exception("Unknown metadata descriptor type " + idpMd.getEntry().getClass().getName());
+            throw new SSOException("Unknown metadata descriptor type " + idpMd.getEntry().getClass().getName());
         }
 
         logger.debug("No IDP Endpoint supporting binding : " + preferredBinding);
-        throw new SamlR2Exception("IDP does not support preferred binding " + preferredBinding);
+        throw new SSOException("IDP does not support preferred binding " + preferredBinding);
 
     }
 

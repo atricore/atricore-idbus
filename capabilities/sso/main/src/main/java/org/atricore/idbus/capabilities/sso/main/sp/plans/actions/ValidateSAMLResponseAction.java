@@ -22,7 +22,7 @@
 package org.atricore.idbus.capabilities.sso.main.sp.plans.actions;
 
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
-import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSamlR2Action;
+import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
@@ -31,7 +31,7 @@ import org.jbpm.graph.exe.ExecutionContext;
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id$
  */
-public class ValidateSAMLResponseAction extends AbstractSamlR2Action {
+public class ValidateSAMLResponseAction extends AbstractSSOAction {
 
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) throws Exception {
 

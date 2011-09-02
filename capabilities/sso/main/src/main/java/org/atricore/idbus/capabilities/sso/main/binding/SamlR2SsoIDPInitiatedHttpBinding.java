@@ -25,7 +25,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
@@ -53,7 +53,7 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
     public SamlR2SsoIDPInitiatedHttpBinding(Channel channel) {
-        super(SamlR2Binding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.getValue(), channel);
+        super(SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.getValue(), channel);
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {

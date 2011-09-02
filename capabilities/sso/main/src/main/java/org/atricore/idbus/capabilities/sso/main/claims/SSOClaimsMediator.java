@@ -24,9 +24,9 @@ package org.atricore.idbus.capabilities.sso.main.claims;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.AbstractSamlR2Mediator;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
@@ -38,11 +38,11 @@ import java.util.Collection;
  * @org.apache.xbean.XBean element="claims-mediator"
  *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: SamlR2ClaimsMediator.java 1359 2009-07-19 16:57:57Z sgonzalez $
+ * @version $Id: SSOClaimsMediator.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
+public class SSOClaimsMediator extends AbstractSSOMediator {
 
-    private static final Log logger = LogFactory.getLog( SamlR2ClaimsMediator.class );
+    private static final Log logger = LogFactory.getLog( SSOClaimsMediator.class );
 
     private String basicAuthnUILocation;
 
@@ -95,7 +95,7 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 
-                    SamlR2Binding binding = SamlR2Binding.asEnum(endpoint.getBinding());
+                    SSOBinding binding = SSOBinding.asEnum(endpoint.getBinding());
                     EndpointDescriptor ed = resolveEndpoint(claimChannel, endpoint);
 
                     switch (binding) {
@@ -110,12 +110,12 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
                                     process(new LoggerProcessor(getLogger())).
                                     to("direct:" + ed.getName());
 
-                            // FROM samlr-bind TO samlr2-idp
+                            // FROM samlr-bind TO sso-idp
                             from("idbus-bind:camel://direct:" + ed.getName() +
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + claimChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("samlr2-claim:" + ed.getType() +
+                                    to("sso-claim:" + ed.getType() +
                                             "?channelRef=" + claimChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -126,12 +126,12 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
                                         process(new LoggerProcessor(getLogger())).
                                         to("direct:" + ed.getName() + "-response");
 
-                                // FROM samlr-bind TO samlr2-idp
+                                // FROM samlr-bind TO sso-idp
                                 from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + claimChannel.getName()).
                                         process(new LoggerProcessor(getLogger())).
-                                        to("samlr2-claim:" + ed.getType() +
+                                        to("sso-claim:" + ed.getType() +
                                                 "?channelRef=" + claimChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");
@@ -141,7 +141,7 @@ public class SamlR2ClaimsMediator extends AbstractSamlR2Mediator {
 
                             break;
                         default:
-                            throw new SamlR2Exception("Unsupported SamlR2Binding " + binding.getValue());
+                            throw new SSOException("Unsupported SSOBinding " + binding.getValue());
                     }
 
 

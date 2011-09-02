@@ -24,7 +24,7 @@ package org.atricore.idbus.capabilities.sso.main.common.plans.actions;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.common.AbstractSamlR2Mediator;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
@@ -34,7 +34,7 @@ import org.jbpm.graph.exe.ExecutionContext;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SignRequestAction extends AbstractSamlR2Action {
+public class SignRequestAction extends AbstractSSOAction {
 
     private static final Log logger = LogFactory.getLog(SignRequestAction.class);
 
@@ -43,7 +43,7 @@ public class SignRequestAction extends AbstractSamlR2Action {
         RequestAbstractType request = (RequestAbstractType) out.getContent();
 
         Channel channel = (Channel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
-        AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
 
         if (!mediator.isSignRequests()) {
             logger.debug("Signature disabled for " + channel.getName());

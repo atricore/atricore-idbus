@@ -29,13 +29,13 @@ import org.atricore.idbus.capabilities.openid.main.binding.OpenIDBinding;
 import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDMessage;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV2AuthnRequest;
 import org.atricore.idbus.capabilities.openid.main.proxy.OpenIDProxyMediator;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsMediator;
-import org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
 import org.atricore.idbus.capabilities.openid.main.common.producers.OpenIDProducer;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV1AuthnRequest;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
@@ -93,10 +93,10 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
 
                 doProcessSPInitiatedSSO(exchange, (SPInitiatedAuthnRequestType) content);
 
-            } else if (content instanceof SamlR2ClaimsResponse) {
+            } else if (content instanceof SSOClaimsResponse) {
 
                 // Processing Claims to create authn resposne
-                doProcessClaimsResponse(exchange, (SamlR2ClaimsResponse) content);
+                doProcessClaimsResponse(exchange, (SSOClaimsResponse) content);
 
             } else if (content instanceof OpenIDAuthnResponse) {
 
@@ -151,8 +151,8 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
         logger.debug("Selected claims endpoint : " + claimsEndpoint);
 
         // Create Claims Request
-        org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsRequest claimsRequest =
-                new org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsRequest(authnRequest.getID(),
+        org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest claimsRequest =
+                new org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest(authnRequest.getID(),
                 channel,
                 endpoint,
                 channel.getClaimsProvider(),
@@ -178,7 +178,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
     }
 
     protected void doProcessClaimsResponse(CamelMediationExchange exchange,
-                                           SamlR2ClaimsResponse claimsResponse) throws OpenIDException {
+                                           SSOClaimsResponse claimsResponse) throws OpenIDException {
         //------------------------------------------------------------
         // Process a claims response
         //------------------------------------------------------------
@@ -394,10 +394,10 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
                                            ClaimSet receivedClaims) throws Exception {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-        SamlR2ClaimsMediator mediator = ((SamlR2ClaimsMediator ) channel.getIdentityMediator());
+        SSOClaimsMediator mediator = ((SSOClaimsMediator) channel.getIdentityMediator());
 
         // This is the binding we're using to send the response
-        SamlR2Binding binding = SamlR2Binding.SSO_ARTIFACT;
+        SSOBinding binding = SSOBinding.SSO_ARTIFACT;
         Channel issuer = claimsRequest.getIssuerChannel();
 
         IdentityMediationEndpoint claimsProcessingEndpoint = null;
@@ -412,7 +412,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
         }
 
         if (claimsProcessingEndpoint == null) {
-            throw new SamlR2Exception("No endpoint supporting " + binding + " of type " +
+            throw new SSOException("No endpoint supporting " + binding + " of type " +
                     claimsRequest.getIssuerEndpoint().getType() + " found in channel " + claimsRequest.getIssuerChannel().getName());
         }
 
@@ -445,7 +445,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(claim);
 
-        SamlR2ClaimsResponse claimsResponse = new SamlR2ClaimsResponse (claimsRequest.getId() /* TODO : Generate new ID !*/,
+        ClaimsResponse claimsResponse = new SSOClaimsResponse (claimsRequest.getId() /* TODO : Generate new ID !*/,
                 channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();

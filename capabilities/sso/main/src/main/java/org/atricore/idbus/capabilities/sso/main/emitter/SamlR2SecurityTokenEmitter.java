@@ -25,7 +25,7 @@ import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.ObjectFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.common.plans.SamlR2PlanningConstants;
+import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
@@ -58,7 +58,7 @@ import javax.xml.namespace.QName;
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id: SamlR2SecurityTokenEmitter.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter implements SamlR2PlanningConstants {
+public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter implements SSOPlanningConstants {
 
     private static final Log logger = LogFactory.getLog(SamlR2SecurityTokenEmitter.class);
 

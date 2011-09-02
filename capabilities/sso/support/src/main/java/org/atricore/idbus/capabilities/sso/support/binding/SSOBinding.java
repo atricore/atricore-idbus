@@ -23,9 +23,9 @@ package org.atricore.idbus.capabilities.sso.support.binding;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: SamlR2Binding.java 1359 2009-07-19 16:57:57Z sgonzalez $
+ * @version $Id: SSOBinding.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public enum SamlR2Binding {
+public enum SSOBinding {
     
     /** URI for SAML 2 Artifact binding. [SAMLBinding 3.6]*/
     SAMLR2_ARTIFACT("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact", true),
@@ -82,7 +82,7 @@ public enum SamlR2Binding {
     private String binding;
     boolean frontChannel;
 
-    SamlR2Binding(String binding, boolean frontChannel) {
+    SSOBinding(String binding, boolean frontChannel) {
         this.binding = binding;
         this.frontChannel = frontChannel;
     }
@@ -100,12 +100,12 @@ public enum SamlR2Binding {
         return frontChannel;
     }
 
-    public static SamlR2Binding asEnum(String binding) {
-        for (SamlR2Binding b : values()) {
+    public static SSOBinding asEnum(String binding) {
+        for (SSOBinding b : values()) {
             if (b.getValue().equals(binding))
                 return b;
         }
 
-        throw new IllegalArgumentException("Invalid SamlR2Binding '" + binding + "'");
+        throw new IllegalArgumentException("Invalid SSOBinding '" + binding + "'");
     }
 }

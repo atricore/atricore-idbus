@@ -39,9 +39,9 @@ import java.security.cert.Certificate;
  *         User: ajadzinsky
  *         Date: Jun 9, 2009
  */
-public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
+public class SSOKeystoreKeyResolver extends SSOKeyResolverImpl {
 
-    private static final Log logger = LogFactory.getLog(SamlR2KeystoreKeyResolver.class);
+    private static final Log logger = LogFactory.getLog(SSOKeystoreKeyResolver.class);
 
     private KeyStore keystore;
     private Boolean initiated = false;
@@ -109,7 +109,7 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
         this.certificateAlias = certificateAlias;
     }
 
-    public void init() throws SamlR2KeyResolverException {
+    public void init() throws SSOKeyResolverException {
         InputStream is = null;
         try {
             keystore = KeyStore.getInstance(keystoreType);
@@ -121,7 +121,7 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
             is = keystoreFile.getInputStream();
 
             if (is == null)
-                throw new SamlR2KeyResolverException("Keystore not found " + keystoreFile);                     
+                throw new SSOKeyResolverException("Keystore not found " + keystoreFile);
 
             //load the keystore
             keystore.load(is, keystorePass.toCharArray());
@@ -136,11 +136,11 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
 
             initiated = true;
         } catch (Exception e) {
-            throw new SamlR2KeyResolverException("Error accessing or reading keystore", e);
+            throw new SSOKeyResolverException("Error accessing or reading keystore", e);
         }
 
         if (privateKeyAlias != null && privateKey == null)
-            throw new SamlR2KeyResolverException("No private key found for : " + privateKeyAlias + " in " + keystoreFile);
+            throw new SSOKeyResolverException("No private key found for : " + privateKeyAlias + " in " + keystoreFile);
 
         if (logger.isDebugEnabled())
             logger.debug("Found private key : " +
@@ -149,7 +149,7 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
                 " Class:" + privateKey.getClass().getName());
         
         if (certificateAlias != null && certificate == null)
-            throw new SamlR2KeyResolverException("No certificate found for : " + certificateAlias + " in " + keystoreFile);
+            throw new SSOKeyResolverException("No certificate found for : " + certificateAlias + " in " + keystoreFile);
 
         if (logger.isDebugEnabled())
             logger.debug("Found certificate : " +
@@ -160,7 +160,7 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
     }
 
     @Override
-    public Certificate getCertificate() throws SamlR2KeyResolverException {
+    public Certificate getCertificate() throws SSOKeyResolverException {
         if (!initiated)
             init();
 
@@ -168,7 +168,7 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
     }
 
     @Override
-    public PrivateKey getPrivateKey() throws SamlR2KeyResolverException {
+    public PrivateKey getPrivateKey() throws SSOKeyResolverException {
         if (!initiated)
             init();
 
@@ -176,7 +176,7 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
     }
 
     @Override
-    public PublicKey getPublicKey() throws SamlR2KeyResolverException {
+    public PublicKey getPublicKey() throws SSOKeyResolverException {
         if (!initiated)
             init();
 

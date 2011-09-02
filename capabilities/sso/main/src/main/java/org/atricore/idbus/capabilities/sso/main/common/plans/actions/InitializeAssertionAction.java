@@ -27,7 +27,7 @@ import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
-import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSAMLR2AssertionAction;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSSOAssertionAction;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
@@ -50,7 +50,7 @@ import java.util.Date;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: InitializeAssertionAction.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public class InitializeAssertionAction extends AbstractSAMLR2AssertionAction {
+public class InitializeAssertionAction extends AbstractSSOAssertionAction {
 
     public static final Log logger = LogFactory.getLog(InitializeAssertionAction.class);
 

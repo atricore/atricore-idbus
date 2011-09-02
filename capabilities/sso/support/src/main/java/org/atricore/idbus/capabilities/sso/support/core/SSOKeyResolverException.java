@@ -26,20 +26,20 @@ package org.atricore.idbus.capabilities.sso.support.core;
  *         User: ajadzinsky
  *         Date: Jun 9, 2009
  */
-public class SamlR2KeyResolverException extends Exception {
-    public SamlR2KeyResolverException() {
+public class SSOKeyResolverException extends Exception {
+    public SSOKeyResolverException() {
         super();
     }
 
-    public SamlR2KeyResolverException(String message) {
+    public SSOKeyResolverException(String message) {
         super(message);
     }
 
-    public SamlR2KeyResolverException(String message, Throwable cause) {
+    public SSOKeyResolverException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public SamlR2KeyResolverException(Throwable cause) {
+    public SSOKeyResolverException(Throwable cause) {
         super(cause);
     }
 }

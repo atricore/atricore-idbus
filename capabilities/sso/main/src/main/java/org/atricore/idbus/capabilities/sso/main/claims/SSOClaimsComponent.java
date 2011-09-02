@@ -26,7 +26,7 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.claims.endpoints.OpenIDClaimsEndpoint;
 import org.atricore.idbus.capabilities.sso.main.claims.endpoints.UsernamePasscodeClaimsEndpoint;
 import org.atricore.idbus.capabilities.sso.main.claims.endpoints.UsernamePasswordClaimsEndpoint;
@@ -39,15 +39,15 @@ import java.util.Map;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SamlR2ClaimsComponent extends DefaultComponent {
+public class SSOClaimsComponent extends DefaultComponent {
 
-    private static final Log logger = LogFactory.getLog( SamlR2ClaimsComponent.class );
+    private static final Log logger = LogFactory.getLog( SSOClaimsComponent.class );
 
-    public SamlR2ClaimsComponent() {
+    public SSOClaimsComponent() {
         super();
     }
 
-    public SamlR2ClaimsComponent(CamelContext camelContext) {
+    public SSOClaimsComponent(CamelContext camelContext) {
         super(camelContext);
     }                                
 
@@ -70,7 +70,7 @@ public class SamlR2ClaimsComponent extends DefaultComponent {
                 endpoint = new OpenIDClaimsEndpoint(uri, this, parameters);
                 break;
             default:
-                throw new SamlR2Exception("Unsupported endpoint type " + remaining);
+                throw new SSOException("Unsupported endpoint type " + remaining);
                 
         }
 

@@ -28,13 +28,13 @@ import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedLogoutReqToSamlR2LogoutReqPlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
@@ -63,7 +63,7 @@ import javax.xml.namespace.QName;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
+public class SPInitiatedSingleLogoutProducer extends SSOProducer {
 
     private static final Log logger = LogFactory.getLog( SPInitiatedSingleLogoutProducer .class );
 
@@ -74,7 +74,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
     }
 
     @Override
-    protected void doProcess(CamelMediationExchange exchange) throws SamlR2Exception {
+    protected void doProcess(CamelMediationExchange exchange) throws SSOException {
         logger.debug("Processing SP Initiated Single SingOn on HTTP Redirect");
 
         try {
@@ -94,7 +94,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
                 EndpointDescriptor destination =
                         new EndpointDescriptorImpl("EmbeddedSPAcs",
                                 "SingleLogoutService",
-                                SamlR2Binding.SSO_ARTIFACT.getValue(),
+                                SSOBinding.SSO_ARTIFACT.getValue(),
                                 destinationLocation, null);
 
                 logger.debug("Sending JOSSO SLO Response to " + destination);
@@ -117,7 +117,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
 
             CircleOfTrustMemberDescriptor idp = resolveIdp(exchange, secCtx.getIdpAlias());
             if (idp == null) {
-                throw new SamlR2Exception("No IdP descriptor found for " + secCtx.getIdpAlias());
+                throw new SSOException("No IdP descriptor found for " + secCtx.getIdpAlias());
             }
 
             logger.debug("Using IDP " + idp.getAlias());
@@ -133,7 +133,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
             // ------------------------------------------------------
             // Send SLO Request to IdP
             // ------------------------------------------------------
-            SamlR2Binding binding = SamlR2Binding.asEnum(endpoint.getBinding());
+            SSOBinding binding = SSOBinding.asEnum(endpoint.getBinding());
 
             // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
             EndpointType idpSsoEndpoint = resolveIdpSloEndpoint(idp, binding.isFrontChannel());
@@ -173,7 +173,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
                     channel.getIdentityMediator().sendMessage(sloRequest, destination, channel);
                     // TODO : Verify IDP Response!
                 } catch (IdentityMediationException e) {
-                    throw new SamlR2Exception("Can't logout from IDP:" + e);
+                    throw new SSOException("Can't logout from IDP:" + e);
                 }
 
 
@@ -191,14 +191,14 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
             }
 
         } catch (IdentityPlanningException e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
     }
 
     protected LogoutRequestType buildSLORequest(CamelMediationExchange exchange,
                                                 CircleOfTrustMemberDescriptor idp,
                                                 IdPChannel idpChannel,
-                                                EndpointDescriptor ed, SPSecurityContext secCtx) throws IdentityPlanningException, SamlR2Exception {
+                                                EndpointDescriptor ed, SPSecurityContext secCtx) throws IdentityPlanningException, SSOException {
 
         CamelMediationMessage samlIn = (CamelMediationMessage) exchange.getIn();
 
@@ -240,7 +240,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
         return (LogoutRequestType) idPlanExchange.getOut().getContent();
     }
 
-    protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange, String idpAlias) throws SamlR2Exception {
+    protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange, String idpAlias) throws SSOException {
         return getCotManager().lookupMemberByAlias(idpAlias);
     }
 
@@ -274,14 +274,14 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
     }
 
 
-    protected EndpointType resolveIdpSloEndpoint(CircleOfTrustMemberDescriptor idp, boolean frontChannel) throws SamlR2Exception {
+    protected EndpointType resolveIdpSloEndpoint(CircleOfTrustMemberDescriptor idp, boolean frontChannel) throws SSOException {
 
         SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
-        SamlR2Binding preferredBinding = mediator.getPreferredIdpSSOBindingValue();
+        SSOBinding preferredBinding = mediator.getPreferredIdpSSOBindingValue();
         MetadataEntry idpMd = idp.getMetadata();
 
         if (idpMd == null || idpMd.getEntry() == null)
-            throw new SamlR2Exception("No metadata descriptor found for IDP " + idp);
+            throw new SSOException("No metadata descriptor found for IDP " + idp);
 
         if (idpMd.getEntry() instanceof EntityDescriptorType) {
             EntityDescriptorType md = (EntityDescriptorType) idpMd.getEntry();
@@ -296,7 +296,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
 
                     for (EndpointType idpSloEndpoint : idpSsoRole.getSingleLogoutService()) {
 
-                        SamlR2Binding b = SamlR2Binding.asEnum(idpSloEndpoint.getBinding());
+                        SSOBinding b = SSOBinding.asEnum(idpSloEndpoint.getBinding());
 
                         if (b.isFrontChannel() != frontChannel)
                             continue;
@@ -308,7 +308,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
                         }
 
                         // If POST is available, use it
-                        if (b.equals(SamlR2Binding.SAMLR2_POST))
+                        if (b.equals(SSOBinding.SAMLR2_POST))
                             endpoint = idpSloEndpoint;
 
                         // Take the first front channel endpoint
@@ -323,16 +323,16 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
                 }
             }
         } else {
-            throw new SamlR2Exception("Unknown metadata descriptor type " + idpMd.getEntry().getClass().getName());
+            throw new SSOException("Unknown metadata descriptor type " + idpMd.getEntry().getClass().getName());
         }
 
         logger.debug("No IDP Endpoint supporting binding : " + preferredBinding);
-        throw new SamlR2Exception("IDP does not support preferred binding " + preferredBinding);
+        throw new SSOException("IDP does not support preferred binding " + preferredBinding);
 
     }
 
     protected void destroySPSecurityContext(CamelMediationExchange exchange,
-                                            SPSecurityContext secCtx) throws SamlR2Exception {
+                                            SPSecurityContext secCtx) throws SSOException {
 
         CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(secCtx.getIdpAlias());
         IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
@@ -346,7 +346,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
         } catch (NoSuchSessionException e) {
             logger.debug("SSO Session already invalidated " + secCtx.getSessionIndex());
         } catch (Exception e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
 
     }

@@ -371,7 +371,7 @@
                   init-method="init"
                   class="org.atricore.idbus.capabilities.sso.support.core.signature.JSR105SamlR2SignerImpl" >
                 <property name="keyResolver">
-                    <bean class="org.atricore.idbus.capabilities.sso.support.core.SamlR2KeystoreKeyResolver">
+                    <bean class="org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver">
                         <property name="keystoreType" value="JKS"/>
                         <property name="keystoreFile" value="classpath:org/atricore/idbus/examples/simplefederation/idau/sp3/sp3-keystore.jks"/>
                         <property name="keystorePass" value="ATRICORE"/>
@@ -388,7 +388,7 @@
                 <property name="symmetricKeyAlgorithmURI" value="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
                 <property name="kekAlgorithmURI" value="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/>
                 <property name="keyResolver">
-                    <bean class="org.atricore.idbus.capabilities.sso.support.core.SamlR2KeystoreKeyResolver">
+                    <bean class="org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver">
                          <property name="keystoreType" value="JKS"/>
                          <property name="keystoreFile" value="classpath:org/atricore/idbus/examples/simplefederation/idau/sp3/sp3-keystore.jks"/>
                          <property name="keystorePass" value="ATRICORE"/>

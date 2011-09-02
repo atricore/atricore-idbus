@@ -25,7 +25,7 @@ import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.common.plans.SamlR2PlanningConstants;
+import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.Consent;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
@@ -44,7 +44,7 @@ import java.util.Date;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: InitializeRequestAction.java 1342 2009-06-26 16:21:27Z sgonzalez $
  */
-public class InitializeRequestAction extends AbstractSamlR2Action {
+public class InitializeRequestAction extends AbstractSSOAction {
 
     private static final Log logger = LogFactory.getLog(InitializeRequestAction.class);
 
@@ -83,8 +83,8 @@ public class InitializeRequestAction extends AbstractSamlR2Action {
 
         // Issuer [optional]
         // Where we are requiring response for this request
-        Channel responseChannel = (Channel) executionContext.getContextInstance().getVariable(SamlR2PlanningConstants.VAR_RESPONSE_CHANNEL);
-        Channel channel = (Channel) executionContext.getContextInstance().getVariable(SamlR2PlanningConstants.VAR_CHANNEL);
+        Channel responseChannel = (Channel) executionContext.getContextInstance().getVariable(SSOPlanningConstants.VAR_RESPONSE_CHANNEL);
+        Channel channel = (Channel) executionContext.getContextInstance().getVariable(SSOPlanningConstants.VAR_CHANNEL);
 
         CircleOfTrustMemberDescriptor cotMember = null;
 
@@ -113,7 +113,7 @@ public class InitializeRequestAction extends AbstractSamlR2Action {
         if (cotMember == null) {
 
             cotMember =
-                (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(SamlR2PlanningConstants.VAR_COT_MEMBER);
+                (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(SSOPlanningConstants.VAR_COT_MEMBER);
 
             if (cotMember != null && logger.isDebugEnabled()) {
                 logger.debug("Using process variable COT Member " + cotMember.getAlias());

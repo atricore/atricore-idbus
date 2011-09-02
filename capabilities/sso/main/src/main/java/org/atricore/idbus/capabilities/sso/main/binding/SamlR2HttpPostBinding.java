@@ -27,7 +27,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -50,7 +50,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
 
 
     public SamlR2HttpPostBinding(Channel channel) {
-        super(SamlR2Binding.SAMLR2_POST.getValue(), channel);
+        super(SSOBinding.SAMLR2_POST.getValue(), channel);
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {
@@ -71,7 +71,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             // HTTP Request Parameters from HTTP Request body
             MediationState state = createMediationState(exchange);
 
-            // POST SamlR2Binding supports the following parameters
+            // POST SSOBinding supports the following parameters
             String base64SAMLRequest = state.getTransientVariable("SAMLRequest");
             String base64SAMLResponse = state.getTransientVariable("SAMLResponse");
             String relayState = state.getTransientVariable("RelayState");

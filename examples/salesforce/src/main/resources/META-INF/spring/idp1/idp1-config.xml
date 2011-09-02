@@ -89,7 +89,7 @@
 
         <!-- ============================================================= -->
         <!-- Endpoints are realted to SAMLR2 Metadata endpoints            -->
-        <!-- IdentityMediationEndpoint binding MUST match SAMLR2 SamlR2Binding                    -->
+        <!-- IdentityMediationEndpoint binding MUST match SAMLR2 SSOBinding                    -->
         <!-- Location and Response location is OPTIONAL and overrides SAML -->
         <!-- definitions                                                   -->
         <!-- ============================================================= -->
@@ -239,7 +239,7 @@
 
         <!-- ============================================================= -->
         <!-- Endpoints are realted to SAMLR2 Metadata endpoints            -->
-        <!-- IdentityMediationEndpoint binding MUST match SAMLR2 SamlR2Binding                    -->
+        <!-- IdentityMediationEndpoint binding MUST match SAMLR2 SSOBinding                    -->
         <!-- Location and Response location is OPTIONAL and overrides SAML -->
         <!-- definitions                                                   -->
         <!-- ============================================================= -->
@@ -400,7 +400,7 @@
     </bean>
 
 
-    <bean name="idp1-samlr2-mediator" class="org.atricore.idbus.capabilities.sso.main.idp.SamlR2IDPMediator">
+    <bean name="idp1-samlr2-mediator" class="org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator">
         <property name="logMessages" value="true"/>
         <property name="artifactQueueManager" ref="sfidau-aqm"/>
         <property name="preferredSpAlias" value="https://saml.salesforce.com"/>
@@ -432,8 +432,7 @@
     </bean>
 
     <!--
-    <bean name="idp1-samlr2-sls2-mediator" class="org.atricore.idbus.capabilities.sso.main.idp.SamlR2IDPMediator">
-        <property name="logMessages" value="true"/>
+    <bean name="idp1-samlr2-sls2-mediator" class="org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator        <property name="logMessages" value="true"/>
         <property name="artifactQueueManager" ref="sfidau-aqm"/>
         <property name="preferredSpAlias" value="https://saml.salesforce.com/2"/>
 
@@ -473,7 +472,7 @@
           class="org.atricore.idbus.capabilities.sso.support.core.signature.JSR105SamlR2SignerImpl">
         <property name="keyResolver" >
             <bean name="idp-1-ks-sign-resolver"
-                  class="org.atricore.idbus.capabilities.sso.support.core.SamlR2KeystoreKeyResolver">
+                  class="org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver">
                 <property name="keystoreType" value="JKS"/>
                 <property name="keystoreFile" value="classpath:org/atricore/idbus/examples/salesforce/idau/idp1/idp1-keystore.jks"/>
                 <property name="keystorePass" value="ATRICORE"/>
@@ -490,7 +489,7 @@
         <property name="kekAlgorithmURI" value="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/>
         <property name="keyResolver">
             <bean name="idp-1-ks-crypto-resolver"
-                  class="org.atricore.idbus.capabilities.sso.support.core.SamlR2KeystoreKeyResolver">
+                  class="org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver">
                 <property name="keystoreType" value="JKS"/>
                 <property name="keystoreFile" value="classpath:org/atricore/idbus/examples/salesforce/idau/idp1/idp1-keystore.jks"/>
                 <property name="keystorePass" value="xmlsecurity"/>
@@ -555,7 +554,7 @@
 
     <!-- TODO : Move 'loginFormLocation' property to endpoit declaration
     -->
-    <bean name="idp1-samlr2-claims-mediator" class="org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsMediator">
+    <bean name="idp1-samlr2-claims-mediator" class="org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator">
         <property name="logMessages" value="true"/>
         <property name="basicAuthnUILocation" value="http://poc.atricore.com:8081/idbus-ui/claims/username-password.do"/>
         <property name="artifactQueueManager" ref="sfidau-aqm"/>

@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.capabilities.openid.main.binding;
 
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 
 /**
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
@@ -32,8 +32,8 @@ public enum OpenIDBinding {
     OPENID_HTTP_POST("urn:OPENID:2.0:bindings:HTTP-POST", true),
 
     // Binding URIs for non-native openid endpoints
-    SSO_REDIRECT(SamlR2Binding.SS0_REDIRECT.getValue(), SamlR2Binding.SS0_REDIRECT.isFrontChannel()),
-    SSO_ARTIFACT(SamlR2Binding.SSO_ARTIFACT.getValue(), SamlR2Binding.SSO_ARTIFACT.isFrontChannel())
+    SSO_REDIRECT(SSOBinding.SS0_REDIRECT.getValue(), SSOBinding.SS0_REDIRECT.isFrontChannel()),
+    SSO_ARTIFACT(SSOBinding.SSO_ARTIFACT.getValue(), SSOBinding.SSO_ARTIFACT.isFrontChannel())
     ;
 
     private String binding;

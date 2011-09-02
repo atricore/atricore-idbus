@@ -61,7 +61,7 @@ a7ELPuhainU51QIVAIwJ3kzmEiux9zzZMDU7gRGPRLn0
             <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
         </md:KeyDescriptor>
         
-        <!--<md:ManageNameIDService SamlR2Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+        <!--<md:ManageNameIDService SSOBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
                                 Location="http://localhost:8181/IDBUS/SAML2/IDP-1/RNI"
                                 ResponseLocation="http://localhost:8181/IDBUS/SAML2/IDP-1/MNI_RESPONSE/SOAP"/>-->
 

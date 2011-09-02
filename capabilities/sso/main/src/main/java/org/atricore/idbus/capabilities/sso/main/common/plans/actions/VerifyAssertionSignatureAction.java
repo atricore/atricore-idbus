@@ -28,7 +28,7 @@ import org.jbpm.graph.exe.ExecutionContext;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: VerifyAssertionSignatureAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class VerifyAssertionSignatureAction extends AbstractSamlR2Action {
+public class VerifyAssertionSignatureAction extends AbstractSSOAction {
 
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) throws Exception {
 

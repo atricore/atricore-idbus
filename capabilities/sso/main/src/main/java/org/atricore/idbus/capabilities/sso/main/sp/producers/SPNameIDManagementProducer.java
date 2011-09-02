@@ -32,13 +32,13 @@ import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2RequestException;
+import org.atricore.idbus.capabilities.sso.support.core.SSORequestException;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
@@ -63,7 +63,7 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import javax.security.auth.Subject;
 import java.util.Date;
 
-public class SPNameIDManagementProducer extends SamlR2Producer {
+public class SPNameIDManagementProducer extends SSOProducer {
 
     private static final Log logger = LogFactory.getLog(SPNameIDManagementProducer.class);
 
@@ -89,7 +89,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
 
         try {
             manageNameID = validateManageNameID(manageNameID, secondaryErrorCode);
-        } catch (SamlR2RequestException e1) {
+        } catch (SSORequestException e1) {
             logger.error("Error validating ManageNameIDRequest", e1);
             validated = false;
         }
@@ -107,7 +107,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
                         decryptedNameID = encrypter.decryptNameID(manageNameID.getEncryptedID());
                     } catch (SamlR2EncrypterException e) {
                         //TODO should we throw RuntimeException?
-                        throw new SamlR2Exception("NameID cannot be decrypted.", e);
+                        throw new SSOException("NameID cannot be decrypted.", e);
                     }
                     subjectNameID = new SubjectNameID(decryptedNameID.getValue(), decryptedNameID.getFormat());
                     subjectNameID.setLocalName(decryptedNameID.getSPProvidedID());
@@ -124,7 +124,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
                     // cannot map subject to local account, terminate
                     logger.error("No Account Lifecycle configured for Channel [" + fChannel.getName() + "] " +
                             " ManageNameID [" + manageNameID.getID() + "]");
-                    throw new SamlR2Exception("No Account Lifecycle configured for Channel [" + fChannel.getName() + "] " +
+                    throw new SSOException("No Account Lifecycle configured for Channel [" + fChannel.getName() + "] " +
                             " ManageNameID [" + manageNameID.getID() + "]");
                 }
 
@@ -132,7 +132,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
                 AccountLink accountLink = accountLinkLifecycle.findByIDPAccount(idpSubject);
                 if (accountLink == null) {
                     logger.error("No Account Link available for Principal [" + subjectNameID.getName() + "]");
-                    throw new SamlR2Exception("No Account Link available for Principal [" + subjectNameID.getName() + "]");
+                    throw new SSOException("No Account Link available for Principal [" + subjectNameID.getName() + "]");
                 }
                 accountLinkLifecycle.dispose(accountLink);
             }
@@ -209,14 +209,14 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
         return response;
     }
 
-    private EndpointType resolveIdpMNIDEndpoint(CircleOfTrustMemberDescriptor idp) throws SamlR2Exception {
+    private EndpointType resolveIdpMNIDEndpoint(CircleOfTrustMemberDescriptor idp) throws SSOException {
 
         SamlR2SPMediator mediator = (SamlR2SPMediator) ((IdPChannel) channel).getIdentityMediator();
-        SamlR2Binding preferredBinding = mediator.getPreferredIdpSSOBindingValue();
+        SSOBinding preferredBinding = mediator.getPreferredIdpSSOBindingValue();
         MetadataEntry idpMd = idp.getMetadata();
 
         if (idpMd == null || idpMd.getEntry() == null)
-            throw new SamlR2Exception("No metadata descriptor found for IDP " + idp);
+            throw new SSOException("No metadata descriptor found for IDP " + idp);
 
         if (idpMd.getEntry() instanceof EntityDescriptorType) {
             EntityDescriptorType md = (EntityDescriptorType) idpMd.getEntry();
@@ -233,14 +233,14 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
 
                     for (EndpointType idpMnidEndpoint : idpSsoRole.getManageNameIDService()) {
 
-                        SamlR2Binding b = SamlR2Binding.asEnum(idpMnidEndpoint.getBinding());
+                        SSOBinding b = SSOBinding.asEnum(idpMnidEndpoint.getBinding());
                         if (b.equals(preferredBinding))
                             return idpMnidEndpoint;
 
-                        if (b.equals(SamlR2Binding.SAMLR2_ARTIFACT))
+                        if (b.equals(SSOBinding.SAMLR2_ARTIFACT))
                             artEndpoint = idpMnidEndpoint;
 
-                        if (b.equals(SamlR2Binding.SAMLR2_POST))
+                        if (b.equals(SSOBinding.SAMLR2_POST))
                             postEndpoint = idpMnidEndpoint;
 
                         if (defaultEndpoint == null)
@@ -256,32 +256,32 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
                 }
             }
         } else {
-            throw new SamlR2Exception("Unknown metadata descriptor type " + idpMd.getEntry().getClass().getName());
+            throw new SSOException("Unknown metadata descriptor type " + idpMd.getEntry().getClass().getName());
         }
 
         logger.debug("No IDP Endpoint supporting binding : " + preferredBinding);
-        throw new SamlR2Exception("IDP does not support preferred binding " + preferredBinding);
+        throw new SSOException("IDP does not support preferred binding " + preferredBinding);
 
     }
 
-    protected CircleOfTrustMemberDescriptor resolveIdp() throws SamlR2Exception {
+    protected CircleOfTrustMemberDescriptor resolveIdp() throws SSOException {
         SamlR2SPMediator mediator = (SamlR2SPMediator) ((IdPChannel) channel).getIdentityMediator();
 
         String idpAlias = mediator.getPreferredIdpAlias();
         if (idpAlias == null) {
-            throw new SamlR2Exception("No IDP available");
+            throw new SSOException("No IDP available");
         }
 
         CircleOfTrustMemberDescriptor idp = this.getCotManager().lookupMemberByAlias(idpAlias);
         if (idp == null) {
-            throw new SamlR2Exception("No IDP Member descriptor available for " + idpAlias);
+            throw new SSOException("No IDP Member descriptor available for " + idpAlias);
         }
 
         return idp;
 
     }
 
-    protected ManageNameIDRequestType validateManageNameID(ManageNameIDRequestType manageNameID, StringBuffer secondaryErrorCode) throws SamlR2RequestException {
+    protected ManageNameIDRequestType validateManageNameID(ManageNameIDRequestType manageNameID, StringBuffer secondaryErrorCode) throws SSORequestException {
         EndpointDescriptor epointDesc;
         try {
 
@@ -289,7 +289,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
 
         } catch (IdentityMediationException e1) {
 
-            throw new SamlR2RequestException(manageNameID,
+            throw new SSORequestException(manageNameID,
                     StatusCode.TOP_RESPONDER,
                     null,
                     StatusDetails.INVALID_DESTINATION,
@@ -314,7 +314,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
             }
 
         } catch (CircleOfTrustManagerException e) {
-            throw new SamlR2RequestException(manageNameID,
+            throw new SSORequestException(manageNameID,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.NO_SUPPORTED_IDP,
                     null,
@@ -324,7 +324,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
 
         //ID
         if (manageNameID.getID() == null) {
-            throw new SamlR2RequestException(manageNameID,
+            throw new SSORequestException(manageNameID,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.INVALID_DESTINATION,
@@ -335,7 +335,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
         if (manageNameID.getDestination() == null && (epointDesc.getBinding().equals("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST") ||
                 epointDesc.getBinding().equals("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"))) {
 
-            throw new SamlR2RequestException(manageNameID,
+            throw new SSORequestException(manageNameID,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.INVALID_DESTINATION,
@@ -344,7 +344,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
 
         //issue instant
         if (manageNameID.getIssueInstant() == null) {
-            throw new SamlR2RequestException(manageNameID,
+            throw new SSORequestException(manageNameID,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.NO_ISSUE_INSTANT);
@@ -355,7 +355,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
         if (manageNameID.getNameID() == null && manageNameID.getEncryptedID() == null) {
             secondaryErrorCode.append(StatusDetails.NO_NAMEID_ENCRYPTEDID.toString());
 
-            throw new SamlR2RequestException(manageNameID,
+            throw new SSORequestException(manageNameID,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.NO_NAMEID_ENCRYPTEDID);
@@ -363,7 +363,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
 
         //Issuer
         if (manageNameID.getIssuer() == null) {
-            throw new SamlR2RequestException(manageNameID,
+            throw new SSORequestException(manageNameID,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.NO_ISSUER,
@@ -371,7 +371,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
         } else {
             //Format attrib. must be omitted or have value of: urn:oasis:names:tc:SAML:2.0:nameid-format:entity
             if (manageNameID.getIssuer().getFormat() != null && !manageNameID.getIssuer().getFormat().equals("urn:oasis:names:tc:SAML:2.0:nameid-format:entity")) {
-                throw new SamlR2RequestException(manageNameID,
+                throw new SSORequestException(manageNameID,
                         StatusCode.TOP_RESPONDER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_ISSUER_FORMAT);
@@ -380,7 +380,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
 
         // Version, saml2 core, section 3.2.2
         if (manageNameID.getVersion() == null || !manageNameID.getVersion().equals(SAML2_VERSION)) {
-            throw new SamlR2RequestException(manageNameID,
+            throw new SSORequestException(manageNameID,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.REQUEST_VERSION_TOO_LOW,
                     StatusDetails.INVALID_VERSION);
@@ -394,12 +394,12 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
                 signer.validate(idpMd, manageNameID);
             } catch (SamlR2SignatureValidationException e) {
                 secondaryErrorCode.append(StatusDetails.INVALID_REQUEST_SIGNATURE.toString());
-                throw new SamlR2RequestException(manageNameID,
+                throw new SSORequestException(manageNameID,
                         StatusCode.TOP_RESPONDER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_REQUEST_SIGNATURE);
             } catch (SamlR2SignatureException e) {
-                throw new SamlR2RequestException(manageNameID,
+                throw new SSORequestException(manageNameID,
                         StatusCode.TOP_RESPONDER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_REQUEST_SIGNATURE, e);
@@ -407,7 +407,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
         } else if (epointDesc.getBinding().equals("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST") ||
                 epointDesc.getBinding().equals("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect")) {
 
-            throw new SamlR2RequestException(manageNameID,
+            throw new SSORequestException(manageNameID,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_REQUEST_SIGNATURE,
@@ -416,7 +416,7 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
 
         //if one of the following exists: NewID, NewEncryptedID,Terminate
         if (manageNameID.getNewID() == null && manageNameID.getNewEncryptedID() == null && manageNameID.getTerminate() == null) {
-            throw new SamlR2RequestException(manageNameID,
+            throw new SSORequestException(manageNameID,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.NO_NEWID_NEWENCRYPTEDID_TERMINATE);

@@ -29,12 +29,12 @@ import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSamlR2Action;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
-import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPSessionHeartBeatRequestType;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
@@ -49,7 +49,7 @@ import org.jbpm.graph.exe.ExecutionContext;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: InitializeAuthnRequestAction.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
+public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
     private static final Log logger = LogFactory.getLog(InitializeAuthnRequestAction .class);
 
@@ -127,7 +127,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
             if (samlr2Endpoint != null)
                 authn.setProtocolBinding(samlr2Endpoint.getBinding());
             else
-                authn.setProtocolBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
+                authn.setProtocolBinding(SSOBinding.SAMLR2_SOAP.getValue());
         } else {
             logger.debug("No ACS Endpoint found, we're using back-channel messages.");
         }
@@ -150,19 +150,19 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
         if (log.isDebugEnabled())
             log.debug("Looking for ACS endpoint. Idp: " + idp.getAlias() + ", federation channel: " + idpChannel.getName());
 
-        SamlR2Binding incomingEndpointBinding = null;
+        SSOBinding incomingEndpointBinding = null;
 
         IdentityMediationEndpoint acsEndpoint = null;
         IdentityMediationEndpoint acsArtifactEndpoint = null;
         IdentityMediationEndpoint acsPostEndpoint = null;
 
-        String acsEndpointType = SamlR2Service.AssertionConsumerService.toString();
+        String acsEndpointType = SSOService.AssertionConsumerService.toString();
 
         if (log.isDebugEnabled())
             log.debug("Selected IdP channel " + idpChannel.getName());
 
         if (incomingEndpoint != null) {
-            incomingEndpointBinding  = SamlR2Binding.asEnum(incomingEndpoint.getBinding());
+            incomingEndpointBinding  = SSOBinding.asEnum(incomingEndpoint.getBinding());
 
             if (log.isTraceEnabled())
                 log.trace("Incomming endpoint " + incomingEndpoint + ". Is front-channel: " +
@@ -180,9 +180,9 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
             if (endpoint.getType().equals(acsEndpointType)) {
 
-                SamlR2Binding endpointBinding = SamlR2Binding.asEnum(endpoint.getBinding());
+                SSOBinding endpointBinding = SSOBinding.asEnum(endpoint.getBinding());
 
-                // Get the POST SamlR2Binding endpoint
+                // Get the POST SSOBinding endpoint
                 if (incomingEndpointBinding != null) {
 
                     if (incomingEndpointBinding.isFrontChannel() == endpointBinding.isFrontChannel()) {
@@ -194,10 +194,10 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
                     // Get the first endpoint
                     acsEndpoint = endpoint;
-                    if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue()))
+                    if (endpoint.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()))
                         acsArtifactEndpoint = endpoint;
 
-                    if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_POST.getValue()))
+                    if (endpoint.getBinding().equals(SSOBinding.SAMLR2_POST.getValue()))
                         acsPostEndpoint = endpoint;
                 }
             }
@@ -223,7 +223,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
      * 3. Else, the first format supported by the IdP will be selected. 
      *
      */
-    protected String resolveNameIdFormat(CircleOfTrustMemberDescriptor idp, String preferredNameIdFormat) throws SamlR2Exception {
+    protected String resolveNameIdFormat(CircleOfTrustMemberDescriptor idp, String preferredNameIdFormat) throws SSOException {
 
         MetadataEntry idpMd = idp.getMetadata();
         String selectedNameIdFormat = null;
@@ -253,7 +253,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
             }
 
         } else
-            throw new SamlR2Exception("Unsupported Metadata type " + idpMd.getEntry() + ", SAML 2 Metadata expected");
+            throw new SSOException("Unsupported Metadata type " + idpMd.getEntry() + ", SAML 2 Metadata expected");
 
         if (selectedNameIdFormat == null)
             selectedNameIdFormat = defaultNameIdFormat;

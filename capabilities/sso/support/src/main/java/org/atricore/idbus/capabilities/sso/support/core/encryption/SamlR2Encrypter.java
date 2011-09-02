@@ -26,7 +26,7 @@ import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2KeyResolver;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -39,21 +39,21 @@ public interface SamlR2Encrypter {
      */
     public EncryptedElementType encrypt ( AssertionType assertion ) throws SamlR2EncrypterException;
 
-    public EncryptedElementType encrypt ( AssertionType assertion, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException;
+    public EncryptedElementType encrypt ( AssertionType assertion, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException;
 
     public EncryptedElementType encrypt ( RequestAbstractType request ) throws SamlR2EncrypterException;
 
-    public EncryptedElementType encrypt ( RequestAbstractType request, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException;
+    public EncryptedElementType encrypt ( RequestAbstractType request, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException;
 
     public EncryptedElementType encrypt ( StatusResponseType response ) throws SamlR2EncrypterException;
 
-    public EncryptedElementType encrypt ( StatusResponseType response, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException;
+    public EncryptedElementType encrypt ( StatusResponseType response, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException;
 
     public AssertionType decryptAssertion ( EncryptedElementType encryptedAssertion ) throws SamlR2EncrypterException;
 
-    public AssertionType decryptAssertion ( EncryptedElementType encryptedAssertion, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException;
+    public AssertionType decryptAssertion ( EncryptedElementType encryptedAssertion, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException;
     
     public NameIDType decryptNameID ( EncryptedElementType encryptedNameID ) throws SamlR2EncrypterException;
     
-    public NameIDType decryptNameID ( EncryptedElementType encryptedNameID, SamlR2KeyResolver keyResolver ) throws SamlR2EncrypterException;
+    public NameIDType decryptNameID ( EncryptedElementType encryptedNameID, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException;
 }

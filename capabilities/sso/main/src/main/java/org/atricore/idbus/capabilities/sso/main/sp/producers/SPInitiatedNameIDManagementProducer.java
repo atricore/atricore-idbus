@@ -21,11 +21,11 @@
 
 package org.atricore.idbus.capabilities.sso.main.sp.producers;
 
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 
-public class SPInitiatedNameIDManagementProducer extends SamlR2Producer {
+public class SPInitiatedNameIDManagementProducer extends SSOProducer {
 
 	public SPInitiatedNameIDManagementProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) {
 		super(endpoint);

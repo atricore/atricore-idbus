@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -114,7 +114,7 @@ public class UsernamePasscodeClaimsController extends SimpleFormController {
         if (claimsChannel != null) {
 
             MediationBindingFactory f = claimsChannel.getIdentityMediator().getBindingFactory();
-            MediationBinding b = f.createBinding(SamlR2Binding.SSO_ARTIFACT.getValue(), request.getClaimsChannel());
+            MediationBinding b = f.createBinding(SSOBinding.SSO_ARTIFACT.getValue(), request.getClaimsChannel());
 
             claimsEndpointUrl = claimsEndpoint.getResponseLocation();
             if (claimsEndpointUrl == null)
@@ -170,7 +170,7 @@ public class UsernamePasscodeClaimsController extends SimpleFormController {
         for (IdentityMediationEndpoint endpoint : request.getClaimsChannel().getEndpoints()) {
             // Look for PWD endpoint using Artifacct binding
             if (AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue().equals(endpoint.getType()) &&
-                    SamlR2Binding.SSO_ARTIFACT.getValue().equals(endpoint.getBinding())) {
+                    SSOBinding.SSO_ARTIFACT.getValue().equals(endpoint.getBinding())) {
 
                 if (logger.isDebugEnabled())
                     logger.debug("Resolved claims endpoint " + endpoint);

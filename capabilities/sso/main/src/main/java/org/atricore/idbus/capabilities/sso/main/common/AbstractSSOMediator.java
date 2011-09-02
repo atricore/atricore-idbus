@@ -24,7 +24,7 @@ package org.atricore.idbus.capabilities.sso.main.common;
 import oasis.names.tc.saml._2_0.metadata.EndpointType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -37,11 +37,11 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: AbstractSamlR2Mediator.java 1245 2009-06-05 19:32:53Z sgonzalez $
+ * @version $Id: AbstractSSOMediator.java 1245 2009-06-05 19:32:53Z sgonzalez $
  */
-public abstract class AbstractSamlR2Mediator extends AbstractCamelMediator {
+public abstract class AbstractSSOMediator extends AbstractCamelMediator {
 
-    private static final Log logger = LogFactory.getLog(AbstractSamlR2Mediator.class);
+    private static final Log logger = LogFactory.getLog(AbstractSSOMediator.class);
 
     private boolean validateRequestsSignature;
 
@@ -55,7 +55,7 @@ public abstract class AbstractSamlR2Mediator extends AbstractCamelMediator {
 
     private SamlR2Encrypter encrypter;
 
-    protected AbstractSamlR2Mediator() {
+    protected AbstractSSOMediator() {
 
     }
 
@@ -65,7 +65,7 @@ public abstract class AbstractSamlR2Mediator extends AbstractCamelMediator {
      * @param channel
      * @param endpoint
      * @return
-     * @throws org.atricore.idbus.capabilities.sso.main.SamlR2Exception
+     * @throws org.atricore.idbus.capabilities.sso.main.SSOException
      */
     public EndpointDescriptor resolveEndpoint(Channel channel, IdentityMediationEndpoint endpoint) throws IdentityMediationException {
 
@@ -73,7 +73,7 @@ public abstract class AbstractSamlR2Mediator extends AbstractCamelMediator {
         String type = null;
         String location;
         String responseLocation;
-        SamlR2Binding binding = null;
+        SSOBinding binding = null;
 
         if (endpoint.getMetadata() != null &&
                 endpoint.getMetadata().getEntry() instanceof EndpointType) {
@@ -92,9 +92,9 @@ public abstract class AbstractSamlR2Mediator extends AbstractCamelMediator {
 
             String b = endpoint.getBinding() != null ? endpoint.getBinding() : samlr2Endpoint.getBinding();
             if (b != null)
-                binding = SamlR2Binding.asEnum(b);
+                binding = SSOBinding.asEnum(b);
             else
-                logger.warn("No SamlR2Binding found in endpoint " + endpoint.getName());
+                logger.warn("No SSOBinding found in endpoint " + endpoint.getName());
 
             // ---------------------------------------------
             // Resolve Endpoint location
@@ -149,9 +149,9 @@ public abstract class AbstractSamlR2Mediator extends AbstractCamelMediator {
             // Resolve Endpoint binding
             // ---------------------------------------------
             if (endpoint.getBinding() != null)
-                binding = SamlR2Binding.asEnum(endpoint.getBinding());
+                binding = SSOBinding.asEnum(endpoint.getBinding());
             else
-                logger.warn("No SamlR2Binding found in endpoint " + endpoint.getName());
+                logger.warn("No SSOBinding found in endpoint " + endpoint.getName());
 
             // ---------------------------------------------
             // Resolve Endpoint location

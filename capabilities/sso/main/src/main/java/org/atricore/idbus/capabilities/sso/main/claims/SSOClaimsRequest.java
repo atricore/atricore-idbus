@@ -31,11 +31,11 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SamlR2ClaimsRequest extends ClaimsRequestImpl {
+public class SSOClaimsRequest extends ClaimsRequestImpl {
 
     private RequestedAuthnContextType requestedAuthnCtxClass;
 
-    public SamlR2ClaimsRequest(String id, Channel issuer, IdentityMediationEndpoint endpoint, ClaimChannel provider, String relayState) {
+    public SSOClaimsRequest(String id, Channel issuer, IdentityMediationEndpoint endpoint, ClaimChannel provider, String relayState) {
         super(id, issuer, endpoint, provider, relayState);
     }
 

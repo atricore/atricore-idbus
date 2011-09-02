@@ -6,7 +6,7 @@ import oasis.names.tc.saml._2_0.protocol.StatusCodeType;
 import oasis.names.tc.saml._2_0.protocol.StatusType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSamlR2Action;
+import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
@@ -17,7 +17,7 @@ import org.jbpm.graph.exe.ExecutionContext;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SetSloResponseStatusAction extends AbstractSamlR2Action {
+public class SetSloResponseStatusAction extends AbstractSSOAction {
 
     private static final Log logger = LogFactory.getLog(SetSloResponseStatusAction.class);
 

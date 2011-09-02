@@ -4,7 +4,7 @@ import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSamlR2Action;
+import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
@@ -22,7 +22,7 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class InitializeLogoutRequestAction extends AbstractSamlR2Action {
+public class InitializeLogoutRequestAction extends AbstractSSOAction {
 
     private static final Log logger = LogFactory.getLog(InitializeLogoutRequestAction.class);
 

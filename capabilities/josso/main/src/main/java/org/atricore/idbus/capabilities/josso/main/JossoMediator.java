@@ -227,7 +227,7 @@ public class JossoMediator extends AbstractCamelMediator {
 
                                 }
 
-                                // FROM SAMLR2 SamlR2Binding TO josso-binding
+                                // FROM SAMLR2 SSOBinding TO josso-binding
                                 from("idbus-bind:camel://" + ed.getName() + "-response" +
                                         "?binding=" + ed.getBinding() +
                                         "&channelRef=" + bindingChannel.getName()).

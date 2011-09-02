@@ -24,7 +24,7 @@ package org.atricore.idbus.capabilities.sso.support.core;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 
-public class SamlR2ResponseException extends IdentityMediationFault {
+public class SSOResponseException extends IdentityMediationFault {
 
     private StatusResponseType  response;
 
@@ -32,10 +32,10 @@ public class SamlR2ResponseException extends IdentityMediationFault {
     private StatusCode secondLevelStatusCode;
     private StatusDetails statusDtails;
 
-    public SamlR2ResponseException(StatusResponseType  response,
-                                             StatusCode topLevelStatusCode,
-                                             StatusCode secondLevelStatusCode,
-                                             StatusDetails statusDtails) {
+    public SSOResponseException(StatusResponseType response,
+                                StatusCode topLevelStatusCode,
+                                StatusCode secondLevelStatusCode,
+                                StatusDetails statusDtails) {
         super(topLevelStatusCode.getValue(),
               (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : ""),
               (statusDtails != null ? statusDtails.getValue() : ""),
@@ -48,11 +48,11 @@ public class SamlR2ResponseException extends IdentityMediationFault {
         this.statusDtails = statusDtails;
     }
 
-    public SamlR2ResponseException(StatusResponseType  response,
-                                             StatusCode topLevelStatusCode,
-                                             StatusCode secondLevelStatusCode,
-                                             StatusDetails statusDtails,
-                                             String errorDetails) {
+    public SSOResponseException(StatusResponseType response,
+                                StatusCode topLevelStatusCode,
+                                StatusCode secondLevelStatusCode,
+                                StatusDetails statusDtails,
+                                String errorDetails) {
         super(topLevelStatusCode.getValue(),
               (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : null),
               (statusDtails != null ? statusDtails.getValue() : null),
@@ -65,11 +65,11 @@ public class SamlR2ResponseException extends IdentityMediationFault {
         this.statusDtails = statusDtails;
     }
 
-    public SamlR2ResponseException(StatusResponseType  response,
-                                             StatusCode topLevelStatusCode,
-                                             StatusCode secondLevelStatusCode,
-                                             StatusDetails statusDtails,
-                                             Throwable cause) {
+    public SSOResponseException(StatusResponseType response,
+                                StatusCode topLevelStatusCode,
+                                StatusCode secondLevelStatusCode,
+                                StatusDetails statusDtails,
+                                Throwable cause) {
         super(topLevelStatusCode.getValue(),
               (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : null),
               (statusDtails != null ? statusDtails.getValue() : null),
@@ -82,12 +82,12 @@ public class SamlR2ResponseException extends IdentityMediationFault {
     }
 
 
-    public SamlR2ResponseException(StatusResponseType response,
-                                             StatusCode topLevelStatusCode,
-                                             StatusCode secondLevelStatusCode,
-                                             StatusDetails statusDtails,
-                                             String errorDetails,
-                                             Throwable cause) {
+    public SSOResponseException(StatusResponseType response,
+                                StatusCode topLevelStatusCode,
+                                StatusCode secondLevelStatusCode,
+                                StatusDetails statusDtails,
+                                String errorDetails,
+                                Throwable cause) {
         super(topLevelStatusCode.getValue(),
               (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : null),
               (statusDtails != null ? statusDtails.getValue() : null),

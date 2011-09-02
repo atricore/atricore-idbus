@@ -28,7 +28,7 @@ import org.jbpm.graph.exe.ExecutionContext;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: DecryptRequestAssertionAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class DecryptRequestAssertionAction extends AbstractSamlR2Action {
+public class DecryptRequestAssertionAction extends AbstractSSOAction {
 
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) throws Exception {
 

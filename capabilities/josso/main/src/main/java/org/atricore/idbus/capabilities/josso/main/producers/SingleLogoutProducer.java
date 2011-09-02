@@ -26,8 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.*;
 import org.atricore.idbus.capabilities.josso.main.binding.JossoBinding;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
@@ -164,15 +164,15 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
 
         try {
 
-            logger.debug("Looking for " + SamlR2Service.SPInitiatedSingleLogoutService.toString());
+            logger.debug("Looking for " + SSOService.SPInitiatedSingleLogoutService.toString());
 
             for (IdentityMediationEndpoint endpoint : idP.getEndpoints()) {
 
                 logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
 
-                if (endpoint.getType().equals(SamlR2Service.SPInitiatedSingleLogoutService.toString())) {
+                if (endpoint.getType().equals(SSOService.SPInitiatedSingleLogoutService.toString())) {
 
-                    if (endpoint.getBinding().equals(SamlR2Binding.SSO_ARTIFACT.getValue())) {
+                    if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
                         // This is the endpoint we're looking for
                         return  idP.getIdentityMediator().resolveEndpoint(idP, endpoint);
                     }

@@ -2,12 +2,12 @@ package org.atricore.idbus.capabilities.sso.main.sp.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPSessionHeartBeatRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPSessionHeartBeatResponseType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPSessionHeartBeatRequestType;
@@ -39,7 +39,7 @@ import org.atricore.idbus.kernel.planning.IdentityPlanningException;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SessionHeartBeatProducer extends SamlR2Producer {
+public class SessionHeartBeatProducer extends SSOProducer {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
@@ -57,11 +57,11 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
         if (in.getMessage().getContent() instanceof SPSessionHeartBeatRequestType) {
             doProcessSPSessionHeartBeat(exchange, (SPSessionHeartBeatRequestType) in.getMessage().getContent());
         } else {
-            throw new SamlR2Exception("Unsupported message type " + in.getMessage().getContent());
+            throw new SSOException("Unsupported message type " + in.getMessage().getContent());
         }
     }
 
-    protected void doProcessSPSessionHeartBeat(CamelMediationExchange exchange, SPSessionHeartBeatRequestType request) throws SamlR2Exception,
+    protected void doProcessSPSessionHeartBeat(CamelMediationExchange exchange, SPSessionHeartBeatRequestType request) throws SSOException,
             IdentityPlanningException,
             SSOSessionException {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
@@ -138,7 +138,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
     }
 
     protected IDPSessionHeartBeatResponseType performIdPSessionHeartBeat(CamelMediationExchange exchange,
-                                                                         SPSecurityContext secCtx) throws SamlR2Exception {
+                                                                         SPSecurityContext secCtx) throws SSOException {
 
         try {
 
@@ -172,14 +172,14 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
                     (IDPSessionHeartBeatResponseType) channel.getIdentityMediator().sendMessage(req, ed, spChannel);
 
             if (res.getInReplayTo() == null || !res.getInReplayTo().equals(req.getID()))
-                throw new SamlR2Exception("Received response is not expected, invalid 'inReplayTo' attribute " +
+                throw new SSOException("Received response is not expected, invalid 'inReplayTo' attribute " +
                         res.getInReplayTo() + ", expected " + req.getID());
 
             return res;
         } catch (IdentityMediationException e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         } catch (IdentityPlanningException e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
 
 
@@ -215,7 +215,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
 
     }
 
-    protected SPChannel resolveSpChannel(CircleOfTrustMemberDescriptor idp) throws SamlR2Exception {
+    protected SPChannel resolveSpChannel(CircleOfTrustMemberDescriptor idp) throws SSOException {
         // The channel might be a binding or federation channel, get the main channel from the provider.
         CircleOfTrust cot = getProvider().getChannel().getCircleOfTrust();
 
@@ -260,25 +260,25 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
 
     }
 
-    protected EndpointDescriptor resolveIdpHeartBeatEndpoint(SPChannel spChannel) throws SamlR2Exception {
+    protected EndpointDescriptor resolveIdpHeartBeatEndpoint(SPChannel spChannel) throws SSOException {
 
         IdentityMediationEndpoint endpoint = null;
         for (IdentityMediationEndpoint ep : spChannel.getEndpoints()) {
 
-            if (ep.getType().equals(SamlR2Service.IDPSessionHeartBeatService.toString())) {
+            if (ep.getType().equals(SSOService.IDPSessionHeartBeatService.toString())) {
 
                 // Local endpoints are preferred
-                if (ep.getBinding().equals(SamlR2Binding.SSO_LOCAL.getValue())) {
+                if (ep.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
                     endpoint = ep;
                     break;
-                } else if (ep.getBinding().equals(SamlR2Binding.SSO_SOAP.getValue())) {
+                } else if (ep.getBinding().equals(SSOBinding.SSO_SOAP.getValue())) {
                     endpoint = ep; // keep looking, maybe there is a local endpoint
                 }
             }
         }
 
         if (endpoint == null) {
-            logger.warn("No IDP Endpoint supporting service/binding " + SamlR2Service.IDPSessionHeartBeatService + " in channel " + spChannel.getName());
+            logger.warn("No IDP Endpoint supporting service/binding " + SSOService.IDPSessionHeartBeatService + " in channel " + spChannel.getName());
             return null;
         }
 
@@ -291,7 +291,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
 
     }
 
-    protected IDPSessionHeartBeatRequestType buildIDPSessionHeartBeatRequest(SPSecurityContext secCtx) throws SamlR2Exception, IdentityPlanningException {
+    protected IDPSessionHeartBeatRequestType buildIDPSessionHeartBeatRequest(SPSecurityContext secCtx) throws SSOException, IdentityPlanningException {
 
         IDPSessionHeartBeatRequestType request = new IDPSessionHeartBeatRequestType();
         request.setID(uuidGenerator.generateId());
@@ -304,7 +304,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
 
     protected SPSecurityContext updateSPSecurityContext(SPSecurityContext secCtx,
                                                         CamelMediationExchange exchange)
-            throws SamlR2Exception, SSOSessionException {
+            throws SSOException, SSOSessionException {
 
         if (logger.isDebugEnabled())
             logger.debug("Updating SP Security Context for " + secCtx.getSessionIndex());

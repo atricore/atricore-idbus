@@ -3,7 +3,7 @@ package org.atricore.idbus.capabilities.sso.main.binding;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -57,7 +57,7 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
 
     }
 
-    public SamlArtifact decode(String samlArtStr) throws SamlR2Exception {
+    public SamlArtifact decode(String samlArtStr) throws SSOException {
 
         if (logger.isTraceEnabled())
             logger.trace("Decoding SAML 2.0 Artifact " + samlArtStr);
@@ -65,7 +65,7 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
         byte[] samlArtBin = Base64.decodeBase64(samlArtStr.getBytes());
 
         if (samlArtBin.length < 44) // Using SAML 2.0 Recommended format !
-            throw new SamlR2Exception("Invalid Saml 2.0 Artifact format " + samlArtBin.length);
+            throw new SSOException("Invalid Saml 2.0 Artifact format " + samlArtBin.length);
 
         byte[] typeCodeBin = new byte[2];
         typeCodeBin[0] = samlArtBin[0];

@@ -19,19 +19,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.capabilities.sso.main.claims;
-
-import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsResponseImpl;
+package org.atricore.idbus.capabilities.sso.main;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id$
+ * @version $Id: SSOException.java 1245 2009-06-05 19:32:53Z sgonzalez $
  */
-public class SamlR2ClaimsResponse extends ClaimsResponseImpl {
+public class SSOException extends Exception {
 
-    public SamlR2ClaimsResponse(String id, Channel issuer, String inResponseTo, ClaimSet claimSet, String relayState) {
-        super(id, issuer, inResponseTo, claimSet, relayState);
+    public SSOException() {
+        super();
+    }
+
+    public SSOException(String message) {
+        super(message);
+    }
+
+    public SSOException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public SSOException(Throwable cause) {
+        super(cause);
     }
 }

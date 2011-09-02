@@ -30,9 +30,9 @@ import java.util.Set;
  * @org.apache.xbean.XBean element="abstract-saml-assertion-plan"
  *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: AbstractSAMLR2AssertionPlan.java 1335 2009-06-24 16:34:38Z sgonzalez $
+ * @version $Id: AbstractSSOAssertionPlan.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public abstract class AbstractSAMLR2AssertionPlan extends AbstractJbpmIdentityPlan {
+public abstract class AbstractSSOAssertionPlan extends AbstractJbpmIdentityPlan {
 
     private SSOIdentityManager identityManager;
 

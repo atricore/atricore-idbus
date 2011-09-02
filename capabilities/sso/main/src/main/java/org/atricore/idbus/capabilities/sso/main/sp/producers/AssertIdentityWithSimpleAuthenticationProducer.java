@@ -9,13 +9,13 @@ import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.AssertIdentityWithSimpleAuthenticationReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
@@ -56,7 +56,7 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Producer {
+public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
@@ -75,9 +75,9 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
         Object content = in.getMessage().getContent();
 
         // Check Binding ... we only support SOAP!
-        SamlR2Binding b = SamlR2Binding.asEnum(endpoint.getBinding());
-        if (!b.equals(SamlR2Binding.SSO_SOAP)) {
-            throw new SamlR2Exception("Operation does not support " + b.getValue() + " binding!");
+        SSOBinding b = SSOBinding.asEnum(endpoint.getBinding());
+        if (!b.equals(SSOBinding.SSO_SOAP)) {
+            throw new SSOException("Operation does not support " + b.getValue() + " binding!");
         }
 
         if (content instanceof AssertIdentityWithSimpleAuthenticationRequestType) {
@@ -127,7 +127,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
 
             // TODO : Validate SP Response!
             if (!status.equals(StatusCode.TOP_SUCCESS)) {
-                throw new SamlR2Exception("Unexpected IDP Status Code " + status.getValue() +
+                throw new SSOException("Unexpected IDP Status Code " + status.getValue() +
                     (secStatus != null ? "/" + secStatus.getValue() : ""));
 
             }
@@ -139,7 +139,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
                 // cannot map subject to local account, terminate
                 logger.error("No Account Lifecycle configured for Channel [" + idpChannel.getName() + "] " +
                         " Response [" + authnResponse.getID() + "]");
-                throw new SamlR2Exception("No Account Lifecycle configured for Channel [" + idpChannel.getName() + "] " +
+                throw new SSOException("No Account Lifecycle configured for Channel [" + idpChannel.getName() + "] " +
                         " Response [" + authnResponse.getID() + "]");
             }
 
@@ -250,7 +250,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
                 if (ssoRequest.getReplyTo() != null) {
                     destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
                             "AssertionConsumerService",
-                            SamlR2Binding.SSO_ARTIFACT.getValue(),
+                            SSOBinding.SSO_ARTIFACT.getValue(),
                             ssoRequest.getReplyTo(), null);
                 }
             }
@@ -272,7 +272,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
 
     }
 
-    protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SamlR2Exception {
+    protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SSOException {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         AssertIdentityWithSimpleAuthenticationRequestType ssoAuthnReq =
@@ -299,7 +299,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
 
             idp = getCotManager().lookupMemberByAlias(idpAlias);
             if (idp == null) {
-                throw new SamlR2Exception("No IDP found in circle of trust for received alias [" + idpAlias + "], verify your setup.");
+                throw new SSOException("No IDP found in circle of trust for received alias [" + idpAlias + "], verify your setup.");
             }
         }
         if (idp != null)
@@ -317,7 +317,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
 
             idp = getCotManager().lookupMemberByAlias(idpAlias);
             if (idp == null) {
-                throw new SamlR2Exception("No IDP found in circle of trust for preferred alias [" + idpAlias + "], verify your setup.");
+                throw new SSOException("No IDP found in circle of trust for preferred alias [" + idpAlias + "], verify your setup.");
             }
         }
         if (idp != null)
@@ -326,18 +326,18 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
         // --------------------------------------------------------------
         // TODO : In the future, we could discover IdPs from COT Manager, based on COT Member role and user intervention
 
-        throw new SamlR2Exception("Cannot resolve IDP, try to configure a preferred IdP for this SP");
+        throw new SSOException("Cannot resolve IDP, try to configure a preferred IdP for this SP");
 
     }
 
 
-    protected EndpointType resolveIdpSsoEndpoint(CircleOfTrustMemberDescriptor idp) throws SamlR2Exception {
+    protected EndpointType resolveIdpSsoEndpoint(CircleOfTrustMemberDescriptor idp) throws SSOException {
 
         SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
         MetadataEntry idpMd = idp.getMetadata();
 
         if (idpMd == null || idpMd.getEntry() == null)
-            throw new SamlR2Exception("No metadata descriptor found for IDP " + idp);
+            throw new SSOException("No metadata descriptor found for IDP " + idp);
 
         if (idpMd.getEntry() instanceof EntityDescriptorType) {
             EntityDescriptorType md = (EntityDescriptorType) idpMd.getEntry();
@@ -351,8 +351,8 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
 
                     for (EndpointType idpSsoEndpoint : idpSsoRole.getSingleSignOnService()) {
 
-                        SamlR2Binding b = SamlR2Binding.asEnum(idpSsoEndpoint.getBinding());
-                        if (b.equals(SamlR2Binding.SAMLR2_SOAP))
+                        SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
+                        if (b.equals(SSOBinding.SAMLR2_SOAP))
                             defaultEndpoint = idpSsoEndpoint;
 
                     }
@@ -360,11 +360,11 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
                 }
             }
         } else {
-            throw new SamlR2Exception("Unknown metadata descriptor type " + idpMd.getEntry().getClass().getName());
+            throw new SSOException("Unknown metadata descriptor type " + idpMd.getEntry().getClass().getName());
         }
 
-        logger.debug("No IDP Endpoint supporting binding : " + SamlR2Binding.SAMLR2_SOAP);
-        throw new SamlR2Exception("IDP does not support preferred binding " + SamlR2Binding.SAMLR2_SOAP);
+        logger.debug("No IDP Endpoint supporting binding : " + SSOBinding.SAMLR2_SOAP);
+        throw new SSOException("IDP does not support preferred binding " + SSOBinding.SAMLR2_SOAP);
 
     }
 
@@ -397,7 +397,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
     protected SecTokenAuthnRequestType buildSamlSecTokenAuthnRequetRequest(CamelMediationExchange exchange,
                                                                            CircleOfTrustMemberDescriptor idp,
                                                                            EndpointDescriptor ed,
-                                                                           FederationChannel idpChannel) throws SamlR2Exception, IdentityPlanningException {
+                                                                           FederationChannel idpChannel) throws SSOException, IdentityPlanningException {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(AssertIdentityWithSimpleAuthenticationReqToSamlR2AuthnReqPlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
@@ -450,7 +450,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
      * @param federatedSubject
      * @param idpSubject
      * @return
-     * @throws SamlR2Exception
+     * @throws org.atricore.idbus.capabilities.sso.main.SSOException
      */
     protected SPSecurityContext createSPSecurityContext(CamelMediationExchange exchange,
                                                         String requester,
@@ -459,7 +459,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
                                                         AccountLink acctLink,
                                                         Subject federatedSubject,
                                                         Subject idpSubject)
-            throws SamlR2Exception {
+            throws SSOException {
 
         if (logger.isDebugEnabled())
             logger.debug("Creating new SP Security Context for subject " + federatedSubject);
@@ -487,7 +487,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
                     logger.debug("Invalidating already invalid sso session " + secCtx.getSessionIndex());
 
             } catch (SSOSessionException e) {
-                throw new SamlR2Exception(e);
+                throw new SSOException(e);
             }
 
         } */
@@ -507,7 +507,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
 
         if (nameId == null) {
             logger.error("No suitable Subject Name Identifier (SubjectNameID) found");
-            throw new SamlR2Exception("No suitable Subject Name Identifier (SubjectNameID) found");
+            throw new SSOException("No suitable Subject Name Identifier (SubjectNameID) found");
         }
 
         // Create a new Security Context
@@ -549,7 +549,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
 
             return secCtx;
         } catch (SSOSessionException e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
 
     }

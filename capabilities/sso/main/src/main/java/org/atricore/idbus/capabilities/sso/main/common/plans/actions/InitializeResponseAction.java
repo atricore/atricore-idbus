@@ -26,7 +26,7 @@ import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.common.plans.SamlR2PlanningConstants;
+import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.Consent;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
@@ -43,7 +43,7 @@ import java.util.Date;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class InitializeResponseAction extends AbstractSamlR2Action {
+public class InitializeResponseAction extends AbstractSSOAction {
 
     private static final Log logger = LogFactory.getLog(InitializeResponseAction.class);
 
@@ -96,7 +96,7 @@ public class InitializeResponseAction extends AbstractSamlR2Action {
 
         // Issuer [optional]
         CircleOfTrustMemberDescriptor cotMember =
-                (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(SamlR2PlanningConstants.VAR_COT_MEMBER);
+                (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(SSOPlanningConstants.VAR_COT_MEMBER);
 
         if (cotMember != null) {
             NameIDType issuer = new NameIDType();

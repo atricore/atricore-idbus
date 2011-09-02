@@ -30,11 +30,11 @@ import java.security.cert.Certificate;
  *         User: ajadzinsky
  *         Date: Jun 9, 2009
  */
-public interface SamlR2KeyResolver {
+public interface SSOKeyResolver {
 
-    Certificate getCertificate () throws SamlR2KeyResolverException;
+    Certificate getCertificate () throws SSOKeyResolverException;
 
-    Key getPrivateKey () throws SamlR2KeyResolverException;
+    Key getPrivateKey () throws SSOKeyResolverException;
 
-    PublicKey getPublicKey() throws SamlR2KeyResolverException;
+    PublicKey getPublicKey() throws SSOKeyResolverException;
 }

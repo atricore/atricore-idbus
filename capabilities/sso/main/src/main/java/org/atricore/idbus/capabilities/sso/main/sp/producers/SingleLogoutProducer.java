@@ -30,15 +30,15 @@ import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.producers.SamlR2Producer;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2RequestException;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2ResponseException;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.core.SSORequestException;
+import org.atricore.idbus.capabilities.sso.support.core.SSOResponseException;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
@@ -70,7 +70,7 @@ import javax.xml.namespace.QName;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: IDPSingleSignOnServiceProducer.java 1246 2009-06-05 20:30:58Z sgonzalez $
  */
-public class SingleLogoutProducer extends SamlR2Producer {
+public class SingleLogoutProducer extends SSOProducer {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
@@ -106,9 +106,9 @@ public class SingleLogoutProducer extends SamlR2Producer {
                 doProcessLogoutRequest(exchange, samlSloRequest);
 
             } else {
-                throw new SamlR2Exception("Unsupported message type " + content);
+                throw new SSOException("Unsupported message type " + content);
             }
-        } catch (SamlR2RequestException e) {
+        } catch (SSORequestException e) {
 
             throw new IdentityMediationFault(
                     e.getTopLevelStatusCode() != null ? e.getTopLevelStatusCode().getValue() : StatusCode.TOP_RESPONDER.getValue(),
@@ -117,7 +117,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
                     e.getErrorDetails() != null ? e.getErrorDetails() : content.getClass().getName(),
                     e);
 
-        } catch (SamlR2Exception e) {
+        } catch (SSOException e) {
 
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
@@ -158,7 +158,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
         }
 
         EndpointDescriptor destination = resolveIdPSloEndpoint(idp.getAlias(),
-                new SamlR2Binding[] {SamlR2Binding.asEnum(endpoint.getBinding()) },
+                new SSOBinding[] {SSOBinding.asEnum(endpoint.getBinding()) },
                 true);
 
         ResponseType samlResponse = buildSamlSloResponse(exchange, sloRequest, idp, destination);
@@ -244,7 +244,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
         EndpointDescriptor destination =
                 new EndpointDescriptorImpl("EmbeddedSPAcs",
                         "SingleLogoutService",
-                        SamlR2Binding.SSO_ARTIFACT.getValue(),
+                        SSOBinding.SSO_ARTIFACT.getValue(),
                         destinationLocation, null);
 
         if (ssoLogoutRequest != null) {
@@ -256,7 +256,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
                 destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
                         "SingleLogoutService",
-                        SamlR2Binding.SSO_ARTIFACT.getValue(),
+                        SSOBinding.SSO_ARTIFACT.getValue(),
                         ssoLogoutRequest.getReplyTo(), null);
             }
         }
@@ -275,7 +275,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
     // TODO : Reuse basic SAML request validations ....
     protected void validateRequest(LogoutRequestType request, String originalRequest)
-            throws SamlR2RequestException, SamlR2Exception {
+            throws SSORequestException, SSOException {
 
         SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
@@ -297,7 +297,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
             }
 
         } catch (CircleOfTrustManagerException e) {
-            throw new SamlR2RequestException(request,
+            throw new SSORequestException(request,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.NO_SUPPORTED_IDP,
                     null,
@@ -310,7 +310,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
             // If no signature is present, throw an exception!
             if (request.getSignature() == null)
-                throw new SamlR2RequestException(request,
+                throw new SSORequestException(request,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_RESPONSE_SIGNATURE);
@@ -322,13 +322,13 @@ public class SingleLogoutProducer extends SamlR2Producer {
                     signer.validate(idpMd, request);
 
             } catch (SamlR2SignatureValidationException e) {
-                throw new SamlR2RequestException(request,
+                throw new SSORequestException(request,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
             } catch (SamlR2SignatureException e) {
                 //other exceptions like JAXB, xml parser...
-                throw new SamlR2RequestException(request,
+                throw new SSORequestException(request,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
@@ -343,7 +343,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
     protected ResponseType validateResponse(LogoutRequestType request,
                                             ResponseType response,
                                             String originalResponse)
-            throws SamlR2ResponseException, SamlR2Exception {
+            throws SSOResponseException, SSOException {
 
         SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
@@ -365,7 +365,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
             }
 
         } catch (CircleOfTrustManagerException e) {
-            throw new SamlR2ResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.NO_SUPPORTED_IDP,
                     null,
@@ -378,7 +378,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 		try {
 			endpointDesc = channel.getIdentityMediator().resolveEndpoint(channel, endpoint);
 		} catch (IdentityMediationException e1) {
-			throw new SamlR2ResponseException(response,
+			throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.RESOURCE_NOT_RECOGNIZED,
                     StatusDetails.INTERNAL_ERROR,
@@ -400,21 +400,21 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
 
     		if(!response.getDestination().equals(location)){
-    			throw new SamlR2ResponseException(response,
+    			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_DESTINATION);
     		}
 
     	} else if(response.getSignature() != null &&
-                (!endpointDesc.getBinding().equals(SamlR2Binding.SAMLR2_LOCAL.getValue()) &&
-                 !endpointDesc.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue()))) {
+                (!endpointDesc.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue()) &&
+                 !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()))) {
 
             // Local and Artifact bindings don't require signature
 
             // If message is signed, the destination is mandatory!
             //saml2 binding, sections 3.4.5.2 & 3.5.5.2
-    		throw new SamlR2ResponseException(response,
+    		throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.NO_DESTINATION);
@@ -427,7 +427,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 		   -  check that time difference is not bigger than X
 		   */
     	if(response.getIssueInstant() == null){
-    		throw new SamlR2ResponseException(response,
+    		throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.NO_ISSUE_INSTANT);
@@ -436,7 +436,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
             // Request can be null for IDP initiated SSO
     		if(response.getIssueInstant().compare(request.getIssueInstant()) <= 0){
-    			throw new SamlR2ResponseException(response,
+    			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_ISSUE_INSTANT,
@@ -456,7 +456,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
     			if(response.getIssueInstant().toGregorianCalendar().getTime().getTime()
     					- request.getIssueInstant().toGregorianCalendar().getTime().getTime() > ttl) {
 
-    				throw new SamlR2ResponseException(response,
+    				throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                             StatusDetails.INVALID_ISSUE_INSTANT,
@@ -468,7 +468,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
         // Version, saml2 core, section 3.2.2
     	if(response.getVersion() == null) {
-    		throw new SamlR2ResponseException(response,
+    		throw new SSOResponseException(response,
                     StatusCode.TOP_VERSION_MISSMATCH,
                     null,
                     StatusDetails.INVALID_VERSION);
@@ -476,7 +476,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
         if (!response.getVersion().equals(SAML_VERSION)){
 
-            throw new SamlR2ResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_VERSION_MISSMATCH,
                     null, // TODO : Check version!
                     StatusDetails.UNSUPPORTED_VERSION,
@@ -489,13 +489,13 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
     	if(request != null) {
             if (response.getInResponseTo() == null) {
-                throw new SamlR2ResponseException(response,
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         null,
                         StatusDetails.NO_IN_RESPONSE_TO);
 
             } else if (!request.getID().equals(response.getInResponseTo())) {
-                throw new SamlR2ResponseException(response,
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         null,
                         StatusDetails.INVALID_RESPONSE_ID,
@@ -511,20 +511,20 @@ public class SingleLogoutProducer extends SamlR2Producer {
     			if(StringUtils.isEmpty(response.getStatus().getStatusCode().getValue())
     					|| !isStatusCodeValid(response.getStatus().getStatusCode().getValue())){
 
-    				throw new SamlR2ResponseException(response,
+    				throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                             StatusDetails.INVALID_STATUS_CODE,
                             response.getStatus().getStatusCode().getValue());
     			}
     		} else {
-    			throw new SamlR2ResponseException(response,
+    			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NO_STATUS_CODE);
     		}
     	} else {
-    		throw new SamlR2ResponseException(response,
+    		throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.NO_STATUS);
@@ -533,7 +533,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 		// XML Signature, saml2 core, section 5 (always validate response signature)
         // If no signature is present, throw an exception!
         if (response.getSignature() == null)
-            throw new SamlR2ResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_RESPONSE_SIGNATURE);
@@ -545,13 +545,13 @@ public class SingleLogoutProducer extends SamlR2Producer {
                 signer.validate(idpMd, response);
 
         } catch (SamlR2SignatureValidationException e) {
-            throw new SamlR2ResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
         } catch (SamlR2SignatureException e) {
             //other exceptions like JAXB, xml parser...
-            throw new SamlR2ResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
@@ -561,7 +561,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
     }
 
     protected void destroySPSecurityContext(CamelMediationExchange exchange,
-                                            SPSecurityContext secCtx) throws SamlR2Exception {
+                                            SPSecurityContext secCtx) throws SSOException {
 
         CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(secCtx.getIdpAlias());
         IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
@@ -575,7 +575,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
         } catch (NoSuchSessionException e) {
             logger.debug("SSO Session already invalidated " + secCtx.getSessionIndex());
         } catch (Exception e) {
-            throw new SamlR2Exception(e);
+            throw new SSOException(e);
         }
 
     }

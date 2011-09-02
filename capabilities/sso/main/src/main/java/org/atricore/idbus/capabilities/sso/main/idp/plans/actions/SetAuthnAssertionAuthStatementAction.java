@@ -23,7 +23,7 @@ package org.atricore.idbus.capabilities.sso.main.idp.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.AuthnStatementType;
-import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSamlR2Action;
+import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
@@ -31,7 +31,7 @@ import org.jbpm.graph.exe.ExecutionContext;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SetAuthnAssertionAuthStatementAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class SetAuthnAssertionAuthStatementAction extends AbstractSamlR2Action {
+public class SetAuthnAssertionAuthStatementAction extends AbstractSSOAction {
 
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) throws Exception {
         AuthnStatementType authnStatement = (AuthnStatementType) in.getContent();

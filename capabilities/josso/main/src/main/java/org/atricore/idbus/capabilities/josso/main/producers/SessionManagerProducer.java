@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoException;
 import org.atricore.idbus.capabilities.josso.main.binding.JossoBinding;
-import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.SPSessionHeartBeatRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPSessionHeartBeatResponseType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -132,7 +132,7 @@ public class SessionManagerProducer extends AbstractJossoProducer {
 
         for (IdentityMediationEndpoint endpoint : spBindingChannel.getEndpoints()) {
 
-            if (endpoint.getType().equals(SamlR2Service.SPSessionHeartBeatService.toString())) {
+            if (endpoint.getType().equals(SSOService.SPSessionHeartBeatService.toString())) {
 
                 if (endpoint.getBinding().equals(JossoBinding.SSO_LOCAL.getValue())) {
                     return myChannel.getIdentityMediator().resolveEndpoint(spBindingChannel, endpoint);

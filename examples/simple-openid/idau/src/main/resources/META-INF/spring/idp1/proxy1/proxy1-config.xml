@@ -189,7 +189,7 @@
         </property>
     </bean>
 
-    <bean class="org.atricore.idbus.capabilities.sso.main.claims.SamlR2ClaimsMediator" name="proxy1-openid-claims-mediator">
+    <bean class="org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator" name="proxy1-openid-claims-mediator">
         <property name="logMessages">
             <value>true</value>
         </property>

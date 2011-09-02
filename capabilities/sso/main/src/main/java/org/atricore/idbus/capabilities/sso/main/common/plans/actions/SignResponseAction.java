@@ -29,7 +29,7 @@ import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.common.AbstractSamlR2Mediator;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
@@ -43,7 +43,7 @@ import java.util.List;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SignResponseAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class SignResponseAction extends AbstractSamlR2Action {
+public class SignResponseAction extends AbstractSSOAction {
 
     private static final Log logger = LogFactory.getLog(SignResponseAction.class);
 
@@ -52,7 +52,7 @@ public class SignResponseAction extends AbstractSamlR2Action {
         StatusResponseType response = (StatusResponseType) out.getContent();
 
         FederationChannel channel = (FederationChannel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
-        AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
 
         CircleOfTrustMemberDescriptor dest =

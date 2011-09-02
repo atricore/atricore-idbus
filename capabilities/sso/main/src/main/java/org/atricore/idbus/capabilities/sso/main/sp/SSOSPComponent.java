@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.endpoints.ArtifactResolutionEndpoint;
 import org.atricore.idbus.capabilities.sso.main.sp.endpoints.*;
-import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 
 import java.util.Map;
@@ -39,14 +39,14 @@ import java.util.Map;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SamlR2Component.java 1246 2009-06-05 20:30:58Z sgonzalez $
  */
-public class SamlR2SPComponent extends DefaultComponent {
+public class SSOSPComponent extends DefaultComponent {
 
-    private static final Log logger = LogFactory.getLog( SamlR2SPComponent.class );
+    private static final Log logger = LogFactory.getLog( SSOSPComponent.class );
 
-    public SamlR2SPComponent() {
+    public SSOSPComponent() {
     }
 
-    public SamlR2SPComponent( CamelContext context ) {
+    public SSOSPComponent(CamelContext context) {
         super( context );
     }
 
@@ -56,7 +56,7 @@ public class SamlR2SPComponent extends DefaultComponent {
         logger.debug("Creating Camel Endpoint for [" + uri + "] [" + remaining + "]");
         
         AbstractCamelEndpoint endpoint;
-        SamlR2Service e = getSamlR2Service( remaining );
+        SSOService e = getSamlR2Service( remaining );
 
         switch ( e ) {
             case SingleLogoutService:
@@ -86,9 +86,6 @@ public class SamlR2SPComponent extends DefaultComponent {
             case SPSessionHeartBeatService:
                 endpoint = new SessionHeartBeatEndpoint(uri, this, parameters);
                 break;
-            case ProxyAssertionConsumerService:
-                endpoint = new ProxyAssertionConsumerEndpoint(uri, this, parameters);
-                break;
             default:
                 throw new IllegalArgumentException( "Unsupported SAMLR 2.0 endpoint " + remaining );
         }
@@ -99,10 +96,10 @@ public class SamlR2SPComponent extends DefaultComponent {
         return endpoint;
     }
 
-    protected SamlR2Service getSamlR2Service(String remaining) {
+    protected SSOService getSamlR2Service(String remaining) {
 
         // TODO !
-        for (SamlR2Service et : SamlR2Service.values()) {
+        for (SSOService et : SSOService.values()) {
             if (et.getQname().getLocalPart().equals(remaining))
                 return et;
         }

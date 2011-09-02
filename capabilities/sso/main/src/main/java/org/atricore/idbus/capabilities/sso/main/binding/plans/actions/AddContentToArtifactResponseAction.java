@@ -5,7 +5,7 @@ import oasis.names.tc.saml._2_0.protocol.ArtifactResponseType;
 import oasis.names.tc.saml._2_0.protocol.ObjectFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSamlR2Action;
+import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class AddContentToArtifactResponseAction  extends AbstractSamlR2Action {
+public class AddContentToArtifactResponseAction  extends AbstractSSOAction {
 
     private static final Log logger = LogFactory.getLog(AddArtifactToArtifactResolveAction.class);
 

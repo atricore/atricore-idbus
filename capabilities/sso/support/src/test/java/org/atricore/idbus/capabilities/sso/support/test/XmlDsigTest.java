@@ -25,7 +25,7 @@ import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.utils.XMLUtils;
-import org.atricore.idbus.capabilities.sso.support.core.SamlR2KeystoreKeyResolver;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver;
 import org.atricore.idbus.capabilities.sso.support.core.signature.JSR105SamlR2SignerImpl;
 import org.junit.Test;
 import org.w3c.dom.Element;
@@ -296,7 +296,7 @@ public class XmlDsigTest {
 //        signer.setPrivateKeyAlias(privateKeyAlias);
 //        signer.setPrivateKeyPass(privateKeyPass);
 //        signer.setCertificateAlias(certificateAlias);
-        SamlR2KeystoreKeyResolver kr = new SamlR2KeystoreKeyResolver();
+        SSOKeystoreKeyResolver kr = new SSOKeystoreKeyResolver();
         kr.setCertificateAlias(certificateAlias);
         // TODO : kr.setKeystoreFile("keystore.jks");
         kr.setKeystorePass(keystorePass);

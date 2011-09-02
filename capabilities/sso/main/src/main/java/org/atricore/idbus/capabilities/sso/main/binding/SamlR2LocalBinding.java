@@ -6,7 +6,7 @@ import org.apache.camel.Message;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.CamelIdentityMediationUnitContainer;
@@ -29,7 +29,7 @@ public class SamlR2LocalBinding extends AbstractMediationBinding {
     private static final Log logger = LogFactory.getLog(SamlR2LocalBinding.class);
 
     public SamlR2LocalBinding(Channel channel) {
-        super(SamlR2Binding.SAMLR2_LOCAL.getValue(), channel);
+        super(SSOBinding.SAMLR2_LOCAL.getValue(), channel);
     }
 
 

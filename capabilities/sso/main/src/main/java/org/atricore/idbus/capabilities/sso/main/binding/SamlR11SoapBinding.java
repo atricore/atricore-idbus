@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.message.MessageContentsList;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2MessagingConstants;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationSoapBinding;
@@ -31,7 +31,7 @@ public class SamlR11SoapBinding extends AbstractMediationSoapBinding {
     private static final Log logger = LogFactory.getLog(SamlR2SoapBinding.class);
 
     public SamlR11SoapBinding(Channel channel) {
-        super(SamlR2Binding.SAMLR11_SOAP.getValue(), channel);
+        super(SSOBinding.SAMLR11_SOAP.getValue(), channel);
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {

@@ -27,12 +27,12 @@ import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSamlR2Action;
-import org.atricore.idbus.capabilities.sso.main.idp.SamlR2IDPMediator;
-import org.atricore.idbus.capabilities.sso.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
+import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
-import org.atricore.idbus.capabilities.sso.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
@@ -52,7 +52,7 @@ import org.jbpm.graph.exe.ExecutionContext;
  * @author <a href="mailto:gbrigand@atricore.org">Gianluca Brigandi</a>
  * @version $Id: InitializeAuthnRequestAction.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
+public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
     private static final Log logger = LogFactory.getLog(InitializeAuthnRequestAction.class);
 
@@ -77,7 +77,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
         // NameIDPolicy [optional]
         // TODO : This is deployment specific, every IDP and SP can provide / support different policies, check SAMLR2 MD
-        SamlR2IDPMediator mediator = (SamlR2IDPMediator) spChannel.getIdentityMediator();
+        SSOIDPMediator mediator = (SSOIDPMediator) spChannel.getIdentityMediator();
 
         CircleOfTrustMemberDescriptor spCotMember = resolveSpAlias(channel, ssoAuthnReq);
 
@@ -152,19 +152,19 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
         if (log.isDebugEnabled())
             log.debug("Looking for ACS endpoint. Idp: " + idp.getAlias() + ", federation channel: " + idpChannel.getName());
 
-        SamlR2Binding incomingEndpointBinding = null;
+        SSOBinding incomingEndpointBinding = null;
 
         IdentityMediationEndpoint acsEndpoint = null;
         IdentityMediationEndpoint acsPostEndpoint = null;
         IdentityMediationEndpoint acsArtEndpoint = null;
 
-        String acsEndpointType = SamlR2Service.AssertionConsumerService.toString();
+        String acsEndpointType = SSOService.AssertionConsumerService.toString();
 
         if (log.isDebugEnabled())
             log.debug("Selected IdP channel " + idpChannel.getName());
 
         if (incomingEndpoint != null) {
-            incomingEndpointBinding  = SamlR2Binding.asEnum(incomingEndpoint.getBinding());
+            incomingEndpointBinding  = SSOBinding.asEnum(incomingEndpoint.getBinding());
             if (log.isTraceEnabled())
                 log.trace("Incomming endpoint " + incomingEndpoint);
         }
@@ -174,9 +174,9 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
             if (endpoint.getType().equals(acsEndpointType)) {
 
-                SamlR2Binding endpointBinding = SamlR2Binding.asEnum(endpoint.getBinding());
+                SSOBinding endpointBinding = SSOBinding.asEnum(endpoint.getBinding());
 
-                // Get the POST SamlR2Binding endpoint
+                // Get the POST SSOBinding endpoint
                 if (incomingEndpointBinding != null) {
 
                     if (incomingEndpointBinding.isFrontChannel() == endpointBinding.isFrontChannel()) {
@@ -189,10 +189,10 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
                     // Get the first endpoint
                     acsEndpoint = endpoint;
 
-                    if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_POST.getValue()))
+                    if (endpoint.getBinding().equals(SSOBinding.SAMLR2_POST.getValue()))
                         acsPostEndpoint = endpoint;
 
-                    if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue()))
+                    if (endpoint.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()))
                         acsArtEndpoint = endpoint;
 
                 }
@@ -220,7 +220,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
      * 3. Else, the first format supported by the IdP will be selected.
      *
      */
-    protected String resolveNameIdFormat(CircleOfTrustMemberDescriptor idp, String preferredNameIdFormat) throws SamlR2Exception {
+    protected String resolveNameIdFormat(CircleOfTrustMemberDescriptor idp, String preferredNameIdFormat) throws SSOException {
 
         MetadataEntry idpMd = idp.getMetadata();
         String selectedNameIdFormat = null;
@@ -250,7 +250,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
             }
 
         } else
-            throw new SamlR2Exception("Unsupported Metadata type " + idpMd.getEntry() + ", SAML 2 Metadata expected");
+            throw new SSOException("Unsupported Metadata type " + idpMd.getEntry() + ", SAML 2 Metadata expected");
 
         if (selectedNameIdFormat == null)
             selectedNameIdFormat = defaultNameIdFormat;
@@ -263,11 +263,11 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
     }
 
 
-    protected CircleOfTrustMemberDescriptor resolveSpAlias(SPChannel spChannel, IDPInitiatedAuthnRequestType ssoAuthnReq) throws SamlR2Exception {
+    protected CircleOfTrustMemberDescriptor resolveSpAlias(SPChannel spChannel, IDPInitiatedAuthnRequestType ssoAuthnReq) throws SSOException {
 
         CircleOfTrustMemberDescriptor spDescr = null;
 
-        SamlR2IDPMediator mediator = (SamlR2IDPMediator) spChannel.getIdentityMediator();
+        SSOIDPMediator mediator = (SSOIDPMediator) spChannel.getIdentityMediator();
 
         if (spChannel.getTargetProvider() != null) {
 
@@ -344,7 +344,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
                 logger.trace("Using Preferred SP Alias " + spAlias);
 
             if (spDescr == null) {
-                throw new SamlR2Exception("Cannot find SP for AuthnRequest ");
+                throw new SSOException("Cannot find SP for AuthnRequest ");
             }
 
 

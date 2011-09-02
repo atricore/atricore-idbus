@@ -23,7 +23,7 @@ package org.atricore.idbus.capabilities.sso.support.core;
 
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 
-public class SamlR2RequestException extends Exception {
+public class SSORequestException extends Exception {
 
     private RequestAbstractType Request;
 
@@ -32,14 +32,14 @@ public class SamlR2RequestException extends Exception {
     private StatusDetails statusDtails;
     private String errorDetails;
 
-    public SamlR2RequestException() {
+    public SSORequestException() {
 		super();
 	}
 
-    public SamlR2RequestException(RequestAbstractType Request,
-                                             StatusCode topLevelStatusCode,
-                                             StatusCode secondLevelStatusCode,
-                                             StatusDetails statusDtails) {
+    public SSORequestException(RequestAbstractType Request,
+                               StatusCode topLevelStatusCode,
+                               StatusCode secondLevelStatusCode,
+                               StatusDetails statusDtails) {
         super("SAMLR2 Request [" + (Request != null ? Request.getID() : "<NULL>") +
                 "] error. (" + topLevelStatusCode.getValue() + ":" +
                 (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : "") + ":" +
@@ -51,11 +51,11 @@ public class SamlR2RequestException extends Exception {
         this.statusDtails = statusDtails;
     }
 
-    public SamlR2RequestException(RequestAbstractType Request,
-                                             StatusCode topLevelStatusCode,
-                                             StatusCode secondLevelStatusCode,
-                                             StatusDetails statusDtails,
-                                             String errorDetails) {
+    public SSORequestException(RequestAbstractType Request,
+                               StatusCode topLevelStatusCode,
+                               StatusCode secondLevelStatusCode,
+                               StatusDetails statusDtails,
+                               String errorDetails) {
         super("SAMLR2 Request [" + (Request != null ? Request.getID() : "<NULL>") +
                 "] error. (" + topLevelStatusCode.getValue() + ":" +
                 (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : "") + ":" +
@@ -69,11 +69,11 @@ public class SamlR2RequestException extends Exception {
         this.errorDetails = errorDetails;
     }
 
-    public SamlR2RequestException(RequestAbstractType Request,
-                                             StatusCode topLevelStatusCode,
-                                             StatusCode secondLevelStatusCode,
-                                             StatusDetails statusDtails,
-                                             Throwable cause) {
+    public SSORequestException(RequestAbstractType Request,
+                               StatusCode topLevelStatusCode,
+                               StatusCode secondLevelStatusCode,
+                               StatusDetails statusDtails,
+                               Throwable cause) {
         super("SAMLR2 Request [" + (Request != null ? Request.getID() : "<NULL>") +
                 "] error. (" + topLevelStatusCode.getValue() + ":" +
                 (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : "") + ":" +
@@ -86,12 +86,12 @@ public class SamlR2RequestException extends Exception {
     }
 
 
-    public SamlR2RequestException(RequestAbstractType Request,
-                                             StatusCode topLevelStatusCode,
-                                             StatusCode secondLevelStatusCode,
-                                             StatusDetails statusDtails,
-                                             String errorDetails,
-                                             Throwable cause) {
+    public SSORequestException(RequestAbstractType Request,
+                               StatusCode topLevelStatusCode,
+                               StatusCode secondLevelStatusCode,
+                               StatusDetails statusDtails,
+                               String errorDetails,
+                               Throwable cause) {
         super("SAMLR2 Request [" + (Request != null ? Request.getID() : "<NULL>") +
                 "] error. (" + topLevelStatusCode.getValue() + ":" +
                 (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : "") + ":" +
