@@ -50,14 +50,12 @@ import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
@@ -140,9 +138,11 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private Keystore sampleKeystore;
 
-    private AccountLinkagePolicyRegistry accountLinkagePolicyRegistry;
+    private AccountLinkagePoliciesRegistry accountLinkagePoliciesRegistry;
 
-    private IdentityMappingPolicyRegistry identityMappingPolicyRegistry;
+    private IdentityMappingPoliciesRegistry identityMappingPoliciesRegistry;
+
+    private ImpersonateUserPoliciesRegistry impersonateUserPoliciesRegistry;
 
     private SubjectNameIdentifierPolicyRegistry  subjectNameIdentifierPolicyRegistry;
 
@@ -193,7 +193,7 @@ public class IdentityApplianceManagementServiceImpl implements
                 policy.setName(type.getDisplayName());
                 policy.setMappingType(type);
 
-                this.identityMappingPolicyRegistry.register(policy, null);
+                this.identityMappingPoliciesRegistry.register(policy, null);
             }
         }
 
@@ -203,9 +203,20 @@ public class IdentityApplianceManagementServiceImpl implements
                 policy.setName(type.getDisplayName());
                 policy.setLinkEmitterType(type);
 
-                this.accountLinkagePolicyRegistry.register(policy, null);
+                this.accountLinkagePoliciesRegistry.register(policy, null);
             }
         }
+
+        for (ImpersonateUserPolicyType type : ImpersonateUserPolicyType.values()) {
+            if (type != ImpersonateUserPolicyType.CUSTOM) {
+                ImpersonateUserPolicy policy = new ImpersonateUserPolicy();
+                policy.setName(type.getDisplayName());
+                policy.setImpersonateUserPolicyType(type);
+
+                this.impersonateUserPoliciesRegistry.register(policy, null);
+            }
+        }
+
 
 
     }
@@ -850,7 +861,7 @@ public class IdentityApplianceManagementServiceImpl implements
         logger.debug("Listing all account linkage policies");
 
         // Add policies to response
-        for (AccountLinkagePolicy policy : accountLinkagePolicyRegistry.getPolicies()) {
+        for (AccountLinkagePolicy policy : accountLinkagePoliciesRegistry.getPolicies()) {
             res.getAccountLinkagePolicies().add(policy);
         }
 
@@ -918,13 +929,13 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     @Transactional
-    public ListIdentityMappingPolicyResponse listIdentityMappingPolicies(ListIdentityMappingPolicyRequest req) throws IdentityServerException {
-        ListIdentityMappingPolicyResponse res = new ListIdentityMappingPolicyResponse();
+    public ListIdentityMappingPoliciesResponse listIdentityMappingPolicies(ListIdentityMappingPoliciesRequest req) throws IdentityServerException {
+        ListIdentityMappingPoliciesResponse res = new ListIdentityMappingPoliciesResponse();
 
         logger.debug("Listing all identity mapping policies");
 
         // Add policies to response
-        for (IdentityMappingPolicy policy : identityMappingPolicyRegistry.getPolicies()) {
+        for (IdentityMappingPolicy policy : identityMappingPoliciesRegistry.getPolicies()) {
             res.getIdentityMappingPolicies().add(policy);
         }
 
@@ -938,6 +949,19 @@ public class IdentityApplianceManagementServiceImpl implements
 
         for (SubjectNameIdentifierPolicy policy : subjectNameIdentifierPolicyRegistry.getPolicies()) {
             res.getPolicies().add(policy);
+        }
+
+        return res;
+    }
+
+    public ListImpersonateUserPoliciesResponse listImpersonateUserPolicies(ListImpersonateUserPoliciesRequest req) throws IdentityServerException {
+        ListImpersonateUserPoliciesResponse res = new ListImpersonateUserPoliciesResponse();
+
+        logger.debug("Listing all impersonate user policies");
+
+        // Add policies to response
+        for (ImpersonateUserPolicy policy : impersonateUserPoliciesRegistry.getPolicies()) {
+            res.getImpersonateUserPolicies().add(policy);
         }
 
         return res;
@@ -1413,12 +1437,12 @@ public class IdentityApplianceManagementServiceImpl implements
         this.marshaller = marshaller;
     }
 
-    public AccountLinkagePolicyRegistry getAccountLinkagePolicyRegistry() {
-        return accountLinkagePolicyRegistry;
+    public AccountLinkagePoliciesRegistry getAccountLinkagePoliciesRegistry() {
+        return accountLinkagePoliciesRegistry;
     }
 
-    public void setAccountLinkagePolicyRegistry(AccountLinkagePolicyRegistry accountLinkagePolicyRegistry) {
-        this.accountLinkagePolicyRegistry = accountLinkagePolicyRegistry;
+    public void setAccountLinkagePoliciesRegistry(AccountLinkagePoliciesRegistry accountLinkagePoliciesRegistry) {
+        this.accountLinkagePoliciesRegistry = accountLinkagePoliciesRegistry;
     }
 
     public SubjectNameIdentifierPolicyRegistry getSubjectNameIdentifierPolicyRegistry() {
@@ -1429,12 +1453,20 @@ public class IdentityApplianceManagementServiceImpl implements
         this.subjectNameIdentifierPolicyRegistry = subjectNameIdentifierPolicyRegistry;
     }
 
-    public IdentityMappingPolicyRegistry getIdentityMappingPolicyRegistry() {
-        return identityMappingPolicyRegistry;
+    public IdentityMappingPoliciesRegistry getIdentityMappingPoliciesRegistry() {
+        return identityMappingPoliciesRegistry;
     }
 
-    public void setIdentityMappingPolicyRegistry(IdentityMappingPolicyRegistry identityMappingPolicyRegistry) {
-        this.identityMappingPolicyRegistry = identityMappingPolicyRegistry;
+    public void setIdentityMappingPoliciesRegistry(IdentityMappingPoliciesRegistry identityMappingPoliciesRegistry) {
+        this.identityMappingPoliciesRegistry = identityMappingPoliciesRegistry;
+    }
+
+    public ImpersonateUserPoliciesRegistry getImpersonateUserPoliciesRegistry() {
+        return impersonateUserPoliciesRegistry;
+    }
+
+    public void setImpersonateUserPoliciesRegistry(ImpersonateUserPoliciesRegistry impersonateUserPoliciesRegistry) {
+        this.impersonateUserPoliciesRegistry = impersonateUserPoliciesRegistry;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {

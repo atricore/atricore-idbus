@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class ListIdentityMappingPolicyResponse {
+public class ListIdentityMappingPoliciesResponse {
     private List<IdentityMappingPolicy> identityMappingPolicies;
 
     public List<IdentityMappingPolicy> getIdentityMappingPolicies() {

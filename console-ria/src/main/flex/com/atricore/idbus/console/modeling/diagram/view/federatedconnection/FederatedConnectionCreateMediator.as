@@ -26,7 +26,7 @@ import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicyListCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPoliciesListCommand;
 import com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AccountLinkEmitterType;
@@ -650,7 +650,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
     override public function listNotificationInterests():Array {
         return [AccountLinkagePolicyListCommand.SUCCESS,
-            IdentityMappingPolicyListCommand.SUCCESS,
+            IdentityMappingPoliciesListCommand.SUCCESS,
         SubjectNameIDPolicyListCommand.SUCCESS];
     }
 
@@ -684,7 +684,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
                     }
                 }
                 break;
-            case IdentityMappingPolicyListCommand.SUCCESS:
+            case IdentityMappingPoliciesListCommand.SUCCESS:
                 if (view != null && view.parent != null) {
                     _identityMappingPolicies = projectProxy.identityMappingPolicies;
 

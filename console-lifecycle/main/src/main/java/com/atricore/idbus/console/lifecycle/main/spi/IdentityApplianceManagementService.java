@@ -82,8 +82,9 @@ public interface IdentityApplianceManagementService {
     ListAuthenticationMechanismsResponse listAuthenticationMechanisms(ListAuthenticationMechanismsRequest req) throws IdentityServerException;
     ListAttributeProfilesResponse listAttributeProfiles(ListAttributeProfilesRequest req) throws IdentityServerException;
     ListAuthAssertionEmissionPoliciesResponse listAuthAssertionEmissionPolicies(ListAuthAssertionEmissionPoliciesRequest req) throws IdentityServerException;
-    ListIdentityMappingPolicyResponse listIdentityMappingPolicies(ListIdentityMappingPolicyRequest req) throws IdentityServerException;
+    ListIdentityMappingPoliciesResponse listIdentityMappingPolicies(ListIdentityMappingPoliciesRequest req) throws IdentityServerException;
     ListSubjectNameIDPoliciesResponse listSubjectNameIDPolicies(ListSubjectNameIDPoliciesRequest req) throws IdentityServerException;
+    ListImpersonateUserPoliciesResponse listImpersonateUserPolicies(ListImpersonateUserPoliciesRequest req) throws IdentityServerException;
 
     /****************************
      * Lookup methods

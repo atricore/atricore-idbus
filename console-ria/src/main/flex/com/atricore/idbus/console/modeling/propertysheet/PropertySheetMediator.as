@@ -33,7 +33,7 @@ import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand;
 import com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCommand;
 import com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicyListCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPoliciesListCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
@@ -360,8 +360,8 @@ public class PropertySheetMediator extends IocMediator {
             GetCertificateInfoCommand.SUCCESS,
             AccountLinkagePolicyListCommand.SUCCESS,
             AccountLinkagePolicyListCommand.FAILURE,
-            IdentityMappingPolicyListCommand.SUCCESS,
-            IdentityMappingPolicyListCommand.FAILURE,
+            IdentityMappingPoliciesListCommand.SUCCESS,
+            IdentityMappingPoliciesListCommand.FAILURE,
             SubjectNameIDPolicyListCommand.SUCCESS,
             SubjectNameIDPolicyListCommand.FAILURE];
     }
@@ -585,7 +585,7 @@ public class PropertySheetMediator extends IocMediator {
                     }
                 }
                 break;
-            case IdentityMappingPolicyListCommand.SUCCESS:
+            case IdentityMappingPoliciesListCommand.SUCCESS:
                 if (_currentIdentityApplianceElement != null) {
                     if (_currentIdentityApplianceElement is ServiceProvider && _spCoreSection != null) {
                         _identityMappingPolicies = projectProxy.identityMappingPolicies;

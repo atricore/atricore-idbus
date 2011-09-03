@@ -132,6 +132,20 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 setPropertyValue(ccSpPwdLocal, "type", AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue());
                 ccEndpoints.add(ccSpPwdLocal);
 
+                if (((BasicAuthentication)authnMechanism).getImpersonateUserPolicy() != null) {
+
+                    // Enable endpoints for user impersonation
+
+                    Bean ccSpImpersonateLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                    ccSpImpersonateLocal.setName(idpBean.getName() + "-cc-spimpersonate-local");
+                    setPropertyValue(ccSpImpersonateLocal, "name", ccSpImpersonateLocal.getName());
+                    setPropertyValue(ccSpImpersonateLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
+                    setPropertyValue(ccSpImpersonateLocal, "location",  "local://" + claimsChannelBean.getName().toUpperCase() + "/CC/SPIMPERSONATE/LOCAL");
+                    setPropertyValue(ccSpImpersonateLocal, "type", AuthnCtxClass.ATC_SP_IMPERSONATE_AUTHN_CTX.getValue());
+                    ccEndpoints.add(ccSpImpersonateLocal);
+
+                }
+
             }
         }
 

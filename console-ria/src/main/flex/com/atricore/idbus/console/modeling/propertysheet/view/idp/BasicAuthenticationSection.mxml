@@ -69,5 +69,12 @@
             <s:CheckBox id="ignorePasswordCase"/>
         </mx:FormItem>
 
+        <s:HGroup width="100%">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.impersonateUserPolicy')}:">
+                <s:DropDownList id="impersonateUserPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
+            </mx:FormItem>
+        </s:HGroup>
+
+
     </mx:Form>
 </s:Group>

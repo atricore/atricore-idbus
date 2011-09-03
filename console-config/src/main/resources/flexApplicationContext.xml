@@ -493,7 +493,7 @@
 
 
     <object id="identityMappingPolicyListCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicyListCommand">
+            class="com.atricore.idbus.console.modeling.main.controller.IdentityMappingPoliciesListCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>

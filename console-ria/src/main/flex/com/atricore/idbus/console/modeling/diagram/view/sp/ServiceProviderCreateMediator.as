@@ -25,7 +25,7 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolicyListCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPoliciesListCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AccountLinkEmitterType;
 import com.atricore.idbus.console.services.dto.Binding;
@@ -418,8 +418,8 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
     override public function listNotificationInterests():Array {
         return [AccountLinkagePolicyListCommand.SUCCESS,
             AccountLinkagePolicyListCommand.FAILURE,
-            IdentityMappingPolicyListCommand.SUCCESS,
-            IdentityMappingPolicyListCommand.FAILURE];
+            IdentityMappingPoliciesListCommand.SUCCESS,
+            IdentityMappingPoliciesListCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -435,7 +435,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
                     }
                 }
                 break;
-            case IdentityMappingPolicyListCommand.SUCCESS:
+            case IdentityMappingPoliciesListCommand.SUCCESS:
                 if (view != null && view.parent != null) {
                     _identityMappingPolicies = projectProxy.identityMappingPolicies;
                     for (var j:int=0; j < view.identityMappingPolicyCombo.dataProvider.length; j++) {

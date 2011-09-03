@@ -80,9 +80,10 @@
 
         <property name="sampleKeystore" ref="sampleKeystore"/>
 
-        <property name="identityMappingPolicyRegistry" ref="identityMappingPolicyRegistry"/>
-        <property name="accountLinkagePolicyRegistry" ref="accountLinkagePolicyRegistry"/>
+        <property name="identityMappingPoliciesRegistry" ref="identityMappingPoliciesRegistry"/>
+        <property name="accountLinkagePoliciesRegistry" ref="accountLinkagePoliciesRegistry"/>
         <property name="subjectNameIdentifierPolicyRegistry" ref="subjectNameIdentifierPolicyRegistry"/>
+        <property name="impersonateUserPoliciesRegistry" ref="impersonateUserPoliciesRegistry"/>
 
         <!-- DAO's -->
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
@@ -155,8 +156,8 @@
     <osgi:reference id="jdbcDriverManager" timeout="60" cardinality="1..1"
                     interface="org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager"/>
 
-    <bean name="accountLinkagePolicyRegistry"
-          class="com.atricore.idbus.console.lifecycle.main.impl.AccountLinkagePolicyRegistry">
+    <bean name="accountLinkagePoliciesRegistry"
+          class="com.atricore.idbus.console.lifecycle.main.impl.AccountLinkagePoliciesRegistry">
 
     </bean>
 
@@ -165,22 +166,28 @@
 
     </bean>
 
-    <bean name="identityMappingPolicyRegistry"
-          class="com.atricore.idbus.console.lifecycle.main.impl.IdentityMappingPolicyRegistry">
+    <bean name="impersonateUserPoliciesRegistry"
+          class="com.atricore.idbus.console.lifecycle.main.impl.ImpersonateUserPoliciesRegistry">
+
+    </bean>
+
+    <bean name="identityMappingPoliciesRegistry"
+          class="com.atricore.idbus.console.lifecycle.main.impl.IdentityMappingPoliciesRegistry">
 
     </bean>
 
 
+
     <osgi:list id="customAccountLinkagePolicies" cardinality="0..N"
                interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.AccountLinkagePolicy">
-        <osgi:listener ref="accountLinkagePolicyRegistry"
+        <osgi:listener ref="accountLinkagePoliciesRegistry"
                        bind-method="register"
                        unbind-method="unregister"/>
     </osgi:list>
 
     <osgi:list id="customIdentityMappingPolicies" cardinality="0..N"
                interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityMappingPolicy">
-        <osgi:listener ref="identityMappingPolicyRegistry"
+        <osgi:listener ref="identityMappingPoliciesRegistry"
                        bind-method="register"
                        unbind-method="unregister"/>
     </osgi:list>

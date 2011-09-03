@@ -605,17 +605,17 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, ListAuthAssertionEmissionPoliciesResponse.class);
     }
 
-    public ListIdentityMappingPolicyResponse listIdentityMappingPolicies(ListIdentityMappingPolicyRequest req) throws IdentityServerException{
-        com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityMappingPolicyRequest beReq =
-                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityMappingPolicyRequest.class);
+    public ListIdentityMappingPoliciesResponse listIdentityMappingPolicies(ListIdentityMappingPoliciesRequest req) throws IdentityServerException{
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityMappingPoliciesRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityMappingPoliciesRequest.class);
 
-        com.atricore.idbus.console.lifecycle.main.spi.response.ListIdentityMappingPolicyResponse beRes;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListIdentityMappingPoliciesResponse beRes;
         try {
             beRes = idApplianceManagementService.listIdentityMappingPolicies(beReq);
         } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
-        return dozerMapper.map(beRes, ListIdentityMappingPolicyResponse.class);
+        return dozerMapper.map(beRes, ListIdentityMappingPoliciesResponse.class);
     }
 
     public ListSubjectNameIDPoliciesResponse listSubjectNameIDPolicies(ListSubjectNameIDPoliciesRequest req) throws IdentityServerException {
@@ -631,6 +631,21 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ListSubjectNameIDPoliciesResponse.class);
+    }
+
+    public ListImpersonateUserPoliciesResponse listImpersonateUserPolicy(ListImpersonateUserPoliciesRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListImpersonateUserPoliciesRequest beReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.ListImpersonateUserPoliciesRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListImpersonateUserPoliciesResponse beRes;
+        try {
+            beRes = idApplianceManagementService.listImpersonateUserPolicies(beReq);
+        }
+
+        catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ListImpersonateUserPoliciesResponse.class);
     }
 
     /****************************

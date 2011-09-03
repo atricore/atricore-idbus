@@ -15,6 +15,9 @@ public class BasicAuthentication extends AuthenticationMechanism {
 
     private boolean ignorePasswordCase = false;
 
+    // TODO : For now this is bound to basic authn.  When multiple authn mechanisms are supported, it should be a mechanism on its own.
+    private ImpersonateUserPolicy impersonateUserPolicy;
+
     public String getHashAlgorithm() {
         return hashAlgorithm;
     }
@@ -45,5 +48,13 @@ public class BasicAuthentication extends AuthenticationMechanism {
 
     public void setIgnorePasswordCase(boolean ignorePasswordCase) {
         this.ignorePasswordCase = ignorePasswordCase;
+    }
+
+    public ImpersonateUserPolicy getImpersonateUserPolicy() {
+        return impersonateUserPolicy;
+    }
+
+    public void setImpersonateUserPolicy(ImpersonateUserPolicy impersonateUserPolicy) {
+        this.impersonateUserPolicy = impersonateUserPolicy;
     }
 }

@@ -2,10 +2,13 @@ package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ImpersonateUserPolicy;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ImpersonateUserPolicyType;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.AuthenticatorImpl;
@@ -61,13 +64,49 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
 
         setPropertyRef(basicAuthnBean, "credentialStore", idpBean.getName() + "-identity-store");
         setPropertyBean(basicAuthnBean, "credentialStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));
+
+        ImpersonateUserPolicy impUsrPolicy = basicAuthn.getImpersonateUserPolicy();
+        if (impUsrPolicy != null && !impUsrPolicy.getImpersonateUserPolicyType().equals(ImpersonateUserPolicyType.DISABLED)) {
+
+            // Add additional authn scheme  and reference the configured policy using OSGi services
+            Bean impersonateAuthnBean = newBean(idpBeans, normalizeBeanName("impersonate-scheme"),
+                    "org.atricore.idbus.idojos.impersonateusrauthscheme.ImpersonateUserAuthScheme");
+
+
+            ImpersonateUserPolicyType impUsrPolicyType = impUsrPolicy.getImpersonateUserPolicyType();
+            String impersonateUsrPolicyName = idpBean.getName() + "-impersonate-user-policy";
+
+            switch (impUsrPolicyType) {
+                case CUSTOM:
+
+                    // Add OSGi reference to policy service bean:
+                    Reference customIpersonateValidationPolicy = new Reference();
+                    customIpersonateValidationPolicy.setId(impersonateUsrPolicyName);
+                    customIpersonateValidationPolicy.setBeanName(impUsrPolicy.getCustomImpersonateUserPolicy());
+                    customIpersonateValidationPolicy.setInterface("org.atricore.idbus.idojos.impersonateusrauthscheme.CurrentUserValidationPolicy");
+
+                    idpBeans.getImportsAndAliasAndBeen().add(customIpersonateValidationPolicy);
+                    setPropertyRef(impersonateAuthnBean, "policy", impersonateUsrPolicyName);
+
+                    break;
+                default:
+                    logger.warn("Unsupported Impersonate User Policy : " + impUsrPolicyType.getDisplayName());
+                    break;
+            }
+
+
+
+        }
     }
 
     @Override
     public Object after(TransformEvent event) throws TransformException {
         BasicAuthentication basicAuthn = (BasicAuthentication) event.getData();
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
+
         Bean basicAuthnBean = getBean(idpBeans, normalizeBeanName(basicAuthn.getName()));
+        Bean impersonateAuthnBean = getBean(idpBeans, normalizeBeanName("impersonate-scheme"));
+
         Bean idpBean = null;
         Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
         if (b.size() != 1) {
@@ -81,14 +120,22 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
 
             // Wire basic authentication scheme to Authenticator
             Bean legacyAuthenticator = authenticators.iterator().next();
+
+            // Add basic authenticator
             addPropertyBeansAsRefs(legacyAuthenticator, "authenticationSchemes", basicAuthnBean);
 
-            // Add new Basic Authenticator
-            Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
+            // Add impersonate authenticator, if any
+            if (impersonateAuthnBean != null)
+                addPropertyBeansAsRefs(legacyAuthenticator, "authenticationSchemes", impersonateAuthnBean);
+
+            // Add 2F Authenticator
             Bean twoFactorAuthenticator = newAnonymousBean("org.atricore.idbus.capabilities.sts.main.authenticators.BasicSecurityTokenAuthenticator");
             setPropertyRef(twoFactorAuthenticator, "authenticator", legacyAuthenticator.getName());
 
+            // Add authenticators to STS
+            Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
             addPropertyBean(sts, "authenticators", twoFactorAuthenticator);
+
 
         }
 

@@ -11,9 +11,9 @@ import java.util.Map;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class IdentityMappingPolicyRegistry {
+public class IdentityMappingPoliciesRegistry {
     
-    private static final Log logger = LogFactory.getLog(IdentityMappingPolicyRegistry.class);
+    private static final Log logger = LogFactory.getLog(IdentityMappingPoliciesRegistry.class);
     
     private Map<String, IdentityMappingPolicy> policies = new HashMap<String, IdentityMappingPolicy>();
 

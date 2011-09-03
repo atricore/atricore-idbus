@@ -12,6 +12,9 @@ public class BasicAuthenticationDTO extends AuthenticationMechanismDTO {
 
     private boolean ignorePasswordCase = false;
 
+    // TODO : For now this is bound to basic authn.  When multiple authn mechanisms are supported, it should be a mechanism on its own.
+    private String impersonateValidationPolicy;
+
     public String getHashAlgorithm() {
         return hashAlgorithm;
     }
@@ -42,5 +45,13 @@ public class BasicAuthenticationDTO extends AuthenticationMechanismDTO {
 
     public void setIgnorePasswordCase(boolean ignorePasswordCase) {
         this.ignorePasswordCase = ignorePasswordCase;
+    }
+
+    public String getImpersonateValidationPolicy() {
+        return impersonateValidationPolicy;
+    }
+
+    public void setImpersonateValidationPolicy(String impersonateValidationPolicy) {
+        this.impersonateValidationPolicy = impersonateValidationPolicy;
     }
 }

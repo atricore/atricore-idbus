@@ -4,18 +4,16 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.AccountLinkageP
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class AccountLinkagePolicyRegistry {
+public class AccountLinkagePoliciesRegistry {
 
-    private static final Log logger = LogFactory.getLog(AccountLinkagePolicyRegistry.class);
+    private static final Log logger = LogFactory.getLog(AccountLinkagePoliciesRegistry.class);
 
     private Map<String, AccountLinkagePolicy> policies = new HashMap<String, AccountLinkagePolicy>();
 

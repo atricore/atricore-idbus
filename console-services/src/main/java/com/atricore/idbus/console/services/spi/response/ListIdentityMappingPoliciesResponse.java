@@ -5,7 +5,7 @@ import com.atricore.idbus.console.services.dto.IdentityMappingPolicyDTO;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListIdentityMappingPolicyResponse {
+public class ListIdentityMappingPoliciesResponse {
 
     private List<IdentityMappingPolicyDTO> identityMappingPolicies;
 

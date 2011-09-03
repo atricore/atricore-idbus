@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class SubjectNameIdentifierPolicyRegistry {
 
-    private static final Log logger = LogFactory.getLog(AccountLinkagePolicyRegistry.class);
+    private static final Log logger = LogFactory.getLog(AccountLinkagePoliciesRegistry.class);
 
     private Map<String, SubjectNameIdentifierPolicy> policies = new HashMap<String, SubjectNameIdentifierPolicy>();
 
