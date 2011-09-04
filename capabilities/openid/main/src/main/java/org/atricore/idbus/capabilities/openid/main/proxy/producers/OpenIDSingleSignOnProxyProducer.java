@@ -23,47 +23,44 @@ package org.atricore.idbus.capabilities.openid.main.proxy.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openid.main.common.OpenIDException;
-import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDAuthnResponse;
 import org.atricore.idbus.capabilities.openid.main.binding.OpenIDBinding;
+import org.atricore.idbus.capabilities.openid.main.common.OpenIDException;
+import org.atricore.idbus.capabilities.openid.main.common.producers.OpenIDProducer;
+import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDAuthnResponse;
 import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDMessage;
+import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV1AuthnRequest;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV2AuthnRequest;
 import org.atricore.idbus.capabilities.openid.main.proxy.OpenIDProxyMediator;
-import org.atricore.idbus.capabilities.sso.main.SSOException;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
-import org.atricore.idbus.capabilities.openid.main.common.producers.OpenIDProducer;
-import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV1AuthnRequest;
-import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
-import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
-import org.atricore.idbus.common.sso._1_0.protocol.*;
-import org.atricore.idbus.kernel.main.authn.Constants;
+import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
+import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
+import org.atricore.idbus.common.sso._1_0.protocol.SubjectNameIDType;
+import org.atricore.idbus.common.sso._1_0.protocol.SubjectType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
-import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-import org.atricore.idbus.kernel.main.mediation.claim.*;
+import org.atricore.idbus.kernel.main.mediation.claim.Claim;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
-import org.openid4java.consumer.*;
-import org.openid4java.discovery.DiscoveryException;
+import org.openid4java.consumer.ConsumerManager;
+import org.openid4java.consumer.InMemoryConsumerAssociationStore;
+import org.openid4java.consumer.InMemoryNonceVerifier;
+import org.openid4java.consumer.VerificationResult;
 import org.openid4java.discovery.DiscoveryInformation;
 import org.openid4java.discovery.Identifier;
 import org.openid4java.message.AuthRequest;
 import org.openid4java.message.AuthSuccess;
-import org.openid4java.message.MessageException;
 import org.openid4java.message.ParameterList;
 
-import javax.xml.namespace.QName;
 import java.util.List;
 
 /**
@@ -109,15 +106,13 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
                         content.getClass().getName(),
                         null);
             }
-        } catch (OpenIDException e) {
-
+        } catch (Exception e) {
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
-                    StatusDetails.UNKNOWN_REQUEST.getValue(),
+                    StatusDetails.INTERNAL_ERROR.getValue(),
                     content.getClass().getName(),
                     e);
         }
-
     }
 
     /**
@@ -135,7 +130,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
      * are available, we're sending a status error response. (we could look for a different IDP here!)
      */
     protected void doProcessSPInitiatedSSO(CamelMediationExchange exchange, SPInitiatedAuthnRequestType authnRequest)
-            throws OpenIDException {
+            throws Exception {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
@@ -153,10 +148,10 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
         // Create Claims Request
         org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest claimsRequest =
                 new org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest(authnRequest.getID(),
-                channel,
-                endpoint,
-                channel.getClaimsProvider(),
-                uuidGenerator.generateId());
+                        channel,
+                        endpoint,
+                        channel.getClaimsProvider(),
+                        uuidGenerator.generateId());
 
         // --------------------------------------------------------------------
         // Send claims request
@@ -178,7 +173,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
     }
 
     protected void doProcessClaimsResponse(CamelMediationExchange exchange,
-                                           SSOClaimsResponse claimsResponse) throws OpenIDException {
+                                           SSOClaimsResponse claimsResponse) throws Exception {
         //------------------------------------------------------------
         // Process a claims response
         //------------------------------------------------------------
@@ -195,7 +190,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
         OpenIDProxyMediator mediator = (OpenIDProxyMediator) channel.getIdentityMediator();
         /* TODO: setup declaratively using spring -- needs to be a prototype (singleton=false) */
         ConsumerManager consumerManager = new ConsumerManager();
-        ConsumerManager manager=new ConsumerManager();
+        ConsumerManager manager = new ConsumerManager();
         manager.setAssociations(new InMemoryConsumerAssociationStore());
         manager.setNonceVerifier(new InMemoryNonceVerifier(5000));
 
@@ -221,80 +216,69 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
         }
 
 
-        try {
-            // determine a return_to URL where your application will receive
-            // the authentication responses from the OpenID provider
-            IdentityMediationEndpoint openIDConsumerEndpoint =
-                    resolveOpenIDEndpoint(OpenIDBinding.OPENID_HTTP_POST.getValue());
+        // determine a return_to URL where your application will receive
+        // the authentication responses from the OpenID provider
+        IdentityMediationEndpoint openIDConsumerEndpoint =
+                resolveOpenIDEndpoint(OpenIDBinding.OPENID_HTTP_POST.getValue());
 
 
-            String returnToUrl = channel.getLocation() + openIDConsumerEndpoint.getLocation();
+        String returnToUrl = channel.getLocation() + openIDConsumerEndpoint.getLocation();
 
-            // perform discovery on the user-supplied identifier
-            List discoveries = consumerManager.discover(openid);
+        // perform discovery on the user-supplied identifier
+        List discoveries = consumerManager.discover(openid);
 
-            // attempt to associate with an OpenID provider
-            // and retrieve one service endpoint for authentication
-            DiscoveryInformation discovered = consumerManager.associate(discoveries);
+        // attempt to associate with an OpenID provider
+        // and retrieve one service endpoint for authentication
+        DiscoveryInformation discovered = consumerManager.associate(discoveries);
 
-            // store the discovery information in the provider's state
-            String discoveredVarName = getProvider().getName().toUpperCase() + "_OPENID_DISCO";
-            mediationState.setLocalVariable(discoveredVarName, discovered);
+        // store the discovery information in the provider's state
+        String discoveredVarName = getProvider().getName().toUpperCase() + "_OPENID_DISCO";
+        mediationState.setLocalVariable(discoveredVarName, discovered);
 
-            // obtain a AuthRequest message to be sent to the OpenID provider
-            AuthRequest authReq = consumerManager.authenticate(discovered, returnToUrl);
-
-
-            OpenIDMessage authnRequestSubmit = null;
-            if (!discovered.isVersion2()) {
-                // Option 1: GET HTTP-redirect to the OpenID Provider endpoint
-                // The only method supported in OpenID 1.x
-                // redirect-URL usually limited ~2048 bytes
-                logger.info("Submitting OpenID version 1 Authentication Request : version = " + discovered.getVersion() + ", " +
-                             "destination url = " + authReq.getDestinationUrl(true));
-
-                authnRequestSubmit = new SubmitOpenIDV1AuthnRequest(
-                        discovered.getVersion(), authReq.getDestinationUrl(true)
-                );
+        // obtain a AuthRequest message to be sent to the OpenID provider
+        AuthRequest authReq = consumerManager.authenticate(discovered, returnToUrl);
 
 
-            } else {
-                logger.info("Submitting OpenID version 2 Authentication Request : version = " + discovered.getVersion() + ", " +
-                             "destination url = " + authReq.getOPEndpoint() + ", parameterMap=" + authReq.getParameterMap());
+        OpenIDMessage authnRequestSubmit = null;
+        if (!discovered.isVersion2()) {
+            // Option 1: GET HTTP-redirect to the OpenID Provider endpoint
+            // The only method supported in OpenID 1.x
+            // redirect-URL usually limited ~2048 bytes
+            logger.info("Submitting OpenID version 1 Authentication Request : version = " + discovered.getVersion() + ", " +
+                    "destination url = " + authReq.getDestinationUrl(true));
 
-                // Form-based submission
-                authnRequestSubmit = new SubmitOpenIDV2AuthnRequest(
-                        discovered.getVersion(),
-                        authReq.getOPEndpoint(),
-                        authReq.getParameterMap()
-                );
-            }
+            authnRequestSubmit = new SubmitOpenIDV1AuthnRequest(
+                    discovered.getVersion(), authReq.getDestinationUrl(true)
+            );
 
-            EndpointDescriptor ed = new EndpointDescriptorImpl(openIDConsumerEndpoint.getName(),
-                    openIDConsumerEndpoint.getType(), openIDConsumerEndpoint.getBinding(), null, null);
 
-            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                    authnRequestSubmit,
-                    "OpenIDAuthenticationRequest",
-                    null,
-                    ed,
-                    in.getMessage().getState()));
-            exchange.setOut(out);
+        } else {
+            logger.info("Submitting OpenID version 2 Authentication Request : version = " + discovered.getVersion() + ", " +
+                    "destination url = " + authReq.getOPEndpoint() + ", parameterMap=" + authReq.getParameterMap());
 
-        } catch (MessageException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (DiscoveryException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (ConsumerException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            // Form-based submission
+            authnRequestSubmit = new SubmitOpenIDV2AuthnRequest(
+                    discovered.getVersion(),
+                    authReq.getOPEndpoint(),
+                    authReq.getParameterMap()
+            );
         }
+
+        EndpointDescriptor ed = new EndpointDescriptorImpl(openIDConsumerEndpoint.getName(),
+                openIDConsumerEndpoint.getType(), openIDConsumerEndpoint.getBinding(), null, null);
+
+        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                authnRequestSubmit,
+                "OpenIDAuthenticationRequest",
+                null,
+                ed,
+                in.getMessage().getState()));
+        exchange.setOut(out);
 
     }
 
     protected void doProcessOpenIDAuthnResponse(CamelMediationExchange exchange, OpenIDAuthnResponse openIdAuthnResponse)
-            throws OpenIDException, DiscoveryException {
+            throws Exception {
 
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
@@ -311,156 +295,78 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
         String discoveredVarName = getProvider().getName().toUpperCase() + "_OPENID_DISCO";
         DiscoveryInformation discovered = (DiscoveryInformation) mediationState.getLocalVariable(discoveredVarName);
 
-        try {
-            // --- processing the authentication response
+        // --- processing the authentication response
 
-            // extract the parameters from the authentication response
-            // (which comes in as a HTTP request from the OpenID provider)
-            ParameterList responselist =
-                    new ParameterList(openIdAuthnResponse.getParameterMap());
-
-
-            // extract the receiving URL from the HTTP request
-            /* TODO: factor out to binding
-            StringBuffer receivingURL = request.getRequestURL();
-            String queryString = request.getQueryString();
-            if (queryString != null && queryString.length() > 0)
-                receivingURL.append("?").append(request.getQueryString());
-            */
-
-            // verify the response; ConsumerManager needs to be the same
-            // (static) instance used to place the authentication request
-            VerificationResult verification = consumerManager.verify(
-                    openIdAuthnResponse.getReceivingUrl(),
-                    responselist, discovered);
-
-            // examine the verification result and extract the verified identifier
-            Identifier verified = verification.getVerifiedId();
-            if (verified != null) {
-                AuthSuccess authSuccess =
-                        (AuthSuccess) verification.getAuthResponse();
+        // extract the parameters from the authentication response
+        // (which comes in as a HTTP request from the OpenID provider)
+        ParameterList responselist =
+                new ParameterList(openIdAuthnResponse.getParameterMap());
 
 
-                SPAuthnResponseType ssoResponse = new SPAuthnResponseType ();
-                ssoResponse.setID(uuidGenerator.generateId());
-                SPInitiatedAuthnRequestType ssoRequest =
-                        (SPInitiatedAuthnRequestType) in.getMessage().getState().
-                                getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
+        // extract the receiving URL from the HTTP request
+        /* TODO: factor out to binding
+        StringBuffer receivingURL = request.getRequestURL();
+        String queryString = request.getQueryString();
+        if (queryString != null && queryString.length() > 0)
+            receivingURL.append("?").append(request.getQueryString());
+        */
 
-                if (ssoRequest != null) {
-                    ssoResponse.setInReplayTo(ssoRequest.getID());
-                }
+        // verify the response; ConsumerManager needs to be the same
+        // (static) instance used to place the authentication request
+        VerificationResult verification = consumerManager.verify(
+                openIdAuthnResponse.getReceivingUrl(),
+                responselist, discovered);
 
-                SubjectType st = new SubjectType();
+        // examine the verification result and extract the verified identifier
+        Identifier verified = verification.getVerifiedId();
+        if (verified != null) {
+            AuthSuccess authSuccess =
+                    (AuthSuccess) verification.getAuthResponse();
 
-                SubjectNameIDType a = new SubjectNameIDType ();
-                a.setName(authSuccess.getIdentity());
-                a.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:entity");
-                a.setLocalName(authSuccess.getIdentity());
-                a.setNameQualifier(getProvider().getName().toUpperCase());
-                a.setLocalNameQualifier(getProvider().getName().toUpperCase());
 
-                st.getAbstractPrincipal().add(a);
+            SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
+            ssoResponse.setID(uuidGenerator.generateId());
+            SPInitiatedAuthnRequestType ssoRequest =
+                    (SPInitiatedAuthnRequestType) in.getMessage().getState().
+                            getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
 
-                // TODO: create a second principal for the OpenID claimed identifier
-
-                ssoResponse.setSessionIndex(uuidGenerator.generateId());
-                ssoResponse.setSubject(st);
-
-                String destinationLocation = resolveSpProxyACS();
-
-                EndpointDescriptor destination =
-                        new EndpointDescriptorImpl("EmbeddedSPAcs",
-                                "AssertionConsumerService",
-                                OpenIDBinding.SSO_ARTIFACT.getValue(),
-                                destinationLocation, null);
-
-                out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
-                        ssoResponse, "SPAuthnResponse", "", destination, in.getMessage().getState()));
-
-                exchange.setOut(out);
-                return;
-            } else {
-                // TODO  Handle login failure
+            if (ssoRequest != null) {
+                ssoResponse.setInReplayTo(ssoRequest.getID());
             }
-        } catch (Exception e) {
-            logger.error("Error processing OpenID Response" + e);
-        }
 
+            SubjectType st = new SubjectType();
+
+            SubjectNameIDType a = new SubjectNameIDType();
+            a.setName(authSuccess.getIdentity());
+            a.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:entity");
+            a.setLocalName(authSuccess.getIdentity());
+            a.setNameQualifier(getProvider().getName().toUpperCase());
+            a.setLocalNameQualifier(getProvider().getName().toUpperCase());
+
+            st.getAbstractPrincipal().add(a);
+
+            // TODO: create a second principal for the OpenID claimed identifier
+
+            ssoResponse.setSessionIndex(uuidGenerator.generateId());
+            ssoResponse.setSubject(st);
+
+            String destinationLocation = resolveSpProxyACS();
+
+            EndpointDescriptor destination =
+                    new EndpointDescriptorImpl("EmbeddedSPAcs",
+                            "AssertionConsumerService",
+                            OpenIDBinding.SSO_ARTIFACT.getValue(),
+                            destinationLocation, null);
+
+            out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
+                    ssoResponse, "SPAuthnResponse", "", destination, in.getMessage().getState()));
+
+            exchange.setOut(out);
+            return;
+        } else {
+            // TODO  Handle login failure
+        }
     }
-
-    protected void doProcessReceivedClaims(CamelMediationExchange exchange,
-                                           ClaimsRequest claimsRequest,
-                                           ClaimSet receivedClaims) throws Exception {
-
-        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-        SSOClaimsMediator mediator = ((SSOClaimsMediator) channel.getIdentityMediator());
-
-        // This is the binding we're using to send the response
-        SSOBinding binding = SSOBinding.SSO_ARTIFACT;
-        Channel issuer = claimsRequest.getIssuerChannel();
-
-        IdentityMediationEndpoint claimsProcessingEndpoint = null;
-
-        // Look for an endpoint to send the response
-        for (IdentityMediationEndpoint endpoint : issuer.getEndpoints()) {
-            if (endpoint.getType().equals(claimsRequest.getIssuerEndpoint().getType()) &&
-                    endpoint.getBinding().equals(binding.getValue())) {
-                claimsProcessingEndpoint = endpoint;
-                break;
-            }
-        }
-
-        if (claimsProcessingEndpoint == null) {
-            throw new SSOException("No endpoint supporting " + binding + " of type " +
-                    claimsRequest.getIssuerEndpoint().getType() + " found in channel " + claimsRequest.getIssuerChannel().getName());
-        }
-
-        EndpointDescriptor ed = mediator.resolveEndpoint(claimsRequest.getIssuerChannel(),
-                claimsProcessingEndpoint);
-
-        String password = null;
-        String username = null;
-
-        // Addapt received simple claims to SAMLR Required token
-        for (Claim c : receivedClaims.getClaims()) {
-
-            if (c.getQualifier().equalsIgnoreCase("username"))
-                username = (String) c.getValue();
-
-            if (c.getQualifier().equalsIgnoreCase("password"))
-                password = (String) c.getValue();
-        }
-
-        // Build a SAMLR2 Compatible Security token
-        UsernameTokenType usernameToken = new UsernameTokenType ();
-        AttributedString usernameString = new AttributedString();
-        usernameString.setValue( username );
-
-        usernameToken.setUsername( usernameString );
-        usernameToken.getOtherAttributes().put( new QName( Constants.PASSWORD_NS), password );
-        usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
-
-        Claim claim = new ClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
-        ClaimSet claims = new ClaimSetImpl();
-        claims.addClaim(claim);
-
-        ClaimsResponse claimsResponse = new SSOClaimsResponse (claimsRequest.getId() /* TODO : Generate new ID !*/,
-                channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
-
-        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-
-        out.setMessage(new MediationMessageImpl(claimsResponse.getId(),
-                claimsResponse,
-                "ClaimsResponse",
-                null,
-                ed,
-                in.getMessage().getState()));
-
-        exchange.setOut(out);
-
-    }
-
 
     protected IdentityMediationEndpoint selectClaimsEndpoint() {
 
@@ -497,7 +403,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
     }
 
     protected String resolveSpProxyACS() {
-        return ((OpenIDProxyMediator)channel.getIdentityMediator()).getSpProxyACS();
+        return ((OpenIDProxyMediator) channel.getIdentityMediator()).getSpProxyACS();
     }
 
 }

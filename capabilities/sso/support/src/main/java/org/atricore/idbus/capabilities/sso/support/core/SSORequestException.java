@@ -40,7 +40,7 @@ public class SSORequestException extends Exception {
                                StatusCode topLevelStatusCode,
                                StatusCode secondLevelStatusCode,
                                StatusDetails statusDtails) {
-        super("SAMLR2 Request [" + (Request != null ? Request.getID() : "<NULL>") +
+        super("SSO Request [" + (Request != null ? Request.getID() : "<NULL>") +
                 "] error. (" + topLevelStatusCode.getValue() + ":" +
                 (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : "") + ":" +
                 (statusDtails != null ? statusDtails.getValue() : "")  +  ")");
@@ -56,7 +56,7 @@ public class SSORequestException extends Exception {
                                StatusCode secondLevelStatusCode,
                                StatusDetails statusDtails,
                                String errorDetails) {
-        super("SAMLR2 Request [" + (Request != null ? Request.getID() : "<NULL>") +
+        super("SSO Request [" + (Request != null ? Request.getID() : "<NULL>") +
                 "] error. (" + topLevelStatusCode.getValue() + ":" +
                 (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : "") + ":" +
                 (statusDtails != null ? statusDtails.getValue() : "")  + ":" +
@@ -74,7 +74,7 @@ public class SSORequestException extends Exception {
                                StatusCode secondLevelStatusCode,
                                StatusDetails statusDtails,
                                Throwable cause) {
-        super("SAMLR2 Request [" + (Request != null ? Request.getID() : "<NULL>") +
+        super("SSO Request [" + (Request != null ? Request.getID() : "<NULL>") +
                 "] error. (" + topLevelStatusCode.getValue() + ":" +
                 (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : "") + ":" +
                 (statusDtails != null ? statusDtails.getValue() : "")  + ")", 
@@ -92,7 +92,7 @@ public class SSORequestException extends Exception {
                                StatusDetails statusDtails,
                                String errorDetails,
                                Throwable cause) {
-        super("SAMLR2 Request [" + (Request != null ? Request.getID() : "<NULL>") +
+        super("SSO Request [" + (Request != null ? Request.getID() : "<NULL>") +
                 "] error. (" + topLevelStatusCode.getValue() + ":" +
                 (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : "") + ":" +
                 (statusDtails != null ? statusDtails.getValue() : "")  + ":" +
