@@ -1951,7 +1951,7 @@ public class SingleSignOnProducer extends SSOProducer {
         SPInitiatedAuthnRequestType target = new SPInitiatedAuthnRequestType();
         target.setID(uuidGenerator.generateId());
         target.setPassive(source.isIsPassive());
-        target.setReplyTo(endpoint.getProxyResponseLocation());
+
         return target;
     }
 
