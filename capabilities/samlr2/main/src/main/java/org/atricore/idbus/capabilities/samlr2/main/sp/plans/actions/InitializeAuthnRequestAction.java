@@ -61,6 +61,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
             return;
 
         boolean passive = false;
+        boolean forceAuthn = false;
 
         RequestedAuthnContextType reqAuthnCtx = null;
         if (in.getContent() instanceof SPInitiatedAuthnRequestType) {
@@ -71,15 +72,22 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
             // If credentials are present, request a special authnctx
             if (ssoAuthnReq.getCredentials() != null &&
-                    ssoAuthnReq.getCredentials().size() > 0) {
+                ssoAuthnReq.getCredentials().size() > 0) {
 
+                // TODO : Send SAML Subject, as stated in Saml 2 profiles : 4.1.4.1 <AuthnRequest> Usage
+
+                // Only set requested authn ctx. class when credentials are provided by the SP.
                 reqAuthnCtx = new RequestedAuthnContextType();
-                reqAuthnCtx.getAuthnContextClassRef().add(AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue());
+                reqAuthnCtx.getAuthnContextClassRef().add(ssoAuthnReq.getAuthnCtxClass());
 
                 if (logger.isDebugEnabled() && passive)
-                    logger.debug("Generating NON-PASSIVE Authn Request (SPInitiatedAuthnRequest w/credentials received)");
+                    logger.debug("Generating NON-PASSIVE Authn Request " +
+                            "(SPInitiatedAuthnRequest w/credentials received for " + ssoAuthnReq.getAuthnCtxClass() + ")");
+
                 // Set this to non-passive, JOSSO Login will handle subsequent errors.
-                passive = false;
+                passive = ssoAuthnReq.isPassive();
+                forceAuthn = ssoAuthnReq.isForceAuthn();
+
             } else {
 
                 if (logger.isDebugEnabled() && passive)
@@ -108,6 +116,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
         CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
 
         // saml:Subject [optional]
+        // TODO : If credentials are present, Send SAML Subject, as stated in Saml 2 profiles : 4.1.4.1 <AuthnRequest> Usage
 
         // NameIDPolicy [optional]
         // TODO : This is deployment specific, every IDP and SP can provide / support different policies, check SAMLR2 MD
@@ -128,7 +137,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
         // Scoping [optional]
 
         // ForceAuthn [optional] --> re-establish identity
-        authn.setForceAuthn(false);
+        authn.setForceAuthn(forceAuthn);
 
         // IsPassive [optional] --> automatic login!
         authn.setIsPassive(passive);

@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoAuthnContext;
 import org.atricore.idbus.capabilities.josso.main.JossoConstants;
 import org.atricore.idbus.capabilities.josso.main.JossoException;
+import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
 import org.atricore.idbus.common.sso._1_0.protocol.CredentialType;
@@ -128,6 +129,28 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
             ct.setAny(usernameToken);
 
             request.getCredentials().add(ct);
+
+            request.setAuthnCtxClass(AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue());
+
+        } else if (username != null && cmd != null && cmd.equals("impersonate")) {
+            if (logger.isDebugEnabled())
+                logger.debug("Initializing Authnentiation request for impersonation");
+
+            // Send credentials with authn request:
+            UsernameTokenType usernameToken = new UsernameTokenType ();
+            AttributedString usernameString = new AttributedString();
+            usernameString.setValue( username );
+
+            usernameToken.setUsername( usernameString );
+            usernameToken.getOtherAttributes().put(new QName(Constants.IMPERSONATE_NS), password );
+
+            CredentialType ct = new CredentialType();
+            ct.setAny(usernameToken);
+
+            request.setAuthnCtxClass(AuthnCtxClass.ATC_SP_IMPERSONATE_AUTHN_CTX.getValue());
+
+            request.getCredentials().add(ct);
+
         }
 
         // Create context information

@@ -95,7 +95,6 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
 
             if (secCtx != null && secCtx.getSessionIndex() != null) {
 
-
                 // TODO ! Check that the session belongs to the IdP associated with this request
 
                 logger.debug("SSO Session found " + secCtx.getSessionIndex());

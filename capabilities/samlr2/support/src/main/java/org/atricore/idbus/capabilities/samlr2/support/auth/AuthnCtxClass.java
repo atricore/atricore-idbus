@@ -106,6 +106,10 @@ public enum AuthnCtxClass {
     /** URI for Secure SP Provided credentials. */
     ATC_SP_PASSWORD_AUTHN_CTX("urn:org:atricore:idbus:SAML:2.0:ac:classes:SpSecurePassword", true),
 
+
+    /** URI for Secure SP Impersonation request. */
+    ATC_SP_IMPERSONATE_AUTHN_CTX("urn:org:atricore:idbus:SAML:2.0:ac:classes:SpImpersonateUsr", true),
+
     /** URI for unspecified authentication context. */
     UNSPECIFIED_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified", true),
 

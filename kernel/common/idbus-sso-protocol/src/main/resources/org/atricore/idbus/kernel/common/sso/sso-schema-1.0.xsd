@@ -51,6 +51,8 @@
                     <element name="Credentials" type="ssop:CredentialType" maxOccurs="unbounded"/>
                 </sequence>
                 <attribute name="Passive" type="boolean" use="required"/>
+                <attribute name="ForceAuthn" type="boolean" use="optional"/>
+                <attribute name="AuthnCtxClass" type="string" use="optional"/>
             </extension>
         </complexContent>
     </complexType>

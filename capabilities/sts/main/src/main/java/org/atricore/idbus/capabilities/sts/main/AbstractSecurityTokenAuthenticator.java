@@ -66,7 +66,7 @@ public abstract class AbstractSecurityTokenAuthenticator implements SecurityToke
             if (logger.isTraceEnabled())
                 logger.trace("Got " + (credentials != null ? credentials.length + "" : "<null>") + " credentials");
 
-            // Addapt authentication, use existing components
+            // Adapt authentication, use existing components
             return getAuthenticator().check(credentials, getScheme());
 
 

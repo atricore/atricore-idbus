@@ -63,7 +63,6 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
