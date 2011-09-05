@@ -21,7 +21,7 @@
             <ref bean="tc1-josso-binding-channel"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.management.internal.BindingProviderMBeanImpl" name="tc1-mbean">
+    <bean class="org.atricore.idbus.capabilities.sso.management.internal.BindingProviderMBeanImpl" name="tc1-mbean">
         <property name="bindingProvider">
             <ref bean="tc1"/>
         </property>
@@ -201,13 +201,13 @@
                             <value>SP1</value>
                         </property>
                         <property name="spAlias">
-                            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/OPENID/MD</value>
+                            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MD</value>
                         </property>
                         <property name="partnerAppSLO">
                             <value>http://localhost:8080/</value>
                         </property>
                         <property name="partnerAppACS">
-                            <value>http://localhost:8080/josso_security_check</value>
+                            <value>http://localhost:8080/partnerapp/josso_security_check</value>
                         </property>
                     </bean>
                 </entry>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<EntityDescriptor ID="idAB30465F3DB631D3" entityID="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MD" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ns4="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ns3="http://www.w3.org/2001/04/xmlenc#">
+    <SPSSODescriptor WantAssertionsSigned="true" AuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" ID="id9BA9CE80FE9D0C64">
+        <KeyDescriptor use="signing">
+            <ns2:KeyInfo>
+                <ns2:X509Data>
+                    <ns2:X509Certificate>MIIE0zCCA7ugAwIBAgIkAhwR/6TV13SCQflqv+LdVvJ05dmYfXF3XrNceJgPAgIE
+XQK9MA0GCSqGSIb3DQEBBQUAMDExGjAYBgNVBAsTEU9yZ2FuaXphdGlvbmFsIENB
+MRMwEQYDVQQKFApuYW0wMV90cmVlMB4XDTA5MDYyMDAxMjIxNFoXDTExMDYyMDAx
+MjIxNFowZTESMBAGA1UEAxMJam9zc28tc3AxMQ4wDAYDVQQLEwVqb3NzbzERMA8G
+A1UEChMIYXRyaWNvcmUxETAPBgNVBAcTCE5ldyBZb3JrMQswCQYDVQQIEwJOWTEM
+MAoGA1UEBhMDVVNBMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDEnUh9guWA
+xB0AI51pGtCRwCEJAFgFoKZlXwLGFPa7+1L+4jo5Oih5RZdY7bRYpv56Q5jlCiRP
+HbW3oYDlexd+CcfXMhKjuNayau6l/ZJD2ICfIRSStJggeGmbA8rZKUmDTim0m5HS
+cHpWEQd/llUuyCrgx/fUDkwJ1CSkOGyOHQIDAQABo4ICITCCAh0wHQYDVR0OBBYE
+FFDsMByQWSPQy7fCCjA9eC+b23GTMB8GA1UdIwQYMBaAFEbWfhVp6z/iUKW6ipwG
+9X3imtMHMAsGA1UdDwQEAwIEsDCCAcwGC2CGSAGG+DcBCQQBBIIBuzCCAbcEAgEA
+AQH/Ex1Ob3ZlbGwgU2VjdXJpdHkgQXR0cmlidXRlKHRtKRZDaHR0cDovL2RldmVs
+b3Blci5ub3ZlbGwuY29tL3JlcG9zaXRvcnkvYXR0cmlidXRlcy9jZXJ0YXR0cnNf
+djEwLmh0bTCCAUigGgEBADAIMAYCAQECAUYwCDAGAgEBAgEKAgFpoRoBAQAwCDAG
+AgEBAgEAMAgwBgIBAQIBAAIBAKIGAgEXAQH/o4IBBKBYAgECAgIA/wIBAAMNAIAA
+AAAAAAAAAAAAAAMJAIAAAAAAAAAAMBgwEAIBAAIIf/////////8BAQACBAbw30gw
+GDAQAgEAAgh//////////wEBAAIEBvDfSKFYAgECAgIA/wIBAAMNAEAAAAAAAAAA
+AAAAAAMJAEAAAAAAAAAAMBgwEAIBAAIIf/////////8BAQACBBH/pNUwGDAQAgEA
+Agh//////////wEBAAIEEf+k1aJOMEwCAQICAQACAgD/Aw0AgAAAAAAAAAAAAAAA
+AwkAgAAAAAAAAAAwEjAQAgEAAgh//////////wEBADASMBACAQACCH//////////
+AQEAMA0GCSqGSIb3DQEBBQUAA4IBAQCW4svATocORIjaBYVfFopCoXvjXm0GCaqj
+lpSISETSOZXKDmB18acdH8BE4hBR38avN4TrNORsd/aooo/D62PxbZUibxlq3fVV
+xBgi0WwW+1tkScGkOICRTIx9qZ4FZ0bHknPDVLGIzskeiHNR1eRW2ujrta1vWjrt
++JNLOp/bh8txhCzltyb3nDpyKc5b6R3zbvvs9U/3fm5h83FmzanscjplFwZcrJxL
+H+BeYr+3I+T0USftV/+k1dMWKzU9YG44eJyWXgqFglgG5VomPiO/WlliMtSNj67x
+eflURWZiaSX8N4qNIM1030jBmGg3Vhfb9zltarBTjSx+XWcYAFmT</ns2:X509Certificate>
+                </ns2:X509Data>
+            </ns2:KeyInfo>
+            <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
+        </KeyDescriptor>
+        <KeyDescriptor use="encryption">
+            <ns2:KeyInfo>
+                <ns2:X509Data>
+                    <ns2:X509Certificate>MIIE0zCCA7ugAwIBAgIkAhwR/6TV13SCQflqv+LdVvJ05dmYfXF3XrNceJgPAgIE
+XQK9MA0GCSqGSIb3DQEBBQUAMDExGjAYBgNVBAsTEU9yZ2FuaXphdGlvbmFsIENB
+MRMwEQYDVQQKFApuYW0wMV90cmVlMB4XDTA5MDYyMDAxMjIxNFoXDTExMDYyMDAx
+MjIxNFowZTESMBAGA1UEAxMJam9zc28tc3AxMQ4wDAYDVQQLEwVqb3NzbzERMA8G
+A1UEChMIYXRyaWNvcmUxETAPBgNVBAcTCE5ldyBZb3JrMQswCQYDVQQIEwJOWTEM
+MAoGA1UEBhMDVVNBMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDEnUh9guWA
+xB0AI51pGtCRwCEJAFgFoKZlXwLGFPa7+1L+4jo5Oih5RZdY7bRYpv56Q5jlCiRP
+HbW3oYDlexd+CcfXMhKjuNayau6l/ZJD2ICfIRSStJggeGmbA8rZKUmDTim0m5HS
+cHpWEQd/llUuyCrgx/fUDkwJ1CSkOGyOHQIDAQABo4ICITCCAh0wHQYDVR0OBBYE
+FFDsMByQWSPQy7fCCjA9eC+b23GTMB8GA1UdIwQYMBaAFEbWfhVp6z/iUKW6ipwG
+9X3imtMHMAsGA1UdDwQEAwIEsDCCAcwGC2CGSAGG+DcBCQQBBIIBuzCCAbcEAgEA
+AQH/Ex1Ob3ZlbGwgU2VjdXJpdHkgQXR0cmlidXRlKHRtKRZDaHR0cDovL2RldmVs
+b3Blci5ub3ZlbGwuY29tL3JlcG9zaXRvcnkvYXR0cmlidXRlcy9jZXJ0YXR0cnNf
+djEwLmh0bTCCAUigGgEBADAIMAYCAQECAUYwCDAGAgEBAgEKAgFpoRoBAQAwCDAG
+AgEBAgEAMAgwBgIBAQIBAAIBAKIGAgEXAQH/o4IBBKBYAgECAgIA/wIBAAMNAIAA
+AAAAAAAAAAAAAAMJAIAAAAAAAAAAMBgwEAIBAAIIf/////////8BAQACBAbw30gw
+GDAQAgEAAgh//////////wEBAAIEBvDfSKFYAgECAgIA/wIBAAMNAEAAAAAAAAAA
+AAAAAAMJAEAAAAAAAAAAMBgwEAIBAAIIf/////////8BAQACBBH/pNUwGDAQAgEA
+Agh//////////wEBAAIEEf+k1aJOMEwCAQICAQACAgD/Aw0AgAAAAAAAAAAAAAAA
+AwkAgAAAAAAAAAAwEjAQAgEAAgh//////////wEBADASMBACAQACCH//////////
+AQEAMA0GCSqGSIb3DQEBBQUAA4IBAQCW4svATocORIjaBYVfFopCoXvjXm0GCaqj
+lpSISETSOZXKDmB18acdH8BE4hBR38avN4TrNORsd/aooo/D62PxbZUibxlq3fVV
+xBgi0WwW+1tkScGkOICRTIx9qZ4FZ0bHknPDVLGIzskeiHNR1eRW2ujrta1vWjrt
++JNLOp/bh8txhCzltyb3nDpyKc5b6R3zbvvs9U/3fm5h83FmzanscjplFwZcrJxL
+H+BeYr+3I+T0USftV/+k1dMWKzU9YG44eJyWXgqFglgG5VomPiO/WlliMtSNj67x
+eflURWZiaSX8N4qNIM1030jBmGg3Vhfb9zltarBTjSx+XWcYAFmT</ns2:X509Certificate>
+                </ns2:X509Data>
+            </ns2:KeyInfo>
+            <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
+        </KeyDescriptor>
+        <ArtifactResolutionService isDefault="true" index="0" Location="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/ARTIFACT/SOAP" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"/>
+        <ArtifactResolutionService index="1" Location="local://SIMPLE-OPENID/SP1/SAML2/ARTIFACT/LOCAL" Binding="urn:oasis:names:tc:SAML:2.0:bindings:LOCAL"/>
+        <SingleLogoutService ResponseLocation="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/SLO_RESPONSE/POST" Location="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/SLO/POST" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"/>
+        <SingleLogoutService Location="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/SLO/ARTIFACT" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"/>
+        <SingleLogoutService Location="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/SLO/SOAP" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"/>
+        <SingleLogoutService Location="local://SIMPLE-OPENID/SP1/SAML2/SLO/LOCAL" Binding="urn:org:atricore:idbus:sso:bindings:LOCAL"/>
+        <ManageNameIDService Location="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MNI/SOAP" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"/>
+        <ManageNameIDService ResponseLocation="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MNI_RESPONSE/POST" Location="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MNI/POST" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"/>
+        <ManageNameIDService ResponseLocation="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MNI_RESPONSE/REDIR" Location="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/MNI/REDIR" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"/>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+        <AssertionConsumerService isDefault="true" index="0" Location="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/ACS/ARTIFACT" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"/>
+        <AssertionConsumerService index="1" Location="http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SAML2/ACS/POST" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"/>
+    </SPSSODescriptor>
+    <Organization>
+        <OrganizationName xml:lang="en">Atricore IDBUs SAMLR2 JOSSO SP Sample</OrganizationName>
+        <OrganizationDisplayName xml:lang="en">Atricore, Inc.</OrganizationDisplayName>
+        <OrganizationURL xml:lang="en">http://www.atricore.org</OrganizationURL>
+    </Organization>
+    <ContactPerson contactType="other"/>
+</EntityDescriptor>

@@ -86,8 +86,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
             <version>1.2.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -100,15 +100,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
             <version>1.2.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.management</artifactId>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.management</artifactId>
             <version>1.2.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -312,35 +312,35 @@
                             org.apache.derby.jdbc,
                         </Import-Package>
                         <Require-Bundle>
-                           org.atricore.idbus.kernel.common.support,
-                           org.atricore.idbus.kernel.common.samlr2,
-                           org.atricore.idbus.kernel.common.spml,
-                           org.atricore.idbus.kernel.common.sso,
-                           org.atricore.idbus.kernel.common.html,
-                           org.atricore.idbus.kernel.main,
-                           org.atricore.idbus.kernel.planning,
-                           org.atricore.idbus.capabilities.sts.main,
-                           org.atricore.idbus.capabilities.samlr2.management,
-                           org.atricore.idbus.capabilities.samlr2.main,
-                           org.atricore.idbus.capabilities.samlr2.support,
-                           org.atricore.idbus.capabilities.spmlr2.main,
-                           org.atricore.idbus.capabilities.josso.main,
-                           org.atricore.idbus.capabilities.spnego,
-                           org.atricore.idbus.capabilities.openid.main,
-                           org.atricore.idbus.connectors.jdoidentityvault,
-                           org.atricore.idbus.idojos.dbidentitystore,
-                           org.atricore.idbus.idojos.memorysessionstore,
-                           org.atricore.idbus.idojos.ehcachesessionstore,
-                           org.atricore.idbus.idojos.memoryidentitystore,
-                           org.atricore.idbus.idojos.ldapidentitystore,
-                           com.atricore.idbus.console.twofactor.wikid.authscheme; resolution:="optional",
-                           org.atricore.idbus.bundles.javax-jdo2-v2_3-ec,
-                           org.datanucleus,
-                           org.apache.cxf.bundle,
-                           org.apache.activemq.activemq-core,
-                           org.atricore.idbus.bundles.ehcache-v2_1_0,
-                           org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1,
-                           org.apache.servicemix.specs.jaxb-api-2.1
+                            org.atricore.idbus.kernel.common.support,
+                            org.atricore.idbus.kernel.common.samlr2,
+                            org.atricore.idbus.kernel.common.spml,
+                            org.atricore.idbus.kernel.common.sso,
+                            org.atricore.idbus.kernel.common.html,
+                            org.atricore.idbus.kernel.main,
+                            org.atricore.idbus.kernel.planning,
+                            org.atricore.idbus.capabilities.sts.main,
+                            org.atricore.idbus.capabilities.sso.management,
+                            org.atricore.idbus.capabilities.sso.main,
+                            org.atricore.idbus.capabilities.sso.support,
+                            org.atricore.idbus.capabilities.spmlr2.main,
+                            org.atricore.idbus.capabilities.josso.main,
+                            org.atricore.idbus.capabilities.spnego,
+                            org.atricore.idbus.capabilities.openid.main,
+                            org.atricore.idbus.connectors.jdoidentityvault,
+                            org.atricore.idbus.idojos.dbidentitystore,
+                            org.atricore.idbus.idojos.memorysessionstore,
+                            org.atricore.idbus.idojos.ehcachesessionstore,
+                            org.atricore.idbus.idojos.memoryidentitystore,
+                            org.atricore.idbus.idojos.ldapidentitystore,
+                            com.atricore.idbus.console.twofactor.wikid.authscheme; resolution:="optional",
+                            org.atricore.idbus.bundles.javax-jdo2-v2_3-ec,
+                            org.datanucleus,
+                            org.apache.cxf.bundle,
+                            org.apache.activemq.activemq-core,
+                            org.atricore.idbus.bundles.ehcache-v2_1_0,
+                            org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1,
+                            org.apache.servicemix.specs.jaxb-api-2.1
                         </Require-Bundle>
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
                     </instructions>

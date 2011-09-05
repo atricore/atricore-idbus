@@ -24,7 +24,6 @@ package org.atricore.idbus.capabilities.sts.main;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
-import org.atricore.idbus.kernel.main.authn.exceptions.AuthenticationFailureException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.planning.*;
@@ -45,7 +44,7 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    private IdentityPlanRegistry identityPlansRegistry;
+    private IdentityPlanRegistry identityPlanRegistry;
 
     private static final Log logger = LogFactory.getLog(AbstractSecurityTokenEmitter.class);
 
@@ -66,12 +65,12 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
         this.uuidGenerator = uuidGenerator;
     }
 
-    public IdentityPlanRegistry getIdentityPlansRegistry() {
-        return identityPlansRegistry;
+    public IdentityPlanRegistry getIdentityPlanRegistry() {
+        return identityPlanRegistry;
     }
 
-    public void setIdentityPlansRegistry(IdentityPlanRegistry identityPlansRegistry) {
-        this.identityPlansRegistry = identityPlansRegistry;
+    public void setIdentityPlanRegistry(IdentityPlanRegistry identityPlanRegistry) {
+        this.identityPlanRegistry = identityPlanRegistry;
     }
 
     /**

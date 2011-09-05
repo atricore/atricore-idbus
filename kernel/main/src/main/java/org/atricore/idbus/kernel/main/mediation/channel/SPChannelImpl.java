@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.kernel.main.mediation.channel;
 
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
@@ -44,6 +45,9 @@ public class SPChannelImpl extends AbstractFederationChannel implements SPChanne
     // SSO Identity manager service used to retrieve identity for this SP.
     private transient SSOIdentityManager identityManager;
 
+    private boolean isProxyModeEnabled;
+
+    private BindingChannel proxy;
 
     public SecurityTokenService getSecurityTokenService() {
         return securityTokenService;
@@ -69,4 +73,19 @@ public class SPChannelImpl extends AbstractFederationChannel implements SPChanne
         this.identityManager = identityManager;
     }
 
+    public boolean isProxyModeEnabled() {
+        return isProxyModeEnabled;
+    }
+
+    public void setProxyModeEnabled(boolean proxyModeEnabled) {
+        isProxyModeEnabled = proxyModeEnabled;
+    }
+
+    public BindingChannel getProxy() {
+        return proxy;
+    }
+
+    public void setProxy(BindingChannel proxy) {
+        this.proxy = proxy;
+    }
 }

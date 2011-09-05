@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.*;
 import org.atricore.idbus.capabilities.josso.main.binding.JossoBinding;
-import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
@@ -257,7 +257,7 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
         IdentityMediationEndpoint e = null;
         for (IdentityMediationEndpoint endpoint : spBindingChannel.getEndpoints()) {
 
-            if (endpoint.getType().equals(SamlR2Service.AssertIdentityWithSimpleAuthenticationService.toString())) {
+            if (endpoint.getType().equals(SSOService.AssertIdentityWithSimpleAuthenticationService.toString())) {
                 if (endpoint.getBinding().equals(JossoBinding.SSO_LOCAL.getValue())) {
                     return myChannel.getIdentityMediator().resolveEndpoint(spBindingChannel, endpoint);
                 } else if (endpoint.getBinding().equals(JossoBinding.SSO_SOAP.getValue())) {
@@ -280,7 +280,7 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
         IdentityMediationEndpoint e = null;
         for (IdentityMediationEndpoint endpoint : spBindingChannel.getEndpoints()) {
 
-            if (endpoint.getType().equals(SamlR2Service.SPInitiatedSingleLogoutService.toString())) {
+            if (endpoint.getType().equals(SSOService.SPInitiatedSingleLogoutService.toString())) {
                 if (endpoint.getBinding().equals(JossoBinding.SSO_SOAP.getValue())) {
                     return myChannel.getIdentityMediator().resolveEndpoint(spBindingChannel, endpoint);
                 } else if (endpoint.getBinding().equals(JossoBinding.SSO_SOAP.getValue())) {

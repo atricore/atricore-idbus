@@ -41,7 +41,7 @@
             </set>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager" name="simple-iwa-cot-manager">
+    <bean class="org.atricore.idbus.capabilities.sso.main.SamlR2CircleOfTrustManager" name="simple-iwa-cot-manager">
         <property name="cot">
             <ref bean="simple-iwa-cot"/>
         </property>
@@ -49,7 +49,7 @@
     <bean factory-method="getInstance" class="org.atricore.idbus.kernel.main.session.SSOSessionEventManager" name="session-event-manager">
         <property name="listeners">
             <list>
-                <bean class="org.atricore.idbus.capabilities.samlr2.main.idp.IdPSessionEventListener">
+                <bean class="org.atricore.idbus.capabilities.sso.main.idp.IdPSessionEventListener">
                     <property name="identityProvider">
                         <ref bean="idp1"/>
                     </property>

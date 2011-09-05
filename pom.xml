@@ -56,7 +56,7 @@
         <module>bundles/ini4j-v0_5_1</module>
 
         <module>capabilities/spmlr2</module>
-        <module>capabilities/samlr2</module>
+        <module>capabilities/sso</module>
         <module>capabilities/josso</module>
         <module>capabilities/sts</module>
         <module>capabilities/spnego</module>
