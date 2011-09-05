@@ -48,7 +48,7 @@
         <idbus.app.server.version>1.2.1-SNAPSHOT</idbus.app.server.version>
 
         <idbus.cap.josso.version>1.2.1-SNAPSHOT</idbus.cap.josso.version>
-        <idbus.cap.saml2.version>1.2.1-SNAPSHOT</idbus.cap.saml2.version>
+        <idbus.cap.sso.version>1.2.1-SNAPSHOT</idbus.cap.sso.version>
         <idbus.cap.spml2.version>1.2.1-SNAPSHOT</idbus.cap.spml2.version>
         <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.2.1-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
         <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.2.1-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
@@ -136,9 +136,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
+            <version>${idbus.cap.sso.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -150,16 +150,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
+            <version>${idbus.cap.sso.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.management</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.management</artifactId>
+            <version>${idbus.cap.sso.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -334,9 +334,9 @@
                            org.atricore.idbus.kernel.main,
                            org.atricore.idbus.kernel.planning,
                            org.atricore.idbus.capabilities.sts.main,
-                           org.atricore.idbus.capabilities.samlr2.management,
-                           org.atricore.idbus.capabilities.samlr2.main,
-                           org.atricore.idbus.capabilities.samlr2.support,
+                           org.atricore.idbus.capabilities.sso.management,
+                           org.atricore.idbus.capabilities.sso.main,
+                           org.atricore.idbus.capabilities.sso.support,
                            org.atricore.idbus.capabilities.spmlr2.main,
                            org.atricore.idbus.capabilities.josso.main,
                            org.atricore.idbus.connectors.jdoidentityvault,

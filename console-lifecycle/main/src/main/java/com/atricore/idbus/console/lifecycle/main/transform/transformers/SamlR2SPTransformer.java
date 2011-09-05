@@ -8,9 +8,9 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
+import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.factory.InitializingBean;
@@ -262,14 +262,14 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
         // if (artifactEnabled)
         {
             IndexedEndpointType artifactResolutionService0 = new IndexedEndpointType();
-            artifactResolutionService0.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
+            artifactResolutionService0.setBinding(SSOBinding.SAMLR2_SOAP.getValue());
             artifactResolutionService0.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ARTIFACT/SOAP");
             artifactResolutionService0.setIndex(0);
             artifactResolutionService0.setIsDefault(true);
             spSSODescriptor.getArtifactResolutionService().add(artifactResolutionService0);
 
             IndexedEndpointType artifactResolutionService1 = new IndexedEndpointType();
-            artifactResolutionService1.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
+            artifactResolutionService1.setBinding(SSOBinding.SAMLR2_LOCAL.getValue());
             artifactResolutionService1.setLocation("local://" + (idpChannel != null ?
                     idpChannel.getLocation().getUri().toUpperCase() : provider.getLocation().getUri().toUpperCase()) + "/SAML2/ARTIFACT/LOCAL");
             artifactResolutionService1.setIndex(1);
@@ -282,7 +282,7 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
         if (sloEnabled) {
             if (postEnabled) {
                 EndpointType singleLogoutServicePost = new EndpointType();
-                singleLogoutServicePost.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
+                singleLogoutServicePost.setBinding(SSOBinding.SAMLR2_POST.getValue());
                 singleLogoutServicePost.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/POST");
                 singleLogoutServicePost.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO_RESPONSE/POST");
                 spSSODescriptor.getSingleLogoutService().add(singleLogoutServicePost);
@@ -290,14 +290,14 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
 
             if (artifactEnabled) {
                 EndpointType singleLogoutServiceArtifact = new EndpointType();
-                singleLogoutServiceArtifact.setBinding(SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+                singleLogoutServiceArtifact.setBinding(SSOBinding.SAMLR2_ARTIFACT.getValue());
                 singleLogoutServiceArtifact.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/ARTIFACT");
                 spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceArtifact);
             }
 
             if (redirectEnabled) {
                 EndpointType singleLogoutServiceRedirect = new EndpointType();
-                singleLogoutServiceRedirect.setBinding(SamlR2Binding.SAMLR2_REDIRECT.getValue());
+                singleLogoutServiceRedirect.setBinding(SSOBinding.SAMLR2_REDIRECT.getValue());
                 singleLogoutServiceRedirect.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/REDIR");
                 singleLogoutServiceRedirect.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO_RESPONSE/REDIR");
                 spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceRedirect);
@@ -305,13 +305,13 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
 
             if (soapEnabled) {
                 EndpointType singleLogoutServiceSOAP = new EndpointType();
-                singleLogoutServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
+                singleLogoutServiceSOAP.setBinding(SSOBinding.SAMLR2_SOAP.getValue());
                 singleLogoutServiceSOAP.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/SOAP");
                 spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceSOAP);
             }
 
             EndpointType singleLogoutServiceLocal = new EndpointType();
-            singleLogoutServiceLocal.setBinding(SamlR2Binding.SSO_LOCAL.getValue());
+            singleLogoutServiceLocal.setBinding(SSOBinding.SSO_LOCAL.getValue());
             singleLogoutServiceLocal.setLocation("local://" + (idpChannel != null ?
                     idpChannel.getLocation().getUri().toUpperCase() : provider.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
             spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceLocal);
@@ -319,18 +319,18 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
 
         // ManageNameIDService
         EndpointType manageNameIDServiceSOAP = new EndpointType();
-        manageNameIDServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
+        manageNameIDServiceSOAP.setBinding(SSOBinding.SAMLR2_SOAP.getValue());
         manageNameIDServiceSOAP.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI/SOAP");
         spSSODescriptor.getManageNameIDService().add(manageNameIDServiceSOAP);
 
         EndpointType manageNameIDServicePost = new EndpointType();
-        manageNameIDServicePost.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
+        manageNameIDServicePost.setBinding(SSOBinding.SAMLR2_POST.getValue());
         manageNameIDServicePost.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI/POST");
         manageNameIDServicePost.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI_RESPONSE/POST");
         spSSODescriptor.getManageNameIDService().add(manageNameIDServicePost);
 
         EndpointType manageNameIDServiceRedirect = new EndpointType();
-        manageNameIDServiceRedirect.setBinding(SamlR2Binding.SAMLR2_REDIRECT.getValue());
+        manageNameIDServiceRedirect.setBinding(SSOBinding.SAMLR2_REDIRECT.getValue());
         manageNameIDServiceRedirect.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI/REDIR");
         manageNameIDServiceRedirect.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI_RESPONSE/REDIR");
         spSSODescriptor.getManageNameIDService().add(manageNameIDServiceRedirect);
@@ -344,7 +344,7 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
             int index = 0;
             if (artifactEnabled) {
                 IndexedEndpointType assertionConsumerService0 = new IndexedEndpointType();
-                assertionConsumerService0.setBinding(SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+                assertionConsumerService0.setBinding(SSOBinding.SAMLR2_ARTIFACT.getValue());
                 assertionConsumerService0.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS/ARTIFACT");
                 assertionConsumerService0.setIndex(index++);
                 assertionConsumerService0.setIsDefault(true);
@@ -353,7 +353,7 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
 
             if (postEnabled) {
                 IndexedEndpointType assertionConsumerService1 = new IndexedEndpointType();
-                assertionConsumerService1.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
+                assertionConsumerService1.setBinding(SSOBinding.SAMLR2_POST.getValue());
                 assertionConsumerService1.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS/POST");
                 assertionConsumerService1.setIndex(index++);
                 //assertionConsumerService1.setIsDefault(false);
@@ -362,7 +362,7 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
 
             if (redirectEnabled) {
                 IndexedEndpointType assertionConsumerService2 = new IndexedEndpointType();
-                assertionConsumerService2.setBinding(SamlR2Binding.SAMLR2_REDIRECT.getValue());
+                assertionConsumerService2.setBinding(SSOBinding.SAMLR2_REDIRECT.getValue());
                 assertionConsumerService2.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS/REDIR");
                 assertionConsumerService2.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS_RESPONSE/REDIR");
                 assertionConsumerService2.setIndex(index++);

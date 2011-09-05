@@ -14,8 +14,8 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Description;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.SamlR2MetadataDefinitionIntrospector;
-import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
+import org.atricore.idbus.capabilities.sso.main.SamlR2MetadataDefinitionIntrospector;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
@@ -81,7 +81,7 @@ public class SPExternalTransformer extends AbstractTransformer {
         setPropertyValue(sp, "name", sp.getName());
 
         // Role
-        setPropertyValue(sp, "role", SAMLR2MetadataConstants.SPSSODescriptor_QNAME.toString());
+        setPropertyValue(sp, "role", SSOMetadataConstants.SPSSODescriptor_QNAME.toString());
 
         // Wire provider to COT
         Collection<Bean> cots = getBeansOfType(baseBeans, CircleOfTrustImpl.class.getName());

@@ -56,8 +56,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
@@ -1138,13 +1138,13 @@ public class IdentityApplianceManagementServiceImpl implements
                         res.setSignAuthnRequests(((SPSSODescriptorType)ssoDescriptor).isAuthnRequestsSigned());
                 }
                 for (EndpointType endpoint : endpoints) {
-                    if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_POST.getValue())) {
+                    if (endpoint.getBinding().equals(SSOBinding.SAMLR2_POST.getValue())) {
                         res.setPostEnabled(true);
-                    } else if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_REDIRECT.getValue())) {
+                    } else if (endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
                         res.setRedirectEnabled(true);
-                    } else if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue())) {
+                    } else if (endpoint.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue())) {
                         res.setArtifactEnabled(true);
-                    } else if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_SOAP.getValue())) {
+                    } else if (endpoint.getBinding().equals(SSOBinding.SAMLR2_SOAP.getValue())) {
                         res.setSoapEnabled(true);
                     }
                     if (res.isPostEnabled() && res.isRedirectEnabled() &&

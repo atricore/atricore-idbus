@@ -9,6 +9,7 @@ import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.util.SamlR2KeystoreKeyResolver;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Description;
@@ -16,22 +17,22 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
-import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder;
-import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder;
-import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
-import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
-import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
-import org.atricore.idbus.capabilities.samlr2.main.idp.IdPSessionEventListener;
-import org.atricore.idbus.capabilities.samlr2.main.idp.SamlR2IDPMediator;
-import org.atricore.idbus.capabilities.samlr2.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
-import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
-import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
-import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
-import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeystoreKeyResolver;
-import org.atricore.idbus.capabilities.samlr2.support.core.encryption.XmlSecurityEncrypterImpl;
-import org.atricore.idbus.capabilities.samlr2.support.core.signature.JSR105SamlR2SignerImpl;
-import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
+import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
+import org.atricore.idbus.capabilities.sso.main.binding.logging.SSOLogMessageBuilder;
+import org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder;
+import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
+import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
+import org.atricore.idbus.capabilities.sso.main.idp.IdPSessionEventListener;
+import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
+import org.atricore.idbus.capabilities.sso.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
+import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
+import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
+import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver;
+import org.atricore.idbus.capabilities.sso.support.core.encryption.XmlSecurityEncrypterImpl;
+import org.atricore.idbus.capabilities.sso.support.core.signature.JSR105SamlR2SignerImpl;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
@@ -123,7 +124,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         if (!provider.getRole().equals(ProviderRole.SSOIdentityProvider)) {
             logger.warn("Provider " + provider.getId() + " is defined as ["+provider.getRole()+"], forcing IDP role! ");
         }
-        setPropertyValue(idpBean, "role", SAMLR2MetadataConstants.IDPSSODescriptor_QNAME.toString());
+        setPropertyValue(idpBean, "role", SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
 
         // unitContainer
         setPropertyRef(idpBean, "unitContainer", provider.getIdentityAppliance().getName() + "-container");
@@ -144,7 +145,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         // Identity Provider Mediator
         // ----------------------------------------
         Bean idpMediator = newBean(idpBeans, idpBean.getName() + "-samlr2-mediator",
-                SamlR2IDPMediator.class.getName());
+                SSOIDPMediator.class.getName());
         setPropertyValue(idpMediator, "logMessages", true);
 
         // artifactQueueManager
@@ -275,7 +276,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         // ----------------------------------------
         // MBean
         // ----------------------------------------
-        Bean mBean = newBean(idpBeans, idpBean.getName() + "-mbean", "org.atricore.idbus.capabilities.samlr2.management.internal.IdentityProviderMBeanImpl");
+        Bean mBean = newBean(idpBeans, idpBean.getName() + "-mbean", "org.atricore.idbus.capabilities.sso.management.internal.IdentityProviderMBeanImpl");
         setPropertyRef(mBean, "identityProvider", idpBean.getName());
 
         Bean mBeanExporter = newBean(idpBeans, idpBean.getName() + "-mbean-exporter", "org.springframework.jmx.export.MBeanExporter");

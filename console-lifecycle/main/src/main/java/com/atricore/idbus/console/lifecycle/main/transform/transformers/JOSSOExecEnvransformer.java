@@ -18,8 +18,8 @@ import org.atricore.idbus.capabilities.josso.main.JossoService;
 import org.atricore.idbus.capabilities.josso.main.binding.JossoBinding;
 import org.atricore.idbus.capabilities.josso.main.binding.JossoBindingFactory;
 import org.atricore.idbus.capabilities.josso.main.binding.logging.JossoLogMessageBuilder;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerImpl;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl;
@@ -99,7 +99,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
         // MBean
         Bean mBean = newBean(bpBeans, bpBean.getName() + "-mbean",
-                "org.atricore.idbus.capabilities.samlr2.management.internal.BindingProviderMBeanImpl");
+                "org.atricore.idbus.capabilities.sso.management.internal.BindingProviderMBeanImpl");
         setPropertyRef(mBean, "bindingProvider", bpBean.getName());
 
         // MBean Exporter
@@ -153,15 +153,15 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         sloArtifact.setName(bpBean.getName() + "-binding-ssop-slo-artifact");
         setPropertyValue(sloArtifact, "name", sloArtifact.getName());
         setPropertyValue(sloArtifact, "type", "{urn:org:atricore:idbus:sso:metadata}SingleLogoutService");
-        setPropertyValue(sloArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
+        setPropertyValue(sloArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
         setPropertyValue(sloArtifact, "location", "/SSO/SLO/ARTIFACT");
         endpoints.add(sloArtifact);
 
         Bean acsArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
         acsArtifact.setName(bpBean.getName() + "-binding-ssop-acs-artifact");
         setPropertyValue(acsArtifact, "name", acsArtifact.getName());
-        setPropertyValue(acsArtifact, "type", SAMLR2MetadataConstants.SPBindingAssertionConsumerService_QNAME.toString());
-        setPropertyValue(acsArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
+        setPropertyValue(acsArtifact, "type", SSOMetadataConstants.SPBindingAssertionConsumerService_QNAME.toString());
+        setPropertyValue(acsArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
         setPropertyValue(acsArtifact, "location", "/SSO/ACS/ARTIFACT");
         endpoints.add(acsArtifact);
 
@@ -169,7 +169,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         ssoRedirect.setName(bpBean.getName() + "-binding-josso-sso-redir");
         setPropertyValue(ssoRedirect, "name", ssoRedirect.getName());
         setPropertyValue(ssoRedirect, "type", JossoService.SingleSignOnService.toString());
-        setPropertyValue(ssoRedirect, "binding", SamlR2Binding.SS0_REDIRECT.getValue());
+        setPropertyValue(ssoRedirect, "binding", SSOBinding.SS0_REDIRECT.getValue());
         setPropertyValue(ssoRedirect, "location", "/JOSSO/SSO/REDIR");
         endpoints.add(ssoRedirect);
 
@@ -177,7 +177,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         sloRedirect.setName(bpBean.getName() + "-binding-josso-slo-redir");
         setPropertyValue(sloRedirect, "name", sloRedirect.getName());
         setPropertyValue(sloRedirect, "type", JossoService.SingleLogoutService.toString());
-        setPropertyValue(sloRedirect, "binding", SamlR2Binding.SS0_REDIRECT.getValue());
+        setPropertyValue(sloRedirect, "binding", SSOBinding.SS0_REDIRECT.getValue());
         setPropertyValue(sloRedirect, "location", "/JOSSO/SLO/REDIR");
         endpoints.add(sloRedirect);
 

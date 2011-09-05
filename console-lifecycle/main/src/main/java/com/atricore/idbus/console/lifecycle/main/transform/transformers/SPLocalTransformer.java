@@ -7,25 +7,26 @@ import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
+import com.atricore.idbus.console.lifecycle.main.util.SamlR2KeystoreKeyResolver;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Description;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
-import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder;
-import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder;
-import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
-import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
-import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
-import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
-import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeystoreKeyResolver;
-import org.atricore.idbus.capabilities.samlr2.support.core.encryption.XmlSecurityEncrypterImpl;
-import org.atricore.idbus.capabilities.samlr2.support.core.signature.JSR105SamlR2SignerImpl;
-import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
+import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
+import org.atricore.idbus.capabilities.sso.main.binding.logging.SSOLogMessageBuilder;
+import org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder;
+import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
+import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
+import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
+import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver;
+import org.atricore.idbus.capabilities.sso.support.core.encryption.XmlSecurityEncrypterImpl;
+import org.atricore.idbus.capabilities.sso.support.core.signature.JSR105SamlR2SignerImpl;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.kernel.main.federation.AccountLinkLifecycleImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerImpl;
@@ -152,7 +153,7 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         if (!provider.getRole().equals(ProviderRole.SSOServiceProvider)) {
             logger.warn("Provider "+provider.getId()+" is not defined as SP, forcing role! ");
         }
-        setPropertyValue(sp, "role", SAMLR2MetadataConstants.SPSSODescriptor_QNAME.toString());
+        setPropertyValue(sp, "role", SSOMetadataConstants.SPSSODescriptor_QNAME.toString());
 
         // unitContainer
         setPropertyRef(sp, "unitContainer", provider.getIdentityAppliance().getName() + "-container");
@@ -194,10 +195,10 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         }
 
 
-        //setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_POST.getValue());
-        //setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_POST.getValue());
-        setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
-        setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+        //setPropertyValue(spMediator, "preferredIdpSSOBinding", SSOBinding.SAMLR2_POST.getValue());
+        //setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_POST.getValue());
+        setPropertyValue(spMediator, "preferredIdpSSOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
+        setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
 
         ExecutionEnvironment execEnv = provider.getActivation().getExecutionEnv();
 
@@ -347,7 +348,7 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         // ----------------------------------------
         // MBean
         // ----------------------------------------
-        Bean mBean = newBean(spBeans, sp.getName() + "-mbean", "org.atricore.idbus.capabilities.samlr2.management.internal.ServiceProviderMBeanImpl");
+        Bean mBean = newBean(spBeans, sp.getName() + "-mbean", "org.atricore.idbus.capabilities.sso.management.internal.ServiceProviderMBeanImpl");
         setPropertyRef(mBean, "serviceProvider", sp.getName());
 
         Bean mBeanExporter = newBean(spBeans, sp.getName() + "-mbean-exporter", "org.springframework.jmx.export.MBeanExporter");

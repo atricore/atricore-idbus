@@ -35,7 +35,7 @@
             <value>idbus1-cot</value>
         </property>
     </bean>
-    <bean name="idbus1-cot-manager" class="org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager">
+    <bean name="idbus1-cot-manager" class="org.atricore.idbus.capabilities.sso.main.SamlR2CircleOfTrustManager">
         <property name="cot">
             <ref bean="idbus1-cot"/>
         </property>
