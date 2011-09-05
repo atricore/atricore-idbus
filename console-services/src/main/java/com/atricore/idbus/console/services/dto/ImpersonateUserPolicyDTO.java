@@ -13,7 +13,7 @@ public class ImpersonateUserPolicyDTO implements Serializable {
 
 	private String name;
 
-    private ImpersonateUserPolicyTypeDTO impersonateUserPolicy;
+    private ImpersonateUserPolicyTypeDTO impersonateUserPolicyType;
 
     private String customImpersonateUserPolicy;
 
@@ -41,12 +41,12 @@ public class ImpersonateUserPolicyDTO implements Serializable {
         this.customImpersonateUserPolicy = customImpersonateUserPolicy;
     }
 
-    public ImpersonateUserPolicyTypeDTO getImpersonateUserPolicy() {
-        return impersonateUserPolicy;
+    public ImpersonateUserPolicyTypeDTO getImpersonateUserPolicyType() {
+        return impersonateUserPolicyType;
     }
 
-    public void setImpersonateUserPolicy(ImpersonateUserPolicyTypeDTO impersonateUserPolicy) {
-        this.impersonateUserPolicy = impersonateUserPolicy;
+    public void setImpersonateUserPolicyType(ImpersonateUserPolicyTypeDTO impersonateUserPolicy) {
+        this.impersonateUserPolicyType = impersonateUserPolicy;
     }
 
     @Override

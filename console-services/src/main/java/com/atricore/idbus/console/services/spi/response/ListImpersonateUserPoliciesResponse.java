@@ -10,17 +10,19 @@ import java.util.List;
  */
 public class ListImpersonateUserPoliciesResponse extends AbstractManagementResponse {
     
-    private List<ImpersonateUserPolicyDTO> identityMappingPolicies;
+    private List<ImpersonateUserPolicyDTO> impersonateUserPolicies;
 
-    public List<ImpersonateUserPolicyDTO> getIdentityMappingPolicies() {
-        if(identityMappingPolicies == null){
-            identityMappingPolicies = new ArrayList<ImpersonateUserPolicyDTO>();
+    public List<ImpersonateUserPolicyDTO> getImpersonateUserPolicies() {
+        if(impersonateUserPolicies == null){
+            impersonateUserPolicies = new ArrayList<ImpersonateUserPolicyDTO>();
         }
-        return identityMappingPolicies;
+        return impersonateUserPolicies;
     }
 
-    public void setIdentityMappingPolicies(List<ImpersonateUserPolicyDTO> identityMappingPolicies) {
-        this.identityMappingPolicies = identityMappingPolicies;
+    public void setImpersonateUserPolicies(List<ImpersonateUserPolicyDTO> identityMappingPolicies) {
+        this.impersonateUserPolicies = identityMappingPolicies;
     }
+
+
     
 }

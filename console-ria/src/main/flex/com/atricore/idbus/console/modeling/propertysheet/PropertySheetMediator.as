@@ -34,6 +34,7 @@ import com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand;
 import com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCommand;
 import com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPoliciesListCommand;
+import com.atricore.idbus.console.modeling.main.controller.ImpersonateUserPoliciesListCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
@@ -99,6 +100,8 @@ import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
+import com.atricore.idbus.console.services.dto.ImpersonateUserPolicy;
+import com.atricore.idbus.console.services.dto.ImpersonateUserPolicyType;
 import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
 import com.atricore.idbus.console.services.dto.WindowsAuthentication;
 import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
@@ -284,6 +287,9 @@ public class PropertySheetMediator extends IocMediator {
     public var _identityMappingPolicies:ArrayCollection;
 
     [Bindable]
+    public var _impersonateUserPolicies:ArrayCollection;
+
+    [Bindable]
     public var _subjectNameIdPolicies:ArrayCollection;
 
     // WiKID
@@ -363,10 +369,14 @@ public class PropertySheetMediator extends IocMediator {
             IdentityMappingPoliciesListCommand.SUCCESS,
             IdentityMappingPoliciesListCommand.FAILURE,
             SubjectNameIDPolicyListCommand.SUCCESS,
-            SubjectNameIDPolicyListCommand.FAILURE];
+            SubjectNameIDPolicyListCommand.FAILURE,
+            ImpersonateUserPoliciesListCommand.SUCCESS,
+            ImpersonateUserPoliciesListCommand.FAILURE
+            ];
     }
 
     override public function handleNotification(notification:INotification):void {
+
         switch (notification.getName()) {
             case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 clearPropertyTabs();
@@ -461,7 +471,7 @@ public class PropertySheetMediator extends IocMediator {
                 if(_execEnvHomeDir != null){
                     _execEnvHomeDir.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                     _execEnvHomeDir = null;
-                    _execEnvSaveFunction = null;                    
+                    _execEnvSaveFunction = null;
                 }
                 break;
             case FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED:
@@ -565,7 +575,7 @@ public class PropertySheetMediator extends IocMediator {
                         } else if (fc.channelB is IdentityProviderChannel) {
                             idpChannel = fc.channelB as IdentityProviderChannel;
                         }
-                        
+
                         if (idpChannel.accountLinkagePolicy != null) {
                             for (var l:int=0; l < _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider.length; l++) {
                                 if (_federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider[l].name == idpChannel.accountLinkagePolicy.name) {
@@ -648,7 +658,7 @@ public class PropertySheetMediator extends IocMediator {
                                 }
                             }
                         } else {
-                            for (var p1:int=0; p < _ipCoreSection.subjectNameIdPolicyCombo.dataProvider.length; p1++) {
+                            for (var p1:int=0; p1 < _ipCoreSection.subjectNameIdPolicyCombo.dataProvider.length; p1++) {
 
                                 if (_ipCoreSection.subjectNameIdPolicyCombo.dataProvider[p1].type.toString() == SubjectNameIDPolicyType.PRINCIPAL.toString()) {
                                     _ipCoreSection.subjectNameIdPolicyCombo.selectedIndex = p1;
@@ -686,8 +696,44 @@ public class PropertySheetMediator extends IocMediator {
                     }
                 }
                 break;
-        }
+            case ImpersonateUserPoliciesListCommand.SUCCESS:
 
+                if (_currentIdentityApplianceElement != null) {
+                    if (_currentIdentityApplianceElement is IdentityProvider && _basicAuthenticationSection != null) {
+
+                        _impersonateUserPolicies = projectProxy.impersonateUserPolicies;
+
+                        var ip3:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+                        var bauthn3:BasicAuthentication = null;
+                        for each (var authMechanism:AuthenticationMechanism in ip3.authenticationMechanisms) {
+                            if (authMechanism is BasicAuthentication) {
+                                bauthn3 = authMechanism as BasicAuthentication;
+                                break;
+                            }
+                        }
+
+                        if (bauthn3 != null) {
+                            for (var n2:int=0; n2 < _basicAuthenticationSection.impersonateUserPoliciesCombo.dataProvider.length; n2++) {
+                                if (_basicAuthenticationSection.impersonateUserPoliciesCombo.dataProvider[n2].name == bauthn3.impersonateUserPolicy.name) {
+                                    _basicAuthenticationSection.impersonateUserPoliciesCombo.selectedIndex = n2;
+                                    break;
+                                }
+                            }
+                        } else {
+                            for (var p2:int=0; p2 < _basicAuthenticationSection.impersonateUserPoliciesCombo.dataProvider.length; p2++) {
+                                if (_basicAuthenticationSection.impersonateUserPoliciesCombo.dataProvider[p2].type.toString() == ImpersonateUserPolicyType.DISABLED.toString()) {
+                                    _basicAuthenticationSection.impersonateUserPoliciesCombo.selectedIndex = p2;
+                                    break;
+                                }
+                            }
+                        }
+                        _basicAuthenticationSection.impersonateUserPoliciesCombo.addEventListener(Event.CHANGE, handleSectionChange);
+
+                    }
+                }
+                break;
+        }
     }
 
     protected function enableIdentityAppliancePropertyTabs():void {
@@ -1184,6 +1230,8 @@ public class PropertySheetMediator extends IocMediator {
         // if identityProvider is null that means some other element was selected before completing this
         if (identityProvider != null) {
             // bind view
+            BindingUtils.bindProperty(_basicAuthenticationSection.impersonateUserPoliciesCombo, "dataProvider", this, "_impersonateUserPolicies");
+            sendNotification(ApplicationFacade.LIST_IMPERSONATE_USER_POLICIES);
 
             // find basic authentication
             var basicAuthentication:BasicAuthentication = null;
@@ -1194,19 +1242,23 @@ public class PropertySheetMediator extends IocMediator {
             }
 
             if (basicAuthentication != null) {
+
                 _basicAuthenticationSection.authName.text = basicAuthentication.name;
+
                 for (var i:int = 0; i < _basicAuthenticationSection.hashAlgorithm.dataProvider.length; i++) {
                     if (_basicAuthenticationSection.hashAlgorithm.dataProvider[i].data == basicAuthentication.hashAlgorithm) {
                         _basicAuthenticationSection.hashAlgorithm.selectedIndex = i;
                         break;
                     }
                 }
+
                 for (var j:int = 0; j < _basicAuthenticationSection.hashEncoding.dataProvider.length; j++) {
                     if (_basicAuthenticationSection.hashEncoding.dataProvider[j].data == basicAuthentication.hashEncoding) {
                         _basicAuthenticationSection.hashEncoding.selectedIndex = j;
                         break;
                     }
                 }
+
                 _basicAuthenticationSection.ignoreUsernameCase.selected = basicAuthentication.ignoreUsernameCase;
                 _basicAuthenticationSection.ignorePasswordCase.selected = basicAuthentication.ignorePasswordCase;
 
@@ -1215,6 +1267,7 @@ public class PropertySheetMediator extends IocMediator {
                 _basicAuthenticationSection.hashEncoding.addEventListener(Event.CHANGE, handleSectionChange);
                 _basicAuthenticationSection.ignoreUsernameCase.addEventListener(Event.CHANGE, handleSectionChange);
                 _basicAuthenticationSection.ignorePasswordCase.addEventListener(Event.CHANGE, handleSectionChange);
+                _basicAuthenticationSection.impersonateUserPoliciesCombo.addEventListener(Event.CHANGE, handleSectionChange);
 
                 //clear all existing validators and add basic auth. section validators
                 //_validators = [];
@@ -1242,6 +1295,9 @@ public class PropertySheetMediator extends IocMediator {
                 basicAuthentication.hashEncoding = _basicAuthenticationSection.hashEncoding.selectedItem.data;
                 basicAuthentication.ignoreUsernameCase = _basicAuthenticationSection.ignoreUsernameCase.selected;
                 basicAuthentication.ignorePasswordCase = _basicAuthenticationSection.ignorePasswordCase.selected;
+
+                var up:ImpersonateUserPolicy = _basicAuthenticationSection.impersonateUserPoliciesCombo.selectedItem;
+                basicAuthentication.impersonateUserPolicy = up;
 
                 sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

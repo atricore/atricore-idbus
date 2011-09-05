@@ -46,6 +46,7 @@ public class ProjectProxy extends IocProxy implements IDisposable
     private var _accountLinkagePolicies:ArrayCollection;
     private var _identityMappingPolicies:ArrayCollection;
     private var _subjectNameIdentifierPolicies:ArrayCollection;
+    private var _impersonateUserPolicies:ArrayCollection;
 
     public function ProjectProxy()
     {
@@ -147,6 +148,14 @@ public class ProjectProxy extends IocProxy implements IDisposable
 
     public function set subjectNameIdentifierPolicies(value:ArrayCollection):void {
         _subjectNameIdentifierPolicies = value;
+    }
+
+    public function get impersonateUserPolicies():ArrayCollection {
+        return _impersonateUserPolicies;
+    }
+
+    public function set impersonateUserPolicies(value:ArrayCollection):void {
+        _impersonateUserPolicies = value;
     }
 
     public function dispose():void {

@@ -114,6 +114,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const LIST_ACCOUNT_LINKAGE_POLICIES:String = "listAccountLinkagePolicies";
     public static const LIST_IDENTITY_MAPPING_POLICIES:String = "listIdentityMappingPolicies";
     public static const LIST_NAMEID_POLICIES:String = "listNameIDPolicies";
+    public static const LIST_IMPERSONATE_USER_POLICIES:String = "listImpersonateUserPolicies";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";

@@ -85,8 +85,9 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _exportProviderCertificateCommand:IIocCommand;
     private var _exportMetadataCommand:IIocCommand;
     private var _accountLinkagePolicyListCommand:IIocCommand;
-    private var _identityMappingPolicyListCommand:IIocCommand;
+    private var _identityMappingPoliciesListCommand:IIocCommand;
     private var _subjectNameIDPolicyListCommand:IIocCommand;
+    private var _impersonateUserPoliciesListCommand:IIocCommand;
     
     public function ModelerStartUpCommand() {
     }
@@ -175,8 +176,8 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.PROVIDER_CERTIFICATE_EXPORT, exportProviderCertificateCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.METADATA_EXPORT, exportMetadataCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES, accountLinkagePolicyListCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES, identityMappingPolicyListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_NAMEID_POLICIES, subjectNameIDPolicyListCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IMPERSONATE_USER_POLICIES, impersonateUserPoliciesListCommand.getConfigName());
     }
 
     public function get browserMediator():IIocMediator {
@@ -732,14 +733,21 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _accountLinkagePolicyListCommand = value;
     }
 
-    public function get identityMappingPolicyListCommand():IIocCommand {
-        return _identityMappingPolicyListCommand;
+    public function get impersonateUserPoliciesListCommand():IIocCommand {
+        return _impersonateUserPoliciesListCommand;
     }
 
-    public function set identityMappingPolicyListCommand(value:IIocCommand):void {
-        _identityMappingPolicyListCommand = value;
+    public function set impersonateUserPoliciesListCommand(value:IIocCommand):void {
+        _impersonateUserPoliciesListCommand = value;
     }
 
+    public function get identityMappingPoliciesListCommand():IIocCommand {
+        return _identityMappingPoliciesListCommand;
+    }
+
+    public function set identityMappingPoliciesListCommand(value:IIocCommand):void {
+        _identityMappingPoliciesListCommand = value;
+    }
 
     public function get subjectNameIDPolicyListCommand():IIocCommand {
         return _subjectNameIDPolicyListCommand;

@@ -127,7 +127,8 @@
         <property name="exportMetadataCommand" ref="exportMetadataCommand"/>
         <property name="accountLinkagePolicyListCommand" ref="accountLinkagePolicyListCommand"/>
         <property name="subjectNameIDPolicyListCommand" ref="subjectNameIDPolicyListCommand"/>
-        <property name="identityMappingPolicyListCommand" ref="identityMappingPolicyListCommand"/>
+        <property name="identityMappingPoliciesListCommand" ref="identityMappingPoliciesListCommand"/>
+        <property name="impersonateUserPoliciesListCommand" ref="impersonateUserPoliciesListCommand"/>
     </object>
 
     <object id="lifecycleStartupCommand"
@@ -491,12 +492,18 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
-
-    <object id="identityMappingPolicyListCommand"
+    <object id="identityMappingPoliciesListCommand"
             class="com.atricore.idbus.console.modeling.main.controller.IdentityMappingPoliciesListCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+
+    <object id="impersonateUserPoliciesListCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ImpersonateUserPoliciesListCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
 
     <!-- Mediators -->
     <object id="manageCertificateMediator"

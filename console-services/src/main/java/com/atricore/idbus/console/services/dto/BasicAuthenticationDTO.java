@@ -1,5 +1,7 @@
 package com.atricore.idbus.console.services.dto;
 
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ImpersonateUserPolicy;
+
 public class BasicAuthenticationDTO extends AuthenticationMechanismDTO {
 
     private static final long serialVersionUID = -1338282044516771281L;
@@ -13,7 +15,7 @@ public class BasicAuthenticationDTO extends AuthenticationMechanismDTO {
     private boolean ignorePasswordCase = false;
 
     // TODO : For now this is bound to basic authn.  When multiple authn mechanisms are supported, it should be a mechanism on its own.
-    private String impersonateValidationPolicy;
+    private ImpersonateUserPolicyDTO impersonateUserPolicy;
 
     public String getHashAlgorithm() {
         return hashAlgorithm;
@@ -47,11 +49,11 @@ public class BasicAuthenticationDTO extends AuthenticationMechanismDTO {
         this.ignorePasswordCase = ignorePasswordCase;
     }
 
-    public String getImpersonateValidationPolicy() {
-        return impersonateValidationPolicy;
+    public ImpersonateUserPolicyDTO getImpersonateUserPolicy() {
+        return impersonateUserPolicy;
     }
 
-    public void setImpersonateValidationPolicy(String impersonateValidationPolicy) {
-        this.impersonateValidationPolicy = impersonateValidationPolicy;
+    public void setImpersonateUserPolicy(ImpersonateUserPolicyDTO impersonateUserPolicy) {
+        this.impersonateUserPolicy = impersonateUserPolicy;
     }
 }

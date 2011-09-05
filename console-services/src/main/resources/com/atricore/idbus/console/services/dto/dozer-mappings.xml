@@ -594,10 +594,14 @@
         <class-b>com.atricore.idbus.console.services.dto.CustomNameIdentifierPolicyDTO</class-b>
     </mapping>
 
-
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityMappingPolicy</class-a>
         <class-b>com.atricore.idbus.console.services.dto.IdentityMappingPolicyDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ImpersonateUserPolicy</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.ImpersonateUserPolicyDTO</class-b>
     </mapping>
 
     <mapping>
