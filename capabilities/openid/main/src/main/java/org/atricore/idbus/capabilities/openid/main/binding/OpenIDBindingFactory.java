@@ -1,7 +1,7 @@
 package org.atricore.idbus.capabilities.openid.main.binding;
 
-import org.atricore.idbus.capabilities.samlr2.main.binding.SsoHttpRedirectBinding;
-import org.atricore.idbus.capabilities.samlr2.main.binding.SsoHttpArtifactBinding;
+import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpRedirectBinding;
+import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

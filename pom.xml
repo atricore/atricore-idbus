@@ -29,7 +29,7 @@
     <artifactId>all</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
     <name>Atricore IDBus All POM</name>
     <inceptionYear>2009</inceptionYear>
 
@@ -56,7 +56,7 @@
         <module>bundles/ini4j-v0_5_1</module>
 
         <module>capabilities/spmlr2</module>
-        <module>capabilities/samlr2</module>
+        <module>capabilities/sso</module>
         <module>capabilities/josso</module>
         <module>capabilities/sts</module>
         <module>capabilities/spnego</module>

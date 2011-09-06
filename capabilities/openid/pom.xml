@@ -26,12 +26,12 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.3.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.openid</groupId>
     <artifactId>openid</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
     <name>Atricore IDBus :: Capability : OpenID POM</name>
     <packaging>pom</packaging>
 
@@ -48,8 +48,8 @@
         <openxri.version>1.2.0</openxri.version>
         <guice.annotations.version>1.0</guice.annotations.version>
 
-        <idbus.kernel.version>1.2.1-SNAPSHOT</idbus.kernel.version>
-        <idbus.sts.version>1.2.1-SNAPSHOT</idbus.sts.version>
+        <idbus.kernel.version>1.3.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.sts.version>1.3.0-SNAPSHOT</idbus.sts.version>
         
         <apache.jasper.version>5.5.9</apache.jasper.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>

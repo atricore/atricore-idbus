@@ -50,4 +50,5 @@ public interface Channel extends Serializable {
     Collection<IdentityPlan> getIdentityPlans();
 
     ClaimChannel getClaimsProvider();
+
 }

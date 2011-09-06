@@ -72,7 +72,8 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
         CamelIdentityMediationUnitContainer container = (CamelIdentityMediationUnitContainer) unitContainer;
 
-        logger.info("Initializing Camel Mediator with unitContainer " + (unitContainer != null ? unitContainer.getClass().getName() : "null"));
+        logger.info("Initializing Camel Mediator " + this.getClass().getName() + " with unitContainer " +
+                (unitContainer != null ? unitContainer.getClass().getName() : "null"));
 
         context = container.getContext();
         registry = (JndiRegistry) context.getRegistry();

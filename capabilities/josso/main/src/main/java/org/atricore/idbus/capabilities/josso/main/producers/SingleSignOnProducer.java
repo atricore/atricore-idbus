@@ -27,10 +27,10 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoAuthnContext;
 import org.atricore.idbus.capabilities.josso.main.JossoConstants;
 import org.atricore.idbus.capabilities.josso.main.JossoException;
-import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.common.sso._1_0.protocol.CredentialType;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
 import org.atricore.idbus.kernel.main.authn.Constants;
@@ -216,15 +216,15 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
 
         try {
 
-            logger.debug("Looking for " + SamlR2Service.SPInitiatedSingleSignOnService.toString());
+            logger.debug("Looking for " + SSOService.SPInitiatedSingleSignOnService.toString());
 
             for (IdentityMediationEndpoint endpoint : sp.getEndpoints()) {
 
                 logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
 
-                if (endpoint.getType().equals(SamlR2Service.SPInitiatedSingleSignOnService.toString())) {
+                if (endpoint.getType().equals(SSOService.SPInitiatedSingleSignOnService.toString())) {
 
-                    if (endpoint.getBinding().equals(SamlR2Binding.SSO_ARTIFACT.getValue())) {
+                    if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
                         // This is the endpoint we're looking for
                         return  sp.getIdentityMediator().resolveEndpoint(sp, endpoint);
                     }
