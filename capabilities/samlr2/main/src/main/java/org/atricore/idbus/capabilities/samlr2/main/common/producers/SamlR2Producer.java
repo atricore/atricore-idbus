@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.samlr2.main.common.plans.SamlR2PlanningConstants;
+import org.atricore.idbus.capabilities.samlr2.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2MessagingConstants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
@@ -40,9 +41,14 @@ import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.session.SSOSessionManager;
+import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.planning.IdentityPlan;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchangeImpl;
@@ -334,5 +340,55 @@ public abstract class SamlR2Producer extends AbstractCamelProducer<CamelMediatio
     protected Subject toSubjectType(SubjectType subjectType) {
         return ProtocolUtils.toSubject(subjectType);
     }
+
+    /**
+     * @return
+     */
+    protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
+        // Resolve IdP channel, then look for the ACS endpoint
+        BindingChannel bChannel = (BindingChannel) channel;
+        FederatedLocalProvider sp = bChannel.getProvider();
+
+        FederationChannel idpChannel = sp.getChannel();
+        for (FederationChannel fChannel : sp.getChannels()) {
+
+            FederatedProvider idp = fChannel.getTargetProvider();
+            for (CircleOfTrustMemberDescriptor member : idp.getMembers()) {
+                if (member.getAlias().equals(idpDescriptor.getAlias())) {
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Selected IdP channel " + fChannel.getName() + " for provider " + idp.getName());
+                    idpChannel = fChannel;
+                    break;
+                }
+
+            }
+
+        }
+
+        return idpChannel;
+
+    }
+
+    protected void destroySPSecurityContext(CamelMediationExchange exchange,
+                                            SPSecurityContext secCtx) throws SamlR2Exception {
+
+        CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(secCtx.getIdpAlias());
+        IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
+        SSOSessionManager ssoSessionManager = idpChannel.getSessionManager();
+        secCtx.clear();
+
+        try {
+            ssoSessionManager.invalidate(secCtx.getSessionIndex());
+            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+            in.getMessage().getState().removeRemoteVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+        } catch (NoSuchSessionException e) {
+            logger.debug("SSO Session already invalidated " + secCtx.getSessionIndex());
+        } catch (Exception e) {
+            throw new SamlR2Exception(e);
+        }
+
+    }
+
     
 }

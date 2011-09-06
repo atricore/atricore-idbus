@@ -95,38 +95,45 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
 
             if (secCtx != null && secCtx.getSessionIndex() != null) {
 
-                // TODO ! Check that the session belongs to the IdP associated with this request
+                if (!ssoAuthnReq.isForceAuthn()) {
 
-                logger.debug("SSO Session found " + secCtx.getSessionIndex());
+                    // TODO ! Check that the session belongs to the IdP associated with this request
 
-                SPAuthnResponseType ssoResponse = new SPAuthnResponseType ();
-                ssoResponse.setID(uuidGenerator.generateId());
-                SPInitiatedAuthnRequestType ssoRequest =
-                        (SPInitiatedAuthnRequestType) in.getMessage().getState().
-                                getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
+                    logger.debug("SSO Session found " + secCtx.getSessionIndex());
 
-                if (ssoRequest != null) {
-                    ssoResponse.setInReplayTo(ssoRequest.getID());
+                    SPAuthnResponseType ssoResponse = new SPAuthnResponseType ();
+                    ssoResponse.setID(uuidGenerator.generateId());
+                    SPInitiatedAuthnRequestType ssoRequest =
+                            (SPInitiatedAuthnRequestType) in.getMessage().getState().
+                                    getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
+
+                    if (ssoRequest != null) {
+                        ssoResponse.setInReplayTo(ssoRequest.getID());
+                    }
+
+                    SubjectType subjectType = toSubjectType(secCtx.getSubject());
+                    ssoResponse.setSessionIndex(secCtx.getSessionIndex());
+                    ssoResponse.setSubject(subjectType);
+
+                    String destinationLocation = resolveSpBindingACS();
+
+                    EndpointDescriptor destination =
+                            new EndpointDescriptorImpl("EmbeddedSPAcs",
+                                    "AssertionConsumerService",
+                                    SamlR2Binding.SSO_ARTIFACT.getValue(),
+                                    destinationLocation, null);
+
+                    CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+                    out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
+                            ssoResponse, "SPAuthnResposne", relayState, destination, in.getMessage().getState()));
+
+                    exchange.setOut(out);
+                    return;
+                } else {
+                    logger.debug("SSO Session found " + secCtx.getSessionIndex() + ", but SP requested 'forceAuthn'. Destroying security context");
+                    // Destroy current session/secCtx !
+                    destroySPSecurityContext(exchange, secCtx);
                 }
-
-                SubjectType subjectType = toSubjectType(secCtx.getSubject());
-                ssoResponse.setSessionIndex(secCtx.getSessionIndex());
-                ssoResponse.setSubject(subjectType);
-
-                String destinationLocation = resolveSpBindingACS();
-
-                EndpointDescriptor destination =
-                        new EndpointDescriptorImpl("EmbeddedSPAcs",
-                                "AssertionConsumerService",
-                                SamlR2Binding.SSO_ARTIFACT.getValue(),
-                                destinationLocation, null);
-
-                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-                out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
-                        ssoResponse, "SPAuthnResposne", relayState, destination, in.getMessage().getState()));
-
-                exchange.setOut(out);
-                return;
 
             }
 

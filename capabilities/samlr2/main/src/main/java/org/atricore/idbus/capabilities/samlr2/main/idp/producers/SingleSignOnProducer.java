@@ -301,13 +301,18 @@ public class SingleSignOnProducer extends SamlR2Producer {
         authnState.setResponseMode(responseMode);
         authnState.setResponseFormat(responseFormat);
 
-        if (!isSsoSessionValid) {
+        if (!isSsoSessionValid || (authnRequest.isForceAuthn() != null && authnRequest.isForceAuthn())) {
             // ------------------------------------------------------------------------------
             // Handle Invalid SSO Session
             // ------------------------------------------------------------------------------
 
             // Ask for credentials, use claims channel
-            logger.debug("No SSO Session found, asking for credentials");
+            if (logger.isDebugEnabled()) {
+                if (isSsoSessionValid)
+                    logger.debug("SSO Session found, but SP Requested FORCE Authn, asking for credentials");
+                else
+                    logger.debug("No SSO Session found, asking for credentials");
+            }
 
             // TODO : Verify max sessions per user, etc!
 
@@ -351,7 +356,6 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             // Set requested authn class
             claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
-
 
             // --------------------------------------------------------------------
             // Send claims request

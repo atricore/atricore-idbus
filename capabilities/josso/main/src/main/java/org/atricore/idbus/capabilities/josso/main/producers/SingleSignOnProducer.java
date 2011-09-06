@@ -148,6 +148,7 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
             ct.setAny(usernameToken);
 
             request.setAuthnCtxClass(AuthnCtxClass.ATC_SP_IMPERSONATE_AUTHN_CTX.getValue());
+            request.setForceAuthn(true);
 
             request.getCredentials().add(ct);
 

@@ -242,36 +242,6 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
         return getCotManager().lookupMemberByAlias(idpAlias);
     }
 
-    /**
-     * @return
-     */
-    protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
-        // Resolve IdP channel, then look for the ACS endpoint
-        BindingChannel bChannel = (BindingChannel) channel;
-        FederatedLocalProvider sp = bChannel.getProvider();
-
-        FederationChannel idpChannel = sp.getChannel();
-        for (FederationChannel fChannel : sp.getChannels()) {
-
-            FederatedProvider idp = fChannel.getTargetProvider();
-            for (CircleOfTrustMemberDescriptor member : idp.getMembers()) {
-                if (member.getAlias().equals(idpDescriptor.getAlias())) {
-
-                    if (logger.isDebugEnabled())
-                        logger.debug("Selected IdP channel " + fChannel.getName() + " for provider " + idp.getName());
-                    idpChannel = fChannel;
-                    break;
-                }
-
-            }
-
-        }
-
-        return idpChannel;
-
-    }
-
-
     protected EndpointType resolveIdpSloEndpoint(CircleOfTrustMemberDescriptor idp, boolean frontChannel) throws SamlR2Exception {
 
         SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
@@ -328,27 +298,5 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
         throw new SamlR2Exception("IDP does not support preferred binding " + preferredBinding);
 
     }
-
-    protected void destroySPSecurityContext(CamelMediationExchange exchange,
-                                            SPSecurityContext secCtx) throws SamlR2Exception {
-
-        CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(secCtx.getIdpAlias());
-        IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
-        SSOSessionManager ssoSessionManager = idpChannel.getSessionManager();
-        secCtx.clear();
-
-        try {
-            ssoSessionManager.invalidate(secCtx.getSessionIndex());
-            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-            in.getMessage().getState().removeRemoteVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
-        } catch (NoSuchSessionException e) {
-            logger.debug("SSO Session already invalidated " + secCtx.getSessionIndex());
-        } catch (Exception e) {
-            throw new SamlR2Exception(e);
-        }
-
-    }
-
-
 
 }
