@@ -58,14 +58,14 @@ public class STSTransformer extends AbstractTransformer {
         // ----------------------------------------
         Bean stsEmitter = newBean(idpBeans,
                 idpBean.getName() + "-samlr2-assertion-emitter",
-                "org.atricore.idbus.capabilities.samlr2.main.emitter.SamlR2SecurityTokenEmitter");
+                "org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmitter");
         setPropertyValue(stsEmitter, "id", stsEmitter.getName());
 
         // identityPlanRegistry
-        setPropertyRef(stsEmitter, "identityPlansRegistry", "identity-plans-registry");
+        setPropertyRef(stsEmitter, "identityPlanRegistry", "identity-plans-registry");
 
 
-        Collection<Bean> mediators = getBeansOfType(idpBeans, "org.atricore.idbus.capabilities.samlr2.main.idp.SamlR2IDPMediator");
+        Collection<Bean> mediators = getBeansOfType(idpBeans, "org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator");
 
         if (mediators.size() != 1)
             throw new TransformException("Too many/few mediators defined " + mediators.size());

@@ -8,11 +8,11 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
-import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder;
-import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsMediator;
-import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
+import org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
@@ -110,7 +110,7 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 Bean ccPwdArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 ccPwdArtifact.setName(idpBean.getName() + "-cc-pwd-artifact");
                 setPropertyValue(ccPwdArtifact, "name", ccPwdArtifact.getName());
-                setPropertyValue(ccPwdArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
+                setPropertyValue(ccPwdArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
                 setPropertyValue(ccPwdArtifact, "location", "/PWD/ARTIFACT");
                 setPropertyValue(ccPwdArtifact, "responseLocation", "/PWD/POST-RESP");
                 setPropertyValue(ccPwdArtifact, "type", AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue());
@@ -119,7 +119,7 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 Bean ccPwdPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 ccPwdPost.setName(idpBean.getName() + "-cc-pwd-post");
                 setPropertyValue(ccPwdPost, "name", ccPwdPost.getName());
-                setPropertyValue(ccPwdPost, "binding", SamlR2Binding.SSO_POST.getValue());
+                setPropertyValue(ccPwdPost, "binding", SSOBinding.SSO_POST.getValue());
                 setPropertyValue(ccPwdPost, "location", "/PWD/POST");
                 setPropertyValue(ccPwdPost, "type", AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue());
                 ccEndpoints.add(ccPwdPost);
@@ -127,7 +127,7 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 Bean ccSpPwdLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 ccSpPwdLocal.setName(idpBean.getName() + "-cc-sppwd-local");
                 setPropertyValue(ccSpPwdLocal, "name", ccSpPwdLocal.getName());
-                setPropertyValue(ccSpPwdLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
+                setPropertyValue(ccSpPwdLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
                 setPropertyValue(ccSpPwdLocal, "location",  "local://" + claimsChannelBean.getName().toUpperCase() + "/CC/SPPWD/LOCAL");
                 setPropertyValue(ccSpPwdLocal, "type", AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue());
                 ccEndpoints.add(ccSpPwdLocal);
@@ -139,7 +139,7 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                     Bean ccSpImpersonateLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
                     ccSpImpersonateLocal.setName(idpBean.getName() + "-cc-spimpersonate-local");
                     setPropertyValue(ccSpImpersonateLocal, "name", ccSpImpersonateLocal.getName());
-                    setPropertyValue(ccSpImpersonateLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
+                    setPropertyValue(ccSpImpersonateLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
                     setPropertyValue(ccSpImpersonateLocal, "location",  "local://" + claimsChannelBean.getName().toUpperCase() + "/CC/SPIMPERSONATE/LOCAL");
                     setPropertyValue(ccSpImpersonateLocal, "type", AuthnCtxClass.ATC_SP_IMPERSONATE_AUTHN_CTX.getValue());
                     ccEndpoints.add(ccSpImpersonateLocal);
@@ -154,7 +154,7 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
         // ----------------------------------------
         // Claims Mediator
         // ----------------------------------------
-        Bean ccMediator = newBean(idpBeans, idpBean.getName() + "-basicauthn-claims-mediator", SamlR2ClaimsMediator.class);
+        Bean ccMediator = newBean(idpBeans, idpBean.getName() + "-basicauthn-claims-mediator", SSOClaimsMediator.class);
 
         // logMessages
         setPropertyValue(ccMediator, "logMessages", true);

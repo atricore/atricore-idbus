@@ -6,7 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;

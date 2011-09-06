@@ -9,11 +9,11 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
-import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedLogoutReqToSamlR2LogoutReqPlan;
-import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPSessionHeartBeatReqToSamlR2AuthnReqPlan;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
+import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
+import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedLogoutReqToSamlR2LogoutReqPlan;
+import org.atricore.idbus.capabilities.sso.main.sp.plans.SPSessionHeartBeatReqToSamlR2AuthnReqPlan;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
 
@@ -58,6 +58,7 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
 
         setPropertyValue(bc, "name", bc.getName());
         setPropertyValue(bc, "description", activation.getDisplayName());
+        setPropertyRef(bc, "unitContainer", sp.getIdentityAppliance().getName() + "-container");
 
         setPropertyRef(bc, "provider", spBean.getName());
         setPropertyValue(bc, "location", resolveLocationUrl(sp) + "/" + activation.getPartnerAppId().toUpperCase());
@@ -80,8 +81,8 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         Bean ssoHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);
         ssoHttpRedirect.setName(spBean.getName() + "-sso-sso-http-redirect");
         setPropertyValue(ssoHttpRedirect, "name", ssoHttpRedirect.getName());
-        setPropertyValue(ssoHttpRedirect, "type", SAMLR2MetadataConstants.SPInitiatedSingleSignOnService_QNAME.toString());
-        setPropertyValue(ssoHttpRedirect, "binding", SamlR2Binding.SS0_REDIRECT.getValue());
+        setPropertyValue(ssoHttpRedirect, "type", SSOMetadataConstants.SPInitiatedSingleSignOnService_QNAME.toString());
+        setPropertyValue(ssoHttpRedirect, "binding", SSOBinding.SS0_REDIRECT.getValue());
         setPropertyValue(ssoHttpRedirect, "location", "/SSO/SSO/REDIR");
         List<Ref> plansList = new ArrayList<Ref>();
         Ref plan = new Ref();
@@ -93,8 +94,8 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         Bean ssoHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
         ssoHttpArtifact.setName(spBean.getName() + "-sso-sso-http-artifact");
         setPropertyValue(ssoHttpArtifact, "name", ssoHttpArtifact.getName());
-        setPropertyValue(ssoHttpArtifact, "type", SAMLR2MetadataConstants.SPInitiatedSingleSignOnService_QNAME.toString());
-        setPropertyValue(ssoHttpArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
+        setPropertyValue(ssoHttpArtifact, "type", SSOMetadataConstants.SPInitiatedSingleSignOnService_QNAME.toString());
+        setPropertyValue(ssoHttpArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
         setPropertyValue(ssoHttpArtifact, "location", "/SSO/SSO/ARTIFACT");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
@@ -106,8 +107,8 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         Bean sloHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);
         sloHttpRedirect.setName(spBean.getName() + "-sso-slo-http-redirect");
         setPropertyValue(sloHttpRedirect, "name", sloHttpRedirect.getName());
-        setPropertyValue(sloHttpRedirect, "type", SAMLR2MetadataConstants.SPInitiatedSingleLogoutService_QNAME.toString());
-        setPropertyValue(sloHttpRedirect, "binding", SamlR2Binding.SS0_REDIRECT.getValue());
+        setPropertyValue(sloHttpRedirect, "type", SSOMetadataConstants.SPInitiatedSingleLogoutService_QNAME.toString());
+        setPropertyValue(sloHttpRedirect, "binding", SSOBinding.SS0_REDIRECT.getValue());
         setPropertyValue(sloHttpRedirect, "location", "/SSO/SLO/REDIR");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
@@ -119,8 +120,8 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         Bean sloHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
         sloHttpArtifact.setName(spBean.getName() + "-sso-slo-http-artifact");
         setPropertyValue(sloHttpArtifact, "name", sloHttpArtifact.getName());
-        setPropertyValue(sloHttpArtifact, "type", SAMLR2MetadataConstants.SPInitiatedSingleLogoutService_QNAME.toString());
-        setPropertyValue(sloHttpArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
+        setPropertyValue(sloHttpArtifact, "type", SSOMetadataConstants.SPInitiatedSingleLogoutService_QNAME.toString());
+        setPropertyValue(sloHttpArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
         setPropertyValue(sloHttpArtifact, "location", "/SSO/SLO/ARTIFACT");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
@@ -132,8 +133,8 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         Bean aisAuthSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
         aisAuthSoap.setName(spBean.getName() + "-sso-aisauth-soap");
         setPropertyValue(aisAuthSoap, "name", aisAuthSoap.getName());
-        setPropertyValue(aisAuthSoap, "type", SAMLR2MetadataConstants.AssertIdentityWithSimpleAuthenticationService_QNAME.toString());
-        setPropertyValue(aisAuthSoap, "binding", SamlR2Binding.SSO_SOAP.getValue());
+        setPropertyValue(aisAuthSoap, "type", SSOMetadataConstants.AssertIdentityWithSimpleAuthenticationService_QNAME.toString());
+        setPropertyValue(aisAuthSoap, "binding", SSOBinding.SSO_SOAP.getValue());
         setPropertyValue(aisAuthSoap, "location", "/SSO/IAAUTHN/SOAP");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
@@ -148,8 +149,8 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         Bean aisAuthLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
         aisAuthLocal.setName(spBean.getName() + "-sso-aisauth-local");
         setPropertyValue(aisAuthLocal, "name", aisAuthLocal.getName());
-        setPropertyValue(aisAuthLocal, "type", SAMLR2MetadataConstants.AssertIdentityWithSimpleAuthenticationService_QNAME.toString());
-        setPropertyValue(aisAuthLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
+        setPropertyValue(aisAuthLocal, "type", SSOMetadataConstants.AssertIdentityWithSimpleAuthenticationService_QNAME.toString());
+        setPropertyValue(aisAuthLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
         setPropertyValue(aisAuthLocal, "location", "local://" + sp.getLocation().getUri().toUpperCase() + "/SSO/IAAUTHN/LOCAL");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
@@ -164,16 +165,16 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         Bean shbSOAP = newAnonymousBean(IdentityMediationEndpointImpl.class);
         shbSOAP.setName(spBean.getName() + "-sso-shb-soap");
         setPropertyValue(shbSOAP, "name", shbSOAP.getName());
-        setPropertyValue(shbSOAP, "type", SAMLR2MetadataConstants.SPSessionHeartBeatService_QNAME.toString());
-        setPropertyValue(shbSOAP, "binding", SamlR2Binding.SSO_SOAP.getValue());
+        setPropertyValue(shbSOAP, "type", SSOMetadataConstants.SPSessionHeartBeatService_QNAME.toString());
+        setPropertyValue(shbSOAP, "binding", SSOBinding.SSO_SOAP.getValue());
         setPropertyValue(shbSOAP, "location", "/SSO/SSHB/SOAP");
         endpoints.add(shbSOAP);
 
         Bean shbLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
         shbLocal.setName(spBean.getName() + "-sso-shb-local");
         setPropertyValue(shbLocal, "name", shbLocal.getName());
-        setPropertyValue(shbLocal, "type", SAMLR2MetadataConstants.SPSessionHeartBeatService_QNAME.toString());
-        setPropertyValue(shbLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
+        setPropertyValue(shbLocal, "type", SSOMetadataConstants.SPSessionHeartBeatService_QNAME.toString());
+        setPropertyValue(shbLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
         setPropertyValue(shbLocal, "location", "local://" + sp.getLocation().getUri().toUpperCase() + "/SSO/SSHB/LOCAL");
         endpoints.add(shbLocal);
 

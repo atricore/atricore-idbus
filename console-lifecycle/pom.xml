@@ -28,14 +28,14 @@
     <parent>
         <groupId>com.atricore.idbus.console</groupId>
         <artifactId>console</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
     </parent>
 
 
     <!-- TODO : Move this to the kernel, or maybe as idbus-management application in applications module -->
     <groupId>com.atricore.idbus.console.lifecycle</groupId>
     <artifactId>console-lifecycle</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Atricore Console :: Lifecycle POM</name>
 
@@ -85,14 +85,14 @@
             </dependency>
 
             <dependency>
-                <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-                <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
+                <groupId>org.atricore.idbus.capabilities.sso</groupId>
+                <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
                 <version>${idbus.cap.saml2.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-                <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
+                <groupId>org.atricore.idbus.capabilities.sso</groupId>
+                <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
                 <version>${idbus.cap.saml2.version}</version>
             </dependency>
 

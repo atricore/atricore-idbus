@@ -28,7 +28,7 @@
     <parent>
         <groupId>com.atricore.idbus.console.lifecycle</groupId>
         <artifactId>console-lifecycle</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
@@ -74,14 +74,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
             <scope>provided</scope>
         </dependency>
 

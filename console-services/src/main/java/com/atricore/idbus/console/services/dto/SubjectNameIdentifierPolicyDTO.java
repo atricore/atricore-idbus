@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.services.dto;
 
-import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>

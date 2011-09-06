@@ -30,10 +30,10 @@ import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.SSODescriptorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
-import org.atricore.idbus.capabilities.samlr2.support.core.util.DateUtils;
+import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
+import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerException;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.w3c.dom.Document;
@@ -126,7 +126,7 @@ public class MetadataUtil {
 
         // AssertionConsumerService
         IndexedEndpointType assertionConsumerService = new IndexedEndpointType();
-        assertionConsumerService.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
+        assertionConsumerService.setBinding(SSOBinding.SAMLR2_POST.getValue());
 
         if (salesforceProvider.getLoginUrl() != null && !"".equals(salesforceProvider.getLoginUrl())) {
             assertionConsumerService.setLocation(salesforceProvider.getLoginUrl());
@@ -158,7 +158,7 @@ public class MetadataUtil {
 
         // AssertionConsumerService
         IndexedEndpointType assertionConsumerService = new IndexedEndpointType();
-        assertionConsumerService.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
+        assertionConsumerService.setBinding(SSOBinding.SAMLR2_POST.getValue());
         assertionConsumerService.setLocation("https://www.google.com/a/" + googleAppsProvider.getDomain() + "/acs");
         assertionConsumerService.setIndex(0);
         assertionConsumerService.setIsDefault(true);
@@ -191,7 +191,7 @@ public class MetadataUtil {
 
         // AssertionConsumerService
         IndexedEndpointType assertionConsumerService = new IndexedEndpointType();
-        assertionConsumerService.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
+        assertionConsumerService.setBinding(SSOBinding.SAMLR2_POST.getValue());
         assertionConsumerService.setLocation(sugarCRMUrl + "/index.php?module=Users&action=Authenticate");
         assertionConsumerService.setIndex(0);
         assertionConsumerService.setIsDefault(true);

@@ -10,14 +10,14 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.SamlR2MetadataDefinitionIntrospector;
-import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
-import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
-import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
-import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.federation.*;
-import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
+import org.atricore.idbus.capabilities.sso.main.SamlR2MetadataDefinitionIntrospector;
+import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
+import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
+import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
+import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.federation.*;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
@@ -271,8 +271,8 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 Bean sloHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 sloHttpPost.setName(idpChannelBean.getName() + "-saml2-slo-http-post");
                 setPropertyValue(sloHttpPost, "name", sloHttpPost.getName());
-                setPropertyValue(sloHttpPost, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
-                setPropertyValue(sloHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
+                setPropertyValue(sloHttpPost, "type", SSOMetadataConstants.SingleLogoutService_QNAME.toString());
+                setPropertyValue(sloHttpPost, "binding", SSOBinding.SAMLR2_POST.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
                 plan.setBean(sloToSamlPlan.getName());
@@ -286,8 +286,8 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 Bean sloHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 sloHttpArtifact.setName(idpChannelBean.getName() + "-saml2-slo-http-artifact");
                 setPropertyValue(sloHttpArtifact, "name", sloHttpArtifact.getName());
-                setPropertyValue(sloHttpArtifact, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
-                setPropertyValue(sloHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+                setPropertyValue(sloHttpArtifact, "type", SSOMetadataConstants.SingleLogoutService_QNAME.toString());
+                setPropertyValue(sloHttpArtifact, "binding", SSOBinding.SAMLR2_ARTIFACT.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
                 plan.setBean(sloToSamlPlan.getName());
@@ -301,8 +301,8 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 Bean sloHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 sloHttpRedirect.setName(idpChannelBean.getName() + "-saml2-slo-http-redirect");
                 setPropertyValue(sloHttpRedirect, "name", sloHttpRedirect.getName());
-                setPropertyValue(sloHttpRedirect, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
-                setPropertyValue(sloHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
+                setPropertyValue(sloHttpRedirect, "type", SSOMetadataConstants.SingleLogoutService_QNAME.toString());
+                setPropertyValue(sloHttpRedirect, "binding", SSOBinding.SAMLR2_REDIRECT.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
                 plan.setBean(sloToSamlPlan.getName());
@@ -316,8 +316,8 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 Bean sloSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 sloSoap.setName(idpChannelBean.getName() + "-saml2-slo-soap");
                 setPropertyValue(sloSoap, "name", sloSoap.getName());
-                setPropertyValue(sloSoap, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
-                setPropertyValue(sloSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
+                setPropertyValue(sloSoap, "type", SSOMetadataConstants.SingleLogoutService_QNAME.toString());
+                setPropertyValue(sloSoap, "binding", SSOBinding.SAMLR2_SOAP.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
                 plan.setBean(sloToSamlPlan.getName());
@@ -330,8 +330,8 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             Bean sloLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
             sloLocal.setName(idpChannelBean.getName() + "-saml2-slo-local");
             setPropertyValue(sloLocal, "name", sloLocal.getName());
-            setPropertyValue(sloLocal, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
-            setPropertyValue(sloLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
+            setPropertyValue(sloLocal, "type", SSOMetadataConstants.SingleLogoutService_QNAME.toString());
+            setPropertyValue(sloLocal, "binding", SSOBinding.SAMLR2_LOCAL.getValue());
             // NOTE: location doesn't exist in simple-federation example
             setPropertyValue(sloLocal, "location", "local://" + (idpChannel != null ?
                     idpChannel.getLocation().getUri().toUpperCase() : sp.getLocation().getUri().toUpperCase()) + "/SLO/LOCAL");
@@ -349,8 +349,8 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 Bean acHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 acHttpPost.setName(idpChannelBean.getName() + "-saml2-ac-http-post");
                 setPropertyValue(acHttpPost, "name", acHttpPost.getName());
-                setPropertyValue(acHttpPost, "type", SAMLR2MetadataConstants.AssertionConsumerService_QNAME.toString());
-                setPropertyValue(acHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
+                setPropertyValue(acHttpPost, "type", SSOMetadataConstants.AssertionConsumerService_QNAME.toString());
+                setPropertyValue(acHttpPost, "binding", SSOBinding.SAMLR2_POST.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
                 plan.setBean(spAuthnToSamlPlan.getName());
@@ -363,8 +363,8 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 Bean acHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 acHttpArtifact.setName(idpChannelBean.getName() + "-saml2-ac-http-artifact");
                 setPropertyValue(acHttpArtifact, "name", acHttpArtifact.getName());
-                setPropertyValue(acHttpArtifact, "type", SAMLR2MetadataConstants.AssertionConsumerService_QNAME.toString());
-                setPropertyValue(acHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+                setPropertyValue(acHttpArtifact, "type", SSOMetadataConstants.AssertionConsumerService_QNAME.toString());
+                setPropertyValue(acHttpArtifact, "binding", SSOBinding.SAMLR2_ARTIFACT.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
                 plan.setBean(spAuthnToSamlPlan.getName());
@@ -377,8 +377,8 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 Bean acHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 acHttpRedirect.setName(idpChannelBean.getName() + "-saml2-ac-http-redirect");
                 setPropertyValue(acHttpRedirect, "name", acHttpRedirect.getName());
-                setPropertyValue(acHttpRedirect, "type", SAMLR2MetadataConstants.AssertionConsumerService_QNAME.toString());
-                setPropertyValue(acHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
+                setPropertyValue(acHttpRedirect, "type", SSOMetadataConstants.AssertionConsumerService_QNAME.toString());
+                setPropertyValue(acHttpRedirect, "binding", SSOBinding.SAMLR2_REDIRECT.getValue());
                 List<Ref> plansList = new ArrayList<Ref>();
                 Ref plan = new Ref();
                 plan.setBean(spAuthnToSamlPlan.getName());
@@ -394,8 +394,8 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             Bean arSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
             arSoap.setName(idpChannelBean.getName() + "-saml2-ar-soap");
             setPropertyValue(arSoap, "name", arSoap.getName());
-            setPropertyValue(arSoap, "type", SAMLR2MetadataConstants.ArtifactResolutionService_QNAME.toString());
-            setPropertyValue(arSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
+            setPropertyValue(arSoap, "type", SSOMetadataConstants.ArtifactResolutionService_QNAME.toString());
+            setPropertyValue(arSoap, "binding", SSOBinding.SAMLR2_SOAP.getValue());
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
             plan.setBean(samlArtResToSamlArtRespPlan.getName());
@@ -409,8 +409,8 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             Bean arLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
             arLocal.setName(idpChannelBean.getName() + "-saml2-ar-local");
             setPropertyValue(arLocal, "name", arLocal.getName());
-            setPropertyValue(arLocal, "type", SAMLR2MetadataConstants.ArtifactResolutionService_QNAME.toString());
-            setPropertyValue(arLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
+            setPropertyValue(arLocal, "type", SSOMetadataConstants.ArtifactResolutionService_QNAME.toString());
+            setPropertyValue(arLocal, "binding", SSOBinding.SAMLR2_LOCAL.getValue());
             plansList = new ArrayList<Ref>();
             plan = new Ref();
             plan.setBean(samlArtResToSamlArtRespPlan.getName());
@@ -427,8 +427,8 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             Bean credCallbackLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
             credCallbackLocal.setName(idpChannelBean.getName() + "-sso-cc-local");
             setPropertyValue(credCallbackLocal, "name", credCallbackLocal.getName());
-            setPropertyValue(credCallbackLocal, "type", SAMLR2MetadataConstants.SPCredentialsCallbackService_QNAME.toString());
-            setPropertyValue(credCallbackLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
+            setPropertyValue(credCallbackLocal, "type", SSOMetadataConstants.SPCredentialsCallbackService_QNAME.toString());
+            setPropertyValue(credCallbackLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
             setPropertyValue(credCallbackLocal, "location",
                     "local://" + (idpChannel != null ? idpChannel.getLocation().getUri().toUpperCase() : sp.getLocation().getUri().toUpperCase()) + "/CCBACK/LOCAL");
 

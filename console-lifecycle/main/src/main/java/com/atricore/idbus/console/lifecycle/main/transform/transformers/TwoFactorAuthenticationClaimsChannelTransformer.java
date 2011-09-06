@@ -11,11 +11,11 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
-import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder;
-import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsMediator;
-import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
+import org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
@@ -108,7 +108,7 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
                 Bean cc2faArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 cc2faArtifact.setName(idpBean.getName() + "-cc-2fa-artifact");
                 setPropertyValue(cc2faArtifact, "name", cc2faArtifact.getName());
-                setPropertyValue(cc2faArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
+                setPropertyValue(cc2faArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
                 setPropertyValue(cc2faArtifact, "location", "/2FA/ARTIFACT");
                 setPropertyValue(cc2faArtifact, "responseLocation", "/2FA/POST-RESP");
                 setPropertyValue(cc2faArtifact, "type", AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue());
@@ -117,7 +117,7 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
                 Bean cc2faPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 cc2faPost.setName(idpBean.getName() + "-cc-2fa-post");
                 setPropertyValue(cc2faPost, "name", cc2faPost.getName());
-                setPropertyValue(cc2faPost, "binding", SamlR2Binding.SSO_POST.getValue());
+                setPropertyValue(cc2faPost, "binding", SSOBinding.SSO_POST.getValue());
                 setPropertyValue(cc2faPost, "location", "/2FA/POST");
                 setPropertyValue(cc2faPost, "type", AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue());
                 ccEndpoints.add(cc2faPost);
@@ -129,7 +129,7 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
         // ----------------------------------------
         // Claims Mediator
         // ----------------------------------------
-        Bean ccMediator = newBean(idpBeans, idpBean.getName() + "-2fa-claims-mediator", SamlR2ClaimsMediator.class);
+        Bean ccMediator = newBean(idpBeans, idpBean.getName() + "-2fa-claims-mediator", SSOClaimsMediator.class);
 
         // logMessages
         setPropertyValue(ccMediator, "logMessages", true);
