@@ -299,5 +299,6 @@
 
     <modules>
         <module>main</module>
+        <module>ui</module>
     </modules>
 </project>
