@@ -21,4 +21,8 @@
         class="org.atricore.idbus.capabilities.openid.ui.internal.OpenIDUIApplication"
         applicationName="openIdWebUI" mountPoint="openid" />
 
+    <reference id="artifactQueueManager" interface="org.atricore.idbus.kernel.main.mediation.MessageQueueManager"
+        availability="optional" />
+
+
 </blueprint>

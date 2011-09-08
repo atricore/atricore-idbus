@@ -24,6 +24,7 @@ import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.atricore.idbus.capabilities.openid.ui.page.DashboardPage;
 import org.atricore.idbus.capabilities.openid.ui.page.LoginPage;
 import org.atricore.idbus.capabilities.openid.ui.security.WebSSOSession;
+import org.ops4j.pax.wicket.api.PaxWicketBean;
 
 /**
  * Entry point for the Wicket-based OpenID front-end.
@@ -34,9 +35,11 @@ public class OpenIDUIApplication extends AuthenticatedWebApplication {
         super();
     }
 
+
     @Override
     protected void init() {
         super.init();
+
 
         mountBookmarkablePage("/login", LoginPage.class);
         mountBookmarkablePage("/error/401", AccessDeniedPage.class);
