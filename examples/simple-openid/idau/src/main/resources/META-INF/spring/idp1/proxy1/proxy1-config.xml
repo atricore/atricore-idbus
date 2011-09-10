@@ -200,8 +200,13 @@
             <value>http://localhost:8081/idbus-ui/claims/username-passcode.do</value>
         </property>
         <property name="openIDUILocation">
+            <value>http://localhost:8081/openid/login</value>
+        </property>
+        <!--
+        <property name="openIDUILocation">
             <value>http://localhost:8081/idbus-ui/claims/openid.do</value>
         </property>
+        -->
         <property name="artifactQueueManager">
             <ref bean="simple-openid-aqm"/>
         </property>

@@ -16,11 +16,15 @@
  */
 package org.atricore.idbus.capabilities.openid.ui.internal;
 
+import org.apache.wicket.Request;
+import org.apache.wicket.Response;
+import org.apache.wicket.Session;
 import org.apache.wicket.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.authentication.AuthenticatedWebSession;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
+import org.apache.wicket.protocol.http.WebApplication;
 import org.atricore.idbus.capabilities.openid.ui.page.DashboardPage;
 import org.atricore.idbus.capabilities.openid.ui.page.LoginPage;
 import org.atricore.idbus.capabilities.openid.ui.security.WebSSOSession;
@@ -29,12 +33,11 @@ import org.ops4j.pax.wicket.api.PaxWicketBean;
 /**
  * Entry point for the Wicket-based OpenID front-end.
  */
-public class OpenIDUIApplication extends AuthenticatedWebApplication {
+public class OpenIDUIApplication extends WebApplication {
 
     public OpenIDUIApplication() {
         super();
     }
-
 
     @Override
     protected void init() {
@@ -53,18 +56,12 @@ public class OpenIDUIApplication extends AuthenticatedWebApplication {
      * @see org.apache.wicket.Application#getHomePage()
      */
     @Override
-    public Class<DashboardPage> getHomePage() {
-        return DashboardPage.class;
-    }
-
-    @Override
-    protected Class<? extends WebPage> getSignInPageClass() {
+    public Class<LoginPage> getHomePage() {
         return LoginPage.class;
     }
 
     @Override
-    protected Class<? extends AuthenticatedWebSession> getWebSessionClass() {
-        return WebSSOSession.class;
+    public Session newSession(Request request, Response response) {
+        return new OpenIDWebSession(request);
     }
-
 }

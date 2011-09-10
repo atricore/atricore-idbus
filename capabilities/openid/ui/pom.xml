@@ -382,7 +382,10 @@
                             net.sf.cglib.reflect;version="[2,3)",
                             <!-- and servlet api -->
                             javax.servlet,
-                            javax.servlet.http
+                            javax.servlet.http,
+                            <!-- queues stuff -->
+                            javax.jms,
+                            org.apache.activemq
                         </Import-Package>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
