@@ -1,8 +1,10 @@
 package org.atricore.idbus.capabilities.openid.ui;
 
+import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.html.CSSPackageResource;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
 
@@ -12,14 +14,16 @@ import java.util.Locale;
 
 public class BasePage extends WebPage {
 
-
-    // list of supported Locales - should be replaced by resolver/detector or something similar
-    private IModel<List<Locale>> supportedLocales = new ListModel<Locale>(Arrays.asList(Locale.FRENCH, Locale.ENGLISH));
-
     @SuppressWarnings("serial")
     public BasePage() {
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "style.css"));
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "grid.css"));
+        add(CSSPackageResource.getHeaderContribution(BasePage.class, "ie6.css"));
+        add(CSSPackageResource.getHeaderContribution(BasePage.class, "ie7.css"));
+        add(CSSPackageResource.getHeaderContribution(BasePage.class, "processing.css"));
+        add(CSSPackageResource.getHeaderContribution(BasePage.class, "reset.css"));
+        add(CSSPackageResource.getHeaderContribution(BasePage.class, "screen.css"));
+
+        add(new Image("jossoLogo", new ResourceReference(BasePage.class, "images/josso-logo.png")));
+        add(new Image("atricoreLogo", new ResourceReference(BasePage.class, "images/atricore-logo.gif")));
 
         add(new Label("footer", "OpenID Support"));
 
