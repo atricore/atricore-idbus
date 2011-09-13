@@ -177,6 +177,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.METADATA_EXPORT, exportMetadataCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES, accountLinkagePolicyListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_NAMEID_POLICIES, subjectNameIDPolicyListCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES, identityMappingPoliciesListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IMPERSONATE_USER_POLICIES, impersonateUserPoliciesListCommand.getConfigName());
     }
 
