@@ -87,15 +87,15 @@
                         <Import-Package>
                             org.springframework.context.support,
                             org.springframework.beans.factory.config,
-                            org.springframework.jmx; version="3.0.5.RELEASE",
-                            org.springframework.jmx.access; version="3.0.5.RELEASE",
-                            org.springframework.jmx.export; version="3.0.5.RELEASE",
-                            org.springframework.jmx.export.annotation; version="3.0.5.RELEASE",
-                            org.springframework.jmx.export.assembler; version="3.0.5.RELEASE",
-                            org.springframework.jmx.export.metadata; version="3.0.5.RELEASE",
-                            org.springframework.jmx.export.naming; version="3.0.5.RELEASE",
-                            org.springframework.jmx.export.notification; version="3.0.5.RELEASE",
-                            org.springframework.jmx.support; version="3.0.5.RELEASE",
+                            org.springframework.jmx; version="3.0.6.RELEASE",
+                            org.springframework.jmx.access; version="3.0.6.RELEASE",
+                            org.springframework.jmx.export; version="3.0.6.RELEASE",
+                            org.springframework.jmx.export.annotation; version="3.0.6.RELEASE",
+                            org.springframework.jmx.export.assembler; version="3.0.6.RELEASE",
+                            org.springframework.jmx.export.metadata; version="3.0.6.RELEASE",
+                            org.springframework.jmx.export.naming; version="3.0.6.RELEASE",
+                            org.springframework.jmx.export.notification; version="3.0.6.RELEASE",
+                            org.springframework.jmx.support; version="3.0.6.RELEASE",
                             *
                         </Import-Package>
                     </instructions>

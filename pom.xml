@@ -87,7 +87,7 @@
         <cxf.version>2.2.2</cxf.version>
         <datanucleus.version>2.1.2</datanucleus.version>
         <dozer.version>5.2.2_1</dozer.version>
-        <felix.karaf.version>2.2.1</felix.karaf.version>
+        <felix.karaf.version>2.2.3</felix.karaf.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <!--
@@ -113,7 +113,7 @@
         <ravis.version>1.0.0.RC2-20100628</ravis.version>
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <spring.security.version>2.0.4</spring.security.version>
-        <spring.version>3.0.5.RELEASE</spring.version>
+        <spring.version>3.0.6.RELEASE</spring.version>
         <spring.osgi.version>1.2.1</spring.osgi.version>
         <velocity.version>1.6.2</velocity.version>
         <xbean.version>3.7</xbean.version>
