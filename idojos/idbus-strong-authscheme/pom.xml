@@ -39,8 +39,8 @@
     <name>Atricore IDBus :: IDOJO : Strong Authentication Scheme</name>
 
     <properties>
-        <commons.logging.version>1.1.1</commons.logging.version>
-        <spring.version>3.0.5.RELEASE</spring.version>
+        <commons-logging.version>1.1.1</commons-logging.version>
+        <spring.version>3.0.6.RELEASE</spring.version>
         <xbean.version>3.7</xbean.version>
         <juni.version>4.4</juni.version>
         <log4j.version>1.2.16</log4j.version>
@@ -100,7 +100,7 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>${commons.logging.version}</version>
+            <version>${commons-logging.version}</version>
             <scope>provided</scope>
         </dependency>
 

@@ -196,14 +196,10 @@
 
     <feature name="web" version="${version}">
         <feature version="${version}">web-core</feature>
-        <!--bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-tiles-jsp-v2_0_6/${idbus.bundle.apache-tiles-jsp-v2_0_6.version}</bundle-->
-        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-tiles-jsp-v2_2_2/${idbus.bundle.apache-tiles-jsp-v2_2_2.version}</bundle>
-        <bundle start-level="40">mvn:org.springframework/spring-web/${spring.version}</bundle>
-        <bundle start-level="40">mvn:org.springframework/spring-webmvc/${spring.version}</bundle>
-        <bundle start-level="40">mvn:org.springframework.osgi/spring-osgi-web/${spring.osgi.version}</bundle>
+        <feature version="${spring.osgi.version}">spring-dm-web</feature>
     </feature>
 
-     <feature name="activemq" version="${activemq.version}">
+    <feature name="activemq" version="${activemq.version}">
         <feature version="${version}">connector</feature>
         <bundle start-level="40">mvn:org.apache.geronimo.specs/geronimo-j2ee-management_1.1_spec/${geronimo.j2ee.management.version}</bundle>
         <bundle start-level="40">mvn:commons-pool/commons-pool/${commons-pool.version}</bundle>
