@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.management.ServiceProviderMBean;
 import org.atricore.idbus.capabilities.sso.management.codec.JmxSSOSession;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
+import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
 import org.atricore.idbus.kernel.main.session.SSOSession;
@@ -115,5 +116,57 @@ public class ServiceProviderMBeanImpl extends AbstractProviderMBean implements S
         }
 
         return null;
+    }
+
+    public long getSessionsCount() {
+        try {
+            SPChannel channel = (SPChannel) serviceProvider.getChannel();
+            SSOSessionManager mgr = channel.getSessionManager();
+
+            return mgr.getStatsCurrentSessions();
+        } catch (Exception e) {
+            logger.error("Cannot find SSO Sessions count");
+            return -1;
+        }
+
+    }
+
+    public long getTotalCreatedSessions() {
+        try {
+            SPChannel channel = (SPChannel) serviceProvider.getChannel();
+            SSOSessionManager mgr = channel.getSessionManager();
+
+            return mgr.getStatsCreatedSessions();
+        } catch (Exception e) {
+            logger.error("Cannot find SSO created sessions count");
+            return -1;
+        }
+
+    }
+
+    public long getTotalDestroyedSessions() {
+        try {
+            SPChannel channel = (SPChannel) serviceProvider.getChannel();
+            SSOSessionManager mgr = channel.getSessionManager();
+
+            return mgr.getStatsCreatedSessions();
+        } catch (Exception e) {
+            logger.error("Cannot find SSO destroyed count");
+            return -1;
+        }
+
+    }
+
+    public long getMaxSessionsCount() {
+        try {
+            SPChannel channel = (SPChannel) serviceProvider.getChannel();
+            SSOSessionManager mgr = channel.getSessionManager();
+
+            return mgr.getStatsMaxSessions();
+        } catch (Exception e) {
+            logger.error("Cannot find SSO max sessions count");
+            return -1;
+        }
+
     }
 }

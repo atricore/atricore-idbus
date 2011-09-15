@@ -18,4 +18,11 @@ public interface ServiceProviderMBean extends ProviderMBean {
 
     SSOSession[] listUserSessions(String username);
 
+    long getSessionsCount();
+
+    long getTotalCreatedSessions();
+
+    long getTotalDestroyedSessions();
+
+    long getMaxSessionsCount();
 }

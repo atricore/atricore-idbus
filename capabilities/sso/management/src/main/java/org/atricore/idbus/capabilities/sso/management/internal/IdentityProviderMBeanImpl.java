@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.idp.IdentityProviderConstants;
+import org.atricore.idbus.capabilities.sso.management.IdentityProviderMBean;
 import org.atricore.idbus.capabilities.sso.management.codec.JmxSSOSession;
 import org.atricore.idbus.capabilities.sso.support.SSOMessagingConstants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
@@ -35,7 +36,7 @@ import java.util.List;
  * @version $Id$
  */
 public class IdentityProviderMBeanImpl extends AbstractProviderMBean
-        implements SSOMessagingConstants {
+        implements IdentityProviderMBean, SSOMessagingConstants {
 
     private static final Log logger = LogFactory.getLog(ServiceProviderMBeanImpl.class);
 
@@ -285,6 +286,59 @@ public class IdentityProviderMBeanImpl extends AbstractProviderMBean
             return -1;
         }
     }
+
+    public long getSessionsCount() {
+        try {
+            SPChannel channel = (SPChannel) identityProvider.getChannel();
+            SSOSessionManager mgr = channel.getSessionManager();
+
+            return mgr.getStatsCurrentSessions();
+        } catch (Exception e) {
+            logger.error("Cannot find SSO Sessions count");
+            return -1;
+        }
+
+    }
+
+    public long getTotalCreatedSessions() {
+        try {
+            SPChannel channel = (SPChannel) identityProvider.getChannel();
+            SSOSessionManager mgr = channel.getSessionManager();
+
+            return mgr.getStatsCreatedSessions();
+        } catch (Exception e) {
+            logger.error("Cannot find SSO created sessions count");
+            return -1;
+        }
+
+    }
+
+    public long getTotalDestroyedSessions() {
+        try {
+            SPChannel channel = (SPChannel) identityProvider.getChannel();
+            SSOSessionManager mgr = channel.getSessionManager();
+
+            return mgr.getStatsDestroyedSessions();
+        } catch (Exception e) {
+            logger.error("Cannot find SSO destroyed count");
+            return -1;
+        }
+
+    }
+
+    public long getMaxSessionsCount() {
+        try {
+            SPChannel channel = (SPChannel) identityProvider.getChannel();
+            SSOSessionManager mgr = channel.getSessionManager();
+
+            return mgr.getStatsMaxSessions();
+        } catch (Exception e) {
+            logger.error("Cannot find SSO max sessions count");
+            return -1;
+        }
+
+    }
+
 
     protected void triggerIdPInitiatedSLO(IdPSecurityContext secCtx) throws SSOException, IdentityMediationException {
 

@@ -181,7 +181,7 @@
                             org.springframework.beans,
                             org.springframework.context
                         </Import-Package>
-                        <!-- TODO : For now, import everything so that RMI works, should be improved -->
+                        <!-- TODO : For now, import everything so that RMI works, needs to be improved -->
                         <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>

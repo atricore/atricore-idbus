@@ -27,4 +27,11 @@ public interface IdentityProviderMBean extends ProviderMBean {
     long getMaxInactiveInterval();
 
 
+    long getSessionsCount();
+
+    long getTotalCreatedSessions();
+
+    long getTotalDestroyedSessions();
+
+    long getMaxSessionsCount();
 }
