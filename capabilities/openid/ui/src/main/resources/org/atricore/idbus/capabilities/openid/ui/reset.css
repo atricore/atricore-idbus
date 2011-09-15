@@ -65,7 +65,7 @@
             form input.error {border:1px solid #C50F11!important; background:#F6EEEE; } 
       fieldset {/* padding:1.4em; margin: 0 0 1.5em 0; border: 1px solid #ccc; */ padding:0 0 15px 0;}
       legend {font-weight: bold; font-size:1.2em; margin-bottom:0 10em; display:block;  }
-      label {font-weight: bold; display:block;  float:left; clear:left; margin:0 0 15px 0; padding:5px 0 0 0; } /* Check IE6 Stylesheet too */
+      label {font-weight: bold; display:block;  float:left; clear:left; margin:0 0 15px 0; padding:0 0 0 0; } /* Check IE6 Stylesheet too */
       textarea, input.text, select {border: 1px solid #BFC8D2; background: #F6F6F6; width:200px;  height:26px; color:#424242; font-size:16px; 
       font-family:Arial, Tahoma, sans-serif; padding:5px 5px 0 5px;  float:left; margin:0 0 15px 0; }
       select {padding:0.2em 0; }

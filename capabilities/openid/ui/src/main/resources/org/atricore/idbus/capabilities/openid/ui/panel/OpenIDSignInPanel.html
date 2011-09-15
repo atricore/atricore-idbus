@@ -2,9 +2,13 @@
 <html xmlns:wicket>
 <body>
 <wicket:panel>
-    <span wicket:id="feedback"/>
 
     <div id="authentication">
+
+        <div class="message error">
+            <span wicket:id="feedback"/>
+        </div>
+
         <div id="subwrapper">
 
             <div class="main">
@@ -18,7 +22,10 @@
                                                                       tabindex="10"/>
                         </div>
                     </fieldset>
-                    <div><input class="button indent" type="submit" value="Login"/></div>
+                    <div>
+                        <input type="submit" value="submit via ajax" wicket:id="ajax-button"/>
+                        <input class="button indent" type="submit" value="Login"/>
+                    </div>
                     <br/>
                     <br/>
                 </form>

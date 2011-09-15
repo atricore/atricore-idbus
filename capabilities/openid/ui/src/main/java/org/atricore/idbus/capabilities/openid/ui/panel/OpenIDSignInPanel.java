@@ -2,13 +2,20 @@ package org.atricore.idbus.capabilities.openid.ui.panel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormValidatingBehavior;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.target.basic.RedirectRequestTarget;
+import org.apache.wicket.util.time.Duration;
 import org.apache.wicket.util.value.ValueMap;
+import org.apache.wicket.validation.validator.UrlValidator;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -28,7 +35,7 @@ public class OpenIDSignInPanel extends Panel {
     /**
      * Field for user name.
      */
-    private TextField<String> openid;
+    private RequiredTextField<String> openid;
 
     private ClaimsRequest claimsRequest;
     private MessageQueueManager artifactQueueManager;
@@ -55,11 +62,10 @@ public class OpenIDSignInPanel extends Panel {
 
             // Attach textfield components that edit properties map
             // in lieu of a formal beans model
-            add(openid = new TextField<String>("openid", new PropertyModel<String>(properties,
+            add(openid = new RequiredTextField<String>("openid", new PropertyModel<String>(properties,
                     "openid")));
-
             openid.setType(String.class);
-
+            openid.add(new UrlValidator());
         }
 
         /**
@@ -92,11 +98,35 @@ public class OpenIDSignInPanel extends Panel {
 
         // Create feedback panel and add to page
         final FeedbackPanel feedback = new FeedbackPanel("feedback");
+        feedback.setOutputMarkupId(true);
         add(feedback);
 
         // Add sign-in form to page, passing feedback panel as
         // validation error handler
-        add(new OpenIDSignInForm("signInForm"));
+        OpenIDSignInForm form = new OpenIDSignInForm("signInForm");
+        AjaxFormValidatingBehavior.addToAllFormComponents(form, "onkeyup", Duration.ONE_SECOND);
+        form.setOutputMarkupId(true);
+
+		// add a button that can be used to submit the form via ajax
+		form.add(new AjaxButton("ajax-button", form)
+		{
+			@Override
+			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
+			{
+				// repaint the feedback panel so that it is hidden
+				target.addComponent(feedback);
+			}
+
+			@Override
+			protected void onError(AjaxRequestTarget target, Form<?> form)
+			{
+				// repaint the feedback panel so errors are shown
+				target.addComponent(feedback);
+			}
+		});
+
+        add(form);
+
     }
 
     /**

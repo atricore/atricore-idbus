@@ -92,7 +92,7 @@ body {text-align:center; background:#1A2739 url(./images/body.jpg) no-repeat 50%
       #content #authentication  form .checkbox {}
       
       /* Highlight */  
-      #content #authentication  .highlight {position:absolute; top:115px; right:0; width:246px; } /* Check IE6 Stylesheet too */
+      #content #authentication  .highlight {position:absolute; top:55px; right:0; width:246px; } /* Check IE6 Stylesheet too */
       #content #authentication  .highlight .footer {width:290px; right:0px;}
       
       
@@ -177,7 +177,7 @@ body {text-align:center; background:#1A2739 url(./images/body.jpg) no-repeat 50%
       #content #authentication  form .checkbox {}
 
       /* Highlight */
-      #content #authentication  .highlight {position:absolute; top:115px; right:0; width:246px; } /* Check IE6 Stylesheet too */
+      #content #authentication  .highlight {position:absolute; top:55px; right:0; width:246px; } /* Check IE6 Stylesheet too */
       #content #authentication  .highlight .footer {width:290px; right:0px;}
 
 
