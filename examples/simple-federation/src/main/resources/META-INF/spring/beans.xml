@@ -115,7 +115,7 @@
     </bean>
 
     <!-- We use a SAMLR2 Cricle of Trust manager implementation -->
-    <bean name="idau1-samlr2-cot-mgr" class="org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager">
+    <bean name="idau1-samlr2-cot-mgr" class="org.atricore.idbus.capabilities.sso.main.SamlR2CircleOfTrustManager">
         <property name="cot" ref="idau1-cot"/>
     </bean>
 
@@ -144,7 +144,7 @@
           class="org.atricore.idbus.kernel.main.session.SSOSessionEventManager">
         <property name="listeners">
             <list>
-                <bean class="org.atricore.idbus.capabilities.samlr2.main.idp.IdPSessionEventListener">
+                <bean class="org.atricore.idbus.capabilities.sso.main.idp.IdPSessionEventListener">
                     <property name="identityProvider" ref="idp1"/>
                 </bean>
             </list>

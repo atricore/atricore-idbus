@@ -16,6 +16,11 @@ public class BasicSecurityTokenAuthenticator extends AbstractSecurityTokenAuthen
 
     public static final String SCHEME_NAME = "basic-authentication";
 
+    public BasicSecurityTokenAuthenticator() {
+        super();
+        setScheme(SCHEME_NAME);
+    }
+
     @Override
     protected Credential[] getCredentials(Object requestToken) throws SSOAuthenticationException {
         setScheme(SCHEME_NAME);

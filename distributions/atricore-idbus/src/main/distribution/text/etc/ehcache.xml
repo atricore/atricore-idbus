@@ -75,8 +75,8 @@
     <defaultCache
             maxElementsInMemory="10000"
             eternal="false"
-            timeToIdleSeconds="360"
-            timeToLiveSeconds="1000"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="43200"
             overflowToDisk="true"
             memoryStoreEvictionPolicy="LRU"/>
 

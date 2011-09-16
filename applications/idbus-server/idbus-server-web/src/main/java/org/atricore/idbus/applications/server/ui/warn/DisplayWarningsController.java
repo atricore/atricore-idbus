@@ -2,8 +2,7 @@ package org.atricore.idbus.applications.server.ui.warn;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.applications.server.ui.claims.CollectUsernamePasswordClaims;
-import org.atricore.idbus.capabilities.samlr2.main.binding.SsoHttpArtifactBinding;
+import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.kernel.main.authn.PasswordPolicyEnforcementWarning;
 import org.atricore.idbus.kernel.main.authn.PasswordPolicyWarningType;
 import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
@@ -17,13 +16,10 @@ import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 /**

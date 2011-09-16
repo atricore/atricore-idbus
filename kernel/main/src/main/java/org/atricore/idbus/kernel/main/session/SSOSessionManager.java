@@ -151,6 +151,16 @@ public interface SSOSessionManager extends java.io.Serializable {
      */
     int getSessionCount() throws SSOSessionException;
 
+
     int getMaxInactiveInterval();
 
+    // Some stats
+
+    long getStatsMaxSessions();
+
+    long getStatsCreatedSessions();
+
+    long getStatsDestroyedSessions();
+
+    long getStatsCurrentSessions();
 }

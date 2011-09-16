@@ -29,12 +29,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.josso</groupId>
         <artifactId>josso</artifactId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.3.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.josso</groupId>
     <artifactId>org.atricore.idbus.capabilities.josso.main</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : JOSSO Main Component</name>
 
@@ -45,10 +45,10 @@
 
     <properties>
 
-        <idbus.kernel.version>1.2.1-SNAPSHOT</idbus.kernel.version>
-        <idbus.cap.saml2.version>1.2.1-SNAPSHOT</idbus.cap.saml2.version>
+        <idbus.kernel.version>1.3.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.cap.sso.version>1.3.0-SNAPSHOT</idbus.cap.sso.version>
 
-        <idbus.bundle.josso-ws-v1_2.version>1.2.1-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
+        <idbus.bundle.josso-ws-v1_2.version>1.3.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
         
         <!-- local party -->
         <josso.version>1.8.3</josso.version>
@@ -63,7 +63,7 @@
         <plexus-classworlds.version>1.2-alpha-12</plexus-classworlds.version>
 
         <xbean.version>3.7</xbean.version>
-        <spring.version>3.0.5.RELEASE</spring.version>
+        <spring.version>3.0.6.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
@@ -116,16 +116,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
+            <version>${idbus.cap.sso.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
+            <version>${idbus.cap.sso.version}</version>
             <scope>provided</scope>
         </dependency>
 

@@ -21,7 +21,7 @@
             <ref bean="tc1-josso-binding-channel"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.samlr2.management.internal.BindingProviderMBeanImpl" name="tc1-mbean">
+    <bean class="org.atricore.idbus.capabilities.sso.management.internal.BindingProviderMBeanImpl" name="tc1-mbean">
         <property name="bindingProvider">
             <ref bean="tc1"/>
         </property>

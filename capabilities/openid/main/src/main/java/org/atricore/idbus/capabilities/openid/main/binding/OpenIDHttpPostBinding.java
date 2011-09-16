@@ -29,8 +29,7 @@ import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDAuthnResponse
 import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDMessage;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV1AuthnRequest;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV2AuthnRequest;
-import org.atricore.idbus.capabilities.openid.main.support.OpenIDConstants;
-import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
+import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
