@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.openid.ui.panel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.AjaxFormValidatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.form.Form;
@@ -40,6 +41,7 @@ public class OpenIDSignInPanel extends Panel {
     private ClaimsRequest claimsRequest;
     private MessageQueueManager artifactQueueManager;
     private IdentityMediationUnitRegistry idsuRegistry;
+    private AjaxButton submit;
 
     /**
      * Sign in form.
@@ -66,20 +68,18 @@ public class OpenIDSignInPanel extends Panel {
                     "openid")));
             openid.setType(String.class);
             openid.add(new UrlValidator());
-        }
 
-        /**
-         * @see org.apache.wicket.markup.html.form.Form#onSubmit()
-         */
-        @Override
-        public final void onSubmit() {
+            openid.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
-            try {
-                String claimsConsumerUrl = signIn(getOpenid());
-                onSignInSucceeded(claimsConsumerUrl);
-            } catch (Exception e) {
-                onSignInFailed();
-            }
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    submit.setEnabled(true);
+                    target.addComponent(submit);
+                }
+            });
+
+            openid.setOutputMarkupId(true);
+
         }
     }
 
@@ -108,13 +108,22 @@ public class OpenIDSignInPanel extends Panel {
         form.setOutputMarkupId(true);
 
 		// add a button that can be used to submit the form via ajax
-		form.add(new AjaxButton("ajax-button", form)
+		submit = new AjaxButton("apply", form)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
 				// repaint the feedback panel so that it is hidden
 				target.addComponent(feedback);
+
+
+                try {
+                    String claimsConsumerUrl = signIn(getOpenid());
+                    onSignInSucceeded(claimsConsumerUrl);
+                } catch (Exception e) {
+                    onSignInFailed();
+                }
+
 			}
 
 			@Override
@@ -123,8 +132,10 @@ public class OpenIDSignInPanel extends Panel {
 				// repaint the feedback panel so errors are shown
 				target.addComponent(feedback);
 			}
-		});
+		};
 
+        submit.setEnabled(false);
+        form.add(submit);
         add(form);
 
     }
