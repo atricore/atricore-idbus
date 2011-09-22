@@ -132,7 +132,8 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 setPropertyValue(ccSpPwdLocal, "type", AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue());
                 ccEndpoints.add(ccSpPwdLocal);
 
-                if (((BasicAuthentication)authnMechanism).getImpersonateUserPolicy() != null) {
+                ImpersonateUserPolicy impUsrPolicy = basicAuthn.getImpersonateUserPolicy();
+                if (impUsrPolicy != null && !impUsrPolicy.getImpersonateUserPolicyType().equals(ImpersonateUserPolicyType.DISABLED)) {
 
                     // Enable endpoints for user impersonation
 
