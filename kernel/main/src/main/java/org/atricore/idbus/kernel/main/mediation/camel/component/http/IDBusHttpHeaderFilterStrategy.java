@@ -32,9 +32,8 @@ public class IDBusHttpHeaderFilterStrategy extends HttpHeaderFilterStrategy {
     @Override
     protected void initialize() {
         super.initialize();
-        // filter headers begin with "org.atricore.idbus"
-        //setOutFilterPattern("(org\\.atricore\\.idbus)[.|-|_|a-z|A-Z|0-9]*");
-
+        // filter headers that start with "org.atricore.idbus"
+        // setOutFilterPattern("(org\\.atricore\\.idbus)[.|-|_|a-z|A-Z|0-9]*");
         setOutFilterPattern("org[.]atricore[.]idbus[.].*");
     }
 }

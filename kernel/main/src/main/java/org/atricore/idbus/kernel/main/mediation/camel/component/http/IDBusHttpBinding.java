@@ -34,6 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * This is actually a CAMEL HTTP Binding extension, it's not related with mediation HTTP bindings
+ *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
@@ -52,9 +54,12 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
     @Override
     public void readRequest(HttpServletRequest httpServletRequest, HttpMessage httpMessage) {
 
-        logger.debug("Reading HTTP Servlet Request");
-        super.readRequest(httpServletRequest, httpMessage);
-
+        if (!(httpServletRequest instanceof InternalHttpServletRequest)) {
+            logger.trace("Reading HTTP Servlet Request");
+            super.readRequest(httpServletRequest, httpMessage);
+        } else {
+            logger.trace("Detected Internal HTTP Servlet Request, ready to process");
+        }
 
         if (httpServletRequest.getCookies() != null) {
             for (Cookie cookie : httpServletRequest.getCookies()) {
@@ -62,11 +67,11 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
                 httpMessage.getHeaders().put("org.atricore.idbus.http.Cookie." + cookie.getName(), cookie.getValue());
             }
         }
-        
+
+        // Export additional information in CAMEL headers
         httpMessage.getHeaders().put("org.atricore.idbus.http.RequestURL", httpServletRequest.getRequestURL().toString());
         httpMessage.getHeaders().put("org.atricore.idbus.http.QueryString", httpServletRequest.getQueryString());
 
-        // TODO : This must be removed once we use the relay state!
         logger.debug("Publishing HTTP Session as Camel header org.atricore.idbus.http.HttpSession");
         httpMessage.getHeaders().put("org.atricore.idbus.http.HttpSession", httpServletRequest.getSession(true));
     }
@@ -80,10 +85,9 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
 
             String value = message.getHeader(key, String.class);
 
-            if (getHeaderFilterStrategy() != null
-                    && getHeaderFilterStrategy().applyFilterToCamelHeaders(key, value)) {
-                // This is a filtered header ... check if is a josso 'set cookie'
+            if (getHeaderFilterStrategy() != null && getHeaderFilterStrategy().applyFilterToCamelHeaders(key, value)) {
 
+                // This is a filtered header ... check if is a josso 'set cookie'
                 if (key.startsWith("org.atricore.idbus.http.Set-Cookie.")) {
                     
                     String cookieName = key.substring("org.atricore.idbus.http.Set-Cookie.".length());
@@ -97,6 +101,11 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
 
         }
 
-        super.doWriteResponse(message, httpServletResponse);
+        if (!(httpServletResponse instanceof InternalHttpServletResponse)) {
+            logger.trace("Writting HTTP Servlet Response");
+            super.doWriteResponse(message, httpServletResponse);
+        } else {
+            logger.trace("Detected Internal HTTP Servlet Response, don't write");
+        }
     }
 }

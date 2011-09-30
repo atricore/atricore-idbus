@@ -5,6 +5,7 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import javax.jms.ConnectionFactory;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -13,8 +14,8 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    // TODO : Purge old artifacts!
-    private Map<String, Object> msgs = new HashMap<String, Object>();
+    // TODO : Purge old artifacts that no one claimed! (see Artifact.creationTime)
+    private Map<String, Object> msgs = new ConcurrentHashMap<String, Object>();
 
     public ConnectionFactory getConnectionFactory() {
         return null;

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.StopWatch;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -186,8 +187,8 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                         logger.trace("LocalState instance removed for alternative key " + removedKey);
                 }
 
-                // Give time to flush messages TODO : Improve this !!!!
-                try { Thread.sleep(1000); } catch (InterruptedException ie) { /**/ }
+                // TODO : Give time to flush messages in cluster (IMPROVE THIS) !!!!
+                // try { Thread.sleep(1000); } catch (InterruptedException ie) { /**/ }
 
                 state.clearState();
             }

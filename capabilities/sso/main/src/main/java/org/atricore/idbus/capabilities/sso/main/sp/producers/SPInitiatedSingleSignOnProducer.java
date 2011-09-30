@@ -95,7 +95,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
             if (secCtx != null && secCtx.getSessionIndex() != null) {
 
-                if (!ssoAuthnReq.isForceAuthn()) {
+                if (ssoAuthnReq.isForceAuthn() != null && !ssoAuthnReq.isForceAuthn()) {
 
                     // TODO ! Check that the session belongs to the IdP associated with this request
 
