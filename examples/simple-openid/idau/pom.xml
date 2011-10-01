@@ -327,6 +327,7 @@
                             org.atricore.idbus.capabilities.josso.main,
                             org.atricore.idbus.capabilities.spnego,
                             org.atricore.idbus.capabilities.openid.main,
+                            org.atricore.idbus.capabilities.openid.ui,
                             org.atricore.idbus.connectors.jdoidentityvault,
                             org.atricore.idbus.idojos.dbidentitystore,
                             org.atricore.idbus.idojos.memorysessionstore,

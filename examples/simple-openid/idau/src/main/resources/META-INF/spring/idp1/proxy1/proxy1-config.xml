@@ -200,7 +200,7 @@
             <value>http://localhost:8081/idbus-ui/claims/username-passcode.do</value>
         </property>
         <property name="openIDUILocation">
-            <value>http://localhost:8081/openid/login</value>
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/UI/login</value>
         </property>
         <!--
         <property name="openIDUILocation">
