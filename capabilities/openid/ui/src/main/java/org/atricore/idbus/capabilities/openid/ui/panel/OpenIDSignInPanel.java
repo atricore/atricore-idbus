@@ -2,15 +2,20 @@ package org.atricore.idbus.capabilities.openid.ui.panel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormValidatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.RequiredTextField;
-import org.apache.wicket.markup.html.form.StatelessForm;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.target.basic.RedirectRequestTarget;
 import org.apache.wicket.util.time.Duration;
@@ -33,55 +38,19 @@ public class OpenIDSignInPanel extends Panel {
     private static final long serialVersionUID = 1L;
 
     /**
+     * El-cheapo model for form.
+     */
+    private final ValueMap properties = new ValueMap();
+
+    /**
      * Field for user name.
      */
     private RequiredTextField<String> openid;
+    private Button submit;
 
     private ClaimsRequest claimsRequest;
     private MessageQueueManager artifactQueueManager;
     private IdentityMediationUnitRegistry idsuRegistry;
-
-    /**
-     * Sign in form.
-     */
-    public final class OpenIDSignInForm extends StatelessForm<Void> {
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * El-cheapo model for form.
-         */
-        private final ValueMap properties = new ValueMap();
-
-        /**
-         * Constructor.
-         *
-         * @param id id of the form component
-         */
-        public OpenIDSignInForm(final String id) {
-            super(id);
-
-            // Attach textfield components that edit properties map
-            // in lieu of a formal beans model
-            add(openid = new RequiredTextField<String>("openid", new PropertyModel<String>(properties,
-                    "openid")));
-            openid.setType(String.class);
-            openid.add(new UrlValidator());
-        }
-
-        /**
-         * @see org.apache.wicket.markup.html.form.Form#onSubmit()
-         */
-        @Override
-        public final void onSubmit() {
-
-            try {
-                String claimsConsumerUrl = signIn(getOpenid());
-                onSignInSucceeded(claimsConsumerUrl);
-            } catch (Exception e) {
-                onSignInFailed();
-            }
-        }
-    }
 
     /**
      * @param id See Component constructor
@@ -103,18 +72,70 @@ public class OpenIDSignInPanel extends Panel {
 
         // Add sign-in form to page, passing feedback panel as
         // validation error handler
-        OpenIDSignInForm form = new OpenIDSignInForm("signInForm");
+        final Form<Void> form = new Form<Void>("signInForm");
+
+        // Attach textfield components that edit properties map
+        // in lieu of a formal beans model
+        form.add(openid = new RequiredTextField<String>("openid", new PropertyModel<String>(properties,
+                "openid")) {
+
+            @Override
+            protected void onValid() {
+                super.onValid();
+                logger.info("onValid() called!");
+                submit.setEnabled(true);
+            }
+
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);    //To change body of overridden methods use File | Settings | File Templates.
+                logger.info("OpenID TextField : onComponentTag");
+            }
+
+        });
+        openid.setType(String.class);
+        AjaxEventBehavior eb = new AjaxEventBehavior("onkeyup") {
+            @Override
+            protected void onEvent(AjaxRequestTarget target) {
+                logger.info("openid onEvent: " + target);
+            }
+        };
+        eb.setThrottleDelay(Duration.ONE_SECOND);
+        openid.add(eb);
+        openid.setOutputMarkupId(true);
+
         AjaxFormValidatingBehavior.addToAllFormComponents(form, "onkeyup", Duration.ONE_SECOND);
+
+        openid.add(new UrlValidator());
+
         form.setOutputMarkupId(true);
 
-		// add a button that can be used to submit the form via ajax
-		form.add(new AjaxButton("ajax-button", form)
+        submit = new IndicatingAjaxButton("apply", form)
 		{
-			@Override
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);
+                logger.info("onComponentTag()");
+                //tag.put("style", "display:none;");
+            }
+
+            @Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
+
+                logger.info("submitting openid = " + openid.getDefaultModelObjectAsString());
+
 				// repaint the feedback panel so that it is hidden
 				target.addComponent(feedback);
+
+
+                try {
+                    String claimsConsumerUrl = signIn(getOpenid());
+                    onSignInSucceeded(claimsConsumerUrl);
+                } catch (Exception e) {
+                    onSignInFailed();
+                }
+
 			}
 
 			@Override
@@ -123,20 +144,16 @@ public class OpenIDSignInPanel extends Panel {
 				// repaint the feedback panel so errors are shown
 				target.addComponent(feedback);
 			}
-		});
+		};
 
+        submit.setEnabled(false);
+        form.add(submit);
+
+//        add(submit);
         add(form);
 
     }
 
-    /**
-     * Removes persisted form data for the signin panel (forget me)
-     */
-    public final void forgetMe() {
-        // Remove persisted user data. Search for child component
-        // of type OpenIDSignInForm and remove its related persistence values.
-        getPage().removePersistedFormData(OpenIDSignInForm.class, true);
-    }
 
     /**
      * Convenience method to access the openid.
