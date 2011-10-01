@@ -58,8 +58,8 @@ public class SamlR2SPMediator extends AbstractSSOMediator {
 
     private String spBindingSLO;
 
-    // Send IdP Heart Beat every 10 minutes by default!
-    private long idpSessionHeartBeatInterval = 10L * 60L;
+    // Send IdP Heart Beat every 7 minutes by default!
+    private long idpSessionHeartBeatInterval = 7L * 60L;
 
     @Override
     protected RouteBuilder createSPRoutes(final IdPChannel idpChannel) throws Exception {

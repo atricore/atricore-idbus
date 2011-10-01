@@ -30,11 +30,19 @@ public interface ProviderMBean {
 
     String SSO_SESSION_CREATION_TIME = "CreationTime";
 
+    String SSO_SESSION_LAST_ACCESSED_TIME = "LastAccessedTime";
+
+    String SSO_SESSION_TOTAL_ACCESSES = "TotalAccesses";
+
+    String SSO_SESSION_MAX_INACTIVE_INTERVAL = "MaxInactiveInterval";
+
     String SSO_SESSION_SEC_TKN_ID = "SecurityTokenID";
 
     String SSO_SESSION_SEC_TKN_NAME_ID = "SecurityTokenNameID";
 
+    // WARNING : Keep this in SYNC ..
     String[] SSO_SESSION = { SSO_SESSION_ID, SSO_SESSION_VALID, SSO_SESSION_USERNAME, SSO_SESSION_CREATION_TIME,
+            SSO_SESSION_LAST_ACCESSED_TIME, SSO_SESSION_TOTAL_ACCESSES, SSO_SESSION_MAX_INACTIVE_INTERVAL,
             SSO_SESSION_SEC_TKN_ID, SSO_SESSION_SEC_TKN_NAME_ID };    
 
     TabularData listStatesAsTable();

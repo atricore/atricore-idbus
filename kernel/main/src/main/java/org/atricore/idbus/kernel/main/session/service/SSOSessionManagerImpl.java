@@ -61,11 +61,22 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
     private boolean _invalidateExceedingSessions = false;
 
+    @Deprecated
     private String _securityDomainName;
 
     private String _node;
 
     private ConfigurationContext _config;
+
+    // Some statistical information:
+
+    private long _statsMaxSessions;
+
+    private long _statsCreatedSessions;
+
+    private long _statsDestroyedSessions;
+
+    private long _statsCurrentSessions;
 
     /**
      * This implementation uses a MemoryStore and a defaylt Session Id generator.
@@ -216,6 +227,20 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         // Store the session
         _store.save(session);
 
+        // Update statistics:
+        synchronized (this) {
+            // Number of created sessions
+            _statsCreatedSessions ++;
+
+            // Number of valid sessions (should match the store count!)
+            _statsCurrentSessions ++;
+
+            // Max number of concurrent sessions
+            if (_statsMaxSessions < _statsCurrentSessions)
+                _statsMaxSessions = _statsCurrentSessions;
+
+        }
+
         session.fireSessionEvent(BaseSession.SESSION_CREATED_EVENT, null);
 
         // Return its id.
@@ -343,6 +368,18 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         // Remove it from the store
         try {
             _store.remove(sessionId);
+
+        // Update statistics:
+        synchronized (this) {
+            // Number of created sessions
+            _statsDestroyedSessions ++;
+
+            // Number of valid sessions (should match the store count!)
+            _statsCurrentSessions --;
+
+
+        }
+
 
         } catch (SSOSessionException e) {
             logger.warn("Can't remove session from store: " + e.getMessage(), e);
@@ -491,6 +528,28 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         }
 
     }
+
+
+    // ---------------------------------------------------------------
+    // Some stats
+    // ---------------------------------------------------------------
+
+    public long getStatsMaxSessions() {
+        return _statsMaxSessions;
+    }
+
+    public long getStatsCreatedSessions() {
+        return _statsCreatedSessions;
+    }
+
+    public long getStatsDestroyedSessions() {
+        return _statsDestroyedSessions;
+    }
+
+    public long getStatsCurrentSessions() {
+        return _statsCurrentSessions;
+    }
+
 
     // ---------------------------------------------------------------
     // Protected utils.

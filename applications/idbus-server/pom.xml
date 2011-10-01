@@ -81,12 +81,12 @@
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
         <junit.version>4.4</junit.version>
-        <karaf.version>2.2.1</karaf.version>
+        <karaf.version>2.2.3</karaf.version>
         <log4j.version>1.2.16</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
         <ravis.version>1.0.0.RC2</ravis.version>
         <spring.security.version>2.0.4</spring.security.version>
-        <spring.version>3.0.5.RELEASE</spring.version>
+        <spring.version>3.0.6.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
         <velocity.version>1.6.2</velocity.version>
         <xbean.version>3.7</xbean.version>
