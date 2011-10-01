@@ -187,7 +187,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                 }
 
                 // Give time to flush messages TODO : Improve this !!!!
-                try { Thread.sleep(1000); } catch (InterruptedException ie) { /**/ }
+                // WTF !? try { Thread.sleep(1000); } catch (InterruptedException ie) { /**/ }
 
                 state.clearState();
             }
