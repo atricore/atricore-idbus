@@ -374,7 +374,7 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         Bean sessionManager = newBean(spBeans, sp.getName() + "-session-manager",
                 "org.atricore.idbus.kernel.main.session.service.SSOSessionManagerImpl");
 
-        // Properties
+        // Properties (take from config!)
         setPropertyValue(sessionManager, "maxInactiveInterval", "30");
         setPropertyValue(sessionManager, "maxSessionsPerUser", "-1");
         setPropertyValue(sessionManager, "invalidateExceedingSessions", "false");
