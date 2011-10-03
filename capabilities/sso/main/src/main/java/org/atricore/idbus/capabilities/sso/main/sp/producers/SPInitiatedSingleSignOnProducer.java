@@ -117,7 +117,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
                     String destinationLocation = resolveSpBindingACS();
 
-                EndpointDescriptor destination =
+                    EndpointDescriptor destination =
                         new EndpointDescriptorImpl("EmbeddedSPAcs",
                                 "AssertionConsumerService",
                                 SSOBinding.SSO_ARTIFACT.getValue(),

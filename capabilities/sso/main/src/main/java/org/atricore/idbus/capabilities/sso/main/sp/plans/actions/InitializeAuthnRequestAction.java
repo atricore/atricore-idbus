@@ -86,7 +86,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
                 // Set this to non-passive, JOSSO Login will handle subsequent errors.
                 passive = ssoAuthnReq.isPassive();
-                forceAuthn = ssoAuthnReq.isForceAuthn();
+                forceAuthn = ssoAuthnReq.isForceAuthn() != null && ssoAuthnReq.isForceAuthn();
 
             } else {
 
