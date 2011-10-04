@@ -166,9 +166,15 @@ public class SsoLocalBinding extends AbstractMediationBinding {
     public void copyFaultMessageToExchange(CamelMediationMessage faultMessage, Exchange exchange) {
         if (logger.isTraceEnabled())
             logger.trace("Copy Fault to Exchange for Local binding!");
+        logger.warn("'copyFaultMessageToExchange' Not implemented , dumping error to log file");
 
-        // TODO : Is copyFaultMessageToExchange necessary ?
-        logger.warn("'copyFaultMessageToExchange' Not implemented !");
+        MediationMessage m = faultMessage.getMessage();
+        if (m.getFault() != null) {
+            logger.error(m.getFault().getMessage(), m.getFault());
+        }
+
+
+
 
     }
 

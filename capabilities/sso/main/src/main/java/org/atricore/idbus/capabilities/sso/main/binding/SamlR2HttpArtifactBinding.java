@@ -221,7 +221,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
 
             String qryString = "?" + artifactParameterName + "=" + samlArtifactEnc;
             if (out.getRelayState() != null) {
-                qryString += "&relayState=" + relayState;
+                qryString += "&RelayState=" + relayState;
             }
 
             Message httpOut = exchange.getOut();

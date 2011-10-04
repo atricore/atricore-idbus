@@ -123,6 +123,9 @@
                             javax.net.ssl,
                             javax.sql,
                             javax.transaction.xa,
+                            javax.management,
+                            javax.crypto.spec,
+                            org.ietf.jgss,
                             *
                         </Import-Package>
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
