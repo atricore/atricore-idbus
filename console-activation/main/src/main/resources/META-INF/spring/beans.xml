@@ -429,7 +429,7 @@
     </bean>
 
     <bean name="liferay6-installer" class="org.josso.tooling.gshell.install.installer.Liferay6Installer">
-        <constructor-arg index="0" ref="liferay"/>
+        <constructor-arg index="0" ref="liferay6"/>
         <property name="printer" ref="printerServiceBean"/>
     </bean>
 
