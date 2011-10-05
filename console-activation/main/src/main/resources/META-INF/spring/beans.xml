@@ -57,7 +57,8 @@
                 <ref bean="wl92-installer"/>
                 <ref bean="wl10-installer"/>
                 <ref bean="wc21-installer"/>
-                <ref bean="liferay-installer"/>
+                <ref bean="liferay5-installer"/>
+                <ref bean="liferay6-installer"/>
                 <ref bean="alfresco-installer"/>
                 <ref bean="iis-installer-32"/>
                 <ref bean="iis-installer-64"/>
@@ -411,13 +412,13 @@
     </bean>
 
     <!-- Liferay 5.2.x -->
-    <bean name="liferay-installer" class="org.josso.tooling.gshell.install.installer.LiferayInstaller">
-        <constructor-arg index="0" ref="liferay"/>
+    <bean name="liferay5-installer" class="org.josso.tooling.gshell.install.installer.Liferay5Installer">
+        <constructor-arg index="0" ref="liferay5"/>
         <property name="printer" ref="printerServiceBean"/>
     </bean>
 
-    <bean name="liferay" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
-        <property name="id" value="liferay"/>
+    <bean name="liferay5" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="liferay5"/>
         <property name="family" value="liferay"/>
         <property name="platformName" value="Liferay Portal"/>
         <property name="version" value="5.2.x"/>
@@ -426,6 +427,23 @@
         <property name="configDir" value="${target}/WEB-INF/classes"/>
         <property name="JOSSOConfDir" value="${target}/WEB-INF/classes"/>
     </bean>
+
+    <bean name="liferay6-installer" class="org.josso.tooling.gshell.install.installer.Liferay6Installer">
+        <constructor-arg index="0" ref="liferay"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="liferay6" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="liferay6"/>
+        <property name="family" value="liferay"/>
+        <property name="platformName" value="Liferay Portal"/>
+        <property name="version" value="5.2.x"/>
+
+        <property name="libDir" value="${target}/WEB-INF/lib"/>
+        <property name="configDir" value="${target}/WEB-INF/classes"/>
+        <property name="JOSSOConfDir" value="${target}/WEB-INF/classes"/>
+    </bean>
+
 
     <!-- Alfresco 3.3 -->
     <bean name="alfresco-installer" class="org.josso.tooling.gshell.install.installer.AlfrescoInstaller">
