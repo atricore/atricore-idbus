@@ -116,5 +116,6 @@
     <modules>
         <module>features</module>
         <module>idau</module>
+        <module>ui</module>
     </modules>
 </project>

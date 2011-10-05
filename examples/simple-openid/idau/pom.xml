@@ -247,8 +247,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Identity-Appliance-Name>simple-openid</Identity-Appliance-Name>
                         <Bundle-SymbolicName>org.atricore.idbus.examples.simple-openid.idau</Bundle-SymbolicName>
-
+       
                         <!-- TODO : Verify this ...
                                                 -->
 

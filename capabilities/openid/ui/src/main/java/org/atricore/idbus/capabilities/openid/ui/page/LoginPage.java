@@ -14,16 +14,22 @@ import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.ops4j.pax.wicket.api.PaxWicketBean;
+import org.osgi.framework.BundleContext;
 
 public class LoginPage extends BasePage {
 
     private static final Log logger = LogFactory.getLog(LoginPage.class);
+
+    @PaxWicketBean(name = "blueprintBundleContext")
+    private BundleContext context;
 
     @PaxWicketBean(name = "idsuRegistry")
     private IdentityMediationUnitRegistry idsuRegistry;
 
     @PaxWicketBean(name = "artifactQueueManager")
     private MessageQueueManager artifactQueueManager;
+
+    private String variant;
 
     public LoginPage() throws Exception {
         this(null);
@@ -36,6 +42,7 @@ public class LoginPage extends BasePage {
         getSession().bind();
 
         if (parameters != null) {
+
             String artifactId = parameters.getString(SsoHttpArtifactBinding.SSO_ARTIFACT_ID);
 
 
@@ -63,6 +70,7 @@ public class LoginPage extends BasePage {
                         parameters.put("statusMessageKey", "claims.text.invalidCredentials");
                     }
 
+                    variant = claimsRequest.getIssuerChannel().getSkin();
                 } else {
                     logger.debug("No claims request received!");
                 }
@@ -78,4 +86,8 @@ public class LoginPage extends BasePage {
         add(new OpenIDSignInPanel("signIn", claimsRequest, artifactQueueManager, idsuRegistry ));
     }
 
+    @Override
+    public String getVariation() {
+        return variant;
+    }
 }

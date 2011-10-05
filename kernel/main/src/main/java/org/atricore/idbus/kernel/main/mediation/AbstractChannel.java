@@ -37,6 +37,7 @@ public abstract class AbstractChannel implements Channel, Serializable {
     private String name;
     private String description;
     private String location;
+    private String skin;
     private Collection<IdentityMediationEndpoint> identityMediationEndpoints;
     private transient IdentityMediator identityMediator;
     private transient IdentityMediationUnitContainer identityMediationUnitContainer;
@@ -65,6 +66,14 @@ public abstract class AbstractChannel implements Channel, Serializable {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 
     public IdentityMediationUnitContainer getUnitContainer() {

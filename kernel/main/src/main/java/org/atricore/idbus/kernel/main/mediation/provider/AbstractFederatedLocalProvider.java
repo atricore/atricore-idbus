@@ -42,89 +42,59 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public abstract class AbstractFederatedProvider implements FederatedProvider {
+public abstract class AbstractFederatedLocalProvider extends AbstractFederatedProvider
+        implements FederatedLocalProvider, BundleContextAware  {
 
-    private static final Log logger = LogFactory.getLog(FederatedProvider.class);
+    private static final Log logger = LogFactory.getLog(AbstractFederatedLocalProvider.class);
 
-    private String name;
+    private BindingChannel bindingChannel;
 
-    private String description;
+    private transient ProviderStateManager stateManager;
 
-    private String role;
+    private transient CircleOfTrustManager cotManager;
 
-    private FederationChannel channel;
+    private transient IdentityMediationUnitContainer unitContainer;
 
-    private Set<FederationChannel> channels = new HashSet<FederationChannel>();
+    private transient BundleContext bundleContext;
 
-    private CircleOfTrust circleOfTrust;
-
-    private String skin;
-
-
-    public String getName() {
-        return name;
+    public BindingChannel getBindingChannel() {
+        return bindingChannel;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setBindingChannel(BindingChannel bindingChannel) {
+        this.bindingChannel = bindingChannel;
     }
 
-    public String getDescription() {
-        return description;
+    public BundleContext getBundleContext() {
+        return bundleContext;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 
-    public String getRole() {
-        return role;
+    public IdentityMediationUnitContainer getUnitContainer() {
+        return unitContainer;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setUnitContainer(IdentityMediationUnitContainer unitContainer) {
+        this.unitContainer = unitContainer;
     }
 
-    public FederationChannel getChannel() {
-        return channel;
+    public ProviderStateManager getStateManager() {
+        return stateManager;
     }
 
-    public void setChannel(FederationChannel channel) {
-        this.channel = channel;
+    public void setStateManager(ProviderStateManager stateManager) {
+        this.stateManager = stateManager;
     }
 
-    public Set<FederationChannel> getChannels() {
-        return channels;
+    public CircleOfTrustManager getCotManager() {
+        return cotManager;
     }
 
-    public CircleOfTrust getCircleOfTrust() {
-        return circleOfTrust;
-    }
-
-    public void setCircleOfTrust(CircleOfTrust circleOfTrust) {
-        this.circleOfTrust = circleOfTrust;
-    }
-
-    public String getSkin() {
-        return skin;
-    }
-
-    public void setSkin(String skin) {
-        this.skin = skin;
-    }
-
-    public List<CircleOfTrustMemberDescriptor> getMembers() {
-
-        List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();
-        for (FederationChannel channel : channels) {
-            members.add(channel.getMember());
-        }
-
-        // Add also the default channel's member
-        if (channel != null)
-            members.add(channel.getMember());
-
-        return members;
+    public void setCotManager(CircleOfTrustManager cotManager) {
+        this.cotManager = cotManager;
     }
 
 }
