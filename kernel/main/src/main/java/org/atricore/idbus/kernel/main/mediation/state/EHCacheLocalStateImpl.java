@@ -65,4 +65,5 @@ public class EHCacheLocalStateImpl extends LocalStateImpl {
         dirty = false;
         removedKeys.clear();
     }
+
 }

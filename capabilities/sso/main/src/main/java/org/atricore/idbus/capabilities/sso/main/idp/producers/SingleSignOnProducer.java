@@ -301,15 +301,39 @@ public class SingleSignOnProducer extends SSOProducer {
             }
         }
 
-        AuthenticationState authnState = this.getAuthnState(exchange);
+        // IF SSO Session is not valid, create a new authn state object
+        AuthenticationState authnState = null;
+        if (!isSsoSessionValid) {
+            if (logger.isTraceEnabled())
+                logger.trace("Creating new AuthnState");
+            authnState = newAuthnState(exchange);
+
+        } else {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Using existing AuthnState, if any");
+
+            authnState = getAuthnState(exchange);
+        }
+
         authnState.setAuthnRequest(authnRequest);
         authnState.setReceivedRelayState(relayState);
         authnState.setResponseMode(responseMode);
         authnState.setResponseFormat(responseFormat);
 
+        if (authnRequest.isForceAuthn() != null && authnRequest.isForceAuthn()) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Forcing authentication for request " + authnRequest.getID());
+
+            isSsoSessionValid = false;
+            // Discard current SSO Session
+        }
+
         if (!isSsoSessionValid) {
 
             SPChannel spChannel = (SPChannel) channel;
+
             // ------------------------------------------------------
             // Handle proxy mode
             // ------------------------------------------------------
@@ -1761,13 +1785,26 @@ public class SingleSignOnProducer extends SSOProducer {
         return mediator.getArtifactQueueManager();
     }
 
+    protected AuthenticationState newAuthnState(CamelMediationExchange exchange) {
+        logger.debug("Creating new AuthenticationState");
+        AuthenticationState state = new AuthenticationState();
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:samlr2:idp:authn-state", state);
+
+        return state;
+    }
+
     protected AuthenticationState getAuthnState(CamelMediationExchange exchange) {
+
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         AuthenticationState state = null;
 
         try {
             state = (AuthenticationState) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:samlr2:idp:authn-state");
+            if (logger.isTraceEnabled())
+                logger.trace("Using existing AuthnState " + state);
         } catch (IllegalStateException e) {
             // This binding does not support provider state ...
             if (logger.isDebugEnabled())
@@ -1779,11 +1816,9 @@ public class SingleSignOnProducer extends SSOProducer {
         }
 
         if (state == null) {
-            logger.debug("Creating new AuthenticationState");
-            state = new AuthenticationState();
-            // Be careful, users COULD be using two IDPs on same JOSSO ... (not very likely, but ...)
-            in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:samlr2:idp:authn-state", state);
+            state = newAuthnState(exchange);
         }
+
         return state;
     }
 

@@ -34,6 +34,9 @@ import java.util.Set;
  */
 public class AuthenticationState implements java.io.Serializable {
 
+    public AuthenticationState() {
+    }
+
     /**
      * SAML received relay state, can be null
      */

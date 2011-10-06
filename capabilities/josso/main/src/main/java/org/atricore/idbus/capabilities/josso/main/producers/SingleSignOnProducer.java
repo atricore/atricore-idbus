@@ -112,48 +112,6 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         // TODO : Support on_error ?
         SPInitiatedAuthnRequestType request = buildAuthnRequest(exchange, idpAlias);
 
-        if (username != null && password != null) {
-
-            if (logger.isDebugEnabled())
-                logger.debug("Initializing Authnentiation request w/credentials");
-
-            // Send credentials with authn request:
-            UsernameTokenType usernameToken = new UsernameTokenType ();
-            AttributedString usernameString = new AttributedString();
-            usernameString.setValue( username );
-
-            usernameToken.setUsername( usernameString );
-            usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password );
-
-            CredentialType ct = new CredentialType();
-            ct.setAny(usernameToken);
-
-            request.getCredentials().add(ct);
-
-            request.setAuthnCtxClass(AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue());
-
-        } else if (username != null && cmd != null && cmd.equals("impersonate")) {
-            if (logger.isDebugEnabled())
-                logger.debug("Initializing Authnentiation request for impersonation");
-
-            // Send credentials with authn request:
-            UsernameTokenType usernameToken = new UsernameTokenType ();
-            AttributedString usernameString = new AttributedString();
-            usernameString.setValue( username );
-
-            usernameToken.setUsername( usernameString );
-            usernameToken.getOtherAttributes().put(new QName(Constants.IMPERSONATE_NS), password );
-
-            CredentialType ct = new CredentialType();
-            ct.setAny(usernameToken);
-
-            request.setAuthnCtxClass(AuthnCtxClass.ATC_SP_IMPERSONATE_AUTHN_CTX.getValue());
-            request.setForceAuthn(true);
-
-            request.getCredentials().add(ct);
-
-        }
-
         // Create context information
         authnCtx = new JossoAuthnContext();
         authnCtx.setAppId(appId);
@@ -200,11 +158,61 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         if (logger.isDebugEnabled())
             logger.debug(JossoConstants.JOSSO_CMD_VAR + "='" + cmd +"'");
 
+        String username = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_USERNAME_VAR);
+        String password = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_PASSWORD_VAR);
+
+
         // Send all transient vars to SP
         for (String tvarName : in.getMessage().getState().getTransientVarNames()) {
             RequestAttributeType a = new RequestAttributeType();
             a.setName(tvarName);
             a.setValue(in.getMessage().getState().getTransientVariable(tvarName));
+        }
+
+        if (username != null && password != null) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Initializing Authnentiation request w/credentials");
+
+            // Send credentials with authn request:
+            UsernameTokenType usernameToken = new UsernameTokenType ();
+            AttributedString usernameString = new AttributedString();
+            usernameString.setValue( username );
+
+            usernameToken.setUsername( usernameString );
+            usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password );
+
+            CredentialType ct = new CredentialType();
+            ct.setAny(usernameToken);
+
+            req.getCredentials().add(ct);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Received basic credentials for user " + username + ", forcing authentication");
+
+            req.setForceAuthn(true);
+            req.setAuthnCtxClass(AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue());
+
+        } else if (username != null && cmd != null && cmd.equals("impersonate")) {
+            if (logger.isDebugEnabled())
+                logger.debug("Initializing Authnentiation request for impersonation");
+
+            // Send credentials with authn request:
+            UsernameTokenType usernameToken = new UsernameTokenType ();
+            AttributedString usernameString = new AttributedString();
+            usernameString.setValue( username );
+
+            usernameToken.setUsername( usernameString );
+            usernameToken.getOtherAttributes().put(new QName(Constants.IMPERSONATE_NS), password );
+
+            CredentialType ct = new CredentialType();
+            ct.setAny(usernameToken);
+
+            req.setAuthnCtxClass(AuthnCtxClass.ATC_SP_IMPERSONATE_AUTHN_CTX.getValue());
+            req.setForceAuthn(true);
+
+            req.getCredentials().add(ct);
+
         }
 
         return req;
