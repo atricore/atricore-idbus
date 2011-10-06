@@ -58,8 +58,15 @@ public class DisplayErrorController extends AbstractController {
             if (fault != null) {
 
                 String details = fault.getFaultDetails();
+
+                // If fault has no details, use error details:
                 IdentityMediationFault err = fault.getFault();
-                List<String> causes = buildCauses(err);
+                if (details == null)
+                    details = err.getErrorDetails();
+
+
+                List<String> causes = buildCauses(err.getCause());
+
                 ErrorData f = new ErrorData(err.getFaultCode(),
                         err.getSecFaultCode(),
                         err.getStatusDetails(),
@@ -103,12 +110,12 @@ public class DisplayErrorController extends AbstractController {
 
         while (cause != null) {
 
-            Writer errorWriter = new StringWriter();
-            PrintWriter errorPrintWriter = new PrintWriter(errorWriter);
+            //Writer errorWriter = new StringWriter();
+            //PrintWriter errorPrintWriter = new PrintWriter(errorWriter);
 
-            cause.printStackTrace(errorPrintWriter);
-            causes.add(errorWriter.toString());
-
+            //cause.printStackTrace(errorPrintWriter);
+            //causes.add(errorWriter.toString());
+            causes.add(cause.getMessage());
             cause = cause.getCause();
         }
         return causes;

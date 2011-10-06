@@ -59,16 +59,19 @@
                 <c:if test="${not empty IDBusError.details}"><li><c:out value="${IDBusError.details}"/></li></c:if>
             </ul>
 
-            <%-- Error Message
-            <h4><fmt:message key="error.message.label"/></h4>
-            <p><c:out value="${IDBusError.errDetails}"/></p>
 
+            <h3><fmt:message key="error.message.label"/></h3>
+
+            <ul>
+                <c:out value="${IDBusError.errDetails}"/>
+
+            <%-- Error Message --%>
             <c:forEach var="cause" items="${IDBusError.causes}">
                 <h5><fmt:message key="error.causedBy.label"/></h5>
-
                 <p style="font-size:10px;"><c:out value="${cause}"/></p>
             </c:forEach>
-            --%>
+
+            </ul>
 
         </div>
     </c:if>
