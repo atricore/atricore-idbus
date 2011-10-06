@@ -146,7 +146,9 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <!-- EHCache properties -->
         <prop key="ehcache.config">file:${karaf.base}/etc/ehcache.xml</prop>
 
-        <prop key="binding.http.ajax">true</prop>
+        <prop key="binding.http.ajax">false</prop>
+        <prop key="binding.http.followRedirects">true</prop>
+        <prop key="binding.http.localTargetBaseUrl">http://localhost:8081</prop>
     </osgix:cm-properties>
 
     <ctx:property-placeholder properties-ref="kernelProps" />

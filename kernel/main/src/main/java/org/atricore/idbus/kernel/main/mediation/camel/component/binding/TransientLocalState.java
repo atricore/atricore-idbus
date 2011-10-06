@@ -33,4 +33,8 @@ public class TransientLocalState extends AbstractLocalState {
     public Collection<String> getKeys() {
         return vars.keySet();
     }
+
+    public boolean isNew() {
+        return true;
+    }
 }
