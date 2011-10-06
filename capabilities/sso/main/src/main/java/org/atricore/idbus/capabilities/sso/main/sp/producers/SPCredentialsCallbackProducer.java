@@ -56,7 +56,7 @@ public class SPCredentialsCallbackProducer extends SSOProducer {
 
         ssoCredResp.getCredentials().addAll(ssoRequest.getCredentials());
 
-        if (!endpoint.getBinding().equals(SSOBinding.SSO_LOCAL)) {
+        if (!endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.toString())) {
             logger.error("Unsupported binding " + endpoint.getBinding());
         }
 
