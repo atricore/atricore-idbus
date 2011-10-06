@@ -26,6 +26,12 @@ public class AddContentToArtifactResponseAction  extends AbstractSSOAction {
         ArtifactResolveType request = (ArtifactResolveType) in.getContent();
 
         java.lang.Object content = executionContext.getContextInstance().getVariable(VAR_SAMLR2_ARTIFACT);
+
+        if (content == null) {
+            logger.error("No SAML 2.0 Content found for artifact response : " + response.getID());
+            return;
+        }
+
         if (logger.isTraceEnabled())
             logger.trace("Adding SAML 2.0 Content " + content + " to ArtifactResponse " + response.getID());
 

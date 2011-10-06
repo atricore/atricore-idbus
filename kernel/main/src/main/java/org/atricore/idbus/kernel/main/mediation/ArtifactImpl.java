@@ -29,6 +29,7 @@ package org.atricore.idbus.kernel.main.mediation;
  * To change this template use File | Settings | File Templates.
  */
 public class ArtifactImpl implements Artifact {
+
     private String content;
 
     public ArtifactImpl(String content) {

@@ -1230,7 +1230,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
         } else if (availableEndpoint != null) {
             if (logger.isTraceEnabled())
-                logger.trace("Selecting available endpoint : " + requestedEndpoint);
+                logger.trace("Selecting available endpoint : " + availableEndpoint);
 
             status.setCurrentClaimsEndpoint(availableEndpoint);
             status.setCurrentClaimsEndpointTryCount(0);
