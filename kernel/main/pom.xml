@@ -109,12 +109,14 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient-osgi</artifactId>
             <version>${httpclient.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore-osgi</artifactId>
             <version>${httpcore.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
