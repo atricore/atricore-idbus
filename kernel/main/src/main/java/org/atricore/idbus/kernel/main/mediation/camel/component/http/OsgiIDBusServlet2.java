@@ -57,7 +57,7 @@ import java.util.*;
  */
 public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
-    private static final Log logger = LogFactory.getLog(OsgiIDBusServlet.class);
+    private static final Log logger = LogFactory.getLog(OsgiIDBusServlet2.class);
 
     private IdentityMediationUnitRegistry registry;
 
