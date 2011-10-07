@@ -51,6 +51,8 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
+ * @Deprecated use OsgiIDBusServlet2
+ *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id$
  */

@@ -46,6 +46,10 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
         if (req.getHeader("IDBUS-PROXIED-REQUEST") != null)
             return false;
 
+        // Do not proxy POST methods
+        if (!req.getMethod().equals("GET"))
+            return false;
+
         // Do not proxy SOAP requests
         if (req.getPathInfo().contains("/SOAP"))
             return false;

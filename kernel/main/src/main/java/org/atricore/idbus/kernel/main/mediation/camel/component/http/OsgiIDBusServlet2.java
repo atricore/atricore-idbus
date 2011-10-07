@@ -48,6 +48,11 @@ import java.net.URL;
 import java.util.*;
 
 /**
+ * This servlet can follow redirects internally. If a redirect  location targets the same IDBus server,
+ * it process it internally, without sending it to the browser.
+ *
+ * An improved version of the servlet could actually act as a proxy/client for external redirects or even to process HTML
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class OsgiIDBusServlet2 extends CamelContinuationServlet {
@@ -119,17 +124,19 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         URI reqUri = proxyReq.getURI();
         String cookieDomain = reqUri.getHost();
 
-        // Create HTTP CLient (TODO : We can improve performance by using statefull connections .. ?!)
+        // Create HTTP Client
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
+        // Create an HTTP Context to publish resources for our client components
         HttpContext httpContext = new BasicHttpContext();
+
         // Publish the original request, it will be removed from the context later, on the first internal redirect.
         httpContext.setAttribute("org.atricorel.idbus.kernel.main.binding.http.HttpServletRequest", req);
 
-        // Replace default request cookie interceptor
+        // Tailor client, we need to send the cookies received from the browser on all requests.
+        // Replace default request cookie handling interceptor
         int intIdx = 0;
         for (int i = 0 ; i < httpClient.getRequestInterceptorCount(); i++) {
-
             if (httpClient.getRequestInterceptor(i) instanceof RequestAddCookies) {
                 intIdx = i;
                 break;
@@ -137,11 +144,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         }
 
         IDBusRequestAddCookies interceptor = new IDBusRequestAddCookies(cookieDomain);
-
         httpClient.removeRequestInterceptorByClass(RequestAddCookies.class);
         httpClient.addRequestInterceptor(interceptor, intIdx);
 
-
+        // Configure client, disable following redirects, we want to be in control of redirecting
         httpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
         httpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
 
@@ -151,9 +157,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
         HttpResponse proxyRes = null;
 
-        // Store received headers and send them back
+        // Store received headers and send them back to the browser
         List<Header> storedHeaders = new ArrayList<Header>(40);
-
 
         boolean followTargetUrl = true;
 
@@ -161,29 +166,21 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
             if (logger.isTraceEnabled())
                 logger.trace("Sending internal request " + proxyReq);
+
+            // Actually execute the request
             proxyRes = httpClient.execute(proxyReq, httpContext);
             String targetUrl = null;
 
-            // store received  cookie headers!
+            // Store some of the received HTTP headers, Set-Cookie are the most important ones
             Header[] headers = proxyRes.getAllHeaders();
             for (Header header : headers) {
-                if (header.getName().equals("Server"))
-                    continue;
-
-                if (header.getName().equals("Transfer-Encoding"))
-                    continue;
-
-                if (header.getName().equals("Location"))
-                    continue;
-
-                if (header.getName().equals("Expires"))
-                    continue;
-
-                if (header.getName().equals("Content-Length"))
-                    continue;
-
-                if (header.getName().equals("Content-Type"))
-                    continue;
+                // Ignored headers
+                if (header.getName().equals("Server")) continue;
+                if (header.getName().equals("Transfer-Encoding")) continue;
+                if (header.getName().equals("Location")) continue;
+                if (header.getName().equals("Expires")) continue;
+                if (header.getName().equals("Content-Length")) continue;
+                if (header.getName().equals("Content-Type")) continue;
 
                 storedHeaders.add(header);
 
@@ -192,9 +189,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             if (logger.isTraceEnabled())
                 logger.trace("HTTP/STATUS:" + proxyRes.getStatusLine().getStatusCode() + "["+proxyReq+"]");
 
+            // Based on the status, we may need to follow redirects
+            // We could convert this into HTTP Client components (req/res interceptors, etc)
             switch (proxyRes.getStatusLine().getStatusCode()) {
                 case 200:
-                    // TODO : Support following HTTP POST binding !?
                     followTargetUrl = false;
                     break;
                 case 404:
@@ -264,7 +262,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                         }
 
                     }
-                    // do something useful with the response
+
                 } catch (IOException ex) {
                     // In case of an IOException the connection will be released
                     // back to the connection manager automatically
@@ -326,6 +324,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         }
 
         // Cookies are automatically managed by the client :)
+        // Mark request as PROXIED, so that we don't get into an infinite loop
         HttpRequestBase proxyReq = new HttpGet(targetUrl);
         proxyReq.addHeader("IDBUS-PROXIED-REQUEST", "TRUE");
 
@@ -356,6 +355,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         }
 
         proxyReq = new HttpGet(targetUrl.toString());
+        // Mark request as PROXIED, so that we don't get into an infinite loop
         proxyReq.addHeader("IDBUS-PROXIED-REQUEST", "TRUE");
         // Add incoming headers, like cookies!
         Enumeration<String> hNames = req.getHeaderNames();
@@ -363,7 +363,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             String hName = hNames.nextElement();
             proxyReq.addHeader(hName, req.getHeader(hName));
 
-            // TODO : Add cookies to cookie store, or it's automatically done by client ?!
+            // Received cookies will be added to HTTP Client cookie store by our own cookie interceptor
         }
 
         return proxyReq;

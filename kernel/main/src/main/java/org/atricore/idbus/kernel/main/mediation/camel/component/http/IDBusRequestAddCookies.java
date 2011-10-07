@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
+ * Extends the default 'RequestAddCookies' initializing the client cookie store with the recevied cookies from the browser
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class IDBusRequestAddCookies extends RequestAddCookies {
@@ -33,7 +35,6 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
         HttpServletRequest originalRequest = (HttpServletRequest) context.getAttribute("org.atricorel.idbus.kernel.main.binding.http.HttpServletRequest");
 
         if (originalRequest != null) {
-            // TODO : Sevlet cookies to cookie store
 
             // Obtain cookie store
             CookieStore cookieStore = (CookieStore) context.getAttribute(
@@ -43,6 +44,7 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
                 return;
             }
 
+            // Convert received servlet cookies to HTTP client cookies
             if (originalRequest.getCookies() != null) {
                 for (javax.servlet.http.Cookie svltCookie : originalRequest.getCookies()) {
                     Cookie clientCookie = toClientCookie(context, svltCookie);

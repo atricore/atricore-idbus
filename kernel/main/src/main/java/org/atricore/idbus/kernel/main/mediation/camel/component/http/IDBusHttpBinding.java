@@ -54,12 +54,8 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
     @Override
     public void readRequest(HttpServletRequest httpServletRequest, HttpMessage httpMessage) {
 
-        if (!(httpServletRequest instanceof InternalHttpServletRequest)) {
-            logger.trace("Reading HTTP Servlet Request");
-            super.readRequest(httpServletRequest, httpMessage);
-        } else {
-            logger.trace("Detected Internal HTTP Servlet Request, ready to process");
-        }
+        logger.trace("Reading HTTP Servlet Request");
+        super.readRequest(httpServletRequest, httpMessage);
 
         if (httpServletRequest.getCookies() != null) {
             for (Cookie cookie : httpServletRequest.getCookies()) {
@@ -101,11 +97,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
 
         }
 
-        if (!(httpServletResponse instanceof InternalHttpServletResponse)) {
-            logger.trace("Writting HTTP Servlet Response");
-            super.doWriteResponse(message, httpServletResponse);
-        } else {
-            logger.trace("Detected Internal HTTP Servlet Response, don't write");
-        }
+        logger.trace("Writting HTTP Servlet Response");
+        super.doWriteResponse(message, httpServletResponse);
     }
 }
