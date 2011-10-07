@@ -38,14 +38,15 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- =================================================================== -->
     <!-- Artifact Queue Manager service definition                           -->
     <!-- =================================================================== -->
-    <!--
+
     <bean name="aqm"
           class="org.atricore.idbus.kernel.main.mediation.MemoryMessageQueueManager"
           depends-on="aqmBroker"
           init-method="init"
           destroy-method="shutDown">
     </bean>
-    -->
+
+    <!--
     <bean name="aqm"
           class="org.atricore.idbus.kernel.main.mediation.ActiveMQMessageQueueManager"
           depends-on="aqmBroker"
@@ -74,6 +75,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
             </bean>
         </property>
     </bean>
+    -->
 
     <osgi:service id="aqmExport" ref="aqm"
                   interface="org.atricore.idbus.kernel.main.mediation.MessageQueueManager" />

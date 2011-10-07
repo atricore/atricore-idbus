@@ -72,6 +72,9 @@
         <hibernate.entitymanager.version>3.4.0.GA</hibernate.entitymanager.version>
         <hibernate.annotations.version>3.4.0.GA</hibernate.annotations.version>
         <hibernate.commons.annotations.version>3.1.0.GA</hibernate.commons.annotations.version>
+        <httpclient.version>4.1.2</httpclient.version>
+        <httpcore.version>4.1.3</httpcore.version>
+
 
         <jbpm.jpdl.version>3.3.1.GA</jbpm.jpdl.version>
         <javax.jdo.version>3.0</javax.jdo.version>
@@ -274,6 +277,24 @@
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
                 <version>${servlet.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient-osgi</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcore</groupId>
+                <artifactId>httpcore-osgi</artifactId>
+                <version>${httpcore.version}</version>
             </dependency>
 
             <dependency>

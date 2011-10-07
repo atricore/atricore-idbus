@@ -29,10 +29,14 @@ package org.atricore.idbus.kernel.main.mediation;
  * To change this template use File | Settings | File Templates.
  */
 public class ArtifactImpl implements Artifact {
+
+    private long creationTime;
+
     private String content;
 
     public ArtifactImpl(String content) {
         this.content = content;
+        this.creationTime = System.currentTimeMillis();
     }
 
     public String getContent() {
@@ -45,6 +49,10 @@ public class ArtifactImpl implements Artifact {
 
     public static Artifact newInstance(String content) {
         return new ArtifactImpl(content);
+    }
+
+    public long getCreationTime() {
+        return creationTime;
     }
 
     @Override

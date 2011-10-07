@@ -194,8 +194,8 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                         logger.trace("LocalState instance removed for alternative key " + removedKey);
                 }
 
-                // Give time to flush messages TODO : Improve this !!!!
-                // WTF !? try { Thread.sleep(1000); } catch (InterruptedException ie) { /**/ }
+                // TODO : Give time to flush messages in cluster (IMPROVE THIS) !!!!
+                // try { Thread.sleep(1000); } catch (InterruptedException ie) { /**/ }
 
                 state.clearState();
             }

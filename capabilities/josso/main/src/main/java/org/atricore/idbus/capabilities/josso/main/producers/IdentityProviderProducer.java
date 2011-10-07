@@ -179,7 +179,8 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
         JossoAuthenticationAssertion assertion = authnCtx != null ? authnCtx.getAuthnAssertion() : null;
 
         if (assertion == null) {
-            logger.warn("No JOSSO Authentication Assertion found for ID " + assertionId);
+            logger.error("No JOSSO Authentication Assertion found for ID " + assertionId);
+            logger.error("Make sure you're using the right SOAP endpoints on your agent configuration (check execution environment name on endpoint URIs)");
         } else {
             if (logger.isDebugEnabled())
                 logger.debug("Found JOSSO Authentication Assertion " + assertion.getId());
