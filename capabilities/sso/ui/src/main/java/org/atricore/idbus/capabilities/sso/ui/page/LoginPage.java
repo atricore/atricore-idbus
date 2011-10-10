@@ -1,22 +1,21 @@
-package org.atricore.idbus.capabilities.openid.ui.page;
+package org.atricore.idbus.capabilities.sso.ui.page;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.authentication.panel.SignInPanel;
-import org.atricore.idbus.capabilities.openid.ui.BasePage;
-import org.atricore.idbus.capabilities.openid.ui.internal.OpenIDWebSession;
-import org.atricore.idbus.capabilities.openid.ui.panel.OpenIDSignInPanel;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.atricore.idbus.capabilities.sso.ui.BasePage;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
+import org.atricore.idbus.capabilities.sso.ui.panel.UsernamePasswordSignInPanel;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
-import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.ops4j.pax.wicket.api.PaxWicketBean;
 import org.osgi.framework.BundleContext;
 
-public class LoginPage extends BasePage {
+public abstract class LoginPage extends BasePage {
 
     private static final Log logger = LogFactory.getLog(LoginPage.class);
 
@@ -54,7 +53,7 @@ public class LoginPage extends BasePage {
 
                 if (claimsRequest != null) {
 
-                    ((OpenIDWebSession)getSession()).setClaimsRequest(claimsRequest);
+                    ((SSOWebSession)getSession()).setClaimsRequest(claimsRequest);
 
                     if (logger.isDebugEnabled())
                         logger.info("Received claims request " + claimsRequest.getId() +
@@ -76,18 +75,21 @@ public class LoginPage extends BasePage {
                 }
 
             } else {
-                claimsRequest = ((OpenIDWebSession)getSession()).getClaimsRequest();
+                claimsRequest = ((SSOWebSession)getSession()).getClaimsRequest();
             }
 
         }
 
         logger.info("claimsRequest = " + claimsRequest);
 
-        add(new OpenIDSignInPanel("signIn", claimsRequest, artifactQueueManager, idsuRegistry ));
+        add(prepareSignInPanel("signIn", claimsRequest, artifactQueueManager, idsuRegistry));
     }
 
     @Override
     public String getVariation() {
         return variant;
     }
+
+    abstract protected Panel prepareSignInPanel(final String id, ClaimsRequest claimsRequest, MessageQueueManager artifactQueueManager,
+                                                final IdentityMediationUnitRegistry idsuRegistry);
 }

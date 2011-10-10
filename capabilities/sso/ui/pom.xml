@@ -27,16 +27,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.atricore.idbus.capabilities.openid</groupId>
-        <artifactId>openid</artifactId>
+        <groupId>org.atricore.idbus.capabilities.sso</groupId>
+        <artifactId>sso</artifactId>
         <version>1.3.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.atricore.idbus.capabilities.openid</groupId>
-    <artifactId>org.atricore.idbus.capabilities.openid.ui</artifactId>
+    <groupId>org.atricore.idbus.capabilities.sso</groupId>
+    <artifactId>org.atricore.idbus.capabilities.sso.ui</artifactId>
     <version>1.3.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Atricore IDBus :: Capability : OpenID UI Component</name>
+    <name>Atricore IDBus :: Capability : SSO UI Component</name>
 
     <properties>
         <idbus.cap.sso.version>1.3.0-SNAPSHOT</idbus.cap.sso.version>
@@ -73,13 +73,6 @@
             <groupId>org.apache.karaf.jaas</groupId>
             <artifactId>org.apache.karaf.jaas.modules</artifactId>
             <version>${karaf.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.atricore.idbus.capabilities.sso</groupId>
-            <artifactId>org.atricore.idbus.capabilities.sso.ui</artifactId>
-            <version>${idbus.cap.sso.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -360,12 +353,12 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>
-                                     org.atricore.idbus.capabilities.openid.ui.internal.Activator
+                                     org.atricore.idbus.capabilities.sso.ui.internal.Activator
                         </Bundle-Activator>
-                        <Export-Package>org.atricore.idbus.capabilities.openid.ui.*;version=${pom.version}
+                        <Export-Package>org.atricore.idbus.capabilities.sso.ui.*;version=${pom.version}
                         </Export-Package>
                         <Import-Package>
-                           !org.atricore.idbus.capabilities.openid.ui*,
+                           !org.atricore.idbus.capabilities.sso.ui*,
                             *,<!-- let bnd import direct dependencies -->
                             org.apache.wicket.settings,
                             org.apache.wicket.session,

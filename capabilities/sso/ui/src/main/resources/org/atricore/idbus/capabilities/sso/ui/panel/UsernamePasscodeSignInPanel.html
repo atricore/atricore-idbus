@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns:wicket>
+<body>
+<wicket:panel>
+
+    <div id="authentication">
+
+        <div class="message error">
+            <span wicket:id="feedback"/>
+        </div>
+
+        <div id="subwrapper">
+
+            <div class="main">
+                <h2><wicket:message key="claims.title.userLogin"/></h2>
+
+                <p><wicket:message key="claims.text.usernamePasscodeLogin"/></p>
+
+                <form wicket:id="signInForm">
+                    <fieldset>
+                        <div><label for="username">Username</label><input wicket:id="username" cssClass="text" path="username"
+                                                                      tabindex="10"/>
+                        </div>
+                        <div><label for="password">Passcode</label><input wicket:id="passcode" cssClass="text" path="passcode"
+                                                                      tabindex="10"/>
+                        </div>
+                    </fieldset>
+                    <div>
+                        <input class="button indent" type="submit" value="Login"/>
+                    </div>
+                    <br/>
+                    <br/>
+                </form>
+
+                <div class="highlight">
+                    <h3 class="help"><wicket:message key="claims.title.help"/></h3>
+
+                    <p><wicket:message key="claims.text.login.help"/></p>
+
+                    <div class="footer"></div>
+
+                </div>
+                <!-- /highlight -->
+
+            </div>
+            <!-- /main -->
+        </div>
+
+    </div>
+    <!-- /authentication -->
+</wicket:panel>
+</body>
+</html>
+
+
+
+
+
+

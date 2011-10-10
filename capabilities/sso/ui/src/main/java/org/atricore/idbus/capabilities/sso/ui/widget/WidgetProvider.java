@@ -1,4 +1,4 @@
-package org.atricore.idbus.capabilities.openid.ui.widget;
+package org.atricore.idbus.capabilities.sso.ui.widget;
 
 import org.apache.wicket.markup.html.panel.Panel;
 

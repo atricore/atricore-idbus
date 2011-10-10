@@ -1,4 +1,4 @@
-package org.atricore.idbus.capabilities.openid.ui.security;
+package org.atricore.idbus.capabilities.sso.ui.security;
 
 import org.apache.wicket.Request;
 import org.apache.wicket.authentication.AuthenticatedWebSession;

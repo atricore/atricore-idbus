@@ -1,4 +1,4 @@
-package org.atricore.idbus.capabilities.openid.ui;
+package org.atricore.idbus.capabilities.sso.ui;
 
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.html.CSSPackageResource;
