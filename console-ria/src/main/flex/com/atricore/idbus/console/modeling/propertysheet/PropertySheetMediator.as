@@ -3836,7 +3836,8 @@ public class PropertySheetMediator extends IocMediator {
             _jossoActivationCoreSection.partnerAppLocationDomain.text = location.host;
             _jossoActivationCoreSection.partnerAppLocationPort.text = location.port.toString() != "0" ?
                     location.port.toString() : "";
-            _jossoActivationCoreSection.partnerAppLocationPath.text = location.context;
+            _jossoActivationCoreSection.partnerAppLocationContext.text = location.context;
+            _jossoActivationCoreSection.partnerAppLocationPath.text = location.uri;
 
             var ignoredWebResources:String = "";
             if (activation.ignoredWebResources != null) {
@@ -3855,12 +3856,14 @@ public class PropertySheetMediator extends IocMediator {
             _jossoActivationCoreSection.partnerAppLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
             _jossoActivationCoreSection.partnerAppLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
             _jossoActivationCoreSection.partnerAppLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+            _jossoActivationCoreSection.partnerAppLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
             _jossoActivationCoreSection.partnerAppLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
             _jossoActivationCoreSection.ignoredWebResources.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
             _validators.push(_jossoActivationCoreSection.nameValidator);
             _validators.push(_jossoActivationCoreSection.domainValidator);
+            _validators.push(_jossoActivationCoreSection.contextValidator);
             _validators.push(_jossoActivationCoreSection.portValidator);
             _validators.push(_jossoActivationCoreSection.pathValidator);
         }
@@ -3877,7 +3880,8 @@ public class PropertySheetMediator extends IocMediator {
             activation.partnerAppLocation.protocol = _jossoActivationCoreSection.partnerAppLocationProtocol.selectedItem.label;
             activation.partnerAppLocation.host = _jossoActivationCoreSection.partnerAppLocationDomain.text;
             activation.partnerAppLocation.port = parseInt(_jossoActivationCoreSection.partnerAppLocationPort.text);
-            activation.partnerAppLocation.context = _jossoActivationCoreSection.partnerAppLocationPath.text;
+            activation.partnerAppLocation.context = _jossoActivationCoreSection.partnerAppLocationContext.text;
+            activation.partnerAppLocation.uri = _jossoActivationCoreSection.partnerAppLocationPath.text;
             var ignoredWebResources:Array = _jossoActivationCoreSection.ignoredWebResources.text.split(",");
             if (activation.ignoredWebResources == null) {
                 activation.ignoredWebResources = new ArrayCollection();

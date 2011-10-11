@@ -29,7 +29,9 @@
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{connectionName}" required="true" property="text"/>
         <utils:URLPartValidator id="domainValidator" source="{partnerAppLocationDomain}" required="true" property="text"/>
-        <utils:URLPartValidator id="pathValidator" source="{partnerAppLocationPath}" required="false" property="text"/>
+        <utils:URLPartValidator id="contextValidator" source="{partnerAppLocationContext}" required="false" property="text"/>
+        <utils:URLMultipartValidator id="pathValidator" source="{partnerAppLocationPath}" required="false" property="text"/>
+
         <mx:NumberValidator id="portValidator" source="{partnerAppLocationPort}" required="false" property="text"
                             minValue="1" maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.portValidationError')}"/>
@@ -62,6 +64,8 @@
             <s:TextInput id="partnerAppLocationDomain" width="150"/>
             <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
             <s:TextInput id="partnerAppLocationPort" width="40"/>
+            <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+            <s:TextInput id="partnerAppLocationContext" styleName="locationInput" width="100"/>
             <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
             <s:TextInput id="partnerAppLocationPath" styleName="locationInput" width="100"/>
         </mx:FormItem>

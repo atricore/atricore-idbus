@@ -85,6 +85,7 @@ public class ActivationCreateMediator extends IocFormMediator {
         view.activationDomain.text = "";
         view.activationPort.text = "";
         view.activationContext.text = "";
+        view.activationPath.text = "";
         view.activationPartnerAppId.text = "";
 
         FormUtility.clearValidationErrors(_validators);
@@ -118,6 +119,7 @@ public class ActivationCreateMediator extends IocFormMediator {
         loc.host = view.activationDomain.text;
         loc.port = parseInt(view.activationPort.text);
         loc.context = view.activationContext.text;
+        loc.uri = view.activationPath.text;
 
         activation.partnerAppId = view.activationPartnerAppId.text;
 
@@ -171,6 +173,7 @@ public class ActivationCreateMediator extends IocFormMediator {
         _validators.push(view.portValidator);
         _validators.push(view.domainValidator);
         _validators.push(view.pathValidator);
+
     }
 
 

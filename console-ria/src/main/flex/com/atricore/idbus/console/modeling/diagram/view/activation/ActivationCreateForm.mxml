@@ -37,8 +37,15 @@
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{activationDomain}" required="true" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
-        <utils:URLPartValidator id="pathValidator" source="{activationContext}" required="false" property="text"
+        <utils:URLPartValidator id="contextValidator" source="{activationContext}" required="true" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
+
+        <utils:URLMultipartValidator id="pathValidator" source="{activationPath}" required="false" property="text"
+                        trigger="{btnOk}" triggerEvent="click"/>
+
+
+
+
     </fx:Declarations>
     
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'activation.name')}:" required="true">
@@ -69,6 +76,8 @@
         <s:TextInput id="activationPort" width="40"/>
         <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
         <s:TextInput id="activationContext" width="140"/>
+        <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="activationPath" width="140"/>
     </mx:FormItem>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
