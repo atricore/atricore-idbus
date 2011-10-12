@@ -3,7 +3,7 @@
 
     <wicket:application id="SSOWebUI"
         class="org.atricore.idbus.capabilities.sso.ui.internal.SSOUIApplication"
-        applicationName="openIdWebUI" mountPoint="sso" />
+        applicationName="ssoWebUI" mountPoint="sso" />
 
     <reference id="artifactQueueManager" timeout="60"
                interface="org.atricore.idbus.kernel.main.mediation.MessageQueueManager"
