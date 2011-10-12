@@ -33,9 +33,14 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
 
         // See if we're redirected to the same host we started processing
         StringBuffer originalUrl = originalReq.getRequestURL();
-        int ctxPos = originalUrl.indexOf(originalReq.getContextPath());
+        String ctxPath = originalReq.getContextPath();
+        if (ctxPath.equals("")) {
+            // TODO : Root context needs special treatment.
+            throw new RuntimeException("Cannot work with mediation on root context !");
+        }
 
-        return redirectUrl.startsWith(originalUrl.substring(0, ctxPos));
+        int ctxEnd = originalUrl.indexOf(ctxPath) + ctxPath.length();
+        return redirectUrl.startsWith(originalUrl.substring(0, ctxEnd));
 
 
     }
