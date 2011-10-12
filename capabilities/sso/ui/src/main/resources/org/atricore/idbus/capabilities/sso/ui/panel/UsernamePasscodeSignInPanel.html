@@ -14,14 +14,14 @@
             <div class="main">
                 <h2><wicket:message key="claims.title.userLogin"/></h2>
 
-                <p><wicket:message key="claims.text.usernamePasscodeLogin"/></p>
+                <p><wicket:message key="claims.text.userLogin"/></p>
 
                 <form wicket:id="signInForm">
                     <fieldset>
-                        <div><label for="username">Username</label><input wicket:id="username" cssClass="text" path="username"
+                        <div><label for="username"><wicket:message key="claims.label.username"/></label><input wicket:id="username" cssClass="text" path="username"
                                                                       tabindex="10"/>
                         </div>
-                        <div><label for="password">Passcode</label><input wicket:id="passcode" cssClass="text" path="passcode"
+                        <div><label for="passcode"><wicket:message key="claims.label.passcode"/></label><input wicket:id="passcode" cssClass="text" path="passcode"
                                                                       tabindex="10"/>
                         </div>
                     </fieldset>

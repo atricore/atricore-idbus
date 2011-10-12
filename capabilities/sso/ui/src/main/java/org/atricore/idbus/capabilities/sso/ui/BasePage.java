@@ -25,7 +25,7 @@ public class BasePage extends WebPage {
         add(new Image("jossoLogo", new ResourceReference(BasePage.class, "images/josso-logo.png")));
         add(new Image("atricoreLogo", new ResourceReference(BasePage.class, "images/atricore-logo.gif")));
 
-        add(new Label("footer", "OpenID Support"));
+        add(new Label("footer", "Atricore"));
 
     }
 }

@@ -2,6 +2,7 @@ package org.atricore.idbus.capabilities.sso.ui.page;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.atricore.idbus.capabilities.sso.ui.panel.UsernamePasscodeSignInPanel;
 import org.atricore.idbus.capabilities.sso.ui.panel.UsernamePasswordSignInPanel;
@@ -15,6 +16,10 @@ public class StrongLoginPage extends LoginPage {
 
     public StrongLoginPage() throws Exception {
         super();
+    }
+
+    public StrongLoginPage(PageParameters parameters) throws Exception {
+        super(parameters);
     }
 
     protected Panel prepareSignInPanel(String id, ClaimsRequest claimsRequest, MessageQueueManager artifactQueueManager,

@@ -51,7 +51,7 @@
             <version>4.2.0</version>
         </dependency>
 
-        <!-- WICKET DEPENDENCIES -->
+        <!-- WICKET DEPENDENCIES
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>
@@ -67,7 +67,7 @@
             <groupId>org.ops4j.pax.wicket</groupId>
             <artifactId>org.ops4j.pax.wicket.service</artifactId>
             <version>${ops4j.paxwicket.version}</version>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>org.apache.karaf.jaas</groupId>
@@ -367,11 +367,13 @@
                         <Import-Package>
                            !org.atricore.idbus.capabilities.openid.ui*,
                             *,<!-- let bnd import direct dependencies -->
+                            org.atricore.idbus.capabilities.sso.ui,
                             org.apache.wicket.settings,
                             org.apache.wicket.session,
                             org.apache.wicket.util.file,
                             org.apache.wicket.request,
                             org.apache.wicket.ajax,
+                            org.apache.wicket.markup.html,
                             org.apache.wicket.markup.html.link,
                             org.apache.wicket.protocol.http,
 
