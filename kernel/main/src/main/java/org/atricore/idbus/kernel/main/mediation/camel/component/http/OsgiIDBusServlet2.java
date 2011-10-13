@@ -255,11 +255,20 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                     } else {
 
                         // just ignore the content ...
+                        // TODO : We should do something with this!
+
                         byte[] buff = new byte[1024];
+
                         int r = instream.read(buff);
+                        int total = r;
                         while (r > 0) {
-                            instream.read(buff);
+                            r = instream.read(buff);
+                            total += r;
                         }
+
+                        if (total > 0)
+                            logger.warn("Ignoring response content size : " + total);
+
 
                     }
 

@@ -236,8 +236,10 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
             _statsCurrentSessions ++;
 
             // Max number of concurrent sessions
-            if (_statsMaxSessions < _statsCurrentSessions)
+            if (_statsMaxSessions < _statsCurrentSessions) {
                 _statsMaxSessions = _statsCurrentSessions;
+                logger.info("Max concurrent SSO Sessions " + _statsMaxSessions);
+            }
 
         }
 
