@@ -266,7 +266,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                             total += r;
                         }
 
-                        logger.warn("Ignoring response content size : " + total);
+                        if (total > 0)
+                            logger.warn("Ignoring response content size : " + total);
 
 
                     }
