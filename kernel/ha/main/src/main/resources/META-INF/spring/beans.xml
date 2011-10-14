@@ -155,12 +155,11 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="binding.http.followRedirects">true</prop>
         <prop key="binding.http.localTargetBaseUrl">http://localhost:8081</prop>
 
-        <!-- TODO : Not implemented in HTTP bindings -->
-        <prop key="binding.http.loadStateRetryCount">3</prop>
-        <prop key="binding.http.loadStateRetryDelay">200</prop>
+        <prop key="binding.http.loadStateRetryCount">5</prop>
+        <prop key="binding.http.loadStateRetryDelay">100</prop>
 
-        <prop key="binding.soap.loadStateRetryCount">3</prop>
-        <prop key="binding.soap.loadStateRetryDelay">200</prop>
+        <prop key="binding.soap.loadStateRetryCount">5</prop>
+        <prop key="binding.soap.loadStateRetryDelay">100</prop>
 
 
     </osgix:cm-properties>

@@ -237,7 +237,12 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
             } else {
 
-                lState = ctx.retrieve(localStateId);
+                int retryCount = getRetryCount();
+                if (retryCount > 0)
+                    lState = ctx.retrieve(localStateId, retryCount, getRetryDelay());
+                else
+                    lState = ctx.retrieve(localStateId);
+
 
                 if (lState == null) {
 
@@ -747,6 +752,35 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
     protected boolean isEnableAjax() {
         return getConfigurationContext() != null && Boolean.parseBoolean(getConfigurationContext().getProperty("binding.http.ajax"));
+    }
+
+    protected int getRetryCount() {
+        String retryCountStr = getConfigurationContext().getProperty("binding.http.loadStateRetryCount");
+        if (retryCountStr == null)
+            return -1;
+
+        int retryCount = Integer.parseInt(retryCountStr);
+        if (retryCount < 1) {
+            logger.warn("Configuratio property 'binding.http.loadStateRetryCount' cannot be " + retryCount);
+            retryCount = 3;
+        }
+
+        return retryCount;
+    }
+
+    protected long getRetryDelay() {
+        String retryDelayStr = getConfigurationContext().getProperty("binding.http.loadStateRetryDelay");
+        if (retryDelayStr == null)
+            return -1;
+
+        long retryDelay = Long.parseLong(retryDelayStr);
+        if (retryDelay < 0) {
+            logger.warn("Configuratio property 'binding.http.loadStateRetryDelay' cannot be " + retryDelay);
+            retryDelay = 100;
+        }
+
+        return retryDelay;
+
     }
 
 }

@@ -39,6 +39,27 @@ public class ProviderStateContext {
         return provider.getStateManager().retrieve(this, key);
     }
 
+    public LocalState retrieve(String key, int retryCount, long retryDelay) {
+
+        int retries = 0;
+
+        LocalState s = provider.getStateManager().retrieve(this, key);
+        while (s == null && retries < retryCount) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("State not found for ["+key+"], retrying in "+retryDelay+" ms");
+
+            synchronized (this) {
+                try { Thread.sleep(retryDelay); } catch (InterruptedException e) { /**/ }
+            }
+
+            retries ++;
+            s = provider.getStateManager().retrieve(this, key);
+        }
+        return s;
+    }
+
+
     public LocalState retrieve(String keyName, String key) {
         return provider.getStateManager().retrieve(this, keyName, key);
     }

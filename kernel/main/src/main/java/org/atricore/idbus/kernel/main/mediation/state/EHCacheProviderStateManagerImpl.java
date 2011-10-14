@@ -163,9 +163,6 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
             synchronized(s) {
 
                 Element element = new Element(ctx.getProvider().getName() + ":PK:" + state.getId(), state);
-                // Set provider state specific timeouts (in seconds)
-                //element.setTimeToIdle(1800);
-                //element.setTimeToLive(43200);
                 cache.put(element);
                 if (logger.isTraceEnabled())
                     logger.trace("LocalState instance stored for key " + element.getKey());
@@ -186,9 +183,6 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                     if (logger.isTraceEnabled())
                         logger.trace("LocalState instance removed for alternative key " + removedKey);
                 }
-
-                // TODO : Give time to flush messages in cluster (IMPROVE THIS) !!!!
-                // try { Thread.sleep(1000); } catch (InterruptedException ie) { /**/ }
 
                 state.clearState();
             }
