@@ -133,13 +133,27 @@ public class JossoSoapBinding extends AbstractMediationSoapBinding {
                     if (lState == null && ssoSessionId != null) {
                         if (logger.isDebugEnabled())
                             logger.debug("Attempting to restore provider state based on SSO Session ID " + ssoSessionId);
-                        lState = ctx.retrieve("ssoSessionId", ssoSessionId);
+
+                        // Add retries just in case we're in a cluster (they are disabled in non HA setups)
+                        int retryCount = getRetryCount();
+                        if (retryCount > 0) {
+                            lState = ctx.retrieve("ssoSessionId", ssoSessionId, retryCount, getRetryDelay());
+                        } else {
+                            lState = ctx.retrieve("ssoSessionId", ssoSessionId);
+                        }
                     }
 
                     if (lState == null && assertionId != null) {
                         if (logger.isDebugEnabled())
                             logger.debug("Attempting to restore provider state based on Assertion ID " + assertionId);
-                        lState = ctx.retrieve("assertionId", assertionId);
+                        // Add retries just in case we're in a cluster (they are disabled in non HA setups)
+                        int retryCount = getRetryCount();
+                        if (retryCount > 0) {
+                            lState = ctx.retrieve("assertionId", assertionId, retryCount, getRetryDelay());
+                        } else {
+                            lState = ctx.retrieve("assertionId", assertionId);
+                        }
+
                     }
 
                 } 

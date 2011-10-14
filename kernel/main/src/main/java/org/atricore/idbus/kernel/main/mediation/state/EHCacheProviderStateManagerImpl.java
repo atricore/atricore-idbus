@@ -12,7 +12,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.util.StopWatch;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -150,12 +149,6 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     public void store(ProviderStateContext ctx, LocalState s) {
 
-        StopWatch sw = null;
-        if (logger.isTraceEnabled()) {
-            sw = new StopWatch(getClass().getSimpleName());
-            sw.start("store");
-        }
-
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -201,11 +194,6 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
             }
         } finally{
             Thread.currentThread().setContextClassLoader(orig);
-
-            if (logger.isTraceEnabled()) {
-                sw.stop();
-                logger.trace(sw.prettyPrint());
-            }
         }
     }
 
@@ -215,12 +203,6 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
     }
 
     public LocalState retrieve(ProviderStateContext ctx, String keyName, String key) {
-
-        StopWatch sw = null;
-        if (logger.isTraceEnabled()) {
-            sw = new StopWatch(getClass().getSimpleName());
-            sw.start("retrieve");
-        }
 
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
@@ -254,22 +236,10 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
             return null;
         } finally {
             Thread.currentThread().setContextClassLoader(orig);
-
-            if (logger.isTraceEnabled()) {
-                sw.stop();
-                logger.trace(sw.prettyPrint());
-            }
-
         }
     }
 
     public void remove(ProviderStateContext ctx, String key) {
-
-        StopWatch sw = null;
-        if (logger.isTraceEnabled()) {
-            sw = new StopWatch(getClass().getSimpleName());
-            sw.start("remove");
-        }
 
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
@@ -296,22 +266,10 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
             }
         } finally {
             Thread.currentThread().setContextClassLoader(orig);
-
-            if (logger.isTraceEnabled()) {
-                sw.stop();
-                logger.trace(sw.prettyPrint());
-            }
-
         }
     }
 
     public Collection<LocalState> retrieveAll(ProviderStateContext ctx) {
-
-        StopWatch sw = null;
-        if (logger.isTraceEnabled()) {
-            sw = new StopWatch(getClass().getSimpleName());
-            sw.start("retrieveAll");
-        }
 
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -337,12 +295,6 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
         } finally {
             Thread.currentThread().setContextClassLoader(orig);
-
-            if (logger.isTraceEnabled()) {
-                sw.stop();
-                logger.trace(sw.prettyPrint());
-            }
-
         }
 
     }

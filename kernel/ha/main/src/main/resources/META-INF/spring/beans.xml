@@ -150,6 +150,19 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="aqm.useCompression">false</prop>
         <!-- EHCache properties -->
         <prop key="ehcache.config">file:${karaf.base}/etc/ehcache-ha.xml</prop>
+
+        <prop key="binding.http.ajax">false</prop>
+        <prop key="binding.http.followRedirects">true</prop>
+        <prop key="binding.http.localTargetBaseUrl">http://localhost:8081</prop>
+
+        <!-- TODO : Not implemented in HTTP bindings -->
+        <prop key="binding.http.loadStateRetryCount">3</prop>
+        <prop key="binding.http.loadStateRetryDelay">200</prop>
+
+        <prop key="binding.soap.loadStateRetryCount">3</prop>
+        <prop key="binding.soap.loadStateRetryDelay">200</prop>
+
+
     </osgix:cm-properties>
 
 </beans>

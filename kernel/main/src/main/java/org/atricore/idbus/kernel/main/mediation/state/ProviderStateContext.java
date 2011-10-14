@@ -1,5 +1,7 @@
 package org.atricore.idbus.kernel.main.mediation.state;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 
 import java.util.Collection;
@@ -13,6 +15,8 @@ public class ProviderStateContext {
     private FederatedLocalProvider provider;
 
     private ClassLoader cl;
+
+    private static final Log logger = LogFactory.getLog(ProviderStateContext.class);
 
     public ProviderStateContext(FederatedLocalProvider provider, ClassLoader cl) {
         this.provider = provider;
@@ -38,6 +42,27 @@ public class ProviderStateContext {
     public LocalState retrieve(String keyName, String key) {
         return provider.getStateManager().retrieve(this, keyName, key);
     }
+
+    public LocalState retrieve(String keyName, String key, int retryCount, long retryDelay) {
+
+        int retries = 0;
+
+        LocalState s = provider.getStateManager().retrieve(this, keyName, key);
+        while (s == null && retries < retryCount) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("State not found for ["+keyName+"/"+key+"], retrying in "+retryDelay+" ms");
+
+            synchronized (this) {
+                try { Thread.sleep(retryDelay); } catch (InterruptedException e) { /**/ }
+            }
+
+            retries ++;
+            s = provider.getStateManager().retrieve(this, keyName, key);
+        }
+        return s;
+    }
+
 
     public LocalState createState() {
         return provider.getStateManager().createState(this);
