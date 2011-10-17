@@ -68,7 +68,7 @@
         <servicemix.jaxb-impl.version>2.1.6_1</servicemix.jaxb-impl.version>
         <servlet.version>2.5</servlet.version>
         <spring.version>3.0.5.RELEASE</spring.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <spring.osgi.version>1.2.1</spring.osgi.version>
         <xalan.version>2.7.1</xalan.version>
         <xbean.version>3.7</xbean.version>
         <xercesImpl.version>2.9.1</xercesImpl.version>

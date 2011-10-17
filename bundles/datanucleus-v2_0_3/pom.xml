@@ -47,7 +47,7 @@
 
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <jdo.version>2.3.0</jdo.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <spring.osgi.version>1.2.1</spring.osgi.version>
         <spring.version>3.0.5.RELEASE</spring.version>
 
     </properties>
@@ -109,7 +109,7 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.osgi.core</artifactId>
-                <version>${spring.osgi.version}</version>
+                <version>1.2.0</version>
             </dependency>
         </dependencies>
 

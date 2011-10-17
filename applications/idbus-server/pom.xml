@@ -87,7 +87,7 @@
         <ravis.version>1.0.0.RC2</ravis.version>
         <spring.security.version>2.0.4</spring.security.version>
         <spring.version>3.0.5.RELEASE</spring.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <spring.osgi.version>1.2.1</spring.osgi.version>
         <velocity.version>1.6.2</velocity.version>
         <xbean.version>3.7</xbean.version>
         <xalan.version>2.7.1</xalan.version>

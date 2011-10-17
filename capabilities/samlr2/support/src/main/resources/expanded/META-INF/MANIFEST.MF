@@ -12,8 +12,8 @@ Import-Package: org.apache.camel;version="1.6",org.apache.camel.impl;v
  framework.core;version="2.5.6.SEC01",org.springframework.instrument;r
  esolution:=optional;version="2.5.6.SEC01",org.springframework.jmx;ver
  sion="2.5.6.SEC01",org.springframework.jmx.export;version="2.5",org.s
- pringframework.osgi;version="1.2.0",org.springframework.osgi.context;
- version="1.2.0",org.springframework.util;version="2.5.6.SEC01"
+ pringframework.osgi;version="1.2.1",org.springframework.osgi.context;
+ version="1.2.1",org.springframework.util;version="3.0.5-RELEASE"
 Spring-Context: *;timeout:=60;wait-for-dependencies:=true;create-async
  hronously:=false
 Bnd-LastModified: 1260193523468
