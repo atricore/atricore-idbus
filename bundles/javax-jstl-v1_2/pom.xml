@@ -29,14 +29,14 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
     </parent>
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.javax-jstl-v1_2</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <packaging>bundle</packaging>
-    <name>Atricore IDBus :: Bundle : Java JSP STL v1.2.0 OSGi</name>
+    <name>Atricore IDBus :: Bundle : Java JSP STL v1.2.1 OSGi</name>
 
     <properties>
         <jstl.osgi.version>1.2.0</jstl.osgi.version>
@@ -63,8 +63,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Bundle : Java JSP Standard Tag Library v1.2.0</Bundle-Name>
-                        <Bundle-Description>This bundle simply wraps Java JSTL v1.2.0 JARs</Bundle-Description>
+                        <Bundle-Name>Atricore IDBus :: Bundle : Java JSP Standard Tag Library v1.2.1</Bundle-Name>
+                        <Bundle-Description>This bundle simply wraps Java JSTL v1.2.1 JARs</Bundle-Description>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>javax.servlet.jsp.jstl.*;version=${jstl.osgi.version},
                         org.apache.taglibs.*;version=${jstl.osgi.version},

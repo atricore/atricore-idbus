@@ -28,13 +28,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>distributions</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
     </parent>
 
     <groupId>org.atricore.idbus</groupId>
     <artifactId>atricore-idbus</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <name>Atricore :: Distribution : Atricore Identity Bus Standalone</name>
 
     <url>http://www.atricore.org</url>
@@ -96,7 +96,7 @@
         <pax.tinybundles.version>1.3.0</pax.tinybundles.version>
         <servlet.api.version>2.5</servlet.api.version>
         <slf4j.version>1.6.1</slf4j.version>
-        <spring.osgi.version>1.2.1</spring.osgi.version>
+        <spring.osgi.version>1.2.0</spring.osgi.version>
         <spring2.version>2.5.6.SEC02</spring2.version>
         <spring.version>3.0.5.RELEASE</spring.version>
         <sshd.version>0.5.0</sshd.version>
@@ -106,52 +106,52 @@
         <karaf.version>2.2.1</karaf.version>
         <karaf.deployer.war.version>2.1.5</karaf.deployer.war.version>
 
-        <idbus.version>1.2.0</idbus.version>
-        <idbus.kernel.version>1.2.0</idbus.kernel.version>
-        <idbus.examples.version>1.2.0</idbus.examples.version>
-        <idbus.app.server.version>1.2.0</idbus.app.server.version>
+        <idbus.version>1.2.1</idbus.version>
+        <idbus.kernel.version>1.2.1</idbus.kernel.version>
+        <idbus.examples.version>1.2.1</idbus.examples.version>
+        <idbus.app.server.version>1.2.1</idbus.app.server.version>
 
-        <atricore.console.version>1.2.0</atricore.console.version>
+        <atricore.console.version>1.2.1</atricore.console.version>
 
-        <idbus.cap.josso.version>1.2.0</idbus.cap.josso.version>
-        <idbus.cap.saml2.version>1.2.0</idbus.cap.saml2.version>
-        <idbus.cap.spml2.version>1.2.0</idbus.cap.spml2.version>
-        <idbus.cap.sts.version>1.2.0</idbus.cap.sts.version>
-        <idbus.cap.spnego.version>1.2.0</idbus.cap.spnego.version>
+        <idbus.cap.josso.version>1.2.1</idbus.cap.josso.version>
+        <idbus.cap.saml2.version>1.2.1</idbus.cap.saml2.version>
+        <idbus.cap.spml2.version>1.2.1</idbus.cap.spml2.version>
+        <idbus.cap.sts.version>1.2.1</idbus.cap.sts.version>
+        <idbus.cap.spnego.version>1.2.1</idbus.cap.spnego.version>
 
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.2.0</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.2.0</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.2.0</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
-        <idbus.bundle.apache-tiles-jsp-v2_2_2.version>1.2.0</idbus.bundle.apache-tiles-jsp-v2_2_2.version>
-        <idbus.bundle.datanucleus-v2_1_2.version>1.2.0</idbus.bundle.datanucleus-v2_1_2.version>
-        <idbus.bundle.javax-jdo2-v2_3_ec.version>1.2.0</idbus.bundle.javax-jdo2-v2_3_ec.version>
-        <idbus.bundle.javax-jdo-v3_0.version>1.2.0</idbus.bundle.javax-jdo-v3_0.version>
-        <idbus.bundle.javax-jstl-v1_2.version>1.2.0</idbus.bundle.javax-jstl-v1_2.version>
-        <idbus.bundle.josso-ws-v1_2.version>1.2.0</idbus.bundle.josso-ws-v1_2.version>
-        <idbus.bundle.apache-maven-v3_0.version>1.2.0</idbus.bundle.apache-maven-v3_0.version>
-        <idbus.bundle.ehcache-v2_1_0.version>1.2.0</idbus.bundle.ehcache-v2_1_0.version>
-        <idbus.bundle.pax-web-jetty-v0_7_2.version>1.2.0</idbus.bundle.pax-web-jetty-v0_7_2.version>
-        <idbus.bundle.wadi-v2_1_2.version>1.2.0</idbus.bundle.wadi-v2_1_2.version>
-        <idbus.bundle.apacheds-v1_5_7.server.version>1.2.0</idbus.bundle.apacheds-v1_5_7.server.version>
-        <idbus.bundle.ini4j-v0_5_1.version>1.2.0</idbus.bundle.ini4j-v0_5_1.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.2.1</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.2.1</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.2.1</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
+        <idbus.bundle.apache-tiles-jsp-v2_2_2.version>1.2.1</idbus.bundle.apache-tiles-jsp-v2_2_2.version>
+        <idbus.bundle.datanucleus-v2_1_2.version>1.2.1</idbus.bundle.datanucleus-v2_1_2.version>
+        <idbus.bundle.javax-jdo2-v2_3_ec.version>1.2.1</idbus.bundle.javax-jdo2-v2_3_ec.version>
+        <idbus.bundle.javax-jdo-v3_0.version>1.2.1</idbus.bundle.javax-jdo-v3_0.version>
+        <idbus.bundle.javax-jstl-v1_2.version>1.2.1</idbus.bundle.javax-jstl-v1_2.version>
+        <idbus.bundle.josso-ws-v1_2.version>1.2.1</idbus.bundle.josso-ws-v1_2.version>
+        <idbus.bundle.apache-maven-v3_0.version>1.2.1</idbus.bundle.apache-maven-v3_0.version>
+        <idbus.bundle.ehcache-v2_1_0.version>1.2.1</idbus.bundle.ehcache-v2_1_0.version>
+        <idbus.bundle.pax-web-jetty-v0_7_2.version>1.2.1</idbus.bundle.pax-web-jetty-v0_7_2.version>
+        <idbus.bundle.wadi-v2_1_2.version>1.2.1</idbus.bundle.wadi-v2_1_2.version>
+        <idbus.bundle.apacheds-v1_5_7.server.version>1.2.1</idbus.bundle.apacheds-v1_5_7.server.version>
+        <idbus.bundle.ini4j-v0_5_1.version>1.2.1</idbus.bundle.ini4j-v0_5_1.version>
 
 
-        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.2.0</idbus.fragment.mysql-connector-java_v5_1_10.version>
-        <idbus.connectors.jdoidentityvault.version>1.2.0</idbus.connectors.jdoidentityvault.version>
+        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.2.1</idbus.fragment.mysql-connector-java_v5_1_10.version>
+        <idbus.connectors.jdoidentityvault.version>1.2.1</idbus.connectors.jdoidentityvault.version>
 
-        <idbus.idojo.dbidentitystore.version>1.2.0</idbus.idojo.dbidentitystore.version>
-        <idbus.idojo.ldapidentitystore.version>1.2.0</idbus.idojo.ldapidentitystore.version>
-        <idbus.idojo.memoryidentitystore.version>1.2.0</idbus.idojo.memoryidentitystore.version>
-        <idbus.idojo.memorysessionstore.version>1.2.0</idbus.idojo.memorysessionstore.version>
-        <idbus.idojo.dbsessionstore.version>1.2.0</idbus.idojo.dbsessionstore.version>
-        <idbus.idojo.ehcachesessionstore.version>1.2.0</idbus.idojo.ehcachesessionstore.version>
-        <idbus.idojo.serializedsessionstore.version>1.2.0</idbus.idojo.serializedsessionstore.version>
-        <idbus.idojo.strongauthscheme.version>1.2.0</idbus.idojo.strongauthscheme.version>
+        <idbus.idojo.dbidentitystore.version>1.2.1</idbus.idojo.dbidentitystore.version>
+        <idbus.idojo.ldapidentitystore.version>1.2.1</idbus.idojo.ldapidentitystore.version>
+        <idbus.idojo.memoryidentitystore.version>1.2.1</idbus.idojo.memoryidentitystore.version>
+        <idbus.idojo.memorysessionstore.version>1.2.1</idbus.idojo.memorysessionstore.version>
+        <idbus.idojo.dbsessionstore.version>1.2.1</idbus.idojo.dbsessionstore.version>
+        <idbus.idojo.ehcachesessionstore.version>1.2.1</idbus.idojo.ehcachesessionstore.version>
+        <idbus.idojo.serializedsessionstore.version>1.2.1</idbus.idojo.serializedsessionstore.version>
+        <idbus.idojo.strongauthscheme.version>1.2.1</idbus.idojo.strongauthscheme.version>
 
-        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.2.0
+        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.2.1
         </idbus.fragment.mysql-connector-java_v5_1_10.version>
 
-        <idbus.extensions.version>1.2.0</idbus.extensions.version>
+        <idbus.extensions.version>1.2.1</idbus.extensions.version>
 
         <!-- IDBUS 3rd party -->
 

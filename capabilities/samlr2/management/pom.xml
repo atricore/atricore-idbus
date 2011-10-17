@@ -23,12 +23,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
         <artifactId>samlr2</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
     <artifactId>org.atricore.idbus.capabilities.samlr2.management</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : SAML R2 Management Component</name>
 
