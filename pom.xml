@@ -1606,7 +1606,7 @@
                 <module>console-branding/console-ee-branding</module>
                 <module>console-ria</module>
                 <module>console-web</module>
-                <module>console-docs</module>
+                <!--module>console-docs</module-->
 
                 <!-- IDAU for Console -->
                 <module>console-appliance/console-default-idau</module>
