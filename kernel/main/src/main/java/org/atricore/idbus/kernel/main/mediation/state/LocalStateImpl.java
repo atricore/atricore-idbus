@@ -15,11 +15,15 @@ public class LocalStateImpl extends AbstractLocalState {
 
     private static Log logger = LogFactory.getLog(LocalStateImpl.class);
 
+    private boolean newState = false;
+
     private Map<String, Object> values;
+
 
     public LocalStateImpl(String id) {
         super(id);
         values = new HashMap<String, Object>();
+        newState = true;
     }
 
     public void setValue(String key, Object value) {
@@ -47,4 +51,13 @@ public class LocalStateImpl extends AbstractLocalState {
     public Collection<String> getKeys() {
         return values.keySet();
     }
+
+    public boolean isNew() {
+        return newState;
+    }
+
+    public void setNew(boolean b) {
+        this.newState = b;
+    }
 }
+

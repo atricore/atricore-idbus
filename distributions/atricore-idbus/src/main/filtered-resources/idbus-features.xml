@@ -288,13 +288,13 @@
         <bundle start-level="35">mvn:org.apache.ws.security/wss4j/${wss4j.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlbeans/${xmlbeans.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-codec/${commons-codec.bundle.version}</bundle>
-        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-httpclient/${commons-httpclient.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-httpclient/${commons-httpclient-bundle.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-lang/${commons-lang.bundle.version}</bundle>
         <bundle start-level="35">mvn:commons-digester/commons-digester/${commons-digester.version}</bundle>
         <bundle start-level="35">mvn:org.apache.commons/commons-compress/${commons-compress.version}</bundle>
         <!--<bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-beanutils/${commons-beanutils.version}</bundle>-->
         <bundle start-level="35">mvn:org.apache.commons/com.springsource.org.apache.commons.beanutils/${commons-beanutils.version}</bundle>
-        <bundle start-level="35">mvn:commons-collections/commons-collections/${commons-collections.version}</bundle>
+        <bundle start-level="35">mvn:lis commons-collections/commons-collections/${commons-collections.version}</bundle>
         <bundle start-level="35">mvn:org.jdom/com.springsource.org.jdom/${jdom.version}</bundle>
         <!--bundle>mvn:org.apache.commons/com.springsource.org.apache.commons.jxpath/${commons-jxpath.version}</bundle-->
         <bundle start-level="35">mvn:commons-jxpath/commons-jxpath/${commons-jxpath.version}</bundle>
