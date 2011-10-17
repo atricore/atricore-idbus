@@ -42,7 +42,8 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     private boolean init;
 
-    private int receiveRetries = 3;
+    // TODO : Make configurable
+    private int receiveRetries = -1;
 
     private ApplicationContext applicationContext;
 
@@ -183,9 +184,6 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                         logger.trace("LocalState instance removed for alternative key " + removedKey);
                 }
 
-                // Give time to flush messages TODO : Improve this !!!!
-                try { Thread.sleep(1000); } catch (InterruptedException ie) { /**/ }
-
                 state.clearState();
             }
         } finally{
@@ -199,6 +197,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
     }
 
     public LocalState retrieve(ProviderStateContext ctx, String keyName, String key) {
+
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -226,7 +225,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
             }
 
             if (logger.isTraceEnabled())
-                logger.trace("No LocalState instance not found for key " + key);
+                logger.trace("LocalState instance not found for key " + key);
 
             return null;
         } finally {
@@ -265,6 +264,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
     }
 
     public Collection<LocalState> retrieveAll(ProviderStateContext ctx) {
+
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
@@ -279,7 +279,9 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
                 Element element = cache.get(key);
                 if (element.getValue() instanceof LocalState) {
-                    states.add((LocalState) element.getValue());
+                    EHCacheLocalStateImpl s = (EHCacheLocalStateImpl) element.getValue();
+                    s.setNew(false);
+                    states.add(s);
                 }
             }
 
@@ -293,6 +295,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     public LocalState createState(ProviderStateContext ctx) {
         EHCacheLocalStateImpl state = new EHCacheLocalStateImpl(idGen.generateId());
+        state.setNew(true);
         store(ctx, state);
 
         if (logger.isTraceEnabled())
@@ -303,3 +306,4 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
 
 }
+
