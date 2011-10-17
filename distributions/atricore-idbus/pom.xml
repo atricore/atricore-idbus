@@ -153,6 +153,8 @@
 
         <idbus.extensions.version>1.2.1</idbus.extensions.version>
 
+        <josso1.version>1.8.5</josso1.version>
+
         <!-- IDBUS 3rd party -->
 
         <abdera.version>0.4.0-incubating_1</abdera.version>
@@ -1287,7 +1289,18 @@
             <version>${idbus.bundle.josso-ws-v1_2.version}</version>
             <type>pom</type>
         </dependency>
-
+        <dependency>
+            <groupId>org.josso</groupId>
+            <artifactId>components</artifactId>
+            <version>${josso1.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.josso</groupId>
+            <artifactId>josso-parent</artifactId>
+            <version>${josso1.version}</version>
+            <type>pom</type>
+        </dependency>
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
