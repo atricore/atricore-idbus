@@ -68,7 +68,14 @@ public class SsoSoapBinding extends AbstractMediationSoapBinding {
                     String ssoSessionId = (String) getSsoSessionId.invoke(ssoRequestAbstracType);
 
                     ProviderStateContext ctx = createProviderStateContext();
-                    lState = ctx.retrieve("ssoSessionId", ssoSessionId);
+
+                    // Add retries just in case we're in a cluster (they are disabled in non HA setups)
+                    int retryCount = getRetryCount();
+                    if (retryCount > 0) {
+                        lState = ctx.retrieve("ssoSessionId", ssoSessionId, retryCount, getRetryDelay());
+                    } else {
+                        lState = ctx.retrieve("ssoSessionId", ssoSessionId);
+                    }
 
                     if (logger.isDebugEnabled())
                         logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for ssoSessionId " + ssoSessionId);

@@ -26,7 +26,6 @@ public interface LocalState extends java.io.Serializable {
 
     Collection<String> getKeys();
 
-
-
+    boolean isNew();
 
 }

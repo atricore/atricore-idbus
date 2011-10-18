@@ -64,7 +64,7 @@ public class EHCacheSessionIdManager extends AbstractSessionIdManager {
         }
         catch (Exception e)
         {
-            logger.warn("Problem checking inUse for id="+clusterId, e);
+            logger.warn("Problem checking inUse for id=" + clusterId, e);
             return false;
         }
     }

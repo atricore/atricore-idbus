@@ -298,6 +298,20 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
         }
     }
 
+    public synchronized void destroyProcess(Object processId) {
+        JbpmContext jbpmContext = jbpmConfiguration.createJbpmContext();
+        try {
+            jbpmContext.getGraphSession().deleteProcessInstance(toLong(processId));
+
+        } catch (Exception e) {
+            jbpmContext.setRollbackOnly();
+            logger.error(e.getMessage(), e);
+        } finally {
+            jbpmContext.close();
+        }
+
+    }
+
     /**
      * Returns the variables for given a process.
      *
@@ -465,21 +479,24 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
             transientVariables.put(transientVar,  ex.getTransientProperty(transientVar));
         }
 
+
+        Object processId = null;
         try {
             if (processType != null) {
 
                 logger.debug("Starting process '" + processType + "'");
 
                 process = startProcess(processType, processVariables, transientVariables);
-                Object processId = getId(process);
+                processId = getId(process);
 
                 Object state = getState(process);
                 logger.debug("New " + processType + " process started, ID = " + processId + ", state:" + state);
 
                 if (!hasEnded(process)) {
                     logger.warn("Identity Plan process '"+processType+"' [" + processId + "] has not ended, forcing abortion! Check your process definition");
-                    abortProcess(processId);
+                    // we'll destroy it later : abortProcess(processId);
                 }
+
 
             } else {
                 throw new IllegalArgumentException("Process type is missing, cannot start a new process.");
@@ -487,6 +504,9 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
         } catch (Exception e) {
             ex.setStatus(IdentityPlanExecutionStatus.ERROR);
             throw new IdentityPlanningException(e);
+        } finally {
+            if (processId != null)
+                destroyProcess(processId);
         }
 
         // TODO : Can be replaced the out/in ?

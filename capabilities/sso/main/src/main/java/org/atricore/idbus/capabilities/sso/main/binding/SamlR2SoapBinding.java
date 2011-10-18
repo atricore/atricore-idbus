@@ -95,7 +95,15 @@ public class SamlR2SoapBinding extends AbstractMediationSoapBinding {
                             String sessionIndex = sessionIndexes.get(0);
 
                             ProviderStateContext ctx = createProviderStateContext();
-                            lState = ctx.retrieve("idpSsoSessionId", sessionIndex);
+
+                            // Add retries just in case we're in a cluster (they are disabled in non HA setups)
+                            int retryCount = getRetryCount();
+                            if (retryCount > 0) {
+                                lState = ctx.retrieve("idpSsoSessionId", sessionIndex, retryCount, getRetryDelay());
+                            } else {
+                                lState = ctx.retrieve("idpSsoSessionId", sessionIndex);
+                            }
+
 
                             if (logger.isDebugEnabled())
                                 logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for ssoSessionId " + sessionIndex);

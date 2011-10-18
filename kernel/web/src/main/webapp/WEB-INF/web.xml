@@ -37,7 +37,7 @@
 
     <servlet>
         <servlet-name>OsgiIDBusServlet</servlet-name>
-        <servlet-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.OsgiIDBusServlet</servlet-class>
+        <servlet-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.OsgiIDBusServlet2</servlet-class>
     </servlet>
 
     <servlet-mapping>

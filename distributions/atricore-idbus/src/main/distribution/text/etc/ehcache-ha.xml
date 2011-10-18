@@ -30,7 +30,9 @@
                                       properties="port=40001, remoteObjectPort=47001"/>
     <defaultCache
             maxElementsInMemory="10000"
-            eternal="true"
+            eternal="false"
+            timeToIdleSeconds="28800"
+            timeToLiveSeconds="28800"
             overflowToDisk="true">
         <!-- Replicate cache elements using JMS
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.jms.JMSCacheReplicatorFactory"

@@ -29,7 +29,9 @@
         http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
         >
 
+    <bean name="internal-processing-policy" class="org.atricore.idbus.kernel.main.mediation.camel.component.http.DefaultInternalProcessingPolicy">
 
+    </bean>
 
     <!--
     <osgi:list id="identityMediationUnits" interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnit"
@@ -40,6 +42,11 @@
     -->
     <osgi:reference id="idsuRegistry"
                     interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry"
+                    cardinality="1..1"
+                    timeout="60"/>
+
+    <osgi:reference id="kernelConfig"
+                    interface="org.atricore.idbus.kernel.main.util.ConfigurationContext"
                     cardinality="1..1"
                     timeout="60"/>
 

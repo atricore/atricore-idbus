@@ -165,11 +165,11 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
             assert ed != null : "Mediation Response MUST Provide a destination";
             if (out.getContent() == null) {
-                throw new NullPointerException("Cannot Create form with null content for action " + ed.getLocation());
+                throw new NullPointerException("Cannot send HTTP Artifact response for null content. Endpoint location " + ed.getLocation());
             }
 
             // ------------------------------------------------------------
-            // Create HTML Form for response body
+            // Create HTML Redirect
             // ------------------------------------------------------------
             if (logger.isDebugEnabled())
                 logger.debug("Creating HTML Artifact to " + ed.getLocation());
@@ -177,7 +177,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             String msgName = null;
             String destAlias = null;
             java.lang.Object msgValue = out.getContent();
-            String element = out.getContentType();
+            //String element = out.getContentType();
             boolean isResponse = false;
             String relayState = out.getRelayState();
 
@@ -197,6 +197,9 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
                     }
                 }
 
+            } else {
+                logger.error("Unsupported SAML 2.0 Type for "  + out.getContent());
+                throw new RuntimeException("Unsupported SAML 2.0 Type for "  + out.getContent());
             }
 
             if (msgValue == null) {
@@ -215,13 +218,13 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
                     artifact.getContent());
 
             if (logger.isTraceEnabled())
-                logger.trace("Created SAML Artifact " + samlArtifact);
+                logger.trace("Created SAML Artifact " + samlArtifact + " for AQM artifact " + artifact.getContent());
 
             String samlArtifactEnc = getEncoder().encode(samlArtifact);
 
             String qryString = "?" + artifactParameterName + "=" + samlArtifactEnc;
             if (out.getRelayState() != null) {
-                qryString += "&relayState=" + relayState;
+                qryString += "&RelayState=" + relayState;
             }
 
             Message httpOut = exchange.getOut();

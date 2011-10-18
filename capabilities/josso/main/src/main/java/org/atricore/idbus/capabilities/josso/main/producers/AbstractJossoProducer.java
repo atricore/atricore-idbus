@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoMediator;
 import org.atricore.idbus.capabilities.josso.main.PartnerAppMapping;
+import org.atricore.idbus.capabilities.josso.main.UnknownAppIdException;
 import org.atricore.idbus.capabilities.sso.support.core.util.ProtocolUtils;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectType;
 import org.atricore.idbus.kernel.main.authn.*;
@@ -107,12 +108,12 @@ public abstract class AbstractJossoProducer extends AbstractCamelProducer<CamelM
         }
     }
 
-    protected BindingChannel resolveSpBindingChannel(BindingChannel bChannel, String appId) {
+    protected BindingChannel resolveSpBindingChannel(BindingChannel bChannel, String appId) throws UnknownAppIdException {
 
         PartnerAppMapping mapping = resolveAppMapping(bChannel, appId);
         if (mapping == null) {
             logger.error("Unknown Application Id " + appId);
-            throw new RuntimeException("Unknown Application Id " + appId);
+            throw new UnknownAppIdException(appId);
         }
 
         String spAlias = mapping.getSpAlias();

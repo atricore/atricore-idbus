@@ -762,7 +762,11 @@ public class AssertionConsumerProducer extends SSOProducer {
 
     	} else if(request != null) {
 
-           	if(response.getIssueInstant().compare(request.getIssueInstant()) <= 0){
+            long responseIssueInstant = response.getIssueInstant().toGregorianCalendar().getTimeInMillis();
+            long requestIssueInstant = request.getIssueInstant().toGregorianCalendar().getTimeInMillis();
+
+            // TODO : Make configurable ?! Give a second of tolerance between request/response issue instants
+           	if(responseIssueInstant - requestIssueInstant <= -1000) {
     			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,

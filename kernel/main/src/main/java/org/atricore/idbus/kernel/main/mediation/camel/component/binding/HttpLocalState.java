@@ -45,4 +45,8 @@ public class HttpLocalState extends AbstractLocalState {
 
         return lAttrs;
     }
+
+    public boolean isNew() {
+        return this.session.isNew();
+    }
 }
