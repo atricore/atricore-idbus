@@ -50,7 +50,7 @@
 
     </properties>
 
-    <distributionManagement>
+    <!--distributionManagement>
 
         <repository>
             <id>deploy-repo</id>
@@ -58,7 +58,7 @@
             <url>file:///home/gbrigand/Development/infrastructure/josso-ee-2.1.0/appliances/</url>
         </repository>
 
-    </distributionManagement>
+    </distributionManagement-->
 
     <build>
 
