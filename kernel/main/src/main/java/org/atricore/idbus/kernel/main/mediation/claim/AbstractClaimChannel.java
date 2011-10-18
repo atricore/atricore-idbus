@@ -33,11 +33,12 @@ public class AbstractClaimChannel extends AbstractChannel implements ClaimChanne
 
     private FederatedLocalProvider provider;
 
+    public FederatedLocalProvider getProvider() {
+        return provider;
+    }
+
     public void setProvider(FederatedLocalProvider provider) {
         this.provider = provider;
     }
 
-    public FederatedLocalProvider getProvider() {
-        return provider;
-    }
 }

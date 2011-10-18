@@ -247,8 +247,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Identity-Appliance-Name>simple-openid</Identity-Appliance-Name>
                         <Bundle-SymbolicName>org.atricore.idbus.examples.simple-openid.idau</Bundle-SymbolicName>
-
+       
                         <!-- TODO : Verify this ...
                                                 -->
 
@@ -327,6 +328,7 @@
                             org.atricore.idbus.capabilities.josso.main,
                             org.atricore.idbus.capabilities.spnego,
                             org.atricore.idbus.capabilities.openid.main,
+                            org.atricore.idbus.capabilities.openid.ui,
                             org.atricore.idbus.connectors.jdoidentityvault,
                             org.atricore.idbus.idojos.dbidentitystore,
                             org.atricore.idbus.idojos.memorysessionstore,

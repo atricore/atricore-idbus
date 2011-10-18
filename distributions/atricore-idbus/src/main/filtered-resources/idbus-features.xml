@@ -88,6 +88,7 @@
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.main/${idbus.cap.sso.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.support/${idbus.cap.sso.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.management/${idbus.cap.sso.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.ui/${idbus.cap.sso.version}</bundle>
     </feature>
 
     <feature name="atricore-spml2" version="${version}">
@@ -101,6 +102,7 @@
 
     <feature name="atricore-openid" version="${version}">
         <bundle>mvn:org.atricore.idbus.capabilities.openid/org.atricore.idbus.capabilities.openid.main/${idbus.cap.openid.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.openid/org.atricore.idbus.capabilities.openid.ui/${idbus.cap.openid.version}</bundle>
     </feature>
 
     <feature name="atricore-idbus-ui" version="${version}">
@@ -195,8 +197,10 @@
     </feature>
 
     <feature name="web" version="${version}">
+        <feature version="${karaf.version}">eventadmin</feature>
         <feature version="${version}">web-core</feature>
         <feature version="${spring.osgi.version}">spring-dm-web</feature>
+        <bundle start-level="40">mvn:org.ops4j.pax.wicket/org.ops4j.pax.wicket.service/${pax.wicket.service.version}</bundle>
     </feature>
 
     <feature name="activemq" version="${activemq.version}">

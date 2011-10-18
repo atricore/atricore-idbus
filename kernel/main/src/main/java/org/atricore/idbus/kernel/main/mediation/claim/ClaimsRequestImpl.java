@@ -43,6 +43,7 @@ public class ClaimsRequestImpl implements ClaimsRequest {
     private String lastErrorId;
     private String lastErrorMsg;
     private Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = new HashSet<SSOPolicyEnforcementStatement>();
+    private String skin;
 
     public ClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel) {
         this.id = id;
@@ -118,6 +119,14 @@ public class ClaimsRequestImpl implements ClaimsRequest {
 
     public void setLastErrorMsg(String lastErrorMsg) {
         this.lastErrorMsg = lastErrorMsg;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 
     @Override

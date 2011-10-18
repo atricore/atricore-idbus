@@ -35,59 +35,8 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class FederatedRemoteProviderImpl implements FederatedRemoteProvider {
+public class FederatedRemoteProviderImpl extends AbstractFederatedProvider implements FederatedRemoteProvider {
 
     private static final Log logger = LogFactory.getLog(FederatedRemoteProviderImpl.class);
 
-    private String name;
-
-    private String description;
-
-    private String role;
-
-    private CircleOfTrust circleOfTrust;
-
-    private List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();
-
-    private Set<Provider> targets = new HashSet<Provider>();
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public CircleOfTrust getCircleOfTrust() {
-        return circleOfTrust;
-    }
-
-    public void setCircleOfTrust(CircleOfTrust circleOfTrust) {
-        this.circleOfTrust = circleOfTrust;
-    }
-
-    public List<CircleOfTrustMemberDescriptor> getMembers() {
-        return members;
-    }
-
-    public void setMembers(List<CircleOfTrustMemberDescriptor> members) {
-        this.members = members;
-    }
 }

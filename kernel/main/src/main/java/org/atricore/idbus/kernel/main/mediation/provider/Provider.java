@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.mediation.provider;
 
+import org.atricore.idbus.kernel.main.mediation.Skinnable;
+
 /**
  * Represents any provider participating in the circle of trust. For example service providers, identity providers,
  * attribute authorities, etc.

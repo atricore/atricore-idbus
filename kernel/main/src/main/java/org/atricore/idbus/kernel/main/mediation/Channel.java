@@ -33,7 +33,7 @@ import java.util.Collection;
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id: Channel.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public interface Channel extends Serializable {
+public interface Channel extends Skinnable, Serializable {
 
     String getName();
 

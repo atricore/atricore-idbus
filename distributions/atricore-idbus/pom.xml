@@ -203,6 +203,7 @@
         <jetty.bundle.version>6.1.22_2</jetty.bundle.version>
         <neethi.version>2.0.4_1</neethi.version>
         <pax.web.extender.version>0.7.2</pax.web.extender.version>
+        <pax.wicket.service.version>0.8.0-SNAPSHOT</pax.wicket.service.version>
         <saaj.impl.version>1.3_1</saaj.impl.version>
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <velocity.version>1.6.2</velocity.version>
@@ -935,6 +936,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.ops4j.pax.wicket</groupId>
+            <artifactId>org.ops4j.pax.wicket.service</artifactId>
+            <version>${pax.wicket.service.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-finder-shaded</artifactId>
             <version>${xbean.version}</version>
@@ -1446,6 +1453,17 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.ui</artifactId>
+            <version>${idbus.cap.sso.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.ui</artifactId>
+            <version>${idbus.cap.sso.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>sso</artifactId>
             <version>${idbus.cap.sso.version}</version>
             <type>pom</type>
@@ -1489,6 +1507,23 @@
             <groupId>org.atricore.idbus.capabilities.openid</groupId>
             <artifactId>org.atricore.idbus.capabilities.openid.main</artifactId>
             <version>${idbus.cap.openid.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.openid</groupId>
+            <artifactId>org.atricore.idbus.capabilities.openid.main</artifactId>
+            <version>${idbus.cap.openid.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.openid</groupId>
+            <artifactId>org.atricore.idbus.capabilities.openid.ui</artifactId>
+            <version>${idbus.cap.openid.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.openid</groupId>
+            <artifactId>org.atricore.idbus.capabilities.openid.ui</artifactId>
+            <version>${idbus.cap.openid.version}</version>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>

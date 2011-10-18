@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns:wicket>
+<body>
+<wicket:panel>
+
+    <div id="authentication">
+
+        <div class="message error">
+            <span wicket:id="feedback"/>
+        </div>
+
+        <div id="subwrapper">
+
+            <div class="main">
+                <h2><wicket:message key="claims.title.userLogin"/></h2>
+
+                <p><wicket:message key="claims.text.openIDLogin"/></p>
+
+                <form wicket:id="signInForm">
+                    <fieldset>
+                        <div><label for="openid"><wicket:message key="claims.label.openid"/></label><input wicket:id="openid" cssClass="text" path="openid"
+                                                                      tabindex="10"/>
+                        </div>
+                    </fieldset>
+                    <div>
+                        <input class="button indent" type="submit" value="Login" wicket:id="apply"/>
+                    </div>
+                    <br/>
+                    <br/>
+                </form>
+
+                <div class="highlight">
+                    <h3 class="help"><wicket:message key="claims.title.help"/></h3>
+
+                    <p><wicket:message key="claims.text.login.help"/></p>
+
+                    <div class="footer"></div>
+
+                </div>
+                <!-- /highlight -->
+
+            </div>
+            <!-- /main -->
+        </div>
+
+    </div>
+    <!-- /authentication -->
+</wicket:panel>
+</body>
+</html>
+
+
+
+
+
+

@@ -42,9 +42,9 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public abstract class AbstractFederatedProvider implements FederatedLocalProvider, BundleContextAware {
+public abstract class AbstractFederatedProvider implements FederatedProvider {
 
-    private static final Log logger = LogFactory.getLog(AbstractFederatedProvider.class);
+    private static final Log logger = LogFactory.getLog(FederatedProvider.class);
 
     private String name;
 
@@ -56,17 +56,10 @@ public abstract class AbstractFederatedProvider implements FederatedLocalProvide
 
     private Set<FederationChannel> channels = new HashSet<FederationChannel>();
 
-    private BindingChannel bindingChannel;
-
     private CircleOfTrust circleOfTrust;
 
-    private transient ProviderStateManager stateManager;
+    private String skin;
 
-    private transient CircleOfTrustManager cotManager;
-
-    private transient IdentityMediationUnitContainer unitContainer;
-
-    private transient BundleContext bundleContext;
 
     public String getName() {
         return name;
@@ -104,18 +97,6 @@ public abstract class AbstractFederatedProvider implements FederatedLocalProvide
         return channels;
     }
 
-    public void setChannels(Set<FederationChannel> channels) {
-        this.channels = channels;
-    }
-
-    public BindingChannel getBindingChannel() {
-        return bindingChannel;
-    }
-
-    public void setBindingChannel(BindingChannel bindingChannel) {
-        this.bindingChannel = bindingChannel;
-    }
-
     public CircleOfTrust getCircleOfTrust() {
         return circleOfTrust;
     }
@@ -124,12 +105,12 @@ public abstract class AbstractFederatedProvider implements FederatedLocalProvide
         this.circleOfTrust = circleOfTrust;
     }
 
-    public BundleContext getBundleContext() {
-        return bundleContext;
+    public String getSkin() {
+        return skin;
     }
 
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 
     public List<CircleOfTrustMemberDescriptor> getMembers() {
@@ -138,36 +119,12 @@ public abstract class AbstractFederatedProvider implements FederatedLocalProvide
         for (FederationChannel channel : channels) {
             members.add(channel.getMember());
         }
-        
+
         // Add also the default channel's member
         if (channel != null)
             members.add(channel.getMember());
 
         return members;
-    }
-
-    public IdentityMediationUnitContainer getUnitContainer() {
-        return unitContainer;
-    }
-
-    public void setUnitContainer(IdentityMediationUnitContainer unitContainer) {
-        this.unitContainer = unitContainer;
-    }
-
-    public ProviderStateManager getStateManager() {
-        return stateManager;
-    }
-
-    public void setStateManager(ProviderStateManager stateManager) {
-        this.stateManager = stateManager;
-    }
-
-    public CircleOfTrustManager getCotManager() {
-        return cotManager;
-    }
-
-    public void setCotManager(CircleOfTrustManager cotManager) {
-        this.cotManager = cotManager;
     }
 
 }

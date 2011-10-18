@@ -50,4 +50,6 @@ public interface ClaimsRequest extends Serializable {
     String getLastErrorMsg();
 
     Set<SSOPolicyEnforcementStatement> getSsoPolicyEnforcements();
+
+    String getSkin();
 }

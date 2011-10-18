@@ -125,7 +125,7 @@ public enum StatusDetails {
             ("urn:org:atricore:idbus:samlr2:status:NoNewIDNewEncryptedIDTerminate", "One of the elements must exist: NewID, NewEncryptedID or Terminate."),
 
     INTERNAL_ERROR
-            ("urn:org:atricore:idbus:samlr2:status:InterlanError", "Internal Error");
+            ("urn:org:atricore:idbus:samlr2:status:InternalError", "Internal Error");
 
     private String value;
     private String description;

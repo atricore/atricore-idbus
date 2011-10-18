@@ -48,28 +48,15 @@
             <value>http://localhost:8081/idbus-ui/error.do</value>
         </property>
     </bean>
-    <!-- Remove - BCs have no metadata
-    <bean class="org.atricore.idbus.kernel.main.federation.metadata.InlineCircleOfTrustMemberDescriptor" name="sp1-md">
-        <property name="id">
-            <value>Nonb1Tafo4FIXOsUPcDPnEWxv34=</value>
-        </property>
-        <property name="alias">
-            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/OPENID/MD</value>
-        </property>
-        <property name="metadataDefinition">
-            <bean class="org.atricore.idbus.capabilities.openid.main.metadata.OpenIDMetadataDefinition"/>
-        </property>
-        <property name="metadataIntrospector">
-            <bean class="org.atricore.idbus.capabilities.openid.main.metadata.OpenIDMetadataDefinitionIntrospector"/>
-        </property>
-    </bean>
-    -->
     <bean class="org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl" name="proxy1-idp1-binding-channel">
         <property name="name">
             <value>proxy1-idp1-binding-channel</value>
         </property>
         <property name="description">
             <value/>
+        </property>
+        <property name="skin">
+            <value>foo</value>
         </property>
         <property name="unitContainer">
             <ref bean="simple-openid-container"/>
@@ -200,7 +187,7 @@
             <value>http://localhost:8081/idbus-ui/claims/username-passcode.do</value>
         </property>
         <property name="openIDUILocation">
-            <value>http://localhost:8081/idbus-ui/claims/openid.do</value>
+            <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/UI/login</value>
         </property>
         <property name="artifactQueueManager">
             <ref bean="simple-openid-aqm"/>

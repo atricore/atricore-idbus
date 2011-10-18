@@ -78,7 +78,7 @@ public class DisplayErrorController extends AbstractController {
 
         } catch (Exception e) {
             logger.error("Cannot display error information:" + e.getMessage(), e);
-            ErrorData f = new ErrorData("urn:org:atricore:idbus:samlr2:status:InterlanError",
+            ErrorData f = new ErrorData("urn:org:atricore:idbus:samlr2:status:InternalError",
                     null,
                     null,
                     e.getMessage(),
