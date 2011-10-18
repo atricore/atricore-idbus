@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.atricore.idbus.capabilities.openid.ui.panel.OpenIDSignInPanel;
-import org.atricore.idbus.capabilities.sso.ui.page.ErrorPage;
+import org.atricore.idbus.capabilities.sso.ui.page.LoginPage;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
@@ -35,7 +35,7 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-public class OpenIDLoginPage extends ErrorPage {
+public class OpenIDLoginPage extends LoginPage {
 
     private static final Log logger = LogFactory.getLog(OpenIDLoginPage.class);
 
