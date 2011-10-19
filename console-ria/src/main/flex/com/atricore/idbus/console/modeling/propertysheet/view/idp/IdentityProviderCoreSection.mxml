@@ -40,6 +40,10 @@
         <utils:NameValidator id="nameValidator" source="{identityProviderName}" required="true" property="text"/>
         <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+
+        <mx:NumberValidator id="ssoSessionTimeoutValidator" source="{ssoSessionTimeout}" required="false" property="text" minValue="1" maxValue="65535"
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoSessionTimeoutValidationError')}"/>
+
         <utils:URLPartValidator id="domainValidator" source="{idpLocationDomain}" required="true" property="text" />
         <utils:URLPartValidator id="contextValidator" source="{idpLocationContext}" required="true" property="text"/>
         <utils:URLMultipartValidator id="pathValidator" source="{idpLocationPath}" required="false" property="text"/>
@@ -57,6 +61,11 @@
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.description')}:">
                 <s:TextInput id="identityProvDescription"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoSessionTimeout')}:"
+                         required="true">
+                <s:TextInput id="ssoSessionTimeout"/>
             </mx:FormItem>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:"

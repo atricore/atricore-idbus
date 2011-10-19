@@ -1055,7 +1055,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createActivationCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.josso.activation");
-        _popup.width = 670;
+        _popup.width = 800;
         _popup.height = 200;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;

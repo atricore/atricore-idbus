@@ -35,6 +35,8 @@ public class IdentityProvider extends FederatedProvider {
 
     private boolean ignoreRequestedNameIDPolicy = true;
 
+    private int ssoSessionTimeout = 30; //
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicy subjectNameIDPolicy;
 
@@ -91,6 +93,14 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setWantSignedRequests(boolean wantSignedRequests) {
         this.wantSignedRequests = wantSignedRequests;
+    }
+
+    public int getSsoSessionTimeout() {
+        return ssoSessionTimeout;
+    }
+
+    public void setSsoSessionTimeout(int ssoSessionTimeout) {
+        this.ssoSessionTimeout = ssoSessionTimeout;
     }
 
     public AttributeProfile getAttributeProfile() {

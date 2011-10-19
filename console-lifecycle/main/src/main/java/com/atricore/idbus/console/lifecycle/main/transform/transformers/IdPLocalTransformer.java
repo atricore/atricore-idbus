@@ -19,15 +19,8 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.logging.SSOLogMessageBuilder;
 import org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder;
-import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
-import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
-import org.atricore.idbus.capabilities.sso.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSessionEventListener;
 import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
-import org.atricore.idbus.capabilities.sso.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
-import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
-import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
-import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.XmlSecurityEncrypterImpl;
 import org.atricore.idbus.capabilities.sso.support.core.signature.JSR105SamlR2SignerImpl;
@@ -303,7 +296,9 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
                 "org.atricore.idbus.kernel.main.session.service.SSOSessionManagerImpl");
 
         // Properties (take from config!)
-        setPropertyValue(sessionManager, "maxInactiveInterval", "30");
+
+        int ssoSessionTimeout = provider.getSsoSessionTimeout();
+        setPropertyValue(sessionManager, "maxInactiveInterval", ssoSessionTimeout + "");
         setPropertyValue(sessionManager, "maxSessionsPerUser", "-1");
         setPropertyValue(sessionManager, "invalidateExceedingSessions", "false");
         setPropertyValue(sessionManager, "sessionMonitorInterval", "10000");

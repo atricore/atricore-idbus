@@ -942,6 +942,8 @@ public class PropertySheetMediator extends IocMediator {
             // bind view
             _ipCoreSection.identityProviderName.text = identityProvider.name;
             _ipCoreSection.identityProvDescription.text = identityProvider.description;
+            _ipCoreSection.ssoSessionTimeout.text =
+                    identityProvider.ssoSessionTimeout > 0 ? identityProvider.ssoSessionTimeout.toString() : "30";
 
             BindingUtils.bindProperty(_ipCoreSection.subjectNameIdPolicyCombo, "dataProvider", this, "_subjectNameIdPolicies");
             sendNotification(ApplicationFacade.LIST_NAMEID_POLICIES);
@@ -982,6 +984,7 @@ public class PropertySheetMediator extends IocMediator {
 
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.ssoSessionTimeout.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
@@ -992,6 +995,7 @@ public class PropertySheetMediator extends IocMediator {
             //clear all existing validators and add idp core section validators
             _validators = [];
             _validators.push(_ipCoreSection.nameValidator);
+            _validators.push(_ipCoreSection.ssoSessionTimeoutValidator);
             _validators.push(_ipCoreSection.portValidator);
             _validators.push(_ipCoreSection.domainValidator);
             _validators.push(_ipCoreSection.contextValidator);
@@ -1009,6 +1013,7 @@ public class PropertySheetMediator extends IocMediator {
 
             identityProvider.name = _ipCoreSection.identityProviderName.text;
             identityProvider.description = _ipCoreSection.identityProvDescription.text;
+            identityProvider.ssoSessionTimeout = parseInt(_ipCoreSection.ssoSessionTimeout.text);
 
             identityProvider.location.protocol = _ipCoreSection.idpLocationProtocol.labelDisplay.text;
             identityProvider.location.host = _ipCoreSection.idpLocationDomain.text;

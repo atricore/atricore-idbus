@@ -36,6 +36,8 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     private boolean ignoreRequestedNameIDPolicy = true;
 
+    private int ssoSessionTimeout;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicyDTO subjectNameIDPolicy;
 
@@ -93,6 +95,14 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     public void setWantSignedRequests(boolean wantSignedRequests) {
         this.wantSignedRequests = wantSignedRequests;
+    }
+
+    public int getSsoSessionTimeout() {
+        return ssoSessionTimeout;
+    }
+
+    public void setSsoSessionTimeout(int ssoSessionTimeout) {
+        this.ssoSessionTimeout = ssoSessionTimeout;
     }
 
     public AttributeProfileDTO getAttributeProfile() {

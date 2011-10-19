@@ -75,7 +75,7 @@
         <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
         <s:TextInput id="activationPort" width="40"/>
         <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
-        <s:TextInput id="activationContext" width="140"/>
+        <s:TextInput id="activationContext" width="100"/>
         <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
         <s:TextInput id="activationPath" width="140"/>
     </mx:FormItem>

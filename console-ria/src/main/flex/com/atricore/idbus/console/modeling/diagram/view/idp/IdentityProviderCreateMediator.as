@@ -132,11 +132,12 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.idpLocationPort.text = "";
         view.idpLocationContext.text = "";
         view.idpLocationPath.text = "";
+        view.ssoSessionTimeout.text = "30";
         view.wantAuthnRequestsSignedCheck.selected = false;
         view.signRequestsCheck.selected = false;
         view.wantSignedRequestsCheck.selected = false;
-        view.samlBindingHttpPostCheck.selected = true;
-        view.samlBindingArtifactCheck.selected = false;
+        view.samlBindingHttpPostCheck.selected = false;
+        view.samlBindingArtifactCheck.selected = true;
         view.samlBindingHttpRedirectCheck.selected = true;
         view.samlBindingSoapCheck.selected = true;
         view.samlProfileSSOCheck.selected = true;
@@ -202,6 +203,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
         identityProvider.name = view.identityProviderName.text;
         identityProvider.description = view.identityProvDescription.text;
+        identityProvider.ssoSessionTimeout = parseInt(view.ssoSessionTimeout.text);
 
         var loc:Location = new Location();
         loc.protocol = view.idpLocationProtocol.labelDisplay.text;
@@ -427,6 +429,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         _validators.push(view.domainValidator);
         _validators.push(view.contextValidator);
         _validators.push(view.pathValidator);
+        _validators.push(view.ssoSessionTimeoutValidator);
         if (view.uploadKeystore.selected) {
             _validators.push(view.certificateAliasValidator);
             _validators.push(view.keyAliasValidator);

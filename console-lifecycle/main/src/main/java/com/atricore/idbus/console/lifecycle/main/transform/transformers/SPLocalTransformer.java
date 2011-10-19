@@ -375,7 +375,8 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
                 "org.atricore.idbus.kernel.main.session.service.SSOSessionManagerImpl");
 
         // Properties (take from config!)
-        setPropertyValue(sessionManager, "maxInactiveInterval", "30");
+        // FOR SPs, the session timeout should be long enough ...
+        setPropertyValue(sessionManager, "maxInactiveInterval", "500");
         setPropertyValue(sessionManager, "maxSessionsPerUser", "-1");
         setPropertyValue(sessionManager, "invalidateExceedingSessions", "false");
         setPropertyValue(sessionManager, "sessionMonitorInterval", "10000");

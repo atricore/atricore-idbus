@@ -32,6 +32,7 @@
         <mx:NumberValidator id="portValidator" source="{spLocationPort}" required="false" property="text"
                         minValue="1" maxValue="65535" trigger="{btnOk}" triggerEvent="click"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+
         <utils:URLPartValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
         <utils:URLPartValidator id="contextValidator" source="{spLocationContext}" required="true" property="text"

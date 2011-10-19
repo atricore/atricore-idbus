@@ -46,6 +46,10 @@
         <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <mx:NumberValidator id="ssoSessionTimeoutValidator" source="{ssoSessionTimeout}" required="false" property="text"
+                        trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoSessionTimeoutValidationError')}"/>
+
         <utils:URLPartValidator id="domainValidator" source="{idpLocationDomain}" required="true" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
         <utils:URLPartValidator id="contextValidator" source="{idpLocationContext}" required="true" property="text"
@@ -130,6 +134,12 @@
                 <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.subjectNameIDPolicy')}:">
                     <s:DropDownList id="subjectNameIdPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
                 </mx:FormItem>
+
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoSessionTimeout')}:"
+                             required="true">
+                    <s:TextInput id="ssoSessionTimeout" />
+                </mx:FormItem>
+
                 <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.ignoreRequestedNameIDPolicy')}:">
                     <s:CheckBox id="ignoreRequestedNameIDPolicy" selected="true"/>
                 </mx:FormItem>
