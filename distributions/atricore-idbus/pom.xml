@@ -419,6 +419,20 @@
             <version>${karaf.version}</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>shell</artifactId>
+            <version>${karaf.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.util</artifactId>
+            <version>${karaf.version}</version>
+            <type>pom</type>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.karaf.jaas</groupId>
