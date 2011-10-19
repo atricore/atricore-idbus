@@ -413,6 +413,12 @@
             <version>${karaf.version}</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>karaf</artifactId>
+            <version>${karaf.version}</version>
+            <type>pom</type>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.karaf.jaas</groupId>
