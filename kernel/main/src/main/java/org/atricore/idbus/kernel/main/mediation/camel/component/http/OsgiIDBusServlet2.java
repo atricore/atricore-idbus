@@ -82,36 +82,51 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        if (kernelConfig == null) {
+        long started = 0;
+        try {
 
-            // Lazy load kernel config
-
-            kernelConfig = lookupKernelConfig();
-
-            if (kernelConfig == null) {
-                logger.error("No Kernel Configuration Context found!");
-                throw new ServletException("No Kernel Configuration Context found!");
+            if (logger.isTraceEnabled()) {
+                started = System.currentTimeMillis();
+                logger.trace("IDBUS SERVLET SERVICE START AT " + started + " ("+Thread.currentThread().getName()+")");
             }
 
-            followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects"));
-            localTargetBaseUrl = kernelConfig.getProperty("binding.http.localTargetBaseUrl");
+            if (kernelConfig == null) {
 
-            logger.info("Following Redirects internally : " + followRedirects);
-        }
+                // Lazy load kernel config
 
-        if (internalProcessingPolicy == null) {
-            org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext wac =
-                (org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext)
-                        WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+                kernelConfig = lookupKernelConfig();
 
-            internalProcessingPolicy = (InternalProcessingPolicy) wac.getBean("internal-processing-policy");
-        }
+                if (kernelConfig == null) {
+                    logger.error("No Kernel Configuration Context found!");
+                    throw new ServletException("No Kernel Configuration Context found!");
+                }
 
-        // Do we actually service this request or we proxy it ?
-        if (!followRedirects || !internalProcessingPolicy.match(req)) {
-            doService(req, res);
-        } else {
-            doProxyInternally(req, res);
+                followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects"));
+                localTargetBaseUrl = kernelConfig.getProperty("binding.http.localTargetBaseUrl");
+
+                logger.info("Following Redirects internally : " + followRedirects);
+            }
+
+            if (internalProcessingPolicy == null) {
+                org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext wac =
+                    (org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext)
+                            WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+
+                internalProcessingPolicy = (InternalProcessingPolicy) wac.getBean("internal-processing-policy");
+            }
+
+            // Do we actually service this request or we proxy it ?
+            if (!followRedirects || !internalProcessingPolicy.match(req)) {
+                doService(req, res);
+            } else {
+                doProxyInternally(req, res);
+            }
+        } finally {
+            if (logger.isTraceEnabled()) {
+                long ended = System.currentTimeMillis();
+                logger.trace("IDBUS SERVLET SERVICE END AT " + ended + " TOOK: " + (ended - started) + " ms("+Thread.currentThread().getName()+")");
+            }
+
         }
 
 
