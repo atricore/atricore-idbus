@@ -22,16 +22,31 @@
   -->
 
 
+
 <beans xmlns="http://www.springframework.org/schema/beans"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:osgi="http://www.springframework.org/schema/osgi"
-         xmlns:s="http://www.springframework.org/schema/beans"
-         xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-        http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
-        >
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:osgi="http://www.springframework.org/schema/osgi"
+xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+xmlns:ctx="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context.xsd
+                    http://www.springframework.org/schema/osgi-compendium
+                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+                    ">
 
     <import resource="idbus-ui-servlet-extensions.xml" />
+
+
+    <!-- ========================================================================= -->
+    <!-- Bundle configuration properties                                           -->
+    <!-- ========================================================================= -->
+    <osgix:cm-properties id="idbusUiProps" persistent-id="org.atricore.idbus.applications.server.web"/>
+
+    <ctx:property-placeholder properties-ref="idbusUiProps" />
 
     <!-- ========================================================================= -->
     <!-- IDBus compoments                                                          -->
@@ -53,6 +68,7 @@
     <!-- Tiles Beans -->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView"/>
+        <property name="attributes" ref="idbusUiProps"/>
     </bean>
 
     <bean id="tilesConfigurer" class="org.atricore.idbus.bundles.apache.tiles.OsgiTilesConfigurer">

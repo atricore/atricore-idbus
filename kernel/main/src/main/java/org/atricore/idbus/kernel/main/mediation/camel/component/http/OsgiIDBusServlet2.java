@@ -174,8 +174,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
         // Store received headers and send them back to the browser
         List<Header> storedHeaders = new ArrayList<Header>(40);
-
         boolean followTargetUrl = true;
+        byte[] buff = new byte[1024];
 
         while(followTargetUrl) {
 
@@ -256,6 +256,14 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
                     if (!followTargetUrl) {
                         // If we're not following the target URL, send all to the browser
+                        // Last received headers
+                        for (Header header : headers) {
+                            if (header.getName().equals("Content-Type"))
+                                res.setHeader(header.getName(), header.getValue());
+                            if (header.getName().equals("Content-Length"))
+                                res.setHeader(header.getName(), header.getValue());
+                        }
+
                         res.setStatus(proxyRes.getStatusLine().getStatusCode());
                         for (Header header : storedHeaders) {
                             if (header.getName().startsWith("Set-Cookie"))
@@ -269,11 +277,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
                     } else {
 
-                        // just ignore the content ...
-                        // TODO : We should do something with this!
-
-                        byte[] buff = new byte[1024];
-
+                        // Just ignore the content ...
+                        // should we do something with this ?!
                         int r = instream.read(buff);
                         int total = r;
                         while (r > 0) {
@@ -307,6 +312,15 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                 if (!followTargetUrl) {
                     // If we're not following the target URL, send all to the browser
                     res.setStatus(proxyRes.getStatusLine().getStatusCode());
+
+                    for (Header header : headers) {
+                        if (header.getName().equals("Content-Type"))
+                            res.setHeader(header.getName(), header.getValue());
+                        if (header.getName().equals("Content-Length"))
+                            res.setHeader(header.getName(), header.getValue());
+
+                    }
+
                     for (Header header : storedHeaders) {
                         if (header.getName().startsWith("Set-Cookie"))
                             res.addHeader(header.getName(), header.getValue());
