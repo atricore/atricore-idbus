@@ -52,6 +52,7 @@
        <module>idbus-samlr2-protocol</module>
        <module>idbus-samlr11-protocol</module>
        <module>idbus-sso-protocol</module>
+       <module>idbus-oauth2-protocol</module>
        <module>wagon-osgi</module>
     </modules>
 </project>

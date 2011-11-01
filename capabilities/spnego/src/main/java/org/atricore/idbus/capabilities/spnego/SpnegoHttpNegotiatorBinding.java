@@ -78,8 +78,6 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
                 final String base64token = authorization.substring(SpnegoHeader.NEGOTIATE.getValue().length() + 1);
                 final byte[] binaryToken = Base64.decodeBase64(base64token.getBytes());
 
-
-
                 logger.debug("Token received in Authorization Header (base64) : " + base64token);
                 sm = new AuthenticatedRequest(binaryToken);
             } else {
