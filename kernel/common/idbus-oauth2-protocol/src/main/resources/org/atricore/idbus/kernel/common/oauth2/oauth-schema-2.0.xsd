@@ -126,14 +126,23 @@
         </restriction>
     </simpleType>
 
+    <element name="OAuthAccessToken" type="oauth2p:OAuthAccessTokenType"/>
+    <complexType name="OAuthAccessTokenType">
+        <sequence>
+            <element name="tokenParameters" type="oauth2p:OauthAttributeType" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="accessToken" type="string" use="required"/>
+        <attribute name="tokenType" type="string" use="required"/>
+        <attribute name="expiresIn" type="long" />
+    </complexType>
 
-    <element name="OauthAttribute" type="oauth2p:OauthAttributeType"/>
+    <element name="OAuthAttribute" type="oauth2p:OauthAttributeType"/>
     <complexType name="OauthAttributeType" abstract="true">
         <attribute name="name" type="string" use="required"/>
         <attribute name="value" type="string" use="required"/>
     </complexType>
 
-    <element name="OauthHeader" type="oauth2p:OauthHeaderType"/>
+    <element name="OAuthHeader" type="oauth2p:OauthHeaderType"/>
     <complexType name="OauthHeaderType" abstract="true">
         <attribute name="name" type="string" use="required"/>
         <attribute name="value" type="string" use="required"/>
