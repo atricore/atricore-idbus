@@ -44,7 +44,9 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- ========================================================================= -->
     <!-- Bundle configuration properties                                           -->
     <!-- ========================================================================= -->
-    <osgix:cm-properties id="idbusUiProps" persistent-id="org.atricore.idbus.applications.server.web"/>
+    <osgix:cm-properties id="idbusUiProps" persistent-id="org.atricore.idbus.applications.server.web">
+        <prop key="resourceBundle">messages</prop>
+    </osgix:cm-properties>
 
     <ctx:property-placeholder properties-ref="idbusUiProps" />
 
@@ -62,7 +64,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- ========================================================================= -->
     <!-- Message resources-->
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-        <property name="basename" value="messages"/>
+        <property name="basename" value="${resourceBundle}"/>
     </bean>
 
     <!-- Tiles Beans -->
