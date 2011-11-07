@@ -6,9 +6,9 @@ package org.atricore.idbus.capabilities.oauth2.main.binding;
 public enum OAuth2Binding {
 
     /** URI for IDBUS SOAP binding, this is NOT SAML Normtive */
-    OAUTH2_SOAP("urn:org:atricore:idbus:oauth2:bindings:SOAP", false),
+    OAUTH2_SOAP("urn:org:atricore:idbus:OAUTH:2.0:bindings:SOAP", false),
 
-    OAUTH2_RESTFUL("urn:org:atricore:idbus:oauth2:bindings:RESTFUL", true);
+    OAUTH2_RESTFUL("urn:org:atricore:idbus:OAUTH:2.0:bindings:RESTFUL", true);
 
 
     private String binding;

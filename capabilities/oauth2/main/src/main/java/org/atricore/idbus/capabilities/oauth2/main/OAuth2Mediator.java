@@ -75,7 +75,7 @@ public class OAuth2Mediator extends AbstractCamelMediator {
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + spChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("oauth2-idp:" + ed.getType() +
+                                    to("oauth2-as:" + ed.getType() +
                                             "?channelRef=" + spChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -101,7 +101,7 @@ public class OAuth2Mediator extends AbstractCamelMediator {
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + spChannel.getName()).
                                         process(new LoggerProcessor(getLogger())).
-                                        to("oauth2-idp:" + ed.getType() +
+                                        to("oauth2-as:" + ed.getType() +
                                                 "?channelRef=" + spChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");
@@ -119,7 +119,7 @@ public class OAuth2Mediator extends AbstractCamelMediator {
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + spChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("oauth2-idp:" + ed.getType() +
+                                    to("oauth2-as:" + ed.getType() +
                                             "?channelRef=" + spChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -135,7 +135,7 @@ public class OAuth2Mediator extends AbstractCamelMediator {
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + spChannel.getName()).
                                         process(new LoggerProcessor(getLogger())).
-                                        to("oauth2-idp:" + ed.getType() +
+                                        to("oauth2-as:" + ed.getType() +
                                                 "?channelRef=" + spChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");

@@ -147,7 +147,6 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
      * This only works for the default channel configuration
      */
     public List<CircleOfTrustMemberDescriptor> getMembers() {
-
         List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();
         if (defaultProviderService == null)
             return members;
@@ -161,12 +160,36 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
             members.add(defaultProviderService.getChannel().getMember());
 
         return members;
+
+    }
+
+    public List<CircleOfTrustMemberDescriptor> getAllMembers() {
+
+        List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();
+        if (defaultProviderService == null)
+            return members;
+
+        for (FederationChannel channel : defaultProviderService.getOverrideChannels()) {
+            members.add(channel.getMember());
+        }
+
+        // Add also the default channel's member
+        if (defaultProviderService.getChannel() != null)
+            members.add(defaultProviderService.getChannel().getMember());
+
+        // Add non-default services too
+        for (ProviderService svc : providerServices.values()) {
+            members.add(svc.getChannel().getMember());
+            for (FederationChannel fc : svc.getOverrideChannels()) {
+                members.add(fc.getMember());
+            }
+        }
+
+
+        return members;
     }
 
 
-    /**
-     * This only works for the default channel configuration
-     */
     public List<CircleOfTrustMemberDescriptor> getMembers(String configurationKey) {
 
         List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();

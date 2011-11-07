@@ -73,7 +73,7 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
                 for (FederatedProvider provider : cot.getProviders()) {
 
 
-                    for (CircleOfTrustMemberDescriptor member : provider.getMembers()) {
+                    for (CircleOfTrustMemberDescriptor member : provider.getAllMembers()) {
 
                         if (logger.isDebugEnabled())
                             logger.debug("Initializing Provider Member information " + provider.getName() + ", member " + member.getAlias());
@@ -112,7 +112,7 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
         if (logger.isDebugEnabled())
             logger.debug("Registering COT Member descriptor " + member);
 
-        MetadataDefinition def;
+        MetadataDefinition def = null;
         // resource-based metadata
         if (member instanceof ResourceCircleOfTrustMemberDescriptorImpl) {
 
@@ -120,8 +120,9 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
             ResourceCircleOfTrustMemberDescriptorImpl m = (ResourceCircleOfTrustMemberDescriptorImpl) member;
             if (logger.isDebugEnabled())
                 logger.debug("Loading resource-based metadata for member " + member.getId() + " [" + member.getAlias() + "]");
-            
-            def = loadMetadataDefinition(member, m.getResource());
+
+            if (m.getResource() != null)
+                def = loadMetadataDefinition(member, m.getResource());
 
         } else { // non-resource-based metadata
             if (logger.isDebugEnabled())
@@ -130,17 +131,19 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
             def = loadMetadataDefinition(member);
         }
 
-        MetadataDefinition old = definitions.put(member.getAlias(), def);
+        if (def != null) {
+            MetadataDefinition old = definitions.put(member.getAlias(), def);
 
-        MetadataEntry md = findEntityMetadata(member.getAlias());
-        if (md == null)
-            logger.warn("No metadata found for COT Member " + member.getAlias());
+            MetadataEntry md = findEntityMetadata(member.getAlias());
+            if (md == null)
+                logger.warn("No metadata found for COT Member " + member.getAlias());
 
-        member.setMetadata(md);
+            member.setMetadata(md);
 
-        if (old != null)
-            throw new CircleOfTrustManagerException("Duplicated COT Member descriptor for alias : " +
-                    member.getAlias());
+            if (old != null)
+                throw new CircleOfTrustManagerException("Duplicated COT Member descriptor for alias : " +
+                        member.getAlias());
+        }
 
     }
 
@@ -156,7 +159,7 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
     public Collection<CircleOfTrustMemberDescriptor> getMembers() {
         List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();
         for (FederatedProvider p : cot.getProviders()) {
-            members.addAll(p.getMembers());
+            members.addAll(p.getAllMembers());
         }
         return members;
     }
@@ -229,7 +232,7 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
     public boolean isLocalMember(String alias) throws CircleOfTrustManagerException {
         for (FederatedProvider p : cot.getProviders()) {
 
-            for (CircleOfTrustMemberDescriptor m : p.getMembers()) {
+            for (CircleOfTrustMemberDescriptor m : p.getAllMembers()) {
                 if (m.getAlias().equals(alias)) {
                     return !(p instanceof FederatedRemoteProvider);
                 }
@@ -267,7 +270,7 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
                     }
                 } else {
                     FederatedRemoteProvider destRemoteProvider = (FederatedRemoteProvider) destProvider;
-                    for(CircleOfTrustMemberDescriptor m : destRemoteProvider.getMembers()) {
+                    for(CircleOfTrustMemberDescriptor m : destRemoteProvider.getAllMembers()) {
                         if (logger.isDebugEnabled())
                             logger.debug("Selected member : " + m.getAlias());
 
@@ -287,7 +290,7 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
 
         for (FederatedProvider provider : cot.getProviders()) {
 
-            for (CircleOfTrustMemberDescriptor member : provider.getMembers()) {
+            for (CircleOfTrustMemberDescriptor member : provider.getAllMembers()) {
                 if (member.getAlias().equals(alias)) {
                     if (logger.isDebugEnabled())
                         logger.debug("Specific COT Member found for " + alias + " in provider " + provider.getName());
@@ -307,7 +310,7 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
     public CircleOfTrustMemberDescriptor loolkupMemberById(String id) {
         for (FederatedProvider provider : cot.getProviders()) {
 
-            for (CircleOfTrustMemberDescriptor member : provider.getMembers()) {
+            for (CircleOfTrustMemberDescriptor member : provider.getAllMembers()) {
                 if (member.getId().equals(id)) {
                     if (logger.isDebugEnabled())
                         logger.debug("Specific COT Member found for " + id + " in provider " + provider.getName());
@@ -413,7 +416,10 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
     protected MetadataDefinition loadMetadataDefinition(CircleOfTrustMemberDescriptor member)
             throws CircleOfTrustManagerException {
 
-        return member.getMetadataIntrospector().load(member);
+        if (member.getMetadataIntrospector() != null)
+            return member.getMetadataIntrospector().load(member);
+
+        return null;
     }
 
     protected MetadataDefinition loadMetadataDefinition(CircleOfTrustMemberDescriptor member,

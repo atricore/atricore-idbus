@@ -108,11 +108,15 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
 
 
                     AbstractFederationChannel fedChannel = (AbstractFederationChannel) channel;
+
+                    // Some federation channels may not have Metadata files
                     MetadataEntry md = cotMgr.findEntityRoleMetadata(fedChannel.getMember().getAlias(),
                             fedChannel.getRole());
 
-                    fedChannel.setMetadata(md);
-                    fedChannel.setCircleOfTrust(cotMgr.getCot());
+                    if (md != null) {
+                        fedChannel.setMetadata(md);
+                        fedChannel.setCircleOfTrust(cotMgr.getCot());
+                    }
 
                     if (fedChannel.getEndpoints() != null) {
 

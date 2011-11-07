@@ -5,6 +5,8 @@ package org.atricore.idbus.capabilities.oauth2.common;
  */
 public interface OAuth2Constants {
 
+    static final String OAUTH2_SERVICE_BASE_URI="urn:org:atricore:idbus:OAUTH:2.0:metadata";
+
     static final String SERVICE_TYPE = "urn:org:atricore:idbus:OAUTH:2.0";
 
     static final String TOKEN_SERVICE_TYPE = "{urn:org:atricore:idbus:OAUTH:2.0:metadata}TokenService";

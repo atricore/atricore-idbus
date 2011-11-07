@@ -18,9 +18,26 @@ public interface FederatedProvider extends Provider, Skinnable {
     CircleOfTrust getCircleOfTrust();
 
     /**
-     * Returns all the COT members associated with this provider.
+     * Returns all the COT members associated with this provider's default servcie.
      * @return
      */
     List<CircleOfTrustMemberDescriptor> getMembers();
+
+    /**
+     * Returns all the COT members associated with a provider's given service
+     * @return
+     */
+    List<CircleOfTrustMemberDescriptor> getMembers(String svcType);
+
+
+    /**
+     * Returns all the COT members associated with this provider (for any service)
+     * @return
+     */
+    List<CircleOfTrustMemberDescriptor> getAllMembers();
+
+
+
+
 
 }
