@@ -65,6 +65,11 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
 
         String artifactId = hreq.getParameter(SsoHttpArtifactBinding.SSO_ARTIFACT_ID);
 
+        if (artifactId == null) {
+            CollectUsernamePasswordClaims collectClaims = (CollectUsernamePasswordClaims) hreq.getSession().getAttribute("CollectUsernamePasswordClaims");
+            return collectClaims;
+        }
+
         CollectUsernamePasswordClaims collectClaims = new CollectUsernamePasswordClaims();
         if (logger.isDebugEnabled())
             logger.debug("Creating form backing object for artifact " + artifactId);                
@@ -111,6 +116,8 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
         } else {
             logger.debug("No claims request received!");
         }
+
+        hreq.getSession().setAttribute("CollectUsernamePasswordClaims", collectClaims);
 
         return collectClaims;
     }
