@@ -21,7 +21,7 @@
   -->
 <s:beans xmlns="urn:org:atricore:idbus:core"
          xmlns:samlr2="urn:org:atricore:idbus:samlr2"
-         xmlns:im="urn:org:atricore:idbus:default:identity-mediator"
+         xmlns:im="urn:org:atricore:idbus:default:identity-a2Mediator"
          xmlns:amq="http://activemq.apache.org/schema/core"
          xmlns:def-auth="urn:org:atricore:idbus:default:authenticator"
          xmlns:basic-authscheme="urn:org:atricore:idbus:basic:authscheme"

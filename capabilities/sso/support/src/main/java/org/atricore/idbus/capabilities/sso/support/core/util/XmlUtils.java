@@ -145,11 +145,11 @@ public class XmlUtils {
 
     public static String marshalSamlR2Request(RequestAbstractType request, String requestType, boolean encode) throws Exception {
 
-        String marshalledRequest;
+        String marshaledRequest;
         // Support IDBus SAMLR2 Extentions when marshalling
         if (request.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
 
-            marshalledRequest = marshalSamlR2(
+            marshaledRequest = marshalSamlR2(
                     request,
                     SAMLR2Constants.SAML_IDBUS_NS,
                     requestType
@@ -157,14 +157,14 @@ public class XmlUtils {
 
         } else {
 
-            marshalledRequest = marshalSamlR2(
+            marshaledRequest = marshalSamlR2(
                     request,
                     SAMLR2Constants.SAML_PROTOCOL_NS,
                     requestType
             );
         }
 
-        return encode ? new String(new Base64().encode(marshalledRequest.getBytes())) : marshalledRequest;
+        return encode ? new String(new Base64().encode(marshaledRequest.getBytes())) : marshaledRequest;
     }
 
 
@@ -245,17 +245,17 @@ public class XmlUtils {
     public static String marshalSamlR2Response(StatusResponseType response,
                                                String responseType, boolean encode) throws Exception {
 
-        String marshalledResponse;
+        String marshaledResponse;
         // Support IDBus SAMLR2 Extentions when marshalling
         if (response.getClass().getPackage().getName().equals(SAMLR2Constants.SAML_IDBUS_PKG)) {
 
-            marshalledResponse = XmlUtils.marshalSamlR2(
+            marshaledResponse = XmlUtils.marshalSamlR2(
                     response,
                     SAMLR2Constants.SAML_IDBUS_NS,
                     responseType
             );
         } else {
-            marshalledResponse = XmlUtils.marshalSamlR2(
+            marshaledResponse = XmlUtils.marshalSamlR2(
                     response,
                     SAMLR2Constants.SAML_PROTOCOL_NS,
                     responseType
@@ -263,7 +263,7 @@ public class XmlUtils {
 
         }
 
-        return encode ? new String(new Base64().encode(marshalledResponse.getBytes())) : marshalledResponse;
+        return encode ? new String(new Base64().encode(marshaledResponse.getBytes())) : marshaledResponse;
     }
 
     /**
@@ -308,13 +308,13 @@ public class XmlUtils {
 
     public static String marshalSSORequest(SSORequestAbstractType request, String requestType, boolean encode) throws Exception {
 
-        String marshalledRequest = marshalSamlR2(
+        String marshaledRequest = marshalSamlR2(
                 request,
                 SSOConstants.SSO_PROTOCOL_NS,
                 requestType
         );
 
-        return encode ? new String(new Base64().encode(marshalledRequest.getBytes())) : marshalledRequest;
+        return encode ? new String(new Base64().encode(marshaledRequest.getBytes())) : marshaledRequest;
     }
 
     public static SSORequestAbstractType unmarshalSSORequest(String request, boolean decode) throws Exception {
@@ -355,13 +355,13 @@ public class XmlUtils {
 
     public static String marshalSSOResponse(SSOResponseType response,
                                             String responseType, boolean encode) throws Exception {
-        String marshalledResponse = XmlUtils.marshalSamlR2(
+        String marshaledResponse = XmlUtils.marshalSamlR2(
                 response,
                 SSOConstants.SSO_PROTOCOL_NS,
                 responseType
         );
 
-        return encode ? new String(new Base64().encode(marshalledResponse.getBytes())) : marshalledResponse;
+        return encode ? new String(new Base64().encode(marshaledResponse.getBytes())) : marshaledResponse;
     }
 
     /**
@@ -401,15 +401,15 @@ public class XmlUtils {
     public static String marshalSamlR11Response(oasis.names.tc.saml._1_0.protocol.ResponseType response,
                                                 String responseType, boolean encode) throws Exception {
 
-        String marshalledResponse;
-        marshalledResponse = XmlUtils.marshalSamlR2(
+        String marshaledResponse;
+        marshaledResponse = XmlUtils.marshalSamlR2(
                 response,
                 SAMLR11Constants.SAML_PROTOCOL_NS,
                 responseType
         );
 
 
-        return encode ? new String(new Base64().encode(marshalledResponse.getBytes())) : marshalledResponse;
+        return encode ? new String(new Base64().encode(marshaledResponse.getBytes())) : marshaledResponse;
     }
 
     public static String decode(String content) {

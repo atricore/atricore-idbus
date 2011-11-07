@@ -107,7 +107,7 @@
         <!-- Required services/components -->
         <property name="accountLinkLifecycle" ref="sp2-account-link-lifecycle"/>
         <property name="accountLinkEmitter" ref="sp2-account-link-emitter"/>
-        <property name="identityMediator" ref="sp2-samlr2-mediator"/>
+        <property name="identityMediator" ref="sp2-samlr2-a2Mediator"/>
         <property name="sessionManager" ref="sp2-session-manager"/>
         <property name="identityManager" ref="sp2-identity-manager"/>
         <property name="identityMapper" ref="sp2-identity-mapper"/>
@@ -210,7 +210,7 @@
         <property name="location" value="http://localhost:8081/IDBUS/SP-2"/>
 
         <!-- Required services/components -->
-        <property name="identityMediator" ref="sp2-samlr2-mediator"/>
+        <property name="identityMediator" ref="sp2-samlr2-a2Mediator"/>
 
         <!-- Endpoints -->
 
@@ -346,7 +346,7 @@
 
     </bean>
 
-    <bean name="sp2-samlr2-mediator" class="org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator">
+    <bean name="sp2-samlr2-a2Mediator" class="org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator">
 
         <property name="preferredIdpAlias"  value="http://localhost:8081/IDBUS/IDP-1/SAML2/MD" />
 

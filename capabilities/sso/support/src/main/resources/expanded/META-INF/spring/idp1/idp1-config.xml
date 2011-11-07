@@ -78,7 +78,7 @@
         <property name="identityManager" ref="idp1-identity-manager"/>
 
         <property name="member" ref="idp1-md"/>
-        <property name="identityMediator" ref="idp1-samlr2-mediator"/>
+        <property name="identityMediator" ref="idp1-samlr2-a2Mediator"/>
 
         <!-- ============================================================= -->
         <!-- Endpoints are realted to SAMLR2 Metadata endpoints            -->
@@ -220,7 +220,7 @@
     </bean>
 
 
-    <bean name="idp1-samlr2-mediator" class="org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator">
+    <bean name="idp1-samlr2-a2Mediator" class="org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator">
         <property name="logMessages" value="true"/>
         <property name="artifactQueueManager" ref="artifactQueueManager"/>
 
@@ -293,7 +293,7 @@
 
         <property name="name" value="idp1-claim-channel"/>
         <property name="location" value="http://localhost:8080/IDBUS/@@idau-identifier@@/CC-1"/>
-        <property name="identityMediator" ref="idp1-samlr2-claims-mediator"/>
+        <property name="identityMediator" ref="idp1-samlr2-claims-a2Mediator"/>
         <property name="unitContainer" ref="identity-mediation-engine"/>
 
         <!-- Claim channels do not have members ... -->
@@ -337,7 +337,7 @@
 
     <!-- TODO : Move 'loginFormLocation' property to endpoit declaration
     -->
-    <bean name="idp1-samlr2-claims-mediator" class="org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator">
+    <bean name="idp1-samlr2-claims-a2Mediator" class="org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator">
         <property name="logMessages" value="true"/>
         <property name="basicAuthnUILocation" value="http://localhost:8080/idbus-ui/claims/username-password.do"/>
         <property name="artifactQueueManager" ref="artifactQueueManager"/>

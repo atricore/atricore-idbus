@@ -86,7 +86,7 @@
         <property name="provider" ref="bp1-josso"/>
 
         <property name="unitContainer" ref="idau1-container"/>
-        <property name="identityMediator" ref="bp1-josso-binding-mediator"/>
+        <property name="identityMediator" ref="bp1-josso-binding-a2Mediator"/>
 
 
         <property name="endpoints">
@@ -170,7 +170,7 @@
 
     </bean>
 
-    <bean name="bp1-josso-binding-mediator"
+    <bean name="bp1-josso-binding-a2Mediator"
           class="org.atricore.idbus.capabilities.josso.main.JossoMediator">
 
         <property name="logMessages" value="true"/>

@@ -39,6 +39,8 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
  */
 public interface FederationChannel extends Channel {
 
+    String getServiceType();
+
     String getRole();
 
     CircleOfTrust getCircleOfTrust();
@@ -56,5 +58,6 @@ public interface FederationChannel extends Channel {
     FederatedProvider getTargetProvider();
 
     FederatedLocalProvider getProvider();
+
 
 }

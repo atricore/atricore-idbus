@@ -2,8 +2,8 @@ package org.atricore.idbus.capabilities.oauth2.main.token.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.oauth2.common.OAuthAccessToken;
-import org.atricore.idbus.capabilities.oauth2.main.OAuthMediator;
+import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessToken;
+import org.atricore.idbus.capabilities.oauth2.main.OAuth2Mediator;
 import org.atricore.idbus.capabilities.oauth2.main.emitter.OAuthAccessTokenEmissionContext;
 import org.atricore.idbus.capabilities.oauth2.main.token.endpoints.TokenEndpoint;
 import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenRequestType;
@@ -64,7 +64,7 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
         // --------------------------------------------
 
         // Call STS and wait for OAUTH AccessToken
-        OAuthAccessToken at = null;
+        OAuth2AccessToken at = null;
 
         // serialize, sign, encode , send access token
 
@@ -130,8 +130,8 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
     }
 
     protected MessageQueueManager getArtifactQueueManager() {
-        OAuthMediator mediator = (OAuthMediator) channel.getIdentityMediator();
-        return mediator.getArtifactQueueManager();
+        OAuth2Mediator a2Mediator = (OAuth2Mediator) channel.getIdentityMediator();
+        return a2Mediator.getArtifactQueueManager();
     }
 
 }

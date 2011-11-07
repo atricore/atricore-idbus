@@ -22,7 +22,7 @@
 <s:beans xmlns="urn:org:atricore:idbus:core"
          xmlns:samlr2="urn:org:atricore:idbus:samlr2"
          xmlns:samlr2-support="urn:org:atricore:idbus:samlr2:support"
-         xmlns:im="urn:org:atricore:idbus:default:identity-mediator"
+         xmlns:im="urn:org:atricore:idbus:default:identity-a2Mediator"
          xmlns:amq="http://activemq.apache.org/schema/core"
          xmlns:def-auth="urn:org:atricore:idbus:default:authenticator"
          xmlns:basic-authscheme="urn:org:atricore:idbus:basic:authscheme"
@@ -210,9 +210,9 @@
         </member>
 
         <!-- SAMLR2 IDP Mediator -->
-        <mediator>
-            <s:ref bean="samlr2-idp-mediator"/>
-        </mediator>
+        <a2Mediator>
+            <s:ref bean="samlr2-idp-a2Mediator"/>
+        </a2Mediator>
 
         <!-- Mediation Engine -->
         <engine>
@@ -225,8 +225,8 @@
 
     </idp-channel>
 
-    <samlr2:idp-mediator
-            id="samlr2-idp-mediator"
+    <samlr2:idp-a2Mediator
+            id="samlr2-idp-a2Mediator"
             log-messages="true">
 
         <samlr2:artifact-queue-mgr>
@@ -249,7 +249,7 @@
             <samlr2:samlr2-binding-factory />
         </bindingFactory>
 
-    </samlr2:idp-mediator>
+    </samlr2:idp-a2Mediator>
 
     <samlr2-support:samlr2-encrypter id="idp-1-samlr2-encrypter"
                                      symmetricKeyAlgorithmURI="http://www.w3.org/2001/04/xmlenc#aes128-cbc"
@@ -338,9 +338,9 @@
         </endpoints>
 
         <!-- Mediator -->
-        <mediator>
-            <s:ref bean="samlr2-claims-mediator"/>
-        </mediator>
+        <a2Mediator>
+            <s:ref bean="samlr2-claims-a2Mediator"/>
+        </a2Mediator>
 
         <!-- Mediation Engine -->
         <engine>
@@ -351,7 +351,7 @@
 
     <!-- TODO : Move 'loginFormLocation' property to endpoit declaration
     -->
-    <samlr2:claims-mediator id="samlr2-claims-mediator"
+    <samlr2:claims-a2Mediator id="samlr2-claims-a2Mediator"
                             log-messages="true"
                             loginFormLocation="http://localhost:8181/idbus-ui/BasicAuthnFormLogin.action">
 
@@ -367,7 +367,7 @@
             <samlr2:samlr2-binding-factory/>
         </bindingFactory>
 
-    </samlr2:claims-mediator>
+    </samlr2:claims-a2Mediator>
 
     <mediation-logger id="claims-1-mediation-logger"
                       category="org.josso2.mediation.CLAIMS-1.wire">
@@ -451,9 +451,9 @@
             <s:ref bean="entity-1"/>
         </member>
 
-        <mediator>
-            <s:ref bean="samlr2-sp-mediator"/>
-        </mediator>
+        <a2Mediator>
+            <s:ref bean="samlr2-sp-a2Mediator"/>
+        </a2Mediator>
 
         <!-- Mediation Engine -->
         <engine>
@@ -470,7 +470,7 @@
         
     </sp-channel>
 
-    <samlr2:sp-mediator id="samlr2-sp-mediator"
+    <samlr2:sp-a2Mediator id="samlr2-sp-a2Mediator"
                         preferred-idp="http://localhost:8181/IDBUS/SAML2/MD"
                         preferred-idp-sso-binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
                         log-messages="true">
@@ -494,7 +494,7 @@
         <logger>
             <s:ref bean="sp-1-mediation-logger"/>
         </logger>
-    </samlr2:sp-mediator>
+    </samlr2:sp-a2Mediator>
 
 
     <samlr2-support:samlr2-encrypter id="sp-1-samlr2-encrypter"

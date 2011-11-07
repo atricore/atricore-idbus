@@ -20,7 +20,7 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 <s:beans xmlns:s="http://www.springframework.org/schema/beans"
-       xmlns="urn:org:atricore:idbus:default:identity-mediator"
+       xmlns="urn:org:atricore:idbus:default:identity-a2Mediator"
        xmlns:core="urn:org:atricore:idbus:core"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="

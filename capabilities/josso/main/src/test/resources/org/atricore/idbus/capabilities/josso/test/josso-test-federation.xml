@@ -21,7 +21,7 @@
   -->
 <s:beans xmlns:s="http://www.springframework.org/schema/beans"
          xmlns="urn:org:atricore:idbus:core"
-         xmlns:im="urn:org:atricore:idbus:default:identity-mediator"
+         xmlns:im="urn:org:atricore:idbus:default:identity-a2Mediator"
          xmlns:core="urn:org:atricore:idbus:core"
          xmlns:amq="http://activemq.apache.org/schema/core"
          xmlns:josso11="urn:org:atricore:idbus:websso:josso11"
@@ -86,9 +86,9 @@
         <engine>
             <s:ref bean="engine1"/>
         </engine>
-        <mediator>
+        <a2Mediator>
             <s:ref bean="mediator1"/>
-        </mediator>
+        </a2Mediator>
     </binding-channel>
 
     <idp-channel name="idp_channel1">
@@ -105,9 +105,9 @@
         <engine>
             <s:ref bean="engine1"/>
         </engine>
-        <mediator>
+        <a2Mediator>
             <s:ref bean="mediator2"/>
-        </mediator>
+        </a2Mediator>
     </idp-channel>
 
     <claim-channel name="claim_channel1">
@@ -115,9 +115,9 @@
         <engine>
             <s:ref bean="engine1"/>
         </engine>
-        <mediator>
+        <a2Mediator>
             <s:ref bean="mediator3"/>
-        </mediator>
+        </a2Mediator>
     </claim-channel>
 
     <!-- Trusted partners -->
@@ -137,19 +137,19 @@
         </im:mediators>
     </im:identity-mediation-engine>
 
-    <!--  Binding mediator for JOSSO 1.1 protocol -->
-    <josso11:binding-mediator id="mediator1">
+    <!--  Binding a2Mediator for JOSSO 1.1 protocol -->
+    <josso11:binding-a2Mediator id="mediator1">
         <josso11:artifactQueueManager>
             <s:ref bean="artifactQueueManager"/>
         </josso11:artifactQueueManager>
-    </josso11:binding-mediator>
+    </josso11:binding-a2Mediator>
 
-    <!--  Test IdP mediator that publishes a Mock IdP endpoint -->
+    <!--  Test IdP a2Mediator that publishes a Mock IdP endpoint -->
     <s:bean id="mediator2" class="org.atricore.idbus.capabilities.josso.test.support.SampleIdPMediator">
         <s:property name="artifactQueueManager" ref="artifactQueueManager"/>
     </s:bean>
 
-    <!--  Test Claims mediator that provides test identity request claims -->
+    <!--  Test Claims a2Mediator that provides test identity request claims -->
     <s:bean id="mediator3" class="org.atricore.idbus.capabilities.josso.test.support.SampleClaimsMediator">
         <s:property name="artifactQueueManager" ref="artifactQueueManager"/>
     </s:bean>

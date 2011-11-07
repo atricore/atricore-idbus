@@ -5,7 +5,7 @@ import javax.xml.namespace.QName;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public interface OAuthMessagingConstants {
+public interface OAuth2MessagingConstants {
 
     static final QName SERVICE_NAME = new QName("urn:org:atricore:idbus:common:oauth:2.0:wsdl", "OAuthService");
 

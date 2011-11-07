@@ -35,15 +35,15 @@
         <core:target>
             <s:ref bean="idp_channel_1"/>
         </core:target>
-        <mediator>
+        <a2Mediator>
             <s:ref bean="mediator1"/>
-        </mediator>
+        </a2Mediator>
     </core:binding-channel>
 
     <core:binding-channel name="binding_channel_2">
-        <mediator>
+        <a2Mediator>
             <s:ref bean="mediator2"/>
-        </mediator>
+        </a2Mediator>
 
     </core:binding-channel>
 
@@ -51,17 +51,17 @@
         <core:location>http://localhost:8181/IDPCH1</core:location>        
     </core:idp-channel>
 
-    <josso11:binding-mediator id="mediator1">
+    <josso11:binding-a2Mediator id="mediator1">
 
-    </josso11:binding-mediator>
+    </josso11:binding-a2Mediator>
 
-    <josso11:binding-mediator id="mediator2">
+    <josso11:binding-a2Mediator id="mediator2">
         <josso11:idpSSOLocationHttpRedirectBinding>http://localhost:8080/josso</josso11:idpSSOLocationHttpRedirectBinding>
         <josso11:josso11ACSUrl>http://localhost:8282/josso_security_check/</josso11:josso11ACSUrl>
         <josso11:assertionManager>
             <s:ref bean="josso-assertion-manager"/>
         </josso11:assertionManager>
-    </josso11:binding-mediator>
+    </josso11:binding-a2Mediator>
 
     <!-- ===================================================================== -->
     <!-- SSO Assertion anager, referencing assertion store                     -->

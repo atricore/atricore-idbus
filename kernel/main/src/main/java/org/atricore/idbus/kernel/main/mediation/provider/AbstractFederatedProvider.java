@@ -24,19 +24,10 @@ package org.atricore.idbus.kernel.main.mediation.provider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
-import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
-import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitContainer;
-import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
-import org.atricore.idbus.kernel.main.mediation.state.ProviderStateManager;
-import org.osgi.framework.BundleContext;
-import org.springframework.osgi.context.BundleContextAware;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -52,14 +43,16 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
 
     private String role;
 
-    private FederationChannel channel;
+    // Main channel and specializations ...
+    private ProviderService defaultProviderService;
 
-    private Set<FederationChannel> channels = new HashSet<FederationChannel>();
+    // Alternative channel configurations, including the possibility of overriding the setup.
+    private Map<String, ProviderService> providerServices = new HashMap<String, ProviderService>();
 
     private CircleOfTrust circleOfTrust;
 
+    // TODO : Is this part of the channel configuration ?!
     private String skin;
-
 
     public String getName() {
         return name;
@@ -86,15 +79,52 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
     }
 
     public FederationChannel getChannel() {
-        return channel;
+        return defaultProviderService.getChannel();
     }
 
     public void setChannel(FederationChannel channel) {
-        this.channel = channel;
+
+        if (this.defaultProviderService == null) {
+            this.defaultProviderService = new ProviderService(channel);
+        } else {
+            this.defaultProviderService.setChannel(channel);
+        }
     }
 
     public Set<FederationChannel> getChannels() {
-        return channels;
+        return this.defaultProviderService.getOverrideChannels();
+    }
+
+    public FederationChannel getChannel(String configurationKey) {
+        ProviderService cc = providerServices.get(configurationKey);
+        if (cc != null)
+            return cc.getChannel();
+
+        return null;
+    }
+
+    public Set<FederationChannel> getChannels(String configurationKey) {
+        ProviderService cc = providerServices.get(configurationKey);
+        if (cc != null)
+            return cc.getOverrideChannels();
+
+        return null;
+    }
+
+    public ProviderService getDefaultProviderService() {
+        return defaultProviderService;
+    }
+
+    public void setDefaultProviderService(ProviderService defaultProviderService) {
+        this.defaultProviderService = defaultProviderService;
+    }
+
+    public Map<String, ProviderService> getProviderServices() {
+        return providerServices;
+    }
+
+    public void setProviderServices(Map<String, ProviderService> providerServices) {
+        this.providerServices = providerServices;
     }
 
     public CircleOfTrust getCircleOfTrust() {
@@ -113,18 +143,47 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
         this.skin = skin;
     }
 
+    /**
+     * This only works for the default channel configuration
+     */
     public List<CircleOfTrustMemberDescriptor> getMembers() {
 
         List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();
-        for (FederationChannel channel : channels) {
+        if (defaultProviderService == null)
+            return members;
+
+        for (FederationChannel channel : defaultProviderService.getOverrideChannels()) {
             members.add(channel.getMember());
         }
 
         // Add also the default channel's member
-        if (channel != null)
-            members.add(channel.getMember());
+        if (defaultProviderService.getChannel() != null)
+            members.add(defaultProviderService.getChannel().getMember());
 
         return members;
     }
+
+
+    /**
+     * This only works for the default channel configuration
+     */
+    public List<CircleOfTrustMemberDescriptor> getMembers(String configurationKey) {
+
+        List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();
+        ProviderService cc = providerServices.get(configurationKey);
+        if (cc == null)
+            return members;
+
+        for (FederationChannel channel : cc.getOverrideChannels()) {
+            members.add(channel.getMember());
+        }
+
+        // Add also the default channel's member
+        if (cc.getChannel() != null)
+            members.add(cc.getChannel().getMember());
+
+        return members;
+    }
+
 
 }

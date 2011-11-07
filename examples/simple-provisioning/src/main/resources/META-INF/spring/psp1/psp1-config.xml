@@ -56,7 +56,7 @@
     <bean name="psp1-default-channel" class="org.atricore.idbus.kernel.main.mediation.channel.PspChannelImpl">
         <property name="name" value="psp1-default-channel"/>
         <property name="description" value="PSP One default channel"/>
-        <property name="identityMediator" ref="psp1-spml2-mediator"/>
+        <property name="identityMediator" ref="psp1-spml2-a2Mediator"/>
         <property name="unitContainer" ref="idau2-container"/>
         <property name="location" value="http://localhost:8081/IDBUS/PSP-1/SPML2"/>
         <property name="provider" ref="psp1"/>
@@ -73,7 +73,7 @@
         </property>
     </bean>
 
-    <bean name="psp1-spml2-mediator" class="org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator">
+    <bean name="psp1-spml2-a2Mediator" class="org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator">
         <property name="bindingFactory">
             <bean class="org.atricore.idbus.capabilities.spmlr2.main.binding.SpmlR2BindingFactory"/>
         </property>

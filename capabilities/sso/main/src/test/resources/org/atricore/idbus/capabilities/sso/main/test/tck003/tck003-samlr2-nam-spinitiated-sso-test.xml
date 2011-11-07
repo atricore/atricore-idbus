@@ -22,7 +22,7 @@
 <s:beans xmlns="urn:org:atricore:idbus:core"
          xmlns:samlr2="urn:org:atricore:idbus:samlr2"
          xmlns:samlr2-support="urn:org:atricore:idbus:samlr2:support"
-         xmlns:im="urn:org:atricore:idbus:default:identity-mediator"
+         xmlns:im="urn:org:atricore:idbus:default:identity-a2Mediator"
          xmlns:amq="http://activemq.apache.org/schema/core"
          xmlns:def-auth="urn:org:atricore:idbus:default:authenticator"
          xmlns:basic-authscheme="urn:org:atricore:idbus:basic:authscheme"
@@ -162,9 +162,9 @@
             <s:ref bean="sp-josso-1"/>
         </member>
 
-        <mediator>
-            <s:ref bean="samlr2-sp-mediator"/>
-        </mediator>
+        <a2Mediator>
+            <s:ref bean="samlr2-sp-a2Mediator"/>
+        </a2Mediator>
 
         <!-- Mediation Engine -->
         <engine>
@@ -181,7 +181,7 @@
 
     </sp-channel>
 
-    <samlr2:sp-mediator id="samlr2-sp-mediator"
+    <samlr2:sp-a2Mediator id="samlr2-sp-a2Mediator"
                         log-messages="true"
                         preferred-idp="http://nam01.dev.atricore.com:8080/nidp/saml2/metadata"
                         preferred-idp-binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" >
@@ -201,7 +201,7 @@
             <s:ref bean="sp-1-mediation-logger"/>
         </logger>
 
-    </samlr2:sp-mediator>
+    </samlr2:sp-a2Mediator>
 
     <mediation-logger id="sp-1-mediation-logger"
                       category="org.josso2.mediation.SP-1.wire">

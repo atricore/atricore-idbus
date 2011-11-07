@@ -71,7 +71,7 @@
         <property name="location" value="http://localhost:8080/IDBUS/@@idau-identifier@@/SP-1"/>
         <property name="accountLinkLifecycle" ref="sp1-account-link-lifecycle"/>
         <property name="accountLinkEmitter" ref="sp1-account-link-emitter"/>
-        <property name="identityMediator" ref="sp1-samlr2-mediator"/>
+        <property name="identityMediator" ref="sp1-samlr2-a2Mediator"/>
         <property name="sessionManager" ref="idp1-session-manager"/>
         <property name="identityManager" ref="sp1-identity-manager"/>
         <!--NO TARGET IN DEFAULTCHANNEL : property name="target" ref="sp-1-md"/-->
@@ -190,7 +190,7 @@
     </bean>
 
 
-    <bean name="sp1-samlr2-mediator" class="org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator">
+    <bean name="sp1-samlr2-a2Mediator" class="org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator">
 
         <property name="preferredIdpAlias"  value="http://localhost:8080/IDBUS/@@idau-identifier@@/IDP-1/SAML2/MD" />
         
@@ -321,7 +321,7 @@
         <property name="location" value="http://localhost:8080"/>
         <property name="target" ref="sp1-to-idp-default-channel"/>
         <property name="mediationEngine" ref="identity-mediation-engine"/>
-        <property name="identityMediator" ref="sp1-binding-channel-mediator"/>
+        <property name="identityMediator" ref="sp1-binding-channel-a2Mediator"/>
 
 
         <property name="endpoints">
@@ -398,7 +398,7 @@
 
     </bean>
 
-    <bean name="sp1-binding-channel-mediator"
+    <bean name="sp1-binding-channel-a2Mediator"
             class="org.atricore.idbus.capabilities.josso.main.JossoMediator">
 
         <property name="jossoAgentACS"

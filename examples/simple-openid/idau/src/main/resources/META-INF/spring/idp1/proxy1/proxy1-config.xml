@@ -17,7 +17,7 @@
             <ref bean="proxy1-idp1-binding-channel"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.openid.main.proxy.OpenIDProxyMediator" name="proxy1-openid-mediator">
+    <bean class="org.atricore.idbus.capabilities.openid.main.proxy.OpenIDProxyMediator" name="proxy1-openid-a2Mediator">
         <property name="spProxyACS">
             <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/IDP1/PROXY1/ACS/ARTIFACT</value>
         </property>
@@ -68,7 +68,7 @@
             <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/PROXY1/IDP1</value>
         </property>
         <property name="identityMediator">
-            <ref bean="proxy1-openid-mediator"/>
+            <ref bean="proxy1-openid-a2Mediator"/>
         </property>
         <property name="claimsProvider">
             <ref bean="proxy1-claims-channel"/>
@@ -166,7 +166,7 @@
             </list>
         </property>
         <property name="identityMediator">
-            <ref bean="proxy1-openid-claims-mediator"/>
+            <ref bean="proxy1-openid-claims-a2Mediator"/>
         </property>
         <property name="provider">
             <ref bean="proxy1"/>
@@ -176,7 +176,7 @@
         </property>
     </bean>
 
-    <bean class="org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator" name="proxy1-openid-claims-mediator">
+    <bean class="org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator" name="proxy1-openid-claims-a2Mediator">
         <property name="logMessages">
             <value>true</value>
         </property>

@@ -5,7 +5,7 @@ import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.message.MessageContentsList;
-import org.atricore.idbus.capabilities.oauth2.common.OAuthMessagingConstants;
+import org.atricore.idbus.capabilities.oauth2.common.OAuth2MessagingConstants;
 import org.atricore.idbus.common.oauth._2_0.protocol.OAuthRequestAbstractType;
 import org.atricore.idbus.common.oauth._2_0.wsdl.OAuthPortType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -14,21 +14,19 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.Abstract
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
-import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 
 import javax.xml.ws.Service;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class Oauth2SoapBinding extends AbstractMediationSoapBinding {
+public class OAuth2SoapBinding extends AbstractMediationSoapBinding {
 
-    private static final Log logger = LogFactory.getLog(Oauth2SoapBinding.class);
+    private static final Log logger = LogFactory.getLog(OAuth2SoapBinding.class);
 
-    public Oauth2SoapBinding(Channel channel) {
-        super(Oauth2Binding.OAUTH2_SOAP.getValue(), channel);
+    public OAuth2SoapBinding(Channel channel) {
+        super(OAuth2Binding.OAUTH2_SOAP.getValue(), channel);
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {
@@ -130,8 +128,8 @@ public class Oauth2SoapBinding extends AbstractMediationSoapBinding {
 
         String soapEndpoint = endpoint.getLocation();
 
-        Service service = Service.create(OAuthMessagingConstants.SERVICE_NAME);
-        service.addPort(OAuthMessagingConstants.PORT_NAME,
+        Service service = Service.create(OAuth2MessagingConstants.SERVICE_NAME);
+        service.addPort(OAuth2MessagingConstants.PORT_NAME,
                 javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING,
                 soapEndpoint);
 
@@ -155,7 +153,7 @@ public class Oauth2SoapBinding extends AbstractMediationSoapBinding {
         if (logger.isTraceEnabled())
             logger.trace("Using soap method ["+soapMethodName+"]");
 
-        OAuthPortType port = service.getPort(OAuthMessagingConstants.PORT_NAME, OAuthPortType.class);
+        OAuthPortType port = service.getPort(OAuth2MessagingConstants.PORT_NAME, OAuthPortType.class);
 
         if (logger.isTraceEnabled())
             logger.trace("Sending SSO SOAP Request: " + content);

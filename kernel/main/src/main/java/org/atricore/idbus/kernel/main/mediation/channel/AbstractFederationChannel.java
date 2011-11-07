@@ -40,6 +40,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
  */
 public abstract class AbstractFederationChannel extends AbstractChannel implements FederationChannel {
 
+    private String serviceType;
     private CircleOfTrust cot;
     private CircleOfTrustMemberDescriptor member;
     private MetadataEntry metadata;
@@ -50,6 +51,13 @@ public abstract class AbstractFederationChannel extends AbstractChannel implemen
     private transient AccountLinkEmitter accountLinkEmitter;
     private transient IdentityMapper identityMapper;
 
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    public void setConfiguration(String serviceType) {
+        this.serviceType = serviceType;
+    }
 
     public CircleOfTrust getCircleOfTrust() {
         return cot;

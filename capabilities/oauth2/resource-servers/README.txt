@@ -1,0 +1,1 @@
+* Placeholder for the different implementations of OAuth2 Resource Servers (java, c#, javascript, php, etc)

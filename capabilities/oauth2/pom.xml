@@ -252,8 +252,8 @@
     <modules>
         <module>common</module>
         <module>main</module>
-        <module>resource-server</module>
-        <module>clients/oauth2-java</module>
+        <module>resource-servers/oauth2-rs-java</module>
+        <module>clients/oauth2-client-java</module>
     </modules>
 
 </project>

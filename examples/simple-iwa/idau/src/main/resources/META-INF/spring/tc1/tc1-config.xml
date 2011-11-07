@@ -58,7 +58,7 @@
             <ref bean="simple-iwa-container"/>
         </property>
         <property name="identityMediator">
-            <ref bean="tc1-binding-mediator"/>
+            <ref bean="tc1-binding-a2Mediator"/>
         </property>
         <property name="endpoints">
             <list>
@@ -163,7 +163,7 @@
             </list>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.josso.main.JossoMediator" name="tc1-binding-mediator">
+    <bean class="org.atricore.idbus.capabilities.josso.main.JossoMediator" name="tc1-binding-a2Mediator">
         <property name="logMessages">
             <value>true</value>
         </property>

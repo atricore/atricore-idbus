@@ -24,7 +24,7 @@
             <ref bean="sp1-tc1-activation"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator" name="sp1-samlr2-mediator">
+    <bean class="org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator" name="sp1-samlr2-a2Mediator">
         <property name="preferredIdpAlias">
             <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/IDP1/SAML2/MD</value>
         </property>
@@ -241,7 +241,7 @@
             <ref bean="sp1-md"/>
         </property>
         <property name="identityMediator">
-            <ref bean="sp1-samlr2-mediator"/>
+            <ref bean="sp1-samlr2-a2Mediator"/>
         </property>
         <property name="accountLinkLifecycle">
             <ref bean="sp1-account-link-lifecycle"/>
@@ -403,7 +403,7 @@
             <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/SP1/SP1</value>
         </property>
         <property name="identityMediator">
-            <ref bean="sp1-samlr2-mediator"/>
+            <ref bean="sp1-samlr2-a2Mediator"/>
         </property>
         <property name="endpoints">
             <list>

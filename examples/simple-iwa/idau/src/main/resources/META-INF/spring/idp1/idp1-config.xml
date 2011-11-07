@@ -24,7 +24,7 @@
             <ref bean="idp1-default-sp-channel"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator" name="idp1-samlr2-mediator">
+    <bean class="org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator" name="idp1-samlr2-a2Mediator">
         <property name="logMessages">
             <value>true</value>
         </property>
@@ -243,7 +243,7 @@
             <ref bean="idp1-md"/>
         </property>
         <property name="identityMediator">
-            <ref bean="idp1-samlr2-mediator"/>
+            <ref bean="idp1-samlr2-a2Mediator"/>
         </property>
         <property name="endpoints">
             <list>
@@ -582,7 +582,7 @@
             </list>
         </property>
         <property name="identityMediator">
-            <ref bean="idp1-samlr2-claims-mediator"/>
+            <ref bean="idp1-samlr2-claims-a2Mediator"/>
         </property>
         <property name="provider">
             <ref bean="idp1"/>
@@ -591,7 +591,7 @@
             <ref bean="simple-iwa-container"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator" name="idp1-samlr2-claims-mediator">
+    <bean class="org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator" name="idp1-samlr2-claims-a2Mediator">
         <property name="logMessages">
             <value>true</value>
         </property>
@@ -677,7 +677,7 @@
             </list>
         </property>
         <property name="identityMediator">
-            <ref bean="idp1-spnego-claims-mediator"/>
+            <ref bean="idp1-spnego-claims-a2Mediator"/>
         </property>
         <property name="provider">
             <ref bean="idp1"/>
@@ -686,7 +686,7 @@
             <ref bean="simple-iwa-container"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.spnego.SpnegoMediator" name="idp1-spnego-claims-mediator">
+    <bean class="org.atricore.idbus.capabilities.spnego.SpnegoMediator" name="idp1-spnego-claims-a2Mediator">
         <property name="realm" value="spnego"/>
         <property name="principal" value="HTTP/wsdev1.w2k3dev.atricore.com@W2K3DEV.ATRICORE.COM"/>
         <property name="bindingFactory">
