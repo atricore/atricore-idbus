@@ -42,7 +42,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
 
     <!-- ========================================================================= -->
-    <!-- Bundle configuration properties                                           -->
+    <!-- OSGi Bundle configuration properties                                      -->
     <!-- ========================================================================= -->
     <osgix:cm-properties id="idbusUiProps" persistent-id="org.atricore.idbus.applications.server.web">
         <prop key="resourceBundle">messages</prop>
@@ -67,6 +67,32 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <property name="basename" value="${resourceBundle}"/>
     </bean>
 
+    <bean id="localeChangeInterceptor"
+        class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="lang" />
+    </bean>
+
+    <bean id="localeResolver"
+        class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="defaultLocale" value="en"/>
+    </bean>
+
+    <bean id="handlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="interceptors">
+            <ref bean="localeChangeInterceptor" />
+        </property>
+        <property name="mappings">
+            <props>
+                <!-- THIS SHOULD BE EASIER! -->
+                <prop key="/warn/policy-enforcement.do">/warn/policy-enforcement.do</prop>
+                <prop key="/claims/username-password.do">/claims/username-password.do</prop>
+                <prop key="/claims/username-passcode.do">/claims/username-passcode.do</prop>
+                <prop key="/warn/policy-enforcement.do">/warn/policy-enforcement.do</prop>
+                <prop key="/error.do">/error.do</prop>
+            </props>
+        </property>
+    </bean>
+
     <!-- Tiles Beans -->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView"/>
@@ -74,6 +100,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     </bean>
 
     <bean id="tilesConfigurer" class="org.atricore.idbus.bundles.apache.tiles.OsgiTilesConfigurer">
+
         <!--
         <property name="definitions">
             <list>
