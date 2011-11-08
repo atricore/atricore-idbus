@@ -298,6 +298,11 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         // Properties (take from config!)
 
         int ssoSessionTimeout = provider.getSsoSessionTimeout();
+
+        if (ssoSessionTimeout < 1) {
+            logger.warn("Invalid SSO Session Timeout " + ssoSessionTimeout + ", forcing a new value");
+            ssoSessionTimeout = 30;
+        }
         setPropertyValue(sessionManager, "maxInactiveInterval", ssoSessionTimeout + "");
         setPropertyValue(sessionManager, "maxSessionsPerUser", "-1");
         setPropertyValue(sessionManager, "invalidateExceedingSessions", "false");

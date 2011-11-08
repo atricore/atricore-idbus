@@ -41,6 +41,8 @@
         <idbus.cap.saml2.version>1.3.0-SNAPSHOT</idbus.cap.saml2.version>
         <idbus.cap.spnego.version>1.3.0-SNAPSHOT</idbus.cap.spnego.version>
         <idbus.cap.spml2.version>1.3.0-SNAPSHOT</idbus.cap.spml2.version>
+        <idbus.cap.openid.version>1.3.0-SNAPSHOT</idbus.cap.openid.version>
+        <idbus.cap.oauth2.version>1.3.0-SNAPSHOT</idbus.cap.oauth2.version>
         <idbus.cap.josso.version>1.3.0-SNAPSHOT</idbus.cap.josso.version>
         <idbus.cap.sts.version>1.3.0-SNAPSHOT</idbus.cap.sts.version>
 

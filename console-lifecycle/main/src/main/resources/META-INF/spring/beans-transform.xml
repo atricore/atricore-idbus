@@ -35,6 +35,12 @@
         <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
 
+    <bean name="oauth2IdpLocalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.OAuth2IdpLocalTransformer">
+
+    </bean>
+
+
     <bean name="idpExternalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPExternalTransformer"/>
 
@@ -51,6 +57,19 @@
         <property name="roleA" value="false"/>
     </bean>
 
+    <bean name="oauth2IdpDefaultSPChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.OAuth2IdpSPChannelTransformer"/>
+
+    <bean name="oauth2IdpFederatedConnectionATransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.OAuth2IdpFederatedConnectionTransformer">
+        <property name="roleA" value="true"/>
+    </bean>
+
+    <bean name="oauth2IdpFederatedConnectionBTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.OAuth2IdpFederatedConnectionTransformer">
+        <property name="roleA" value="false"/>
+    </bean>
+
     <bean name="basicAuthnClaimsChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationClaimsChannelTransformer"/>
 
@@ -62,6 +81,9 @@
 
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.STSTransformer"/>
+
+    <bean name="oauth2StsTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.OAuth2STSTransformer"/>
 
     <bean name="basicAuthenticationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationTransformer"/>
@@ -343,6 +365,7 @@
 
                                         <!-- IDP Transformers -->
                                         <ref bean="idpLocalTransformer"/>
+                                        <ref bean="oauth2IdpLocalTransformer"/>
                                         <ref bean="idpExternalTransformer"/>
                                         <ref bean="samlr2IdPTransformer"/>
 
@@ -350,11 +373,17 @@
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
 
+                                        <ref bean="oauth2IdpDefaultSPChannelTransformer"/>
+                                        <ref bean="oauth2IdpFederatedConnectionATransformer"/>
+                                        <ref bean="oauth2IdpFederatedConnectionBTransformer"/>
+
                                         <ref bean="basicAuthnClaimsChannelTransformer"/>
                                         <ref bean="2faAuthnClaimsChannelTransformer"/>
                                         <ref bean="wiaAuthnClaimsChannelTransformer"/>
 
                                         <ref bean="stsTransformer"/>
+                                        <ref bean="oauth2StsTransformer"/>
+
                                         <ref bean="basicAuthenticationTransformer"/>
                                         <ref bean="twoFactorAuthenticationTransformer"/>
                                         <ref bean="directoryServiceAuthenticationTransformer"/>

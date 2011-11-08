@@ -23,6 +23,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
+import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
 import org.atricore.idbus.kernel.main.util.HashGenerator;
 
 import java.io.UnsupportedEncodingException;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
 
 public class AbstractIdPChannelTransformer extends AbstractTransformer {
 
@@ -54,26 +56,44 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
         if (logger.isTraceEnabled())
             logger.trace("Generating Beans for IdP Channel " + (idpChannel != null ? idpChannel.getName() : "default") + " of SP " + sp.getName());
 
+        //---------------------------------------------
+        // Get IDP Bean
+        //---------------------------------------------
         Bean spBean = null;
         Collection<Bean> b = getBeansOfType(spBeans, ServiceProviderImpl.class.getName());
         if (b.size() != 1) {
             throw new TransformException("Invalid SP definition count : " + b.size());
         }
-        
         spBean = b.iterator().next();
+
+        //---------------------------------------------
+        // Get IDP default (SSO) federation service bean
+        //---------------------------------------------
+        Bean spSsoSvcBean = null;
+        String spSsoSvcBeanName = getPropertyRef(spBean, "defaultFederationService");
+        String spSsoServiceType = "urn:oasis:names:tc:SAML:2.0";
+        if (spSsoSvcBeanName == null) {
+            spSsoSvcBeanName = spBean.getName() + "-sso-default-svc";
+            spSsoSvcBean = newBean(spBeans, spSsoSvcBeanName, FederationService.class);
+            setPropertyRef(spBean, "defaultFederationService", spSsoSvcBeanName);
+            setPropertyValue(spSsoSvcBean, "serviceType", spSsoServiceType);
+            setPropertyValue(spSsoSvcBean, "name", spSsoSvcBeanName);
+        }
+        spSsoSvcBean = getBean(spBeans, spSsoSvcBeanName);
+
         String idpChannelName = spBean.getName() +  "-" + (idpChannel != null ? normalizeBeanName(target.getName()) : "default") + "-idp-channel";
 
         String idauPath = (String) ctx.get("idauPath");
         
         // Check if we already created default channel
-        if (idpChannel == null && getPropertyRef(spBean, "channel") != null) {
+        if (idpChannel == null && getPropertyRef(spSsoSvcBean, "channel") != null) {
             ctx.put(contextIdpChannelBean, getBean(spBeans, idpChannelName));
             return;
         }
 
         // Check if we already created override channel
         if (idpChannel != null) {
-            List<Bean> idpChannelBeans = getPropertyBeans(spBeans, spBean, "channels");
+            List<Bean> idpChannelBeans = getPropertyBeans(spBeans, spSsoSvcBean, "overrideChannels");
             if (idpChannelBeans != null) {
                 for (Bean idpChannelBean : idpChannelBeans) {
                     if (getPropertyValue(idpChannelBean, "name").equals(idpChannelName)) {
@@ -439,9 +459,9 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
         setPropertyAsBeans(idpChannelBean, "endpoints", endpoints);
 
         if (idpChannel != null)
-            addPropertyBeansAsRefsToSet(spBean, "channels", idpChannelBean);
+            addPropertyBeansAsRefsToSet(spSsoSvcBean, "overrideChannels", idpChannelBean);
         else
-            setPropertyRef(spBean, "channel", idpChannelBean.getName());
+            setPropertyRef(spSsoSvcBean, "channel", idpChannelBean.getName());
     }
 
     @Override

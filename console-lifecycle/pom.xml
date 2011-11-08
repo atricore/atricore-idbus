@@ -103,6 +103,31 @@
             </dependency>
 
             <dependency>
+                <groupId>org.atricore.idbus.capabilities.openid</groupId>
+                <artifactId>org.atricore.idbus.capabilities.openid.main</artifactId>
+                <version>${idbus.cap.openid.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.capabilities.openid</groupId>
+                <artifactId>org.atricore.idbus.capabilities.openid.ui</artifactId>
+                <version>${idbus.cap.openid.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
+                <artifactId>org.atricore.idbus.capabilities.oauth2.common</artifactId>
+                <version>${idbus.cap.oauth2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
+                <artifactId>org.atricore.idbus.capabilities.oauth2.main</artifactId>
+                <version>${idbus.cap.oauth2.version}</version>
+            </dependency>
+
+
+            <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.apache-maven-v3_0</artifactId>
                 <version>${idbus.bundle.apache-maven-v3_0.version}</version>
@@ -178,6 +203,12 @@
             <dependency>
                 <groupId>org.atricore.idbus.kernel.common</groupId>
                 <artifactId>org.atricore.idbus.kernel.common.samlr2</artifactId>
+                <version>${idbus.kernel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.kernel.common</groupId>
+                <artifactId>org.atricore.idbus.kernel.common.oauth2</artifactId>
                 <version>${idbus.kernel.version}</version>
             </dependency>
 
