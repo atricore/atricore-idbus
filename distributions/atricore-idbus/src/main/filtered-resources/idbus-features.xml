@@ -51,6 +51,7 @@
         <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.samlr2/${idbus.kernel.version}</bundle>
         <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.samlr11/${idbus.kernel.version}</bundle>
         <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.sso/${idbus.kernel.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.oauth2/${idbus.kernel.version}</bundle>
         <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.wst/${idbus.kernel.version}</bundle>
         <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.html/${idbus.kernel.version}</bundle>
     </feature>

@@ -50,7 +50,7 @@
     <complexType name="AuthorizationRequestType">
         <complexContent>
             <extension base="oauth2p:OAuthRequestAbstractType">
-                <attribute name="responseType" type="string" use="required" default="code"/>
+                <attribute name="responseType" type="string" use="optional" default="code"/>
                 <attribute name="clientId" type="string" use="required"/>
                 <attribute name="clientSecret" type="string" use="optional"/>
                 <attribute name="redirectUri" type="string" use="optional"/>
