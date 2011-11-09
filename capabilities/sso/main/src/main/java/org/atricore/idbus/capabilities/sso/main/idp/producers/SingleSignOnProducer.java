@@ -1327,7 +1327,7 @@ public class SingleSignOnProducer extends SSOProducer {
         MessageQueueManager aqm = getArtifactQueueManager();
 
         // -------------------------------------------------------
-        // Emitt a new security token
+        // Emit a new security token
         // -------------------------------------------------------
 
         // TODO : Improve communication mechanism between STS and IDP!

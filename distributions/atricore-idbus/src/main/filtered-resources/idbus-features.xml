@@ -316,6 +316,9 @@
         <bundle start-level="35">mvn:org.apache.commons/com.springsource.org.apache.commons.fileupload/${commons-fileupload.version}</bundle>
         <bundle start-level="35">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.wadi-v2_1_2/${idbus.bundle.wadi-v2_1_2.version}</bundle>
         <bundle start-level="34">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ini4j-v0_5_1/${idbus.bundle.ini4j-v0_5_1.version}</bundle>
+        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-core-asl/1.9.1</bundle>
+        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.1</bundle>
+        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-jaxrs/1.9.1</bundle>
     </feature>
 
     <feature name="mysql-connector-java" version="5.1.10">

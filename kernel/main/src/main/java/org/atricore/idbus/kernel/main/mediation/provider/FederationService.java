@@ -14,17 +14,26 @@ import java.util.Set;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class ProviderService implements Serializable {
+public class FederationService implements Serializable {
 
+    private String name;
     private String serviceType;
     private FederationChannel channel;
     private Set<FederationChannel> overrideChannels = new HashSet<FederationChannel>();
 
-    public ProviderService() {
+    public FederationService() {
 
     }
 
-    public ProviderService(FederationChannel channel) {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public FederationService(FederationChannel channel) {
         this.channel = channel;
     }
 

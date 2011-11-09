@@ -56,8 +56,6 @@
             <scope>provided</scope>
         </dependency>
 
-
-
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-bindings-soap</artifactId>
@@ -106,6 +104,12 @@
                     <artifactId>jsr181</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>1.9.1</version>
         </dependency>
 
     </dependencies>

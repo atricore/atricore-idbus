@@ -44,10 +44,10 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
     private String role;
 
     // Main channel and specializations ...
-    private ProviderService defaultProviderService;
+    private FederationService defaultFederationService;
 
     // Alternative channel configurations, including the possibility of overriding the setup.
-    private Map<String, ProviderService> providerServices = new HashMap<String, ProviderService>();
+    private Set<FederationService> federationServices = new HashSet<FederationService>();
 
     private CircleOfTrust circleOfTrust;
 
@@ -79,52 +79,52 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
     }
 
     public FederationChannel getChannel() {
-        return defaultProviderService.getChannel();
+        return defaultFederationService.getChannel();
     }
 
     public void setChannel(FederationChannel channel) {
 
-        if (this.defaultProviderService == null) {
-            this.defaultProviderService = new ProviderService(channel);
+        if (this.defaultFederationService == null) {
+            this.defaultFederationService = new FederationService(channel);
         } else {
-            this.defaultProviderService.setChannel(channel);
+            this.defaultFederationService.setChannel(channel);
         }
     }
 
     public Set<FederationChannel> getChannels() {
-        return this.defaultProviderService.getOverrideChannels();
+        return this.defaultFederationService.getOverrideChannels();
     }
 
     public FederationChannel getChannel(String configurationKey) {
-        ProviderService cc = providerServices.get(configurationKey);
-        if (cc != null)
-            return cc.getChannel();
-
+        for (FederationService fc : federationServices) {
+            if (fc.getName().equals(configurationKey))
+                return fc.getChannel();
+        }
         return null;
     }
 
     public Set<FederationChannel> getChannels(String configurationKey) {
-        ProviderService cc = providerServices.get(configurationKey);
-        if (cc != null)
-            return cc.getOverrideChannels();
-
+        for (FederationService fc : federationServices) {
+            if (fc.getName().equals(configurationKey))
+                return fc.getOverrideChannels();
+        }
         return null;
     }
 
-    public ProviderService getDefaultProviderService() {
-        return defaultProviderService;
+    public FederationService getDefaultFederationService() {
+        return defaultFederationService;
     }
 
-    public void setDefaultProviderService(ProviderService defaultProviderService) {
-        this.defaultProviderService = defaultProviderService;
+    public void setDefaultFederationService(FederationService defaultFederationService) {
+        this.defaultFederationService = defaultFederationService;
     }
 
-    public Map<String, ProviderService> getProviderServices() {
-        return providerServices;
+    public Set<FederationService> getFederationServices() {
+        return federationServices;
     }
 
-    public void setProviderServices(Map<String, ProviderService> providerServices) {
-        this.providerServices = providerServices;
+    public void setFederationServices(Set<FederationService> federationServices) {
+        this.federationServices = federationServices;
     }
 
     public CircleOfTrust getCircleOfTrust() {
@@ -148,16 +148,16 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
      */
     public List<CircleOfTrustMemberDescriptor> getMembers() {
         List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();
-        if (defaultProviderService == null)
+        if (defaultFederationService == null)
             return members;
 
-        for (FederationChannel channel : defaultProviderService.getOverrideChannels()) {
+        for (FederationChannel channel : defaultFederationService.getOverrideChannels()) {
             members.add(channel.getMember());
         }
 
         // Add also the default channel's member
-        if (defaultProviderService.getChannel() != null)
-            members.add(defaultProviderService.getChannel().getMember());
+        if (defaultFederationService.getChannel() != null)
+            members.add(defaultFederationService.getChannel().getMember());
 
         return members;
 
@@ -166,19 +166,19 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
     public List<CircleOfTrustMemberDescriptor> getAllMembers() {
 
         List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();
-        if (defaultProviderService == null)
+        if (defaultFederationService == null)
             return members;
 
-        for (FederationChannel channel : defaultProviderService.getOverrideChannels()) {
+        for (FederationChannel channel : defaultFederationService.getOverrideChannels()) {
             members.add(channel.getMember());
         }
 
         // Add also the default channel's member
-        if (defaultProviderService.getChannel() != null)
-            members.add(defaultProviderService.getChannel().getMember());
+        if (defaultFederationService.getChannel() != null)
+            members.add(defaultFederationService.getChannel().getMember());
 
         // Add non-default services too
-        for (ProviderService svc : providerServices.values()) {
+        for (FederationService svc : federationServices) {
             members.add(svc.getChannel().getMember());
             for (FederationChannel fc : svc.getOverrideChannels()) {
                 members.add(fc.getMember());
@@ -193,17 +193,25 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
     public List<CircleOfTrustMemberDescriptor> getMembers(String configurationKey) {
 
         List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();
-        ProviderService cc = providerServices.get(configurationKey);
-        if (cc == null)
+
+        FederationService federationSvc = null;
+        for (FederationService fc : federationServices) {
+            if (fc.getName().equals(configurationKey)) {
+                federationSvc = fc;
+                break;
+            }
+        }
+
+        if (federationSvc == null)
             return members;
 
-        for (FederationChannel channel : cc.getOverrideChannels()) {
+        for (FederationChannel channel : federationSvc.getOverrideChannels()) {
             members.add(channel.getMember());
         }
 
         // Add also the default channel's member
-        if (cc.getChannel() != null)
-            members.add(cc.getChannel().getMember());
+        if (federationSvc.getChannel() != null)
+            members.add(federationSvc.getChannel().getMember());
 
         return members;
     }

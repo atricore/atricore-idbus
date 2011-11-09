@@ -74,8 +74,9 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
      * @return true, if the received token and requested token type are supported.
      */
     public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
-        // We can emit for any context with a valid subject!
-        return context.getProperty(WSTConstants.SUBJECT_PROP) != null;
+        // We can emit for any context with a valid subject when Token Type is SAMLR2!
+        return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
+                WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType);
     }
 
     /**

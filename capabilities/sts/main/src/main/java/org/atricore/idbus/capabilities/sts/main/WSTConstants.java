@@ -27,6 +27,12 @@ package org.atricore.idbus.capabilities.sts.main;
  */
 public interface WSTConstants {
 
+    /**
+     * This is not actually an oasis profile
+     */
+    static final String WST_OAUTH2_TOKEN_TYPE =
+            "http://docs.oasis-open.org/wss/oasis-wss-oauth2-token-profile-1.1#OAUTH2.0";
+
     static final String WST_SAMLR2_TOKEN_TYPE =
             "http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0";
 
