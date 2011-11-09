@@ -8,6 +8,9 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmitter;
+import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
+import org.atricore.idbus.kernel.main.authn.AuthenticatorImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 
 import java.util.ArrayList;
@@ -58,14 +61,14 @@ public class STSTransformer extends AbstractTransformer {
         // ----------------------------------------
         Bean stsEmitter = newBean(idpBeans,
                 idpBean.getName() + "-samlr2-assertion-emitter",
-                "org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmitter");
+                SamlR2SecurityTokenEmitter.class.getName());
         setPropertyValue(stsEmitter, "id", stsEmitter.getName());
 
         // identityPlanRegistry
         setPropertyRef(stsEmitter, "identityPlanRegistry", "identity-plans-registry");
 
 
-        Collection<Bean> mediators = getBeansOfType(idpBeans, "org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator");
+        Collection<Bean> mediators = getBeansOfType(idpBeans, SSOIDPMediator.class.getName());
 
         if (mediators.size() != 1)
             throw new TransformException("Too many/few mediators defined " + mediators.size());
@@ -92,7 +95,7 @@ public class STSTransformer extends AbstractTransformer {
         // JOSSO Legacy authenticator
         // ----------------------------------------
 
-        Bean legacyAuthenticator = newBean(idpBeans, "authenticator", "org.atricore.idbus.kernel.main.authn.AuthenticatorImpl");
+        Bean legacyAuthenticator = newBean(idpBeans, "authenticator", AuthenticatorImpl.class.getName());
         List<Ref> authnSchemes = new ArrayList<Ref>();
 
         if (provider.getAuthenticationMechanisms().size() < 1)

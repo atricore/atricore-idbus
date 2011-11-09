@@ -42,7 +42,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
 
     private static final Log logger = LogFactory.getLog(AbstractSPChannelTransformer.class);
 
-    protected String contextSpChannelBean = "spChannelBean";
+    protected String contextSpChannelBean = "spSsoChannelBean";
 
     /**
      * Generate IDP Components for a federated connection:

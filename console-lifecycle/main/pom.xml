@@ -80,10 +80,23 @@
         </dependency>
 
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.oauth2.common</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.oauth2.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
             <scope>provided</scope>
         </dependency>
+
 
         <dependency>
             <groupId>org.atricore.idbus.capabilities.spnego</groupId>

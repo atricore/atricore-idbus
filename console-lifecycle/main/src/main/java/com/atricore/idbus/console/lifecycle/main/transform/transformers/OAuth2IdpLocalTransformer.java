@@ -100,7 +100,7 @@ public class OAuth2IdpLocalTransformer extends AbstractTransformer implements In
         // warningUrl
         setPropertyValue(idpMediator, "warningUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/warn/policy-enforcement.do");
 
-        // TODO : Register OAuth2 STS Emitter
+
 
 
 

@@ -15,7 +15,7 @@ public class OAuth2IdpSPChannelTransformer extends AbstractOAuth2SPChannelTransf
 
     public OAuth2IdpSPChannelTransformer() {
         super();
-        setContextSpChannelBean("defaultSPChannelBean");
+        setContextSpChannelBean("defaultOauth2SPChannelBean");
     }
 
     @Override

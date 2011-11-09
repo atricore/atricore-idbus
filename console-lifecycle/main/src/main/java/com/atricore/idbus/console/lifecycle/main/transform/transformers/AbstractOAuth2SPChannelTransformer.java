@@ -267,6 +267,47 @@ public class AbstractOAuth2SPChannelTransformer extends AbstractTransformer {
             setPropertyRef(idpOAuth2SvcBean, "channel", spChannelBean.getName());
     }
 
+    @Override
+    public Object after(TransformEvent event) throws TransformException {
+
+        // SP Channel bean
+        Bean spChannelBean = (Bean) event.getContext().get(contextSpChannelBean);
+        Bean idpBean = (Bean) event.getContext().get("idpBean");
+        Beans idpBeans = (Beans) event.getContext().get("idpBeans");
+        Beans beans = (Beans) event.getContext().get("beans");
+
+        Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
+        if (sts == null)
+            throw new TransformException("No STS defined as " + idpBean.getName() + "-sts");
+        setPropertyRef(spChannelBean, "securityTokenService", sts.getName());
+
+
+        // Mediation Unit
+        Collection<Bean> mus = getBeansOfType(beans, OsgiIdentityMediationUnit.class.getName());
+        if (mus.size() == 1) {
+            Bean mu = mus.iterator().next();
+
+            List<Bean> channels = getPropertyBeans(idpBeans, mu, "channels");
+            boolean found = false;
+
+            if (channels != null)
+                for (Bean bean : channels) {
+                    if (getPropertyValue(bean, "name").equals(getPropertyValue(spChannelBean, "name"))) {
+                        found = true;
+                        break;
+                    }
+                }
+
+            if (!found)
+                addPropertyBeansAsRefs(mu, "channels", spChannelBean);
+
+        } else {
+            throw new TransformException("One and only one Identity Mediation Unit is expected, found " + mus.size());
+        }
+
+        return spChannelBean;
+    }
+
     public String getContextSpChannelBean() {
         return contextSpChannelBean;
     }
