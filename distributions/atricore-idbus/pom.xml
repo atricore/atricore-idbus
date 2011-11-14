@@ -1491,7 +1491,7 @@
         <dependency>
             <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
             <artifactId>org.atricore.idbus.capabilities.oauth2.common</artifactId>
-            <version>${idbus.cap.josso.version}</version>
+            <version>${idbus.cap.oauth2.version}</version>
             <type>pom</type>
         </dependency>
 

@@ -377,7 +377,7 @@ public class LDAPIdentityStore extends AbstractStore  {
                     logger.debug("Search Filter:  (&(" + uidAttributeID + "=" + userDN + "))");
 
                 if (!answer.hasMore())
-                    logger.info("No role where found for user " + username);
+                    logger.info("No roles found for user " + username);
 
                 while (answer.hasMore()) {
                     SearchResult sr = (SearchResult) answer.next();

@@ -8,6 +8,8 @@ import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessTokenEnvelope;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -20,6 +22,10 @@ public class JasonUtils {
     private static final Log logger = LogFactory.getLog(JasonUtils.class);
 
     private static ObjectMapper mapper = new ObjectMapper();
+
+    static {
+        mapper.writerWithType(List.class).withType(ArrayList.class);
+    }
 
     public static String marshalAccessToken(OAuth2AccessToken accessToken) throws IOException {
         return marshalAccessToken(accessToken, true);
@@ -120,7 +126,7 @@ public class JasonUtils {
     public static String inflate(String tokenStr, boolean decode) {
 
         if (tokenStr == null || tokenStr.length() == 0) {
-            throw new RuntimeException("Redirect string cannot be null or empty");
+            throw new RuntimeException("Token string cannot be null or empty");
         }
 
         byte[] redirBin = null;
@@ -139,7 +145,7 @@ public class JasonUtils {
         try {
             resultLength = inflater.inflate(result);
         } catch (DataFormatException e) {
-            throw new RuntimeException("Cannot inflate SAML message : " + e.getMessage(), e);
+            throw new RuntimeException("Cannot inflate OAuth2 Token : " + e.getMessage(), e);
         }
 
 

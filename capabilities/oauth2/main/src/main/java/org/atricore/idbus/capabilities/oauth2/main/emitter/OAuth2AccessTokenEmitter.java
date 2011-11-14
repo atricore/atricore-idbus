@@ -4,6 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessToken;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessTokenEnvelope;
+import org.atricore.idbus.capabilities.oauth2.common.OAuth2Claim;
+import org.atricore.idbus.capabilities.oauth2.common.OAuth2ClaimType;
 import org.atricore.idbus.capabilities.oauth2.common.util.JasonUtils;
 import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmitter;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
@@ -100,17 +102,16 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         assert ssoUsers.size() == 1;
         OAuth2AccessToken at = new OAuth2AccessToken();
         SSOUser user = ssoUsers.iterator().next();
-        at.setUser(user.getName());
+        at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.USERID.toString(), user.getName()));
+        // Just a temporary work-around.
+        at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.UNKNOWN.toString(), "UNKNOWN"));
 
         // Roles
         Set<SSORole> ssoRoles = subject.getPrincipals(SSORole.class);
-        String[] roles = new String[ssoRoles.size()];
-        int idx = 0;
         for (SSORole ssoRole : ssoRoles) {
-            roles[idx] = ssoRole.getName();
-            idx++;
+            at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ROLE.toString(), ssoRole.getName()));
         }
-        at.setRoles(roles);
+
 
         return at;
     }
