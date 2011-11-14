@@ -132,19 +132,22 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 setPropertyValue(ccSpPwdLocal, "type", AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue());
                 ccEndpoints.add(ccSpPwdLocal);
 
-                ImpersonateUserPolicy impUsrPolicy = ((BasicAuthentication)authnMechanism).getImpersonateUserPolicy();
-                if (impUsrPolicy != null && !impUsrPolicy.getImpersonateUserPolicyType().equals(ImpersonateUserPolicyType.DISABLED)) {
 
-                    // Enable endpoints for user impersonation
+                if (authnMechanism instanceof BasicAuthentication) {
+                    ImpersonateUserPolicy impUsrPolicy = ((BasicAuthentication)authnMechanism).getImpersonateUserPolicy();
+                    if (impUsrPolicy != null && !impUsrPolicy.getImpersonateUserPolicyType().equals(ImpersonateUserPolicyType.DISABLED)) {
 
-                    Bean ccSpImpersonateLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                    ccSpImpersonateLocal.setName(idpBean.getName() + "-cc-spimpersonate-local");
-                    setPropertyValue(ccSpImpersonateLocal, "name", ccSpImpersonateLocal.getName());
-                    setPropertyValue(ccSpImpersonateLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
-                    setPropertyValue(ccSpImpersonateLocal, "location",  "local://" + claimsChannelBean.getName().toUpperCase() + "/CC/SPIMPERSONATE/LOCAL");
-                    setPropertyValue(ccSpImpersonateLocal, "type", AuthnCtxClass.ATC_SP_IMPERSONATE_AUTHN_CTX.getValue());
-                    ccEndpoints.add(ccSpImpersonateLocal);
+                        // Enable endpoints for user impersonation
 
+                        Bean ccSpImpersonateLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                        ccSpImpersonateLocal.setName(idpBean.getName() + "-cc-spimpersonate-local");
+                        setPropertyValue(ccSpImpersonateLocal, "name", ccSpImpersonateLocal.getName());
+                        setPropertyValue(ccSpImpersonateLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
+                        setPropertyValue(ccSpImpersonateLocal, "location",  "local://" + claimsChannelBean.getName().toUpperCase() + "/CC/SPIMPERSONATE/LOCAL");
+                        setPropertyValue(ccSpImpersonateLocal, "type", AuthnCtxClass.ATC_SP_IMPERSONATE_AUTHN_CTX.getValue());
+                        ccEndpoints.add(ccSpImpersonateLocal);
+
+                    }
                 }
 
             }
