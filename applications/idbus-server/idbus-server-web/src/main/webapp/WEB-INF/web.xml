@@ -40,6 +40,16 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
+    <filter>
+        <filter-name>cssContentTypeFilter</filter-name>
+        <filter-class>org.atricore.idbus.applications.server.ui.util.CssResourcesFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>cssContentTypeFilter</filter-name>
+        <url-pattern>*.css</url-pattern>
+    </filter-mapping>
+
     <servlet>
         <servlet-name>idbus-ui</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
