@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -60,17 +61,66 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
 
     private IdentityMediationUnitRegistry idauRegistry;
 
+    private String fallbackUrl;
+
+    @Override
+    protected ModelAndView showForm(HttpServletRequest hreq, HttpServletResponse hres, BindException errors) throws Exception {
+
+        if (fallbackUrl != null) {
+            try {
+                CollectUsernamePasswordClaims claims = (CollectUsernamePasswordClaims) hreq.getSession().getAttribute("CollectUsernamePasswordClaims");
+
+                if (claims == null || claims.getClaimsRequest() == null)
+                    return new ModelAndView(new RedirectView(fallbackUrl));
+
+            } catch (Exception e) {
+                return new ModelAndView(new RedirectView(fallbackUrl));
+            }
+        }
+
+        return super.showForm(hreq, hres, errors);
+    }
+
+    @Override
+    protected ModelAndView showForm(HttpServletRequest hreq, HttpServletResponse hres, BindException errors, Map controlModel) throws Exception {
+
+        // TODO : Get from configuration
+
+        if (fallbackUrl != null) {
+            try {
+                CollectUsernamePasswordClaims claims = (CollectUsernamePasswordClaims) hreq.getSession().getAttribute("CollectUsernamePasswordClaims");
+
+                if (claims == null || claims.getClaimsRequest() == null)
+                    return new ModelAndView(new RedirectView(fallbackUrl));
+
+            } catch (Exception e) {
+                return new ModelAndView(new RedirectView(fallbackUrl));
+            }
+        }
+
+        return super.showForm(hreq, hres, errors, controlModel);
+    }
+
     @Override
     protected Object formBackingObject(HttpServletRequest hreq) throws Exception {
 
         String artifactId = hreq.getParameter(SsoHttpArtifactBinding.SSO_ARTIFACT_ID);
+        CollectUsernamePasswordClaims collectClaims;
 
+        // No request parameter , try to get the form from the session
         if (artifactId == null) {
-            CollectUsernamePasswordClaims collectClaims = (CollectUsernamePasswordClaims) hreq.getSession().getAttribute("CollectUsernamePasswordClaims");
+
+            collectClaims = (CollectUsernamePasswordClaims) hreq.getSession().getAttribute("CollectUsernamePasswordClaims");
+            // No collect claims in session, build an empty value and return.
+            if (collectClaims == null)
+                collectClaims = new CollectUsernamePasswordClaims();
+
             return collectClaims;
         }
 
-        CollectUsernamePasswordClaims collectClaims = new CollectUsernamePasswordClaims();
+        collectClaims = new CollectUsernamePasswordClaims();
+
+
         if (logger.isDebugEnabled())
             logger.debug("Creating form backing object for artifact " + artifactId);                
 
@@ -114,6 +164,7 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
             collectClaims.setClaimsRequest(claimsRequest);
 
         } else {
+            // TODO : redirect User to configured fallback URL
             logger.debug("No claims request received!");
         }
 
@@ -197,6 +248,8 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
         if (logger.isDebugEnabled())
             logger.debug("Returing claims to " + claimsEndpointUrl);
 
+        hreq.getSession().removeAttribute("CollectUsernamePasswordClaims");
+
         return new ModelAndView(new RedirectView(claimsEndpointUrl));
     }
 
@@ -249,6 +302,14 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
         }
 
         return null;
+    }
+
+    public String getFallbackUrl() {
+        return fallbackUrl;
+    }
+
+    public void setFallbackUrl(String fallbackUrl) {
+        this.fallbackUrl = fallbackUrl;
     }
 }
 

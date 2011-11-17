@@ -134,6 +134,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <property name="artifactQueueManager" ref="artifactQueueManager"/>
         <property name="idauRegistry" ref="idsuRegistry"/>
         <property name="sessionForm" value="true"/>
+        <property name="fallbackUrl" value="${fallbackUrl}"/>
         <property name="commandName" value="collectUsernamePassword"/>
         <property name="commandClass" value="org.atricore.idbus.applications.server.ui.claims.CollectUsernamePasswordClaims"/>
         <!-- Refer to tiles -->
