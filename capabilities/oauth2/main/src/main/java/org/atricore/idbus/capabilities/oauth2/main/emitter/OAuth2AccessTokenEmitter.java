@@ -2,10 +2,7 @@ package org.atricore.idbus.capabilities.oauth2.main.emitter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessToken;
-import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessTokenEnvelope;
-import org.atricore.idbus.capabilities.oauth2.common.OAuth2Claim;
-import org.atricore.idbus.capabilities.oauth2.common.OAuth2ClaimType;
+import org.atricore.idbus.capabilities.oauth2.common.*;
 import org.atricore.idbus.capabilities.oauth2.common.util.JasonUtils;
 import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmitter;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
@@ -33,6 +30,10 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
     private static final Log logger = LogFactory.getLog(OAuth2AccessTokenEmitter.class);
 
     private SSOIdentityManager identityManager;
+
+    private TokenSigner tokenSigner;
+
+    private TokenEncrypter tokenEncrypter;
 
     @Override
     public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
@@ -80,19 +81,35 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             return st;
         } catch (IOException e) {
             throw new SecurityTokenEmissionException(e);
+        } catch (OAuth2SignatureException e) {
+            throw new SecurityTokenEmissionException(e);
+        } catch (OAuth2EncryptionException e) {
+            throw new SecurityTokenEmissionException(e);
         }
     }
 
-    protected OAuth2AccessTokenEnvelope buildOAuth2AccessTokenEnvelope(OAuth2AccessToken token) throws IOException {
-        String sigAlg = null;
-        String sigValue = null;
+    protected OAuth2AccessTokenEnvelope buildOAuth2AccessTokenEnvelope(OAuth2AccessToken token) throws IOException, OAuth2EncryptionException, OAuth2SignatureException {
 
+        // Build and deflate
         String tokenValue = JasonUtils.marshalAccessToken(token);
         tokenValue = JasonUtils.deflate(tokenValue, true);
 
-        // TODO : Sign and zip
+        // Encrypt
+        String encryptAlg = null;
+        if (tokenEncrypter != null) {
+            tokenValue = tokenEncrypter.encrypt(tokenValue);
+            encryptAlg = tokenEncrypter.getEncryptAlg();
+        }
 
-        return new OAuth2AccessTokenEnvelope (sigAlg, sigValue, tokenValue, true);
+        // Sign
+        String sigValue = null;
+        String sigAlg = null;
+        if (tokenSigner != null) {
+            sigValue = tokenSigner.signToken(tokenValue);
+            sigAlg = tokenSigner.getSignAlg();
+        }
+
+        return new OAuth2AccessTokenEnvelope (encryptAlg, sigAlg, sigValue, tokenValue, true);
     }
 
     protected OAuth2AccessToken buildOAuth2AccessToken(Subject subject) {
@@ -197,5 +214,21 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
     public void setIdentityManager(SSOIdentityManager identityManager) {
         this.identityManager = identityManager;
+    }
+
+    public TokenSigner getTokenSigner() {
+        return tokenSigner;
+    }
+
+    public void setTokenSigner(TokenSigner tokenSigner) {
+        this.tokenSigner = tokenSigner;
+    }
+
+    public TokenEncrypter getTokenEncrypter() {
+        return tokenEncrypter;
+    }
+
+    public void setTokenEncrypter(TokenEncrypter tokenEncrypter) {
+        this.tokenEncrypter = tokenEncrypter;
     }
 }

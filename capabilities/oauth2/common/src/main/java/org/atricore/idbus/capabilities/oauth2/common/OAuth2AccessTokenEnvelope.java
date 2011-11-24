@@ -5,6 +5,8 @@ package org.atricore.idbus.capabilities.oauth2.common;
  */
 public class OAuth2AccessTokenEnvelope {
 
+    private String encryptionAlg;
+
     private String signatureAlg;
 
     private String signatureValue;
@@ -13,7 +15,8 @@ public class OAuth2AccessTokenEnvelope {
 
     private boolean deflated;
 
-    public OAuth2AccessTokenEnvelope(String signatureAlg, String signatureValue, String token, boolean deflated) {
+    public OAuth2AccessTokenEnvelope(String encryptionAlg, String signatureAlg, String signatureValue, String token, boolean deflated) {
+        this.encryptionAlg = encryptionAlg;
         this.signatureAlg = signatureAlg;
         this.signatureValue = signatureValue;
         this.token = token;
@@ -21,6 +24,14 @@ public class OAuth2AccessTokenEnvelope {
     }
 
     public OAuth2AccessTokenEnvelope() {
+    }
+
+    public String getEncryptionAlg() {
+        return encryptionAlg;
+    }
+
+    public void setEncryptionAlg(String encryptionAlg) {
+        this.encryptionAlg = encryptionAlg;
     }
 
     public String getSignatureAlg() {
