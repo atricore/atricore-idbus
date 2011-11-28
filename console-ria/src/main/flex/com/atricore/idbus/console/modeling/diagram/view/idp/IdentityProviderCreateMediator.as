@@ -121,6 +121,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
         initLocation();
         view.focusManager.setFocus(view.identityProviderName);
+        view.ssoSessionTimeout.text = "30";
     }
 
     private function resetForm():void {

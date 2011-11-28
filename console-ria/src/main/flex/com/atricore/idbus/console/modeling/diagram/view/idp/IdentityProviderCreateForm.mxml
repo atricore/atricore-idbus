@@ -46,7 +46,8 @@
         <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
-        <mx:NumberValidator id="ssoSessionTimeoutValidator" source="{ssoSessionTimeout}" required="false" property="text"
+
+        <mx:NumberValidator id="ssoSessionTimeoutValidator" source="{ssoSessionTimeout}" required="true" property="text"
                         trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoSessionTimeoutValidationError')}"/>
 
@@ -149,32 +150,61 @@
 
         <!-- CONTRACT TAB -->
         <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.tab.contract')}">
-            <s:VGroup>
+            <s:VGroup paddingLeft="5" paddingRight="5" width="100%">
 
-                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal">
-                    <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}" selected="true"/>
-                    <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}" selected="true"/>
-                </mx:FormItem>
+                <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.saml')}"
+                                       height="100%" width="100%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
 
-                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal">
-                    <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
-                    <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}" selected="true"/>
-                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}" selected="false"/>
-                    <s:CheckBox id="samlBindingSoapCheck"
-                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}" selected="true"/>
-                </mx:FormItem>
+                    <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal">
+                        <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}" selected="true"/>
+                        <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}" selected="true"/>
+                    </mx:FormItem>
 
-                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantAuthnRequestsSigned')}:">
-                    <s:CheckBox id="wantAuthnRequestsSignedCheck" selected="false"/>
-                </mx:FormItem>
+                    <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal">
+                        <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
+                        <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}" selected="true"/>
+                        <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}" selected="false"/>
+                        <s:CheckBox id="samlBindingSoapCheck"
+                                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}" selected="true"/>
+                    </mx:FormItem>
 
-                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantSignedRequests')}:">
-                    <s:CheckBox id="wantSignedRequestsCheck" selected="false"/>
-                </mx:FormItem>
+                    <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantAuthnRequestsSigned')}:">
+                        <s:CheckBox id="wantAuthnRequestsSignedCheck" selected="false"/>
+                    </mx:FormItem>
 
-                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.signRequests')}:">
-                    <s:CheckBox id="signRequestsCheck" selected="false"/>
-                </mx:FormItem>
+                    <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantSignedRequests')}:">
+                        <s:CheckBox id="wantSignedRequestsCheck" selected="false"/>
+                    </mx:FormItem>
+
+                    <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.signRequests')}:">
+                        <s:CheckBox id="signRequestsCheck" selected="false"/>
+                    </mx:FormItem>
+                </utils:TitledBorderBox>
+
+
+                <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.oauth2')}"
+                                       height="100%" width="100%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
+                    <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.oauth2.flows')}:" direction="horizontal">
+                        <!--
+                        <s:CheckBox id="oauth2UserAgentFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.user-agent')}" selected="false" enabled="false"/>
+                        <s:CheckBox id="oauth2WebServerFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.webServer')}" selected="false" enabled="false"/>
+                        <s:CheckBox id="oauth2DeviceFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.device')}" selected="false" enabled="false"/>
+                        -->
+                        <s:CheckBox id="oauth2UsernamePasswordFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.usernamePassword')}" selected="true"/>
+                        <!--
+                        <s:CheckBox id="oauth2clientCredentialsFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.clientCredentials')}" selected="false" enabled="false"/>
+                        <s:CheckBox id="oauth2AssertionFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.assertion')}" selected="false" enabled="false"/>
+                        -->
+                    </mx:FormItem>
+                    <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.oauth2.bindings')}:" direction="horizontal">
+                        <s:CheckBox id="oauth2BindingSoapCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.binding.soap')}" selected="true"/>
+                        <s:CheckBox id="oauth2BindingRestfulCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.binding.restful')}" selected="true"/>
+                    </mx:FormItem>
+
+                </utils:TitledBorderBox>
+
+
+
 
             </s:VGroup>
         </s:NavigatorContent>
