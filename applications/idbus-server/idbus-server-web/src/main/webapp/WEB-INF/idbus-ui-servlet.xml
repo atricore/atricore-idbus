@@ -46,6 +46,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- ========================================================================= -->
     <osgix:cm-properties id="idbusUiProps" persistent-id="org.atricore.idbus.applications.server.web">
         <prop key="resourceBundle">messages</prop>
+        <prop key="fallbackUrl">http://localhost:8081/idbus-ui/error.do</prop>
     </osgix:cm-properties>
 
     <ctx:property-placeholder properties-ref="idbusUiProps" />

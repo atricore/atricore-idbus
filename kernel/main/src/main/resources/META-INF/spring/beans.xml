@@ -132,7 +132,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     <osgix:cm-properties id="kernelProps" persistent-id="org.atricore.idbus.kernel.main">
         <!-- AQM Properties -->
-        <prop key="aqm.brokerName">idbusAqmBroker</prop>
+        <prop key="aqm.brokerName">aq1</prop>
         <prop key="aqm.host">localhost</prop>
         <prop key="aqm.bind">127.0.0.1</prop>
         <prop key="aqm.port">61217</prop>

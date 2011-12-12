@@ -34,6 +34,7 @@ import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -349,4 +350,5 @@ public class JossoMediator extends AbstractCamelMediator {
     public void setIdentityManager(SSOIdentityManager identityManager) {
         this.identityManager = identityManager;
     }
+
 }

@@ -274,6 +274,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
                         // Send content to browser
                         IOUtils.copy(instream, res.getOutputStream());
+                        res.getOutputStream().flush();
 
                     } else {
 
@@ -441,9 +442,23 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         }
 
         IDBusHttpEndpoint endpoint = (IDBusHttpEndpoint) consumer.getEndpoint();
+        /** Synchrony version : TODO: use this instead of the old one with continuations! */
+        try {
+            final HttpExchange exchange = new HttpExchange(endpoint, req, res);
+            consumer.getProcessor().process(exchange);
+            consumer.getBinding().writeResponse(exchange, res);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        /* Asynchronous version with continuations (TODO : deprecated!!!!)
+        boolean wroteResponse = false;
 
         final Continuation continuation = ContinuationSupport.getContinuation(req, null);
         if (continuation.isNew()) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Continuation is NEW");
 
             // Have camel process the HTTP exchange.
             final HttpExchange exchange = new HttpExchange(endpoint, req, res);
@@ -470,17 +485,36 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             // Camels more message oriented protocol exchanges.
 
             // now lets output to the response
+            wroteResponse  = true;
             consumer.getBinding().writeResponse(exchange, res);
             return;
+        } else {
+            if (logger.isTraceEnabled())
+                logger.trace("Continuation is NOT NEW");
+
         }
 
         if (continuation.isResumed()) {
             HttpExchange exchange = (HttpExchange) continuation.getObject();
             // now lets output to the response
+            wroteResponse = true;
             consumer.getBinding().writeResponse(exchange, res);
-            return;
+
+            if (logger.isTraceEnabled())
+                logger.trace("Continuation is RESUMED");
+
+        } else {
+            if (logger.isTraceEnabled())
+                logger.trace("Continuation is NOT RESUMED");
+
         }
 
+        if (!wroteResponse) {
+
+            logger.error("Not Writting response !!!...");
+        }
+
+        */
 
     }
 

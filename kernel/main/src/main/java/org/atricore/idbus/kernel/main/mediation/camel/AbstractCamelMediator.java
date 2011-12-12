@@ -36,7 +36,11 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.springframework.context.ApplicationContext;
+
+import java.util.Map;
 
 /**
  *
@@ -65,6 +69,15 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     protected boolean initialized = false;
 
+    private ConfigurationContext kernelConfigCtx;
+
+    ApplicationContext applicationContext;
+
+    public String getIdBusNode() {
+        return kernelConfigCtx.getProperty("idbus.node");
+    }
+
+
     // TODO : remove it , should be somewhere else!
     private MessageQueueManager artifactQueueManager;
 
@@ -77,6 +90,16 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
         context = container.getContext();
         registry = (JndiRegistry) context.getRegistry();
+
+        ApplicationContext applicationContext = registry.lookup( "applicationContext", ApplicationContext.class );
+        Map<String, ConfigurationContext> kernelCfgCtxs = applicationContext.getBeansOfType(ConfigurationContext.class);
+        assert !kernelCfgCtxs.isEmpty() : "No Kernel Configuration context found";
+        assert kernelCfgCtxs.values().size() == 1 : "Too many Kernel Context configurations found " + kernelCfgCtxs.values().size();
+
+        kernelConfigCtx = kernelCfgCtxs.values().iterator().next();
+
+        logger.info("Initialized Camel Mediator " + this.getClass().getName() + " with unitContainer " +
+                (unitContainer != null ? unitContainer.getClass().getName() : "null") + " for IDBus Node : " + getIdBusNode());
 
         initialized = true;
 
@@ -372,4 +395,15 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
         }
     }
 
+    public ConfigurationContext getKernelConfigCtx() {
+        return kernelConfigCtx;
+    }
+
+    public void setKernelConfigCtx(ConfigurationContext kernelConfigCtx) {
+        this.kernelConfigCtx = kernelConfigCtx;
+    }
+
+    public String getNodeId() {
+        return kernelConfigCtx.getProperty("idbus.node");
+    }
 }

@@ -128,7 +128,8 @@ public class JossoHttpArtifactBinding extends AbstractMediationHttpBinding {
                     artifactLocation = this.buildHttpTargetLocation(httpIn, ed);
                     artifactLocation += (artifactLocation.contains("?") ? "&" : "?") +
                         "josso_assertion_id=" + key +
-                            "&josso_artifact=" + out.getId();
+                            "&josso_artifact=" + out.getId() +
+                            "&josso_node=" + getConfigurationContext().getProperty("idbus.node");
 
                     lState.setValue(out.getId(), out);
                 } else {
