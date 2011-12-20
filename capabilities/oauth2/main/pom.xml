@@ -35,8 +35,6 @@
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : OAUTH2 Main Component</name>
 
-
-
     <dependencies>
 
         <dependency>
@@ -80,7 +78,6 @@
             <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
             <scope>provided</scope>
         </dependency>
-
 
         <dependency>
             <groupId>org.apache.camel</groupId>
@@ -212,6 +209,23 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 

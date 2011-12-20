@@ -2,33 +2,32 @@ package org.atricore.idbus.capabilities.oauth2.main.token.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessToken;
+import org.atricore.idbus.capabilities.oauth2.common.OAuth2Constants;
+import org.atricore.idbus.capabilities.oauth2.main.OAuth2Client;
 import org.atricore.idbus.capabilities.oauth2.main.OAuth2Exception;
 import org.atricore.idbus.capabilities.oauth2.main.OAuth2Mediator;
-import org.atricore.idbus.capabilities.oauth2.main.emitter.OAuth2AccessTokenEmitter;
 import org.atricore.idbus.capabilities.oauth2.main.emitter.OAuth2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.oauth2.main.token.endpoints.TokenEndpoint;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenRequestType;
 import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenResponseType;
+import org.atricore.idbus.common.oauth._2_0.protocol.ErrorCodeType;
 import org.atricore.idbus.common.oauth._2_0.protocol.OAuthAccessTokenType;
 import org.atricore.idbus.kernel.main.authn.Constants;
-import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.mediation.Artifact;
-import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
-import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
-import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
+import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
-import org.atricore.idbus.kernel.main.mediation.claim.Claim;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet;
-import org.atricore.idbus.kernel.main.provisioning.domain.User;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString;
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
@@ -38,6 +37,7 @@ import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.math.BigInteger;
+import java.util.Set;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -57,60 +57,79 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         AccessTokenRequestType atReq = (AccessTokenRequestType) in.getMessage().getContent();
 
-        // We are acting as authorization server, it's an IDP role ;)
+        // We are acting as OAUTH 2.0 Authorization server, we consider it an IDP role.
 
-        // Get the proper SP Channel
-        SPChannel spChannel = (SPChannel) channel;
+        // TODO : Use identity planning
+        AccessTokenResponseType atRes = new AccessTokenResponseType();
 
         // ---------------------------------------------------------
         // Validate Request
         // ---------------------------------------------------------
+        try {
 
-        if (atReq.getClientId() == null) {
-            // TODO : Return invalid client id error
+            OAuth2Client client = null;
+            // This returns the SP associated with the OAuth request.
+            validateRequest(atReq, atRes);
+            if (atRes.getError() != null) {
+                // Resolve the OAuth2 client that issued the request
+                // TODO : We probably need a way to make configurations specific to each SP, since now
+                // an OAuth client will have access to all SPs.
+                client = resolveOAuth2Client(atReq, atRes);
+            }
+
+            // Authenticate the client, unless an error has ocured.
+            if (atRes.getError() != null) {
+                boolean clientAuthn = authenticateRequest(client, atReq, atRes);
+                if (logger.isDebugEnabled())
+                    logger.debug("Client ["+atReq.getClientId()+"] is "+(clientAuthn ? "" : "NOT")+" authenticated");
+            }
+
+        } catch (Exception e) {
+            // Something went wrong
+            atRes.setError(ErrorCodeType.SERVER_ERROR);
+            atRes.setErrorDescription(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
 
-        // Get configured client id (parnterapp)
-        String clientId = spChannel.getName();
-        if (atReq.getClientId().equals(clientId)) {
-            // TODO : Return invalid client id error
-        }
-
-        // TODO : Get configured client secret (optional)
 
         // --------------------------------------------
         // Emit OAuth Access Token
         // --------------------------------------------
 
-        OAuth2SecurityTokenEmissionContext securityTokenEmissionCtx = new OAuth2SecurityTokenEmissionContext();
-        // Send extra information to STS, using the emission context
 
-        //securityTokenEmissionCtx.setMember(sp);
-        //securityTokenEmissionCtx.setAuthnState(authnState);
-        securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
+        if (atRes.getError() == null) {
+            OAuth2SecurityTokenEmissionContext securityTokenEmissionCtx = new OAuth2SecurityTokenEmissionContext();
 
-        emitAccessTokenFromClaims(exchange, securityTokenEmissionCtx, atReq.getUsername(), atReq.getPassword());
+            // Send extra information to STS, using the emission context
+            //securityTokenEmissionCtx.setMember(sp);
+            //securityTokenEmissionCtx.setAuthnState(authnState);
+            securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
 
-        // Call STS and wait for OAUTH AccessToken
-        OAuthAccessTokenType at = securityTokenEmissionCtx.getAccessToken();
+            emitAccessTokenFromClaims(exchange, securityTokenEmissionCtx, atReq.getUsername(), atReq.getPassword());
 
-        // serialize, sign, encode , send access token
+            // Call STS and wait for OAUTH AccessToken
+            OAuthAccessTokenType at = securityTokenEmissionCtx.getAccessToken();
 
-        // build response
-        AccessTokenResponseType atRes = new AccessTokenResponseType();
-        atRes.setAccessToken(at.getAccessToken());
-        atRes.setExpiresIn(BigInteger.valueOf(at.getExpiresIn()));
-        atRes.setTokeyType(at.getTokenType());
+            // send access token back to requester
 
-        // send back
+            // build response
+            atRes.setAccessToken(at.getAccessToken());
+            atRes.setExpiresIn(BigInteger.valueOf(at.getExpiresIn()));
+            atRes.setTokeyType(at.getTokenType());
+
+        } else {
+            if (logger.isDebugEnabled())
+                logger.debug("Respose error detected, access token will not be issued : " +
+                        atRes.getError().value() + " ["+atRes.getErrorDescription()+"]");
+        }
+
+        // send response back
         EndpointDescriptor ed = null; // TODO : Only works for SOAP messages!
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 atRes, "AccessTokenResponseType", null, ed, null));
 
         exchange.setOut(out);
-
-
 
     }
 
@@ -195,5 +214,125 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
         OAuth2Mediator a2Mediator = (OAuth2Mediator) channel.getIdentityMediator();
         return a2Mediator.getArtifactQueueManager();
     }
+
+    protected FederatedProvider resolveProvider(String spId) {
+        CircleOfTrust cot = this.getCot();
+        Set<FederatedProvider> providers = cot.getProviders();
+        for (FederatedProvider provider : providers) {
+            if (provider.getName().equals(spId)) {
+                return provider;
+            }
+        }
+
+        return null;
+
+    }
+
+    protected CircleOfTrust getCot() {
+        if (this.channel instanceof FederationChannel) {
+            return ((FederationChannel) channel).getCircleOfTrust();
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("There is no associated circle of trust, channel is not a federation channel");
+
+        return null;
+    }
+
+    protected void validateRequest(AccessTokenRequestType atReq, AccessTokenResponseType atRes) {
+
+        if (atReq.getClientId() == null) {
+            atRes.setError(ErrorCodeType.INVALID_REQUEST);
+            atRes.setErrorDescription("Access Token Request MUST include a client id");
+            return;
+        }
+
+        if (atReq.getClientSecret() == null) {
+            atRes.setError(ErrorCodeType.INVALID_REQUEST);
+            atRes.setErrorDescription("Access Token Request MUST include a client secret");
+            return;
+        }
+
+        FederatedProvider provider = resolveProvider(atReq.getClientId());
+        if (provider == null) {
+            atRes.setError(ErrorCodeType.UNAUTHORIZED_CLIENT);
+            atRes.setErrorDescription("Invalid clientId/clientSecret");
+            if (logger.isDebugEnabled())
+                logger.debug("Access Token Request MUST include a valid client id for the endpoint " + endpoint.getName());
+            return;
+        }
+
+        if (!(provider instanceof ServiceProvider)) {
+            atRes.setError(ErrorCodeType.UNAUTHORIZED_CLIENT);
+            atRes.setErrorDescription("Invalid clientId/clientSecret");
+
+            if (logger.isDebugEnabled())
+                logger.debug("Access Token Request MUST include a valid client id for the endpoint " + endpoint.getName()
+                        + "(invalid provider type ) " + provider.getClass().getSimpleName());
+            return;
+        }
+
+        SPChannel spChannel = (SPChannel) channel;
+        if (spChannel.getTargetProvider() != null) {
+
+            if (!spChannel.getTargetProvider().getName().equals(provider.getName())) {
+                logger.error("Selected endpoint ["+endpoint.getName()+"] is not configured to be used for provider " + provider.getName());
+
+                atRes.setError(ErrorCodeType.INVALID_REQUEST);
+                atRes.setErrorDescription("Access Token Request MUST include a valid client id for the endpoint (invalid provider " + provider.getName() + " for endpoint " + endpoint.getName() + ") ");
+                return;
+            }
+        }
+
+    }
+
+    protected OAuth2Client resolveOAuth2Client(AccessTokenRequestType atReq, AccessTokenResponseType atRes) {
+
+        if (atRes.getError() != null)
+            return null;
+
+        // Now we need the idpChannel configured to talk to us.
+        SPChannel spChannel = (SPChannel) channel;
+        if (spChannel == null) {
+            atRes.setError(ErrorCodeType.INVALID_REQUEST);
+            atRes.setErrorDescription("No IDP Channel found for request");
+            return null;
+        }
+
+        // TODO : Look for configured client authentication mechanism: authn token, secret, others?!
+
+        // Take oauth2 client configuration from mediator
+        OAuth2Mediator mediator = (OAuth2Mediator) spChannel.getIdentityMediator();
+
+        // Authenticate client using secret
+        if (mediator.getClients() != null && mediator.getClients().size() > 0) {
+            for (OAuth2Client oAuth2Client : mediator.getClients()) {
+                if (oAuth2Client.getId().equals(atReq.getClientId())) {
+                    return oAuth2Client;
+                }
+            }
+
+        } else {
+            if (logger.isDebugEnabled())
+                logger.debug("No OAuth2 clients configured for mediator in channel " + spChannel.getName());
+            return null;
+        }
+
+        return null;
+
+    }
+
+    protected boolean authenticateRequest(OAuth2Client client, AccessTokenRequestType atReq, AccessTokenResponseType atRes) {
+
+        if (!client.getSecret().equals(atReq.getClientSecret())) {
+            atRes.setError(ErrorCodeType.UNAUTHORIZED_CLIENT);
+            atRes.setErrorDescription("Invalid clientId/clientSecret");
+            return false;
+        }
+
+        return true;
+
+    }
+
 
 }

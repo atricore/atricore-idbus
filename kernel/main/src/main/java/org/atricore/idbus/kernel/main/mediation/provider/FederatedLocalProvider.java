@@ -39,10 +39,16 @@ import java.util.Set;
 public interface FederatedLocalProvider extends FederatedProvider {
 
     /**
-     * The channel that this provider uses to communicate with other providres
+     * The channel that this provider uses to communicate with other providers
      * @return
      */
     FederationChannel getChannel();
+
+    /**
+     * The channel that this provider uses to communicate with other providers
+     * @return
+     */
+    FederationChannel getChannel(String configurationKey);
 
     /**
      * Specific set of channels that this provider uses to communicate with other providers.
@@ -50,6 +56,14 @@ public interface FederatedLocalProvider extends FederatedProvider {
      * @return
      */
     Set<FederationChannel> getChannels();
+
+    /**
+     * Specific set of channels that this provider uses to communicate with other providers.
+     *
+     * @return
+     */
+    Set<FederationChannel> getChannels(String configurationKey);
+
 
     /**
      * The channel this provider uses to communicate with binding providers or bindings

@@ -13,6 +13,8 @@ import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -20,6 +22,9 @@ import java.util.Collection;
 public class OAuth2Mediator extends AbstractCamelMediator {
 
     private static final Log logger = LogFactory.getLog(OAuth2Mediator.class);
+
+    // List of trusted OAuth 2 clients
+    private Set<OAuth2Client> clients = new HashSet<OAuth2Client>();
 
     public OAuth2Mediator() {
         logger.info("OAuth2Mediator Instantiated");
@@ -159,8 +164,6 @@ public class OAuth2Mediator extends AbstractCamelMediator {
         String responseLocation;
         OAuth2Binding binding = null;
 
-
-
         logger.debug("Creating Endpoint Descriptor without SAMLR2 Metadata for : " + endpoint.getName());
 
         // ---------------------------------------------
@@ -205,5 +208,14 @@ public class OAuth2Mediator extends AbstractCamelMediator {
                 type,
                 binding.getValue(),
                 location,
-                responseLocation);    }
+                responseLocation);
+    }
+
+    public Set<OAuth2Client> getClients() {
+        return clients;
+    }
+
+    public void setClients(Set<OAuth2Client> clients) {
+        this.clients = clients;
+    }
 }

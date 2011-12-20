@@ -8,7 +8,7 @@ public enum OAuth2Binding {
     /** URI for IDBUS SOAP binding, this is NOT SAML Normtive */
     OAUTH2_SOAP("urn:org:atricore:idbus:OAUTH:2.0:bindings:SOAP", false),
 
-    OAUTH2_RESTFUL("urn:org:atricore:idbus:OAUTH:2.0:bindings:RESTFUL", true);
+    OAUTH2_RESTFUL("urn:org:atricore:idbus:OAUTH:2.0:bindings:HTTP-Restful", true);
 
 
     private String binding;
