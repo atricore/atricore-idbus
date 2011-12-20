@@ -1060,6 +1060,8 @@ public class PropertySheetMediator extends IocMediator {
             _ipContractSection.wantAuthnRequestsSignedCheck.selected = identityProvider.wantAuthnRequestsSigned;
             _ipContractSection.signRequestsCheck.selected = identityProvider.signRequests;
             _ipContractSection.wantSignedRequestsCheck.selected = identityProvider.wantSignedRequests;
+
+            _ipContractSection.oauth2ClientsConfig.text = identityProvider.oauth2ClientsConfig;
             
             for (var j:int = 0; j < identityProvider.activeBindings.length; j ++) {
                 var tmpBinding:Binding = identityProvider.activeBindings.getItemAt(j) as Binding;
@@ -1100,6 +1102,12 @@ public class PropertySheetMediator extends IocMediator {
             _ipContractSection.wantAuthnRequestsSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.signRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.wantSignedRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _ipContractSection.oauth2UsernamePasswordFlow.addEventListener(Event.CHANGE,  handleSectionChange)
+            _ipContractSection.oauth2BindingRestfulCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.oauth2BindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.oauth2ClientsConfig.addEventListener(Event.CHANGE,  handleSectionChange)
+
         }
     }
 
@@ -1143,6 +1151,7 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.wantAuthnRequestsSigned = _ipContractSection.wantAuthnRequestsSignedCheck.selected;
             identityProvider.signRequests = _ipContractSection.signRequestsCheck.selected;
             identityProvider.wantSignedRequests = _ipContractSection.wantSignedRequestsCheck.selected;
+            identityProvider.oauth2ClientsConfig = _ipContractSection.oauth2ClientsConfig.text;
 
             // update default sp channels
             if (identityProvider.federatedConnectionsA != null) {

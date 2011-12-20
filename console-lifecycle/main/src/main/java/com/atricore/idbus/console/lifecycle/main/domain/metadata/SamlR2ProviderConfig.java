@@ -6,10 +6,12 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  */
 public class SamlR2ProviderConfig extends AbstractProviderConfig {
 
+    private static final long serialVersionUID = 8401310209898123598L;
+
     private Keystore signer;
 
     private Keystore encrypter;
-    private static final long serialVersionUID = 8401310209898123598L;
+
     private boolean useSampleStore;
 
     public Keystore getSigner() {

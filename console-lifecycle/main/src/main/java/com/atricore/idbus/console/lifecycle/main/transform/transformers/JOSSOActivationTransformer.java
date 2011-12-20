@@ -149,10 +149,10 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
             logger.error("Execution Environment NOT supported by this transformer " + execEnv.getName() + " ["+execEnv.getPlatformId()+"]");
 
         } else if (execEnv instanceof IISExecutionEnvironment) {
-            return baseLocation + "josso/JOSSOIsapiAgent.dll?josso_security_check";
+            return baseLocation + ((IISExecutionEnvironment) execEnv).getIsapiExtensionPath() + "?josso_security_check";
 
         } else if (execEnv instanceof WindowsIISExecutionEnvironment) {
-            return baseLocation + "josso/JOSSOIsapiAgent.dll?josso_security_check";
+            return baseLocation + ((WindowsIISExecutionEnvironment) execEnv).getIsapiExtensionPath() + "?josso_security_check";
 
         } else if (execEnv instanceof PHPExecutionEnvironment ||
                 execEnv instanceof PhpBBExecutionEnvironment) {

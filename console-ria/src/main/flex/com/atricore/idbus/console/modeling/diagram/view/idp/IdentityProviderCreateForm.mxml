@@ -184,6 +184,7 @@
 
                 <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.oauth2')}"
                                        height="100%" width="100%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
+
                     <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.oauth2.flows')}:" direction="horizontal">
                         <!--
                         <s:CheckBox id="oauth2UserAgentFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.user-agent')}" selected="false" enabled="false"/>
@@ -196,10 +197,18 @@
                         <s:CheckBox id="oauth2AssertionFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.assertion')}" selected="false" enabled="false"/>
                         -->
                     </mx:FormItem>
+
                     <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.oauth2.bindings')}:" direction="horizontal">
                         <s:CheckBox id="oauth2BindingSoapCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.binding.soap')}" selected="true"/>
                         <s:CheckBox id="oauth2BindingRestfulCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.binding.restful')}" selected="true"/>
                     </mx:FormItem>
+
+                    <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.oauth2.clients.config')}:"
+                             required="true">
+                        <s:TextArea id="oauth2ClientsConfig" heightInLines="3" width="300" />
+                    </mx:FormItem>
+
+
 
                 </utils:TitledBorderBox>
 

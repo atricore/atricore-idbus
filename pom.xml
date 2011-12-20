@@ -102,6 +102,7 @@
         <flexiframe.version>1.4.6</flexiframe.version>
         <geronimo.wsmetadata.version>1.1.2</geronimo.wsmetadata.version>
         <hsqldb.version>1.8.0.9</hsqldb.version>
+        <jackson.version>1.9.1</jackson.version>
         <javax.jdo2.version>2.3-ec</javax.jdo2.version>
         <javax.jaxws-api.version>2.1-1</javax.jaxws-api.version>
         <javax.portlet.version>1.0.0</javax.portlet.version>
@@ -993,7 +994,25 @@
                 <artifactId>org.apache.servicemix.bundles.javax.mail</artifactId>
                 <version>${javax.mail.version}</version>
             </dependency>
-            
+
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-jaxrs</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-core-asl</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

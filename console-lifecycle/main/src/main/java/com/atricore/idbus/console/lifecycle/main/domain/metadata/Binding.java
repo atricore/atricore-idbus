@@ -21,6 +21,9 @@
 
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+/**
+ * All possible bindings are here ...
+ */
 public enum Binding {
                     
 	SAMLR2_HTTP_POST("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", "samlr2Post"),
@@ -41,7 +44,12 @@ public enum Binding {
 
     JOSSO_SOAP("urn:org:atricore:idbus:capabilities:josso:bindings:SOAP", "jossoSoap"),
 
-    JOSSO_ARTIFACT("urn:org:atricore:idbus:capabilities:josso:bindings:", "jossoArtifact");
+    JOSSO_ARTIFACT("urn:org:atricore:idbus:capabilities:josso:bindings:", "jossoArtifact"),
+
+    OAUTH2_SOAP("urn:org:atricore:idbus:OAUTH:2.0:bindings:SOAP", "oauth2Soap"),
+
+    OAUTH2_HTTP_RESTFUL("urn:org:atricore:idbus:OAUTH:2.0:bindings:HTTP-Restful", "oauth2Restful"),
+    ;
 
 	private String fullName;
 	private String shortName;

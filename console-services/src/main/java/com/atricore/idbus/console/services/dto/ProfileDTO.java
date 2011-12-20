@@ -75,6 +75,11 @@ public enum ProfileDTO {
     // 8.5 8.5 XACML Attribute Profile
     ATTR_XACML("urn:oasis:names:tc:SAML:2.0:profiles:attribute:XACML"),
 
+    // OAUTH 2.0 FLows
+
+    OAUTH2_USERNAMEPWD_FLOW("urn:org:atricore:idbus:OAUTH:2.0:flows:USRPWD"),
+
+
     ;
 
     private String name;

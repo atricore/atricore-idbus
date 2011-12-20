@@ -51,6 +51,8 @@ import mx.events.ItemClickEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
+import org.puremvc.as3.core.View;
+
 import org.puremvc.as3.interfaces.INotification;
 
 public class IdentityProviderCreateMediator extends IocFormMediator {
@@ -149,6 +151,11 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.subjectNameIdPolicyCombo.selectedIndex = 0;
         view.ignoreRequestedNameIDPolicy.selected = true;
 
+        view.oauth2ClientsConfig.text = "";
+        view.oauth2BindingRestfulCheck.selected = false;
+        view.oauth2BindingSoapCheck.selected = false;
+        view.oauth2UsernamePasswordFlow.selected = false;
+
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
         view.certificateKeyPair.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair");
@@ -221,7 +228,11 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         identityProvider.ignoreRequestedNameIDPolicy = view.ignoreRequestedNameIDPolicy.selected;
         identityProvider.subjectNameIDPolicy = view.subjectNameIdPolicyCombo.selectedItem;
 
+        identityProvider.oauth2ClientsConfig = view.oauth2ClientsConfig.text;
+
         identityProvider.activeBindings = new ArrayCollection();
+
+        // SAML 2.0 Bindings
         if (view.samlBindingHttpPostCheck.selected) {
             identityProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
         }
@@ -235,6 +246,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             identityProvider.activeBindings.addItem(Binding.SAMLR2_SOAP);
         }
 
+        // SAML 2.0 Profiles
         identityProvider.activeProfiles = new ArrayCollection();
         if (view.samlProfileSSOCheck.selected) {
             identityProvider.activeProfiles.addItem(Profile.SSO);
@@ -243,10 +255,22 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             identityProvider.activeProfiles.addItem(Profile.SSO_SLO);
         }
 
+        // OAUTH 2.0 Bindings
+        if (view.oauth2BindingSoapCheck.selected)
+            identityProvider.activeBindings.addItem(Binding.OAUTH2_SOAP);
+
+        if (view.oauth2BindingRestfulCheck.selected)
+            identityProvider.activeBindings.addItem(Binding.OAUTH2_HTTP_RESTFUL);
+
+        // OAUTH 2.0 FLows (stored as profiles)
+        if (view.oauth2UsernamePasswordFlow.selected)
+            identityProvider.activeProfiles.addItem(Profile.OAUTH2_USERNAMEPWD_FLOW);
+
         if (identityProvider.authenticationMechanisms == null) {
             identityProvider.authenticationMechanisms = new ArrayCollection();
         }
 
+        // Authentication mechanisms
         if (view.authMechanism.selectedItem.data == "basic") {
             var basicAuth:BasicAuthentication = new BasicAuthentication();
             basicAuth.name = identityProvider.name.replace(/\s+/g, "-").toLowerCase() + "-basic-authn";
@@ -268,7 +292,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             identityProvider.emissionPolicy = authAssertionEmissionPolicy;
         }
 
-        // set saml config
+        // SAML 2.0 Configuration (keystore for signature/encryption)
+
         var idpSamlConfig:SamlR2IDPConfig = new SamlR2IDPConfig();
         idpSamlConfig.name = identityProvider.name.toLowerCase().replace(/\s+/g, "-") + "-samlr2-config";
         idpSamlConfig.description = "SAMLR2 " + identityProvider.name + "Configuration";

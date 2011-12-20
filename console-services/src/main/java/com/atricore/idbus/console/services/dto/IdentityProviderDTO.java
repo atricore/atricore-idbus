@@ -38,6 +38,8 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     private int ssoSessionTimeout;
 
+    private String oauth2ClientsConfig;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicyDTO subjectNameIDPolicy;
 
@@ -162,5 +164,13 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     public void setSubjectNameIDPolicy(SubjectNameIdentifierPolicyDTO subjectNameIDPolicy) {
         this.subjectNameIDPolicy = subjectNameIDPolicy;
+    }
+
+    public String getOauth2ClientsConfig() {
+        return oauth2ClientsConfig;
+    }
+
+    public void setOauth2ClientsConfig(String oauth2ClientsConfig) {
+        this.oauth2ClientsConfig = oauth2ClientsConfig;
     }
 }

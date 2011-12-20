@@ -94,37 +94,43 @@
         </s:NavigatorContent>
 
         <!-- CONTRACT TAB -->
-        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.tab.contract')}">
-            <s:VGroup>
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.tab.contract')}">
+            <s:VGroup paddingLeft="5" paddingRight="5" width="100%">
 
-                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.profiles')}:" direction="horizontal">
-                    <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}" selected="true"/>
-                    <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}" selected="true"/>
-                </mx:FormItem>
+                <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.saml')}"
+                                       height="100%" width="100%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
 
-                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.bindings')}:" direction="horizontal">
-                    <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
-                    <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}" selected="false"/>
-                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}" selected="false"/>
-                    <s:CheckBox id="samlBindingSoapCheck"
-                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}" selected="true"/>
-                </mx:FormItem>
 
-                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">
-                    <s:CheckBox id="signAuthnRequestsCheck" selected="false"/>
-                </mx:FormItem>
+                    <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.profiles')}:" direction="horizontal">
+                        <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}" selected="true"/>
+                        <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}" selected="true"/>
+                    </mx:FormItem>
 
-                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantAssertionSigned')}:">
-                    <s:CheckBox id="wantAssertionSignedCheck" selected="false"/>
-                </mx:FormItem>
+                    <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.bindings')}:" direction="horizontal">
+                        <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
+                        <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}" selected="false"/>
+                        <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}" selected="false"/>
+                        <s:CheckBox id="samlBindingSoapCheck"
+                                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}" selected="true"/>
+                    </mx:FormItem>
 
-                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantSignedRequests')}:">
-                    <s:CheckBox id="wantSignedRequestsCheck" selected="false"/>
-                </mx:FormItem>
+                    <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">
+                        <s:CheckBox id="signAuthnRequestsCheck" selected="false"/>
+                    </mx:FormItem>
 
-                <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.signRequests')}:">
-                    <s:CheckBox id="signRequestsCheck" selected="false"/>
-                </mx:FormItem>
+                    <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantAssertionSigned')}:">
+                        <s:CheckBox id="wantAssertionSignedCheck" selected="false"/>
+                    </mx:FormItem>
+
+                    <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantSignedRequests')}:">
+                        <s:CheckBox id="wantSignedRequestsCheck" selected="false"/>
+                    </mx:FormItem>
+
+                    <mx:FormItem labelWidth="180" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.signRequests')}:">
+                        <s:CheckBox id="signRequestsCheck" selected="false"/>
+                    </mx:FormItem>
+
+                </utils:TitledBorderBox>
                 
             </s:VGroup>
         </s:NavigatorContent>

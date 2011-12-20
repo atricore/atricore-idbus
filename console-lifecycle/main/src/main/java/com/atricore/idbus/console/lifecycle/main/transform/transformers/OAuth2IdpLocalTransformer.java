@@ -8,6 +8,8 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.oauth2.main.OAuth2Client;
+import org.atricore.idbus.capabilities.oauth2.main.util.JasonUtils;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
@@ -16,7 +18,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.atricore.idbus.capabilities.oauth2.main.OAuth2Mediator;
 import org.atricore.idbus.capabilities.oauth2.main.binding.OAuth2BindingFactory;
 import org.atricore.idbus.capabilities.oauth2.main.binding.logging.OAuth2LogMessageBuilder;
+import org.springframework.transaction.TransactionSuspensionNotSupportedException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -100,8 +104,24 @@ public class OAuth2IdpLocalTransformer extends AbstractTransformer implements In
         // warningUrl
         setPropertyValue(idpMediator, "warningUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/warn/policy-enforcement.do");
 
+        // we need to create OAuth2 Client definitions, for now use Client Config string as JSON serialization
 
+        try {
+            // TODO : Use a metadata-specific class ?!
+            List<OAuth2Client> clients = JasonUtils.unmarshallClients(provider.getOauth2ClientsConfig());
 
+            if (clients != null) {
+                for (OAuth2Client oauth2ClientDef : clients) {
+                    Bean oauth2ClientBean = newAnonymousBean(OAuth2Client.class);
+                    setPropertyValue(oauth2ClientBean, "id", oauth2ClientDef.getId());
+                    setPropertyValue(oauth2ClientBean, "secret", oauth2ClientDef.getSecret());
+
+                    addPropertyBean(idpMediator, "clients", oauth2ClientBean);
+                }
+            }
+        } catch (IOException e) {
+            throw new TransactionSuspensionNotSupportedException(e.getMessage(), e);
+        }
 
 
     }

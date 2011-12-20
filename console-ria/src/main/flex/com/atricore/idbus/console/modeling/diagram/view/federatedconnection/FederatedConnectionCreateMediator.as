@@ -514,7 +514,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
             spChannel.wantAuthnRequestsSigned = view.wantAuthnRequestsSignedCheck.selected;
 
-            spChannel.ignoreRequestedNameIDPolicy = view.ignoreRequestedNameIDPolicy;
+            spChannel.ignoreRequestedNameIDPolicy = view.ignoreRequestedNameIDPolicy.selected;
             spChannel.subjectNameIDPolicy = view.subjectNameIdPolicyCombo.selectedItem;
             
             // set location

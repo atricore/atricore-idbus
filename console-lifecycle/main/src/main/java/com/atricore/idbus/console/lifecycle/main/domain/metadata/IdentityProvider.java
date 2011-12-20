@@ -37,6 +37,9 @@ public class IdentityProvider extends FederatedProvider {
 
     private int ssoSessionTimeout = 30; //
 
+    // Do we need something abstract, not bound to oauth2 ?
+    private String oauth2ClientsConfig;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicy subjectNameIDPolicy;
 
@@ -60,6 +63,8 @@ public class IdentityProvider extends FederatedProvider {
 //    private Set<Profile> activeProfiles;
 
     private DelegatedAuthentication delegatedAuthentication;
+
+
     
     @Override
     public ProviderRole getRole() {
@@ -158,5 +163,13 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setSubjectNameIDPolicy(SubjectNameIdentifierPolicy subjectNameIDPolicy) {
         this.subjectNameIDPolicy = subjectNameIDPolicy;
+    }
+
+    public String getOauth2ClientsConfig() {
+        return oauth2ClientsConfig;
+    }
+
+    public void setOauth2ClientsConfig(String oauth2ClientsConfig) {
+        this.oauth2ClientsConfig = oauth2ClientsConfig;
     }
 }

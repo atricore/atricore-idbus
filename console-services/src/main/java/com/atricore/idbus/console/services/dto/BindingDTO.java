@@ -41,7 +41,11 @@ public enum BindingDTO {
 
     JOSSO_SOAP("urn:org:atricore:idbus:capabilities:josso:bindings:SOAP", "jossoSoap"),
 
-    JOSSO_ARTIFACT("urn:org:atricore:idbus:capabilities:josso:bindings:", "jossoArtifact");
+    JOSSO_ARTIFACT("urn:org:atricore:idbus:capabilities:josso:bindings:", "jossoArtifact"),
+
+    OAUTH2_SOAP("urn:org:atricore:idbus:OAUTH:2.0:bindings:SOAP", "oauth2Soap"),
+
+    OAUTH2_HTTP_RESTFUL("urn:org:atricore:idbus:OAUTH:2.0:bindings:HTTP-Restful", "oauth2Restful");
 
 	private String fullName;
 	private String shortName;

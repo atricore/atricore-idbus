@@ -13,6 +13,9 @@ import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.atricore.idbus.capabilities.oauth2.main.OAuth2Client;
+import org.atricore.idbus.capabilities.oauth2.main.util.JasonUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 
 import java.io.ByteArrayInputStream;
@@ -213,6 +216,16 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 }
 
             }
+        }
+
+        // Try to unmarshall this as JSON
+        if (node.getOauth2ClientsConfig() != null && !node.getOauth2ClientsConfig().equals("")) {
+            try {
+                JasonUtils.unmarshallClients(node.getOauth2ClientsConfig());
+            } catch (Exception e) {
+                addError("Invalid OAuth 2.0 clients definition for " + node.getName() + ": " + e.getMessage(), e);
+            }
+
         }
     }
 
