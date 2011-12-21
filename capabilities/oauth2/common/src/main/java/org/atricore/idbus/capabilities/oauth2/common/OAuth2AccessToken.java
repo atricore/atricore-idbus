@@ -15,6 +15,9 @@ import java.util.List;
  */
 public class OAuth2AccessToken implements java.io.Serializable {
 
+    private long timeStamp;
+
+    private long rnd;
 
     private List<OAuth2Claim> claims = new ArrayList<OAuth2Claim>();
 
@@ -24,6 +27,22 @@ public class OAuth2AccessToken implements java.io.Serializable {
 
     public void setClaims(List<OAuth2Claim> claims) {
         this.claims = claims;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public long getRnd() {
+        return rnd;
+    }
+
+    public void setRnd(long rnd) {
+        this.rnd = rnd;
     }
 }
 

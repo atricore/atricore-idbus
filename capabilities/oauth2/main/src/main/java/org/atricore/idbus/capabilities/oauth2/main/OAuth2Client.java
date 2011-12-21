@@ -38,4 +38,9 @@ public class OAuth2Client {
     public void setSecret(String secret) {
         this.secret = secret;
     }
+
+    @Override
+    public String toString() {
+        return "clientId:" + id + ", clientSecret:" + (secret != null ? "*" : "null");
+    }
 }

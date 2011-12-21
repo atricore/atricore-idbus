@@ -16,17 +16,17 @@ public class SecureAccessTokenResolverFactory extends AccessTokenResolverFactory
         // Resolver
         SecureAccessTokenResolverImpl r = new SecureAccessTokenResolverImpl();
         String defaultKey = config.getProperty("org.atricore.idbus.capabilities.oauth2.key");
+        String encKey = config.getProperty("org.atricore.idbus.capabilities.oauth2.encryptKey", defaultKey);
+        String signKey = config.getProperty("org.atricore.idbus.capabilities.oauth2.signKey", defaultKey);
 
         // HMAC Signer
         HMACTokenSigner signer = new HMACTokenSigner();
-        signer.setKey(config.getProperty("org.atricore.idbus.capabilities.oauth2.signKey", defaultKey));
+        signer.setKey(signKey);
         r.setTokenSigner(signer);
 
         // AES Encrypter
         AESTokenEncrypter encrypter = new AESTokenEncrypter();
-        String encKey = config.getProperty("org.atricore.idbus.capabilities.oauth2.encryptKey", defaultKey);
-        String base64Key = new String(Base64.encodeBase64(encKey.getBytes()));
-        encrypter.setBase64key(base64Key);
+        encrypter.setBase64key(encKey);
         r.setTokenEncrypter(encrypter);
 
         return r;

@@ -6,7 +6,9 @@ import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -55,9 +57,11 @@ public class AESTokenEncrypter implements  TokenEncrypter {
     /**
      * Creates an ecnrypted string using AES of the given message.  The string is encoded using base 64.
      */
-    protected String encryptAES(String msg, String base64Key) throws UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    protected String encryptAES(String msg, String myKey) throws UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
-        byte[] key = decodeBase64 (base64Key);
+        // use SHA-1 to generate a hash from your key and trim the result to 128 bit (16 bytes)
+        byte[] key = toAESKey(myKey);
+
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
@@ -69,8 +73,10 @@ public class AESTokenEncrypter implements  TokenEncrypter {
     /**
      * Decrypts the given text using AES
      */
-    protected String decryptAES(String base64text, String base64Key) throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
-        byte[] key = decodeBase64 (base64Key);
+    protected String decryptAES(String base64text, String myKey ) throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+        // use SHA-1 to generate a hash from your key and trim the result to 128 bit (16 bytes)
+        byte[] key = toAESKey(myKey);
+
         SecretKeySpec skeySpec = new SecretKeySpec(key, encryptAlg);
         Cipher cipher = Cipher.getInstance(encryptAlg);
         cipher.init(Cipher.DECRYPT_MODE, skeySpec);
@@ -79,6 +85,17 @@ public class AESTokenEncrypter implements  TokenEncrypter {
         byte[] msg = cipher.doFinal(text);
 
         return new String (msg);
+
+    }
+
+    protected byte[] toAESKey(String myKey) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        // use SHA-1 to generate a hash from your key and trim the result to 128 bit (16 bytes)
+        byte[] key = myKey.getBytes("UTF-8");
+        MessageDigest sha = MessageDigest.getInstance("SHA-1");
+        key = sha.digest(key);
+        key = Arrays.copyOf(key, 16);
+
+        return key;
 
     }
 

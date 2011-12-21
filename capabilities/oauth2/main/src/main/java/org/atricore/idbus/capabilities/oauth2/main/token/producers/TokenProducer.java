@@ -2,12 +2,10 @@ package org.atricore.idbus.capabilities.oauth2.main.token.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.oauth2.common.OAuth2Constants;
-import org.atricore.idbus.capabilities.oauth2.main.OAuth2Client;
-import org.atricore.idbus.capabilities.oauth2.main.OAuth2Exception;
-import org.atricore.idbus.capabilities.oauth2.main.OAuth2Mediator;
+import org.atricore.idbus.capabilities.oauth2.main.*;
 import org.atricore.idbus.capabilities.oauth2.main.emitter.OAuth2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.oauth2.main.token.endpoints.TokenEndpoint;
+import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenRequestType;
 import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenResponseType;
@@ -16,16 +14,15 @@ import org.atricore.idbus.common.oauth._2_0.protocol.OAuthAccessTokenType;
 import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.mediation.*;
+import org.atricore.idbus.kernel.main.mediation.Artifact;
+import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
+import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
+import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
@@ -37,7 +34,6 @@ import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.math.BigInteger;
-import java.util.Set;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -70,34 +66,15 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
             OAuth2Client client = null;
             // This returns the SP associated with the OAuth request.
             validateRequest(atReq, atRes);
-            if (atRes.getError() != null) {
-                // Resolve the OAuth2 client that issued the request
-                // TODO : We probably need a way to make configurations specific to each SP, since now
-                // an OAuth client will have access to all SPs.
-                client = resolveOAuth2Client(atReq, atRes);
+
+            client = resolveOAuth2Client(atReq, atRes);
+            if (client == null) {
+                throw new OAuth2ServerException(ErrorCodeType.UNAUTHORIZED_CLIENT, "Invalid clientId/clientSecret");
             }
 
             // Authenticate the client, unless an error has ocured.
-            if (atRes.getError() != null) {
-                boolean clientAuthn = authenticateRequest(client, atReq, atRes);
-                if (logger.isDebugEnabled())
-                    logger.debug("Client ["+atReq.getClientId()+"] is "+(clientAuthn ? "" : "NOT")+" authenticated");
-            }
+            authenticateRequest(client, atReq, atRes);
 
-        } catch (Exception e) {
-            // Something went wrong
-            atRes.setError(ErrorCodeType.SERVER_ERROR);
-            atRes.setErrorDescription(e.getMessage());
-            logger.error(e.getMessage(), e);
-        }
-
-
-        // --------------------------------------------
-        // Emit OAuth Access Token
-        // --------------------------------------------
-
-
-        if (atRes.getError() == null) {
             OAuth2SecurityTokenEmissionContext securityTokenEmissionCtx = new OAuth2SecurityTokenEmissionContext();
 
             // Send extra information to STS, using the emission context
@@ -117,11 +94,36 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
             atRes.setExpiresIn(BigInteger.valueOf(at.getExpiresIn()));
             atRes.setTokeyType(at.getTokenType());
 
-        } else {
+        } catch (OAuth2ServerException e) {
+            // Send oauth error in response
+            atRes.setError(e.getErrorCode());
+            atRes.setErrorDescription(e.getErrorDescription());
+
+            // Dump stack trance if we have a cause:
+            if (e.getCause() != null)
+                logger.error(e.getErrorCode().value() + " ["+e.getErrorDescription()+"]", e);
+            else
+                logger.warn(e.getErrorCode().value() + " ["+e.getErrorDescription()+"]");
+
+        } catch (SecurityTokenAuthenticationFailure e) {
+            atRes.setError(ErrorCodeType.ACCESS_DENIED);
+            atRes.setErrorDescription(e.getMessage());
+
             if (logger.isDebugEnabled())
-                logger.debug("Respose error detected, access token will not be issued : " +
-                        atRes.getError().value() + " ["+atRes.getErrorDescription()+"]");
+                logger.debug(e.getMessage(), e);
+
+        } catch (Exception e) {
+            // Something went wrong
+            atRes.setError(ErrorCodeType.SERVER_ERROR);
+            atRes.setErrorDescription(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
+
+
+        // --------------------------------------------
+        // Emit OAuth Access Token
+        // --------------------------------------------
+
 
         // send response back
         EndpointDescriptor ed = null; // TODO : Only works for SOAP messages!
@@ -215,19 +217,6 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
         return a2Mediator.getArtifactQueueManager();
     }
 
-    protected FederatedProvider resolveProvider(String spId) {
-        CircleOfTrust cot = this.getCot();
-        Set<FederatedProvider> providers = cot.getProviders();
-        for (FederatedProvider provider : providers) {
-            if (provider.getName().equals(spId)) {
-                return provider;
-            }
-        }
-
-        return null;
-
-    }
-
     protected CircleOfTrust getCot() {
         if (this.channel instanceof FederationChannel) {
             return ((FederationChannel) channel).getCircleOfTrust();
@@ -239,49 +228,14 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
         return null;
     }
 
-    protected void validateRequest(AccessTokenRequestType atReq, AccessTokenResponseType atRes) {
+    protected void validateRequest(AccessTokenRequestType atReq, AccessTokenResponseType atRes) throws InvalidRequestException {
 
         if (atReq.getClientId() == null) {
-            atRes.setError(ErrorCodeType.INVALID_REQUEST);
-            atRes.setErrorDescription("Access Token Request MUST include a client id");
-            return;
+            throw new InvalidRequestException(ErrorCodeType.INVALID_REQUEST, "Access Token Request MUST include a client id");
         }
 
         if (atReq.getClientSecret() == null) {
-            atRes.setError(ErrorCodeType.INVALID_REQUEST);
-            atRes.setErrorDescription("Access Token Request MUST include a client secret");
-            return;
-        }
-
-        FederatedProvider provider = resolveProvider(atReq.getClientId());
-        if (provider == null) {
-            atRes.setError(ErrorCodeType.UNAUTHORIZED_CLIENT);
-            atRes.setErrorDescription("Invalid clientId/clientSecret");
-            if (logger.isDebugEnabled())
-                logger.debug("Access Token Request MUST include a valid client id for the endpoint " + endpoint.getName());
-            return;
-        }
-
-        if (!(provider instanceof ServiceProvider)) {
-            atRes.setError(ErrorCodeType.UNAUTHORIZED_CLIENT);
-            atRes.setErrorDescription("Invalid clientId/clientSecret");
-
-            if (logger.isDebugEnabled())
-                logger.debug("Access Token Request MUST include a valid client id for the endpoint " + endpoint.getName()
-                        + "(invalid provider type ) " + provider.getClass().getSimpleName());
-            return;
-        }
-
-        SPChannel spChannel = (SPChannel) channel;
-        if (spChannel.getTargetProvider() != null) {
-
-            if (!spChannel.getTargetProvider().getName().equals(provider.getName())) {
-                logger.error("Selected endpoint ["+endpoint.getName()+"] is not configured to be used for provider " + provider.getName());
-
-                atRes.setError(ErrorCodeType.INVALID_REQUEST);
-                atRes.setErrorDescription("Access Token Request MUST include a valid client id for the endpoint (invalid provider " + provider.getName() + " for endpoint " + endpoint.getName() + ") ");
-                return;
-            }
+            throw new InvalidRequestException(ErrorCodeType.INVALID_REQUEST, "Access Token Request MUST include a client secret");
         }
 
     }
@@ -294,13 +248,13 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
         // Now we need the idpChannel configured to talk to us.
         SPChannel spChannel = (SPChannel) channel;
         if (spChannel == null) {
+            logger.error("No IDP Channel found for request");
             atRes.setError(ErrorCodeType.INVALID_REQUEST);
             atRes.setErrorDescription("No IDP Channel found for request");
             return null;
         }
 
         // TODO : Look for configured client authentication mechanism: authn token, secret, others?!
-
         // Take oauth2 client configuration from mediator
         OAuth2Mediator mediator = (OAuth2Mediator) spChannel.getIdentityMediator();
 
@@ -308,26 +262,32 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
         if (mediator.getClients() != null && mediator.getClients().size() > 0) {
             for (OAuth2Client oAuth2Client : mediator.getClients()) {
                 if (oAuth2Client.getId().equals(atReq.getClientId())) {
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Found OAuth2 client for " + atReq.getClientId());
+
                     return oAuth2Client;
                 }
             }
 
         } else {
-            if (logger.isDebugEnabled())
-                logger.debug("No OAuth2 clients configured for mediator in channel " + spChannel.getName());
+            logger.warn("No OAuth2 clients configured for mediator in channel " + spChannel.getName());
             return null;
         }
+        logger.warn("OAuth2 client not found for " + atReq.getClientId());
 
         return null;
 
     }
 
-    protected boolean authenticateRequest(OAuth2Client client, AccessTokenRequestType atReq, AccessTokenResponseType atRes) {
+    protected boolean authenticateRequest(OAuth2Client client, AccessTokenRequestType atReq, AccessTokenResponseType atRes) throws OAuth2ServerException {
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Authenticating req "+atReq.getClientId()+" for client " + client);
+        }
 
         if (!client.getSecret().equals(atReq.getClientSecret())) {
-            atRes.setError(ErrorCodeType.UNAUTHORIZED_CLIENT);
-            atRes.setErrorDescription("Invalid clientId/clientSecret");
-            return false;
+            throw new OAuth2ServerException(ErrorCodeType.UNAUTHORIZED_CLIENT, "Invalid clientId/clientSecret");
         }
 
         return true;

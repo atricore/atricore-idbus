@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -34,6 +35,8 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
     private TokenSigner tokenSigner;
 
     private TokenEncrypter tokenEncrypter;
+
+    private Random randomGenerator = new Random();
 
     @Override
     public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
@@ -120,6 +123,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         OAuth2AccessToken at = new OAuth2AccessToken();
         SSOUser user = ssoUsers.iterator().next();
         at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.USERID.toString(), user.getName()));
+
         // Just a temporary work-around.
         at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.UNKNOWN.toString(), "UNKNOWN"));
 
@@ -129,6 +133,10 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ROLE.toString(), ssoRole.getName()));
         }
 
+        // Create some randon information, to make every token different!
+        at.setTimeStamp(System.currentTimeMillis());
+        // is this thread-safe ?!
+        at.setRnd(randomGenerator.nextInt());
 
         return at;
     }
