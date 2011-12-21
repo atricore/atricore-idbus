@@ -83,9 +83,8 @@ public class OAuth2STSTransformer extends AbstractTransformer {
         String oauth2Key = provider.getOauth2Key();
 
         /* Configure AES encryption */
-        String base64key = new String(Base64.encodeBase64(oauth2Key.getBytes()));
         Bean aesEncrypter = newAnonymousBean(AESTokenEncrypter.class);
-        setPropertyValue(aesEncrypter, "base64key", base64key);
+        setPropertyValue(aesEncrypter, "base64key", oauth2Key);
         setPropertyBean(oauth2StsEmitter, "tokenEncrypter", aesEncrypter);
 
         /* Configure H-MAC signature support */
