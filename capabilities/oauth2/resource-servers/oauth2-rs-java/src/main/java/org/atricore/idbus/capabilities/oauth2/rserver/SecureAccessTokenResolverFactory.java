@@ -11,13 +11,19 @@ import org.atricore.idbus.capabilities.oauth2.common.HMACTokenSigner;
  */
 public class SecureAccessTokenResolverFactory extends AccessTokenResolverFactory {
 
+    public static final String SHARED_SECRECT_PROPERTY = "org.atricore.idbus.capabilities.oauth2.key";
+
+    public static final String SHARED_SECRECT_SIGN_PROPERTY = "org.atricore.idbus.capabilities.oauth2.signKey";
+
+    public static final String SHARED_SECRECT_ENC_PROPERTY = "org.atricore.idbus.capabilities.oauth2.encryptKey";
+
     public AccessTokenResolver doMakeResolver() {
 
         // Resolver
         SecureAccessTokenResolverImpl r = new SecureAccessTokenResolverImpl();
-        String defaultKey = config.getProperty("org.atricore.idbus.capabilities.oauth2.key");
-        String encKey = config.getProperty("org.atricore.idbus.capabilities.oauth2.encryptKey", defaultKey);
-        String signKey = config.getProperty("org.atricore.idbus.capabilities.oauth2.signKey", defaultKey);
+        String defaultKey = config.getProperty(SHARED_SECRECT_PROPERTY);
+        String encKey = config.getProperty(SHARED_SECRECT_ENC_PROPERTY, defaultKey);
+        String signKey = config.getProperty(SHARED_SECRECT_SIGN_PROPERTY, defaultKey);
 
         // HMAC Signer
         HMACTokenSigner signer = new HMACTokenSigner();
