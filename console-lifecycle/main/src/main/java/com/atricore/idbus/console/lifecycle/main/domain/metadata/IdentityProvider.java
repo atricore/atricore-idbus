@@ -40,6 +40,8 @@ public class IdentityProvider extends FederatedProvider {
     // Do we need something abstract, not bound to oauth2 ?
     private String oauth2ClientsConfig;
 
+    private String oauth2Key;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicy subjectNameIDPolicy;
 
@@ -64,8 +66,6 @@ public class IdentityProvider extends FederatedProvider {
 
     private DelegatedAuthentication delegatedAuthentication;
 
-
-    
     @Override
     public ProviderRole getRole() {
         return ProviderRole.SSOIdentityProvider;
@@ -171,5 +171,13 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setOauth2ClientsConfig(String oauth2ClientsConfig) {
         this.oauth2ClientsConfig = oauth2ClientsConfig;
+    }
+
+    public String getOauth2Key() {
+        return oauth2Key;
+    }
+
+    public void setOauth2Key(String oauth2Key) {
+        this.oauth2Key = oauth2Key;
     }
 }

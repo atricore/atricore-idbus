@@ -549,7 +549,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createIdentityProviderCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.idp");
         _popup.width = 690;
-        _popup.height = 455;
+        _popup.height = 515;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_identityProviderCreateForm);

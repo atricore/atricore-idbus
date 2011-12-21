@@ -311,7 +311,7 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
             }
 
             EndpointType singleLogoutServiceLocal = new EndpointType();
-            singleLogoutServiceLocal.setBinding(SSOBinding.SSO_LOCAL.getValue());
+            singleLogoutServiceLocal.setBinding(SSOBinding.SAMLR2_LOCAL.getValue());
             singleLogoutServiceLocal.setLocation("local://" + (idpChannel != null ?
                     idpChannel.getLocation().getUri().toUpperCase() : provider.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
             spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceLocal);

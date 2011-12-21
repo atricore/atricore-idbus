@@ -102,6 +102,13 @@
 
                 </mx:FormItem>
 
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.oauth2.key')}:" required="true"
+                        labelWidth="230"
+                        direction="horizontal">
+                    <s:TextInput id="oauth2Key" width="300"/>
+                </mx:FormItem>
+
+
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.oauth2.clients.config')}:"
                         labelWidth="230" >
                     <s:TextArea id="oauth2ClientsConfig" heightInLines="6" width="100%" />

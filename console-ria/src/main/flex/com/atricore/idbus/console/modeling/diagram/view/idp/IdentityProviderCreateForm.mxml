@@ -74,7 +74,7 @@
         <s:TextInput id="identityProvDescription" width="300"/>
     </mx:FormItem>
 
-    <mx:TabNavigator id="idpTabNavigator" borderStyle="solid" width="100%" height="310" creationPolicy="all">
+    <mx:TabNavigator id="idpTabNavigator" borderStyle="solid" width="100%" height="360" creationPolicy="all">
 
         <!-- CORE TAB -->
         <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.tab.core')}">
@@ -183,7 +183,7 @@
 
 
                 <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.oauth2')}"
-                                       height="100%" width="100%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
+                                       height="100%" width="100%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5" >
 
                     <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.oauth2.flows')}:" direction="horizontal">
                         <!--
@@ -203,17 +203,17 @@
                         <s:CheckBox id="oauth2BindingRestfulCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.binding.restful')}" selected="true"/>
                     </mx:FormItem>
 
+                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.oauth2.key')}:" required="true"
+                            labelWidth="230">
+                        <s:TextInput id="oauth2Key" width="300"/>
+                    </mx:FormItem>
+
                     <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.oauth2.clients.config')}:"
-                             required="true">
+                             required="false">
                         <s:TextArea id="oauth2ClientsConfig" heightInLines="3" width="300" />
                     </mx:FormItem>
 
-
-
                 </utils:TitledBorderBox>
-
-
-
 
             </s:VGroup>
         </s:NavigatorContent>

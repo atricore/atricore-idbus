@@ -40,6 +40,8 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     private String oauth2ClientsConfig;
 
+    private String oauth2Key;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicyDTO subjectNameIDPolicy;
 
@@ -173,4 +175,13 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
     public void setOauth2ClientsConfig(String oauth2ClientsConfig) {
         this.oauth2ClientsConfig = oauth2ClientsConfig;
     }
+
+    public String getOauth2Key() {
+        return oauth2Key;
+    }
+
+    public void setOauth2Key(String oauth2Key) {
+        this.oauth2Key = oauth2Key;
+    }
+
 }

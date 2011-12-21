@@ -579,6 +579,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
 
         // IDP Initiated SLO
         if (sloEnabled) {
+
             // SSO SLO SOAP
             Bean ssoSloSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
             ssoSloSoap.setName(spChannelBean.getName() + "-sso-slo-soap");

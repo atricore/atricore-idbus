@@ -5,15 +5,16 @@ import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.oauth2.common.AESTokenEncrypter;
+import org.atricore.idbus.capabilities.oauth2.common.HMACTokenSigner;
 import org.atricore.idbus.capabilities.oauth2.main.OAuth2Mediator;
 import org.atricore.idbus.capabilities.oauth2.main.emitter.OAuth2AccessTokenEmitter;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
@@ -79,20 +80,20 @@ public class OAuth2STSTransformer extends AbstractTransformer {
         // Inject identity Manager
         setPropertyRef(oauth2StsEmitter, "identityManager", idpBean.getName() + "-identity-manager");
 
-        /**
-        String signerBeanName = getPropertyRef(mediatorBean , "signer");
-        if (signerBeanName == null)
-            throw new TransformException("No 'SIGNER' defined in Mediator " + mediatorBean.getName());
+        String oauth2Key = provider.getOauth2Key();
 
-        Bean signerBean = getBean(idpBeans, signerBeanName);
-        if (signerBean != null) {
-            // signer
-            setPropertyRef(oauth2StsEmitter, "signer", signerBean.getName());
-        } else {
-            throw new TransformException("No 'SIGNER' defined as " + signerBeanName);
-        }
-        */
+        /* Configure AES encryption */
+        String base64key = new String(Base64.encodeBase64(oauth2Key.getBytes()));
+        Bean aesEncrypter = newAnonymousBean(AESTokenEncrypter.class);
+        setPropertyValue(aesEncrypter, "base64key", base64key);
+        setPropertyBean(oauth2StsEmitter, "tokenEncrypter", aesEncrypter);
 
+        /* Configure H-MAC signature support */
+        Bean hmacSigner = newAnonymousBean(HMACTokenSigner.class);
+        setPropertyValue(hmacSigner, "key", oauth2Key);
+        setPropertyBean(oauth2StsEmitter, "tokenSigner", hmacSigner);
+
+        // Add emitter to STS
         addPropertyBean(sts, "emitters", oauth2StsEmitter);
     }
 

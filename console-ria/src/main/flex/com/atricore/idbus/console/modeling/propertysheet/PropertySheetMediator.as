@@ -1062,6 +1062,7 @@ public class PropertySheetMediator extends IocMediator {
             _ipContractSection.wantSignedRequestsCheck.selected = identityProvider.wantSignedRequests;
 
             _ipContractSection.oauth2ClientsConfig.text = identityProvider.oauth2ClientsConfig;
+            _ipContractSection.oauth2Key.text = identityProvider.oauth2Key;
             
             for (var j:int = 0; j < identityProvider.activeBindings.length; j ++) {
                 var tmpBinding:Binding = identityProvider.activeBindings.getItemAt(j) as Binding;
@@ -1107,6 +1108,7 @@ public class PropertySheetMediator extends IocMediator {
             _ipContractSection.oauth2BindingRestfulCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.oauth2BindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.oauth2ClientsConfig.addEventListener(Event.CHANGE,  handleSectionChange)
+            _ipContractSection.oauth2Key.addEventListener(Event.CHANGE,  handleSectionChange)
 
         }
     }
@@ -1152,6 +1154,7 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.signRequests = _ipContractSection.signRequestsCheck.selected;
             identityProvider.wantSignedRequests = _ipContractSection.wantSignedRequestsCheck.selected;
             identityProvider.oauth2ClientsConfig = _ipContractSection.oauth2ClientsConfig.text;
+            identityProvider.oauth2Key = _ipContractSection.oauth2Key.text;
 
             // update default sp channels
             if (identityProvider.federatedConnectionsA != null) {

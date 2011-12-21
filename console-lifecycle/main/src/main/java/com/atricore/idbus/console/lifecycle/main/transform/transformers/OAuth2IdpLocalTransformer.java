@@ -106,21 +106,23 @@ public class OAuth2IdpLocalTransformer extends AbstractTransformer implements In
 
         // we need to create OAuth2 Client definitions, for now use Client Config string as JSON serialization
 
-        try {
-            // TODO : Use a metadata-specific class ?!
-            List<OAuth2Client> clients = JasonUtils.unmarshallClients(provider.getOauth2ClientsConfig());
+        if (provider.getOauth2ClientsConfig() != null && !"".equals(provider.getOauth2ClientsConfig())) {
 
-            if (clients != null) {
-                for (OAuth2Client oauth2ClientDef : clients) {
-                    Bean oauth2ClientBean = newAnonymousBean(OAuth2Client.class);
-                    setPropertyValue(oauth2ClientBean, "id", oauth2ClientDef.getId());
-                    setPropertyValue(oauth2ClientBean, "secret", oauth2ClientDef.getSecret());
+            try {
+                // TODO : Use a metadata-specific class ?!
+                List<OAuth2Client> clients = JasonUtils.unmarshallClients(provider.getOauth2ClientsConfig());
+                if (clients != null) {
+                    for (OAuth2Client oauth2ClientDef : clients) {
+                        Bean oauth2ClientBean = newAnonymousBean(OAuth2Client.class);
+                        setPropertyValue(oauth2ClientBean, "id", oauth2ClientDef.getId());
+                        setPropertyValue(oauth2ClientBean, "secret", oauth2ClientDef.getSecret());
 
-                    addPropertyBean(idpMediator, "clients", oauth2ClientBean);
+                        addPropertyBean(idpMediator, "clients", oauth2ClientBean);
+                    }
                 }
+            } catch (IOException e) {
+                throw new TransactionSuspensionNotSupportedException(e.getMessage(), e);
             }
-        } catch (IOException e) {
-            throw new TransactionSuspensionNotSupportedException(e.getMessage(), e);
         }
 
 
