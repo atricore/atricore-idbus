@@ -62,11 +62,11 @@ public enum SSOBinding {
     /** URI for IDBUS SOAP binding, this is NOT SAML Normtive */
     SSO_SOAP("urn:org:atricore:idbus:sso:bindings:SOAP", false),
 
+    /** URI for IDBUS LOCAL binding, this is NOT SAML Normative */
     SSO_LOCAL("urn:org:atricore:idbus:sso:bindings:LOCAL", false),
 
-    /** URI for SAML 2.0 IdP initiated bindings */ // TODO : Generalize this into Provider Initiated HTTP binding or something ?
+    /** URI for SAML 2.0 IdP initiated bindings */
     SSO_IDP_INITIATED_SSO_HTTP_SAML2("urn:org:atricore:idbus:sso:bindings:SAML:2:0:IDP-Initiated-SSO-http", true),
-
 
     /** URI for IDBUS HTTP Artifact binding, this is NOT SAML Normative*/
     SAMLR11_ARTIFACT("urn:oasis:names:tc:SAML:1.0:bindings:HTTP-Artifact", true),

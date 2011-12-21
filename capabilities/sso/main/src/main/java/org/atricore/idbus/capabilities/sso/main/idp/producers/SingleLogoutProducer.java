@@ -376,7 +376,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
                     }
 
-                    // Try to send back channel requests, otherwise try http bindings (post, artifact, redirect)
+                    // Try to send back channel requests, otherwise try http bindings (post, artifact, redirect NOT IMPLEMENTED YET!)
                     EndpointDescriptor ed = resolveSpSloEndpoint(pSecCtx.getProviderId(),
                             new SSOBinding[] { SSOBinding.SAMLR2_LOCAL, SSOBinding.SAMLR2_SOAP }, true);
 

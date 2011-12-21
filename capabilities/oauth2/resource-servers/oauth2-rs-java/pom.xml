@@ -43,7 +43,6 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -92,8 +91,12 @@
             <scope>provided</scope>
         </dependency>
 
-
-
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
 
     </dependencies>

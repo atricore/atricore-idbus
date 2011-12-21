@@ -200,7 +200,7 @@ public class SamlR2SoapBinding extends AbstractMediationSoapBinding {
                     e.getMessage(), e);
 
         } catch (Exception e) {
-            throw new IdentityMediationException("SOAP Method not impelmented " + soapMethodName + ": " +
+            throw new IdentityMediationException("SOAP error: " +
                     e.getMessage(), e);
         }
 

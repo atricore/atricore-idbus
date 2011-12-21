@@ -115,8 +115,10 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
 
                     if (md != null) {
                         fedChannel.setMetadata(md);
-                        fedChannel.setCircleOfTrust(cotMgr.getCot());
                     }
+
+                    // Federation channels without MD can have a COT
+                    fedChannel.setCircleOfTrust(cotMgr.getCot());
 
                     if (fedChannel.getEndpoints() != null) {
 

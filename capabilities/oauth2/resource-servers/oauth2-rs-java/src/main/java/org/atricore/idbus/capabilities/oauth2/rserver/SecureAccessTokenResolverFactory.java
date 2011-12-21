@@ -1,5 +1,6 @@
 package org.atricore.idbus.capabilities.oauth2.rserver;
 
+import org.apache.commons.codec.binary.Base64;
 import org.atricore.idbus.capabilities.oauth2.common.AESTokenEncrypter;
 import org.atricore.idbus.capabilities.oauth2.common.HMACTokenSigner;
 
@@ -12,18 +13,20 @@ public class SecureAccessTokenResolverFactory extends AccessTokenResolverFactory
 
     public AccessTokenResolver doMakeResolver() {
 
-
         // Resolver
         SecureAccessTokenResolverImpl r = new SecureAccessTokenResolverImpl();
+        String defaultKey = config.getProperty("org.atricore.idbus.capabilities.oauth2.key");
 
-        // Signer
+        // HMAC Signer
         HMACTokenSigner signer = new HMACTokenSigner();
-        signer.setKey(config.getProperty("org.atricore.idbus.capabilities.oauth2.signKey"));
+        signer.setKey(config.getProperty("org.atricore.idbus.capabilities.oauth2.signKey", defaultKey));
         r.setTokenSigner(signer);
 
-        // Encrypter
+        // AES Encrypter
         AESTokenEncrypter encrypter = new AESTokenEncrypter();
-        encrypter.setBase64key(config.getProperty("org.atricore.idbus.capabilities.oauth2.encryptKey"));
+        String encKey = config.getProperty("org.atricore.idbus.capabilities.oauth2.encryptKey", defaultKey);
+        String base64Key = new String(Base64.encodeBase64(encKey.getBytes()));
+        encrypter.setBase64key(base64Key);
         r.setTokenEncrypter(encrypter);
 
         return r;
