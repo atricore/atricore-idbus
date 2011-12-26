@@ -148,6 +148,7 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
         } else if (execEnv instanceof JEEExecutionEnvironment) {
             logger.error("Execution Environment NOT supported by this transformer " + execEnv.getName() + " ["+execEnv.getPlatformId()+"]");
 
+        // TODO : Make this configurable, and default valuue should be josso/agent.sso ....
         } else if (execEnv instanceof IISExecutionEnvironment) {
             return baseLocation + ((IISExecutionEnvironment) execEnv).getIsapiExtensionPath() + "?josso_security_check";
 
