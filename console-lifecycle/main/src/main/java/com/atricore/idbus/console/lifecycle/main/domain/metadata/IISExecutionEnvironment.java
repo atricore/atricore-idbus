@@ -7,7 +7,8 @@ public class IISExecutionEnvironment extends ExecutionEnvironment {
 
     private static final long serialVersionUID = 1238838949395879247L;
 
-    String isapiExtensionPath = "josso/JOSSOIsapiAgent.dll";
+    //private String isapiExtensionPath = "josso/JOSSOIsapiAgent.dll";
+    private String isapiExtensionPath = "josso/agent.sso";
 
     public String getIsapiExtensionPath() {
         return isapiExtensionPath;

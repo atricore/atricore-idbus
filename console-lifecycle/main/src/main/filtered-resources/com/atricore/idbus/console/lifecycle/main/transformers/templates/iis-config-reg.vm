@@ -6,6 +6,6 @@ Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Atricore\JOSSO Isapi Agent\1.8]
 "LogLevel"="trace"
-"ExtensionUri"="/josso/JOSSOIsapiAgent.dll"
+"ExtensionUri"="$isapiExtensionPath"
 "LogFile"="$iisPath\\log\\josso_isapi.log"
 "AgentConfigFile"="$iisPath\\config\\josso-agent-config.ini"

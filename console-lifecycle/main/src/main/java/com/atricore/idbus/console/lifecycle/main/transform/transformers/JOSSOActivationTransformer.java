@@ -83,6 +83,7 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
                 }
             }
         }
+
         // TODO : Maybe we can get this value from the context ..
         String spAlias = resolveLocationUrl(sp, preferredIdpChannel) + "/SAML2/MD";
         setPropertyValue(partnerappBean, "spAlias", spAlias);
@@ -150,10 +151,20 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
 
         // TODO : Make this configurable, and default valuue should be josso/agent.sso ....
         } else if (execEnv instanceof IISExecutionEnvironment) {
-            return baseLocation + ((IISExecutionEnvironment) execEnv).getIsapiExtensionPath() + "?josso_security_check";
+            // Base location always ends with a slash:
+            String isapiExtension = ((IISExecutionEnvironment) execEnv).getIsapiExtensionPath();
+            if (isapiExtension.startsWith("/"))
+                isapiExtension = isapiExtension.substring(1);
+
+            return baseLocation + isapiExtension + "?josso_security_check";
 
         } else if (execEnv instanceof WindowsIISExecutionEnvironment) {
-            return baseLocation + ((WindowsIISExecutionEnvironment) execEnv).getIsapiExtensionPath() + "?josso_security_check";
+            // Base location always ends with a slash:
+            String isapiExtension = ((WindowsIISExecutionEnvironment) execEnv).getIsapiExtensionPath();
+            if (isapiExtension.startsWith("/"))
+                isapiExtension = isapiExtension.substring(1);
+
+            return baseLocation + isapiExtension  + "?josso_security_check";
 
         } else if (execEnv instanceof PHPExecutionEnvironment ||
                 execEnv instanceof PhpBBExecutionEnvironment) {

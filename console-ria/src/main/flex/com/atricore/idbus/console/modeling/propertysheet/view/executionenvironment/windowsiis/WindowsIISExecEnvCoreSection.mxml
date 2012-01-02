@@ -42,6 +42,10 @@
             <s:TextInput id="executionEnvironmentDescription" width="300"/>
         </mx:FormItem>
 
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.isapiExtensionPath')}:" required="true">
+            <s:TextInput id="isapiExtensionPath" width="300"/>
+        </mx:FormItem>
+
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.selectedhost')}:"
                 direction="horizontal">
             <s:DropDownList id="selectedHost" width="300" selectedIndex="0">

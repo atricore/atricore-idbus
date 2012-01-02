@@ -4907,6 +4907,7 @@ public class PropertySheetMediator extends IocMediator {
             // bind view
             _windowsIISExecEnvCoreSection.executionEnvironmentName.text = windowsIISExecEnv.name;
             _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text = windowsIISExecEnv.description;
+            _windowsIISExecEnvCoreSection.isapiExtensionPath.text = windowsIISExecEnv.isapiExtensionPath;
 
             for (var i:int=0; i < _windowsIISExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_windowsIISExecEnvCoreSection.selectedHost.dataProvider[i].data == windowsIISExecEnv.type.toString()) {
@@ -4936,6 +4937,7 @@ public class PropertySheetMediator extends IocMediator {
 
             _windowsIISExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIISExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIISExecEnvCoreSection.isapiExtensionPath.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIISExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIISExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIISExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
@@ -4985,6 +4987,7 @@ public class PropertySheetMediator extends IocMediator {
         var windowsIISExecEnv:WindowsIISExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WindowsIISExecutionEnvironment;
         windowsIISExecEnv.name = _windowsIISExecEnvCoreSection.executionEnvironmentName.text;
         windowsIISExecEnv.description = _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text;
+        windowsIISExecEnv.isapiExtensionPath = _windowsIISExecEnvCoreSection.isapiExtensionPath.text;
         windowsIISExecEnv.platformId = _windowsIISExecEnvCoreSection.architecture.selectedItem.data;
 
         windowsIISExecEnv.type = ExecEnvType.valueOf(_windowsIISExecEnvCoreSection.selectedHost.selectedItem.data);

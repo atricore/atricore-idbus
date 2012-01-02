@@ -3,6 +3,7 @@ package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExecutionEnvironment;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIISExecutionEnvironment;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
@@ -379,6 +380,15 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                         iisPath = iisPath.substring(0, iisPath.length() - 1);
                     }
                     params.put("iisPath", iisPath);
+
+                    String isapiExtensionPath = "/josso/agent.sso";
+                    if (execEnv instanceof WindowsIISExecutionEnvironment) {
+                        isapiExtensionPath = ((WindowsIISExecutionEnvironment)execEnv).getIsapiExtensionPath();
+                        if (!isapiExtensionPath.startsWith("/"))
+                            isapiExtensionPath = "/" + isapiExtensionPath;
+                    }
+
+                    params.put("isapiExtensionPath", isapiExtensionPath);
 
                     IdProjectResource<String> configReg = new IdProjectResource<String>(idGen.generateId(),
                             "META-INF/spring/" + bpBean.getName() + "/josso", "JOSSO-ISAPI-Config", "iis", "config-reg");

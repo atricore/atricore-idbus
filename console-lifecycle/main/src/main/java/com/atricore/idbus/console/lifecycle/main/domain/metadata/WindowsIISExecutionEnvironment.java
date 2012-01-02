@@ -8,7 +8,8 @@ public class WindowsIISExecutionEnvironment extends ExecutionEnvironment {
     private static final long serialVersionUID = 475740871223858432L;
 
     // TODO : Make this configurable, and default valuue should be josso/agent.sso ....
-    private String isapiExtensionPath = "josso/JOSSOIsapiAgent.dll";
+    //private String isapiExtensionPath = "josso/JOSSOIsapiAgent.dll";
+    private String isapiExtensionPath = "josso/agent.sso";
 
     public String getIsapiExtensionPath() {
         return isapiExtensionPath;

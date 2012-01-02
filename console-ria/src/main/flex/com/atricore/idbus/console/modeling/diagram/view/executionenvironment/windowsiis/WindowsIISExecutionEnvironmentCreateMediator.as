@@ -88,12 +88,15 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.architecture.selectedIndex = 0;
+
+        view.isapiExtensionPath.text = "/josso/agent.sso";
         view.focusManager.setFocus(view.executionEnvironmentName);
     }
 
     private function resetForm():void {
         view.executionEnvironmentName.text = "";
         view.executionEnvironmentDescription.text = "";
+        view.isapiExtensionPath.text = "/josso/agent.sso";
         view.selectedHost.selectedIndex = 0;
         view.architecture.selectedIndex = 0;
         view.homeDirectory.text = "";
@@ -112,6 +115,8 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
 
         windowsIISExecutionEnvironment.name = view.executionEnvironmentName.text;
         windowsIISExecutionEnvironment.description = view.executionEnvironmentDescription.text;
+        windowsIISExecutionEnvironment.isapiExtensionPath = view.isapiExtensionPath.text;
+
         windowsIISExecutionEnvironment.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
         windowsIISExecutionEnvironment.installUri = view.homeDirectory.text;
         if (windowsIISExecutionEnvironment.type.name == ExecEnvType.REMOTE.name)
@@ -119,6 +124,7 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         windowsIISExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
         windowsIISExecutionEnvironment.installDemoApps = view.installSamples.selected;
         windowsIISExecutionEnvironment.platformId = view.architecture.selectedItem.data;
+
         _newExecutionEnvironment = windowsIISExecutionEnvironment;
     }
 
