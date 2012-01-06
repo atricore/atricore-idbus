@@ -51,6 +51,8 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.sharepoint2010.Sharepoint2010ExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.sharepoint2010.Sharepoint2010ExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateForm;
@@ -148,6 +150,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _wikidCreateMediator:WikidCreateMediator;
     private var _directoryServiceCreateMediator:DirectoryServiceCreateMediator;
     private var _windowsIntegratedAuthnCreateMediator:WindowsIntegratedAuthnCreateMediator;
+    private var _sharepoint2010ExecutionEnvironmentCreateMediator:Sharepoint2010ExecutionEnvironmentCreateMediator;
 
     // views
     private var _simpleSSOWizardView:SimpleSSOWizardView;
@@ -189,6 +192,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _wikidCreateForm:WikidCreateForm;
     private var _directoryServiceCreateForm:DirectoryServiceCreateForm;
     private var _windowsIntegratedAuthnCreateForm:WindowsIntegratedAuthnCreateForm;
+    private var _sharepoint2010ExecutionEnvironmentCreateForm:Sharepoint2010ExecutionEnvironmentCreateForm;
 
     public function ModelerPopUpManager() {
         super();
@@ -510,6 +514,15 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set windowsIntegratedAuthnCreateMediator(value:WindowsIntegratedAuthnCreateMediator):void {
         _windowsIntegratedAuthnCreateMediator = value;
+    }
+
+
+    public function get sharepoint2010ExecutionEnvironmentCreateMediator():Sharepoint2010ExecutionEnvironmentCreateMediator {
+        return _sharepoint2010ExecutionEnvironmentCreateMediator;
+    }
+
+    public function set sharepoint2010ExecutionEnvironmentCreateMediator(value:Sharepoint2010ExecutionEnvironmentCreateMediator):void {
+        _sharepoint2010ExecutionEnvironmentCreateMediator = value;
     }
 
     public function showSimpleSSOWizardWindow(notification:INotification):void {
@@ -1019,6 +1032,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         showPopup(_webserverExecutionEnvironmentCreateForm);
     }
 
+
     private function createWebserverExecutionEnvironmentCreateForm():void {
         _webserverExecutionEnvironmentCreateForm = new WebserverExecutionEnvironmentCreateForm();
         _webserverExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleWebserverExecutionEnvironmentCreateFormCreated);
@@ -1028,6 +1042,28 @@ public class ModelerPopUpManager extends BasePopUpManager {
         webserverExecutionEnvironmentCreateMediator.setViewComponent(_webserverExecutionEnvironmentCreateForm);
         webserverExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
     }
+
+    public function showCreateSharepoint2010ExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createSharepoint2010ExecutionEnvironmentCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.sharepoint2010");
+        _popup.width = 500;
+        _popup.height = 350;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_sharepoint2010ExecutionEnvironmentCreateForm);
+    }
+
+    private function createSharepoint2010ExecutionEnvironmentCreateForm():void {
+        _sharepoint2010ExecutionEnvironmentCreateForm = new Sharepoint2010ExecutionEnvironmentCreateForm();
+        _sharepoint2010ExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleSharepoint2010ExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleSharepoint2010ExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        sharepoint2010ExecutionEnvironmentCreateMediator.setViewComponent(_sharepoint2010ExecutionEnvironmentCreateForm);
+        sharepoint2010ExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
 
     public function showCreateFederatedConnectionWindow(notification:INotification):void {
         _lastWindowNotification = notification;

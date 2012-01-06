@@ -134,5 +134,9 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/windows_execution_environment.png")]
     public static var windowsEnvironmentMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/sharepoint2010_execution_environment.png")]
+    public static var sharepoint2010EnvironmentMiniIcon:Class;
+
 }
 }

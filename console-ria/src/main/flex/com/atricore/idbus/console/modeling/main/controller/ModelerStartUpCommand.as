@@ -43,6 +43,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _phpBBExecutionEnvironmentCreateMediator:IIocMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:IIocMediator;
     private var _webserverExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _sharepoint2010ExecutionEnvironmentCreateMediator:IIocMediator;
     private var _simpleSSOWizardViewMediator:IIocMediator;
     private var _activationCreateMediator:IIocMediator;
     private var _federatedConnectionCreateMediator:IIocMediator;
@@ -134,6 +135,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(phpBBExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(windowsIISExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(webserverExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(sharepoint2010ExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(activationCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(federatedConnectionCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(exportIdentityApplianceMediator.getConfigName());
@@ -411,6 +413,15 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set webserverExecutionEnvironmentCreateMediator(value:IIocMediator):void {
         _webserverExecutionEnvironmentCreateMediator = value;
+    }
+
+
+    public function get sharepoint2010ExecutionEnvironmentCreateMediator():IIocMediator {
+        return _sharepoint2010ExecutionEnvironmentCreateMediator;
+    }
+
+    public function set sharepoint2010ExecutionEnvironmentCreateMediator(value:IIocMediator):void {
+        _sharepoint2010ExecutionEnvironmentCreateMediator = value;
     }
 
     public function get simpleSSOWizardViewMediator():IIocMediator {

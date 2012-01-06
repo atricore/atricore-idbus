@@ -563,6 +563,16 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT, cwebcontenv);
                         break;
+
+                    case DiagramElementTypes.SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var cshpoint2010contenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT, cshpoint2010contenv);
+                        break;
+
                     case DiagramElementTypes.WIKID_ELEMENT_TYPE:
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {

@@ -131,6 +131,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 );
 
         environmentsPaletteDrawer.add(
+                new PaletteEntry("Sharepoint 2010", EmbeddedIcons.sharepoint2010EnvironmentMiniIcon, "Sharepoint 2010 Environment Entry", DiagramElementTypes.SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                );
+
+        environmentsPaletteDrawer.add(
                 new PaletteEntry("Tomcat", EmbeddedIcons.tomcatEnvironmentMiniIcon, "Tomcat Environment Entry", DiagramElementTypes.TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );

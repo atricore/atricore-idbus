@@ -55,6 +55,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironme
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.liferayportal.LiferayPortalExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.php.PHPExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.phpbb.PhpBBExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.sharepoint2010.Sharepoint2010ExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.tomcat.TomcatExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.wasce.WASCEExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.weblogic.WeblogicExecEnvCoreSection;
@@ -102,6 +103,7 @@ import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.ImpersonateUserPolicy;
 import com.atricore.idbus.console.services.dto.ImpersonateUserPolicyType;
+import com.atricore.idbus.console.services.dto.Sharepoint2010ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
 import com.atricore.idbus.console.services.dto.WindowsAuthentication;
 import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
@@ -224,6 +226,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _phpExecEnvCoreSection:PHPExecEnvCoreSection;
     private var _phpBBExecEnvCoreSection:PhpBBExecEnvCoreSection;
     private var _webserverExecEnvCoreSection:WebserverExecEnvCoreSection;
+    private var _sharepoint2010ExecEnvCoreSection:Sharepoint2010ExecEnvCoreSection;
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     private var _authenticationPropertyTab:Group;
     private var _basicAuthenticationSection:BasicAuthenticationSection;
@@ -456,6 +459,8 @@ public class PropertySheetMediator extends IocMediator {
                         enablePhpBBExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is WebserverExecutionEnvironment) {
                         enableWebserverExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is Sharepoint2010ExecutionEnvironment) {
+                        enableSharepoint2010ExecEnvPropertyTabs();
                     }
                 }
                 break;
@@ -5630,6 +5635,132 @@ public class PropertySheetMediator extends IocMediator {
         _applianceSaved = false;
         _dirty = false;
     }
+
+    /*****SHAREPOINT2010*****/
+    private function enableSharepoint2010ExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _sharepoint2010ExecEnvCoreSection = new Sharepoint2010ExecEnvCoreSection();
+        corePropertyTab.addElement(_sharepoint2010ExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _sharepoint2010ExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSharepoint2010ExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSharepoint2010ExecEnvCorePropertyTabRollOut);
+    }
+
+    private function handleSharepoint2010ExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var sharepoint2010ExecEnv:Sharepoint2010ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as Sharepoint2010ExecutionEnvironment;
+
+        if (sharepoint2010ExecEnv != null) {
+            // bind view
+            _sharepoint2010ExecEnvCoreSection.executionEnvironmentName.text = sharepoint2010ExecEnv.name;
+            _sharepoint2010ExecEnvCoreSection.executionEnvironmentDescription.text = sharepoint2010ExecEnv.description;
+            //_sharepoint2010ExecEnvCoreSection.executionEnvironmentType.text = sharepoint2010ExecEnv.containerType;
+
+            for(var i:int=0; i < _sharepoint2010ExecEnvCoreSection.platform.dataProvider.length; i++){
+                if(_sharepoint2010ExecEnvCoreSection.platform.dataProvider[i].data == sharepoint2010ExecEnv.platformId){
+                    _sharepoint2010ExecEnvCoreSection.platform.selectedIndex = i;
+                    break;
+                }
+            }
+
+            for (var i:int=0; i < _sharepoint2010ExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
+                if (_sharepoint2010ExecEnvCoreSection.selectedHost.dataProvider[i].data == sharepoint2010ExecEnv.type.toString()) {
+                    _sharepoint2010ExecEnvCoreSection.selectedHost.selectedIndex = i;
+                    break;
+                }
+            }
+
+            if (_sharepoint2010ExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _sharepoint2010ExecEnvCoreSection.locationItem.includeInLayout = true;
+                _sharepoint2010ExecEnvCoreSection.locationItem.visible = true;
+            }
+
+            _sharepoint2010ExecEnvCoreSection.homeDirectory.text = sharepoint2010ExecEnv.installUri;
+            if (sharepoint2010ExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _sharepoint2010ExecEnvCoreSection.location.text = sharepoint2010ExecEnv.location;
+
+            _execEnvLocationValidator = new URLValidator();
+            _execEnvLocationValidator.required = true;
+
+            _sharepoint2010ExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _sharepoint2010ExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_sharepoint2010ExecEnvCoreSection);
+            });
+
+            _validators = [];
+            _validators.push(_sharepoint2010ExecEnvCoreSection.nameValidator);
+            //_validators.push(_sharepoint2010ExecEnvCoreSection.typeValidator);
+            _validators.push(_sharepoint2010ExecEnvCoreSection.homeDirValidator);
+        }
+    }
+
+    private function handleSharepoint2010ExecEnvCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        _sharepoint2010ExecEnvCoreSection.homeDirectory.errorString = "";
+        _sharepoint2010ExecEnvCoreSection.location.errorString = "";
+        if (_dirty && validate(true)) {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _sharepoint2010ExecEnvCoreSection.homeDirValidator.validate(_sharepoint2010ExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _sharepoint2010ExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_sharepoint2010ExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
+                _execEnvSaveFunction = sharepoint2010Save;
+                _execEnvHomeDir = _sharepoint2010ExecEnvCoreSection.homeDirectory;
+                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                cif.homeDir = _sharepoint2010ExecEnvCoreSection.homeDirectory.text;
+                cif.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+            } else {
+                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_sharepoint2010ExecEnvCoreSection.location.text);
+                if (lvResult.type == ValidationResultEvent.VALID) {
+                    sharepoint2010Save();
+                } else {
+                    _sharepoint2010ExecEnvCoreSection.location.errorString = lvResult.results[0].errorMessage;
+                }
+            }
+        }
+    }
+
+    private function sharepoint2010Save(): void {
+         // bind model
+        var sharepoint2010ExecEnv:Sharepoint2010ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as Sharepoint2010ExecutionEnvironment;
+        sharepoint2010ExecEnv.name = _sharepoint2010ExecEnvCoreSection.executionEnvironmentName.text;
+        sharepoint2010ExecEnv.description = _sharepoint2010ExecEnvCoreSection.executionEnvironmentDescription.text;
+        //sharepoint2010ExecEnv.containerType = _sharepoint2010ExecEnvCoreSection.executionEnvironmentType.text;
+        //TODO CHECK PLATFORM ID
+        sharepoint2010ExecEnv.platformId = "sp2010";
+
+        sharepoint2010ExecEnv.type = ExecEnvType.valueOf(_sharepoint2010ExecEnvCoreSection.selectedHost.selectedItem.data);
+        sharepoint2010ExecEnv.installUri = _sharepoint2010ExecEnvCoreSection.homeDirectory.text;
+        if (sharepoint2010ExecEnv.type.name == ExecEnvType.REMOTE.name) {
+            sharepoint2010ExecEnv.location = _sharepoint2010ExecEnvCoreSection.location.text;
+        } else {
+            sharepoint2010ExecEnv.location = null;
+        }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
 
     private function handleExecEnvActivationPropertyTabCreationComplete(event:Event):void {
         var execEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;

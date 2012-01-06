@@ -145,6 +145,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.phpbbEnvironmentMiniIcon;
             case DiagramElementTypes.WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.webEnvironmentMiniIcon;
+            case DiagramElementTypes.SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.sharepoint2010EnvironmentMiniIcon;
             case DiagramElementTypes.WIKID_ELEMENT_TYPE:
                 return EmbeddedIcons.wikidMiniIcon;
             case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
