@@ -150,12 +150,18 @@ public class SamlR2LocalBinding extends AbstractMediationBinding {
 
         // TODO : Is copyFaultMessageToExchange necessary ?
         logger.warn("'copyFaultMessageToExchange' Not implemented !");
+
+        MediationMessage m = faultMessage.getMessage();
+        if (m.getFault() != null) {
+            logger.error(m.getFault().getMessage(), m.getFault());
+        }
+
     }
 
     @Override
     public Object sendMessage(MediationMessage message) throws IdentityMediationException {
         if (logger.isTraceEnabled())
-            logger.trace("Sending new SAML 2.0 message using SSO Local Binding");
+            logger.trace("Sending new SAML 2.0 message using Local Binding");
 
         IdentityMediationUnitContainer uc = channel.getUnitContainer();
 

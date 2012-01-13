@@ -173,9 +173,6 @@ public class SsoLocalBinding extends AbstractMediationBinding {
             logger.error(m.getFault().getMessage(), m.getFault());
         }
 
-
-
-
     }
 
     @Override

@@ -40,6 +40,7 @@
             <list>
                 <value>samlr2-sp-init-slo-response-process-fragment</value>
                 <value>samlr2-sp-slo-response-setstatus-process-fragment</value>
+                <value>samlr2-sp-slo-response-sign-process-fragment</value>
             </list>
         </property>
     </bean>

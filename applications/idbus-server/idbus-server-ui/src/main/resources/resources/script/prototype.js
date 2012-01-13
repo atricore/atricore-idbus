@@ -3965,7 +3965,7 @@ Prototype.Selector = (function() {
 Prototype._original_property = window.Sizzle;
 /*!
  * Sizzle CSS Selector Engine - v1.0
- *  Copyright 2009, The Dojo Foundation
+ *  Copyright 2011, The Dojo Foundation
  *  Released under the MIT, BSD, and GPL Licenses.
  *  More information: http://sizzlejs.com/
  */

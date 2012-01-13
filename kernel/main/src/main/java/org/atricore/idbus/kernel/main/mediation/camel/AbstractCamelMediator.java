@@ -358,7 +358,15 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
             throw new IllegalStateException("Mediator not initialized!");
 
         MediationBinding b = bindingFactory.createBinding(message.getDestination().getBinding(), channel);
-        return b.sendMessage(message);
+
+        // When camel gives you the same message you sent, it's normally because something went wrong.
+        Object r =  b.sendMessage(message);
+        if (r == message) {
+            logger.warn("Message response seams to be invalid for ["
+                    + message.getDestination().getLocation() + "] at channel " + channel.getName() + ", using " + b.getBinding());
+        }
+
+        return r;
     }
 
     /**

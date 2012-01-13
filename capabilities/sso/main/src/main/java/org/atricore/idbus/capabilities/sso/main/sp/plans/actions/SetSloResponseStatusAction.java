@@ -21,6 +21,7 @@ public class SetSloResponseStatusAction extends AbstractSSOAction {
 
     private static final Log logger = LogFactory.getLog(SetSloResponseStatusAction.class);
 
+    @Override
     protected void doExecute ( IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext ) throws Exception {
 
         ResponseType response = (ResponseType) out.getContent();

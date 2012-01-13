@@ -21,9 +21,9 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<process-definition name='SAMLR2 Sign Response'>
+<process-definition name='SAMLR2 Sign IDP Response'>
 
-    <description>Sign SAMLR2 Response</description>
+    <description>Sign SAMLR2 IDP Response</description>
 
     <start-state name="start">
         <transition to="samlrSignResponse"/>
@@ -32,7 +32,7 @@
     <state name="samlrSignResponse">
         <event type="node-enter">
             <action class="org.atricore.idbus.capabilities.sso.main.common.plans.actions.SignResponseAction"
-                    name="SAMLR2 Sign Response">
+                    name="SAMLR2 Sign IDP Response">
             </action>
         </event>
 

@@ -35,6 +35,7 @@ import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.idp.IdentityProviderConstants;
 import org.atricore.idbus.capabilities.sso.main.idp.ProviderSecurityContext;
+import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
@@ -221,7 +222,7 @@ public class SingleLogoutProducer extends SSOProducer {
     // TODO : Reuse basic SAML response validations ....
     protected void validateResponse(LogoutRequestType spSloRequest, StatusResponseType spSloResponse, String originalSloResponse)
             throws SSOResponseException {
-        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
         SamlR2Encrypter encrypter = mediator.getEncrypter();
 
@@ -378,7 +379,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
                     // Try to send back channel requests, otherwise try http bindings (post, artifact, redirect NOT IMPLEMENTED YET!)
                     EndpointDescriptor ed = resolveSpSloEndpoint(pSecCtx.getProviderId(),
-                            new SSOBinding[] { SSOBinding.SAMLR2_LOCAL, SSOBinding.SAMLR2_SOAP }, true);
+                            new SSOBinding[] { SSOBinding.SAMLR2_SOAP }, true);
 
                     CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(pSecCtx.getProviderId());
 

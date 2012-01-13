@@ -1,8 +1,9 @@
-<%@page contentType="text/html; charset=UTF-8" language="java" session="true" %>
-<%--
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
   ~ Atricore IDBus
   ~
-  ~ Copyright (c) 2011, Atricore Inc.
+  ~ Copyright (c) 2009, Atricore Inc.
   ~
   ~ This is free software; you can redistribute it and/or modify it
   ~ under the terms of the GNU Lesser General Public License as
@@ -18,11 +19,26 @@
   ~ License along with this software; if not, write to the Free
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  --%>
-<!--
-Redirects the user to the proper login page.  Configured as the login url the web.xml for this application.
--->
-<%
-    response.sendRedirect(request.getContextPath() + "/error.do");
-%>
+  -->
 
+<process-definition name='SAMLR2 Sign SP Response'>
+
+    <description>Sign SAMLR2 SP Response</description>
+
+    <start-state name="start">
+        <transition to="samlrSignResponse"/>
+    </start-state>
+
+    <state name="samlrSignResponse">
+        <event type="node-enter">
+            <action class="org.atricore.idbus.capabilities.sso.main.common.plans.actions.SignResponseAction"
+                    name="SAMLR2 Sign SP Response">
+            </action>
+        </event>
+
+        <transition to="end" />
+    </state>
+
+    <end-state name="end" />
+
+</process-definition>

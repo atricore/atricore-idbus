@@ -133,7 +133,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
         channel = (Channel) applicationContext.getBean(channelRef);
 
         logger.debug("Creating Mediation Binding consumer for URI " + getEndpointUri());
-        logger.debug("Receving exchanges from " + directEndpointUri);
+        logger.debug("Receiving exchanges from " + directEndpointUri);
 
         Endpoint destinationEndpoint = getCamelContext().getEndpoint(directEndpointUri);
 
