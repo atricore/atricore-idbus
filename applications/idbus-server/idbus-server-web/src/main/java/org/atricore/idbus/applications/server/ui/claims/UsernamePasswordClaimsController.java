@@ -120,7 +120,6 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
 
         collectClaims = new CollectUsernamePasswordClaims();
 
-
         if (logger.isDebugEnabled())
             logger.debug("Creating form backing object for artifact " + artifactId);                
 
@@ -159,13 +158,21 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
             if (ssoPolicyMsgs.size() > 0)
                 hreq.setAttribute("ssoPolicyMessages", ssoPolicyMsgs);
 
-
-
             collectClaims.setClaimsRequest(claimsRequest);
 
         } else {
             // TODO : redirect User to configured fallback URL
-            logger.debug("No claims request received!");
+            if (logger.isDebugEnabled())
+                logger.debug("No claims request received, use the one stored in session, if any!");
+            CollectUsernamePasswordClaims oldClaims = (CollectUsernamePasswordClaims) hreq.getSession().getAttribute("CollectUsernamePasswordClaims");
+            if (oldClaims != null) {
+                if (logger.isDebugEnabled())
+                    logger.debug("No claims request received, using old claims request : " + oldClaims.getClaimsRequest());
+
+                collectClaims.setClaimsRequest(oldClaims.getClaimsRequest());
+            }
+
+
         }
 
         hreq.getSession().setAttribute("CollectUsernamePasswordClaims", collectClaims);
@@ -186,10 +193,10 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
         if (logger.isDebugEnabled())
             logger.debug("Received CMD" + cmd);
 
-        ClaimsRequest request = cmd.getClaimsRequest();
+        ClaimsRequest cRequest = cmd.getClaimsRequest();
         if (logger.isDebugEnabled())
             logger.debug("Collecting usenrame/password claims for request " +
-                    (request != null ? request.getId() : "NULL"));
+                    (cRequest != null ? cRequest.getId() : "NULL"));
 
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(new ClaimImpl("username", cmd.getUsername()));
@@ -198,25 +205,25 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
 
         ClaimsResponse response = new ClaimsResponseImpl(idGenerator.generateId(),
                 null,
-                request.getId(),
+                cRequest.getId(),
                 claims,
-                request.getRelayState());
+                cRequest.getRelayState());
 
-        EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(request);
+        EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(cRequest);
         if (claimsEndpoint == null) {
             logger.error("No claims endpoint found!");
             // TODO : Create error and redirect to error view using 'IDBusErrArt'
         }
 
         // We want the binding factory to use a binding component to build this URL, if possible
-        Channel claimsChannel = request.getClaimsChannel();
+        Channel claimsChannel = cRequest.getClaimsChannel();
         claimsChannel = getNonSerializedChannel(claimsChannel);
 
         String claimsEndpointUrl = null;
         if (claimsChannel != null) {
 
             MediationBindingFactory f = claimsChannel.getIdentityMediator().getBindingFactory();
-            MediationBinding b = f.createBinding(SSOBinding.SSO_ARTIFACT.getValue(), request.getClaimsChannel());
+            MediationBinding b = f.createBinding(SSOBinding.SSO_ARTIFACT.getValue(), cRequest.getClaimsChannel());
 
             claimsEndpointUrl = claimsEndpoint.getResponseLocation();
             if (claimsEndpointUrl == null)
@@ -234,7 +241,7 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
         } else {
 
             logger.warn("Cannot delegate URL construction to binding, valid definition of channel " +
-                    request.getClaimsChannel().getName() + " not foud ...");
+                    cRequest.getClaimsChannel().getName() + " not foud ...");
             claimsEndpointUrl = claimsEndpoint.getResponseLocation() != null ?
                     claimsEndpoint.getResponseLocation() : claimsEndpoint.getLocation();
         }
