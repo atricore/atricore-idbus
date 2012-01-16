@@ -230,7 +230,7 @@ public class SingleLogoutProducer extends SSOProducer {
         String spAlias = null;
         SPSSODescriptorType spMd = null;
         try {
-            spAlias = spSloRequest.getIssuer().getValue();
+            spAlias = spSloResponse.getIssuer().getValue();
             MetadataEntry md = getCotManager().findEntityMetadata(spAlias);
             EntityDescriptorType saml2Md = (EntityDescriptorType) md.getEntry();
             boolean found = false;
@@ -379,7 +379,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
                     // Try to send back channel requests, otherwise try http bindings (post, artifact, redirect NOT IMPLEMENTED YET!)
                     EndpointDescriptor ed = resolveSpSloEndpoint(pSecCtx.getProviderId(),
-                            new SSOBinding[] { SSOBinding.SAMLR2_SOAP }, true);
+                            new SSOBinding[] { SSOBinding.SAMLR2_LOCAL, SSOBinding.SAMLR2_SOAP }, true);
 
                     CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(pSecCtx.getProviderId());
 
