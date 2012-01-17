@@ -5672,9 +5672,9 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            for (var i:int=0; i < _sharepoint2010ExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
-                if (_sharepoint2010ExecEnvCoreSection.selectedHost.dataProvider[i].data == sharepoint2010ExecEnv.type.toString()) {
-                    _sharepoint2010ExecEnvCoreSection.selectedHost.selectedIndex = i;
+            for (var j:int=0; j < _sharepoint2010ExecEnvCoreSection.selectedHost.dataProvider.length; j++) {
+                if (_sharepoint2010ExecEnvCoreSection.selectedHost.dataProvider[j].data == sharepoint2010ExecEnv.type.toString()) {
+                    _sharepoint2010ExecEnvCoreSection.selectedHost.selectedIndex = j;
                     break;
                 }
             }
