@@ -143,6 +143,8 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
 
         if (ctx != null && ctx.getRequest() != null) {
             AuthnRequestType authnReq = (AuthnRequestType)ctx.getRequest();
+
+            subjectConfirmationData.setRecipient(authnReq.getIssuer().getValue());
             subjectConfirmationData.setInResponseTo(authnReq.getID());
             subjectConfirmationData.setRecipient(authnReq.getAssertionConsumerServiceURL());
 
