@@ -29,7 +29,14 @@ public class SecureAccessTokenResolverImpl implements AccessTokenResolver {
             if (envelope.isDeflated())
                 accessToken = JasonUtils.inflate(accessToken, true);
 
-            return JasonUtils.unmarshalAccessToken(accessToken);
+            OAuth2AccessToken at = JasonUtils.unmarshalAccessToken(accessToken);
+            // TODO: Timezones ?!
+            // TODO: Make expiration time configurable!
+            if (System.currentTimeMillis() - at.getTimeStamp() > 1000L*60L*30L) {
+                throw new OAuth2TokenExpiredException("Token is over " + 1000L*60L*30L + " ms old");
+            }
+
+            return at;
 
         } catch (IOException e) {
             throw new OAuth2RServerException(e);

@@ -39,4 +39,46 @@ public class FederatedRemoteProviderImpl extends AbstractFederatedProvider imple
 
     private static final Log logger = LogFactory.getLog(FederatedRemoteProviderImpl.class);
 
+    private CircleOfTrustMemberDescriptor member;
+
+    private List<CircleOfTrustMemberDescriptor > members = new ArrayList<CircleOfTrustMemberDescriptor>();
+
+    public CircleOfTrustMemberDescriptor getMember() {
+        return member;
+    }
+
+    public void setMember(CircleOfTrustMemberDescriptor member) {
+        this.members.clear();
+        this.members.add(member);
+        this.member = member;
+    }
+
+
+    public void setMembers(List<CircleOfTrustMemberDescriptor> members) {
+        if (members.size() != 1)
+            throw new RuntimeException("Cannot set " + members.size() + " COT Members to a Federated Remote Provdier");
+
+        this.members.clear();
+        this.members.addAll(members);
+        this.member = members.get(0);
+
+    }
+
+    @Override
+    public List<CircleOfTrustMemberDescriptor> getMembers() {
+        return members;
+    }
+
+    @Override
+    public List<CircleOfTrustMemberDescriptor> getMembers(String configurationKey) {
+        logger.warn("Remote provider has only one member, ignoring configuration key " + configurationKey);
+        return members;
+    }
+
+    @Override
+    public List<CircleOfTrustMemberDescriptor> getAllMembers() {
+        return members;
+    }
+
+
 }

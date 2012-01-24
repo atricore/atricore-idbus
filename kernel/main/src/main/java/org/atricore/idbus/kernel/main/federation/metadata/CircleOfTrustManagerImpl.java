@@ -84,9 +84,6 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
                     if (provider instanceof AbstractFederatedProvider) {
                         AbstractFederatedProvider localProvider = (AbstractFederatedProvider) provider;
                         localProvider.setCircleOfTrust(cot);
-                    } else if (provider instanceof FederatedRemoteProviderImpl) {
-                        FederatedRemoteProviderImpl remoteProvider = (FederatedRemoteProviderImpl) provider;
-                        remoteProvider.setCircleOfTrust(cot);
                     } else {
                         logger.debug("Unknown provider type " + provider + ", cannot inject COT");
                     }
