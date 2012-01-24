@@ -143,9 +143,15 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
 
         if (ctx != null && ctx.getRequest() != null) {
             AuthnRequestType authnReq = (AuthnRequestType)ctx.getRequest();
+            // TODO :Be carefull when we're using IDP Initiated SSO!
 
-            subjectConfirmationData.setRecipient(authnReq.getIssuer().getValue());
-            subjectConfirmationData.setInResponseTo(authnReq.getID());
+            if (authnReq.getIssuer() != null)
+                subjectConfirmationData.setRecipient(authnReq.getIssuer().getValue());
+
+            String responseMode = (String) executionContext.getContextInstance().getVariable(VAR_RESPONSE_MODE);
+            if (responseMode == null || !responseMode.equalsIgnoreCase("unsolicited"))
+                subjectConfirmationData.setInResponseTo(authnReq.getID());
+
             subjectConfirmationData.setRecipient(authnReq.getAssertionConsumerServiceURL());
 
         }
@@ -156,13 +162,6 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
         // TODO : Check when we need to set SubjectConfirmation notBefore
         // subjectConfirmationData.setNotBefore(DateUtils.toXMLGregorianCalendar(dateNow.getTime() - (1000L * 60L * 5)));
 
-        // Subject Confirmation In Response To : If we have an authn request, set the ID here!
-        if (ctx.getAuthnState() != null) {
-            // TODO : Check when we need to sent SubjectConfirmation inResponseTo
-            AuthnRequestType req = ctx.getAuthnState().getAuthnRequest();
-//            if (req != null)
-//                subjectConfirmationData.setInResponseTo(req.getID());
-        }
 
         // Subject Confirmation, Confirmation Method Bearer is required.
         SubjectConfirmationType subjectConfirmation = samlObjectFactory.createSubjectConfirmationType();
