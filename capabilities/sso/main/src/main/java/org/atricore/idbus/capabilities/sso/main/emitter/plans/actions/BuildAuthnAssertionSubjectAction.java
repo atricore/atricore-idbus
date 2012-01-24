@@ -142,9 +142,9 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
                 (SamlR2SecurityTokenEmissionContext) executionContext.getContextInstance().getVariable(RST_CTX);
 
         if (ctx != null && ctx.getRequest() != null) {
-            subjectConfirmationData.setRecipient(
-                ((AuthnRequestType)ctx.getRequest()).getAssertionConsumerServiceURL()
-            );
+            AuthnRequestType authnReq = (AuthnRequestType)ctx.getRequest();
+            subjectConfirmationData.setInResponseTo(authnReq.getID());
+            subjectConfirmationData.setRecipient(authnReq.getAssertionConsumerServiceURL());
 
         }
 
