@@ -25,6 +25,7 @@ import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.session.SSOSession;
 
@@ -54,6 +55,8 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
     private MetadataEntry issuerMetadata;
 
     private String identityPlanName;
+
+    private EndpointDescriptor spAcs;
 
     public SamlR2SecurityTokenEmissionContext() {
     }
@@ -141,5 +144,13 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
     public String getIdentityPlanName() {
         return identityPlanName;
+    }
+
+    public void setSpAcs(EndpointDescriptor spAcs) {
+        this.spAcs = spAcs;
+    }
+
+    public EndpointDescriptor getSpAcs() {
+        return this.spAcs;
     }
 }

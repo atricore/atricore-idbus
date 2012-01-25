@@ -617,6 +617,9 @@ public class SingleSignOnProducer extends SSOProducer {
 
         try {
 
+            // Resolve SP endpoint
+            EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
+
             // -------------------------------------------------------
             // Build STS Context
             // -------------------------------------------------------
@@ -633,6 +636,7 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setRoleMetadata(null);
             securityTokenEmissionCtx.setAuthnState(authnState);
             securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
+            securityTokenEmissionCtx.setSpAcs(ed);
 
             SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
                     securityTokenEmissionCtx,
@@ -653,8 +657,6 @@ public class SingleSignOnProducer extends SSOProducer {
             // We already validated authn request issuer, so we can use it.
             secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
 
-            // Resolve SP endpoint
-            EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
 
             // Build a response for the SP
             ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed);

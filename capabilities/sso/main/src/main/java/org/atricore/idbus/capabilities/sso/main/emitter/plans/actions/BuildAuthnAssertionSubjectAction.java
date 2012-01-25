@@ -32,6 +32,7 @@ import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
 import org.atricore.idbus.capabilities.sso.support.profiles.SubjectConfirmationMethod;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
@@ -143,14 +144,22 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
 
         if (ctx != null && ctx.getRequest() != null) {
             AuthnRequestType authnReq = (AuthnRequestType)ctx.getRequest();
-            // TODO :Be carefull when we're using IDP Initiated SSO!
 
-            if (authnReq.getIssuer() != null)
-                subjectConfirmationData.setRecipient(authnReq.getIssuer().getValue());
+            // This should be the ACS endpoint we're using
 
-            String responseMode = (String) executionContext.getContextInstance().getVariable(VAR_RESPONSE_MODE);
-            if (responseMode == null || !responseMode.equalsIgnoreCase("unsolicited"))
+            EndpointDescriptor ed = ctx.getSpAcs();
+            if (ed != null) {
+                subjectConfirmationData.setRecipient(
+                        ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation());
+            }
+
+
+            if (ctx.getAuthnState() == null ||
+                ctx.getAuthnState().getResponseMode() == null ||
+                !ctx.getAuthnState().getResponseMode().equals("unsolicited")) {
+                // This is NOT idp initiated, send in response to.
                 subjectConfirmationData.setInResponseTo(authnReq.getID());
+            }
 
             subjectConfirmationData.setRecipient(authnReq.getAssertionConsumerServiceURL());
 
