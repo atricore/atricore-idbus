@@ -14,8 +14,11 @@ public class SecureAccessTokenResolverImpl implements AccessTokenResolver {
 
     private TokenEncrypter tokenEncrypter;
 
+    private long tkValidityInterval;
+
     public OAuth2AccessToken resolve(String tokenString) throws OAuth2RServerException {
         try {
+
             OAuth2AccessTokenEnvelope envelope = JasonUtils.unmarshalAccessTokenEnvelope(tokenString);
 
             String accessToken = envelope.getToken();
@@ -30,10 +33,11 @@ public class SecureAccessTokenResolverImpl implements AccessTokenResolver {
                 accessToken = JasonUtils.inflate(accessToken, true);
 
             OAuth2AccessToken at = JasonUtils.unmarshalAccessToken(accessToken);
-            // TODO: Timezones ?!
-            // TODO: Make expiration time configurable!
-            if (System.currentTimeMillis() - at.getTimeStamp() > 1000L*60L*30L) {
-                throw new OAuth2TokenExpiredException("Token is over " + 1000L*60L*30L + " ms old");
+            if (getTokenValidityInterval() > 0) {
+                long now = System.currentTimeMillis();
+                if (now - at.getTimeStamp() > getTokenValidityInterval() * 1000L) {
+                    throw new OAuth2TokenExpiredException("Token is over " + getTokenValidityInterval() + " seconds old ["+now+"/"+at.getTimeStamp()+"]");
+                }
             }
 
             return at;
@@ -61,5 +65,16 @@ public class SecureAccessTokenResolverImpl implements AccessTokenResolver {
 
     public void setTokenEncrypter(TokenEncrypter tokenEncrypter) {
         this.tokenEncrypter = tokenEncrypter;
+    }
+
+    /**
+     * In seconds
+     */
+    public long getTokenValidityInterval() {
+        return tkValidityInterval;
+    }
+
+    public void setTokenValidityInterval(long tkValidityInterval) {
+        this.tkValidityInterval = tkValidityInterval;
     }
 }

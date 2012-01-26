@@ -9,7 +9,7 @@ import java.util.Properties;
  */
 public abstract class AccessTokenResolverFactory {
 
-    // Default to secure!
+    // Default secure resolver
     private static String factoryClass = SecureAccessTokenResolverFactory.class.getName();
 
     protected Properties config;

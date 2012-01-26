@@ -17,6 +17,8 @@ public class SecureAccessTokenResolverFactory extends AccessTokenResolverFactory
 
     public static final String SHARED_SECRECT_ENC_PROPERTY = "org.atricore.idbus.capabilities.oauth2.encryptKey";
 
+    public static final String TOKEN_VALIDITY_INTERVAL_PROPERTY = "org.atricore.idbus.capabilities.oauth2.accessTokenValidityInterval";
+
     public AccessTokenResolver doMakeResolver() {
 
         // Resolver
@@ -24,6 +26,7 @@ public class SecureAccessTokenResolverFactory extends AccessTokenResolverFactory
         String defaultKey = config.getProperty(SHARED_SECRECT_PROPERTY);
         String encKey = config.getProperty(SHARED_SECRECT_ENC_PROPERTY, defaultKey);
         String signKey = config.getProperty(SHARED_SECRECT_SIGN_PROPERTY, defaultKey);
+        long tkValidityInterval = Long.parseLong(config.getProperty(TOKEN_VALIDITY_INTERVAL_PROPERTY, "0"));
 
         // HMAC Signer
         HMACTokenSigner signer = new HMACTokenSigner();
@@ -34,6 +37,8 @@ public class SecureAccessTokenResolverFactory extends AccessTokenResolverFactory
         AESTokenEncrypter encrypter = new AESTokenEncrypter();
         encrypter.setBase64key(encKey);
         r.setTokenEncrypter(encrypter);
+
+        r.setTokenValidityInterval(tkValidityInterval);
 
         return r;
 
