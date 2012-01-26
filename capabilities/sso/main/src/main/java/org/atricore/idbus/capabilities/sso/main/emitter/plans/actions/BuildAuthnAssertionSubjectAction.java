@@ -146,13 +146,11 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
             AuthnRequestType authnReq = (AuthnRequestType)ctx.getRequest();
 
             // This should be the ACS endpoint we're using
-
             EndpointDescriptor ed = ctx.getSpAcs();
             if (ed != null) {
                 subjectConfirmationData.setRecipient(
                         ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation());
             }
-
 
             if (ctx.getAuthnState() == null ||
                 ctx.getAuthnState().getResponseMode() == null ||
@@ -160,8 +158,6 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
                 // This is NOT idp initiated, send in response to.
                 subjectConfirmationData.setInResponseTo(authnReq.getID());
             }
-
-            subjectConfirmationData.setRecipient(authnReq.getAssertionConsumerServiceURL());
 
         }
 

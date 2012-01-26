@@ -449,6 +449,8 @@ public class SingleSignOnProducer extends SSOProducer {
             if (logger.isDebugEnabled())
                 logger.debug("Found valid SSO Session for AuthnRequest " + authnRequest.getID());
 
+            EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
+
             SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx = new SamlR2SecurityTokenEmissionContext();
 
             // Send extra information to STS, using the emission context
@@ -460,6 +462,7 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setSsoSession(sessionMgr.getSession(secCtx.getSessionIndex()));
             securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
             securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
+            securityTokenEmissionCtx.setSpAcs(ed);
 
             securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest);
 
@@ -471,7 +474,7 @@ public class SingleSignOnProducer extends SSOProducer {
             secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
 
             CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(authnRequest.getIssuer());
-            EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
+
 
             ResponseType response = buildSamlResponse(exchange,
                     authnState,
@@ -505,6 +508,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
         NameIDType issuer = authnRequest.getIssuer();
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(issuer);
+        // Resolve SP endpoint
+        EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
 
         // -------------------------------------------------------
         // Build STS Context
@@ -522,6 +527,7 @@ public class SingleSignOnProducer extends SSOProducer {
         securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
         securityTokenEmissionCtx.setIssuerMetadata(sp.getMetadata());
         securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
+        securityTokenEmissionCtx.setSpAcs(ed);
 
         UsernameTokenType usernameToken = new UsernameTokenType();
         AttributedString usernameString = new AttributedString();
@@ -549,9 +555,6 @@ public class SingleSignOnProducer extends SSOProducer {
         // TODO : Instead of authnRequest, use metadata to get issuer!
 
         secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
-
-        // Resolve SP endpoint
-        EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
 
         // Build a response for the SP
         ResponseType response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
@@ -836,11 +839,15 @@ public class SingleSignOnProducer extends SSOProducer {
             logger.debug("Response Mode for Proxy Response " + authnRequest.getID() + " is NOT unsolicited");
         }
 
+
         // ----------------------------------------------------
         // Emit new assertion
         // ----------------------------------------------------
 
         try {
+
+            // Resolve SP endpoint
+            EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
 
             // -------------------------------------------------------
             // Build STS Context
@@ -858,6 +865,7 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setRoleMetadata(null);
             securityTokenEmissionCtx.setAuthnState(authnState);
             securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
+            securityTokenEmissionCtx.setSpAcs(ed);
 
             // in order to request a security token we need to map the claims sent by the proxy to
             // STS claims
@@ -901,9 +909,6 @@ public class SingleSignOnProducer extends SSOProducer {
             // Associate the SP with the new session, including relay state!
             // We already validated authn request issuer, so we can use it.
             secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
-
-            // Resolve SP endpoint
-            EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
 
             // Build a response for the SP
             ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
