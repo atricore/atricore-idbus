@@ -64,7 +64,7 @@ public interface SamlR2Signer {
      * @return the signed response
      * @throws SamlR2SignatureException if an error occurs when signing.
      */
-    StatusResponseType sign(StatusResponseType response) throws SamlR2SignatureException;
+    StatusResponseType sign(StatusResponseType response, String element) throws SamlR2SignatureException;
 
     /**
      * @param md       The signer SAML 2.0 Metadata

@@ -221,35 +221,27 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
     }
 
-    public StatusResponseType sign(StatusResponseType response) throws SamlR2SignatureException {
+    public StatusResponseType sign(StatusResponseType response, String element) throws SamlR2SignatureException {
         try {
-
-            // TODO : Support other responses
-            if (!(response instanceof ResponseType))
-                throw new SamlR2SignatureException("Unsuported response type : " + response.getClass().getName());
-
 
             // Marshall the Assertion object as a DOM tree:
             if (logger.isDebugEnabled())
-                logger.debug("Marshalling SAMLR2 Status Response to DOM Tree [" + response.getID() + "]");
+                logger.debug("Marshalling SAMLR2 Response to DOM Tree [" + response.getID() + "]");
 
             Document doc = XmlUtils.marshalSamlR2AsDom(response,
                     SAMLR2Constants.SAML_PROTOCOL_NS,
-                    "Response",
+                    element,
                     new String[]{
                             SAMLR2Constants.SAML_PROTOCOL_PKG,
                             SAMLR2Constants.SAML_ASSERTION_PKG});
 
-
             doc = sign(doc, response.getID());
 
             if (logger.isDebugEnabled())
-                logger.debug("Unmarshalling SAMLR2 Status Response from DOM Tree [" + response.getID() + "]");
+                logger.debug("Unmarshalling SAMLR2 Response from DOM Tree [" + response.getID() + "]");
 
             // Unmarshall the response
             return XmlUtils.unmarshalSamlR2Response(doc);
-
-
 
         } catch (Exception e) {
             throw new SamlR2SignatureException("XML Parser Error signing SAMLR2 Response " + response.getID(), e);

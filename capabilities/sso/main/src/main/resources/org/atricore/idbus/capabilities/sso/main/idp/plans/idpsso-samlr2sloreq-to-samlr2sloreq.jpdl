@@ -53,6 +53,16 @@
     <process-fragment-state name="provideSloRequestContent">
         <process-fragment lifecycle="generate-idp-sloreq" phase="provide-content"/>
         <transition to="ensureContentConfidentiality"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:cot" access="read" />
+        <variable name="urn:org:atricore:idbus:channel" access="read" />
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:security-context" access="read"/>
+
     </process-fragment-state>
 
 
@@ -64,10 +74,13 @@
         <transition to="ensureAuthenticity"/>
 
         <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:cot" access="read" />
         <variable name="urn:org:atricore:idbus:channel" access="read" />
         <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
         <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read" />
         <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:security-context" access="read"/>
 
     </process-fragment-state>
 
@@ -79,10 +92,13 @@
         <transition to="validateSloRequest"/>
 
         <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:cot" access="read" />
         <variable name="urn:org:atricore:idbus:channel" access="read" />
         <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
         <variable name="urn:org:atricore:idbus:endpoint" access="read" />
-        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:security-context" access="read"/>
 
     </process-fragment-state>
 
@@ -94,10 +110,13 @@
         <transition to="ensureConfidentiality"/>
 
         <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:cot" access="read" />
         <variable name="urn:org:atricore:idbus:channel" access="read" />
         <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
         <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read" />
         <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:security-context" access="read"/>
 
     </process-fragment-state>
 
@@ -109,10 +128,13 @@
         <transition to="end"/>
 
         <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:cot" access="read" />
         <variable name="urn:org:atricore:idbus:channel" access="read" />
         <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
         <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read" />
         <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:security-context" access="read"/>
         
     </process-fragment-state>
 

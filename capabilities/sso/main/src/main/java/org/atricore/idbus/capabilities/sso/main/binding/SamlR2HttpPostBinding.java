@@ -149,13 +149,15 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
 
             Message httpIn = exchange.getIn();
             Message httpOut = exchange.getOut();
-            String targetLocation = this.buildHttpTargetLocation(httpIn, ed);
+            boolean isResponse = false;
+
             String relayState = out.getRelayState();
 
             if (out.getContent() instanceof RequestAbstractType) {
                 msgName = "SAMLRequest";
                 msgValue = XmlUtils.marshalSamlR2Request((RequestAbstractType) out.getContent(), element, true);
             } else if (out.getContent() instanceof StatusResponseType) {
+                isResponse = true;
                 msgName = "SAMLResponse";
                 msgValue = XmlUtils.marshalSamlR2Response((StatusResponseType) out.getContent(), element, true);
 
@@ -171,6 +173,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
                 
             } else if (out.getContent() instanceof oasis.names.tc.saml._1_0.protocol.ResponseType) {
                 // Marshal SAML 1.1 Response
+                isResponse = true;
                 msgName = "SAMLResponse";
                 msgValue = XmlUtils.marshalSamlR11Response((oasis.names.tc.saml._1_0.protocol.ResponseType) out.getContent(), element, true);
             }
@@ -183,6 +186,8 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
             // Create HTML Form for response body
             // ------------------------------------------------------------
+
+            String targetLocation = this.buildHttpTargetLocation(httpIn, ed, isResponse);
 
             Html post = null;
 

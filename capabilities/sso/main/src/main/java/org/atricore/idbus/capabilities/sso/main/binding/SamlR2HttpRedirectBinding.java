@@ -147,12 +147,14 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             if (out.getContent() == null) {
                 throw new NullPointerException("Cannot Create form with null content for action " + ed.getLocation());
             }
+            String location = ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation();
 
             // ------------------------------------------------------------
             // Create HTML Form for response body
             // ------------------------------------------------------------
+
             if (logger.isDebugEnabled())
-                logger.debug("Creating HTML Redirect to " + ed.getLocation());
+                logger.debug("Creating HTML Redirect to " + location);
 
             String msgName = null;
             java.lang.Object msgValue = null;
@@ -164,9 +166,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
 
             if (out.getContent() instanceof RequestAbstractType) {
 
-
                 msgName = "SAMLRequest";
-
 
                 RequestAbstractType req = (RequestAbstractType) out.getContent();
 
@@ -185,6 +185,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
 
             } else if (out.getContent() instanceof StatusResponseType) {
                 msgName = "SAMLResponse";
+                isResponse = true;
 
                 // Strip DS information from request/response!
                 StatusResponseType res = (StatusResponseType) out.getContent();
@@ -214,7 +215,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             }
 
             if (out.getContent() == null) {
-                throw new NullPointerException("Cannot REDIRECT null content to " + ed.getLocation());
+                throw new NullPointerException("Cannot REDIRECT null content to " + location);
             }
             if (!(msgValue instanceof String)) {
                 throw new IllegalArgumentException("Cannot REDIRECT content of type " + msgValue.getClass().getName());

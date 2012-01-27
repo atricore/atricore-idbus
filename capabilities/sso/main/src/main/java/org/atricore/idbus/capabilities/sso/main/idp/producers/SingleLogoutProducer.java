@@ -35,10 +35,8 @@ import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.idp.IdentityProviderConstants;
 import org.atricore.idbus.capabilities.sso.main.idp.ProviderSecurityContext;
-import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
-import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.SSORequestException;
@@ -168,20 +166,20 @@ public class SingleLogoutProducer extends SSOProducer {
         EndpointDescriptor ed = resolveSpSloEndpoint(sloRequest.getIssuer(), new SSOBinding[] { binding } , true);
 
         // TODO : Send partialLogout status code if required
-        ResponseType response = buildSamlResponse(exchange, sloRequest, sp, ed);
+        StatusResponseType response = buildSamlSloResponse(exchange, sloRequest, sp, ed);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(response.getID(),
-                response, "Response", in.getMessage().getRelayState(), ed, in.getMessage().getState()));
+                response, "LogoutResponse", in.getMessage().getRelayState(), ed, in.getMessage().getState()));
 
         exchange.setOut(out);
 
     }
 
-    protected ResponseType buildSamlResponse(CamelMediationExchange exchange,
-                                             LogoutRequestType sloRequest,
-                                             CircleOfTrustMemberDescriptor sp,
-                                             EndpointDescriptor spEndpoint) throws Exception {
+    protected StatusResponseType buildSamlSloResponse(CamelMediationExchange exchange,
+                                                LogoutRequestType sloRequest,
+                                                CircleOfTrustMemberDescriptor sp,
+                                                EndpointDescriptor spEndpoint) throws Exception {
         // Build sloresponse
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SloRequestToSamlR2RespPlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
@@ -198,9 +196,9 @@ public class SingleLogoutProducer extends SSOProducer {
 
         idPlanExchange.setIn(in);
 
-        IdentityArtifact<ResponseType> out =
-                new IdentityArtifactImpl<ResponseType>(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, "Response"),
-                        new ResponseType());
+        IdentityArtifact<StatusResponseType> out =
+                new IdentityArtifactImpl<StatusResponseType>(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, "LogoutResponse"),
+                        new StatusResponseType());
         idPlanExchange.setOut(out);
 
         // Prepare execution
@@ -216,7 +214,7 @@ public class SingleLogoutProducer extends SSOProducer {
         if (idPlanExchange.getOut() == null)
             throw new SecurityTokenEmissionException("Plan Exchange OUT must not be null!");
 
-        return (ResponseType) idPlanExchange.getOut().getContent();
+        return (StatusResponseType) idPlanExchange.getOut().getContent();
     }
 
     // TODO : Reuse basic SAML response validations ....

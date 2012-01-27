@@ -1,9 +1,6 @@
 package org.atricore.idbus.capabilities.sso.main.idp.plans.actions;
 
-import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
-import oasis.names.tc.saml._2_0.protocol.ResponseType;
-import oasis.names.tc.saml._2_0.protocol.StatusCodeType;
-import oasis.names.tc.saml._2_0.protocol.StatusType;
+import oasis.names.tc.saml._2_0.protocol.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
@@ -20,7 +17,7 @@ public class SetResponseStatusAction extends AbstractSSOAction {
 
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) throws Exception {
 
-        ResponseType response = (ResponseType) out.getContent();
+        StatusResponseType response = (StatusResponseType) out.getContent();
         RequestAbstractType request = (RequestAbstractType) in.getContent();
 
         if (logger.isDebugEnabled())

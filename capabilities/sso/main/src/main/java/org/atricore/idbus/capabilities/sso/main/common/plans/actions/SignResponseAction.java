@@ -31,7 +31,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
@@ -58,61 +60,79 @@ public class SignResponseAction extends AbstractSSOAction {
         CircleOfTrustMemberDescriptor dest =
                 (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
 
-        // Mediator configuration as default for assertions signature
-        boolean signAssertion = true;
-        if (dest != null) {
 
-            EntityDescriptorType entity = (EntityDescriptorType) dest.getMetadata().getEntry();
+        // If the Response can contains assertions
+        if (response instanceof ResponseType) {
 
-            // This is the destination entity, we need to figure out the role, only SPs can request signed assertions:
-            for (RoleDescriptorType role : entity.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
-                if (role instanceof SPSSODescriptorType) {
-                    SPSSODescriptorType spRole = (SPSSODescriptorType) role;
+            // Mediator configuration as default for assertions signature
+            boolean signAssertion = true;
+            if (dest != null) {
 
-                    if (spRole.isWantAssertionsSigned() != null)
-                        signAssertion = spRole.isWantAssertionsSigned();
-                    break;
-                }
-            }
+                EntityDescriptorType entity = (EntityDescriptorType) dest.getMetadata().getEntry();
 
-        }
+                // This is the destination entity, we need to figure out the role, only SPs can request signed assertions:
+                for (RoleDescriptorType role : entity.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
+                    if (role instanceof SPSSODescriptorType) {
+                        SPSSODescriptorType spRole = (SPSSODescriptorType) role;
 
-        if (((ResponseType)response).getAssertionOrEncryptedAssertion().size() > 0) {
-
-            List assertions = new ArrayList();
-            for (Object o : ((ResponseType)response).getAssertionOrEncryptedAssertion()) {
-
-                if (o instanceof AssertionType) {
-
-                    AssertionType assertion = (AssertionType) o;
-
-                    if (logger.isDebugEnabled())
-                        logger.debug("Signing SAMLR2 Assertion: " + assertion.getID() + " in channel " + channel.getName());
-
-                    // The Assertion is now enveloped within a SAML Response so we need to sign a second time within this context.
-                    assertion.setSignature(null);
-
-                    // If the response has an assertion, remove the signature and re-sign it ... (we're discarding STS signature!)
-                    if (signAssertion) {
-                        AssertionType signedAssertion =  signer.sign(assertion);
-                        assertions.add(signedAssertion);
-                    } else {
-                        assertions.add(assertion);
+                        if (spRole.isWantAssertionsSigned() != null)
+                            signAssertion = spRole.isWantAssertionsSigned();
+                        break;
                     }
                 }
+
             }
 
-            // Replace assertions
-            ((ResponseType)response).getAssertionOrEncryptedAssertion().clear();
-            ((ResponseType)response).getAssertionOrEncryptedAssertion().addAll(assertions);
+            if (((ResponseType)response).getAssertionOrEncryptedAssertion().size() > 0) {
 
+                List assertions = new ArrayList();
+                for (Object o : ((ResponseType)response).getAssertionOrEncryptedAssertion()) {
+
+                    if (o instanceof AssertionType) {
+
+                        AssertionType assertion = (AssertionType) o;
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Signing SAMLR2 Assertion: " + assertion.getID() + " in channel " + channel.getName());
+
+                        // The Assertion is now enveloped within a SAML Response so we need to sign a second time within this context.
+                        assertion.setSignature(null);
+
+                        // If the response has an assertion, remove the signature and re-sign it ... (we're discarding STS signature!)
+                        if (signAssertion) {
+                            AssertionType signedAssertion =  signer.sign(assertion);
+                            assertions.add(signedAssertion);
+                        } else {
+                            assertions.add(assertion);
+                        }
+                    }
+                }
+
+                // Replace assertions
+                ((ResponseType)response).getAssertionOrEncryptedAssertion().clear();
+                ((ResponseType)response).getAssertionOrEncryptedAssertion().addAll(assertions);
+
+            }
         }
+
+        // Let's see the type of response:
+
+        String element = "Response";
+
+        EndpointDescriptor ed = (EndpointDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_ENDPOINT_DESCRIPTOR);
+
+        if (ed != null && ed.getType() != null) {
+            if (SSOService.SingleLogoutService.toString().equals(ed.getType()))
+                element = "LogoutResponse";
+        }
+
+        // TODO : Support other type of responses,
 
         // Always Sign responses
         if (logger.isDebugEnabled())
             logger.debug("Signing SAMLR2 Response: " + response.getID() + " in channel " + channel.getName());
 
-        ResponseType signedResponse = (ResponseType) signer.sign(response);
+        StatusResponseType signedResponse = signer.sign(response, element);
 
         out.replaceContent(signedResponse);
 
