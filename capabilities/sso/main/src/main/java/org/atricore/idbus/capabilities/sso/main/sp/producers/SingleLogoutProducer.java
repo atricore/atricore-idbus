@@ -233,7 +233,7 @@ public class SingleLogoutProducer extends SSOProducer {
         in.getMessage().getState().removeLocalVariable("urn:oasis:names:tc:SAML:2.0:protocol:LogoutRequest");
 
         // Validate received Response
-        validateResponse(logoutRequest, (ResponseType) in.getMessage().getContent(), in.getMessage().getRawContent());
+        validateResponse(logoutRequest, (StatusResponseType) in.getMessage().getContent(), in.getMessage().getRawContent());
 
         // Received SAML2 Response from IdP
         // TODO : Use plans ?
@@ -340,8 +340,8 @@ public class SingleLogoutProducer extends SSOProducer {
 
 
     // TODO : Reuse basic SAML response validations ....
-    protected ResponseType validateResponse(LogoutRequestType request,
-                                            ResponseType response,
+    protected StatusResponseType validateResponse(LogoutRequestType request,
+                                            StatusResponseType response,
                                             String originalResponse)
             throws SSOResponseException, SSOException {
 
