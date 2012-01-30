@@ -207,7 +207,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             }
 
             MessageQueueManager aqm = getArtifactQueueManager();
-            // TODO : Wrapp SAML Message, including type
+            // Wrapp SAML Message, including type
             SamlMessageWrapper wrapper = new SamlMessageWrapper(element, msgValue);
             Artifact artifact = aqm.pushMessage(wrapper);
 

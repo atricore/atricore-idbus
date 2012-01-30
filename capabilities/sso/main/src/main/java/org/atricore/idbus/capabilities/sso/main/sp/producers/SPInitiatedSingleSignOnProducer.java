@@ -29,6 +29,7 @@ import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
@@ -82,6 +83,10 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
             // ------------------------------------------------------------------------------------------
 
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+            // May be used later by HTTP-Redirect binding!
+            AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+            in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
 
             SPInitiatedAuthnRequestType ssoAuthnReq =
                     (SPInitiatedAuthnRequestType) in.getMessage().getContent();

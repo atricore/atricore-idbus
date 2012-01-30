@@ -64,7 +64,14 @@ public interface SamlR2Signer {
      * @return the signed response
      * @throws SamlR2SignatureException if an error occurs when signing.
      */
-    StatusResponseType nsign(StatusResponseType response, String element) throws SamlR2SignatureException;
+    StatusResponseType sign(StatusResponseType response, String element) throws SamlR2SignatureException;
+
+    /**
+     * @param queryString  the SAML 2.0 Query string (HTTP-Redirect binding)
+     * @return
+     * @throws SamlR2SignatureException
+     */
+    String signQueryString(String queryString) throws SamlR2SignatureException;
 
     /**
      * @param md       The signer SAML 2.0 Metadata
@@ -77,20 +84,38 @@ public interface SamlR2Signer {
     /**
      * @param md       The signer SAML 2.0 Metadata
      * @param request The signed SAML 2.0 Response
-     * @throws SamlR2SignatureValidationException
-     *          if the assertion signature is invalid
+     * @throws SamlR2SignatureValidationException if the signature is invalid
      */
     void validate(RoleDescriptorType md, LogoutRequestType request) throws SamlR2SignatureException, SamlR2SignatureValidationException;
 
     /**
      * @param md       The signer SAML 2.0 Metadata
      * @param request The signed SAML 2.0 Response
-     * @throws SamlR2SignatureValidationException
-     *          if the assertion signature is invalid
+     * @throws SamlR2SignatureValidationException if the signature is invalid
      */
     void validate(RoleDescriptorType md, AuthnRequestType request) throws SamlR2SignatureException, SamlR2SignatureValidationException;
 
+    /**
+     *
+     * @param md The signer SAML 2.0 Metadata
+     * @param queryString The signed SAML 2.0 Query String , URL Encoded (HTTP-Redirect binding)
+     * @throws SamlR2SignatureException
+     * @throws SamlR2SignatureValidationException if the signature is invalid
+     */
+    void validateQueryString(RoleDescriptorType md, String queryString) throws SamlR2SignatureException, SamlR2SignatureValidationException;
 
+    /**
+     *
+     @param md The signer SAML 2.0 Metadata
+     * @param msg the SAML Msg
+     * @param relayState
+     * @param sigAlg
+     * @param signature non URL Encoded
+     * @param isResponse non URL Encoded
+     * @throws SamlR2SignatureException
+     * @throws SamlR2SignatureValidationException
+     */
+    void validateQueryString(RoleDescriptorType md, String msg, String relayState, String sigAlg, String signature, boolean isResponse) throws SamlR2SignatureException, SamlR2SignatureValidationException;
 
     /**
      * @param md                  The signer SAML 2.0 Metadata
@@ -106,7 +131,7 @@ public interface SamlR2Signer {
      * @throws SamlR2SignatureValidationException
      *          if the assertion signature is invalid
      */
-    void validate(RoleDescriptorType md, String domStr) throws SamlR2SignatureException;
+    void validateDom(RoleDescriptorType md, String domStr) throws SamlR2SignatureException;
 
     /**
      * @param md  The signer SAML 2.0 Metadata

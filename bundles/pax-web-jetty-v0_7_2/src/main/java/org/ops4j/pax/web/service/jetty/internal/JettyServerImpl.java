@@ -28,7 +28,7 @@ private static final Log LOG = LogFactory.getLog( JettyServerImpl.class );
 
     JettyServerImpl( final ServerModel serverModel, final SessionHandlerBuilder sessionHandlerBuilder)
     {
-        m_server = new JettyServerWrapper( serverModel, sessionHandlerBuilder );
+        m_server = new JettyServerWrapper(serverModel, sessionHandlerBuilder);
     }
 
     public void start()
@@ -43,6 +43,7 @@ private static final Log LOG = LogFactory.getLog( JettyServerImpl.class );
                 XmlConfiguration configuration = new XmlConfiguration( resource );
                 configuration.configure( m_server );
             }
+
             m_server.start();
         }
         catch( Exception e )
@@ -76,6 +77,10 @@ private static final Log LOG = LogFactory.getLog( JettyServerImpl.class );
                 connector.getPort()
             )
         );
+
+        // Override connector buffer size (TODO : Make this configurable)
+        connector.setHeaderBufferSize(8192);
+
         m_server.addConnector( connector );
     }
 

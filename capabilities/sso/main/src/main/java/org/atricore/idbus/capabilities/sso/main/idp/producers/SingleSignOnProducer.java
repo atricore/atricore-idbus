@@ -46,10 +46,7 @@ import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2AuthnRequestToSa
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
-import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
-import org.atricore.idbus.capabilities.sso.support.core.SSORequestException;
-import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
-import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
+import org.atricore.idbus.capabilities.sso.support.core.*;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureValidationException;
@@ -114,6 +111,10 @@ public class SingleSignOnProducer extends SSOProducer {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         Object content = in.getMessage().getContent();
+
+        // May be used later by HTTP-Redirect binding!
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+        in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
 
         try {
 
@@ -279,7 +280,7 @@ public class SingleSignOnProducer extends SSOProducer {
         SSOSessionManager sessionMgr = ((SPChannel) channel).getSessionManager();
 
         // Validate AuthnRequest
-        validateRequest(authnRequest, in.getMessage().getRawContent());
+        validateRequest(authnRequest, in.getMessage().getRawContent(), in.getMessage().getState());
 
         // -----------------------------------------------------------------------------
         // Validate SSO Session
@@ -1032,7 +1033,7 @@ public class SingleSignOnProducer extends SSOProducer {
     // Utils
     // -----------------------------------------------------------------------------------
 
-    protected void validateRequest(AuthnRequestType request, String originalRequest)
+    protected void validateRequest(AuthnRequestType request, String originalRequest, MediationState state)
             throws SSORequestException, SSOException {
 
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
@@ -1073,30 +1074,56 @@ public class SingleSignOnProducer extends SSOProducer {
         // XML Signature, saml2 core, section 5
         if (validateSignature) {
 
-            // If no signature is present, throw an exception!
-            if (request.getSignature() == null)
-                throw new SSORequestException(request,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_REQUEST_SIGNATURE);
-            try {
+            if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
 
-                if (originalRequest != null)
-                    signer.validate(saml2SpMd, originalRequest);
-                else
-                    signer.validate(saml2SpMd, request);
+                // If no signature is present, throw an exception!
+                if (request.getSignature() == null)
 
-            } catch (SamlR2SignatureValidationException e) {
-                throw new SSORequestException(request,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-            } catch (SamlR2SignatureException e) {
-                //other exceptions like JAXB, xml parser...
-                throw new SSORequestException(request,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_REQUEST_SIGNATURE);
+                try {
+
+                    if (originalRequest != null)
+                        signer.validateDom(saml2SpMd, originalRequest);
+                    else
+                        signer.validate(saml2SpMd, request);
+
+                } catch (SamlR2SignatureValidationException e) {
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                } catch (SamlR2SignatureException e) {
+                    //other exceptions like JAXB, xml parser...
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                }
+            } else {
+                // HTTP-Redirect binding signature validation !
+                try {
+                    signer.validateQueryString(saml2SpMd,
+                            state.getTransientVariable("SAMLRequest"),
+                            state.getTransientVariable("RelayState"),
+                            state.getTransientVariable("SigAlg"),
+                            state.getTransientVariable("Signature"),
+                            false);
+                } catch (SamlR2SignatureValidationException e) {
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                } catch (SamlR2SignatureException e) {
+                    //other exceptions like JAXB, xml parser...
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                }
+
             }
 
         }

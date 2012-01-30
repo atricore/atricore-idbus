@@ -36,9 +36,20 @@ public interface MediationState {
     boolean isLocalStateAvailable();
 
     /**
-     * Variables only available during the current request.
+     * Variables, read-only. Available during the current request.
      */
     String getTransientVariable(String name);
+
+    /**
+     * Attributes, read-write. Available during the current request.
+     *
+     * @return previous value, if any
+     */
+    Object setAttribute(String attrName, Object attrValue);
+
+    Object getAttribute(String attrName);
+
+    Object removeAttribute(String attrName);
 
     /**
      * Variable available through different requests, stored locally

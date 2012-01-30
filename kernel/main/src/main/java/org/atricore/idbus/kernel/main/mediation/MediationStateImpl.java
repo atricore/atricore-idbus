@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 
 import java.util.*;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -34,6 +35,8 @@ import java.util.*;
 public class MediationStateImpl implements MediationState {
 
     private static final Log logger = LogFactory.getLog(MediationStateImpl.class);
+
+    private Map<String, Object> transientAttribute = new HashMap<String, Object>();
 
     private Map<String, String> transientVars = new HashMap<String, String>();
 
@@ -54,6 +57,18 @@ public class MediationStateImpl implements MediationState {
 
     public String getTransientVariable(String name) {
         return transientVars.get(name);
+    }
+
+    public Object getAttribute(String name) {
+        return transientAttribute.get(name);
+    }
+
+    public Object setAttribute(String name, Object value) {
+        return transientAttribute.put(name, value);
+    }
+
+    public Object removeAttribute(String name) {
+        return transientAttribute.remove(name);
     }
 
     public Object getLocalVariable(String name) {

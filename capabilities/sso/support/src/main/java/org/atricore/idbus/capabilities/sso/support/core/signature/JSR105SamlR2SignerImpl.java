@@ -23,8 +23,10 @@ package org.atricore.idbus.capabilities.sso.support.core.signature;
 
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.metadata.KeyDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.KeyTypes;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.*;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.SAMLR11Constants;
@@ -38,6 +40,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import sun.security.x509.KeyUsageExtension;
 
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlType;
@@ -58,11 +61,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.xpath.*;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.*;
+import java.security.acl.NotOwnerException;
 import java.security.cert.Certificate;
 import java.security.cert.*;
 import java.util.*;
@@ -89,6 +92,10 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
      */
     public static final String DEFAULT_JSR105_PROVIDER_FQCN = "org.jcp.xml.dsig.internal.dom.XMLDSigRI";
 
+    private static final String SHA1_WITH_DSA = "SHA1withDSA";
+
+    private static final String SHA1_WITH_RSA = "SHA1withRSA";
+
     private static final Log logger = LogFactory.getLog(JSR105SamlR2SignerImpl.class);
 
     /**
@@ -97,6 +104,9 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
     private Provider provider;
 
     private SSOKeyResolver keyResolver;
+
+    // Validate certificate expiration, CA, etc.
+    private boolean validateCertificate = false;
 
     public Provider getProvider() {
         return provider;
@@ -108,6 +118,14 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     public SSOKeyResolver getKeyResolver() {
         return keyResolver;
+    }
+
+    public boolean isValidateCertificate() {
+        return validateCertificate;
+    }
+
+    public void setValidateCertificate(boolean validateCertificate) {
+        this.validateCertificate = validateCertificate;
     }
 
     /**
@@ -166,7 +184,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Assertion from DOM Tree [" + assertion.getID() + "]");
 
-            return (AssertionType) XmlUtils.unmarshal(doc, new String[] {SAMLR2Constants.SAML_ASSERTION_PKG});
+            return (AssertionType) XmlUtils.unmarshal(doc, new String[]{SAMLR2Constants.SAML_ASSERTION_PKG});
 
         } catch (JAXBException e) {
             throw new SamlR2SignatureException("JAXB Error signing SAMLR2 Assertion " + assertion.getID(), e);
@@ -186,7 +204,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
 
         try {
-            Document doc  = XmlUtils.marshalSamlR2AssertionAsDom(assertion);
+            Document doc = XmlUtils.marshalSamlR2AssertionAsDom(assertion);
             validate(md, doc);
         } catch (Exception e) {
             throw new SamlR2SignatureValidationException(e);
@@ -248,6 +266,68 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
     }
 
+    public String signQueryString(String queryString) throws SamlR2SignatureException {
+
+        try {
+
+            if (queryString == null || queryString.length() == 0) {
+                logger.error("SAML 2.0 Qery string null");
+                throw new SamlR2SignatureException("SAML 2.0 Qery string null");
+            }
+
+            if (logger.isDebugEnabled())
+                logger.debug("Received SAML 2.0 Query string [" + queryString + "] for signing");
+
+            PrivateKey privateKey = (PrivateKey) this.getKeyResolver().getPrivateKey();
+
+            String keyAlgorithm = privateKey.getAlgorithm();
+            Signature signature = null;
+            String algURI = null;
+            if (keyAlgorithm.equals("RSA")) {
+                signature = Signature.getInstance(SHA1_WITH_RSA);
+                algURI = SignatureMethod.RSA_SHA1;
+            } else if (keyAlgorithm.equals("DSA")) {
+                signature = Signature.getInstance(SHA1_WITH_DSA);
+                algURI = SignatureMethod.DSA_SHA1;
+            } else {
+                throw new SamlR2SignatureException("SAML 2.0 Signature does not support provided key's algorithm " + keyAlgorithm);
+            }
+
+            if (queryString.charAt(queryString.length() - 1) != '&') {
+                queryString = queryString + "&";
+            }
+
+            queryString += "SigAlg=" +
+                    URLEncoder.encode(algURI, "UTF-8");
+
+            if (logger.isTraceEnabled())
+                logger.trace("Signing SAML 2.0 Query string [" + queryString + "]");
+
+
+            signature.initSign(privateKey);
+            signature.update(queryString.getBytes());
+            byte[] sigBytes = null;
+            sigBytes = signature.sign();
+            if (sigBytes == null || sigBytes.length == 0) {
+                logger.error("Cannot generate signed query string, Signature created 'null' value.");
+                throw new SamlR2SignatureException("Cannot generate signed query string, Signature created 'null' value.");
+            }
+
+            Base64 encoder = new Base64();
+            String encodedSig = new String(encoder.encode(sigBytes), "UTF-8");
+            queryString +=
+                    "&Signature=" +
+                            URLEncoder.encode(encodedSig, "UTF-8");
+
+            if (logger.isTraceEnabled())
+                logger.trace("Signed SAML 2.0 Query string [" + queryString + "]");
+
+            return queryString;
+        } catch (Exception e) {
+            throw new SamlR2SignatureException("Error generating SAML 2.0 Query string signature " + e.getMessage(), e);
+        }
+    }
+
     public void validate(RoleDescriptorType md, StatusResponseType response, String element) throws SamlR2SignatureException {
 
         try {
@@ -277,6 +357,144 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         } catch (Exception e) {
             throw new SamlR2SignatureException("Error verifying signature for SAMLR2 authn request " + request.getID(), e);
         }
+    }
+
+    public void validateQueryString(RoleDescriptorType md, String queryString) throws SamlR2SignatureException, SamlR2SignatureValidationException {
+        try {
+
+            X509Certificate cert = getX509Certificate(md);
+
+            if(cert == null) {
+                logger.error("No Certificate found in Metadata " + md.getID());
+                throw new SamlR2SignatureException("No Certificate found in Metadata " + md.getID());
+            }
+
+            if (queryString == null || queryString.length() == 0) {
+                logger.error("SAML 2.0 Qery string null");
+                throw new SamlR2SignatureException("SAML 2.0 Qery string null");
+            }
+
+            if (logger.isTraceEnabled())
+                logger.trace("SAML 2.0 Query string to validate ["+queryString+"]");
+
+            StringTokenizer st = new StringTokenizer(queryString, "&");
+            String samlParam;
+
+            String samlRequest = null;
+            String samlResponse = null;
+            String relayState = null;
+            String sigAlg = null;
+            String encSig = null;
+
+            while (st.hasMoreTokens()) {
+                samlParam = st.nextToken();
+                if (samlParam.startsWith("SAMLRequest")) {
+                    samlRequest = samlParam;
+                } else if (samlParam.startsWith("SAMLResponse")) {
+                    samlResponse = samlParam;
+                } else if (samlParam.startsWith("RelayState")) {
+                    relayState = samlParam;
+                } else if (samlParam.startsWith("SigAlg")) {
+                    sigAlg = samlParam;
+                } else if (samlParam.startsWith("Signature")) {
+                    encSig = samlParam;
+                } else {
+                    // Ignore this token ...
+                    logger.warn("Non-SAML 2.0 parameter ignored " + samlParam);
+                }
+            }
+            if ((samlRequest == null || samlRequest.equals("")) &&
+                (samlResponse == null || samlResponse.equals("")))
+                throw new SamlR2SignatureValidationException("SAML 2.0 Query string MUST contain either 'SAMLRequest' or 'SAMLResponse' parameter");
+
+            if (sigAlg == null || sigAlg.equals(""))
+                throw new SamlR2SignatureValidationException("SAML 2.0 Query string MUST contain a 'SigAlg' parameter");
+
+            if (encSig == null || encSig.equals("")) {
+                throw new SamlR2SignatureValidationException("SAML 2.0 Query string MUST contain a 'Signature' parameter");
+            }
+
+            // Re-order paramters just in case they were mixed-up while getting here.
+            String newQueryString = null;
+            if (samlRequest != null) {
+                newQueryString = samlRequest;
+            } else {
+                newQueryString = samlResponse;
+            }
+            if (relayState != null) {
+                newQueryString += "&" + relayState;
+            }
+            newQueryString += "&" + sigAlg;
+            if (logger.isDebugEnabled())
+                logger.debug("SAML 2.0 Query string signature validation for (re-arranged) [" + newQueryString + "]");
+
+            int sigAlgValueIndex = sigAlg.indexOf('=');
+
+            // Get Signature Algorithm
+            String sigAlgValue =
+                    sigAlg.substring(sigAlgValueIndex + 1);
+            if (sigAlgValue == null || sigAlgValue.equals("")) {
+                throw new SamlR2SignatureValidationException("SAML 2.0 Query string MUST contain a 'SigAlg' parameter value");
+            }
+            sigAlgValue = URLDecoder.decode(sigAlgValue, "UTF-8");
+            if (logger.isTraceEnabled())
+                logger.trace("SigAlg=" + sigAlgValue);
+
+            // Get Signature value
+            int encSigValueIndex = encSig.indexOf('=');
+            String signatureEnc = encSig.substring(encSigValueIndex + 1);
+            if (signatureEnc == null || signatureEnc.equals("")) {
+                throw new SamlR2SignatureValidationException("SAML 2.0 Query string MUST contain a 'Signature' parameter value");
+            }
+            signatureEnc = URLDecoder.decode(signatureEnc, "UTF-8");
+            if (logger.isTraceEnabled())
+                logger.trace("Signature=" + signatureEnc);
+
+            // base-64 decode the signature value
+            byte[] signatureBin = null;
+            Base64 decoder = new Base64();
+            signatureBin = decoder.decode(signatureEnc.getBytes());
+
+            // get Signature instance based on algorithm
+            Signature signature = null;
+            if (sigAlgValue.equals(SignatureMethod.DSA_SHA1)) {
+                signature = Signature.getInstance(SHA1_WITH_DSA);
+            } else if (sigAlgValue.equals(SignatureMethod.RSA_SHA1)) {
+                signature = Signature.getInstance(SHA1_WITH_RSA);
+            } else {
+                throw new SamlR2SignatureException("SAML 2.0 Siganture does not support algorithm " + sigAlgValue);
+            }
+
+            // now verify signature
+            signature.initVerify(cert);
+            signature.update(newQueryString.getBytes());
+            if (!signature.verify(signatureBin)) {
+                // TODO : Get information about the error ?!
+                throw new SamlR2SignatureValidationException("Invalid digital signature");
+            }
+
+            if (!validateCertificate(md, null)) {
+                throw new SamlR2SignatureValidationException("Certificate is not valid, check logs for details");
+            }
+
+        } catch (Exception e) {
+            logger.error("Cannot verify digital SAML 2.0 Query string signature " + e.getMessage(), e);
+            throw new SamlR2SignatureException("Cannot verify digital SAML 2.0 Query string signature " + e.getMessage(), e);
+        }
+    }
+
+    public void validateQueryString(RoleDescriptorType md, String msg, String relayState, String sigAlg, String signature, boolean isResponse) throws SamlR2SignatureException, SamlR2SignatureValidationException {
+        try {
+            String queryStr = ( isResponse ? "SAMLResponse=" : "SAMLRequest=" ) +
+                URLEncoder.encode(msg, "UTF-8") + "&" +
+                (relayState != null && !"".equals(relayState) ? "RelayState=" + relayState + "&" : "") +
+                "SigAlg="  + URLEncoder.encode(sigAlg, "UTF-8") + "&" +
+                "Signature=" + URLEncoder.encode(signature, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Cannot verify digital SAML 2.0 Query string signature " + e.getMessage(), e);
+            throw new SamlR2SignatureException("Cannot verify digital SAML 2.0 Query string signature " + e.getMessage(), e);
+        }
+
     }
 
     public void validate(RoleDescriptorType md, LogoutRequestType request) throws SamlR2SignatureException, SamlR2SignatureValidationException {
@@ -405,7 +623,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     // Primitives
 
-    public void validate(RoleDescriptorType md, String domStr) throws SamlR2SignatureException {
+    public void validateDom(RoleDescriptorType md, String domStr) throws SamlR2SignatureException {
         try {
             javax.xml.parsers.DocumentBuilderFactory dbf =
                     javax.xml.parsers.DocumentBuilderFactory.newInstance();
@@ -563,14 +781,15 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
     }
 
-    protected boolean validateCertificate(RoleDescriptorType md, Key publicKey) {
-
+    protected byte[] getBinCertificate(RoleDescriptorType md) {
         byte[] x509CertificateBin = null;
-
 
         if (md.getKeyDescriptor() != null && md.getKeyDescriptor().size() > 0) {
 
             for (KeyDescriptorType keyMd : md.getKeyDescriptor()) {
+
+                if (!keyMd.getUse().equals(KeyTypes.SIGNING))
+                    continue;
 
                 if (keyMd.getKeyInfo() != null) {
 
@@ -620,30 +839,91 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Configured Certificate: " + Arrays.toString(publicKey.getEncoded()));
+            logger.trace("MD Sign Certificate: " + Arrays.toString(x509CertificateBin));
+        }
+
+        return x509CertificateBin;
+    }
+
+    protected X509Certificate getX509Certificate(RoleDescriptorType md) {
+
+        byte[] x509CertificateBin = getBinCertificate(md);
+        if (x509CertificateBin == null)
+            return null;
+
+        try {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            X509Certificate x509Cert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(x509CertificateBin));
+
+            return x509Cert;
+
+        } catch (CertificateException e) {
+            logger.error("Cannot get X509 Certificate " + e.getMessage(), e);
+
+        }
+
+        return null;
+
+    }
+
+    protected boolean validateCertificate(RoleDescriptorType md, Key publicKey) {
+
+        X509Certificate x509Cert = getX509Certificate(md);
+
+        if (x509Cert == null) {
+            logger.error("No X509 Signing certificate found in SAML 2.0 Metadata Role " + md.getID());
+            return false;
+        }
+
+        if (logger.isTraceEnabled()) {
+            byte[] x509CertificateBin  =getBinCertificate(md);
+            logger.trace("Configured Certificate: " + (publicKey != null ? Arrays.toString(publicKey.getEncoded()) : "<null>"));
             logger.trace("Used Certificate: " + Arrays.toString(x509CertificateBin));
         }
 
-        if (x509CertificateBin != null) {
+        PublicKey x509PublicKey = x509Cert.getPublicKey();
 
-            try {
-                CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                X509Certificate x509Cert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(x509CertificateBin));
+        byte[] x509PublicKeyEncoded = x509PublicKey.getEncoded();
 
-                PublicKey x509PublicKey = x509Cert.getPublicKey();
+        // Only compare with public key, if provided.
+        if (publicKey != null) {
+            byte[] publicKeyEncoded = publicKey.getEncoded();
 
-                byte[] x509PublicKeyEncoded = x509PublicKey.getEncoded();
-                byte[] publicKeyEncoded = publicKey.getEncoded();
-
-                return java.util.Arrays.equals(x509PublicKeyEncoded, publicKeyEncoded);
-
-            } catch (CertificateException e) {
-                logger.error(e.getMessage(), e);
+            // Validate that the used certificate is the one configured for the entity
+            if (!java.util.Arrays.equals(x509PublicKeyEncoded, publicKeyEncoded)) {
+                logger.error("Certificate used for signing is not the one configured in SAML 2.0 Metadata Role " + md.getID());
+                return false;
             }
-
         }
 
-        return false;
+        Date now = new Date();
+        if (x509Cert.getNotBefore() != null && x509Cert.getNotBefore().before(now)) {
+            if (validateCertificate) {
+                logger.error("Certificate should not be used before " + x509Cert.getNotBefore());
+                return false;
+            }
+            logger.warn("Certificate should not be used before " + x509Cert.getNotBefore());
+        }
+
+        if (x509Cert.getNotAfter() != null && x509Cert.getNotAfter().after(now)) {
+            if (validateCertificate) {
+                logger.error("X509 Certificate has expired " + x509Cert.getNotAfter());
+                return false;
+            }
+            logger.warn("X509 Certificate has expired " + x509Cert.getNotAfter());
+        }
+
+        Calendar aMonthFromNow = Calendar.getInstance();
+        aMonthFromNow.add(Calendar.DAY_OF_MONTH, 30);
+
+        // Just print-out that the certificate will expire soon.
+        if (x509Cert.getNotAfter().after(aMonthFromNow.getTime()))
+            logger.warn("X509 Certificate wil expired in less that 30 days for SAML 2.0 Metadata Role " + md.getID());
+
+
+        // TODO : Validate CRLs , etc !!!!
+
+        return true;
 
     }
 

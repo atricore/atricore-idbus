@@ -97,6 +97,10 @@ public class AssertionConsumerProducer extends SSOProducer {
         // Mediation state
         MediationState state = in.getMessage().getState();
 
+        // May be used later by HTTP-Redirect binding!
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+        state.setAttribute("SAMLR2Signer", mediator.getSigner());
+
         // Originally received Authn request from binding channel
         // When using IdP initiated SSO, this will be null!
         SPInitiatedAuthnRequestType ssoRequest =
@@ -128,7 +132,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         if (logger.isDebugEnabled())
             logger.debug("Previous AuthnRequest " + (authnRequest != null ? authnRequest.getID() : "<NONE>"));
 
-        validateResponse(authnRequest, response, in.getMessage().getRawContent());
+        validateResponse(authnRequest, response, in.getMessage().getRawContent(), state);
 
         // Response is valid, check received status!
         StatusCode status = StatusCode.asEnum(response.getStatus().getStatusCode().getValue());
@@ -659,7 +663,8 @@ public class AssertionConsumerProducer extends SSOProducer {
     // TODO : Reuse basic SAML request validations ....
     protected ResponseType validateResponse(AuthnRequestType request,
                                             ResponseType response,
-                                            String originalResponse)
+                                            String originalResponse,
+                                            MediationState state)
             throws SSOResponseException, SSOException {
 
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
@@ -739,6 +744,16 @@ public class AssertionConsumerProducer extends SSOProducer {
     	} else if(response.getSignature() != null &&
                 (!endpointDesc.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue()) &&
                  !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()))) {
+
+            // If message is signed, the destination is mandatory!
+            //saml2 binding, sections 3.4.5.2 & 3.5.5.2
+    		throw new SSOResponseException(response,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.NO_DESTINATION);
+
+    	} else if(endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()) &&
+                 state.getTransientVariable("Signature") != null) {
 
             // If message is signed, the destination is mandatory!
             //saml2 binding, sections 3.4.5.2 & 3.5.5.2
@@ -879,7 +894,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                 // It's better to validate the original message, when available.
                 if (originalResponse != null)
-                    signer.validate(idpMd, originalResponse);
+                    signer.validateDom(idpMd, originalResponse);
                 else
                     signer.validate(idpMd, response, "Response");
 
@@ -895,9 +910,28 @@ public class AssertionConsumerProducer extends SSOProducer {
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
             }
+
         } else {
             // HTTP-Redirect binding signature validation !
-
+            try {
+                signer.validateQueryString(idpMd,
+                        state.getTransientVariable("SAMLResponse"),
+                        state.getTransientVariable("RelayState"),
+                        state.getTransientVariable("SigAlg"),
+                        state.getTransientVariable("Signature"),
+                        true);
+            } catch (SamlR2SignatureValidationException e) {
+                throw new SSOResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            } catch (SamlR2SignatureException e) {
+                //other exceptions like JAXB, xml parser...
+                throw new SSOResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            }
         }
 
         // --------------------------------------------------------
@@ -950,10 +984,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
 				try {
 
-                    if (originalResponse != null)
-                        signer.validate(idpMd, originalResponse);
-                    else
-					    signer.validate(idpMd, assertion);
+                    signer.validate(idpMd, assertion);
 
 				} catch (SamlR2SignatureValidationException e) {
 					throw new SSOResponseException(response,
