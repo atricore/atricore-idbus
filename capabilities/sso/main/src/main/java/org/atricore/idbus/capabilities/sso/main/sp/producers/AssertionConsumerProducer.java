@@ -864,38 +864,40 @@ public class AssertionConsumerProducer extends SSOProducer {
     	}
     	
 		// XML Signature, saml2 core, section 5 (always validate response signatures
+        // HTTP-Redirect binding does not support embedded signatures
+        if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
 
-        if (response.getSignature() == null) {
-
-            // Redirect binding does not have signature elements!
-            if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
-
+            if (response.getSignature() == null) {
+                // Redirect binding does not have signature elements!
                 throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.INVALID_RESPONSE_SIGNATURE);
             }
-        }
 
-        try {
-            // It's better to validate the original message, when available.
+            try {
 
-            if (originalResponse != null)
-                signer.validate(idpMd, originalResponse);
-            else
-                signer.validate(idpMd, response, "Response");
+                // It's better to validate the original message, when available.
+                if (originalResponse != null)
+                    signer.validate(idpMd, originalResponse);
+                else
+                    signer.validate(idpMd, response, "Response");
 
-        } catch (SamlR2SignatureValidationException e) {
-            throw new SSOResponseException(response,
-                    StatusCode.TOP_REQUESTER,
-                    StatusCode.REQUEST_DENIED,
-                    StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-        } catch (SamlR2SignatureException e) {
-            //other exceptions like JAXB, xml parser...
-            throw new SSOResponseException(response,
-                    StatusCode.TOP_REQUESTER,
-                    StatusCode.REQUEST_DENIED,
-                    StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            } catch (SamlR2SignatureValidationException e) {
+                throw new SSOResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            } catch (SamlR2SignatureException e) {
+                //other exceptions like JAXB, xml parser...
+                throw new SSOResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            }
+        } else {
+            // HTTP-Redirect binding signature validation !
+
         }
 
         // --------------------------------------------------------
