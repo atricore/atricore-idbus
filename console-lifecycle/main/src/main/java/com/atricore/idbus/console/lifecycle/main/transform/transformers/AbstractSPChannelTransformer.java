@@ -601,7 +601,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             setPropertyValue(ssoSloLocal, "type", SSOMetadataConstants.IDPInitiatedSingleLogoutService_QNAME.toString());
             setPropertyValue(ssoSloLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
             setPropertyValue(ssoSloLocal, "location", "local://" + (spChannel != null ?
-                    spChannel.getLocation().getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SAMLR2/SLO/LOCAL");
+                    spChannel.getLocation().getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
             plansList = new ArrayList<Ref>();
             plan = new Ref();
             plan.setBean(sloToSamlSpSloPlan.getName());

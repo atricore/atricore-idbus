@@ -354,7 +354,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             setPropertyValue(sloLocal, "binding", SSOBinding.SAMLR2_LOCAL.getValue());
             // NOTE: location doesn't exist in simple-federation example
             setPropertyValue(sloLocal, "location", "local://" + (idpChannel != null ?
-                    idpChannel.getLocation().getUri().toUpperCase() : sp.getLocation().getUri().toUpperCase()) + "/SAMLR2/SLO/LOCAL");
+                    idpChannel.getLocation().getUri().toUpperCase() : sp.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
 
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
