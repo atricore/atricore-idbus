@@ -1,8 +1,9 @@
 package org.atricore.idbus.capabilities.sso.main.binding.plans.actions;
 
-import oasis.names.tc.saml._2_0.protocol.ArtifactResolveType;
-import oasis.names.tc.saml._2_0.protocol.ArtifactResponseType;
+import oasis.names.tc.saml._1_0.protocol.*;
+import oasis.names.tc.saml._2_0.protocol.*;
 import oasis.names.tc.saml._2_0.protocol.ObjectFactory;
+import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
@@ -26,6 +27,7 @@ public class AddContentToArtifactResponseAction  extends AbstractSSOAction {
         ArtifactResolveType request = (ArtifactResolveType) in.getContent();
 
         java.lang.Object content = executionContext.getContextInstance().getVariable(VAR_SAMLR2_ARTIFACT);
+        String samlType = (String) executionContext.getContextInstance().getVariable(VAR_SAMLR2_ARTIFACT_TYPE);
 
         if (content == null) {
             logger.error("No SAML 2.0 Content found for artifact response : " + response.getID());
@@ -35,18 +37,31 @@ public class AddContentToArtifactResponseAction  extends AbstractSSOAction {
         if (logger.isTraceEnabled())
             logger.trace("Adding SAML 2.0 Content " + content + " to ArtifactResponse " + response.getID());
 
-        ObjectFactory of = new ObjectFactory();
+        try {
 
-        String type = content.getClass().getSimpleName();
-        String ofMethodName = "create" + type.substring(0, type.length() - "Type".length());
-        Method m = of.getClass().getMethod(ofMethodName, content.getClass());
+            ObjectFactory of = new ObjectFactory();
+            JAXBElement samlXmlElement = null;
 
-        JAXBElement samlXmlElemen = (JAXBElement) m.invoke(of, content);
+            // SAML Type may be any request or response ... AuthnRequest
 
-        if (logger.isTraceEnabled())
-            logger.trace("Adding SAML 2.0 JAXB Content " + content + " to ArtifactResponse " + response.getID());
+            String type = content.getClass().getSimpleName();
+            //String ofMethodName = "create" + type.substring(0, type.length() - "Type".length());
+            String ofMethodName = "create" + samlType;
 
-        response.setAny(samlXmlElemen);
+            if (logger.isTraceEnabled())
+                logger.trace("Creating SAML 2.0 JAXB Content with ObjectFactory method : " + ofMethodName);
+
+            Method m = of.getClass().getMethod(ofMethodName, content.getClass());
+            samlXmlElement = (JAXBElement) m.invoke(of, content);
+
+            if (logger.isTraceEnabled())
+                logger.trace("Adding SAML 2.0 JAXB Content " + content + " to ArtifactResponse " + response.getID());
+
+            response.setAny(samlXmlElement);
+
+        } catch (Exception e) {
+            logger.error("Cannot create SAML 2.0 JAXB Content " + e.getMessage(), e);
+        }
 
 
     }

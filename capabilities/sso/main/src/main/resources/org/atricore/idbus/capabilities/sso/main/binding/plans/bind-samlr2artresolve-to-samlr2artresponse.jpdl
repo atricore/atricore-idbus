@@ -53,6 +53,7 @@
         <transition to="ensureContentConfidentiality"/>
 
         <variable name="urn:org:atricore:idbus:samlr2:support:SamlArtifact" access="read" />
+        <variable name="urn:org:atricore:idbus:samlr2:support:SamlArtifactType" access="read" />
     </process-fragment-state>
 
 

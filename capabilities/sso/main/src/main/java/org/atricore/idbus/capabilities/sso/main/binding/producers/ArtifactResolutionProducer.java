@@ -7,10 +7,7 @@ import oasis.names.tc.saml._2_0.protocol.ArtifactResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
-import org.atricore.idbus.capabilities.sso.main.binding.SamlArtifact;
-import org.atricore.idbus.capabilities.sso.main.binding.SamlArtifactEncoder;
-import org.atricore.idbus.capabilities.sso.main.binding.SamlR11HttpArtifactBinding;
-import org.atricore.idbus.capabilities.sso.main.binding.SamlR2HttpArtifactBinding;
+import org.atricore.idbus.capabilities.sso.main.binding.*;
 import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
@@ -88,7 +85,9 @@ public class ArtifactResolutionProducer extends SSOProducer {
 
         // Recover original SAML Msg
         MessageQueueManager aqm = getArtifactQueueManager();
-        Object samlMsg = aqm.pullMessage(new ArtifactImpl(samlArt.getMessageHandle()));
+        SamlMessageWrapper wrapper = (SamlMessageWrapper) aqm.pullMessage(new ArtifactImpl(samlArt.getMessageHandle()));
+        Object samlMsg = wrapper.getMsg();
+        String samlType = wrapper.getType();
 
         if (logger.isTraceEnabled())
             logger.trace("Resolved SAML Artifact " + samlArt + " to " + samlMsg);
@@ -100,7 +99,7 @@ public class ArtifactResolutionProducer extends SSOProducer {
                 endpoint.getLocation(),
                 endpoint.getResponseLocation());
 
-        ArtifactResponseType response = buildSaml2ArtifactResponse(exchange, ed, samlMsg);
+        ArtifactResponseType response = buildSaml2ArtifactResponse(exchange, ed, samlMsg, samlType);
 
         // --------------------------------------------------------------------
         // Send Response to requester (this is SOAP or LOCAL)
@@ -216,7 +215,8 @@ public class ArtifactResolutionProducer extends SSOProducer {
     protected ArtifactResponseType buildSaml2ArtifactResponse(
             CamelMediationExchange exchange,
             EndpointDescriptor ed,
-            java.lang.Object samlMsg) throws IdentityPlanningException, SSOException {
+            java.lang.Object samlMsg,
+            String samlType) throws IdentityPlanningException, SSOException {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
@@ -229,6 +229,7 @@ public class ArtifactResolutionProducer extends SSOProducer {
         idPlanExchange.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, ed);
         idPlanExchange.setProperty(VAR_COT_MEMBER, fChannel.getMember());
         idPlanExchange.setProperty(VAR_SAMLR2_ARTIFACT, samlMsg);
+        idPlanExchange.setProperty(VAR_SAMLR2_ARTIFACT_TYPE, samlType);
 
         // Get SPInitiated authn request, if any!
         ArtifactResolveType request =

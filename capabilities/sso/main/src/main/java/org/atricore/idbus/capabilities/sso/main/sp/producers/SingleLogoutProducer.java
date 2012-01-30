@@ -542,7 +542,7 @@ public class SingleLogoutProducer extends SSOProducer {
             if (originalResponse != null)
                 signer.validate(idpMd, originalResponse);
             else
-                signer.validate(idpMd, response);
+                signer.validate(idpMd, response, "LogoutResponse");
 
         } catch (SamlR2SignatureValidationException e) {
             throw new SSOResponseException(response,

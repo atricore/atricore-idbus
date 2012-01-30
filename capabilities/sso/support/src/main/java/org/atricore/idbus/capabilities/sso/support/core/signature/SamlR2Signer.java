@@ -64,7 +64,7 @@ public interface SamlR2Signer {
      * @return the signed response
      * @throws SamlR2SignatureException if an error occurs when signing.
      */
-    StatusResponseType sign(StatusResponseType response, String element) throws SamlR2SignatureException;
+    StatusResponseType nsign(StatusResponseType response, String element) throws SamlR2SignatureException;
 
     /**
      * @param md       The signer SAML 2.0 Metadata
@@ -72,7 +72,7 @@ public interface SamlR2Signer {
      * @throws SamlR2SignatureValidationException
      *          if the assertion signature is invalid
      */
-    void validate(RoleDescriptorType md, StatusResponseType response) throws SamlR2SignatureException, SamlR2SignatureValidationException;
+    void validate(RoleDescriptorType md, StatusResponseType response, String element) throws SamlR2SignatureException, SamlR2SignatureValidationException;
 
     /**
      * @param md       The signer SAML 2.0 Metadata

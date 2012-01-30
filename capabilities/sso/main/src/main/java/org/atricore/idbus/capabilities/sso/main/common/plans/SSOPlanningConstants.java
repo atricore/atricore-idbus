@@ -69,6 +69,8 @@ public interface SSOPlanningConstants {
 
     static final String VAR_SAMLR2_ARTIFACT =  "urn:org:atricore:idbus:samlr2:support:SamlArtifact";
 
+    static final String VAR_SAMLR2_ARTIFACT_TYPE =  "urn:org:atricore:idbus:samlr2:support:SamlArtifactType";
+
     static final String VAR_SAMLR2_ENCRYPTER = "urn:org:atricore:idbus:samlr2:support:Signer";
 
     static final String VAR_SAMLR2_EMITTER_CXT  = "urn:org:atricore:idbus:samlr2:support:EmitterContext";

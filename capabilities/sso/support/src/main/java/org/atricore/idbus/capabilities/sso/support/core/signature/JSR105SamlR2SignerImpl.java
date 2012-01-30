@@ -248,14 +248,14 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
     }
 
-    public void validate(RoleDescriptorType md, StatusResponseType response) throws SamlR2SignatureException {
+    public void validate(RoleDescriptorType md, StatusResponseType response, String element) throws SamlR2SignatureException {
 
         try {
             // Marshall the Assertion object as a DOM tree:
             if (logger.isDebugEnabled())
                 logger.debug("Marshalling SAMLR2 Status Response to DOM Tree [" + response.getID() + "]");
 
-            Document doc = XmlUtils.marshalSamlR2ResponseAsDom(response);
+            Document doc = XmlUtils.marshalSamlR2ResponseAsDom(response, element);
 
             validate(md, doc);
 

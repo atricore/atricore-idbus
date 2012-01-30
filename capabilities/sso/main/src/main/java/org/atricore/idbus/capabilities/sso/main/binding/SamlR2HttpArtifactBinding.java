@@ -177,7 +177,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             String msgName = null;
             String destAlias = null;
             java.lang.Object msgValue = out.getContent();
-            //String element = out.getContentType();
+            String element = out.getContentType();
             boolean isResponse = false;
             String relayState = out.getRelayState();
 
@@ -207,7 +207,9 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             }
 
             MessageQueueManager aqm = getArtifactQueueManager();
-            Artifact artifact = aqm.pushMessage(msgValue);
+            // TODO : Wrapp SAML Message, including type
+            SamlMessageWrapper wrapper = new SamlMessageWrapper(element, msgValue);
+            Artifact artifact = aqm.pushMessage(wrapper);
 
             CircleOfTrustMemberDescriptor cotMember = getCotMember(destAlias);
 
