@@ -63,6 +63,7 @@
     <s:import resource="plans/spsso-assertidwithsimplauthreq-to-samlr2authnreq-plan.xml"/>
     <s:import resource="plans/spsso-samlr2sloreq-to-samlr2response-plan.xml"/>
     <s:import resource="plans/spsso-sessionheartbeatreq-to-samlr2authnreq-plan.xml"/>
+    <s:import resource="plans/spsso-samlr2authnresp-to-ssospauthnresp-plan.xml"/>
 
     <!-- IDP -->
     <s:import resource="plans/idpsso-samlr2authnreq-to-samlr2response-plan.xml" />

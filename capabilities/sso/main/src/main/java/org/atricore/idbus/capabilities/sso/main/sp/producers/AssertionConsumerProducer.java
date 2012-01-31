@@ -36,7 +36,9 @@ import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2AuthnResponseToSPAuthnResponse;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.sso.support.SSOConstants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.SSOResponseException;
@@ -66,12 +68,14 @@ import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.atricore.idbus.kernel.planning.*;
 import org.w3._2001._04.xmlenc_.EncryptedType;
 import org.w3c.dom.Element;
 
 import javax.security.auth.Subject;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 import java.util.*;
 
 /**
@@ -157,18 +161,15 @@ public class AssertionConsumerProducer extends SSOProducer {
             }
 
             // Send a 'no-passive' status response
-            // TODO : Use plan samlr2resposne to spauthnresponse
-            SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
-            ssoResponse.setID(response.getID());
-            if (ssoRequest != null) {
-                ssoResponse.setInReplayTo(ssoRequest.getID());
-                if (ssoRequest.getReplyTo() != null) {
-                    destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
-                            "AssertionConsumerService",
-                            SSOBinding.SSO_ARTIFACT.getValue(),
-                            ssoRequest.getReplyTo(), null);
-                }
+            if (ssoRequest != null && ssoRequest.getReplyTo() != null) {
+                destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
+                        "AssertionConsumerService",
+                        SSOBinding.SSO_ARTIFACT.getValue(),
+                        ssoRequest.getReplyTo(), null);
+
             }
+
+            SPAuthnResponseType ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, null, destination);
 
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
             out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
@@ -304,19 +305,16 @@ public class AssertionConsumerProducer extends SSOProducer {
         // Send SPAuthnResponse
         // ---------------------------------------------------
 
-        // TODO : Use plan samlr2resposne to spauthnresponse
-        SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
-        ssoResponse.setID(response.getID());
-        if (ssoRequest != null) {
-            ssoResponse.setInReplayTo(ssoRequest.getID());
-            if (ssoRequest.getReplyTo() != null) {
-                destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
-                        "AssertionConsumerService",
-                        SSOBinding.SSO_ARTIFACT.getValue(),
-                        ssoRequest.getReplyTo(), null);
-            }
+        if (ssoRequest != null && ssoRequest.getReplyTo() != null) {
+            destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
+                    "AssertionConsumerService",
+                    SSOBinding.SSO_ARTIFACT.getValue(),
+                    ssoRequest.getReplyTo(), null);
         }
 
+        SPAuthnResponseType ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, spSecurityCtx, destination);
+
+        // TODO : Move to plan actions
         ssoResponse.setSubject(toSubjectType(spSecurityCtx.getSubject()));
         ssoResponse.setSessionIndex(spSecurityCtx.getSessionIndex());
 
@@ -325,6 +323,61 @@ public class AssertionConsumerProducer extends SSOProducer {
                 ssoResponse, "SPAuthnResposne", null, destination, in.getMessage().getState()));
 
         exchange.setOut(out);
+
+    }
+
+
+
+    /**
+     * Build an AuthnRequest for the target SP to which IDP's unsollicited response needs to be pushed to.
+     */
+    protected SPAuthnResponseType buildSPAuthnResponseType(CamelMediationExchange exchange,
+                                                           SPInitiatedAuthnRequestType ssoAuthRequest,
+                                                           SPSecurityContext spSecurityContext,
+                                                           EndpointDescriptor ed
+    ) throws IdentityPlanningException, SSOException {
+
+        IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2AuthnResponseToSPAuthnResponse.class);
+        IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
+
+        // Publish IdP Metadata
+        idPlanExchange.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, ed);
+        idPlanExchange.setProperty(VAR_COT_MEMBER, ((IdPChannel)channel).getMember());
+        idPlanExchange.setProperty(VAR_SSO_AUTHN_REQUEST, ssoAuthRequest);
+
+        if (spSecurityContext != null)
+            idPlanExchange.setTransientProperty(VAR_SECURITY_CONTEXT, spSecurityContext);
+
+        //idPlanExchange.setProperty(VAR_RESPONSE_CHANNEL, ((IdPChannel)channel));
+
+        // Get SPInitiated authn request, if any!
+        ResponseType authnResponse =
+                (ResponseType) ((CamelMediationMessage) exchange.getIn()).getMessage().getContent();
+
+        // Create in/out artifacts
+        IdentityArtifact in =
+                new IdentityArtifactImpl(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, "Response"), authnResponse);
+        idPlanExchange.setIn(in);
+
+        IdentityArtifact<SPAuthnResponseType> out =
+                new IdentityArtifactImpl<SPAuthnResponseType>(new QName(SSOConstants.SSO_PROTOCOL_NS, "AuthnResponse"),
+                        new SPAuthnResponseType());
+        idPlanExchange.setOut(out);
+
+        // Prepare execution
+        identityPlan.prepare(idPlanExchange);
+
+        // Perform execution
+        identityPlan.perform(idPlanExchange);
+
+        if (!idPlanExchange.getStatus().equals(IdentityPlanExecutionStatus.SUCCESS)) {
+            throw new SSOException("Identity plan returned : " + idPlanExchange.getStatus());
+        }
+
+        if (idPlanExchange.getOut() == null)
+            throw new SSOException("Plan Exchange OUT must not be null!");
+
+        return (SPAuthnResponseType) idPlanExchange.getOut().getContent();
 
     }
 
