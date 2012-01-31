@@ -79,6 +79,10 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
     }
 
     public FederationChannel getChannel() {
+        // We need to support this ..
+        if (defaultFederationService == null)
+            return null;
+
         return defaultFederationService.getChannel();
     }
 
@@ -92,6 +96,9 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
     }
 
     public Set<FederationChannel> getChannels() {
+        if (defaultFederationService == null) {
+            return null;
+        }
         return this.defaultFederationService.getOverrideChannels();
     }
 
