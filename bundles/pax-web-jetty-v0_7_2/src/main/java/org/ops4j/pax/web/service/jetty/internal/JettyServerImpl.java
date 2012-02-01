@@ -78,8 +78,8 @@ private static final Log LOG = LogFactory.getLog( JettyServerImpl.class );
             )
         );
 
-        // Override connector buffer size (TODO : Make this configurable, using over 4096 bytes may introduce browser issues)
-        connector.setHeaderBufferSize(8192);
+        // Override connector buffer size (TODO : Make this configurable)
+        connector.setHeaderBufferSize(5120);
 
         m_server.addConnector( connector );
     }
