@@ -14,6 +14,7 @@ import org.atricore.idbus.capabilities.sso.main.SamlR2MetadataDefinitionIntrospe
 import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
 import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
+import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2AuthnResponseToSPAuthnResponse;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.federation.*;
@@ -274,6 +275,9 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
         Bean spAuthnToSamlPlan = newBean(spBeans, idpChannelName + "-idpunsolicitedresponse-to-subject-plan", SPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
         setPropertyRef(spAuthnToSamlPlan, "bpmsManager", "bpms-manager");
 
+        Bean samlAuthnRespToSPAuthnResp = newBean(spBeans, idpChannelName + "-samlr2authnresp-to-ssospauthnresp-plan", SamlR2AuthnResponseToSPAuthnResponse.class);
+        setPropertyRef(samlAuthnRespToSPAuthnResp, "bpmsManager", "bpms-manager");
+
         Bean samlArtResToSamlArtRespPlan = newBean(spBeans, idpChannelName + "-samlr2artresolve-to-samlr2artresponse-plan", SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan.class);
         setPropertyRef(samlArtResToSamlArtRespPlan, "bpmsManager", "bpms-manager");
 
@@ -376,6 +380,11 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 Ref plan = new Ref();
                 plan.setBean(spAuthnToSamlPlan.getName());
                 plansList.add(plan);
+
+                Ref plan1 = new Ref();
+                plan1.setBean(samlAuthnRespToSPAuthnResp.getName());
+                plansList.add(plan1);
+
                 setPropertyRefs(acHttpPost, "identityPlans", plansList);
                 endpoints.add(acHttpPost);
             }
@@ -390,6 +399,11 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 Ref plan = new Ref();
                 plan.setBean(spAuthnToSamlPlan.getName());
                 plansList.add(plan);
+
+                Ref plan1 = new Ref();
+                plan1.setBean(samlAuthnRespToSPAuthnResp.getName());
+                plansList.add(plan1);
+
                 setPropertyRefs(acHttpArtifact, "identityPlans", plansList);
                 endpoints.add(acHttpArtifact);
             }
@@ -404,6 +418,11 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 Ref plan = new Ref();
                 plan.setBean(spAuthnToSamlPlan.getName());
                 plansList.add(plan);
+
+                Ref plan1 = new Ref();
+                plan1.setBean(samlAuthnRespToSPAuthnResp.getName());
+                plansList.add(plan1);
+
                 setPropertyRefs(acHttpRedirect, "identityPlans", plansList);
                 endpoints.add(acHttpRedirect);
             }
