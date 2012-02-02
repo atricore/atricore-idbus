@@ -634,7 +634,7 @@
         </property>
         <property name="authenticators">
             <list>
-                <bean class="org.atricore.idbus.capabilities.sts.main.authenticators.PassthruSecurityTokenAuthenticator"/>
+                <bean class="org.atricore.idbus.capabilities.sts.main.authenticators.PassthroughSecurityTokenAuthenticator"/>
             </list>
         </property>
         <property name="artifactQueueManager">

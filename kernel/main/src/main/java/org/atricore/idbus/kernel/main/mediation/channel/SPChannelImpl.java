@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.kernel.main.mediation.channel;
 
+import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
@@ -47,7 +48,7 @@ public class SPChannelImpl extends AbstractFederationChannel implements SPChanne
 
     private boolean isProxyModeEnabled;
 
-    private BindingChannel proxy;
+    private Channel proxy;
 
     public SecurityTokenService getSecurityTokenService() {
         return securityTokenService;
@@ -81,11 +82,11 @@ public class SPChannelImpl extends AbstractFederationChannel implements SPChanne
         isProxyModeEnabled = proxyModeEnabled;
     }
 
-    public BindingChannel getProxy() {
+    public Channel getProxy() {
         return proxy;
     }
 
-    public void setProxy(BindingChannel proxy) {
+    public void setProxy(Channel proxy) {
         this.proxy = proxy;
     }
 }

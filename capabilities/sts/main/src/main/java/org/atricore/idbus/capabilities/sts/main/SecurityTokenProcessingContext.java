@@ -21,9 +21,9 @@
 
 package org.atricore.idbus.capabilities.sts.main;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import org.atricore.idbus.kernel.main.authn.SecurityToken;
+
+import java.util.*;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -32,6 +32,12 @@ import java.util.Map;
 public class SecurityTokenProcessingContext {
 
     private Map<String, Object> properties = new HashMap<String, Object>();
+
+    private Set<SecurityToken> emittedTokens = new HashSet<SecurityToken>();
+
+    public Set<SecurityToken> getEmittedTokens() {
+        return emittedTokens;
+    }
 
     public Object getProperty(String name) {
         return properties.get(name);

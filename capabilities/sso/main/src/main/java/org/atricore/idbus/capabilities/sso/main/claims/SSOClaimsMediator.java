@@ -35,7 +35,7 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 import java.util.Collection;
 
 /**
- * @org.apache.xbean.XBean element="claims-mediator"
+ *
  *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SSOClaimsMediator.java 1359 2009-07-19 16:57:57Z sgonzalez $
@@ -44,14 +44,14 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     private static final Log logger = LogFactory.getLog( SSOClaimsMediator.class );
 
+
     private String basicAuthnUILocation;
 
     private String twoFactorAuthnUILocation;
 
+    @Deprecated //TODO : EACH CAPABILITY SHOULD HAVE ITS OWN CLAIMS MEDIATOR !!!
     private String openIDUILocation;
-    /**
-     * @org.apache.xnean.Property alias="login-form-location"
-     */
+
     public String getBasicAuthnUILocation() {
         return basicAuthnUILocation;
     }

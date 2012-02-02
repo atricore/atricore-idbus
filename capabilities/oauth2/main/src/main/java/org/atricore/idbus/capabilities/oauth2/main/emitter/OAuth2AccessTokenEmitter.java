@@ -39,18 +39,17 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
     private Random randomGenerator = new Random();
 
     @Override
-    public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
-        // We can emit for any context with a valid subject when Token Type is SAMLR2!
+    public boolean isTargetedEmitter(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
                 WSTConstants.WST_OAUTH2_TOKEN_TYPE.equals(tokenType);
     }
 
     @Override
-    public SecurityToken emit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) throws SecurityTokenEmissionException {
+    public SecurityToken emit(SecurityTokenProcessingContext context,
+                              Object requestToken,
+                              String tokenType) throws SecurityTokenEmissionException {
 
         try {
-            OAuth2SecurityTokenEmissionContext oauth2EmissionCtx =
-                    (OAuth2SecurityTokenEmissionContext) context.getProperty(WSTConstants.RST_CTX);
 
             Subject subject = (Subject) context.getProperty(WSTConstants.SUBJECT_PROP);
 
@@ -73,11 +72,14 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             oauthToken.setTokenType("bearer");
             oauthToken.setAccessToken(tokenValue);
 
-            // Ten minutes, make configurable!
+            // Ten minutes, TODO : make configurable!
             oauthToken.setExpiresIn(1000L * 60L * 10L);
 
             // Create a security token using the OUT artifact content.
-            SecurityToken st = new SecurityTokenImpl(uuid, oauthToken);
+            SecurityToken st = new SecurityTokenImpl(uuid,
+                    WSTConstants.WST_OAUTH2_TOKEN_TYPE,
+                    oauthToken,
+                    tokenValue);
 
             logger.debug("Created new security token [" + uuid + "] with content " + (oauthToken.getClass().getSimpleName()));
 

@@ -97,6 +97,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                     logger.debug("Found RST Context artifact " + rstCtx);
 
                 processingContext.setProperty(RST_CTX, rstCtx);
+
             }
 
             // -----------------------------------------
@@ -158,7 +159,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     protected Subject authenticate(Object requestToken, String tokenType) throws SecurityTokenEmissionException {
 
-        // Authenticate the token!
+        // Authenticate the request token!
         SecurityTokenAuthenticator selectedAuthenticator = null;
         for (SecurityTokenAuthenticator authenticator : authenticators) {
 
@@ -182,44 +183,59 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     protected SecurityToken emit(SecurityTokenProcessingContext ctx, Object requestToken, String tokenType) {
 
-        SecurityTokenEmitter selectedEmitter = null;
+        SecurityToken securityToken = null;
+
         for (SecurityTokenEmitter emitter : emitters) {
 
             if(logger.isDebugEnabled())
                 logger.debug( "Testing emitter " + emitter.getId() );
 
-            if (emitter.canEmit(ctx, requestToken, tokenType)) {
 
-                selectedEmitter = emitter;
-                logger.debug("Selected Security Token Emitter for token type [" + tokenType + " is " +
-                        "[" + selectedEmitter.getId() + "]");
-                break;
+
+            try {
+
+                if (emitter.canEmit(ctx, requestToken, tokenType)) {
+
+                    logger.debug("Selected Security Token Emitter for token type [" + tokenType + " is " +
+                        "[" + emitter.getId() + "]");
+
+                    SecurityToken st = emitter.emit(ctx, requestToken, tokenType);
+
+                    if (st != null) {
+                        logger.debug("Emission successful for token [" + st.getId() + "] " +
+                                     " type [" + tokenType + "] using " +
+                                     "[" + emitter.getId() + "]");
+                    }
+
+                    if (emitter.isTargetedEmitter(ctx, requestToken, tokenType)) {
+
+                        logger.debug("Emission successful for token [" + st.getId() + "] " +
+                                     " type [" + tokenType + "] using targeted " +
+                                     "[" + emitter.getId() + "]");
+
+                        if (securityToken != null) {
+                            logger.warn("Security configured multiple requested emitters, using token " + st);
+                        }
+                        securityToken = st;
+                    }
+                    ctx.getEmittedTokens().add(st);
+
+                }
+
+            }   catch (SecurityTokenEmissionException e) {
+                logger.error("Fatal error generating security token of type [" + tokenType + "]", e);
+                throw new RuntimeException("Fatal error generating security token of type [" + tokenType + "]", e);
             }
 
+
+
         }
 
-        if (selectedEmitter == null) {
-            throw new RuntimeException("No emitter handling security token type [" + tokenType + "] "+
-                    requestToken.getClass().getSimpleName());
+        if (securityToken == null) {
+            throw new RuntimeException("No requested Emitter configured");
         }
 
-
-        SecurityToken securityToken;
-        try {
-
-            securityToken = selectedEmitter.emit(ctx, requestToken, tokenType);
-
-            if (securityToken != null) {
-                logger.debug("Emission successful for token [" + securityToken.getId() + "] " +
-                             " type [" + tokenType + "] using " +
-                             "[" + selectedEmitter.getId() + "]");
-                return securityToken;
-            }
-            throw new RuntimeException("Emitter [" + selectedEmitter.getId() + "] generated null security token");
-
-        } catch (SecurityTokenEmissionException e) {
-            throw new RuntimeException("Fatal error generating security token of type [" + tokenType + "]", e);
-        }
+        return securityToken;
 
     }
 

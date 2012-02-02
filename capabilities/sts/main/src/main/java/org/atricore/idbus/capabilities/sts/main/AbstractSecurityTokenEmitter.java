@@ -46,6 +46,8 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
 
     private IdentityPlanRegistry identityPlanRegistry;
 
+    private boolean emitWhenNotTargeted;
+
     private static final Log logger = LogFactory.getLog(AbstractSecurityTokenEmitter.class);
 
     public String getId() {
@@ -73,10 +75,22 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
         this.identityPlanRegistry = identityPlanRegistry;
     }
 
+    public boolean isEmitWhenNotTargeted() {
+        return emitWhenNotTargeted;
+    }
+
+    public void setEmitWhenNotTargeted(boolean emitWhenNotTargeted) {
+        this.emitWhenNotTargeted = emitWhenNotTargeted;
+    }
+
     /**
      * The default implementation always returns false.
      */
     public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
+        return emitWhenNotTargeted || isTargetedEmitter(context, requestToken, tokenType);
+    }
+
+    public boolean isTargetedEmitter(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         return false;
     }
 
@@ -85,7 +99,7 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
         try {
 
             // Create the exchange and let subclasses provide the artifacts ...
-            IdentityPlanExecutionExchange ex = createIdentityPlanExecutionExchange();
+            IdentityPlanExecutionExchange ex = createIdentityPlanExecutionExchange(context);
 
             // Validate that we have an IN Artifact
             IdentityArtifact in = createInArtifact(requestToken, tokenType);
@@ -155,7 +169,7 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
 
     protected abstract IdentityArtifact createOutArtifact(Object requestToken, String tokenType);
 
-    protected IdentityPlanExecutionExchange createIdentityPlanExecutionExchange() {
+    protected IdentityPlanExecutionExchange createIdentityPlanExecutionExchange(SecurityTokenProcessingContext context) {
         return new IdentityPlanExecutionExchangeImpl();
     }
 

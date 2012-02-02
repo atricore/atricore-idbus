@@ -136,6 +136,17 @@ public class AssertionConsumerProducer extends SSOProducer {
         if (logger.isDebugEnabled())
             logger.debug("Previous AuthnRequest " + (authnRequest != null ? authnRequest.getID() : "<NONE>"));
 
+        if (ssoRequest != null && ssoRequest.getReplyTo() != null) {
+            destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
+                    "AssertionConsumerService",
+                    SSOBinding.SSO_ARTIFACT.getValue(),
+                    ssoRequest.getReplyTo(), null);
+        }
+
+        // ------------------------------------------------------
+        // Handle Proxy Mode
+        // ------------------------------------------------------
+
         validateResponse(authnRequest, response, in.getMessage().getRawContent(), state);
 
         // Response is valid, check received status!
@@ -161,14 +172,6 @@ public class AssertionConsumerProducer extends SSOProducer {
             }
 
             // Send a 'no-passive' status response
-            if (ssoRequest != null && ssoRequest.getReplyTo() != null) {
-                destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
-                        "AssertionConsumerService",
-                        SSOBinding.SSO_ARTIFACT.getValue(),
-                        ssoRequest.getReplyTo(), null);
-
-            }
-
             SPAuthnResponseType ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, null, destination);
 
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
@@ -204,6 +207,10 @@ public class AssertionConsumerProducer extends SSOProducer {
         // Build IDP Subject from response
         // ------------------------------------------------------------------
         Subject idpSubject = buildSubjectFromResponse(response);
+
+        // When working as IDP-Proxy, we need to be able to alter the received Subject.
+
+        // TODO : Add additional information or modify IDP Subject ... specially useful for IDP-Proxy profile.
 
         // check if there is an existing account link for the assertion's subject
         AccountLink acctLink = null;
@@ -305,18 +312,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         // Send SPAuthnResponse
         // ---------------------------------------------------
 
-        if (ssoRequest != null && ssoRequest.getReplyTo() != null) {
-            destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
-                    "AssertionConsumerService",
-                    SSOBinding.SSO_ARTIFACT.getValue(),
-                    ssoRequest.getReplyTo(), null);
-        }
-
         SPAuthnResponseType ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, spSecurityCtx, destination);
-
-        // TODO : Move to plan actions
-        ssoResponse.setSubject(toSubjectType(spSecurityCtx.getSubject()));
-        ssoResponse.setSessionIndex(spSecurityCtx.getSessionIndex());
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(ssoResponse.getID(),

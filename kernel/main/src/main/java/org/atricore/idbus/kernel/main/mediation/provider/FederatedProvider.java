@@ -5,6 +5,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDes
 import org.atricore.idbus.kernel.main.mediation.Skinnable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -35,6 +36,13 @@ public interface FederatedProvider extends Provider, Skinnable {
      * @return
      */
     List<CircleOfTrustMemberDescriptor> getAllMembers();
+
+
+    /**
+     * Set of Federation services available in this provider.
+     * @return
+     */
+    Set<FederationService> getFederationServices();
 
 
 

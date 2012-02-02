@@ -89,6 +89,9 @@ public class SSOSPComponent extends DefaultComponent {
             case SPCredentialsCallbackService:
                 endpoint = new SPCredentialsCallbackEndpoint(uri, this, parameters);
                 break;
+            case SPInitiatedSingleSignOnServiceProxy:
+                endpoint = new SPInitiatedSingleSignOnServiceProxyEndpoint(uri, this, parameters);
+                break;
             default:
                 throw new IllegalArgumentException( "Unsupported SAMLR 2.0 endpoint " + remaining );
         }

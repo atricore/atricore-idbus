@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.kernel.main.mediation.channel;
 
+import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 
@@ -34,4 +35,9 @@ public interface IdPChannel extends FederationChannel {
     SSOSessionManager getSessionManager();
 
     SSOIdentityManager getIdentityManager();
+
+    boolean isProxyModeEnabled();
+
+    Channel getProxy();
+
 }

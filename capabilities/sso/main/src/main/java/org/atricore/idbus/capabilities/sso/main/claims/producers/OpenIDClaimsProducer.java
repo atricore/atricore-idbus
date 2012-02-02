@@ -27,6 +27,8 @@ import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.
 import java.io.IOException;
 
 /**
+ * TODO : MOVE TO OPENID CAPABILITY
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class OpenIDClaimsProducer extends SSOProducer

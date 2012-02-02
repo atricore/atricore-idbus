@@ -66,14 +66,9 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
 
     private SamlR2Encrypter encrypter;
 
-    /**
-     *
-     * @param requestToken the token received with the RequestSecurityToken request;
-     * @param tokenType the required token type.
-     *
-     * @return true, if the received token and requested token type are supported.
-     */
-    public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
+
+    @Override
+    public boolean isTargetedEmitter(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         // We can emit for any context with a valid subject when Token Type is SAMLR2!
         return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
                 WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType);
@@ -96,24 +91,31 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
     }
 
     @Override
-    protected IdentityPlanExecutionExchange createIdentityPlanExecutionExchange() {
+    protected IdentityPlanExecutionExchange createIdentityPlanExecutionExchange(SecurityTokenProcessingContext context) {
 
-        IdentityPlanExecutionExchange ex = super.createIdentityPlanExecutionExchange();
+        IdentityPlanExecutionExchange ex = super.createIdentityPlanExecutionExchange(context);
 
         // Signing and Encryption tools
         ex.setTransientProperty(VAR_SAMLR2_SIGNER, signer);
         ex.setTransientProperty(VAR_SAMLR2_ENCRYPTER, encrypter);
 
+        // Publish emission context
+        ex.setTransientProperty(WSTConstants.VAR_EMISSION_CTX, context);
+
         SamlR2SecurityTokenEmissionContext ctx = (SamlR2SecurityTokenEmissionContext) ex.getProperty(WSTConstants.RST_CTX);
         if (ctx != null) {
             logger.debug("Setting SamlR2 Context information");
             ex.setTransientProperty(VAR_SAMLR2_EMITTER_CXT, ctx);
+
             ex.setProperty(VAR_SAMLR2_AUTHN_REQUEST, ctx.getRequest());
             ex.setProperty(VAR_SUBJECT, ctx.getSubject());
+            ex.setProperty(WSTConstants.VAR_EMISSION_CTX, context);
             ex.setProperty(VAR_IDENTITY_PLAN_NAME, ctx.getIdentityPlanName());
             ex.setProperty(VAR_COT_MEMBER, ctx.getMember());
             ex.setProperty(VAR_RESPONSE_MODE, ctx.getAuthnState().getResponseMode());
             ex.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, ctx.getSpAcs());
+
+
         } else {
             logger.debug("No SamlR2 Emitter context found");
         }
@@ -144,6 +146,7 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
                 logger.debug("Propagating Assertion " + assertion.getID() + " to Security Token Emission Context");
 
         }
+
         return st;
    }
 

@@ -46,4 +46,6 @@ public interface Constants  {
 
     public static final String IMPERSONATE_NS = "urn:org:atricore:idbus:kernel:main:authn:impersonate";
 
+    public static final String PROXY_NS = "urn:org:atricore:idbus:kernel:main:authn:proxy";
+
 }

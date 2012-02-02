@@ -84,7 +84,7 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
 
             emitAccessTokenFromClaims(exchange, securityTokenEmissionCtx, atReq.getUsername(), atReq.getPassword());
 
-            // Call STS and wait for OAUTH AccessToken
+            // Call STS and wait for OAuth AccessToken
             OAuthAccessTokenType at = securityTokenEmissionCtx.getAccessToken();
 
             // send access token back to requester

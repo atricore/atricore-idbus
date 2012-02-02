@@ -13,13 +13,7 @@ import java.io.Serializable;
  */
 public class OAuth2SecurityTokenEmissionContext implements Serializable {
 
-    private OAuthAccessTokenType accessToken;
-
-    private CircleOfTrustMemberDescriptor member;
-
     private Subject subject;
-
-//    private AuthenticationState authnState;
 
     private String sessionIndex;
 
@@ -27,22 +21,13 @@ public class OAuth2SecurityTokenEmissionContext implements Serializable {
 
     private String identityPlanName;
 
+    private CircleOfTrustMemberDescriptor member;
+
+    // OAuth2 Specific information
+    private OAuthAccessTokenType accessToken;
+
     public OAuth2SecurityTokenEmissionContext() {
     }
-/*
-    public SamlR2SecurityTokenEmissionContext(AuthenticationState authnState,
-                                              CircleOfTrustMemberDescriptor member,
-                                              MetadataEntry roleMetadata) {
-
-        this.member = member;
-        this.roleMetadata = roleMetadata;
-        this.authnState = authnState;
-    }
-
-    public RequestAbstractType getRequest() {
-        return authnState.getAuthnRequest();
-    }
-    */
 
     public CircleOfTrustMemberDescriptor getMember() {
         return member;

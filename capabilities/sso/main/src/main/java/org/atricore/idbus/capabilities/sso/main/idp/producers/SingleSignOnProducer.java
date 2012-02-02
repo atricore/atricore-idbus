@@ -72,6 +72,8 @@ import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequestI
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
+import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
@@ -339,8 +341,8 @@ public class SingleSignOnProducer extends SSOProducer {
             // Handle proxy mode
             // ------------------------------------------------------
             if (spChannel.isProxyModeEnabled()) {
-                BindingChannel proxyChannel = spChannel.getProxy();
 
+                Channel proxyChannel = spChannel.getProxy();
 
                 EndpointDescriptor proxyEndpoint = resolveSPInitiatedSSOProxyEndpointDescriptor(exchange, proxyChannel);
 
@@ -842,7 +844,12 @@ public class SingleSignOnProducer extends SSOProducer {
 
 
         // ----------------------------------------------------
-        // Emit new assertion
+        // Emit other tokens, depending on configured services:
+        // ----------------------------------------------------
+        IdentityProvider idp = (IdentityProvider) ((SPChannel) channel).getProvider();
+
+        // ----------------------------------------------------
+        // Emit new SAML Assertion, only if authn succeeded
         // ----------------------------------------------------
 
         try {
@@ -850,74 +857,92 @@ public class SingleSignOnProducer extends SSOProducer {
             // Resolve SP endpoint
             EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
 
-            // -------------------------------------------------------
-            // Build STS Context
-            // -------------------------------------------------------
-            // The context will act as an alternative communication exchange between this producer (IDP) and the STS.
-            // It will transport back the Subject wich is not supported by the WST protocol
-            SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx = new SamlR2SecurityTokenEmissionContext();
-            // Send extra information to STS, using the emission context
+            List<SSOPolicyEnforcementStatement> stmts = null;
+            AssertionType assertion = null;
 
-            securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
-            securityTokenEmissionCtx.setMember(sp);
-            securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
-            // TODO : Resolve SP SAMLR2 Role springmetadata
+            if (proxyResponse.getSubject() == null) {
+                // The authentication failed!
 
-            securityTokenEmissionCtx.setRoleMetadata(null);
-            securityTokenEmissionCtx.setAuthnState(authnState);
-            securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
-            securityTokenEmissionCtx.setSpAcs(ed);
+            } else {
 
-            // in order to request a security token we need to map the claims sent by the proxy to
-            // STS claims
-            List<AbstractPrincipalType> proxyPrincipals = proxyResponse.getSubject().getAbstractPrincipal();
+                // -------------------------------------------------------
+                // Build STS Context
+                // -------------------------------------------------------
+                // The context will act as an alternative communication exchange between this producer (IDP) and the STS.
+                // It will transport back the Subject wich is not supported by the WST protocol
+                SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx = new SamlR2SecurityTokenEmissionContext();
+                // Send extra information to STS, using the emission context
 
-            ClaimSet claims = new ClaimSetImpl();
-            UsernameTokenType usernameToken = new UsernameTokenType();
-            for (Iterator<AbstractPrincipalType> iterator = proxyPrincipals.iterator(); iterator.hasNext(); ) {
-                AbstractPrincipalType next = iterator.next();
+                securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
+                securityTokenEmissionCtx.setMember(sp);
+                securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
+                // TODO : Resolve SP SAMLR2 Role springmetadata
 
-                if (next instanceof SubjectNameIDType) {
-                    SubjectNameIDType nameId = (SubjectNameIDType) next;
+                securityTokenEmissionCtx.setRoleMetadata(null);
+                securityTokenEmissionCtx.setAuthnState(authnState);
+                securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
+                securityTokenEmissionCtx.setSpAcs(ed);
 
-                    AttributedString usernameString = new AttributedString();
-                    usernameString.setValue(nameId.getName());
-                    usernameToken.setUsername(usernameString);
-                    usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), nameId.getName());
-                    usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+                // in order to request a security token we need to map the claims sent by the proxy to
+                // STS claims
+                List<AbstractPrincipalType> proxyPrincipals = proxyResponse.getSubject().getAbstractPrincipal();
 
-                    Claim claim = new ClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
-                    claims.addClaim(claim);
+                ClaimSet claims = new ClaimSetImpl();
+                UsernameTokenType usernameToken = new UsernameTokenType();
+                for (Iterator<AbstractPrincipalType> iterator = proxyPrincipals.iterator(); iterator.hasNext(); ) {
+                    AbstractPrincipalType next = iterator.next();
+
+                    if (next instanceof SubjectNameIDType) {
+
+                        // TODO : Perform some kind of identity mapping if necessary, email -> username, etc.
+                        SubjectNameIDType nameId = (SubjectNameIDType) next;
+
+                        AttributedString usernameString = new AttributedString();
+                        usernameString.setValue(nameId.getName());
+                        usernameToken.setUsername(usernameString);
+                        usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), nameId.getName());
+                        usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+                        usernameToken.getOtherAttributes().put(new QName(Constants.PROXY_NS), "TRUE");
+
+                        // TODO : We should honor the provided authn. context if any
+                        Claim claim = new ClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                        claims.addClaim(claim);
+                    }
+
                 }
 
+                SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
+                        securityTokenEmissionCtx,
+                        claims,
+                        sp);
+
+                assertion = cxt.getAssertion();
+                Subject authnSubject = cxt.getSubject();
+
+                logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
+                        (authnRequest != null ? authnRequest.getID() : "<NULL>"));
+
+
+                // Create a new SSO Session
+                IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion);
+
+                // Associate the SP with the new session, including relay state!
+                // We already validated authn request issuer, so we can use it.
+                secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
+
+                // TODO : If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
+                stmts = getPolicyEnforcementStatements(assertion);
+
+                // Set the SSO Session var
+                in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
+                in.getMessage().getState().getLocalState().addAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY, secCtx.getSessionIndex());
+
             }
-
-            SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
-                    securityTokenEmissionCtx,
-                    claims,
-                    sp);
-
-            AssertionType assertion = cxt.getAssertion();
-            Subject authnSubject = cxt.getSubject();
-
-            logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
-                    (authnRequest != null ? authnRequest.getID() : "<NULL>"));
-
-
-            // Create a new SSO Session
-            IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion);
-
-            // Associate the SP with the new session, including relay state!
-            // We already validated authn request issuer, so we can use it.
-            secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
 
             // Build a response for the SP
             ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
             oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response = null;
 
-            // Set the SSO Session var
-            in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
-            in.getMessage().getState().getLocalState().addAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY, secCtx.getSessionIndex());
 
             // --------------------------------------------------------------------
             // Send Authn Response to SP
@@ -932,9 +957,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
 
             clearAuthnState(exchange);
-
-            // TODO : If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
-            List<SSOPolicyEnforcementStatement> stmts = getPolicyEnforcementStatements(assertion);
 
             if (stmts != null && stmts.size() > 0) {
 
@@ -964,7 +986,6 @@ public class SingleSignOnProducer extends SSOProducer {
                 PolicyEnforcementRequest per = new PolicyEnforcementRequestImpl(uuidGenerator.generateId(), replyTo);
 
                 per.getStatements().addAll(stmts);
-
 
                 out.setMessage(new MediationMessageImpl(
                         per.getId(),
@@ -1287,6 +1308,9 @@ public class SingleSignOnProducer extends SSOProducer {
                                                                                   SamlR2SecurityTokenEmissionContext ctx,
                                                                                   AuthnRequestType authnRequest) throws Exception {
 
+        // TODO : We need to use the STS ..., and get ALL the required tokens again.
+
+        // TODO : Set in assertion AuthnCtxClass.PREVIOUS_SESSION_AUTHN_CTX
         AssertionType assertion = null;
 
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SecurityTokenToAuthnAssertionPlan.class);
@@ -1357,6 +1381,14 @@ public class SingleSignOnProducer extends SSOProducer {
                                                                          SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
                                                                          ClaimSet receivedClaims,
                                                                          CircleOfTrustMemberDescriptor sp) throws Exception {
+        return this.emitAssertionFromClaims(exchange, securityTokenEmissionCtx, receivedClaims, sp, (SPChannel) channel);
+    }
+
+    protected SamlR2SecurityTokenEmissionContext emitAssertionFromClaims(CamelMediationExchange exchange,
+                                                                             SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
+                                                                             ClaimSet receivedClaims,
+                                                                             CircleOfTrustMemberDescriptor sp, SPChannel spChannel) throws Exception {
+
 
         MessageQueueManager aqm = getArtifactQueueManager();
 
@@ -1368,7 +1400,8 @@ public class SingleSignOnProducer extends SSOProducer {
         // Queue this contenxt and send the artifact as RST context information
         Artifact emitterCtxArtifact = aqm.pushMessage(securityTokenEmissionCtx);
 
-        SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
+        SecurityTokenService sts = spChannel.getSecurityTokenService();
+
         // Send artifact id as RST context information, similar to relay state.
         RequestSecurityTokenType rst = buildRequestSecurityToken(receivedClaims, emitterCtxArtifact.getContent());
 
@@ -1381,7 +1414,7 @@ public class SingleSignOnProducer extends SSOProducer {
         if (logger.isDebugEnabled())
             logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
 
-        // Recover emission context, to retrive Subject information
+        // Recover emission context, to retrieve Subject information
         securityTokenEmissionCtx = (SamlR2SecurityTokenEmissionContext) aqm.pullMessage(ArtifactImpl.newInstance(rstrt.getContext()));
 
         /// Obtain assertion from STS Response
@@ -2095,7 +2128,7 @@ public class SingleSignOnProducer extends SSOProducer {
     }
 
     private EndpointDescriptor resolveSPInitiatedSSOProxyEndpointDescriptor(CamelMediationExchange exchange,
-                                                                            BindingChannel bc) throws SSOException {
+                                                                            Channel bc) throws SSOException {
 
         try {
 
@@ -2129,8 +2162,37 @@ public class SingleSignOnProducer extends SSOProducer {
 
         SPInitiatedAuthnRequestType target = new SPInitiatedAuthnRequestType();
         target.setID(uuidGenerator.generateId());
-        target.setPassive(source.isIsPassive());
+        target.setPassive(source.isIsPassive() != null ? source.isIsPassive() : false);
+        target.setForceAuthn(source.isForceAuthn() != null ? source.isForceAuthn() : false);
+
+        if (source.getIssuer() != null) {
+            NameIDType issuer = source.getIssuer();
+            // TODO : Other issuer values may be useful here
+            target.setIssuer(issuer.getValue());
+        }
+        // Set our proxy endpoint here!
+        EndpointDescriptor idpAcsProxy = resolveIdPProxyAcsEndpoint();
+        if (idpAcsProxy != null)
+            target.setReplyTo(idpAcsProxy.getResponseLocation() != null ? idpAcsProxy.getResponseLocation() : idpAcsProxy.getLocation());
+        else
+            logger.error("No ProxyAssertionConsumerService endpoint found for IDP channel " + channel.getName());
 
         return target;
+    }
+
+    protected EndpointDescriptor resolveIdPProxyAcsEndpoint() {
+        for (IdentityMediationEndpoint ided : channel.getEndpoints()) {
+            if (ided.getType().equals(SSOService.ProxyAssertionConsumerService.toString()) &&
+                ided.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+
+                return new EndpointDescriptorImpl(ided.getName(),
+                        ided.getType(),
+                        ided.getBinding(),
+                        channel.getLocation() + ided.getLocation(),
+                        ided.getResponseLocation() != null ? channel.getLocation() + ided.getResponseLocation() : null);
+            }
+
+        }
+        return null;
     }
 }

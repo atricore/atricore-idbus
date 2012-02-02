@@ -34,6 +34,8 @@ public interface SecurityTokenEmitter {
 
     boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType);
 
+    boolean isTargetedEmitter(SecurityTokenProcessingContext context, Object requestToken, String tokenType);
+
     SecurityToken emit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) throws SecurityTokenEmissionException;
 
 

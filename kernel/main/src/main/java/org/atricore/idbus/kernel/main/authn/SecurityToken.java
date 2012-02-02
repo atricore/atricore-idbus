@@ -36,4 +36,6 @@ public interface SecurityToken<T> extends Serializable {
 
     String getNameIdentifier();
 
+    String getSerializedContent();
+
 }

@@ -45,6 +45,11 @@ public interface WSTConstants {
     static final String RST_CTX ="urn:org:atricore:idbus:kernel:main:sts::RSTContext";
 
     /**
+     *
+     */
+    static final String VAR_EMISSION_CTX ="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext";
+
+    /**
      * Request Token namespace (internal) 
      */
     static final String REQUEST_TOKEN = "urn:org:atricore:idbus:kernel:main:sts:RequsetToken";

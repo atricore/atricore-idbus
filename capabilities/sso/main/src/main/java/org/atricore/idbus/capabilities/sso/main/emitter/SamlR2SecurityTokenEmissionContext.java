@@ -38,25 +38,28 @@ import java.io.Serializable;
  */
 public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
-    private CircleOfTrustMemberDescriptor member;
-
-    private MetadataEntry roleMetadata ;
-
     private Subject subject;
-
-    private AssertionType assertion;
-
-    private AuthenticationState authnState;
 
     private String sessionIndex;
 
     private SSOSession ssoSession;
 
-    private MetadataEntry issuerMetadata;
+    private CircleOfTrustMemberDescriptor member;
+
+    private EndpointDescriptor spAcs;
 
     private String identityPlanName;
 
-    private EndpointDescriptor spAcs;
+    // SAML 2.0 Specific information
+
+    private MetadataEntry roleMetadata ;
+
+    private AssertionType assertion;
+
+    private AuthenticationState authnState;
+
+    private MetadataEntry issuerMetadata;
+
 
     public SamlR2SecurityTokenEmissionContext() {
     }

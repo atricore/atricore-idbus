@@ -9,9 +9,10 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import java.util.Map;
 
 /**
+ * TODO : MOVE TO OPENID CAPABILITY
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-
 public class OpenIDClaimsEndpoint extends AbstractCamelEndpoint<CamelMediationExchange> {
     public OpenIDClaimsEndpoint(String uri, Component component, Map parameters) throws Exception {
         super(uri, component, parameters);

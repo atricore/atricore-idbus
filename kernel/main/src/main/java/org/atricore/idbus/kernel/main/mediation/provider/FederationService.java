@@ -14,48 +14,16 @@ import java.util.Set;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class FederationService implements Serializable {
+public interface FederationService extends Serializable {
 
-    private String name;
-    private String serviceType;
-    private FederationChannel channel;
-    private Set<FederationChannel> overrideChannels = new HashSet<FederationChannel>();
+    public String getName();
 
-    public FederationService() {
+    public String getServiceType();
 
-    }
+    public String getProfile();
 
-    public String getName() {
-        return name;
-    }
+    public FederationChannel getChannel();
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public FederationService(FederationChannel channel) {
-        this.channel = channel;
-    }
-
-    public String getServiceType() {
-        return serviceType;
-    }
-
-    public void setServiceType(String serviceType) {
-        this.serviceType = serviceType;
-    }
-
-    public FederationChannel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(FederationChannel channel) {
-        this.channel = channel;
-        ((AbstractFederationChannel)channel).setConfiguration(serviceType);
-    }
-
-    public Set<FederationChannel> getOverrideChannels()  {
-        return overrideChannels;
-    }
+    public Set<FederationChannel> getOverrideChannels();
 
 }

@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.sts.main.authenticators;
 import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenAuthenticator;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticator;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
+import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
@@ -13,12 +14,12 @@ import javax.xml.namespace.QName;
 
 /**
  * Relies an inbound security token without incurring in authentication, emitting a corresponding subject.
- * Passthru authentication is used for skipping the authentication step when it has been already carried out by
+ * Passthrough authentication is used for skipping the authentication step when it has been already carried out by
  * a third-party, such as a proxy.
  *
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
-public class PassthruSecurityTokenAuthenticator extends AbstractSecurityTokenAuthenticator {
+public class PassthroughSecurityTokenAuthenticator extends AbstractSecurityTokenAuthenticator {
 
     @Override
     public Subject authenticate(Object requestToken) throws SecurityTokenEmissionException {
@@ -34,14 +35,19 @@ public class PassthruSecurityTokenAuthenticator extends AbstractSecurityTokenAut
 
     public boolean canAuthenticate(Object requestToken) {
 
-        if (requestToken instanceof UsernameTokenType)
-            return true;
+        if (requestToken instanceof UsernameTokenType) {
+            UsernameTokenType usrToken = (UsernameTokenType) requestToken;
+            // Only authenticate when PROXY attribute is set.
+            if (usrToken.getOtherAttributes().get(new QName(Constants.PROXY_NS)) != null) {
+                return true;
+            }
+        }
 
         return false;
     }
 
     @Override
     protected Credential[] getCredentials(Object requestToken) throws SSOAuthenticationException {
-        throw new UnsupportedOperationException("Passthru authentication does provide credentials");
+        throw new UnsupportedOperationException("Passthrough authentication does NOT provide credentials");
     }
 }

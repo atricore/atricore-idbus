@@ -249,8 +249,6 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Capability : SAML R2 Capability Support</Bundle-Name>
-                        <Bundle-Description>Identity Bus SAML R2 Capability Support Component</Bundle-Description>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>org.atricore.idbus.capabilities.sso.support.*;version=${pom.version}
                         </Export-Package>

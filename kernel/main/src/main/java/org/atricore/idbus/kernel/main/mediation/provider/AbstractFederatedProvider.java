@@ -86,12 +86,17 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
         return defaultFederationService.getChannel();
     }
 
+    /**
+     * Use #setDefaultFederationService instead
+     * @param channel
+     */
+    @Deprecated
     public void setChannel(FederationChannel channel) {
 
         if (this.defaultFederationService == null) {
-            this.defaultFederationService = new FederationService(channel);
+            this.defaultFederationService = new FederationServiceImpl(channel);
         } else {
-            this.defaultFederationService.setChannel(channel);
+            ((FederationServiceImpl)this.defaultFederationService).setChannel(channel);
         }
     }
 
@@ -123,6 +128,7 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
     }
 
     public void setDefaultFederationService(FederationService defaultFederationService) {
+
         this.defaultFederationService = defaultFederationService;
     }
 

@@ -26,9 +26,11 @@ import oasis.names.tc.saml._2_0.assertion.AttributeStatementType;
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
 import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefinition;
+import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
@@ -55,6 +57,7 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSSOAssertionAct
         AssertionType assertion = (AssertionType) out.getContent();
 
         // Do we have a SSOUser ?
+        SecurityTokenProcessingContext stsCtx = (SecurityTokenProcessingContext) executionContext.getContextInstance().getTransientVariable(WSTConstants.VAR_EMISSION_CTX);
         Subject s = (Subject) executionContext.getContextInstance().getVariable(WSTConstants.SUBJECT_PROP);
         Set<SSOUser> ssoUsers = s.getPrincipals(SSOUser.class);
         if (ssoUsers == null || ssoUsers.size() != 1)
@@ -83,6 +86,30 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSSOAssertionAct
 
         // Groups
         Set<SSORole> ssoRoles = s.getPrincipals(SSORole.class);
+
+        // Additional tokens
+        List<AttributeType> attrTokens = new ArrayList<AttributeType>();
+        for (SecurityToken otherToken : stsCtx.getEmittedTokens()) {
+            if (otherToken.getSerializedContent() != null &&
+                otherToken.getNameIdentifier() != null) {
+                // This should be properly encoded !!
+                AttributeType attrToken = new AttributeType();
+
+                if (otherToken.getNameIdentifier() != null) {
+                    String frieandlyName = otherToken.getSerializedContent().substring(otherToken.getNameIdentifier().lastIndexOf(":"));
+                    attrToken.setFriendlyName(frieandlyName);
+                }
+
+                attrToken.setName(otherToken.getNameIdentifier());
+                attrToken.setNameFormat(AttributeNameFormat.URI.getValue());
+                attrToken.getAttributeValue().add(otherToken.getSerializedContent());
+
+                attrTokens.add(attrToken);
+            } else {
+                logger.debug("Ignoring token " + otherToken.getNameIdentifier());
+            }
+
+        }
 
         AttributeType attrRole = new AttributeType();
         // TODO : Make SAML Attribute profile configurable
@@ -116,6 +143,10 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSSOAssertionAct
         attributeStatement.getAttributeOrEncryptedAttribute().add(attrRole);
         attributeStatement.getAttributeOrEncryptedAttribute().add(attrPrincipal);
 
+        if (attrTokens.size() > 0)
+            for (AttributeType attrToken : attrTokens)
+                attributeStatement.getAttributeOrEncryptedAttribute().add(attrToken);
+
         if (attrProps.size() > 0) {
             for (AttributeType attrProp : attrProps)
                 attributeStatement.getAttributeOrEncryptedAttribute().add(attrProp);
@@ -127,8 +158,6 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSSOAssertionAct
 
         // Assembly all
         assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().add( attributeStatement );
-
-
 
         logger.debug("ending action");
     }

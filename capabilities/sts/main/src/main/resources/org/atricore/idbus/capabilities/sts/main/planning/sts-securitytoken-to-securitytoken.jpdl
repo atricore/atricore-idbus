@@ -43,6 +43,9 @@
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
 
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext"
+                  access="read"/>
+
 
     </process-fragment-state>
 
@@ -57,6 +60,8 @@
         <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
                   access="read"/>
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
+                  access="read"/>
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext"
                   access="read"/>
 
     </process-fragment-state>
@@ -73,7 +78,8 @@
                   access="read"/>
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
-
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext"
+                  access="read"/>
 
     </process-fragment-state>
 
@@ -89,7 +95,8 @@
                   access="read"/>
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
-
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext"
+                  access="read"/>
 
     </process-fragment-state>
 
@@ -105,7 +112,8 @@
                   access="read" />
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
-
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext"
+                  access="read"/>
 
     </process-fragment-state>
 
@@ -121,7 +129,8 @@
                   access="read" />
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
-
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext"
+                  access="read"/>
 
     </process-fragment-state>
 
@@ -137,7 +146,8 @@
                   access="read" />
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
-
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext"
+                  access="read"/>
 
     </process-fragment-state>
 

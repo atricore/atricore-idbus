@@ -28,8 +28,10 @@ package org.atricore.idbus.kernel.main.authn;
  */
 public class SecurityTokenImpl<T> implements SecurityToken<T> {
     private String id;
-    private T content;
     private String nameIdentifier;
+    private T content;
+    private String serializedContent;
+
 
     public SecurityTokenImpl(String id, T content) {
         this(id, null, content);
@@ -39,6 +41,13 @@ public class SecurityTokenImpl<T> implements SecurityToken<T> {
         this.id = id;
         this.nameIdentifier = nameIdentifier;
         this.content = content;
+    }
+
+    public SecurityTokenImpl(String id, String nameIdentifier, T content, String serializedContent) {
+        this.id = id;
+        this.nameIdentifier = nameIdentifier;
+        this.content = content;
+        this.serializedContent = serializedContent;
     }
 
     public String getId() {
@@ -53,4 +62,7 @@ public class SecurityTokenImpl<T> implements SecurityToken<T> {
         return nameIdentifier;
     }
 
+    public String getSerializedContent() {
+        return serializedContent;
+    }
 }

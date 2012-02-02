@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.kernel.main.mediation.channel;
 
+import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 
@@ -38,6 +39,10 @@ public class IdPChannelImpl extends AbstractFederationChannel implements IdPChan
 
     @Deprecated
     private transient SSOIdentityManager identityManager;
+
+    private boolean isProxyModeEnabled;
+
+    private Channel proxy;
 
     /**
      * @org.apache.xbean.Property alias="session-manager"
@@ -58,5 +63,21 @@ public class IdPChannelImpl extends AbstractFederationChannel implements IdPChan
     @Deprecated
     public void setIdentityManager(SSOIdentityManager identityManager) {
         this.identityManager = identityManager;
+    }
+
+    public boolean isProxyModeEnabled() {
+        return isProxyModeEnabled;
+    }
+
+    public void setProxyModeEnabled(boolean proxyModeEnabled) {
+        isProxyModeEnabled = proxyModeEnabled;
+    }
+
+    public Channel getProxy() {
+        return proxy;
+    }
+
+    public void setProxy(Channel proxy) {
+        this.proxy = proxy;
     }
 }
