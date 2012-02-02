@@ -48,13 +48,10 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimSetImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
 import javax.xml.namespace.QName;
 
@@ -249,6 +246,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
         // TODO : The way to resolve the IDP may vary from deployment to deployment, user intervention may be required
 
         String idpAlias = null;
+        String idpId = null;
         CircleOfTrustMemberDescriptor idp = null;
 
         // --------------------------------------------------------------
@@ -256,9 +254,13 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
         // --------------------------------------------------------------
         if (ssoAuthnReq.getRequestAttribute() != null) {
             for (int i = 0; i < ssoAuthnReq.getRequestAttribute().size(); i++) {
-                RequestAttributeType a = ssoAuthnReq.getRequestAttribute().get(i);
+                RequestAttributeType a =
+                        ssoAuthnReq.getRequestAttribute().get(i);
                 if (a.getName().equals("atricore_idp_alias"))
                     idpAlias = a.getValue();
+
+                if (a.getName().equals("atricore_idp_id"))
+                    idpId = a.getValue();
             }
         }
 
@@ -271,6 +273,19 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
                 throw new SSOException("No IDP found in circle of trust for received alias ["+idpAlias+"], verify your setup.");
             }
         }
+
+        if (idp == null && idpId != null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Using IdP ID from request attribute " + idpId);
+
+            idp = getCotManager().lookupMemberById(idpId);
+            if (idp == null) {
+                throw new SSOException("No IDP found in circle of trust for received id ["+idpId+"], verify your setup.");
+            }
+
+        }
+
+
         if (idp != null)
             return idp;
 

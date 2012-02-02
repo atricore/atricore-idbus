@@ -1,11 +1,20 @@
 package org.atricore.idbus.capabilities.oauth2.main.binding;
 
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public enum OAuth2Binding {
 
-    /** URI for IDBUS SOAP binding, this is NOT SAML Normtive */
+    SSO_ARTIFACT(SSOBinding.SSO_ARTIFACT.getValue(), SSOBinding.SSO_ARTIFACT.isFrontChannel()),
+
+    SSO_REDIRECT(SSOBinding.SS0_REDIRECT.getValue(), SSOBinding.SS0_REDIRECT.isFrontChannel()),
+
+    SSO_SOAP(SSOBinding.SSO_SOAP.getValue(), SSOBinding.SSO_SOAP.isFrontChannel()),
+
+    SSO_LOCAL(SSOBinding.SSO_LOCAL.getValue(), SSOBinding.SSO_LOCAL.isFrontChannel()),
+
     OAUTH2_SOAP("urn:org:atricore:idbus:OAUTH:2.0:bindings:SOAP", false),
 
     OAUTH2_RESTFUL("urn:org:atricore:idbus:OAUTH:2.0:bindings:HTTP-Restful", true);

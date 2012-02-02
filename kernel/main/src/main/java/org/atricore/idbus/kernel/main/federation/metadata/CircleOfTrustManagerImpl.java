@@ -304,7 +304,7 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
 
     }
 
-    public CircleOfTrustMemberDescriptor loolkupMemberById(String id) {
+    public CircleOfTrustMemberDescriptor lookupMemberById(String id) {
         for (FederatedProvider provider : cot.getProviders()) {
 
             for (CircleOfTrustMemberDescriptor member : provider.getAllMembers()) {

@@ -145,7 +145,7 @@ public class JossoMediator extends AbstractCamelMediator {
                                             "&serviceName={urn:org:josso:gateway:ws:1.2:wsdl}SSOIdentityProviderWS" +
                                             "&portName={urn:org:josso:gateway:ws:1.2:wsdl}SSOIdentityProviderSoap" +
                                             "&dataFormat=POJO").
-                                                    to("direct:" + ed.getName());
+                                            to("direct:" + ed.getName());
                                     break;
                                 case IdentityManager:
 
@@ -155,7 +155,7 @@ public class JossoMediator extends AbstractCamelMediator {
                                             "&serviceName={urn:org:josso:gateway:ws:1.2:wsdl}SSOIdentityManagerWS" +
                                             "&portName={urn:org:josso:gateway:ws:1.2:wsdl}SSOIdentityManagerSoap" +
                                             "&dataFormat=POJO").
-                                                    to("direct:" + ed.getName());
+                                            to("direct:" + ed.getName());
                                     break;
 
                                 case SessionManager:
@@ -166,7 +166,7 @@ public class JossoMediator extends AbstractCamelMediator {
                                             "&serviceName={urn:org:josso:gateway:ws:1.2:wsdl}SSOSessionManagerWS" +
                                             "&portName={urn:org:josso:gateway:ws:1.2:wsdl}SSOSessionManagerSoap" +
                                             "&dataFormat=POJO").
-                                                    to("direct:" + ed.getName());
+                                            to("direct:" + ed.getName());
                                     break;
                                 default:
                                     throw new IllegalArgumentException("Unknown SOAP endpoint type : " + ed.getType());
@@ -178,7 +178,7 @@ public class JossoMediator extends AbstractCamelMediator {
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + bindingChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                            to("josso-binding:" + ed.getType() +
+                                    to("josso-binding:" + ed.getType() +
                                             "?channelRef=" + bindingChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -200,7 +200,7 @@ public class JossoMediator extends AbstractCamelMediator {
                                                 "&serviceName={urn:org:josso:gateway:ws:1.2:wsdl}SSOIdentityProviderWS" +
                                                 "&portName={urn:org:josso:gateway:ws:1.2:wsdl}SSOIdentityProviderSoap" +
                                                 "&dataFormat=POJO").
-                                                        to("direct:" + ed.getName() + "-response");
+                                                to("direct:" + ed.getName() + "-response");
                                         break;
                                     case IdentityManager:
 
@@ -210,7 +210,7 @@ public class JossoMediator extends AbstractCamelMediator {
                                                 "&serviceName={urn:org:josso:gateway:ws:1.2:wsdl}SSOIdentityManagerWS" +
                                                 "&portName={urn:org:josso:gateway:ws:1.2:wsdl}SSOIdentityManagerSoap" +
                                                 "&dataFormat=POJO").
-                                                        to("direct:" + ed.getName() + "-response");
+                                                to("direct:" + ed.getName() + "-response");
                                         break;
 
                                     case SessionManager:
@@ -221,7 +221,7 @@ public class JossoMediator extends AbstractCamelMediator {
                                                 "&serviceName={urn:org:josso:gateway:ws:1.2:wsdl}SSOSessionManagerWS" +
                                                 "&portName={urn:org:josso:gateway:ws:1.2:wsdl}SSOSessionManagerSoap" +
                                                 "&dataFormat=POJO").
-                                                        to("direct:" + ed.getName() + "-response");
+                                                to("direct:" + ed.getName() + "-response");
                                         break;
                                     default:
                                         throw new IllegalArgumentException("Unknown SOAP endpoint type : " + ed.getType());
@@ -242,12 +242,12 @@ public class JossoMediator extends AbstractCamelMediator {
                             break;
                         case SSO_LOCAL:
 
-                             from("direct:" + ed.getLocation()).
-                                     to("direct:" + ed.getName() + "-local");
+                            from("direct:" + ed.getLocation()).
+                                    to("direct:" + ed.getName() + "-local");
 
                             from("idbus-bind:camel://direct:" + ed.getName() + "-local" +
-                                "?binding=" + ed.getBinding() +
-                                "&channelRef=" + bindingChannel.getName()).
+                                    "?binding=" + ed.getBinding() +
+                                    "&channelRef=" + bindingChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
                                     to("josso-binding:" + ed.getType() +
                                             "?channelRef=" + bindingChannel.getName() +
@@ -274,7 +274,7 @@ public class JossoMediator extends AbstractCamelMediator {
             String responseLocation;
             JossoBinding binding = null;
 
-            logger.debug("Creating Endpoint Descriptor without SAMLR2 Metadata for : " + endpoint.getName());
+            logger.debug("Creating Endpoint Descriptor without Metadata for : " + endpoint.getName());
 
             // ---------------------------------------------
             // Resolve Endpoint binding

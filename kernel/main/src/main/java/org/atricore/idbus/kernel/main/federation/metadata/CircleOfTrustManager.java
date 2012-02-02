@@ -91,7 +91,7 @@ public interface CircleOfTrustManager {
      */
     CircleOfTrustMemberDescriptor lookupMemberByAlias(String memberAlias);
 
-    CircleOfTrustMemberDescriptor loolkupMemberById(String hash);
+    CircleOfTrustMemberDescriptor lookupMemberById(String hash);
 
     /**
      * True if the COT member is running in the same identity appliance..

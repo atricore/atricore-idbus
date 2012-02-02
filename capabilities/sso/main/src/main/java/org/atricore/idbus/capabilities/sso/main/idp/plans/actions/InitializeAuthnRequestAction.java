@@ -324,7 +324,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
                 for (RequestAttributeType a : ssoAuthnReq.getRequestAttribute()) {
                     if (a.getName().equals("atricore_sp_id")) {
                         // get cot manager
-                        spDescr = cotManager.loolkupMemberById(a.getValue());
+                        spDescr = cotManager.lookupMemberById(a.getValue());
                         break;
                     }
 

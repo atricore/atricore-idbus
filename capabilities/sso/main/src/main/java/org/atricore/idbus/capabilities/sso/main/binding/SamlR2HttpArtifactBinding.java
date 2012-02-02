@@ -75,7 +75,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             // Access issuer Reolver endpoint to get value!
             SamlArtifact samlArtifact = getEncoder().decode(samlArtStr);
             String sourceId = samlArtifact.getSourceID(); // Here, we assume that our artifacts always have sourceId
-            CircleOfTrustMemberDescriptor resolverMemberDescr = this.getProvider().getCotManager().loolkupMemberById(sourceId);
+            CircleOfTrustMemberDescriptor resolverMemberDescr = this.getProvider().getCotManager().lookupMemberById(sourceId);
             if (resolverMemberDescr == null) {
                 /* Unknown SOURCE ID! */
                 logger.warn("Unkonw SAML Artifact SourceID ["+sourceId+"]");

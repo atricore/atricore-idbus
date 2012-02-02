@@ -1,0 +1,107 @@
+<samlp:Response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns7="urn:oasis:names:tc:SAML:2.0:idbus"
+                xmlns:ns6="urn:org:atricore:idbus:common:sso:1.0:protocol"
+                xmlns:ns5="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                xmlns:enc="http://www.w3.org/2001/04/xmlenc#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                Consent="urn:oasis:names:tc:SAML:2.0:consent:obtained"
+                Destination="http://localhost:8081/IDBUS/IDA3/SP1/SAML2/ACS/POST"
+                IssueInstant="2012-02-02T03:19:43.959Z" Version="2.0" InResponseTo="idE3F1CCF0D9C7E2CA"
+                ID="id86DD0AE33624E380">
+    <saml:Issuer Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">
+        http://localhost:8081/IDBUS/IDA3/PROXY1-IDP/SAML2/MD
+    </saml:Issuer>
+    <ds:Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+            <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+            <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+            <Reference URI="#id86DD0AE33624E380">
+                <Transforms>
+                    <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                    <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                </Transforms>
+                <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                <DigestValue>tWIoca9YuDe5HP0UdemVZdT79MI=</DigestValue>
+            </Reference>
+        </SignedInfo>
+        <SignatureValue>
+            Zj/ul1lk/tyry7tYJFPV6PFunV7qKjF259u/3pb8AU4CwRTK6y5BCj48O/bD3MSu7Dk/QmPY2cDUEwrxhTwikYCIqzjcamGl8Kle+93GnUSQDG6Sw69GX5WyF/smqwmvPgoNBtn6HDOkRolUcqoUcLUxN2AJlByeB0QujxRNo+8=
+        </SignatureValue>
+        <KeyInfo>
+            <X509Data>
+                <X509Certificate>
+                    MIIE0zCCA7ugAwIBAgIkAhwR/6TV13SCQflqv+LdVvJ05dmYfXF3XrNceJgPAgIEXQK9MA0GCSqGSIb3DQEBBQUAMDExGjAYBgNVBAsTEU9yZ2FuaXphdGlvbmFsIENBMRMwEQYDVQQKFApuYW0wMV90cmVlMB4XDTA5MDYyMDAxMjIxNFoXDTExMDYyMDAxMjIxNFowZTESMBAGA1UEAxMJam9zc28tc3AxMQ4wDAYDVQQLEwVqb3NzbzERMA8GA1UEChMIYXRyaWNvcmUxETAPBgNVBAcTCE5ldyBZb3JrMQswCQYDVQQIEwJOWTEMMAoGA1UEBhMDVVNBMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDEnUh9guWAxB0AI51pGtCRwCEJAFgFoKZlXwLGFPa7+1L+4jo5Oih5RZdY7bRYpv56Q5jlCiRPHbW3oYDlexd+CcfXMhKjuNayau6l/ZJD2ICfIRSStJggeGmbA8rZKUmDTim0m5HScHpWEQd/llUuyCrgx/fUDkwJ1CSkOGyOHQIDAQABo4ICITCCAh0wHQYDVR0OBBYEFFDsMByQWSPQy7fCCjA9eC+b23GTMB8GA1UdIwQYMBaAFEbWfhVp6z/iUKW6ipwG9X3imtMHMAsGA1UdDwQEAwIEsDCCAcwGC2CGSAGG+DcBCQQBBIIBuzCCAbcEAgEAAQH/Ex1Ob3ZlbGwgU2VjdXJpdHkgQXR0cmlidXRlKHRtKRZDaHR0cDovL2RldmVsb3Blci5ub3ZlbGwuY29tL3JlcG9zaXRvcnkvYXR0cmlidXRlcy9jZXJ0YXR0cnNfdjEwLmh0bTCCAUigGgEBADAIMAYCAQECAUYwCDAGAgEBAgEKAgFpoRoBAQAwCDAGAgEBAgEAMAgwBgIBAQIBAAIBAKIGAgEXAQH/o4IBBKBYAgECAgIA/wIBAAMNAIAAAAAAAAAAAAAAAAMJAIAAAAAAAAAAMBgwEAIBAAIIf/////////8BAQACBAbw30gwGDAQAgEAAgh//////////wEBAAIEBvDfSKFYAgECAgIA/wIBAAMNAEAAAAAAAAAAAAAAAAMJAEAAAAAAAAAAMBgwEAIBAAIIf/////////8BAQACBBH/pNUwGDAQAgEAAgh//////////wEBAAIEEf+k1aJOMEwCAQICAQACAgD/Aw0AgAAAAAAAAAAAAAAAAwkAgAAAAAAAAAAwEjAQAgEAAgh//////////wEBADASMBACAQACCH//////////AQEAMA0GCSqGSIb3DQEBBQUAA4IBAQCW4svATocORIjaBYVfFopCoXvjXm0GCaqjlpSISETSOZXKDmB18acdH8BE4hBR38avN4TrNORsd/aooo/D62PxbZUibxlq3fVVxBgi0WwW+1tkScGkOICRTIx9qZ4FZ0bHknPDVLGIzskeiHNR1eRW2ujrta1vWjrt+JNLOp/bh8txhCzltyb3nDpyKc5b6R3zbvvs9U/3fm5h83FmzanscjplFwZcrJxLH+BeYr+3I+T0USftV/+k1dMWKzU9YG44eJyWXgqFglgG5VomPiO/WlliMtSNj67xeflURWZiaSX8N4qNIM1030jBmGg3Vhfb9zltarBTjSx+XWcYAFmT
+                </X509Certificate>
+            </X509Data>
+        </KeyInfo>
+    </ds:Signature>
+    <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+    </samlp:Status>
+    <saml:Assertion IssueInstant="2012-02-02T03:19:43.581Z" ID="id2197D2DC100BED4C" Version="2.0">
+        <saml:Issuer Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">
+            http://localhost:8081/IDBUS/IDA3/PROXY1-IDP/SAML2/MD
+        </saml:Issuer>
+        <saml:Subject>
+            <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">user1</saml:NameID>
+            <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                <saml:SubjectConfirmationData InResponseTo="idE3F1CCF0D9C7E2CA"
+                                              Recipient="http://localhost:8081/IDBUS/IDA3/SP1/SAML2/ACS/POST"
+                                              NotOnOrAfter="2012-02-02T03:24:43.605Z"/>
+            </saml:SubjectConfirmation>
+        </saml:Subject>
+        <saml:Conditions NotOnOrAfter="2012-02-02T03:24:43.632Z" NotBefore="2012-02-02T03:14:43.632Z">
+            <saml:AudienceRestriction>
+                <saml:Audience>http://localhost:8081/IDBUS/IDA3/SP1/SAML2/MD</saml:Audience>
+            </saml:AudienceRestriction>
+        </saml:Conditions>
+        <saml:AuthnStatement SessionNotOnOrAfter="2012-02-02T09:19:43.665Z" SessionIndex="idE01DD689D3827EF0"
+                             AuthnInstant="2012-02-02T03:19:43.665Z">
+            <saml:AuthnContext>
+                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PreviousSession
+                </saml:AuthnContextClassRef>
+            </saml:AuthnContext>
+        </saml:AuthnStatement>
+        <saml:AttributeStatement>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                            Name="urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE:groups">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">role1
+                </saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                            Name="urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE:principal">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">user1
+                </saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                            Name="urn:org:atricore:idbus:user:property:email">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                     xsi:type="xsd:string"></saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                            Name="urn:org:atricore:idbus:user:property:firstName">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">u1
+                </saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                            Name="urn:org:atricore:idbus:user:property:lastName">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">u1
+                </saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                            Name="urn:org:atricore:idbus:user:property:commonName">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">u1 u1
+                </saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                            Name="urn:org:atricore:idbus:user:property:countryName">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">u1 u1
+                </saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                            Name="urn:org:atricore:idbus:user:property:language">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">en
+                </saml:AttributeValue>
+            </saml:Attribute>
+        </saml:AttributeStatement>
+    </saml:Assertion>
+</samlp:Response>

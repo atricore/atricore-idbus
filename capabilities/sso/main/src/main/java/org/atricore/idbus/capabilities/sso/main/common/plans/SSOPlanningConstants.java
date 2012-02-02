@@ -76,7 +76,7 @@ public interface SSOPlanningConstants {
 
     static final String VAR_SAMLR2_EMITTER_CXT  = "urn:org:atricore:idbus:samlr2:support:EmitterContext";
 
-    static final String VAR_SSO_AUTHN_REQUEST = SSOConstants.SSO_PROTOCOL_NS + "AuthnRequest";
+    static final String VAR_SSO_AUTHN_REQUEST = SSOConstants.SSO_PROTOCOL_NS + ":AuthnRequest";
 
     static final String VAR_SUBJECT = WSTConstants.SUBJECT_PROP;
 

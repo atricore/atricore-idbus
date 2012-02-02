@@ -8,6 +8,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
@@ -17,17 +18,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * OAuth 2 Mediator used by Identity Providers
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class OAuth2Mediator extends AbstractCamelMediator {
+public class OAuth2IdPMediator extends AbstractCamelMediator {
 
-    private static final Log logger = LogFactory.getLog(OAuth2Mediator.class);
+    private static final Log logger = LogFactory.getLog(OAuth2IdPMediator.class);
 
     // List of trusted OAuth 2 clients
     private Set<OAuth2Client> clients = new HashSet<OAuth2Client>();
 
-    public OAuth2Mediator() {
-        logger.info("OAuth2Mediator Instantiated");
+    public OAuth2IdPMediator() {
+        logger.info("OAuth2IdPMediator Instantiated");
     }
 
     @Override
@@ -57,7 +60,7 @@ public class OAuth2Mediator extends AbstractCamelMediator {
 
                             // ----------------------------------------------------------
                             // SOAP Incomming messages:
-                            // ==> idbus-http ==> cxf ==> idbus-bind ==> sso-idp
+                            // ==> idbus-http ==> cxf ==> idbus-bind ==> oauth2-svc
                             // ----------------------------------------------------------
 
                             // FROM idbus-http TO cxf (through direct component)
@@ -80,14 +83,14 @@ public class OAuth2Mediator extends AbstractCamelMediator {
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + spChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("oauth2-as:" + ed.getType() +
+                                    to("oauth2-svc:" + ed.getType() +
                                             "?channelRef=" + spChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
 
                             if (ed.getResponseLocation() != null) {
 
-                                // FROM idbus-http TO samlr2-binding (through direct component)
+                                // FROM idbus-http TO idbus-bind (through direct component)
                                 from("idbus-http:" + ed.getResponseLocation()).
                                         process(new LoggerProcessor(getLogger())).
                                         to("direct:" + ed.getName() + "-cxf-response");
@@ -101,12 +104,12 @@ public class OAuth2Mediator extends AbstractCamelMediator {
                                         process(new LoggerProcessor(getLogger())).
                                         to("direct:" + ed.getName() + "-response");
 
-                                // FROM SAMLR1 SSOBinding TO sso-idp
+                                // FROM idbus-bind to oauth2-svc
                                 from("idbus-bind:camel://" + ed.getName() + "-response" +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + spChannel.getName()).
                                         process(new LoggerProcessor(getLogger())).
-                                        to("oauth2-as:" + ed.getType() +
+                                        to("oauth2-svc:" + ed.getType() +
                                                 "?channelRef=" + spChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");
@@ -114,33 +117,33 @@ public class OAuth2Mediator extends AbstractCamelMediator {
                             break;
                         case OAUTH2_RESTFUL:
 
-                            // FROM idbus-http TO samlr2-binding (through direct component)
+                            // FROM idbus-http TO idbus-bind (through direct component)
                             from("idbus-http:" + ed.getLocation()).
                                     process(new LoggerProcessor(getLogger())).
                                     to("direct:" + ed.getName());
 
-                            // FROM samlr-bind TO sso-idp
+                            // FROM idbus-bind TO oauth2-svc
                             from("idbus-bind:camel://direct:" + ed.getName() +
                                 "?binding=" + ed.getBinding() +
                                 "&channelRef=" + spChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("oauth2-as:" + ed.getType() +
+                                    to("oauth2-svc:" + ed.getType() +
                                             "?channelRef=" + spChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
                              if (ed.getResponseLocation() != null) {
-                                // FROM idbus-http TO samlr2-binding (through direct component)
+                                // FROM idbus-http TO idbus-bind (through direct component)
                                 from("idbus-http:" + ed.getResponseLocation()).
                                         process(new LoggerProcessor(getLogger())).
                                         to("direct:" + ed.getName() + "-response");
 
 
-                                // FROM samlr-bind TO sso-sp
+                                // FROM ibus-bind TO oauth2-svc
                                 from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + spChannel.getName()).
                                         process(new LoggerProcessor(getLogger())).
-                                        to("oauth2-as:" + ed.getType() +
+                                        to("oauth2-svc:" + ed.getType() +
                                                 "?channelRef=" + spChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");
@@ -164,7 +167,7 @@ public class OAuth2Mediator extends AbstractCamelMediator {
         String responseLocation;
         OAuth2Binding binding = null;
 
-        logger.debug("Creating Endpoint Descriptor without SAMLR2 Metadata for : " + endpoint.getName());
+        logger.debug("Creating Endpoint Descriptor without Metadata for : " + endpoint.getName());
 
         // ---------------------------------------------
         // Resolve Endpoint binding

@@ -82,6 +82,7 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
             //securityTokenEmissionCtx.setAuthnState(authnState);
             securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
 
+            // TODO : Support : EMIT ACCESS TOKEN From AUTHORIZATION TOKEN
             emitAccessTokenFromClaims(exchange, securityTokenEmissionCtx, atReq.getUsername(), atReq.getPassword());
 
             // Call STS and wait for OAuth AccessToken
@@ -213,7 +214,7 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
     }
 
     protected MessageQueueManager getArtifactQueueManager() {
-        OAuth2Mediator a2Mediator = (OAuth2Mediator) channel.getIdentityMediator();
+        OAuth2IdPMediator a2Mediator = (OAuth2IdPMediator) channel.getIdentityMediator();
         return a2Mediator.getArtifactQueueManager();
     }
 
@@ -256,7 +257,7 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
 
         // TODO : Look for configured client authentication mechanism: authn token, secret, others?!
         // Take oauth2 client configuration from mediator
-        OAuth2Mediator mediator = (OAuth2Mediator) spChannel.getIdentityMediator();
+        OAuth2IdPMediator mediator = (OAuth2IdPMediator) spChannel.getIdentityMediator();
 
         // Authenticate client using secret
         if (mediator.getClients() != null && mediator.getClients().size() > 0) {

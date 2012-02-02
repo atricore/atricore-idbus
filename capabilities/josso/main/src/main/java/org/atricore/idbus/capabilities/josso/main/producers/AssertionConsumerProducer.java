@@ -69,13 +69,12 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
         if (req == null) {
             // Process unsolicited response
-            validateUnsolicitedAuthnResposne(exchange, response);
+            validateUnsolicitedAuthnResponse(exchange, response);
         } else {
-            validateAuthnResposne(exchange, req, response);
+            validateAuthnResponse(exchange, req, response);
         }
 
         // Always use configured ACS endpoint, ignore received back_to to avoid security issues.
-
         String appId = authnCtx.getAppId();
         String receivedBackTo = authnCtx.getSsoBackTo();
 
@@ -125,14 +124,22 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
 
     }
 
-    protected void validateAuthnResposne(CamelMediationExchange exchange, SPInitiatedAuthnRequestType request, SPAuthnResponseType response) throws JossoException {
-        // Validate in-reply-to
+    protected void validateAuthnResponse(CamelMediationExchange exchange, SPInitiatedAuthnRequestType request, SPAuthnResponseType response) throws JossoException {
         if (response  == null) {
             throw new JossoException("No response found!");
         }
+
+        // Validate in-reply-to
+        if (response.getInReplayTo() == null ||
+                !request.getID().equals(response.getInReplayTo())) {
+            throw new JossoException("Response is not a reply to " +
+                    request.getID() + " ["+(response.getInReplayTo() == null ? "<null>" : response.getInReplayTo())+"]");
+
+        }
+
     }
 
-    protected void validateUnsolicitedAuthnResposne(CamelMediationExchange exchange, SPAuthnResponseType response) throws JossoException {
+    protected void validateUnsolicitedAuthnResponse(CamelMediationExchange exchange, SPAuthnResponseType response) throws JossoException {
         // Validate other attributes ?
         if (response  == null) {
             throw new JossoException("No response found!");

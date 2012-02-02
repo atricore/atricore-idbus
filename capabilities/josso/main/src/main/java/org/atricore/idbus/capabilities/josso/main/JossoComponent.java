@@ -86,7 +86,7 @@ public class JossoComponent extends DefaultComponent {
     
     protected JossoService getJosso11Service(String remaining) {
 
-        // TODO !
+        // TODO : do not ignore the quallified name!
         for (JossoService et : JossoService.values()) {
             if (et.getQname().getLocalPart().equals(remaining))
                 return et;

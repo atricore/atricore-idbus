@@ -9,6 +9,10 @@ public enum OAuth2Service {
 
     AuthorizationService(new QName(OAuth2Constants.OAUTH2_SERVICE_BASE_URI, "AuthorizationService")),
 
+    SSOAssertionConsumerService(new QName(OAuth2Constants.SSO_SERVICE_BASE_URI, "AssertionConsumerService")),
+
+    SSOSingleSignOnService(new QName(OAuth2Constants.SSO_SERVICE_BASE_URI, "SingleSignOnService")),
+
     TokenService(new QName(OAuth2Constants.OAUTH2_SERVICE_BASE_URI, "TokenService")),
 
 ;
