@@ -9,20 +9,19 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.main.OAuth2Client;
+import org.atricore.idbus.capabilities.oauth2.main.OAuth2IdPMediator;
 import org.atricore.idbus.capabilities.oauth2.main.util.JasonUtils;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.atricore.idbus.capabilities.oauth2.main.OAuth2Mediator;
 import org.atricore.idbus.capabilities.oauth2.main.binding.OAuth2BindingFactory;
 import org.atricore.idbus.capabilities.oauth2.main.binding.logging.OAuth2LogMessageBuilder;
 import org.springframework.transaction.TransactionSuspensionNotSupportedException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
@@ -77,7 +76,7 @@ public class OAuth2IdpLocalTransformer extends AbstractTransformer implements In
         // OAuth 2 Identity Provider Mediator
         // ----------------------------------------
         Bean idpMediator = newBean(idpBeans, idpBean.getName() + "-oauth2-mediator",
-                OAuth2Mediator.class.getName());
+                OAuth2IdPMediator.class.getName());
         setPropertyValue(idpMediator, "logMessages", true);
 
         // artifactQueueManager

@@ -18,6 +18,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
+import org.atricore.idbus.kernel.main.mediation.provider.FederationServiceImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.util.HashGenerator;
 
@@ -99,12 +100,11 @@ public class AbstractOAuth2SPChannelTransformer extends AbstractTransformer {
         if (idpOAuth2SvcBean == null) {
 
             idpOAuth2SvcBeanName = idpBean.getName() + "-oauth2-svc";
-            idpOAuth2SvcBean  = newBean(idpBeans, idpOAuth2SvcBeanName, FederationService.class);
+            idpOAuth2SvcBean  = newBean(idpBeans, idpOAuth2SvcBeanName, FederationServiceImpl.class);
             setPropertyValue(idpOAuth2SvcBean, "serviceType", idpOauth2ServiceType);
             setPropertyValue(idpOAuth2SvcBean, "name", idpOAuth2SvcBeanName);
-
             addPropertyRefsToSet(idpBean, "federationServices", idpOAuth2SvcBeanName);
-
+            // TODO : Profiles ?!
         }
         idpOAuth2SvcBean = getBean(idpBeans, idpOAuth2SvcBeanName);
 

@@ -25,6 +25,7 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
+import org.atricore.idbus.kernel.main.mediation.provider.FederationServiceImpl;
 import org.atricore.idbus.kernel.main.util.HashGenerator;
 
 import java.io.UnsupportedEncodingException;
@@ -75,10 +76,11 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
         String spSsoServiceType = "urn:oasis:names:tc:SAML:2.0";
         if (spSsoSvcBeanName == null) {
             spSsoSvcBeanName = spBean.getName() + "-sso-default-svc";
-            spSsoSvcBean = newBean(spBeans, spSsoSvcBeanName, FederationService.class);
+            spSsoSvcBean = newBean(spBeans, spSsoSvcBeanName, FederationServiceImpl.class);
             setPropertyRef(spBean, "defaultFederationService", spSsoSvcBeanName);
             setPropertyValue(spSsoSvcBean, "serviceType", spSsoServiceType);
             setPropertyValue(spSsoSvcBean, "name", spSsoSvcBeanName);
+            // TODO : Profiles ?!
         }
         spSsoSvcBean = getBean(spBeans, spSsoSvcBeanName);
 

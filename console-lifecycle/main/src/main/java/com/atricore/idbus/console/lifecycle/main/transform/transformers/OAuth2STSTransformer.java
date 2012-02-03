@@ -10,7 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.common.AESTokenEncrypter;
 import org.atricore.idbus.capabilities.oauth2.common.HMACTokenSigner;
-import org.atricore.idbus.capabilities.oauth2.main.OAuth2Mediator;
+import org.atricore.idbus.capabilities.oauth2.main.OAuth2IdPMediator;
 import org.atricore.idbus.capabilities.oauth2.main.emitter.OAuth2AccessTokenEmitter;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 
@@ -69,8 +69,7 @@ public class OAuth2STSTransformer extends AbstractTransformer {
         // identityPlanRegistry
         setPropertyRef(oauth2StsEmitter, "identityPlanRegistry", "identity-plans-registry");
 
-
-        Collection<Bean> mediators = getBeansOfType(idpBeans, OAuth2Mediator.class.getName());
+        Collection<Bean> mediators = getBeansOfType(idpBeans, OAuth2IdPMediator.class.getName());
 
         if (mediators.size() != 1)
             throw new TransformException("Too many/few mediators defined " + mediators.size());

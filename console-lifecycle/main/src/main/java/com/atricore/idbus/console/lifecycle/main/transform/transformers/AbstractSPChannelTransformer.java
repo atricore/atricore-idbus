@@ -27,7 +27,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
-import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
+import org.atricore.idbus.kernel.main.mediation.provider.FederationServiceImpl;
 
 import org.atricore.idbus.kernel.main.util.HashGenerator;
 
@@ -89,11 +89,11 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         String idpSsoServiceType = "urn:oasis:names:tc:SAML:2.0";
         if (idpSsoSvcBeanName == null) {
             idpSsoSvcBeanName = idpBean.getName() + "-sso-default-svc";
-            idpSsoSvcBean  = newBean(idpBeans, idpSsoSvcBeanName, FederationService.class);
+            idpSsoSvcBean  = newBean(idpBeans, idpSsoSvcBeanName, FederationServiceImpl.class);
             setPropertyRef(idpBean, "defaultFederationService", idpSsoSvcBeanName);
             setPropertyValue(idpSsoSvcBean, "serviceType", idpSsoServiceType);
             setPropertyValue(idpSsoSvcBean, "name", idpSsoSvcBeanName);
-
+            // TODO : Profiles ?!
         }
         idpSsoSvcBean = getBean(idpBeans, idpSsoSvcBeanName);
 
