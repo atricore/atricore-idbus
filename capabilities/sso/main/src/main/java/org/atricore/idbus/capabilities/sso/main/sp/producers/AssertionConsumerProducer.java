@@ -302,7 +302,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         CircleOfTrustMemberDescriptor idp = resolveIdp(exchange);
 
         SPSecurityContext spSecurityCtx = createSPSecurityContext(exchange,
-                ssoRequest.getReplyTo(),
+                (ssoRequest != null && ssoRequest.getReplyTo() != null ? ssoRequest.getReplyTo() : null),
                 idp,
                 acctLink,
                 federatedSubject,

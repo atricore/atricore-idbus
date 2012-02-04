@@ -24,12 +24,10 @@ package org.atricore.idbus.capabilities.sso.support.federation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
-import org.atricore.idbus.kernel.main.federation.AccountLink;
-import org.atricore.idbus.kernel.main.federation.AccountLinkEmitter;
-import org.atricore.idbus.kernel.main.federation.DynamicAccountLinkImpl;
-import org.atricore.idbus.kernel.main.federation.SubjectAttribute;
+import org.atricore.idbus.kernel.main.federation.*;
 
 import javax.security.auth.Subject;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -62,12 +60,24 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
                 String email = subjectAttribute.getValue();
 
                 if (logger.isDebugEnabled())
-                    logger.debug("Found email ["+email+"]");
+                    logger.debug("Found email as attribute ["+email+"]");
 
                 // TODO : For now, email user and JOSSO local user MUST match!
                 return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
             }
 
+        }
+
+        // Try directly with the Subject ID
+        Set<SubjectNameID> ids = subject.getPrincipals(SubjectNameID.class);
+
+        if (ids != null && ids.size() > 0) {
+            SubjectNameID id = ids.iterator().next();
+            String email = id.getName();
+            if (logger.isDebugEnabled())
+                logger.debug("Found email as subject id ["+email+"]");
+
+            return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
         }
 
         /*

@@ -46,17 +46,13 @@ public class OAuth2RestfulBinding extends AbstractMediationHttpBinding {
         // TODO : Build request parameters from messages ...
 
         if (out.getContent() instanceof String) {
-            // This could be some kind of token, lets
+            // This could be some kind of token, lets find out ...
 
+            String token = (String) out.getContent();
             if (out.getContentType().equals("AccessToken")) {
-                if (restfulQueryStr.contains("?"))
-                    restfulQueryStr += "&";
-                else
-                    restfulQueryStr += "?";
-
+                restfulQueryStr += "&";
                 try {
-                    restfulQueryStr += "access_token=" + URLEncoder.encode((String) out.getContent(), "UTF-8");
-
+                    restfulQueryStr += "access_token=" + URLEncoder.encode(token, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     logger.error("Cannot encode access token : " + e.getMessage(), e);
                     throw new RuntimeException("Cannot encode access token : " + e.getMessage(), e);
@@ -71,7 +67,7 @@ public class OAuth2RestfulBinding extends AbstractMediationHttpBinding {
 
         Message httpOut = exchange.getOut();
         Message httpIn = exchange.getIn();
-        String oauth2ResfulLocation = this.buildHttpTargetLocation(httpIn, ed) + restfulQueryStr;
+        String oauth2ResfulLocation = restfulQueryStr;
 
         if (logger.isDebugEnabled())
             logger.debug("Redirecting to " + oauth2ResfulLocation);

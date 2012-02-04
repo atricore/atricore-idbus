@@ -829,6 +829,11 @@ public class SingleSignOnProducer extends SSOProducer {
         AuthenticationState authnState = getAuthnState(exchange);
         AuthnRequestType authnRequest = authnState.getAuthnRequest();
 
+        // This is IDP-Initiated !!!
+        if (authnRequest == null) {
+
+        }
+
         NameIDType issuer = authnRequest.getIssuer();
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(issuer);
 
