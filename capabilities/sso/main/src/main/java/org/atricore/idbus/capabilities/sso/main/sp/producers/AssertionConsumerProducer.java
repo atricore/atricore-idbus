@@ -832,8 +832,9 @@ public class AssertionConsumerProducer extends SSOProducer {
             if (logger.isDebugEnabled())
                 logger.debug("TTL 1: " + responseIssueInstant + " - " +  requestIssueInstant + " = " + (responseIssueInstant - requestIssueInstant));
 
-
             // TODO : Make configurable ?! Give a 5 minutes of tolerance between request/response issue instants
+            // TODO : Reanabled
+            /*
            	if(responseIssueInstant - requestIssueInstant <= (-1000L * 60L * 5L )) {
     			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
@@ -843,7 +844,6 @@ public class AssertionConsumerProducer extends SSOProducer {
                                     " earlier than request issue instant (TTL:" + (responseIssueInstant - requestIssueInstant) + ")");
 
     		} else {
-
 
                 long ttl = mediator.getRequestTimeToLive();
 
@@ -865,6 +865,28 @@ public class AssertionConsumerProducer extends SSOProducer {
                                     " expired after " + ttl + "ms");
     			} 
     		}
+    		*/
+
+            long ttl = mediator.getRequestTimeToLive();
+
+            long res = response.getIssueInstant().toGregorianCalendar().getTime().getTime();
+            long req = request.getIssueInstant().toGregorianCalendar().getTime().getTime();
+
+            if (logger.isDebugEnabled())
+                logger.debug("TTL 2: " + res + " - " +  req + " = " + (res - req));
+
+            // If 0, response does not expires!
+            if(ttl > 0 && response.getIssueInstant().toGregorianCalendar().getTime().getTime()
+                    - request.getIssueInstant().toGregorianCalendar().getTime().getTime() > ttl) {
+
+                throw new SSOResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.INVALID_ATTR_NAME_OR_VALUE,
+                        StatusDetails.INVALID_ISSUE_INSTANT,
+                        response.getIssueInstant().toGregorianCalendar().toString() +
+                                " expired after " + ttl + "ms");
+            }
+
     	}
 
         // Version, saml2 core, section 3.2.2
