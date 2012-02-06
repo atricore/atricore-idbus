@@ -829,14 +829,18 @@ public class AssertionConsumerProducer extends SSOProducer {
             long responseIssueInstant = response.getIssueInstant().toGregorianCalendar().getTimeInMillis();
             long requestIssueInstant = request.getIssueInstant().toGregorianCalendar().getTimeInMillis();
 
-            // TODO : Make configurable ?! Give a second of tolerance between request/response issue instants
-           	if(responseIssueInstant - requestIssueInstant <= -1000) {
+            if (logger.isDebugEnabled())
+                logger.debug("TTL 1: " + responseIssueInstant + " - " +  requestIssueInstant + " = " + (responseIssueInstant - requestIssueInstant));
+
+
+            // TODO : Make configurable ?! Give a 5 minutes of tolerance between request/response issue instants
+           	if(responseIssueInstant - requestIssueInstant <= (-1000L * 60L * 5L )) {
     			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_ISSUE_INSTANT,
                         response.getIssueInstant().toGregorianCalendar().toString() +
-                                    " earlier than request issue instant.");
+                                    " earlier than request issue instant (TTL:" + (responseIssueInstant - requestIssueInstant) + ")");
 
     		} else {
 
@@ -847,7 +851,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                 long req = request.getIssueInstant().toGregorianCalendar().getTime().getTime();
 
                 if (logger.isDebugEnabled())
-                    logger.debug("TTL : " + res + " - " +  req + " = " + (res - req));
+                    logger.debug("TTL 2: " + res + " - " +  req + " = " + (res - req));
 
                 // If 0, response does not expires!
     			if(ttl > 0 && response.getIssueInstant().toGregorianCalendar().getTime().getTime()
