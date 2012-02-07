@@ -1,13 +1,12 @@
 package com.atricore.idbus.console.modeling.diagram.view.util {
 
-import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.base.diagram.DiagramElementTypes;
+import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
-
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
@@ -74,15 +73,9 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
             if (node1.data is IdentityProvider && node2.data is AuthenticationService) {
-                var idp1:IdentityProvider = node1.data as IdentityProvider;
-                if (idp1.delegatedAuthentication == null) {
-                    canBeLinked = true;
-                }
+                canBeLinked = true;
             } else if (node1.data is AuthenticationService && node2.data is IdentityProvider) {
-                var idp2:IdentityProvider = node2.data as IdentityProvider;
-                if (idp2.delegatedAuthentication == null) {
-                    canBeLinked = true;
-                }
+                canBeLinked = true;
             }
         }
         return canBeLinked;

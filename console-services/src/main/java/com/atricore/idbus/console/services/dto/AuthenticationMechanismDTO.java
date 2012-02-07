@@ -31,6 +31,8 @@ public class AuthenticationMechanismDTO implements Serializable {
 
 	private String name;
 
+    private int priority;
+
     public long getId() {
         return id;
     }
@@ -46,6 +48,14 @@ public class AuthenticationMechanismDTO implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -275,6 +275,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         if (view.authMechanism.selectedItem.data == "basic") {
             var basicAuth:BasicAuthentication = new BasicAuthentication();
             basicAuth.name = identityProvider.name.replace(/\s+/g, "-").toLowerCase() + "-basic-authn";
+            basicAuth.enabled = true;
+            basicAuth.priority = 1;
             basicAuth.hashAlgorithm = "MD5";
             basicAuth.hashEncoding = "HEX";
             basicAuth.ignoreUsernameCase = false;

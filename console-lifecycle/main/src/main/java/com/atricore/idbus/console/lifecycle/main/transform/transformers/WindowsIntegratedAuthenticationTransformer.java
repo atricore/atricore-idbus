@@ -39,7 +39,8 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
             return false;
 
         IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
-        AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        //AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        AuthenticationService authnService = null; // TODO: JOSSO-355
 
         return authnService != null && authnService instanceof WindowsIntegratedAuthentication;
     }
@@ -52,7 +53,8 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
         WindowsAuthentication wiaAuthn = (WindowsAuthentication) event.getData();
 
         IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
-        WindowsIntegratedAuthentication wia = (WindowsIntegratedAuthentication) idp.getDelegatedAuthentication().getAuthnService();
+        //WindowsIntegratedAuthentication wia = (WindowsIntegratedAuthentication) idp.getDelegatedAuthentication().getAuthnService();
+        WindowsIntegratedAuthentication wia = null; // TODO: JOSSO-355
 
         // TODO : For now user veolicty , but we MUST use blueprint xml binding, like we do with spring!
 

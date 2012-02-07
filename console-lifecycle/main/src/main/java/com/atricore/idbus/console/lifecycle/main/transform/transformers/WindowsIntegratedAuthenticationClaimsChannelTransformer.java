@@ -48,11 +48,12 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
         if (idp.getAuthenticationMechanisms() == null)
             return false;
 
-        if (idp.getDelegatedAuthentication() != null &&
+        // TODO: JOSSO-355
+        /*if (idp.getDelegatedAuthentication() != null &&
             idp.getDelegatedAuthentication().getAuthnService() != null &&
             idp.getDelegatedAuthentication().getAuthnService() instanceof WindowsIntegratedAuthentication)
 
-            return true;
+            return true;*/
 
         // None of the authn mechanisms is supported!
         return false;
@@ -143,10 +144,12 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
         Bean ccMediator = newBean(idpBeans, idpBean.getName() + "-spnego-claims-mediator", "org.atricore.idbus.capabilities.spnego.SpnegoMediator");
 
         // Realm
-        setPropertyValue(ccMediator, "realm", provider.getDelegatedAuthentication().getName());
+        //setPropertyValue(ccMediator, "realm", provider.getDelegatedAuthentication().getName());
+        // TODO: JOSSO-355
 
         // Service Principal Name
-        WindowsIntegratedAuthentication wia = (WindowsIntegratedAuthentication) provider.getDelegatedAuthentication().getAuthnService();
+        //WindowsIntegratedAuthentication wia = (WindowsIntegratedAuthentication) provider.getDelegatedAuthentication().getAuthnService();
+        WindowsIntegratedAuthentication wia = null; // TODO: JOSSO-355
         String spn = WindowsIntegratedAuthenticationTransformer.buildSpn(wia);
 
         setPropertyValue(ccMediator, "principal", spn);

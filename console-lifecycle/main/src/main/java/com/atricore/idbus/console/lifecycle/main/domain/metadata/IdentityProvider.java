@@ -64,7 +64,8 @@ public class IdentityProvider extends FederatedProvider {
     //TODO check whether LocalProvider will have profiles or IdentityProvider    
 //    private Set<Profile> activeProfiles;
 
-    private DelegatedAuthentication delegatedAuthentication;
+    //private DelegatedAuthentication delegatedAuthentication;
+    private Set<DelegatedAuthentication> delegatedAuthentications;
 
     @Override
     public ProviderRole getRole() {
@@ -141,12 +142,12 @@ public class IdentityProvider extends FederatedProvider {
         this.emissionPolicy = emissionPolicy;
     }
 
-    public DelegatedAuthentication getDelegatedAuthentication() {
-        return delegatedAuthentication;
+    public Set<DelegatedAuthentication> getDelegatedAuthentications() {
+        return delegatedAuthentications;
     }
 
-    public void setDelegatedAuthentication(DelegatedAuthentication delegatedAuthentication) {
-        this.delegatedAuthentication = delegatedAuthentication;
+    public void setDelegatedAuthentications(Set<DelegatedAuthentication> delegatedAuthentications) {
+        this.delegatedAuthentications = delegatedAuthentications;
     }
 
     public boolean isIgnoreRequestedNameIDPolicy() {

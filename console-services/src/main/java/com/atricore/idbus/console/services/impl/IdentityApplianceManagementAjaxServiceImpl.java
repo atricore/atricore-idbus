@@ -964,6 +964,8 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         }
         BasicAuthenticationDTO authMechanism = new BasicAuthenticationDTO();
         authMechanism.setName(idp.getName() + "-basic-authn");
+        authMechanism.setEnabled(true);
+        authMechanism.setPriority(1);
         authMechanism.setHashAlgorithm("MD5");
         authMechanism.setHashEncoding("HEX");
         authMechanism.setIgnoreUsernameCase(false);

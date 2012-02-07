@@ -29,7 +29,8 @@ public class WiKIDAuthenticationTransformer extends AbstractTransformer {
             return false;
 
         IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
-        AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        //AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        AuthenticationService authnService = null; // TODO: JOSSO-355
 
         return authnService != null && authnService instanceof WikidAuthenticationService;
     }
@@ -53,7 +54,8 @@ public class WiKIDAuthenticationTransformer extends AbstractTransformer {
         if (logger.isTraceEnabled())
             logger.trace("Generating Two-Factor Authentication Scheme for IdP " + idpBean.getName());
 
-        AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        //AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        AuthenticationService authnService = null; // TODO: JOSSO-355
         
         if (authnService instanceof WikidAuthenticationService) {
             WikidAuthenticationService wikidAuthnService = (WikidAuthenticationService) authnService;

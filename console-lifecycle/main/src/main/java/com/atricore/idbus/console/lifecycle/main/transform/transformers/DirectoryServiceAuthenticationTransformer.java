@@ -34,7 +34,8 @@ public class DirectoryServiceAuthenticationTransformer extends AbstractTransform
             return false;
 
         IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
-        AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        //AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        AuthenticationService authnService = null; // TODO: JOSSO-355
 
         return authnService != null && authnService instanceof DirectoryAuthenticationService;
     }
@@ -58,7 +59,8 @@ public class DirectoryServiceAuthenticationTransformer extends AbstractTransform
         if (logger.isTraceEnabled())
             logger.trace("Generating Two-Factor Authentication Scheme for IdP " + idpBean.getName());
 
-        AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        //AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        AuthenticationService authnService = null; // TODO: JOSSO-355
 
         if (authnService instanceof DirectoryAuthenticationService) {
             DirectoryAuthenticationService directoryAuthnService = (DirectoryAuthenticationService) authnService;
