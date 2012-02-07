@@ -62,6 +62,7 @@
         <module>capabilities/spnego</module>
         <module>capabilities/openid</module>
         <module>capabilities/oauth2</module>
+        <module>capabilities/atricoreid</module>
 
         <module>idojos/idbus-db-identitystore</module>
         <module>idojos/idbus-db-sessionstore</module>

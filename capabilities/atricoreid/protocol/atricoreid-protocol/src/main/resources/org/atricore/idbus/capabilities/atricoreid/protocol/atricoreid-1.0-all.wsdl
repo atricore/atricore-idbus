@@ -1,0 +1,239 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<wsdl:definitions
+        name="SSO-Service"
+        targetNamespace="urn:org:atricore:idbus:capabilities:atricoreid:1.0:wsdl"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="urn:org:atricore:idbus:capabilities:atricoreid:1.0:wsdl"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:atricoreid2p="urn:org:atricore:idbus:capabilities:atricoreid:1.0:protocol"
+        xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <wsdl:types>
+
+        <xsd:schema
+                xmlns:atricoreid2p="urn:org:atricore:idbus:capabilities:atricoreid:1.0:protocol"
+                targetNamespace="urn:org:atricore:idbus:capabilities:atricoreid:1.0:protocol"
+                elementFormDefault="qualified"
+                attributeFormDefault="unqualified">
+
+            <xsd:complexType name="AtricoreIDRequestAbstractType" abstract="true">
+                <xsd:sequence>
+                    <xsd:element name="atricoreidHeaders" type="atricoreid2p:AtricoreIDHeaderType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="AtricoreIDResponseAbstractType" abstract="true">
+                <xsd:sequence>
+                    <xsd:element name="atricoreidHeaders" type="atricoreid2p:AtricoreIDHeaderType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attribute name="statusCode" type="xsd:integer"/>
+                <!-- Only for error responses -->
+                <xsd:attribute name="error" type="atricoreid2p:ErrorCodeType" use="optional"/>
+                <xsd:attribute name="error_description" type="xsd:string" use="optional"/>
+                <xsd:attribute name="error_uri" type="xsd:string" use="optional"/>
+                <xsd:attribute name="state" type="xsd:string" use="optional"/>
+            </xsd:complexType>
+
+            <xsd:element name="AuthorizationRequest" type="atricoreid2p:AuthorizationRequestType"/>
+            <xsd:complexType name="AuthorizationRequestType">
+                <xsd:complexContent>
+                    <xsd:extension base="atricoreid2p:AtricoreIDRequestAbstractType">
+                        <xsd:attribute name="responseType" type="xsd:string" use="optional" default="code"/>
+                        <xsd:attribute name="clientId" type="xsd:string" use="required"/>
+                        <xsd:attribute name="clientSecret" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="redirectUri" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="scope" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="state" type="xsd:string" use="optional"/>
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:element name="AuthorizationResponse" type="atricoreid2p:AuthorizationResponseType"/>
+            <xsd:complexType name="AuthorizationResponseType">
+                <xsd:complexContent>
+                    <xsd:extension base="atricoreid2p:AtricoreIDResponseAbstractType">
+                        <xsd:attribute name="code" type="xsd:string" use="required"/>
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:element name="AccessTokenRequest" type="atricoreid2p:AccessTokenRequestType"/>
+            <xsd:complexType name="AccessTokenRequestType">
+                <xsd:complexContent>
+                    <xsd:extension base="atricoreid2p:AtricoreIDRequestAbstractType">
+                        <xsd:attribute name="grantType" type="xsd:string" use="requitargetNamespacered"/>
+                        <xsd:attribute name="clientId" type="xsd:string" use="required"/>
+                        <xsd:attribute name="clientSecret" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="username" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="password" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="scope" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="redirectUri" type="xsd:string" use="optional"/>
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:element name="AccessTokenResponse" type="atricoreid2p:AccessTokenResponseType"/>
+            <xsd:complexType name="AccessTokenResponseType">
+                <xsd:complexContent>
+                    <xsd:extension base="atricoreid2p:AtricoreIDResponseAbstractType">
+                        <xsd:sequence>
+                            <xsd:element name="atricoreidAttributes" type="atricoreid2p:AtricoreIDAttributeType" minOccurs="0"
+                                     maxOccurs="unbounded"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="tokeyType" type="xsd:string" use="required"/>
+                        <xsd:attribute name="accessToken" type="xsd:string" use="required"/>
+                        <xsd:attribute name="expiresIn" type="xsd:integer"/>
+                        <xsd:attribute name="refreshToken" type="xsd:string" use="optional"/>
+
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:element name="RefreshAccessTokenRequest" type="atricoreid2p:RefreshAccessTokenRequestType"/>
+            <xsd:complexType name="RefreshAccessTokenRequestType">
+                <xsd:complexContent>
+                    <xsd:extension base="atricoreid2p:AtricoreIDRequestAbstractType">
+                        <xsd:attribute name="grantType" type="xsd:string" use="required"/>
+                        <xsd:attribute name="scope" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="refreshToken" type="xsd:string" use="required"/>
+                        <xsd:attribute name="clientId" type="xsd:string" use="required"/>
+                        <xsd:attribute name="clientSecret" type="xsd:string" use="optional"/>
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:simpleType name="ErrorCodeType">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="invalid_request"/>
+                    <xsd:enumeration value="unauthorized_client"/>
+                    <xsd:enumeration value="access_denied"/>
+                    <xsd:enumeration value="unsupported_response_type"/>
+                    <xsd:enumeration value="invalid_scope"/>
+                    <xsd:enumeration value="server_error"/>
+                    <xsd:enumeration value="temporary_unavailable"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+
+            <xsd:element name="AtricoreIDAccessToken" type="atricoreid2p:AtricoreIDAccessTokenType"/>
+            <xsd:complexType name="AtricoreIDAccessTokenType">
+                <xsd:sequence>
+                    <xsd:element name="tokenParameters" type="atricoreid2p:AtricoreIDAttributeType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attribute name="accessToken" type="xsd:string" use="required"/>
+                <xsd:attribute name="tokenType" type="xsd:string" use="required"/>
+                <xsd:attribute name="expiresIn" type="xsd:long" />
+            </xsd:complexType>
+
+            <xsd:element name="AtricoreIDAttribute" type="atricoreid2p:AtricoreIDAttributeType"/>
+            <xsd:complexType name="AtricoreIDAttributeType" abstract="true">
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                <xsd:attribute name="value" type="xsd:string" use="required"/>
+            </xsd:complexType>
+
+            <xsd:element name="AtricoreIDHeader" type="atricoreid2p:AtricoreIDHeaderType"/>
+            <xsd:complexType name="AtricoreIDHeaderType" abstract="true">
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                <xsd:attribute name="value" type="xsd:string" use="required"/>
+            </xsd:complexType>
+        </xsd:schema>
+
+    </wsdl:types>
+
+    <message name="AuthorizationRequestMessage">
+        <part name="body" element="atricoreid2p:AuthorizationRequest"/>
+    </message>
+
+    <message name="AccessTokenRequestMessage">
+        <part name="body" element="atricoreid2p:AccessTokenRequest"/>
+    </message>
+
+    <message name="AuthorizationResponseMessage">
+        <part name="body" element="atricoreid2p:AuthorizationResponse"/>
+    </message>
+
+    <message name="AccessTokenResponseMessage">
+        <part name="body" element="atricoreid2p:AccessTokenResponse"/>
+    </message>
+
+
+    <portType name="AtricoreIDPortType">
+
+        <operation name="AuthorizationRequest">
+            <input name="AuthorizationRequestInput"
+                        message="tns:AuthorizationRequestMessage"/>
+            <output name="AuthorizationResponseOutput"
+                         message="tns:AuthorizationResponseMessage"/>
+        </operation>
+
+        <operation name="AccessTokenRequest">
+            <input name="AccessTokenRequestInput"
+                        message="tns:AccessTokenRequestMessage"/>
+            <output name="AccessTokenResponseOutput"
+                         message="tns:AccessTokenResponseMessage"/>
+        </operation>
+
+
+    </portType>
+
+    <binding name="AtricoreIDSoapBinding" type="tns:AtricoreIDPortType">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <operation name="AuthorizationRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="AuthorizationRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="AuthorizationResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+        <operation name="AccessTokenRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="AccessTokenRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="AccessTokenResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+    </binding>
+
+
+    <wsdl:service name="AtricoreIDService">
+        <documentation>AtricoreID 2 Service</documentation>
+        <port name="soap"
+              binding="tns:AtricoreIDSoapBinding">
+            <!-- Change this -->
+            <soap:address location="http://localhost:8081/AtricoreIDService/"/>
+        </port>
+    </wsdl:service>
+
+</wsdl:definitions>
