@@ -69,6 +69,7 @@ public class CreateDelegatedAuthenticationCommand extends IocSimpleCommand imple
                 authnMechanism = new WindowsAuthentication();
             } // TODO : Avoid depending on the authn type
             authnMechanism.name = Util.getAuthnMechanismName(authnMechanism, idp.name, authnService.name);
+            authnMechanism.delegatedAuthentication = delegatedAuthentication;
             idp.authenticationMechanisms.addItem(authnMechanism);
             authnMechanism.priority = idp.authenticationMechanisms.length;
 

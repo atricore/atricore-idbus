@@ -41,7 +41,8 @@ public class AuthenticationServiceRemoveCommand extends IocSimpleCommand {
                         var removedAuthnMechanismPriority:int = -1;
                         da.idp.delegatedAuthentications.removeItemAt(da.idp.delegatedAuthentications.getItemIndex(da));
                         for (var j:int=0; j<da.idp.authenticationMechanisms.length; j++) {
-                            if (da.idp.authenticationMechanisms[j].name == Util.getAuthnMechanismName(da.idp.authenticationMechanisms[j], da.idp.name, da.authnService.name)) {
+                            //if (da.idp.authenticationMechanisms[j].name == Util.getAuthnMechanismName(da.idp.authenticationMechanisms[j], da.idp.name, da.authnService.name)) {
+                            if (da.idp.authenticationMechanisms[j].delegatedAuthentication == da) {
                                 removedAuthnMechanismPriority = da.idp.authenticationMechanisms[j].priority;
                                 da.idp.authenticationMechanisms.removeItemAt(j);
                                 break;

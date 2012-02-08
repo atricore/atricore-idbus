@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.modeling.main.view {
 import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
+import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.BindAuthentication;
 import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
 import com.atricore.idbus.console.services.dto.WindowsAuthentication;
@@ -31,14 +32,19 @@ public class Util {
     }
 
     public static function getAuthnMechanismName(authnMechanism:AuthenticationMechanism, idpName:String, authnServiceName:String):String {
-        var name:String = idpName.replace(/\s+/g, "-").toLowerCase() + authnServiceName.replace(/\s+/g, "-");
+        var name:String = null;
 
-        if (authnMechanism is TwoFactorAuthentication) {
-            name += "-2factor-authn";
-        } else if (authnMechanism is BindAuthentication) {
-            name += "-bind-authn";
-        } else if (authnMechanism is WindowsAuthentication) {
-            name += "-windows-authn";
+        if (authnMechanism is BasicAuthentication) {
+            name = idpName.replace(/\s+/g, "-").toLowerCase() + "-basic-authn";
+        } else {
+            name = idpName.replace(/\s+/g, "-").toLowerCase() + "-" + authnServiceName.replace(/\s+/g, "-");
+            if (authnMechanism is TwoFactorAuthentication) {
+                name += "-2factor-authn";
+            } else if (authnMechanism is BindAuthentication) {
+                name += "-bind-authn";
+            } else if (authnMechanism is WindowsAuthentication) {
+                name += "-windows-authn";
+            }
         }
 
         return name;

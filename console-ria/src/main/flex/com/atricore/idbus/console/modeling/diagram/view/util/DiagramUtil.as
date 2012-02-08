@@ -71,7 +71,7 @@ public class DiagramUtil {
 
     public static function nodesCanBeLinkedWithDelegatedAuthentication(node1:IVisualNode, node2:IVisualNode):Boolean {
         var canBeLinked:Boolean = false;
-        if (node1 != null && node2 != null && node1.id != node2.id) {
+        if (node1 != null && node2 != null && node1.id != node2.id && !nodeLinkExists(node1.node, node2.node) && !nodeLinkExists(node2.node, node1.node)) {
             if (node1.data is IdentityProvider && node2.data is AuthenticationService) {
                 canBeLinked = true;
             } else if (node1.data is AuthenticationService && node2.data is IdentityProvider) {

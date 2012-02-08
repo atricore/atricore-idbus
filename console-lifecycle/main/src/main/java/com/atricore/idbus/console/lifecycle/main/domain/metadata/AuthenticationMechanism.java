@@ -33,6 +33,8 @@ public class AuthenticationMechanism implements Serializable {
 
     private int priority;
 
+    private DelegatedAuthentication delegatedAuthentication;
+
     public long getId() {
         return id;
     }
@@ -55,6 +57,14 @@ public class AuthenticationMechanism implements Serializable {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public DelegatedAuthentication getDelegatedAuthentication() {
+        return delegatedAuthentication;
+    }
+
+    public void setDelegatedAuthentication(DelegatedAuthentication delegatedAuthentication) {
+        this.delegatedAuthentication = delegatedAuthentication;
     }
 
     @Override

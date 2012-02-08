@@ -38,13 +38,14 @@ public class DelegatedAuthenticationRemoveCommand extends IocSimpleCommand {
 
         var removedAuthnMechanismPriority:int = -1;
         for (var i:int=0; i<idp.authenticationMechanisms.length; i++) {
-            if (idp.authenticationMechanisms[i].name == Util.getAuthnMechanismName(idp.authenticationMechanisms[i], idp.name, authnService.name)) {
+            //if (idp.authenticationMechanisms[i].name == Util.getAuthnMechanismName(idp.authenticationMechanisms[i], idp.name, authnService.name)) {
+            if (idp.authenticationMechanisms[i].delegatedAuthentication == delegatedAuthentication) {
                 removedAuthnMechanismPriority = idp.authenticationMechanisms[i].priority;
                 idp.authenticationMechanisms.removeItemAt(i);
                 break;
             }
         }
-        
+
         authnService.delegatedAuthentications.removeItemAt(authnService.delegatedAuthentications.getItemIndex(delegatedAuthentication));
 
         if (removedAuthnMechanismPriority > -1) {

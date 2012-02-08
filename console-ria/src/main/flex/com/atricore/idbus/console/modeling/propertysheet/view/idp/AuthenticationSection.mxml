@@ -30,12 +30,37 @@
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{simpleAuthnName}" required="true" property="text"/>
     </fx:Declarations>
-    
-    <utils:TitledBorderBox title="Simple Authentication" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
+
+    <fx:Script>
+        <![CDATA[
+        import com.atricore.idbus.console.main.EmbeddedIcons;
+        import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
+        import com.atricore.idbus.console.services.dto.BasicAuthentication;
+        import com.atricore.idbus.console.services.dto.BindAuthentication;
+        import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
+        import com.atricore.idbus.console.services.dto.WindowsAuthentication;
+
+        private function authenticationMechanismsIconFunction(item:AuthenticationMechanism):Class {
+            var iconClass:Class;
+            if (item is BasicAuthentication) {
+                iconClass = EmbeddedIcons.connectionDelegatedAuthnMiniIcon;
+            } else if (item is BindAuthentication) {
+                iconClass = EmbeddedIcons.directoryServiceMiniIcon;
+            } else if (item is TwoFactorAuthentication) {
+                iconClass = EmbeddedIcons.wikidMiniIcon;
+            } else if (item is WindowsAuthentication) {
+                iconClass = EmbeddedIcons.windowsIntegratedAuthnMiniIcon;
+            }
+            return iconClass;
+        }
+        ]]>
+    </fx:Script>
+
+    <utils:TitledBorderBox title="Basic Authentication" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
                            paddingBottom="5">
         <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.name')}:" required="true">
-                <s:TextInput id="simpleAuthnName" width="200"/>
+                <s:TextInput id="simpleAuthnName" width="200" editable="false"/>
             </mx:FormItem>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.enabled')}:">
@@ -91,7 +116,8 @@
             <mx:Tree id="authenticationMechanisms"
                      showRoot="false"
                      labelField="name"
-                     defaultLeafIcon="{null}"
+                     iconFunction="authenticationMechanismsIconFunction"
+                     alternatingItemColors="[0xEFF3FA, 0xFFFFFF]"
                      dragEnabled="true"
                      dropEnabled="true"
                      allowMultipleSelection="true"
