@@ -33,9 +33,10 @@ public class DirectoryServiceAuthenticationTransformer extends AbstractTransform
         if (!(event.getData() instanceof BindAuthentication))
             return false;
 
+        BindAuthentication ba = (BindAuthentication) event.getData();
+
         IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
-        //AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
-        AuthenticationService authnService = null; // TODO: JOSSO-355
+        AuthenticationService authnService = ba.getDelegatedAuthentication().getAuthnService();
 
         return authnService != null && authnService instanceof DirectoryAuthenticationService;
     }
@@ -59,8 +60,7 @@ public class DirectoryServiceAuthenticationTransformer extends AbstractTransform
         if (logger.isTraceEnabled())
             logger.trace("Generating Two-Factor Authentication Scheme for IdP " + idpBean.getName());
 
-        //AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
-        AuthenticationService authnService = null; // TODO: JOSSO-355
+        AuthenticationService authnService = bindAuthn.getDelegatedAuthentication().getAuthnService();
 
         if (authnService instanceof DirectoryAuthenticationService) {
             DirectoryAuthenticationService directoryAuthnService = (DirectoryAuthenticationService) authnService;
@@ -121,12 +121,12 @@ public class DirectoryServiceAuthenticationTransformer extends AbstractTransform
             Bean legacyAuthenticator = authenticators.iterator().next();
             addPropertyBeansAsRefs(legacyAuthenticator, "authenticationSchemes", bindAuthnScheam);
 
-            // Add new Basic Authenticator
+            // Add new Basic Authenticator, if not already configured ...
             Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
-            Bean twoFactorAuthenticator = newAnonymousBean("org.atricore.idbus.capabilities.sts.main.authenticators.BasicSecurityTokenAuthenticator");
-            setPropertyRef(twoFactorAuthenticator, "authenticator", legacyAuthenticator.getName());
+            Bean basicAuthenticator = newAnonymousBean("org.atricore.idbus.capabilities.sts.main.authenticators.BasicSecurityTokenAuthenticator");
+            setPropertyRef(basicAuthenticator, "authenticator", legacyAuthenticator.getName());
 
-            addPropertyBean(sts, "authenticators", twoFactorAuthenticator);
+            addPropertyBean(sts, "authenticators", basicAuthenticator);
 
         }
 

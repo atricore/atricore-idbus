@@ -27,7 +27,7 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
     @Override
     public boolean accept(TransformEvent event) {
         return event.getData() instanceof BasicAuthentication &&
-                event.getContext().getParentNode() instanceof IdentityProvider;
+               event.getContext().getParentNode() instanceof IdentityProvider;
     }
 
     @Override
@@ -128,13 +128,13 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
             if (impersonateAuthnBean != null)
                 addPropertyBeansAsRefs(legacyAuthenticator, "authenticationSchemes", impersonateAuthnBean);
 
-            // Add 2F Authenticator
-            Bean twoFactorAuthenticator = newAnonymousBean("org.atricore.idbus.capabilities.sts.main.authenticators.BasicSecurityTokenAuthenticator");
-            setPropertyRef(twoFactorAuthenticator, "authenticator", legacyAuthenticator.getName());
+            // Add Basic Authenticator, if not already configured
+            Bean basicAuthenticator = newAnonymousBean("org.atricore.idbus.capabilities.sts.main.authenticators.BasicSecurityTokenAuthenticator");
+            setPropertyRef(basicAuthenticator, "authenticator", legacyAuthenticator.getName());
 
             // Add authenticators to STS
             Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
-            addPropertyBean(sts, "authenticators", twoFactorAuthenticator);
+            addPropertyBean(sts, "authenticators", basicAuthenticator);
 
 
         }
