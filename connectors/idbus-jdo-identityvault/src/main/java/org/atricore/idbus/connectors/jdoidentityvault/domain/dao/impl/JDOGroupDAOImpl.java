@@ -35,11 +35,20 @@ public class JDOGroupDAOImpl extends GenericDAOImpl<JDOGroup, Long> implements J
         return groups.iterator().next();
     }
 
+    /**
+     * TODO : Add case insensitive lookup parameter
+     * @param userName
+     * @return
+     */
     public Collection<JDOGroup> findByUserName(String userName) {
         PersistenceManager pm = getPersistenceManager();
 
+//        Query query = pm.newQuery("SELECT FROM org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser" +
+//                " WHERE this.userName.toLowerCase() == '" + userName.toLowerCase() + "'");
+
         Query query = pm.newQuery("SELECT FROM org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser" +
                 " WHERE this.userName == '" + userName + "'");
+
 
         Collection<JDOUser> users = (Collection<JDOUser>) query.execute();
         if (users == null || users.size() != 1)

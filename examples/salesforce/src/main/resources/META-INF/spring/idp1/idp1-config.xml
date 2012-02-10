@@ -79,7 +79,7 @@
         <property name="name" value="idp1-to-sp-default-channel"/>
         <property name="location" value="http://poc.atricore.com:8081/IDBUS/IDP-1"/>
         <property name="provider" ref="idp1"/>
-        <property name="claimsProvider" ref="idp1-claim-channel"/>
+        <property name="claimProviders" ref="idp1-claim-channel"/>
         <property name="securityTokenService" ref="idp1-sts"/>
         <property name="sessionManager" ref="sfidau-idp1-session-manager"/>
         <property name="identityManager" ref="idp1-identity-manager"/>
@@ -227,7 +227,7 @@
         <property name="location" value="http://poc.atricore.com:8081/IDBUS/IDP-1/SLS2"/>
         <property name="provider" ref="idp1"/>
         <property name="targetProvider" ref="salesforce2"/>
-        <property name="claimsProvider" ref="idp1-claim-channel"/>
+        <property name="claimProviders" ref="idp1-claim-channel"/>
         <property name="securityTokenService" ref="idp1-sts"/>
         <property name="sessionManager" ref="sfidau-idp1-session-manager"/>
         <property name="identityManager" ref="idp1-identity-manager"/>

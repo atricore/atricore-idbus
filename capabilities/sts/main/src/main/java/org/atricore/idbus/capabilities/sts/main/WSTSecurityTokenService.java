@@ -156,27 +156,49 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         return rstr;
     }
 
+    /**
+     * For now authentiactors are all considered to be sufficient, as long as one of them succeeds, the authentication is valid.
+     */
     protected Subject authenticate(Object requestToken, String tokenType) throws SecurityTokenEmissionException {
 
         // Authenticate the token!
         SecurityTokenAuthenticator selectedAuthenticator = null;
+        SecurityTokenAuthenticationFailure lastAuthnFailedException = null;
         for (SecurityTokenAuthenticator authenticator : authenticators) {
 
             if (authenticator.canAuthenticate(requestToken)) {
-                selectedAuthenticator = authenticator;
-                logger.debug("Selected Security Token Authenticator for token type [" + tokenType + " is " +
-                        "[" + selectedAuthenticator.getId() + "]");
-                break;
+
+                try {
+                    selectedAuthenticator = authenticator;
+
+                    logger.debug("Selected Security Token Authenticator for token type [" + tokenType + " is " +
+                            "[" + selectedAuthenticator.getId() + "]");
+
+                    // Return the authenticated subject
+                    return authenticator.authenticate(requestToken);
+
+                } catch (SecurityTokenAuthenticationFailure e) {
+
+                    lastAuthnFailedException = e;
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Authentication failed for " + authenticator.getId());
+
+                    if (logger.isTraceEnabled())
+                        logger.trace(e.getMessage(), e);
+
+                }
             }
 
         }
 
         if (selectedAuthenticator == null) {
-            throw new RuntimeException("No authenticator handling security token type [" + tokenType + "] " +
+            throw new RuntimeException("No authenticator configured for security token type [" + tokenType + "] " +
                     requestToken.getClass().getSimpleName());
         }
 
-        return selectedAuthenticator.authenticate(requestToken);
+        // We have a selected authenticator, but the authentication failed
+        throw lastAuthnFailedException;
 
     }
 

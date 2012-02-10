@@ -4,6 +4,7 @@ package org.atricore.idbus.capabilities.spnego.jaas;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.io.IOUtils;
+import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.ini4j.Ini;
 import org.ini4j.Wini;
 import org.osgi.framework.BundleContext;
@@ -170,12 +171,17 @@ public class KerberosServiceInit {
         try {
 
             // Perform an automatic signon, to make sure that everything is working.
-            if (authenticatOnInit)
-                authenticate(new String[] { principal } );
+            if (authenticatOnInit) {
+                try {
+                    authenticate(new String[] { principal } );
+                } catch (SecurityException e) {
+                    // Do not stop JOSSO startup, perhaps the DC will be back on-line later
+                    logger.error("Cannot perform Kerberos Sign-On:" + e.getMessage(), e);
+                }
+            }
 
         } catch (Exception e) {
-            logger.error("Cannot perform Kerberos Sign-On:" + e.getMessage(), e);
-            // TODO : Should we stop JOSSO Start=up ? what if the DC get's back on-line later.
+            logger.error("Error initializing Kerberos " + e.getMessage(), e);
             throw e;
         }
     }

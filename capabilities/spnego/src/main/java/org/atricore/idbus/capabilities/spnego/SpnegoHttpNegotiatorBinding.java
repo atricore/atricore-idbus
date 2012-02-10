@@ -116,11 +116,12 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", isn.getSpnegoInitiationEndpoint());
-        } else
-        if (sm instanceof RequestToken) {
+        } else if (sm instanceof RequestToken) {
             logger.debug("Requesting GSSAPI token to SPNEGO/HTTP initiator");
             httpOut.getHeaders().put(SpnegoHeader.AUTHN.getValue(), SpnegoHeader.NEGOTIATE.getValue());
             httpOut.getHeaders().put("http.responseCode", SpnegoStatus.UNAUTHORIZED.getValue());
+            // TODO : If SPNEGO is not available for the client, we need to send content on the page, to trigger a fall-back
+            // See how JOSSO 1 solves this for NTLM
         }
 
     }
