@@ -982,26 +982,27 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         }
                         if (locProv is IdentityProvider) {
                             var idp:IdentityProvider = locProv as IdentityProvider;
-                            if (idp.delegatedAuthentication != null && idp.delegatedAuthentication.authnService != null){  //check for authn. service
-                                var authnServiceExists:Boolean = false;
-                                for each (var tmpAuthnServiceGraphNode:IVisualNode in authnServiceNodes) {
-                                    if (tmpAuthnServiceGraphNode.data as AuthenticationService == idp.delegatedAuthentication.authnService) {
-                                        GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpAuthnServiceGraphNode, providerGraphNode,
-                                                idp.delegatedAuthentication, EmbeddedIcons.connectionDelegatedAuthnIcon,
-                                                resourceManager.getString(AtricoreConsole.BUNDLE, "delegated.authentication.connection"));
-                                        authnServiceExists = true;
+                            if (idp.delegatedAuthentications != null) {
+                                for each (var delegatedAuthentication:DelegatedAuthentication in idp.delegatedAuthentications) {
+                                    var authnServiceExists:Boolean = false;
+                                    for each (var tmpAuthnServiceGraphNode:IVisualNode in authnServiceNodes) {  //check for authn. service
+                                        if (tmpAuthnServiceGraphNode.data as AuthenticationService == delegatedAuthentication.authnService) {
+                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpAuthnServiceGraphNode, providerGraphNode,
+                                                    delegatedAuthentication, EmbeddedIcons.connectionDelegatedAuthnIcon,
+                                                    resourceManager.getString(AtricoreConsole.BUNDLE, "delegated.authentication.connection"));
+                                            authnServiceExists = true;
+                                        }
+                                    }
+                                    if (!authnServiceExists) {
+                                        var newAuthnServiceNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram,
+                                                UIDUtil.createUID(), delegatedAuthentication.authnService, providerGraphNode,
+                                                delegatedAuthentication, EmbeddedIcons.connectionDelegatedAuthnIcon,
+                                                resourceManager.getString(AtricoreConsole.BUNDLE, "delegated.authentication.connection"),
+                                                true, Constants.AUTHENTICATION_SERVICE_DEEP);
+                                        //if authn. service doesn't exist in the authn. service array, add it so other providers can find it
+                                        authnServiceNodes.addItem(newAuthnServiceNode);
                                     }
                                 }
-                                if (!authnServiceExists) {
-                                    var newAuthnServiceNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram,
-                                            UIDUtil.createUID(), idp.delegatedAuthentication.authnService, providerGraphNode,
-                                            idp.delegatedAuthentication, EmbeddedIcons.connectionDelegatedAuthnIcon,
-                                            resourceManager.getString(AtricoreConsole.BUNDLE, "delegated.authentication.connection"),
-                                            true, Constants.AUTHENTICATION_SERVICE_DEEP);
-                                    //if authn. service doesn't exist in the authn. service array, add it so other providers can find it
-                                    authnServiceNodes.addItem(newAuthnServiceNode);
-                                }
-
                             }
                         }
                     }
@@ -1090,8 +1091,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         }
                         if (locProv is IdentityProvider) {
                             var idp:IdentityProvider = locProv as IdentityProvider;
-                            if (idp.delegatedAuthentication != null) {
-                                updateGraphEdgeData(idp.delegatedAuthentication);
+                            if (idp.delegatedAuthentications != null) {
+                                for each (var delegatedAuthentication:DelegatedAuthentication in idp.delegatedAuthentications) {
+                                    updateGraphEdgeData(delegatedAuthentication);
+                                }
                             }
                         }
                         for each (var fedConnA:FederatedConnection in locProv.federatedConnectionsA) {

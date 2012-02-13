@@ -39,7 +39,9 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
             return false;
 
         IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
-        AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        //AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        WindowsAuthentication wia = (WindowsAuthentication) event.getData();
+        AuthenticationService authnService = wia.getDelegatedAuthentication().getAuthnService();
 
         return authnService != null && authnService instanceof WindowsIntegratedAuthentication;
     }
@@ -52,9 +54,10 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
         WindowsAuthentication wiaAuthn = (WindowsAuthentication) event.getData();
 
         IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
-        WindowsIntegratedAuthentication wia = (WindowsIntegratedAuthentication) idp.getDelegatedAuthentication().getAuthnService();
 
-        // TODO : For now user veolicty , but we MUST use blueprint xml binding, like we do with spring!
+        WindowsIntegratedAuthentication wia = (WindowsIntegratedAuthentication) wiaAuthn.getDelegatedAuthentication().getAuthnService();
+
+        // TODO : For now user velocity, but we MUST use blueprint xml binding, like we do with spring!
 
         String spn = buildSpn(wia);
 

@@ -48,7 +48,7 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
             return false;
 
         for (AuthenticationMechanism a : idp.getAuthenticationMechanisms()) {
-            // Basic and Bind are prity mutch the same from a 'claiming' point of view
+            // Basic and Bind are pretty much the same from a 'claiming' point of view
             if (a instanceof BasicAuthentication ||
                 a instanceof BindAuthentication)
                 return true;
@@ -72,7 +72,7 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
         IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating Claims Channel Beans for IDP Channel " + provider.getName());
+            logger.trace("Generating Claim Channel Beans for IDP Channel " + provider.getName());
 
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans beansOsgi = (Beans) event.getContext().get("beansOsgi");
@@ -85,30 +85,36 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
         idpBean = b.iterator().next();
         
         // ----------------------------------------
-        // Claims Channel
+        // Claim Channel
         // ----------------------------------------
 
-
-        Bean claimsChannelBean = newBean(idpBeans, idpBean.getName() + "-claims-channel", ClaimChannelImpl.class);
-
-        // name
-        setPropertyValue(claimsChannelBean, "name", claimsChannelBean.getName());
-
-        // location
-        String locationUrl = resolveLocationUrl(provider) + "/CC";
-        setPropertyValue(claimsChannelBean, "location", locationUrl);
-
-        // endpoints
-        List<Bean> ccEndpoints = new ArrayList<Bean>();
-
-
         for (AuthenticationMechanism authnMechanism : provider.getAuthenticationMechanisms()) {
+
             // Bind authn is a variant of basic authn
             if (authnMechanism instanceof BasicAuthentication ||
                 authnMechanism instanceof BindAuthentication) {
 
+                String claimChannelBeanName = normalizeBeanName(idpBean.getName() + "-basic-authn-claim-channel");
+
+                // We will generate ONE and only ONE claim channel for retrieving basic authn credentials.
+                Bean claimChannelBean = getBean(idpBeans, claimChannelBeanName);
+                if (claimChannelBean != null)
+                    return;
+
+                claimChannelBean = newBean(idpBeans, claimChannelBeanName, ClaimChannelImpl.class);
+
+                // name
+                setPropertyValue(claimChannelBean, "name", claimChannelBean.getName());
+
+                // location
+                String locationUrl = resolveLocationUrl(provider) + "/CC/BASIC" ;
+                setPropertyValue(claimChannelBean, "location", locationUrl);
+
+                // endpoints
+                List<Bean> ccEndpoints = new ArrayList<Bean>();
+
                 Bean ccPwdArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                ccPwdArtifact.setName(idpBean.getName() + "-cc-pwd-artifact");
+                ccPwdArtifact.setName(claimChannelBeanName + "-cc-pwd-artifact");
                 setPropertyValue(ccPwdArtifact, "name", ccPwdArtifact.getName());
                 setPropertyValue(ccPwdArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
                 setPropertyValue(ccPwdArtifact, "location", "/PWD/ARTIFACT");
@@ -117,7 +123,7 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 ccEndpoints.add(ccPwdArtifact);
 
                 Bean ccPwdPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                ccPwdPost.setName(idpBean.getName() + "-cc-pwd-post");
+                ccPwdPost.setName(claimChannelBeanName + "-cc-pwd-post");
                 setPropertyValue(ccPwdPost, "name", ccPwdPost.getName());
                 setPropertyValue(ccPwdPost, "binding", SSOBinding.SSO_POST.getValue());
                 setPropertyValue(ccPwdPost, "location", "/PWD/POST");
@@ -125,10 +131,10 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 ccEndpoints.add(ccPwdPost);
 
                 Bean ccSpPwdLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                ccSpPwdLocal.setName(idpBean.getName() + "-cc-sppwd-local");
+                ccSpPwdLocal.setName(claimChannelBeanName + "-cc-sppwd-local");
                 setPropertyValue(ccSpPwdLocal, "name", ccSpPwdLocal.getName());
                 setPropertyValue(ccSpPwdLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
-                setPropertyValue(ccSpPwdLocal, "location",  "local://" + claimsChannelBean.getName().toUpperCase() + "/CC/SPPWD/LOCAL");
+                setPropertyValue(ccSpPwdLocal, "location",  "local://" + claimChannelBean.getName().toUpperCase() + "/CC/SPPWD/LOCAL");
                 setPropertyValue(ccSpPwdLocal, "type", AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue());
                 ccEndpoints.add(ccSpPwdLocal);
 
@@ -140,72 +146,71 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                         // Enable endpoints for user impersonation
 
                         Bean ccSpImpersonateLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                        ccSpImpersonateLocal.setName(idpBean.getName() + "-cc-spimpersonate-local");
+                        ccSpImpersonateLocal.setName(claimChannelBeanName + "-cc-spimpersonate-local");
                         setPropertyValue(ccSpImpersonateLocal, "name", ccSpImpersonateLocal.getName());
                         setPropertyValue(ccSpImpersonateLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
-                        setPropertyValue(ccSpImpersonateLocal, "location",  "local://" + claimsChannelBean.getName().toUpperCase() + "/CC/SPIMPERSONATE/LOCAL");
+                        setPropertyValue(ccSpImpersonateLocal, "location",  "local://" + claimChannelBean.getName().toUpperCase() + "/CC/SPIMPERSONATE/LOCAL");
                         setPropertyValue(ccSpImpersonateLocal, "type", AuthnCtxClass.ATC_SP_IMPERSONATE_AUTHN_CTX.getValue());
                         ccEndpoints.add(ccSpImpersonateLocal);
 
                     }
                 }
 
+                setPropertyAsBeans(claimChannelBean, "endpoints", ccEndpoints);
+
+                // ----------------------------------------
+                // Claim Channel Mediator
+                // ----------------------------------------
+                Bean ccMediator = newBean(idpBeans, claimChannelBeanName + "-claim-mediator", SSOClaimsMediator.class);
+
+                // logMessages
+                setPropertyValue(ccMediator, "logMessages", true);
+
+                // basicAuthnUILocation
+                setPropertyValue(ccMediator, "basicAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-password.do");
+
+                // artifactQueueManager
+                setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+
+                // bindingFactory
+                setPropertyBean(ccMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));
+
+                List<Bean> ccLogBuilders = new ArrayList<Bean>();
+                ccLogBuilders.add(newAnonymousBean(SamlR2LogMessageBuilder.class));
+                ccLogBuilders.add(newAnonymousBean(CamelLogMessageBuilder.class));
+                ccLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
+
+                Bean ccLogger = newBean(idpBeans, claimChannelBeanName + "-mediation-logger", DefaultMediationLogger.class.getName());
+                setPropertyValue(ccLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + claimChannelBeanName.toLowerCase());
+                setPropertyAsBeans(ccLogger, "messageBuilders", ccLogBuilders);
+
+                // logger
+                setPropertyBean(ccMediator, "logger", ccLogger);
+
+                // errorUrl
+                setPropertyValue(ccMediator, "errorUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/error.do");
+
+                // warningUrl
+                setPropertyValue(ccMediator, "warningUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/warn/policy-enforcement.do");
+
+                // identityMediator
+                setPropertyRef(claimChannelBean, "identityMediator", ccMediator.getName());
+
+                // provider
+                setPropertyRef(claimChannelBean, "provider", idpBean.getName());
+
+                // unitContainer
+                setPropertyRef(claimChannelBean, "unitContainer", provider.getIdentityAppliance().getName() + "-container");
+
+                // Mediation Unit
+                Collection<Bean> mus = getBeansOfType(baseBeans, OsgiIdentityMediationUnit.class.getName());
+                if (mus.size() == 1) {
+                    Bean mu = mus.iterator().next();
+                    addPropertyBeansAsRefs(mu, "channels", claimChannelBean);
+                } else {
+                    throw new TransformException("One and only one Identity Mediation Unit is expected, found " + mus.size());
+                }
             }
-        }
-
-        setPropertyAsBeans(claimsChannelBean, "endpoints", ccEndpoints);
-
-        // ----------------------------------------
-        // Claims Mediator
-        // ----------------------------------------
-        Bean ccMediator = newBean(idpBeans, idpBean.getName() + "-basicauthn-claims-mediator", SSOClaimsMediator.class);
-
-        // logMessages
-        setPropertyValue(ccMediator, "logMessages", true);
-
-        // basicAuthnUILocation
-        setPropertyValue(ccMediator, "basicAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-password.do");
-
-        // artifactQueueManager
-        setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
-        
-        // bindingFactory
-        setPropertyBean(ccMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));
-
-        List<Bean> ccLogBuilders = new ArrayList<Bean>();
-        ccLogBuilders.add(newAnonymousBean(SamlR2LogMessageBuilder.class));
-        ccLogBuilders.add(newAnonymousBean(CamelLogMessageBuilder.class));
-        ccLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
-
-        Bean ccLogger = newBean(idpBeans, idpBean.getName() + "-cc-mediation-logger", DefaultMediationLogger.class.getName());
-        setPropertyValue(ccLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire.cc1");
-        setPropertyAsBeans(ccLogger, "messageBuilders", ccLogBuilders);
-
-        // logger
-        setPropertyBean(ccMediator, "logger", ccLogger);
-
-        // errorUrl
-        setPropertyValue(ccMediator, "errorUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/error.do");
-
-        // warningUrl
-        setPropertyValue(ccMediator, "warningUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/warn/policy-enforcement.do");
-
-        // identityMediator
-        setPropertyRef(claimsChannelBean, "identityMediator", ccMediator.getName());
-
-        // provider
-        setPropertyRef(claimsChannelBean, "provider", idpBean.getName());
-
-        // unitContainer
-        setPropertyRef(claimsChannelBean, "unitContainer", provider.getIdentityAppliance().getName() + "-container");
-        
-        // Mediation Unit
-        Collection<Bean> mus = getBeansOfType(baseBeans, OsgiIdentityMediationUnit.class.getName());
-        if (mus.size() == 1) {
-            Bean mu = mus.iterator().next();
-            addPropertyBeansAsRefs(mu, "channels", claimsChannelBean);
-        } else {
-            throw new TransformException("One and only one Identity Mediation Unit is expected, found " + mus.size());
         }
     }
 }

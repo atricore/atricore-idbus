@@ -37,11 +37,12 @@ import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPolici
 import com.atricore.idbus.console.modeling.main.controller.ImpersonateUserPoliciesListCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand;
+import com.atricore.idbus.console.modeling.main.view.Util;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.directory.DirectoryAuthnServiceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.directory.DirectoryAuthnServiceLookupSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.windows.WindowsIntegratedAuthnCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.wikid.WikidAuthnServiceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.windows.WindowsIntegratedAuthnCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultLookupSection;
@@ -74,12 +75,13 @@ import com.atricore.idbus.console.modeling.propertysheet.view.googleapps.GoogleA
 import com.atricore.idbus.console.modeling.propertysheet.view.googleapps.GoogleAppsCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.identitylookup.IdentityLookupCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.identityvault.EmbeddedDBIdentityVaultCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.idp.AuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.BasicAuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.BindAuthenticationSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.idp.WindowsAuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.TwoFactorAuthenticationSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.idp.WindowsAuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.jossoactivation.JOSSOActivationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceLookupSection;
@@ -101,12 +103,6 @@ import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
-import com.atricore.idbus.console.services.dto.ImpersonateUserPolicy;
-import com.atricore.idbus.console.services.dto.ImpersonateUserPolicyType;
-import com.atricore.idbus.console.services.dto.Sharepoint2010ExecutionEnvironment;
-import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
-import com.atricore.idbus.console.services.dto.WindowsAuthentication;
-import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
@@ -121,6 +117,8 @@ import com.atricore.idbus.console.services.dto.IdentityMappingType;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.ImpersonateUserPolicy;
+import com.atricore.idbus.console.services.dto.ImpersonateUserPolicyType;
 import com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
@@ -138,6 +136,8 @@ import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
+import com.atricore.idbus.console.services.dto.Sharepoint2010ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
@@ -145,7 +145,9 @@ import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
+import com.atricore.idbus.console.services.dto.WindowsAuthentication;
 import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 import com.atricore.idbus.console.services.spi.response.GetCertificateInfoResponse;
 import com.atricore.idbus.console.services.spi.response.GetMetadataInfoResponse;
@@ -158,6 +160,8 @@ import flash.utils.ByteArray;
 
 import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
+import mx.collections.Sort;
+import mx.collections.SortField;
 import mx.controls.Alert;
 import mx.events.FlexEvent;
 import mx.events.ItemClickEvent;
@@ -228,7 +232,8 @@ public class PropertySheetMediator extends IocMediator {
     private var _webserverExecEnvCoreSection:WebserverExecEnvCoreSection;
     private var _sharepoint2010ExecEnvCoreSection:Sharepoint2010ExecEnvCoreSection;
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
-    private var _authenticationPropertyTab:Group;
+    //private var _authenticationPropertyTab:Group;
+    private var _authenticationSection:AuthenticationSection;
     private var _basicAuthenticationSection:BasicAuthenticationSection;
     private var _twoFactorAuthenticationSection:TwoFactorAuthenticationSection;
     private var _bindAuthenticationSection:BindAuthenticationSection;
@@ -295,6 +300,9 @@ public class PropertySheetMediator extends IocMediator {
     [Bindable]
     public var _subjectNameIdPolicies:ArrayCollection;
 
+    [Bindable]
+    public var _authenticationMechanisms:ArrayCollection;
+
     // WiKID
     [Bindable]
     private var _wikidCAStoreFileRef:FileReference;
@@ -349,9 +357,9 @@ public class PropertySheetMediator extends IocMediator {
 
     private function stackChanged(event:IndexChangeEvent):void {
         _propertySheetsViewStack.selectedIndex = _tabbedPropertiesTabBar.selectedIndex;
-        if (_tabbedPropertiesTabBar.selectedItem.name == "Authentication") {
+        /*if (_tabbedPropertiesTabBar.selectedItem.name == "Authentication") {
             handleAuthenticationTabClick();
-        }
+        }*/
     }
 
     override public function listNotificationInterests():Array {
@@ -863,14 +871,18 @@ public class PropertySheetMediator extends IocMediator {
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderContractPropertyTabRollOut);
 
         // Authentication Tab
-        _authenticationPropertyTab = new Group();
-        _authenticationPropertyTab.id = "propertySheetAuthenticationSection";
-        _authenticationPropertyTab.name = "Authentication";
-        _authenticationPropertyTab.width = Number("100%");
-        _authenticationPropertyTab.height = Number("100%");
-        _authenticationPropertyTab.setStyle("borderStyle", "solid");
+        var authenticationPropertyTab:Group = new Group();
+        authenticationPropertyTab.id = "propertySheetAuthenticationSection";
+        authenticationPropertyTab.name = "Authentication";
+        authenticationPropertyTab.width = Number("100%");
+        authenticationPropertyTab.height = Number("100%");
+        authenticationPropertyTab.setStyle("borderStyle", "solid");
 
-        _propertySheetsViewStack.addNewChild(_authenticationPropertyTab);
+        _authenticationSection = new AuthenticationSection();
+        authenticationPropertyTab.addElement(_authenticationSection);
+        _propertySheetsViewStack.addNewChild(authenticationPropertyTab);
+        _authenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleAuthenticationPropertyTabCreationComplete);
+        authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleAuthenticationPropertyTabRollOut);
 
         // Certificate Tab
         var certificatePropertyTab:Group = new Group();
@@ -980,12 +992,12 @@ public class PropertySheetMediator extends IocMediator {
                     selectedAuthnMechanism = "windows";
 
             }
-            for (var j:int = 0; j < _ipCoreSection.authMechanismCombo.dataProvider.length; j++) {
+            /*for (var j:int = 0; j < _ipCoreSection.authMechanismCombo.dataProvider.length; j++) {
                 if (_ipCoreSection.authMechanismCombo.dataProvider[j].data == selectedAuthnMechanism) {
                     _ipCoreSection.authMechanismCombo.selectedIndex = j;
                     break;
                 }
-            }
+            }*/
 
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1016,6 +1028,7 @@ public class PropertySheetMediator extends IocMediator {
 
             identityProvider = _currentIdentityApplianceElement as IdentityProvider;
 
+            var oldName:String = identityProvider.name;
             identityProvider.name = _ipCoreSection.identityProviderName.text;
             identityProvider.description = _ipCoreSection.identityProvDescription.text;
             identityProvider.ssoSessionTimeout = parseInt(_ipCoreSection.ssoSessionTimeout.text);
@@ -1043,6 +1056,38 @@ public class PropertySheetMediator extends IocMediator {
                     var spChannel2:ServiceProviderChannel = identityProvider.federatedConnectionsB[j].channelB as ServiceProviderChannel;
                     if (!spChannel2.overrideProviderSetup) {
                         updateServiceProviderChannel(spChannel2, identityProvider);
+                    }
+                }
+            }
+
+            if (oldName != identityProvider.name &&
+                    identityProvider.delegatedAuthentications != null &&
+                    identityProvider.delegatedAuthentications.length > 0) {
+                for each (var delegatedAuthentication:DelegatedAuthentication in identityProvider.delegatedAuthentications) {
+                    var authnMechanism:AuthenticationMechanism = null;
+                    if (delegatedAuthentication.authnService is DirectoryAuthenticationService) {
+                        authnMechanism = new BindAuthentication();
+                    } else if (delegatedAuthentication.authnService is WindowsIntegratedAuthentication) {
+                        authnMechanism = new WindowsAuthentication();
+                    } else if (delegatedAuthentication.authnService is WikidAuthenticationService) {
+                        authnMechanism = new TwoFactorAuthentication();
+                    }
+                    //var oldAuthnMechanismName:String = Util.getAuthnMechanismName(authnMechanism, oldName, delegatedAuthentication.authnService.name);
+                    for each (var authenticationMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                        //if (authenticationMechanism.name == oldAuthnMechanismName) {
+                        if (authenticationMechanism.delegatedAuthentication == delegatedAuthentication) {
+                            authenticationMechanism.name = Util.getAuthnMechanismName(authenticationMechanism, identityProvider.name, delegatedAuthentication.authnService.name);
+                            break;
+                        }
+                    }
+                }
+                for each (var authnMech:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                    if (authnMech is BasicAuthentication) {
+                        authnMech.name = Util.getAuthnMechanismName(authnMech, identityProvider.name, null);
+                        if (_authenticationSection != null) {
+                            _authenticationSection.simpleAuthnName.text = authnMech.name;
+                        }
+                        break;
                     }
                 }
             }
@@ -1218,31 +1263,151 @@ public class PropertySheetMediator extends IocMediator {
         spChannel.wantAuthnRequestsSigned = identityProvider.wantAuthnRequestsSigned;
     }
 
-    private function handleAuthenticationTabClick():void {
-        if (_ipCoreSection.authMechanismCombo.selectedItem.data == "basic") {
-            _basicAuthenticationSection = new BasicAuthenticationSection();
-            _authenticationPropertyTab.addElement(_basicAuthenticationSection);
+    private function handleAuthenticationPropertyTabCreationComplete(event:Event):void {
+        var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
 
-            _basicAuthenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleBasicAuthenticationPropertyTabCreationComplete);
-            _authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleBasicAuthenticationPropertyTabRollOut);
-        } else if (_ipCoreSection.authMechanismCombo.selectedItem.data == "2factor") {
-            _twoFactorAuthenticationSection = new TwoFactorAuthenticationSection();
-            _authenticationPropertyTab.addElement(_twoFactorAuthenticationSection);
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            // bind view
+            BindingUtils.bindProperty(_authenticationSection.simpleAuthnImpersonateUserPoliciesCombo, "dataProvider", this, "_impersonateUserPolicies");
+            sendNotification(ApplicationFacade.LIST_IMPERSONATE_USER_POLICIES);
 
-            _twoFactorAuthenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleTwoFactorAuthenticationPropertyTabCreationComplete);
-            _authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleTwoFactorAuthenticationPropertyTabRollOut);
-        } else if (_ipCoreSection.authMechanismCombo.selectedItem.data == "bind") {
-            _bindAuthenticationSection = new BindAuthenticationSection();
-            _authenticationPropertyTab.addElement(_bindAuthenticationSection);
+            // find basic authentication
+            var basicAuthentication:BasicAuthentication = null;
+            for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                if (authMechanism is BasicAuthentication) {
+                    basicAuthentication = authMechanism as BasicAuthentication;
+                    break;
+                }
+            }
 
-            _bindAuthenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleBindAuthenticationPropertyTabCreationComplete);
-            _authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleBindAuthenticationPropertyTabRollOut);
-        } else if (_ipCoreSection.authMechanismCombo.selectedItem.data == "windows") {
-            _windowsAuthenticationSection = new WindowsAuthenticationSection();
-            _authenticationPropertyTab.addElement(_windowsAuthenticationSection);
+            if (basicAuthentication != null) {
 
-            _windowsAuthenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleWindowsAuthenticationPropertyTabCreationComplete);
-            _authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleWindowsAuthenticationPropertyTabRollOut);
+                _authenticationSection.simpleAuthnName.text = basicAuthentication.name;
+
+                _authenticationSection.simpleAuthnEnabled.selected = basicAuthentication.enabled;
+
+                for (var i:int = 0; i < _authenticationSection.simpleAuthnHashAlgorithm.dataProvider.length; i++) {
+                    if (_authenticationSection.simpleAuthnHashAlgorithm.dataProvider[i].data == basicAuthentication.hashAlgorithm) {
+                        _authenticationSection.simpleAuthnHashAlgorithm.selectedIndex = i;
+                        break;
+                    }
+                }
+
+                for (var j:int = 0; j < _authenticationSection.simpleAuthnHashEncoding.dataProvider.length; j++) {
+                    if (_authenticationSection.simpleAuthnHashEncoding.dataProvider[j].data == basicAuthentication.hashEncoding) {
+                        _authenticationSection.simpleAuthnHashEncoding.selectedIndex = j;
+                        break;
+                    }
+                }
+
+                _authenticationSection.simpleAuthnIgnoreUsernameCase.selected = basicAuthentication.ignoreUsernameCase;
+                _authenticationSection.simpleAuthnIgnorePasswordCase.selected = basicAuthentication.ignorePasswordCase;
+
+                _authenticationSection.simpleAuthnName.addEventListener(Event.CHANGE, handleSectionChange);
+                _authenticationSection.simpleAuthnEnabled.addEventListener(Event.CHANGE, handleSectionChange);
+                _authenticationSection.simpleAuthnEnabled.addEventListener(Event.CHANGE, handleSimpleAuthnEnabledChange);
+                _authenticationSection.simpleAuthnHashAlgorithm.addEventListener(Event.CHANGE, handleSectionChange);
+                _authenticationSection.simpleAuthnHashEncoding.addEventListener(Event.CHANGE, handleSectionChange);
+                _authenticationSection.simpleAuthnIgnoreUsernameCase.addEventListener(Event.CHANGE, handleSectionChange);
+                _authenticationSection.simpleAuthnIgnorePasswordCase.addEventListener(Event.CHANGE, handleSectionChange);
+                _authenticationSection.simpleAuthnImpersonateUserPoliciesCombo.addEventListener(Event.CHANGE, handleSectionChange);
+                _authenticationSection.authenticationMechanisms.addEventListener(Event.CHANGE, handleSectionChange);
+
+                //clear all existing validators and add basic auth. section validators
+                //_validators = [];
+                _validators.push(_authenticationSection.nameValidator);
+            }
+
+            var sortedAuthnMechanisms:ArrayCollection = new ArrayCollection();
+            for each (var authenticationMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                if (authenticationMechanism is BasicAuthentication) {
+                    if ((authenticationMechanism as BasicAuthentication).enabled) {
+                        sortedAuthnMechanisms.addItem(authenticationMechanism);
+                    }
+                } else {
+                    sortedAuthnMechanisms.addItem(authenticationMechanism);
+                }
+            }
+
+            var prioritySortField:SortField = new SortField();
+            prioritySortField.name = "priority";
+            prioritySortField.numeric = true;
+
+            var prioritySort:Sort = new Sort();
+            prioritySort.fields = [prioritySortField];
+
+            sortedAuthnMechanisms.sort = prioritySort;
+            sortedAuthnMechanisms.refresh();
+
+            _authenticationMechanisms = new ArrayCollection();
+            for each (var sortedAuthnMechanism:AuthenticationMechanism in sortedAuthnMechanisms) {
+                _authenticationMechanisms.addItem(sortedAuthnMechanism);
+            }
+
+            BindingUtils.bindProperty(_authenticationSection.authenticationMechanisms, "dataProvider", this, "_authenticationMechanisms");
+        }
+    }
+
+    private function handleAuthenticationPropertyTabRollOut(event:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+            // find basic authentication
+            var basicAuthentication:BasicAuthentication = null;
+            for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                authMechanism.priority = _authenticationMechanisms.getItemIndex(authMechanism) + 1;
+                if (authMechanism is BasicAuthentication) {
+                    basicAuthentication = authMechanism as BasicAuthentication;
+                }
+            }
+
+            if (basicAuthentication != null) {
+                //basicAuthentication.name = _authenticationSection.simpleAuthnName.text;
+                basicAuthentication.enabled = _authenticationSection.simpleAuthnEnabled.selected;
+                basicAuthentication.hashAlgorithm = _authenticationSection.simpleAuthnHashAlgorithm.selectedItem.data;
+                basicAuthentication.hashEncoding = _authenticationSection.simpleAuthnHashEncoding.selectedItem.data;
+                basicAuthentication.ignoreUsernameCase = _authenticationSection.simpleAuthnIgnoreUsernameCase.selected;
+                basicAuthentication.ignorePasswordCase = _authenticationSection.simpleAuthnIgnorePasswordCase.selected;
+                basicAuthentication.impersonateUserPolicy = _authenticationSection.simpleAuthnImpersonateUserPoliciesCombo.selectedItem;
+            }
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }
+
+    private function handleSimpleAuthnEnabledChange(event:Event):void {
+        var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+        if (identityProvider != null && _authenticationSection != null) {
+            var enabled:Boolean = _authenticationSection.simpleAuthnEnabled.selected;
+            var basicAuthentication:BasicAuthentication = null;
+            if (enabled) {
+                for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                    if (authMechanism is BasicAuthentication) {
+                        basicAuthentication = authMechanism as BasicAuthentication;
+                        break;
+                    }
+                }
+                if (basicAuthentication != null) {
+                    basicAuthentication.priority = _authenticationMechanisms.length + 1;
+                    _authenticationMechanisms.addItem(basicAuthentication);
+                }
+            } else {
+                var baIndex:int = -1;
+                for (var i:int = 0; i < _authenticationMechanisms.length; i++) {
+                    if (_authenticationMechanisms[i] is BasicAuthentication) {
+                        baIndex = i;
+                        break;
+                    }
+                }
+                if (baIndex > -1) {
+                    _authenticationMechanisms.removeItemAt(baIndex);
+                }
+            }
         }
     }
 
@@ -2533,7 +2698,7 @@ public class PropertySheetMediator extends IocMediator {
         var wikidAuthnService:WikidAuthenticationService = _currentIdentityApplianceElement as WikidAuthenticationService;
         
         if (wikidAuthnService != null) {
-            
+            var oldName:String = wikidAuthnService.name;
             wikidAuthnService.name = _wikidAuthnServiceCoreSection.wikidName.text;
             wikidAuthnService.description = _wikidAuthnServiceCoreSection.wikidDescription.text;
             wikidAuthnService.serverHost = _wikidAuthnServiceCoreSection.serverHost.text;
@@ -2589,6 +2754,24 @@ public class PropertySheetMediator extends IocMediator {
                 wcKeystore.store = wcResource;
             }
             wikidAuthnService.wcStore = wcKeystore;
+
+            if (oldName != wikidAuthnService.name &&
+                    wikidAuthnService.delegatedAuthentications != null &&
+                    wikidAuthnService.delegatedAuthentications.length > 0) {
+                for each (var delegatedAuthentication:DelegatedAuthentication in wikidAuthnService.delegatedAuthentications) {
+                    var idp:IdentityProvider = delegatedAuthentication.idp;
+                    if (idp.authenticationMechanisms != null) {
+                        //var oldAuthnMechanismName:String = Util.getAuthnMechanismName(new TwoFactorAuthentication(), idp.name, oldName);
+                        for each (var authenticationMechanism:AuthenticationMechanism in idp.authenticationMechanisms) {
+                            //if (authenticationMechanism.name == oldAuthnMechanismName) {
+                            if (authenticationMechanism.delegatedAuthentication == delegatedAuthentication) {
+                                authenticationMechanism.name = Util.getAuthnMechanismName(authenticationMechanism, idp.name, wikidAuthnService.name);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -2684,6 +2867,7 @@ public class PropertySheetMediator extends IocMediator {
         if (_dirty && validate(true)) {
             // bind model
             var directoryAuthnService:DirectoryAuthenticationService = _currentIdentityApplianceElement as DirectoryAuthenticationService;
+            var oldName:String = directoryAuthnService.name;
             directoryAuthnService.name = _directoryAuthnServiceCoreSection.directoryName.text;
             directoryAuthnService.description = _directoryAuthnServiceCoreSection.description.text;
             directoryAuthnService.initialContextFactory = _directoryAuthnServiceCoreSection.initialContextFactory.text;
@@ -2693,7 +2877,25 @@ public class PropertySheetMediator extends IocMediator {
             directoryAuthnService.securityPrincipal = _directoryAuthnServiceCoreSection.securityPrincipal.text;
             directoryAuthnService.securityCredential = _directoryAuthnServiceCoreSection.securityCredential.text;
             directoryAuthnService.securityAuthentication = _directoryAuthnServiceCoreSection.securityAuthentication.selectedItem.data;
-            
+
+            if (oldName != directoryAuthnService.name &&
+                    directoryAuthnService.delegatedAuthentications != null &&
+                    directoryAuthnService.delegatedAuthentications.length > 0) {
+                for each (var delegatedAuthentication:DelegatedAuthentication in directoryAuthnService.delegatedAuthentications) {
+                    var idp:IdentityProvider = delegatedAuthentication.idp;
+                    if (idp.authenticationMechanisms != null) {
+                        //var oldAuthnMechanismName:String = Util.getAuthnMechanismName(new BindAuthentication(), idp.name, oldName);
+                        for each (var authenticationMechanism:AuthenticationMechanism in idp.authenticationMechanisms) {
+                            //if (authenticationMechanism.name == oldAuthnMechanismName) {
+                            if (authenticationMechanism.delegatedAuthentication == delegatedAuthentication) {
+                                authenticationMechanism.name = Util.getAuthnMechanismName(authenticationMechanism, idp.name, directoryAuthnService.name);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
@@ -2872,6 +3074,7 @@ public class PropertySheetMediator extends IocMediator {
     protected function updateWindowsIntegratedAuthn():void {
 
         var windowsIntegratedAuthn:WindowsIntegratedAuthentication = _currentIdentityApplianceElement as WindowsIntegratedAuthentication;
+        var oldName:String = windowsIntegratedAuthn.name;
         windowsIntegratedAuthn.name = _windowsIntegratedAuthnCoreSection.nodeName.text;
         windowsIntegratedAuthn.description = _windowsIntegratedAuthnCoreSection.description.text;
         windowsIntegratedAuthn.protocol = _windowsIntegratedAuthnCoreSection.protocol.selectedItem.data;
@@ -2887,6 +3090,23 @@ public class PropertySheetMediator extends IocMediator {
         windowsIntegratedAuthn.domainController = _windowsIntegratedAuthnCoreSection.domainController.text;
         windowsIntegratedAuthn.overwriteKerberosSetup = _windowsIntegratedAuthnCoreSection.overwriteKerberosSetup.selected;
 
+        if (oldName != windowsIntegratedAuthn.name &&
+                windowsIntegratedAuthn.delegatedAuthentications != null &&
+                windowsIntegratedAuthn.delegatedAuthentications.length > 0) {
+            for each (var delegatedAuthentication:DelegatedAuthentication in windowsIntegratedAuthn.delegatedAuthentications) {
+                var idp:IdentityProvider = delegatedAuthentication.idp;
+                if (idp.authenticationMechanisms != null) {
+                    //var oldAuthnMechanismName:String = Util.getAuthnMechanismName(new WindowsAuthentication(), idp.name, oldName);
+                    for each (var authenticationMechanism:AuthenticationMechanism in idp.authenticationMechanisms) {
+                        //if (authenticationMechanism.name == oldAuthnMechanismName) {
+                        if (authenticationMechanism.delegatedAuthentication == delegatedAuthentication) {
+                            authenticationMechanism.name = Util.getAuthnMechanismName(authenticationMechanism, idp.name, windowsIntegratedAuthn.name);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
         if (_uploadedKeyTab != null && _uploadedKeyTabName != null) {
             var resource:Resource = windowsIntegratedAuthn.keyTab;

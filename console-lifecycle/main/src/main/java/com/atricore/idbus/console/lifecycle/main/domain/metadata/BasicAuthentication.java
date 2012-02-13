@@ -18,6 +18,8 @@ public class BasicAuthentication extends AuthenticationMechanism {
     // TODO : For now this is bound to basic authn.  When multiple authn mechanisms are supported, it should be a mechanism on its own.
     private ImpersonateUserPolicy impersonateUserPolicy;
 
+    private boolean enabled;
+
     public String getHashAlgorithm() {
         return hashAlgorithm;
     }
@@ -56,5 +58,13 @@ public class BasicAuthentication extends AuthenticationMechanism {
 
     public void setImpersonateUserPolicy(ImpersonateUserPolicy impersonateUserPolicy) {
         this.impersonateUserPolicy = impersonateUserPolicy;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
