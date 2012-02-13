@@ -5,10 +5,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.SessionIdManager;
-import org.mortbay.jetty.SessionManager;
+import org.mortbay.jetty.*;
 import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.servlet.AbstractSessionIdManager;
 import org.mortbay.jetty.servlet.Context;
@@ -57,6 +54,14 @@ public class JettyServerWrapper extends Server {
 
     public SessionHandlerBuilder getSessionHandlerBuilder() {
         return m_sessionHandlerBuilder;
+    }
+
+    @Override
+    public void addConnector(Connector connector) {
+        // Let's make some configuration before adding this connector
+
+
+        super.addConnector(connector);
     }
 
     @Override

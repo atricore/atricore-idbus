@@ -22,7 +22,9 @@ import java.net.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ops4j.lang.NullArgumentException;
-import static org.ops4j.pax.web.service.WebContainerConstants.*;
+import static org.ops4j.pax.web.service.ext.WebContainerConstantsExt.*;
+
+import org.ops4j.pax.web.service.ext.ConfigurationExt;
 import org.ops4j.pax.web.service.spi.Configuration;
 import org.ops4j.util.property.PropertyResolver;
 import org.ops4j.util.property.PropertyStore;
@@ -34,7 +36,7 @@ import org.ops4j.util.property.PropertyStore;
  * @since 0.3.0, January 22, 2008
  */
 public class ConfigurationImpl extends PropertyStore
-    implements Configuration
+    implements ConfigurationExt
 {
 
     /**
@@ -222,6 +224,11 @@ public class ConfigurationImpl extends PropertyStore
             LOG.debug( "Reading configuration property " + PROPERTY_LISTENING_ADDRESSES + " has failed" );
         }
         return get( PROPERTY_LISTENING_ADDRESSES );
+    }
+
+    //
+    public Integer getHeaderBufferSize() {
+        return getResolvedIntegerProperty( PROPERTY_MAX_HEADER_BUFFER_SIZE );
     }
 
     @Override
