@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal
+END
+HttpServiceStopped.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal/HttpServiceStopped.java
+END
+DefaultSharedWebContainerContext.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal/DefaultSharedWebContainerContext.java
+END
+HttpServiceProxy.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal/HttpServiceProxy.java
+END
+WelcomeFilesFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal/WelcomeFilesFilter.java
+END
+HttpServiceStarted.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal/HttpServiceStarted.java
+END
+ConfigurationImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal/ConfigurationImpl.java
+END
+DefaultHttpContext.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal/DefaultHttpContext.java
+END
+HttpServiceFactoryImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal/HttpServiceFactoryImpl.java
+END
+StoppableHttpService.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal/StoppableHttpService.java
+END
+DefaultPropertyResolver.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal/DefaultPropertyResolver.java
+END
+Activator.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/main/java/org/ops4j/pax/web/service/internal/Activator.java
+END

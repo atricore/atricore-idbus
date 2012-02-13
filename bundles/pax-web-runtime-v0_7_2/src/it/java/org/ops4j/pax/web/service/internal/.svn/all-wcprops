@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/it/java/org/ops4j/pax/web/service/internal
+END
+FilterTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/it/java/org/ops4j/pax/web/service/internal/FilterTest.java
+END
+IntegrationTests.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/it/java/org/ops4j/pax/web/service/internal/IntegrationTests.java
+END
+EventListenerTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/repos/ops4j/!svn/ver/16590/qa/pax/web-0.7.2/pax-web-runtime/src/it/java/org/ops4j/pax/web/service/internal/EventListenerTest.java
+END
