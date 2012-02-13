@@ -11,6 +11,8 @@ import javax.jdo.Query;
 import java.util.Collection;
 
 /**
+ * TODO : Add case insensitive lookup parameter
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class JDOUserDAOImpl extends GenericDAOImpl<JDOUser, Long> implements JDOUserDAO {
@@ -21,8 +23,12 @@ public class JDOUserDAOImpl extends GenericDAOImpl<JDOUser, Long> implements JDO
 
         PersistenceManager pm = getPersistenceManager();
 
-        Query query = pm.newQuery("SELECT FROM org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser" +
+//         Query query = pm.newQuery("SELECT FROM org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser" +
+//                " WHERE this.userName.toLowerCase() == '" + name.toLowerCase() + "'");
+
+         Query query = pm.newQuery("SELECT FROM org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser" +
                 " WHERE this.userName == '" + name + "'");
+
 
         Collection<JDOUser> users = (Collection<JDOUser>) query.execute();
         if (users == null || users.size() != 1)

@@ -100,7 +100,7 @@
         <property name="name" value="idp1-to-sp-default-channel"/>
         <property name="location" value="http://localhost:8081/IDBUS/IDP-1"/>
         <property name="provider" ref="idp1"/>
-        <property name="claimsProvider" ref="idp1-claim-channel"/>
+        <property name="claimProviders" ref="idp1-claim-channel"/>
         <property name="securityTokenService" ref="idp1-sts"/>
         <property name="sessionManager" ref="idp1-session-manager"/>
         <property name="identityManager" ref="idp1-identity-manager"/>

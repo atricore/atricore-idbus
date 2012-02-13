@@ -42,7 +42,7 @@ public abstract class AbstractChannel implements Channel, Serializable {
     private transient IdentityMediator identityMediator;
     private transient IdentityMediationUnitContainer identityMediationUnitContainer;
     private transient Collection<IdentityPlan> identityPlans;
-    private transient ClaimChannel claimsProvider;
+    private transient Collection<ClaimChannel> claimProviders;
 
     public String getName() {
         return name;
@@ -118,12 +118,12 @@ public abstract class AbstractChannel implements Channel, Serializable {
         this.identityPlans = identityPlans;
     }
 
-    public ClaimChannel getClaimsProvider() {
-        return claimsProvider;
+    public Collection<ClaimChannel> getClaimProviders() {
+        return claimProviders;
     }
 
-    public void setClaimsProvider(ClaimChannel claimsProvider) {
-        this.claimsProvider = claimsProvider;
+    public void setClaimProviders(Collection<ClaimChannel> claimProviders) {
+        this.claimProviders = claimProviders;
     }
 
     @Override

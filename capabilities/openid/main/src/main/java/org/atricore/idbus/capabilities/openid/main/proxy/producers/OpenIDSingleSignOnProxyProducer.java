@@ -150,7 +150,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
                 new org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest(authnRequest.getID(),
                         channel,
                         endpoint,
-                        channel.getClaimsProvider(),
+                        channel.getClaimProviders().iterator().next(),
                         uuidGenerator.generateId());
 
         // --------------------------------------------------------------------
@@ -370,7 +370,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
 
     protected IdentityMediationEndpoint selectClaimsEndpoint() {
 
-        ClaimChannel claimChannel = channel.getClaimsProvider();
+        ClaimChannel claimChannel = channel.getClaimProviders().iterator().next();
         IdentityMediationEndpoint foundEndpoint = null;
 
         for (IdentityMediationEndpoint endpoint : claimChannel.getEndpoints()) {

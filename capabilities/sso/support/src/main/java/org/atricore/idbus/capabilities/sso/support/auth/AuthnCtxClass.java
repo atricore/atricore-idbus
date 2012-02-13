@@ -116,10 +116,9 @@ public enum AuthnCtxClass {
     /** URI for OpenID authentication context. */
     OPENID_AUTHN_CTX("urn:org:atricore:idbus:ac:classes:OpenID", true);
 
-
-
-
     private String ac;
+
+    // Weather the authentication can be established without user intervention
     private boolean isPassive;
 
     AuthnCtxClass(String ac) {

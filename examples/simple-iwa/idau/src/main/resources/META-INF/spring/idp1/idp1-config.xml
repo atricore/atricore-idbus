@@ -526,7 +526,7 @@
                 </bean>
             </list>
         </property>
-        <property name="claimsProvider">
+        <property name="claimProviders">
             <!--
             <ref bean="idp1-claims-channel"/>
             -->

@@ -49,6 +49,6 @@ public interface Channel extends Skinnable, Serializable {
 
     Collection<IdentityPlan> getIdentityPlans();
 
-    ClaimChannel getClaimsProvider();
+    Collection<ClaimChannel> getClaimProviders();
 
 }

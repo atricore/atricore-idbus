@@ -188,6 +188,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
             // Store some of the received HTTP headers, Set-Cookie are the most important ones
             Header[] headers = proxyRes.getAllHeaders();
+
             for (Header header : headers) {
                 // Ignored headers
                 if (header.getName().equals("Server")) continue;
@@ -196,6 +197,12 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                 if (header.getName().equals("Expires")) continue;
                 if (header.getName().equals("Content-Length")) continue;
                 if (header.getName().equals("Content-Type")) continue;
+
+                // The sender of the response has explicitly ask no to follow this redirect.
+                if (header.getName().equals("FollowRedirect")) {
+                    // Set 'followTargetUrl' to false
+                    followTargetUrl = false;
+                }
 
                 storedHeaders.add(header);
 
@@ -221,7 +228,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                     Header location = proxyRes.getFirstHeader("Location");
                     targetUrl = location.getValue();
 
-                    if (!internalProcessingPolicy.match(req, targetUrl)) {
+                    // Just in case the value was already set to false
+                    if (followTargetUrl && !internalProcessingPolicy.match(req, targetUrl)) {
 
                         // This is outside our scope, send the response to the browser ...
                         if (logger.isTraceEnabled())

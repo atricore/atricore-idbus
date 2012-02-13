@@ -751,10 +751,20 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     }
 
     protected boolean isEnableAjax() {
-        return getConfigurationContext() != null && Boolean.parseBoolean(getConfigurationContext().getProperty("binding.http.ajax"));
+        if (getConfigurationContext() == null) {
+            logger.warn("No Configuration context find in binding " + getBinding());
+            return false;
+        }
+
+        return Boolean.parseBoolean(getConfigurationContext().getProperty("binding.http.ajax"));
     }
 
     protected int getRetryCount() {
+        if (getConfigurationContext() == null) {
+            logger.warn("No Configuration context find in binding " + getBinding());
+            return -1;
+        }
+
         String retryCountStr = getConfigurationContext().getProperty("binding.http.loadStateRetryCount");
         if (retryCountStr == null)
             return -1;
@@ -769,6 +779,11 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     }
 
     protected long getRetryDelay() {
+        if (getConfigurationContext() == null) {
+            logger.warn("No Configuration context find in binding " + getBinding());
+            return -1;
+        }
+
         String retryDelayStr = getConfigurationContext().getProperty("binding.http.loadStateRetryDelay");
         if (retryDelayStr == null)
             return -1;

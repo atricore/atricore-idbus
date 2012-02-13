@@ -372,9 +372,10 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // TODO : Verify max sessions per user, etc!
 
-                IdentityMediationEndpoint claimsEndpoint = selectNextClaimsEndpoint(authnState);
+                ClaimChannel claimChannel = selectNextClaimsEndpoint(authnState);
+                IdentityMediationEndpoint claimEndpoint = authnState.getCurrentClaimsEndpoint();
 
-                if (claimsEndpoint == null) {
+                if (claimEndpoint == null) {
                     // Auth failed, no more endpoints available
                     if (logger.isDebugEnabled())
                         logger.debug("No claims endpoint found for authn request : " + authnRequest.getID());
@@ -394,13 +395,13 @@ public class SingleSignOnProducer extends SSOProducer {
                 }
 
                 // TODO : Use a plan authnreq to claimsreq
-                logger.debug("Selected claims endpoint : " + claimsEndpoint);
+                logger.debug("Selected claims endpoint : " + claimEndpoint);
 
                 // Create Claims Request
                 SSOClaimsRequest claimsRequest = new SSOClaimsRequest(authnRequest.getID(),
                         channel,
                         endpoint,
-                        ((SPChannel) channel).getClaimsProvider(),
+                        claimChannel,
                         uuidGenerator.generateId());
 
                 // Send our state ID as relay
@@ -413,12 +414,9 @@ public class SingleSignOnProducer extends SSOProducer {
                 // Set requested authn class
                 claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
 
-
                 // --------------------------------------------------------------------
                 // Send claims request
                 // --------------------------------------------------------------------
-                IdentityMediationEndpoint claimEndpoint = authnState.getCurrentClaimsEndpoint();
-                ClaimChannel claimChannel = claimsRequest.getClaimsChannel();
 
                 EndpointDescriptor ed = new EndpointDescriptorImpl(claimEndpoint.getBinding(),
                         claimEndpoint.getType(),
@@ -644,6 +642,10 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
             securityTokenEmissionCtx.setSpAcs(ed);
 
+            // ----------------------------------------------------------------------------------------
+            // Authenticate the user, send a RequestSecurityToken to the Security Token Service (STS)
+            // and emit a SAML 2.0 Assertion
+            // ----------------------------------------------------------------------------------------
             SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
                     securityTokenEmissionCtx,
                     claimsResponse.getClaimSet(),
@@ -652,7 +654,8 @@ public class SingleSignOnProducer extends SSOProducer {
             AssertionType assertion = cxt.getAssertion();
             Subject authnSubject = cxt.getSubject();
 
-            logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
+            if (logger.isDebugEnabled())
+                logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                     (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
 
@@ -676,17 +679,16 @@ public class SingleSignOnProducer extends SSOProducer {
             // Send Authn Response to SP
             // --------------------------------------------------------------------
 
-
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
                 SamlR2Signer signer = ((SSOIDPMediator) channel.getIdentityMediator()).getSigner();
                 saml11Response = signer.sign(saml11Response);
             }
 
-
+            // Clear the current authentication state
             clearAuthnState(exchange);
 
-            // TODO : If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
+            // If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
             List<SSOPolicyEnforcementStatement> stmts = getPolicyEnforcementStatements(assertion);
 
             if (stmts != null && stmts.size() > 0) {
@@ -742,21 +744,30 @@ public class SingleSignOnProducer extends SSOProducer {
 
         } catch (SecurityTokenAuthenticationFailure e) {
 
+            // The authentication failed, let's see what needs to be done.
+
+            // If the request was set to 'Passive', keep trying with passive claim endponits only!
+            // If not, keep trying with other endpoints.
+
             // Set of policies enforced during authentication
             Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = e.getSsoPolicyEnforcements();
 
             if (logger.isDebugEnabled())
                 logger.debug("Security Token authentication failure : " + e.getMessage(), e);
 
-            // Ask for more claims, using other auth schemes ?!
-            IdentityMediationEndpoint claimsEndpoint = selectNextClaimsEndpoint(authnState);
+            // Ask for more claims, using other auth schemes
+            ClaimChannel claimChannel = selectNextClaimsEndpoint(authnState);
+            IdentityMediationEndpoint claimEndpoint = authnState.getCurrentClaimsEndpoint();
 
-            if (claimsEndpoint == null) {
+            // No more claim endpoints available, the authentication process is over.
+            if (claimEndpoint == null) {
                 // Authentication failure, no more endpoints available, consider proxying to another IDP.
                 logger.error("No claims endpoint found for authn request : " + authnRequest.getID());
 
                 // Send failure response
                 EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
+
+                // This could be a response to a passive request ...
                 ResponseType response = buildSamlResponse(exchange, authnState, null, sp, ed);
 
                 out.setMessage(new MediationMessageImpl(response.getID(),
@@ -766,11 +777,13 @@ public class SingleSignOnProducer extends SSOProducer {
                 return;
             }
 
+            // We have another Claim endpoint to try, let's send the request.
+
             logger.debug("Selecting claims endpoint : " + endpoint.getName());
             SSOClaimsRequest claimsRequest = new SSOClaimsRequest(authnRequest.getID(),
                     channel,
                     endpoint,
-                    ((SPChannel) channel).getClaimsProvider(),
+                    claimChannel,
                     uuidGenerator.generateId());
 
             claimsRequest.setLastErrorId("AUTHN_FAILED");
@@ -784,8 +797,6 @@ public class SingleSignOnProducer extends SSOProducer {
             // --------------------------------------------------------------------
             // Send claims request
             // --------------------------------------------------------------------
-            IdentityMediationEndpoint claimEndpoint = authnState.getCurrentClaimsEndpoint();
-            ClaimChannel claimChannel = claimsRequest.getClaimsChannel();
 
             EndpointDescriptor ed = new EndpointDescriptorImpl(claimEndpoint.getBinding(),
                     claimEndpoint.getType(),
@@ -1162,9 +1173,10 @@ public class SingleSignOnProducer extends SSOProducer {
      * TODO : Use a strategy here
      * This has the logic to select endpoings for claims collecting.
      */
-    protected IdentityMediationEndpoint selectNextClaimsEndpoint(AuthenticationState status) {
+    protected ClaimChannel selectNextClaimsEndpoint(AuthenticationState status) {
 
-        ClaimChannel claimChannel = ((SPChannel) channel).getClaimsProvider();
+        Collection<ClaimChannel> claimChannels = ((SPChannel) channel).getClaimProviders();
+
         RequestedAuthnContextType reqAuthnCtx = null;
 
         if (status.getAuthnRequest() != null && status.getAuthnRequest().getRequestedAuthnContext() != null) {
@@ -1197,8 +1209,16 @@ public class SingleSignOnProducer extends SSOProducer {
 
             if (logger.isDebugEnabled())
                 logger.debug("Retry current claims endpoint : " + status.getCurrentClaimsEndpoint());
+            // Look for the channel that references the endpoint
+            for (ClaimChannel c : claimChannels) {
+                for (IdentityMediationEndpoint endpoint : c.getEndpoints()) {
 
-            return status.getCurrentClaimsEndpoint();
+                    if (endpoint.getName().equals(status.getCurrentClaimsEndpoint().getName()))
+                        return c;
+                }
+            }
+
+            throw new RuntimeException("No ClaimChannel found for " + status.getCurrentClaimsEndpoint().getName());
         }
 
         if (logger.isTraceEnabled())
@@ -1207,78 +1227,83 @@ public class SingleSignOnProducer extends SSOProducer {
         IdentityMediationEndpoint requestedEndpoint = null;
         IdentityMediationEndpoint availableEndpoint = null;
 
-        for (IdentityMediationEndpoint endpoint : claimChannel.getEndpoints()) {
+        ClaimChannel claimChannel = null;
+        for (ClaimChannel c : claimChannels) {
+            claimChannel = c;
 
-            if (logger.isTraceEnabled())
-                logger.trace("Processing claims endpoint " + endpoint);
+            for (IdentityMediationEndpoint endpoint : claimChannel.getEndpoints()) {
 
-            // As a work around, ignore endpoints not using artifact or local binding
-            if (!endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue()) &&
-                    !endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
                 if (logger.isTraceEnabled())
-                    logger.trace("Skip claims endpoint. Unsupported binding " + endpoint);
-                continue;
-            }
+                    logger.trace("Processing claims endpoint " + endpoint);
 
-            // Ignore used endpoints
-            if (status.getUsedClaimsEndpoints().contains(endpoint.getName())) {
-                if (logger.isTraceEnabled())
-                    logger.trace("Skip claims endpoint. Already used " + endpoint);
-                continue;
-            }
-
-            // Found requested authn context, use it to filter endpoints if not used before!
-
-            if (reqAuthnCtx != null) {
-
-                for (String reqAuthnCtxClass : reqAuthnCtx.getAuthnContextClassRef()) {
-
+                // As a work around, ignore endpoints not using artifact or local binding
+                if (!endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue()) &&
+                        !endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
                     if (logger.isTraceEnabled())
-                        logger.trace("Requested AuthnCtxClass for claiming " + reqAuthnCtxClass);
+                        logger.trace("Skip claims endpoint. Unsupported binding " + endpoint);
+                    continue;
+                }
 
-                    // TODO : Support comparison method, for now If Requested, use only matching authn context
-                    // reqAuthnCtx.getComparison()
-                    if (reqAuthnCtxClass.equals(endpoint.getType())) {
+                // Ignore used endpoints
+                if (status.getUsedClaimsEndpoints().contains(endpoint.getName())) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Skip claims endpoint. Already used " + endpoint);
+                    continue;
+                }
+
+                // Found requested authn context, use it to filter endpoints if not used before!
+
+                if (reqAuthnCtx != null) {
+
+                    for (String reqAuthnCtxClass : reqAuthnCtx.getAuthnContextClassRef()) {
 
                         if (logger.isTraceEnabled())
-                            logger.trace("Found requested AuthnCtxClass for claiming " + reqAuthnCtxClass);
+                            logger.trace("Requested AuthnCtxClass for claiming " + reqAuthnCtxClass);
 
-                        requestedEndpoint = endpoint;
-                        break;
+                        // TODO : Support comparison method, for now If Requested, use only matching authn context
+                        // reqAuthnCtx.getComparison()
+                        if (reqAuthnCtxClass.equals(endpoint.getType())) {
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Found requested AuthnCtxClass for claiming " + reqAuthnCtxClass);
+
+                            requestedEndpoint = endpoint;
+                            break;
+                        }
+                    }
+
+                }
+
+                AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(endpoint.getType());
+
+                // Only use endpoints that are 'passive' when 'passive' was requested.
+                if (status.getAuthnRequest().isIsPassive() != null &&
+                        status.getAuthnRequest().isIsPassive()) {
+
+
+                    if (!authnCtxClass.isPassive()) {
+                        if (logger.isTraceEnabled())
+                            logger.trace("Skip claims endpoint. Non-passive " + endpoint);
+
+                        continue;
                     }
                 }
 
-            }
+                if (availableEndpoint == null) {
 
-            AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(endpoint.getType());
+                    if (reqAuthnCtx == null && !endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+                        if (logger.isTraceEnabled())
+                            logger.trace("Unsupported binding for non-requested endpoint : " + endpoint.getBinding());
+                        continue;
+                    }
 
-            // Only use endpoints that are 'passive' when 'passive' was requested.
-            if (status.getAuthnRequest().isIsPassive() != null &&
-                    status.getAuthnRequest().isIsPassive()) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Selecting available endpoint : " + endpoint.getName());
 
-
-                if (!authnCtxClass.isPassive()) {
-                    if (logger.isTraceEnabled())
-                        logger.trace("Skip claims endpoint. Non-passive " + endpoint);
-
-                    continue;
-                }
-            }
-
-            if (availableEndpoint == null) {
-
-                if (reqAuthnCtx == null && !endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
-                    if (logger.isTraceEnabled())
-                        logger.trace("Unsupported binding for non-requested endpoint : " + endpoint.getBinding());
-                    continue;
+                    availableEndpoint = endpoint;
                 }
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Selecting available endpoint : " + endpoint.getName());
-
-                availableEndpoint = endpoint;
             }
-
         }
 
         if (requestedEndpoint != null) {
@@ -1305,7 +1330,7 @@ public class SingleSignOnProducer extends SSOProducer {
         if (logger.isDebugEnabled())
             logger.debug("Current claims endpoint : " + status.getCurrentClaimsEndpoint());
 
-        return status.getCurrentClaimsEndpoint();
+        return claimChannel;
 
     }
 

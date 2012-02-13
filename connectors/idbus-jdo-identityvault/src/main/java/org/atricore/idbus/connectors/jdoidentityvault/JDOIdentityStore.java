@@ -35,6 +35,7 @@ public class JDOIdentityStore extends AbstractStore
 
         try {
 
+
             User user = idPartition.findUserByUserName(key.toString());
             // TODO : Support other type of credentials !
 

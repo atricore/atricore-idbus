@@ -67,10 +67,12 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
         Object content = in.getMessage().getContent();
 
-
         if (logger.isDebugEnabled())
             logger.info("doProcess() - Received SPNEGO Message = " + content);
 
+        if (content == null) {
+            throw new SpnegoException("NULL message received by Spnego Capability " + content);
+        }
 
         if (content instanceof SSOClaimsRequest) {
             SpnegoMessage spnegoResponse = null;
@@ -92,8 +94,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
                     in.getMessage().getState()));
             exchange.setOut(out);
 
-        } else
-        if (content instanceof UnauthenticatedRequest) {
+        } else if (content instanceof UnauthenticatedRequest) {
             SpnegoMessage spnegoResponse = null;
             IdentityMediationEndpoint targetEndpoint = endpoint;
 
@@ -110,8 +111,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
                     in.getMessage().getState()));
             exchange.setOut(out);
 
-        } else
-        if (content instanceof AuthenticatedRequest) {
+        } else if (content instanceof AuthenticatedRequest) {
             doProcessAuthenticatedRequest(exchange, (AuthenticatedRequest) content);
         } else {
             throw new SpnegoException("Unknown message received by Spnego Capability : " + content.getClass().getName());

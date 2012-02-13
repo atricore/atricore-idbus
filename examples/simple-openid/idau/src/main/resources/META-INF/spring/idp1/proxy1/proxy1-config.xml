@@ -70,7 +70,7 @@
         <property name="identityMediator">
             <ref bean="proxy1-openid-a2Mediator"/>
         </property>
-        <property name="claimsProvider">
+        <property name="claimProviders">
             <ref bean="proxy1-claims-channel"/>
         </property>
         <property name="endpoints">
