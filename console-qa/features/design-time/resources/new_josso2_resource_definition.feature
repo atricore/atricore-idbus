@@ -1,5 +1,5 @@
 Feature: New JOSSO2 Resource Definition
-  In order to define a candidate application for Federated SSO
+  In order to define an AtricoreID candidate application for Federated SSO
   As an identity architect
   I want to create an JOSSO2 Resource definition
 
