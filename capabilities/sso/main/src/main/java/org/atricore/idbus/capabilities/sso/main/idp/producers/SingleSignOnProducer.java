@@ -640,6 +640,10 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
             securityTokenEmissionCtx.setSpAcs(ed);
 
+            // ----------------------------------------------------------------------------------------
+            // Authenticate the user, send a RequestSecurityToken to the Security Token Service (STS)
+            // and emit a SAML 2.0 Assertion
+            // ----------------------------------------------------------------------------------------
             SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
                     securityTokenEmissionCtx,
                     claimsResponse.getClaimSet(),
@@ -648,7 +652,8 @@ public class SingleSignOnProducer extends SSOProducer {
             AssertionType assertion = cxt.getAssertion();
             Subject authnSubject = cxt.getSubject();
 
-            logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
+            if (logger.isDebugEnabled())
+                logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                     (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
 
@@ -672,17 +677,16 @@ public class SingleSignOnProducer extends SSOProducer {
             // Send Authn Response to SP
             // --------------------------------------------------------------------
 
-
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
                 SamlR2Signer signer = ((SSOIDPMediator) channel.getIdentityMediator()).getSigner();
                 saml11Response = signer.sign(saml11Response);
             }
 
-
+            // Clear the current authentication state
             clearAuthnState(exchange);
 
-            // TODO : If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
+            // If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
             List<SSOPolicyEnforcementStatement> stmts = getPolicyEnforcementStatements(assertion);
 
             if (stmts != null && stmts.size() > 0) {
@@ -738,22 +742,30 @@ public class SingleSignOnProducer extends SSOProducer {
 
         } catch (SecurityTokenAuthenticationFailure e) {
 
+            // The authentication failed, let's see what needs to be done.
+
+            // If the request was set to 'Passive', keep trying with passive claim endponits only!
+            // If not, keep trying with other endpoints.
+
             // Set of policies enforced during authentication
             Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = e.getSsoPolicyEnforcements();
 
             if (logger.isDebugEnabled())
                 logger.debug("Security Token authentication failure : " + e.getMessage(), e);
 
-            // Ask for more claims, using other auth schemes ?!
+            // Ask for more claims, using other auth schemes
             ClaimChannel claimChannel = selectNextClaimsEndpoint(authnState);
             IdentityMediationEndpoint claimEndpoint = authnState.getCurrentClaimsEndpoint();
 
+            // No more claim endpoints available, the authentication process is over.
             if (claimEndpoint == null) {
                 // Authentication failure, no more endpoints available, consider proxying to another IDP.
                 logger.error("No claims endpoint found for authn request : " + authnRequest.getID());
 
                 // Send failure response
                 EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
+
+                // This could be a response to a passive request ...
                 ResponseType response = buildSamlResponse(exchange, authnState, null, sp, ed);
 
                 out.setMessage(new MediationMessageImpl(response.getID(),
@@ -762,6 +774,8 @@ public class SingleSignOnProducer extends SSOProducer {
                 exchange.setOut(out);
                 return;
             }
+
+            // We have another Claim endpoint to try, let's send the request.
 
             logger.debug("Selecting claims endpoint : " + endpoint.getName());
             SSOClaimsRequest claimsRequest = new SSOClaimsRequest(authnRequest.getID(),

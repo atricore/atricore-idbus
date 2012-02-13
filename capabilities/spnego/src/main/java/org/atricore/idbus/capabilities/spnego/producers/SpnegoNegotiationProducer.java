@@ -70,6 +70,9 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
         if (logger.isDebugEnabled())
             logger.info("doProcess() - Received SPNEGO Message = " + content);
 
+        if (content == null) {
+            throw new SpnegoException("NULL message received by Spnego Capability " + content);
+        }
 
         if (content instanceof SSOClaimsRequest) {
             SpnegoMessage spnegoResponse = null;
