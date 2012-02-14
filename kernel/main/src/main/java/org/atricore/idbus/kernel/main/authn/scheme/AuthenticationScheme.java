@@ -50,6 +50,12 @@ import java.util.Set;
 
 public interface AuthenticationScheme extends CredentialProvider, Cloneable {
 
+
+    /**
+     * Authentication scheme priority
+     */
+    int getPriority();
+
     /**
      * Obtains the Authentication Scheme name
      */

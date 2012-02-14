@@ -48,6 +48,8 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
 
     private static final Log logger = LogFactory.getLog(AbstractAuthenticationScheme.class);
 
+    private int priority;
+
     private boolean _authenticated;
 
     // The subjtect beeng authenticated.
@@ -228,4 +230,11 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
     }
 
 
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 }

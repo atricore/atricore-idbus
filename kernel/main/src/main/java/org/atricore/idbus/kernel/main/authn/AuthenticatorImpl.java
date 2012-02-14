@@ -31,6 +31,8 @@ import org.atricore.idbus.kernel.main.authn.scheme.AuthenticationScheme;
 import javax.security.auth.Subject;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -101,6 +103,9 @@ public class AuthenticatorImpl implements Authenticator {
             AuthenticationScheme a = as[i];
             logger.info("[setAuthenticationScheme()] : " + a.getName() + "," + a.getClass().getName());
             _as.add(a);
+
+            // Sort the list, based on priority
+            Collections.sort(_as, new AuthenticationSchemePriorityComparator());
         }
 
     }
@@ -169,6 +174,13 @@ public class AuthenticatorImpl implements Authenticator {
         logger.error("Authentication scheme ["+schemeName+"] not registered!");
 
         return null;
+    }
+
+
+    protected class AuthenticationSchemePriorityComparator implements Comparator<AuthenticationScheme> {
+        public int compare(AuthenticationScheme o1, AuthenticationScheme o2) {
+            return o1.getPriority() - o2.getPriority();
+        }
     }
 
 }

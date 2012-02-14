@@ -116,6 +116,9 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", isn.getSpnegoInitiationEndpoint());
+            // Tell the kernel not to follow this redirect !
+            httpOut.getHeaders().put("FollowRedirect", "FALSE");
+
         } else if (sm instanceof RequestToken) {
             logger.debug("Requesting GSSAPI token to SPNEGO/HTTP initiator");
             httpOut.getHeaders().put(SpnegoHeader.AUTHN.getValue(), SpnegoHeader.NEGOTIATE.getValue());

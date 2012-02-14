@@ -24,6 +24,7 @@ package org.atricore.idbus.kernel.main.federation.metadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.*;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -84,6 +85,12 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
                     if (provider instanceof AbstractFederatedProvider) {
                         AbstractFederatedProvider localProvider = (AbstractFederatedProvider) provider;
                         localProvider.setCircleOfTrust(cot);
+
+                        if (localProvider.getChannel() != null && localProvider.getChannel().getClaimProviders() != null) {
+                            // Sort claim providers, the collection MUST be a list ....
+                            Collections.sort((List<ClaimChannel>) localProvider.getChannel().getClaimProviders(), new ClaimChannelPriorityComparator());
+                        }
+
                     } else {
                         logger.debug("Unknown provider type " + provider + ", cannot inject COT");
                     }
@@ -472,6 +479,15 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
                 endpoint);
 
     }
+
+    protected class ClaimChannelPriorityComparator implements Comparator<ClaimChannel> {
+        public int compare(ClaimChannel o1, ClaimChannel o2) {
+            return o1.getPriority() - o2.getPriority();
+        }
+    }
+
+
+
 
 
 }

@@ -1198,14 +1198,15 @@ public class SingleSignOnProducer extends SSOProducer {
         if (logger.isTraceEnabled())
             logger.trace("Starting to select next claims endpoint ...");
 
+        ClaimChannel requestedChannel = null;
         IdentityMediationEndpoint requestedEndpoint = null;
+        ClaimChannel availableChannel = null;
         IdentityMediationEndpoint availableEndpoint = null;
 
-        ClaimChannel claimChannel = null;
-        for (ClaimChannel c : claimChannels) {
-            claimChannel = c;
 
-            for (IdentityMediationEndpoint endpoint : claimChannel.getEndpoints()) {
+        for (ClaimChannel c : claimChannels) {
+
+            for (IdentityMediationEndpoint endpoint : c.getEndpoints()) {
 
                 if (logger.isTraceEnabled())
                     logger.trace("Processing claims endpoint " + endpoint);
@@ -1242,6 +1243,7 @@ public class SingleSignOnProducer extends SSOProducer {
                                 logger.trace("Found requested AuthnCtxClass for claiming " + reqAuthnCtxClass);
 
                             requestedEndpoint = endpoint;
+                            requestedChannel = c;
                             break;
                         }
                     }
@@ -1275,17 +1277,20 @@ public class SingleSignOnProducer extends SSOProducer {
                         logger.debug("Selecting available endpoint : " + endpoint.getName());
 
                     availableEndpoint = endpoint;
+                    availableChannel = c;
                 }
 
             }
         }
 
+        ClaimChannel claimChannel = null;
         if (requestedEndpoint != null) {
             if (logger.isTraceEnabled())
                 logger.trace("Selecting requested endpoint : " + requestedEndpoint);
 
             status.setCurrentClaimsEndpoint(requestedEndpoint);
             status.setCurrentClaimsEndpointTryCount(0);
+            claimChannel = requestedChannel;
 
         } else if (availableEndpoint != null) {
             if (logger.isTraceEnabled())
@@ -1293,6 +1298,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             status.setCurrentClaimsEndpoint(availableEndpoint);
             status.setCurrentClaimsEndpointTryCount(0);
+            claimChannel = availableChannel;
 
         } else {
             if (logger.isDebugEnabled())
