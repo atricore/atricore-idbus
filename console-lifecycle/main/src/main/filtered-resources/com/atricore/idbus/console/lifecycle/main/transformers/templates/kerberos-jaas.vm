@@ -24,6 +24,8 @@
 
     <ext:property-placeholder placeholder-prefix="\$[" placeholder-suffix="]"/>
 
+    <!-- TODO : Support multiple domains ?! -->
+
     <jaas:config name="$realmName">
         <jaas:module className="com.sun.security.auth.module.Krb5LoginModule" flags="required">
             storeKey = true

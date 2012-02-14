@@ -59,6 +59,8 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
 
         // TODO : For now user velocity, but we MUST use blueprint xml binding, like we do with spring!
 
+        // TODO : Support MULTIPLE domains, does it require multiple JAAS entries ?!
+
         String spn = buildSpn(wia);
 
         String keyTabName = idp.getIdentityAppliance().getName() + "-" +  wia.getName() + ".keytab";
@@ -95,7 +97,6 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
 
         // Authentication scheme
 
-
         Bean idpBean = null;
         Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
         if (b.size() != 1) {
@@ -107,6 +108,9 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
             logger.trace("Generating Spnego Authentication Scheme for IdP " + idpBean.getName());
 
         Bean spnegoAuthn = newBean(idpBeans, normalizeBeanName(wiaAuthn.getName()), SpnegoAuthenticationScheme.class);
+
+        // priority
+        setPropertyValue(spnegoAuthn, "priority", wiaAuthn.getPriority() + "");
 
         // Auth scheme name cannot be changed!
         setPropertyValue(spnegoAuthn, "name", "spnego-authentication");

@@ -18,6 +18,7 @@ import org.atricore.idbus.kernel.main.store.identity.SimpleIdentityStoreKeyAdapt
 import java.util.Collection;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 public class WiKIDAuthenticationTransformer extends AbstractTransformer {
 
@@ -62,6 +63,9 @@ public class WiKIDAuthenticationTransformer extends AbstractTransformer {
 
             Bean twoFactorAuthnBean = newBean(idpBeans, normalizeBeanName(twoFactorAuthn.getName()),
                 "com.atricore.idbus.console.twofactor.wikid.authscheme.WiKIDAuthenticationScheme");
+
+            // priority
+            setPropertyValue(twoFactorAuthnBean, "priority", twoFactorAuthn.getPriority() + "");
 
             // Auth scheme name cannot be changed!
             setPropertyValue(twoFactorAuthnBean, "name", "2factor-authentication");

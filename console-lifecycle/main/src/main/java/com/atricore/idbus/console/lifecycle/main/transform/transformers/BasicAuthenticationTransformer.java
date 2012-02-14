@@ -49,6 +49,9 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
         
         Bean basicAuthnBean = newBean(idpBeans, normalizeBeanName(basicAuthn.getName()), UsernamePasswordAuthScheme.class);
 
+        // priority
+        setPropertyValue(basicAuthnBean, "priority", basicAuthn.getPriority() + "");
+
         // Auth scheme name cannot be changed!
         setPropertyValue(basicAuthnBean, "name", "basic-authentication");
 

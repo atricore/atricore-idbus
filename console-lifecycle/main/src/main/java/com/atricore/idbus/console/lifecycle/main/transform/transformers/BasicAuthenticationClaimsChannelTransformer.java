@@ -6,6 +6,7 @@ import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Property;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
@@ -83,25 +84,37 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
             throw new TransformException("Invalid IdP definition count : " + b.size());
         }
         idpBean = b.iterator().next();
+
+        String claimChannelBeanName = normalizeBeanName(idpBean.getName() + "-basic-authn-claim-channel");
+
+
+        if (getBean(idpBeans, claimChannelBeanName) != null) {
+            // We already created the basic authentication claim channel ..
+            if (logger.isDebugEnabled())
+                logger.debug("Basic authentication claim channel already created");
+            return;
+        }
         
         // ----------------------------------------
         // Claim Channel
         // ----------------------------------------
-
+        Bean claimChannelBean = null;
         for (AuthenticationMechanism authnMechanism : provider.getAuthenticationMechanisms()) {
 
             // Bind authn is a variant of basic authn
             if (authnMechanism instanceof BasicAuthentication ||
                 authnMechanism instanceof BindAuthentication) {
 
-                String claimChannelBeanName = normalizeBeanName(idpBean.getName() + "-basic-authn-claim-channel");
+                if (claimChannelBean != null) {
+                    int currentPriority = Integer.parseInt(getPropertyValue(claimChannelBean, "priority"));
+                    if (authnMechanism.getPriority() < currentPriority)
+                        setPropertyValue(claimChannelBean, "priority",  authnMechanism.getPriority() + "");
+                    continue;
+                }
 
                 // We will generate ONE and only ONE claim channel for retrieving basic authn credentials.
-                Bean claimChannelBean = getBean(idpBeans, claimChannelBeanName);
-                if (claimChannelBean != null)
-                    return;
-
                 claimChannelBean = newBean(idpBeans, claimChannelBeanName, ClaimChannelImpl.class);
+                setPropertyValue(claimChannelBean, "priority",  authnMechanism.getPriority() + "");
 
                 // name
                 setPropertyValue(claimChannelBean, "name", claimChannelBean.getName());

@@ -29,6 +29,7 @@ import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.addPropertyBeansAsRefs;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -83,19 +84,37 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
         idpBean = b.iterator().next();
 
         // ----------------------------------------
-        // Claims Channel
+        // Claims Channel, we have a single claim channel for spnego, no matter how many WIA instances are.
         // ----------------------------------------
+        String claimChannelBeanName = normalizeBeanName(idpBean.getName() + "-wia-authn-claim-channel");
+        if (getBean(idpBeans, claimChannelBeanName) != null) {
+            // We already created the basic authentication claim channel ..
+            if (logger.isDebugEnabled())
+                logger.debug("WIA claim channel already created");
+            return;
+        }
 
+        Bean claimChannelBean = null;
 
         for (AuthenticationMechanism authnMechanism : provider.getAuthenticationMechanisms()) {
 
             // Bind authn is a variant of basic authn
             if (authnMechanism instanceof WindowsAuthentication) {
 
-                // We must create a specific claim channel for each windows authentication mechanism configured.
-                String claimChannelBeanName = normalizeBeanName(authnMechanism.getName() + "-claims-channel");
+                if (claimChannelBean != null) {
+                    int currentPriority = Integer.parseInt(getPropertyValue(claimChannelBean, "priority"));
+                    if (authnMechanism.getPriority() < currentPriority)
+                        setPropertyValue(claimChannelBean, "priority",  authnMechanism.getPriority() + "");
 
-                Bean claimChannelBean = newBean(idpBeans, claimChannelBeanName, ClaimChannelImpl.class);
+                    // Only create one channel
+                    continue;
+                }
+
+
+                claimChannelBean = newBean(idpBeans, claimChannelBeanName, ClaimChannelImpl.class);
+
+                // priority
+                setPropertyValue(claimChannelBean, "priority",  authnMechanism.getPriority() + "");
 
                 // name
                 setPropertyValue(claimChannelBean, "name", claimChannelBean.getName());

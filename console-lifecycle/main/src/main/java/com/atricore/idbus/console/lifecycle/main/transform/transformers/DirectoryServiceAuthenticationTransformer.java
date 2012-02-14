@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.addPropertyBeansAsRefs;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -72,6 +73,9 @@ public class DirectoryServiceAuthenticationTransformer extends AbstractTransform
 
             Bean bindAuthScheme = newBean(idpBeans, normalizeBeanName(bindAuthn.getName()),
                 "org.atricore.idbus.kernel.main.authn.scheme.BindUsernamePasswordAuthScheme");
+
+            // priority
+            setPropertyValue(bindAuthScheme, "priority", bindAuthn.getPriority() + "");
 
             // Auth scheme name cannot be changed!
             setPropertyValue(bindAuthScheme, "name", "basic-authentication");
