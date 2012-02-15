@@ -34,6 +34,9 @@ import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -69,9 +72,25 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
         }
 
         if (httpMsg.getHeader(SpnegoHeader.AUTHZ.getValue()) == null) {
-
             logger.debug("No Authorization Header found");
-            sm = new UnauthenticatedRequest();
+
+            boolean spnegoAvailable = true;
+            try {
+                // If whe have spnego paramenter, it means that we already tried once ...
+                Map<String, String> params = getParameters(exchange.getIn().getHeader("org.apache.camel.component.http.query", String.class));
+                if (exchange.getIn().getHeader("http.requestMethod").equals("POST"))
+                    params.putAll(getParameters((InputStream) exchange.getIn().getBody()));
+
+                if (params.get("SPNEGO") != null) {
+                    logger.debug("SPNEGO not available on browser");
+                    spnegoAvailable = false;
+                }
+
+            } catch (IOException e) {
+                logger.warn("Cannot get request parameters for " + httpMsg);
+            }
+
+            sm = new UnauthenticatedRequest(spnegoAvailable);
         } else {
             String authorization = httpMsg.getHeader(SpnegoHeader.AUTHZ.getValue()).toString();
             if (authorization.startsWith(SpnegoHeader.NEGOTIATE.getValue())) {
@@ -109,22 +128,40 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
 
         if (sm instanceof InitiateSpnegoNegotiation) {
             InitiateSpnegoNegotiation isn = (InitiateSpnegoNegotiation) sm;
-            logger.debug("Initiating Spnego Negotiation on " + isn.getSpnegoInitiationEndpoint());
+            logger.debug("Initiating Spnego Negotiation on " + ed.getLocation());
+
+            if (!isn.getSpnegoInitiationEndpoint().equals(ed.getLocation())) {
+                logger.warn("Requested Spnego Negotiation endpoint ignored : " + isn.getSpnegoInitiationEndpoint());
+            }
 
             httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
             httpOut.getHeaders().put("Pragma", "no-cache");
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
-            httpOut.getHeaders().put("Location", isn.getSpnegoInitiationEndpoint());
-            // Tell the kernel not to follow this redirect !
+            httpOut.getHeaders().put("Location", ed.getLocation());
+            // Tell the kernel not to follow this redirect, we need the browser to handle it
             httpOut.getHeaders().put("FollowRedirect", "FALSE");
 
         } else if (sm instanceof RequestToken) {
             logger.debug("Requesting GSSAPI token to SPNEGO/HTTP initiator");
             httpOut.getHeaders().put(SpnegoHeader.AUTHN.getValue(), SpnegoHeader.NEGOTIATE.getValue());
             httpOut.getHeaders().put("http.responseCode", SpnegoStatus.UNAUTHORIZED.getValue());
-            // TODO : If SPNEGO is not available for the client, we need to send content on the page, to trigger a fall-back
-            // See how JOSSO 1 solves this for NTLM
+
+            String fallBackUrl =
+                    (ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation()) + "?SPNEGO=false";
+
+            // Create fall-back HTML
+            String fallBackHtml = "<HTML>\n" +
+                    "<HEAD>\n" +
+                    "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0;URL="+fallBackUrl+"\">\n" +
+                    "</HEAD>\n" +
+                    "<BODY>\n" +
+                    "If you're not redirected shortly, please click <A HREF=\""+fallBackUrl+"\">here</A>" +
+                    "</BODY>\n" +
+                    "</HTML>";
+
+            ByteArrayInputStream baos = new ByteArrayInputStream (fallBackHtml.getBytes());
+            httpOut.setBody(baos);
         }
 
     }

@@ -599,6 +599,7 @@ public class SingleSignOnProducer extends SSOProducer {
         // TODO : On IDP Initiated, there is no AuthnRequest
         AuthenticationState authnState = getAuthnState(exchange);
         AuthnRequestType authnRequest = authnState.getAuthnRequest();
+        IdentityMediationEndpoint prevClaimsEndpoint = authnState.getCurrentClaimsEndpoint();
 
         NameIDType issuer = authnRequest.getIssuer();
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(issuer);
@@ -776,7 +777,6 @@ public class SingleSignOnProducer extends SSOProducer {
             }
 
             // We have another Claim endpoint to try, let's send the request.
-
             logger.debug("Selecting claims endpoint : " + endpoint.getName());
             SSOClaimsRequest claimsRequest = new SSOClaimsRequest(authnRequest.getID(),
                     channel,
@@ -784,7 +784,10 @@ public class SingleSignOnProducer extends SSOProducer {
                     claimChannel,
                     uuidGenerator.generateId());
 
-            claimsRequest.setLastErrorId("AUTHN_FAILED");
+            // We're retrying the same endpoint type, mark the authentication as failed
+            if (prevClaimsEndpoint != null && prevClaimsEndpoint.getType().equals(claimEndpoint.getType()))
+                claimsRequest.setLastErrorId("AUTHN_FAILED");
+
             claimsRequest.setLastErrorMsg(e.getMessage());
             claimsRequest.getSsoPolicyEnforcements().addAll(ssoPolicyEnforcements);
 
@@ -1255,7 +1258,6 @@ public class SingleSignOnProducer extends SSOProducer {
                 // Only use endpoints that are 'passive' when 'passive' was requested.
                 if (status.getAuthnRequest().isIsPassive() != null &&
                         status.getAuthnRequest().isIsPassive()) {
-
 
                     if (!authnCtxClass.isPassive()) {
                         if (logger.isTraceEnabled())

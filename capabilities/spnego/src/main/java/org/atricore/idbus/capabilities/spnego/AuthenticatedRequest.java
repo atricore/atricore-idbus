@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class AuthenticatedRequest implements SpnegoMessage {
     private byte[] tokenValue;
 
-    AuthenticatedRequest(byte[] tokenValue) {
+    public AuthenticatedRequest(byte[] tokenValue) {
         this.tokenValue = tokenValue;
     }
 
