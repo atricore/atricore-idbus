@@ -131,7 +131,7 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
                 ccWiaSpnegoArtifact.setName(idpBean.getName() + "-cc-spnego-artifact");
                 setPropertyValue(ccWiaSpnegoArtifact, "name", ccWiaSpnegoArtifact.getName());
                 setPropertyValue(ccWiaSpnegoArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
-                setPropertyValue(ccWiaSpnegoArtifact, "location", "/SPNEGO/HTTP/ARTIFACT");
+                setPropertyValue(ccWiaSpnegoArtifact, "location", "/SPNEGO/ARTIFACT");
                 setPropertyValue(ccWiaSpnegoArtifact, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos");
                 ccEndpoints.add(ccWiaSpnegoArtifact);
 
@@ -139,15 +139,16 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
                 ccWiaSpnegoHttpInit.setName(idpBean.getName() + "-cc-spnego-initiator");
                 setPropertyValue(ccWiaSpnegoHttpInit, "name", ccWiaSpnegoHttpInit.getName());
                 setPropertyValue(ccWiaSpnegoHttpInit, "binding", "urn:org:atricore:idbus:spnego:bindings:HTTP-INITIATION");
-                setPropertyValue(ccWiaSpnegoHttpInit, "location", "/SPNEGO/HTTP/INITIATE");
-                //setPropertyValue(ccWiaSpnegoHttpInit, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos");
+                setPropertyValue(ccWiaSpnegoHttpInit, "location", "/SPNEGO/INITIATE");
+                setPropertyValue(ccWiaSpnegoHttpInit, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos");
                 ccEndpoints.add(ccWiaSpnegoHttpInit);
 
                 Bean ccWiaSpnegoHttpNegotiate = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 ccWiaSpnegoHttpNegotiate.setName(idpBean.getName() + "-cc-spnego-negotiatior");
                 setPropertyValue(ccWiaSpnegoHttpNegotiate, "name", ccWiaSpnegoHttpNegotiate.getName());
                 setPropertyValue(ccWiaSpnegoHttpNegotiate, "binding", "urn:org:atricore:idbus:spnego:bindings:HTTP-NEGOTIATION");
-                setPropertyValue(ccWiaSpnegoHttpNegotiate, "location", "/SPNEGO/HTTP/NEGOTIATE");
+                setPropertyValue(ccWiaSpnegoHttpNegotiate, "location", "/SPNEGO/NEGOTIATE");
+                setPropertyValue(ccWiaSpnegoHttpNegotiate, "responseLocation", "/SPNEGO/NEGOTIATE-RESP");
                 setPropertyValue(ccWiaSpnegoHttpNegotiate, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos");
                 ccEndpoints.add(ccWiaSpnegoHttpNegotiate);
 
