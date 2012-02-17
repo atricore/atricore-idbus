@@ -209,7 +209,7 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
                 return serverGSSContext.getSrcName();
             } catch (GSSException e) {
                 if (logger.isDebugEnabled())
-                    logger.error("Error creating GSS security context : " + e.getMessage(), e);
+                    logger.debug("Error creating GSS security context : " + e.getMessage(), e);
             } catch (IOException e) {
                 logger.error("I/O Error creating GSS security context : " + e.getMessage(), e);
             } catch (Exception e) {
