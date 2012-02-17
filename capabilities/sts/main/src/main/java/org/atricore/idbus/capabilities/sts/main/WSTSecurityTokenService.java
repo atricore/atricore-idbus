@@ -128,8 +128,6 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             throw new SecurityTokenAuthenticationFailure(e.getMessage(), e);
         }
 
-
-
         // TODO : Use planning infrastructure to transfor RST to RSTR
         // Transform RST in RSTR
 

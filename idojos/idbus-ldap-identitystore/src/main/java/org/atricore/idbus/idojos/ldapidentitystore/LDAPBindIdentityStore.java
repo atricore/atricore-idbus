@@ -174,13 +174,11 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
             // first try to retrieve the user using an known user
             dn = selectUserDN(username);
             if (dn == null || "".equals(dn)) {
-                // user not found
-                throw new SSOAuthenticationException("No DN found for user : " + username);
-            } else {
-                logger.debug("user dn = " + dn);
+                if (logger.isDebugEnabled())
+                    logger.debug("No DN found for user : " + username);
+                return false;
             }
-
-
+            logger.debug("user dn = " + dn);
 
             // Create context without binding!
             InitialLdapContext ctx = this.createLdapInitialContext(null, null);
