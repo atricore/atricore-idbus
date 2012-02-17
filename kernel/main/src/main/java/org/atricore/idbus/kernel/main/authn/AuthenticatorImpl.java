@@ -30,10 +30,7 @@ import org.atricore.idbus.kernel.main.authn.scheme.AuthenticationScheme;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * This is the default authenticator implementation.
@@ -65,24 +62,41 @@ public class AuthenticatorImpl implements Authenticator {
 
         // Initialize the AuthenticationScheme
         Subject s = new Subject();
-        AuthenticationScheme scheme = getScheme(schemeName);
-        scheme.initialize(credentials, s);
 
-        if (scheme.authenticate()) {
-            scheme.confirm();
-            _authCount++;
+        List<AuthenticationScheme> schemes = getSchemes(schemeName);
+        Set<SSOPolicyEnforcementStatement> ssoPolicies = new HashSet<SSOPolicyEnforcementStatement>();
+        String lastPrincipal = null;
 
-            // Add all SSO Policies to authenticated Subject
-            s.getPrincipals().addAll(scheme.getSSOPolicies());
-        } else {
+        for (AuthenticationScheme scheme : schemes) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Authenticating with " + scheme);
+
+            scheme.initialize(credentials, s);
+
+            if (scheme.authenticate()) {
+                // If authentication succeeds, return the subject.
+                scheme.confirm();
+                _authCount++;
+
+                // Add all SSO Policies to authenticated Subject
+                s.getPrincipals().addAll(scheme.getSSOPolicies());
+                return s;
+            }
+
             scheme.cancel();
-            _authFailures++;
+            if (scheme.getSSOPolicies() != null) {
+                ssoPolicies.addAll(scheme.getSSOPolicies());
+            }
+            if (scheme.getPrincipal() != null)
+                lastPrincipal = scheme.getPrincipal().getName();
 
-            // Send SSO Policies with Authn error
-            throw new AuthenticationFailureException(scheme.getPrincipal().getName(), scheme.getSSOPolicies());
+
         }
+        // Send SSO Policies with Authn error
+        _authFailures++;
+        throw new AuthenticationFailureException(lastPrincipal, ssoPolicies);
 
-        return s;
     }
 
     public Credential newCredential(String schemeName, String name, Object value) throws SSOAuthenticationException {
@@ -160,6 +174,35 @@ public class AuthenticatorImpl implements Authenticator {
      * @param schemeName the name of the authentication scheme to instantiate.
      * @return the cloned AuthenticationScheme
      */
+    protected List<AuthenticationScheme> getSchemes(String schemeName) {
+        List<AuthenticationScheme> as = new ArrayList<AuthenticationScheme>(10);
+
+        for (AuthenticationScheme a : _as) {
+            if (logger.isDebugEnabled())
+                logger.debug("getScheme() : checking " + a.getName());
+
+            // Important to clone it, to make it thread-safe.
+            if (a.getName().equals(schemeName))
+                as.add((AuthenticationScheme) a.clone());
+        }
+
+        logger.debug("Found " + as.size() + " Authentication Schemes  for ["+schemeName+"]");
+
+        if (as.size() < 1)
+            logger.error("Found " + as.size() + " Authentication Schemes  for ["+schemeName+"], scheme not registered!");
+
+        return as;
+
+    }
+
+    /**
+     * This method clones the configured authentication scheme because
+     * authentication schemes are not thread safe.  It's a "prototype" pattern.
+     *
+     * @param schemeName the name of the authentication scheme to instantiate.
+     * @return the cloned AuthenticationScheme
+     */
+    @Deprecated
     protected AuthenticationScheme getScheme(String schemeName) {
 
         for (AuthenticationScheme a : _as) {
