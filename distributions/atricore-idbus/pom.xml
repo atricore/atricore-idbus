@@ -1418,6 +1418,17 @@
             <version>${idbus.bundle.pax-web-jetty-v0_7_2.version}</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.pax-web-runtime-v0_7_2</artifactId>
+            <version>${idbus.bundle.pax-web-runtime-v0_7_2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.pax-web-runtime-v0_7_2</artifactId>
+            <version>${idbus.bundle.pax-web-runtime-v0_7_2.version}</version>
+            <type>pom</type>
+        </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
