@@ -155,5 +155,10 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/sharepoint2010_execution_environment.png")]
     public static var sharepoint2010EnvironmentMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/coldfusion_execution_environment.png")]
+    public static var coldfusionEnvironmentMiniIcon:Class;
+
 }
 }

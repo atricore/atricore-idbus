@@ -40,7 +40,7 @@
           class="com.atricore.idbus.console.activation.main.impl.JOSSOActivationServiceImpl" >
 
         <!-- TODO : Improve -->
-        <property name="jossoVersion" value="1.8.5"/>
+        <property name="jossoVersion" value="1.8.6"/>
         <property name="printer" ref="printerServiceBean"/>
         <property name="installers">
             <list>
@@ -63,7 +63,7 @@
                 <ref bean="iis-installer-32"/>
                 <ref bean="iis-installer-64"/>
                 <ref bean="phpbb-installer"/>
-                
+                <ref bean="coldfusion-installer"/>
             </list>
         </property>
     </bean>
@@ -507,4 +507,21 @@
         <property name="platformName" value="PHP"/>
         <property name="version" value="3.x"/>
     </bean>
+
+    <!-- Coldfusion installer -->
+    <bean name="coldfusion-installer" class="org.josso.tooling.gshell.install.installer.ColdfusionInstaller">
+        <constructor-arg index="0" ref="coldfusion"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="coldfusion" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="coldfusion"/>
+        <property name="family" value="jee"/>
+        <property name="platformName" value="Coldfusion"/>
+        <property name="version" value="9"/>
+        <property name="libDir" value="${target}/WEB-INF/lib"/>
+        <property name="configDir" value="${target}/WEB-INF/classes"/>
+        <property name="JOSSOConfDir" value="${target}/WEB-INF/classes"/>
+    </bean>
+
 </beans>

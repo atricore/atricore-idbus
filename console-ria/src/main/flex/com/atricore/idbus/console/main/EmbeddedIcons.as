@@ -426,6 +426,10 @@ public class EmbeddedIcons {
     public static var sharepoint2010EnvironmentMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/coldfusion_execution_environment.png")]
+    public static var coldfusionEnvironmentMiniIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/22x22/weblogic_execution_environment.png")]
     public static var weblogicEnvironmentMiniIcon:Class;
 
@@ -492,6 +496,9 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/48x48/sharepoint2010_execution_environment.png")]
     public static var sharepoint2010EnvironmentIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/coldfusion_execution_environment.png")]
+    public static var coldfusionEnvironmentIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/main/modeler_22.png")]

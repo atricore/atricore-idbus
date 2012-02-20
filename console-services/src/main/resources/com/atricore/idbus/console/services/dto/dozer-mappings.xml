@@ -105,7 +105,8 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.PhpBBExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JEEExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WebserverExecutionEnvironment,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.Sharepoint2010ExecutionEnvironment
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.Sharepoint2010ExecutionEnvironment,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ColdfusionExecutionEnvironment
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.ApacheExecutionEnvironmentDTO,
@@ -121,7 +122,8 @@
                 com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.JEEExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.WebserverExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.Sharepoint2010ExecutionEnvironmentDTO
+                com.atricore.idbus.console.services.dto.Sharepoint2010ExecutionEnvironmentDTO,
+                com.atricore.idbus.console.services.dto.ColdfusionExecutionEnvironmentDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -579,6 +581,11 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Sharepoint2010ExecutionEnvironment</class-a>
         <class-b>com.atricore.idbus.console.services.dto.Sharepoint2010ExecutionEnvironmentDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ColdfusionExecutionEnvironment</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.ColdfusionExecutionEnvironmentDTO</class-b>
     </mapping>
 
     <mapping>

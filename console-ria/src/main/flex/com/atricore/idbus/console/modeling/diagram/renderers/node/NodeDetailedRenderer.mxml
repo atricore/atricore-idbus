@@ -42,6 +42,7 @@
         import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.BindingProvider;
         import com.atricore.idbus.console.services.dto.Channel;
+        import com.atricore.idbus.console.services.dto.ColdfusionExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.DbIdentitySource;
         import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
         import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
@@ -198,6 +199,8 @@
                     _linkIcon = EmbeddedIcons.windowsEnvironmentIcon;
                 } else if (obj is Sharepoint2010ExecutionEnvironment){
                     _linkIcon = EmbeddedIcons.sharepoint2010EnvironmentIcon;
+                } else if (obj is ColdfusionExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.coldfusionEnvironmentIcon;
                 } else if (obj is AlfrescoExecutionEnvironment){
                     _linkIcon = EmbeddedIcons.alfrescoEnvironmentIcon
                 } else if (obj is JEEExecutionEnvironment) {

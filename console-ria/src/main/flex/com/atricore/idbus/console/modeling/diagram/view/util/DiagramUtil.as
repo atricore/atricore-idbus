@@ -147,6 +147,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.webEnvironmentMiniIcon;
             case DiagramElementTypes.SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.sharepoint2010EnvironmentMiniIcon;
+            case DiagramElementTypes.COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.coldfusionEnvironmentMiniIcon;
             case DiagramElementTypes.WIKID_ELEMENT_TYPE:
                 return EmbeddedIcons.wikidMiniIcon;
             case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
