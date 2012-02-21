@@ -11,6 +11,16 @@ public class ExecutionEnvironmentProperties {
 
     private String javaAgentClass;
 
+    private boolean enableJaxws = false;
+
+    private boolean disableJaas = false;
+
+    private String loginUri;
+    private String userLoginUri;
+    private String securityCheckUri;
+    private String logoutUri;
+    private String authenticationUri;
+
     public String getPlatformId() {
         return platformId;
     }
@@ -34,4 +44,61 @@ public class ExecutionEnvironmentProperties {
     public void setEnableAutoLogin(boolean enableAutoLogin) {
         this.enableAutoLogin = enableAutoLogin;
     }
+
+    public boolean isEnableJaxws() {
+        return enableJaxws;
+    }
+
+    public void setEnableJaxws(boolean enableJaxws) {
+        this.enableJaxws = enableJaxws;
+    }
+
+    public boolean isDisableJaas() {
+        return disableJaas;
+    }
+
+    public void setDisableJaas(boolean disableJaas) {
+        this.disableJaas = disableJaas;
+    }
+
+    public String getLoginUri() {
+        return loginUri;
+    }
+
+    public void setLoginUri(String loginUri) {
+        this.loginUri = loginUri;
+    }
+
+    public String getUserLoginUri() {
+        return userLoginUri;
+    }
+
+    public void setUserLoginUri(String userLoginUri) {
+        this.userLoginUri = userLoginUri;
+    }
+
+    public String getSecurityCheckUri() {
+        return securityCheckUri;
+    }
+
+    public void setSecurityCheckUri(String securityCheckUri) {
+        this.securityCheckUri = securityCheckUri;
+    }
+
+    public String getLogoutUri() {
+        return logoutUri;
+    }
+
+    public void setLogoutUri(String logoutUri) {
+        this.logoutUri = logoutUri;
+    }
+
+    public String getAuthenticationUri() {
+        return authenticationUri;
+    }
+
+    public void setAuthenticationUri(String authenticationUri) {
+        this.authenticationUri = authenticationUri;
+    }
+
 }

@@ -519,9 +519,9 @@
         <property name="family" value="jee"/>
         <property name="platformName" value="Coldfusion"/>
         <property name="version" value="9"/>
-        <property name="libDir" value="${target}/WEB-INF/lib"/>
-        <property name="configDir" value="${target}/WEB-INF/classes"/>
-        <property name="JOSSOConfDir" value="${target}/WEB-INF/classes"/>
+        <property name="libDir" value="${target}/wwwroot/WEB-INF/lib"/>
+        <property name="configDir" value="${target}/wwwroot/WEB-INF/classes"/>
+        <property name="JOSSOConfDir" value="${target}/wwwroot/WEB-INF/classes"/>
     </bean>
 
 </beans>
