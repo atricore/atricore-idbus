@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.atricore.idbus.applications.server</groupId>
         <artifactId>server</artifactId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
     </parent>
 
     <!--artifactId>idbus-server-web</artifactId-->
