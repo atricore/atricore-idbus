@@ -7,6 +7,6 @@
         checksum=""
         lastUpdate="2010-12-25T19:32:52Z">
 
-    <artifact ID="id0000000111" group="com.atricore.idbus.console" name="console-config" version="1.2.0-SNAPSHOT" type="zip" classifier="resources"/>
+    <artifact ID="id0000000111" group="com.atricore.idbus.console" name="console-config" version="1.1.2-SNAPSHOT" type="zip" classifier="resources"/>
 
 </artifactDescriptor>
