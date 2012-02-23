@@ -27,6 +27,12 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider,
@@ -37,6 +43,12 @@
                 com.atricore.idbus.console.services.dto.ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.OpenIDServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.OAuth2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
@@ -56,6 +68,12 @@
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider,
@@ -66,6 +84,12 @@
                   com.atricore.idbus.console.services.dto.ServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
+                  com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
+                  com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
+                  com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
+                  com.atricore.idbus.console.services.dto.OpenIDServiceProviderDTO,
+                  com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO,
+                  com.atricore.idbus.console.services.dto.OAuth2ServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
@@ -86,6 +110,18 @@
                 com.atricore.idbus.console.services.dto.LdapIdentitySourceDTO,
                 com.atricore.idbus.console.services.dto.XmlIdentitySourceDTO,
                 com.atricore.idbus.console.services.dto.EmbeddedIdentitySourceDTO
+            </b-hint>
+        </field>
+        <field relationship-type="non-cumulative" remove-orphans="true">
+            <a>serviceResources</a>
+            <b>serviceResources</b>
+            <a-hint>
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO1Resource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO2Resource
+            </a-hint>
+            <b-hint>
+                com.atricore.idbus.console.services.dto.JOSSO1ResourceDTO,
+                com.atricore.idbus.console.services.dto.JOSSO2ResourceDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -234,8 +270,38 @@
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO</class-b>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.OpenIDServiceProviderDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.OAuth2ServiceProviderDTO</class-b>
     </mapping>
 
     <mapping>
@@ -346,6 +412,12 @@
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider,
@@ -356,6 +428,12 @@
                   com.atricore.idbus.console.services.dto.ServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
+                  com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
+                  com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
+                  com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
+                  com.atricore.idbus.console.services.dto.OpenIDServiceProviderDTO,
+                  com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO,
+                  com.atricore.idbus.console.services.dto.OAuth2ServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
@@ -383,6 +461,12 @@
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider,
@@ -393,6 +477,12 @@
                   com.atricore.idbus.console.services.dto.ServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
+                  com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
+                  com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
+                  com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
+                  com.atricore.idbus.console.services.dto.OpenIDServiceProviderDTO,
+                  com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO,
+                  com.atricore.idbus.console.services.dto.OAuth2ServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
@@ -646,6 +736,12 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider,
@@ -656,6 +752,12 @@
                 com.atricore.idbus.console.services.dto.ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.OpenIDServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.OAuth2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
@@ -670,6 +772,12 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider,
@@ -680,6 +788,12 @@
                 com.atricore.idbus.console.services.dto.ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.OpenIDServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.OAuth2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
@@ -873,6 +987,48 @@
     <mapping>
         <class-a>com.atricore.josso2.licensing._1_0.license.FeatureType</class-a>
         <class-b>com.atricore.idbus.console.services.dto.FeatureTypeDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceResource</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.ServiceResourceDTO</class-b>
+        <field>
+            <a>activation</a>
+            <b>activation</b>
+            <a-hint>
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation
+            </a-hint>
+            <b-hint>
+                com.atricore.idbus.console.services.dto.JOSSOActivationDTO
+            </b-hint>
+        </field>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO1Resource</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.JOSSO1ResourceDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO2Resource</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.JOSSO2ResourceDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceConnection</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.ServiceConnectionDTO</class-b>
+        <field>
+            <a>resource</a>
+            <b>resource</b>
+            <a-hint>
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO1Resource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO2Resource
+            </a-hint>
+            <b-hint>
+                com.atricore.idbus.console.services.dto.JOSSO1ResourceDTO,
+                com.atricore.idbus.console.services.dto.JOSSO2ResourceDTO
+            </b-hint>
+        </field>
     </mapping>
 
 </mappings>

@@ -220,6 +220,30 @@ public class EmbeddedIcons {
     public static var externalSpIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/external_identity_provider.png")]
+    public static var saml2IdpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/external_service_provider.png")]
+    public static var saml2SpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/external_identity_provider.png")]
+    public static var openidIdpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/external_service_provider.png")]
+    public static var openidSpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/external_identity_provider.png")]
+    public static var oauth2IdpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/external_service_provider.png")]
+    public static var oauth2SpIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/48x48/salesforce.png")]
     public static var salesforceIcon:Class;
 
@@ -273,6 +297,14 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/48x48/xml_identity_source.png")]
     public static var xmlIdentitySourceIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/activation.png")]
+    public static var josso1ResourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/activation.png")]
+    public static var josso2ResourceIcon:Class;
+
     //TODO USE APPROPRIATE ICONS
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/identity_appliance.png")]
@@ -293,6 +325,30 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
     public static var externalSpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
+    public static var saml2IdpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
+    public static var saml2SpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
+    public static var openidIdpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
+    public static var openidSpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
+    public static var oauth2IdpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
+    public static var oauth2SpMiniIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/salesforce.png")]
@@ -354,6 +410,10 @@ public class EmbeddedIcons {
     public static var connectionFederatedMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    public static var connectionServiceMiniIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/22x22/activation.png")]
     public static var connectionActivationMiniIcon:Class;
 
@@ -370,6 +430,10 @@ public class EmbeddedIcons {
     public static var connectionFederatedIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
+    public static var connectionServiceIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/48x48/activation.png")]
     public static var connectionActivationIcon:Class;
 
@@ -380,6 +444,15 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/48x48/identity_verification.png")]
     public static var connectionDelegatedAuthnIcon:Class;
+
+    // Resources
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/activation.png")]
+    public static var josso1ResourceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/activation.png")]
+    public static var josso2ResourceMiniIcon:Class;
 
     //Execution environments
     [Bindable]

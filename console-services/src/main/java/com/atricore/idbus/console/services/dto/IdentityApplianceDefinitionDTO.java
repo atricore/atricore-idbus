@@ -54,6 +54,8 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 	private List<ProviderDTO> providers;
 
     private List<IdentitySourceDTO> identitySources;
+    
+    private List<ServiceResourceDTO> serviceResources;
 
     private Set<ExecutionEnvironmentDTO> executionEnvironments;
 
@@ -159,6 +161,17 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     public void setIdentitySources(List<IdentitySourceDTO> identitySources) {
         this.identitySources = identitySources;
+    }
+
+    public List<ServiceResourceDTO> getServiceResources() {
+        if (serviceResources == null) {
+            serviceResources = new ArrayList<ServiceResourceDTO>();
+        }
+        return serviceResources;
+    }
+
+    public void setServiceResources(List<ServiceResourceDTO> serviceResources) {
+        this.serviceResources = serviceResources;
     }
 
     public String getDisplayName() {

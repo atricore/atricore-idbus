@@ -33,7 +33,6 @@
 
 	<mx:Script>
 		<![CDATA[
-
         import com.atricore.idbus.console.main.EmbeddedIcons;
         import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
         import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
@@ -55,20 +54,27 @@
         import com.atricore.idbus.console.services.dto.IdentitySource;
         import com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.JOSSO1Resource;
+        import com.atricore.idbus.console.services.dto.JOSSO2Resource;
         import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.LdapIdentitySource;
         import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
+        import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
+        import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
+        import com.atricore.idbus.console.services.dto.OpenIDServiceProvider;
         import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
+        import com.atricore.idbus.console.services.dto.Saml2IdentityProvider;
+        import com.atricore.idbus.console.services.dto.Saml2ServiceProvider;
         import com.atricore.idbus.console.services.dto.ServiceProvider;
+        import com.atricore.idbus.console.services.dto.ServiceResource;
         import com.atricore.idbus.console.services.dto.Sharepoint2010ExecutionEnvironment;
-
         import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
         import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
-
         import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
         import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
@@ -76,7 +82,6 @@
         import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
         import mx.controls.Alert;
-
         import mx.events.CloseEvent;
 
         import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualGraph;
@@ -122,6 +127,30 @@
                 var eidp:ExternalIdentityProvider = obj as ExternalIdentityProvider;
                 _linkLabel = eidp.name;
                 _linkIcon = EmbeddedIcons.externalIdpIcon;
+            } else if (obj is Saml2IdentityProvider) {
+                var s2idp:Saml2IdentityProvider = obj as Saml2IdentityProvider;
+                _linkLabel = s2idp.name;
+                _linkIcon = EmbeddedIcons.saml2IdpIcon;
+            } else if (obj is Saml2ServiceProvider) {
+                var s2sp:Saml2ServiceProvider = obj as Saml2ServiceProvider;
+                _linkLabel = s2sp.name;
+                _linkIcon = EmbeddedIcons.saml2SpIcon;
+            } else if (obj is OpenIDIdentityProvider) {
+                var oididp:OpenIDIdentityProvider = obj as OpenIDIdentityProvider;
+                _linkLabel = oididp.name;
+                _linkIcon = EmbeddedIcons.openidIdpIcon;
+            } else if (obj is OpenIDServiceProvider) {
+                var oidsp:OpenIDServiceProvider = obj as OpenIDServiceProvider;
+                _linkLabel = oidsp.name;
+                _linkIcon = EmbeddedIcons.openidSpIcon;
+            } else if (obj is OAuth2IdentityProvider) {
+                var oa2idp:OAuth2IdentityProvider = obj as OAuth2IdentityProvider;
+                _linkLabel = oa2idp.name;
+                _linkIcon = EmbeddedIcons.oauth2IdpIcon;
+            } else if (obj is OAuth2ServiceProvider) {
+                var oa2sp:OAuth2ServiceProvider = obj as OAuth2ServiceProvider;
+                _linkLabel = oa2sp.name;
+                _linkIcon = EmbeddedIcons.oauth2SpIcon;
             } else if (obj is SalesforceServiceProvider) {
                 var sf:SalesforceServiceProvider = obj as SalesforceServiceProvider;
                 _linkLabel = sf.name;
@@ -155,18 +184,25 @@
                 _linkLabel = winIntegratedAuthn.name;
                 _linkIcon = EmbeddedIcons.windowsIntegratedAuthnIcon;
             } else if (obj is Channel) {
-                 _linkLabel = (obj as Channel).name;
+                _linkLabel = (obj as Channel).name;
             } else if (obj is IdentitySource) {
                 var identitySource:IdentitySource = obj as IdentitySource;
                 _linkLabel = identitySource.name;
-                if(obj is DbIdentitySource){
+                if (obj is DbIdentitySource) {
                     _linkIcon = EmbeddedIcons.dbIdentitySourceIcon;
-                } else if(obj is LdapIdentitySource){
+                } else if (obj is LdapIdentitySource) {
                     _linkIcon = EmbeddedIcons.ldapIdentitySourceIcon;
-                } else if(obj is XmlIdentitySource){
+                } else if (obj is XmlIdentitySource) {
                     _linkIcon = EmbeddedIcons.xmlIdentitySourceIcon;
                 } else {
                     _linkIcon = EmbeddedIcons.vaultIcon;
+                }
+            } else if (obj is ServiceResource) {
+                _linkLabel = (obj as ServiceResource).name;
+                if (obj is JOSSO1Resource) {
+                    _linkIcon = EmbeddedIcons.josso1ResourceIcon;
+                } else if (obj is JOSSO2Resource) {
+                    _linkIcon = EmbeddedIcons.josso2ResourceIcon;
                 }
             } else if (obj is IdentityApplianceUnit) {
                 var applianceUnit:IdentityApplianceUnit = obj as IdentityApplianceUnit;
@@ -177,36 +213,36 @@
                 } else if (type.equals(IdentityApplianceUnitType.PROVISIONING_UNIT)) {
                     _linkIcon = EmbeddedIcons.vaultIcon;
                 }
-            } else if(obj is ExecutionEnvironment){ //check execution environment
+            } else if (obj is ExecutionEnvironment) { //check execution environment
                 var execEnvirnoment:ExecutionEnvironment = obj as ExecutionEnvironment;
                 _linkLabel = execEnvirnoment.name;
-                if(obj is JbossExecutionEnvironment){
+                if (obj is JbossExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.jbossEnvironmentIcon;
-                } else if(obj is WeblogicExecutionEnvironment){
+                } else if (obj is WeblogicExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.weblogicEnvironmentIcon;
-                } else if (obj is TomcatExecutionEnvironment){
+                } else if (obj is TomcatExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.tomcatEnvironmentIcon;
-                } else if (obj is JBossPortalExecutionEnvironment){
+                } else if (obj is JBossPortalExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.jbossEnvironmentIcon;
-                } else if (obj is LiferayExecutionEnvironment){
+                } else if (obj is LiferayExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.liferayEnvironmentIcon;
-                } else if (obj is WASCEExecutionEnvironment){
+                } else if (obj is WASCEExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.websphereEnvironmentIcon;
-                } else if (obj is ApacheExecutionEnvironment){
+                } else if (obj is ApacheExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.apacheEnvironmentIcon;
-                } else if (obj is WindowsIISExecutionEnvironment){
+                } else if (obj is WindowsIISExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.windowsEnvironmentIcon;
-                } else if (obj is Sharepoint2010ExecutionEnvironment){
+                } else if (obj is Sharepoint2010ExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.sharepoint2010EnvironmentIcon;
-                } else if (obj is AlfrescoExecutionEnvironment){
+                } else if (obj is AlfrescoExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.alfrescoEnvironmentIcon
                 } else if (obj is JEEExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.javaEnvironmentIcon;
-                } else if (obj is PHPExecutionEnvironment){
+                } else if (obj is PHPExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.phpEnvironmentIcon;
-                } else if (obj is PhpBBExecutionEnvironment){
+                } else if (obj is PhpBBExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.phpbbEnvironmentIcon;
-                } else if (obj is WebserverExecutionEnvironment){
+                } else if (obj is WebserverExecutionEnvironment) {
                     _linkIcon = EmbeddedIcons.webEnvironmentIcon;
                 } else {
                     _linkIcon = EmbeddedIcons.executionEnvironmentIcon;
@@ -271,7 +307,6 @@
         private function registerListeners():void {
             IVisualNode(this.data).vgraph.addEventListener(VGraphEvent.VGRAPH_CHANGED, refreshData);
         }
-
-		]]>
+        ]]>
 	</mx:Script>
 </mx:VBox>

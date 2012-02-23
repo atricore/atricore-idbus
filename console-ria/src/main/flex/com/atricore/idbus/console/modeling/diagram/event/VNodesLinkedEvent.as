@@ -8,6 +8,7 @@ public class VNodesLinkedEvent extends VGraphEvent {
      * This event type signals that two VNodes are linked.
      * */
     public static const FEDERATED_CONNECTION_CREATED:String = "vnodesLinked";
+    public static const SERVICE_CONNECTION_CREATED:String = "serviceConnectionCreated";
     public static const ACTIVATION_CREATED:String = "activationCreated";
     public static const IDENTITY_LOOKUP_CREATED:String = "identityLookupCreated";
     public static const DELEGATED_AUTHENTICATION_CREATED:String = "delegatedAuthenticationCreated";

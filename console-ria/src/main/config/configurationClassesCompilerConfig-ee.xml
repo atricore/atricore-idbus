@@ -80,6 +80,14 @@
         <!--<symbol>com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand</symbol>-->
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExternalIdentityProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.Saml2IdentityProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.Saml2ServiceProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.OpenIDIdentityProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.OpenIDServiceProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.OAuth2IdentityProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.OAuth2ServiceProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.JOSSO1ResourceRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.JOSSO2ResourceRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOSetupCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand</symbol>
@@ -87,6 +95,8 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityLookupRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.FederatedConnectionRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.DelegatedAuthenticationRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.CreateServiceConnectionCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.ServiceConnectionRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateIdentityLookupCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateDelegatedAuthenticationCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ActivateExecEnvironmentCommand</symbol>
@@ -145,6 +155,16 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.windows.WindowsIntegratedAuthnCreateMediator</symbol>
+
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.Saml2IdentityProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.Saml2ServiceProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDIdentityProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDServiceProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.oauth2.OAuth2IdentityProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.oauth2.OAuth2ServiceProviderCreateMediator</symbol>
+
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.JOSSO1ResourceCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.JOSSO2ResourceCreateMediator</symbol>
 
         <symbol>com.atricore.idbus.console.modeling.browser.BrowserMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.palette.PaletteMediator</symbol>

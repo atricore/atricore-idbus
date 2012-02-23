@@ -239,6 +239,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         identityApplianceDefinition.keystore = keystore;
         
         identityApplianceDefinition.providers = new ArrayCollection();
+        identityApplianceDefinition.serviceResources = new ArrayCollection();
         for (var i:int = 0; i < _wizardDataModel.spData.length; i++) {
             var sp:ServiceProvider = _wizardDataModel.spData[i] as ServiceProvider;
             sp.config = config;
@@ -252,6 +253,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
             sp.config = spConfig;
             */
             identityApplianceDefinition.providers.addItem(sp);
+            identityApplianceDefinition.serviceResources.addItem(sp.serviceConnection.resource);
         }
 
         sendNotification(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);

@@ -262,6 +262,276 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
+    void arrive(Saml2IdentityProvider node) throws Exception;
+
+    /**
+     * This method is called after walking the children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to compute the result of walking the argument <code>node</code>
+     * and it's children. This result is returned by the tree walker's
+     * <code>walk</code> method. The argument <code>results</code> holds
+     * the results of walking the children of the argument <code>node</code>.
+     * Usually, the result of the argument <code>node</code> is computed in
+     * consideration of the results of its' children.
+     *
+     * @param node the node having been walked
+     * @param results the results of walking the node's children
+     * @return the result of walking the node and it's children
+     */
+    Object[] leave(Saml2IdentityProvider node, Object[] results) throws Exception;
+
+    /**
+     * This method is called before walking each child of the argument
+     * <code>node</code>. The return value of this method determines if
+     * the next child of the argument <code>node</code> should be walked.
+     *  The argument <code>resultOfPreviousChild</code>
+     * holds the result of walking the previous child of the argument
+     * <code>node</code>. Usually, it is used to determine the return value
+     * of this method. The argument <code>indexOfNextChild</code>
+     * determines the index of the next child to be walked. This index
+     * determines the position in the children array of the argument <code>node</code>.
+     * Note: The index of the first child is 0.
+     *
+     * @param node                  the parent node of the children currently walked
+     * @param resultOfPreviousChild the result of walking the node's previous child
+     * @param indexOfNextChild      the index of the next child to be walked
+     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     */
+    boolean walkNextChild(Saml2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+
+    /**
+     * This method is called before walking any children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to perform any initialization tasks it needs for walking the node's
+     * children.
+     *
+     * @param node the node to be walked
+     */
+    void arrive(Saml2ServiceProvider node) throws Exception;
+
+    /**
+     * This method is called after walking the children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to compute the result of walking the argument <code>node</code>
+     * and it's children. This result is returned by the tree walker's
+     * <code>walk</code> method. The argument <code>results</code> holds
+     * the results of walking the children of the argument <code>node</code>.
+     * Usually, the result of the argument <code>node</code> is computed in
+     * consideration of the results of its' children.
+     *
+     * @param node the node having been walked
+     * @param results the results of walking the node's children
+     * @return the result of walking the node and it's children
+     */
+    Object[] leave(Saml2ServiceProvider node, Object[] results) throws Exception;
+
+    /**
+     * This method is called before walking each child of the argument
+     * <code>node</code>. The return value of this method determines if
+     * the next child of the argument <code>node</code> should be walked.
+     *  The argument <code>resultOfPreviousChild</code>
+     * holds the result of walking the previous child of the argument
+     * <code>node</code>. Usually, it is used to determine the return value
+     * of this method. The argument <code>indexOfNextChild</code>
+     * determines the index of the next child to be walked. This index
+     * determines the position in the children array of the argument <code>node</code>.
+     * Note: The index of the first child is 0.
+     *
+     * @param node                  the parent node of the children currently walked
+     * @param resultOfPreviousChild the result of walking the node's previous child
+     * @param indexOfNextChild      the index of the next child to be walked
+     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     */
+    boolean walkNextChild(Saml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+
+    /**
+     * This method is called before walking any children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to perform any initialization tasks it needs for walking the node's
+     * children.
+     *
+     * @param node the node to be walked
+     */
+    void arrive(OpenIDIdentityProvider node) throws Exception;
+
+    /**
+     * This method is called after walking the children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to compute the result of walking the argument <code>node</code>
+     * and it's children. This result is returned by the tree walker's
+     * <code>walk</code> method. The argument <code>results</code> holds
+     * the results of walking the children of the argument <code>node</code>.
+     * Usually, the result of the argument <code>node</code> is computed in
+     * consideration of the results of its' children.
+     *
+     * @param node the node having been walked
+     * @param results the results of walking the node's children
+     * @return the result of walking the node and it's children
+     */
+    Object[] leave(OpenIDIdentityProvider node, Object[] results) throws Exception;
+
+    /**
+     * This method is called before walking each child of the argument
+     * <code>node</code>. The return value of this method determines if
+     * the next child of the argument <code>node</code> should be walked.
+     *  The argument <code>resultOfPreviousChild</code>
+     * holds the result of walking the previous child of the argument
+     * <code>node</code>. Usually, it is used to determine the return value
+     * of this method. The argument <code>indexOfNextChild</code>
+     * determines the index of the next child to be walked. This index
+     * determines the position in the children array of the argument <code>node</code>.
+     * Note: The index of the first child is 0.
+     *
+     * @param node                  the parent node of the children currently walked
+     * @param resultOfPreviousChild the result of walking the node's previous child
+     * @param indexOfNextChild      the index of the next child to be walked
+     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     */
+    boolean walkNextChild(OpenIDIdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+
+    /**
+     * This method is called before walking any children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to perform any initialization tasks it needs for walking the node's
+     * children.
+     *
+     * @param node the node to be walked
+     */
+    void arrive(OpenIDServiceProvider node) throws Exception;
+
+    /**
+     * This method is called after walking the children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to compute the result of walking the argument <code>node</code>
+     * and it's children. This result is returned by the tree walker's
+     * <code>walk</code> method. The argument <code>results</code> holds
+     * the results of walking the children of the argument <code>node</code>.
+     * Usually, the result of the argument <code>node</code> is computed in
+     * consideration of the results of its' children.
+     *
+     * @param node the node having been walked
+     * @param results the results of walking the node's children
+     * @return the result of walking the node and it's children
+     */
+    Object[] leave(OpenIDServiceProvider node, Object[] results) throws Exception;
+
+    /**
+     * This method is called before walking each child of the argument
+     * <code>node</code>. The return value of this method determines if
+     * the next child of the argument <code>node</code> should be walked.
+     *  The argument <code>resultOfPreviousChild</code>
+     * holds the result of walking the previous child of the argument
+     * <code>node</code>. Usually, it is used to determine the return value
+     * of this method. The argument <code>indexOfNextChild</code>
+     * determines the index of the next child to be walked. This index
+     * determines the position in the children array of the argument <code>node</code>.
+     * Note: The index of the first child is 0.
+     *
+     * @param node                  the parent node of the children currently walked
+     * @param resultOfPreviousChild the result of walking the node's previous child
+     * @param indexOfNextChild      the index of the next child to be walked
+     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     */
+    boolean walkNextChild(OpenIDServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+
+    /**
+     * This method is called before walking any children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to perform any initialization tasks it needs for walking the node's
+     * children.
+     *
+     * @param node the node to be walked
+     */
+    void arrive(OAuth2IdentityProvider node) throws Exception;
+
+    /**
+     * This method is called after walking the children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to compute the result of walking the argument <code>node</code>
+     * and it's children. This result is returned by the tree walker's
+     * <code>walk</code> method. The argument <code>results</code> holds
+     * the results of walking the children of the argument <code>node</code>.
+     * Usually, the result of the argument <code>node</code> is computed in
+     * consideration of the results of its' children.
+     *
+     * @param node the node having been walked
+     * @param results the results of walking the node's children
+     * @return the result of walking the node and it's children
+     */
+    Object[] leave(OAuth2IdentityProvider node, Object[] results) throws Exception;
+
+    /**
+     * This method is called before walking each child of the argument
+     * <code>node</code>. The return value of this method determines if
+     * the next child of the argument <code>node</code> should be walked.
+     *  The argument <code>resultOfPreviousChild</code>
+     * holds the result of walking the previous child of the argument
+     * <code>node</code>. Usually, it is used to determine the return value
+     * of this method. The argument <code>indexOfNextChild</code>
+     * determines the index of the next child to be walked. This index
+     * determines the position in the children array of the argument <code>node</code>.
+     * Note: The index of the first child is 0.
+     *
+     * @param node                  the parent node of the children currently walked
+     * @param resultOfPreviousChild the result of walking the node's previous child
+     * @param indexOfNextChild      the index of the next child to be walked
+     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     */
+    boolean walkNextChild(OAuth2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+
+    /**
+     * This method is called before walking any children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to perform any initialization tasks it needs for walking the node's
+     * children.
+     *
+     * @param node the node to be walked
+     */
+    void arrive(OAuth2ServiceProvider node) throws Exception;
+
+    /**
+     * This method is called after walking the children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to compute the result of walking the argument <code>node</code>
+     * and it's children. This result is returned by the tree walker's
+     * <code>walk</code> method. The argument <code>results</code> holds
+     * the results of walking the children of the argument <code>node</code>.
+     * Usually, the result of the argument <code>node</code> is computed in
+     * consideration of the results of its' children.
+     *
+     * @param node the node having been walked
+     * @param results the results of walking the node's children
+     * @return the result of walking the node and it's children
+     */
+    Object[] leave(OAuth2ServiceProvider node, Object[] results) throws Exception;
+
+    /**
+     * This method is called before walking each child of the argument
+     * <code>node</code>. The return value of this method determines if
+     * the next child of the argument <code>node</code> should be walked.
+     *  The argument <code>resultOfPreviousChild</code>
+     * holds the result of walking the previous child of the argument
+     * <code>node</code>. Usually, it is used to determine the return value
+     * of this method. The argument <code>indexOfNextChild</code>
+     * determines the index of the next child to be walked. This index
+     * determines the position in the children array of the argument <code>node</code>.
+     * Note: The index of the first child is 0.
+     *
+     * @param node                  the parent node of the children currently walked
+     * @param resultOfPreviousChild the result of walking the node's previous child
+     * @param indexOfNextChild      the index of the next child to be walked
+     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     */
+    boolean walkNextChild(OAuth2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+
+    /**
+     * This method is called before walking any children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to perform any initialization tasks it needs for walking the node's
+     * children.
+     *
+     * @param node the node to be walked
+     */
     void arrive(SalesforceServiceProvider node) throws Exception;
 
     /**
@@ -704,6 +974,141 @@ public interface IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
     boolean walkNextChild(XmlIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+
+    /**
+     * This method is called before walking any children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to perform any initialization tasks it needs for walking the node's
+     * children.
+     *
+     * @param node the node to be walked
+     */
+    void arrive(JOSSO1Resource node) throws Exception;
+
+    /**
+     * This method is called after walking the children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to compute the result of walking the argument <code>node</code>
+     * and it's children. This result is returned by the tree walker's
+     * <code>walk</code> method. The argument <code>results</code> holds
+     * the results of walking the children of the argument <code>node</code>.
+     * Usually, the result of the argument <code>node</code> is computed in
+     * consideration of the results of its' children.
+     *
+     * @param node the node having been walked
+     * @param results the results of walking the node's children
+     * @return the result of walking the node and it's children
+     */
+    Object[] leave(JOSSO1Resource node, Object[] results) throws Exception;
+
+    /**
+     * This method is called before walking each child of the argument
+     * <code>node</code>. The return value of this method determines if
+     * the next child of the argument <code>node</code> should be walked.
+     *  The argument <code>resultOfPreviousChild</code>
+     * holds the result of walking the previous child of the argument
+     * <code>node</code>. Usually, it is used to determine the return value
+     * of this method. The argument <code>indexOfNextChild</code>
+     * determines the index of the next child to be walked. This index
+     * determines the position in the children array of the argument <code>node</code>.
+     * Note: The index of the first child is 0.
+     *
+     * @param node                  the parent node of the children currently walked
+     * @param resultOfPreviousChild the result of walking the node's previous child
+     * @param indexOfNextChild      the index of the next child to be walked
+     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     */
+    boolean walkNextChild(JOSSO1Resource node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+
+    /**
+     * This method is called before walking any children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to perform any initialization tasks it needs for walking the node's
+     * children.
+     *
+     * @param node the node to be walked
+     */
+    void arrive(JOSSO2Resource node) throws Exception;
+
+    /**
+     * This method is called after walking the children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to compute the result of walking the argument <code>node</code>
+     * and it's children. This result is returned by the tree walker's
+     * <code>walk</code> method. The argument <code>results</code> holds
+     * the results of walking the children of the argument <code>node</code>.
+     * Usually, the result of the argument <code>node</code> is computed in
+     * consideration of the results of its' children.
+     *
+     * @param node the node having been walked
+     * @param results the results of walking the node's children
+     * @return the result of walking the node and it's children
+     */
+    Object[] leave(JOSSO2Resource node, Object[] results) throws Exception;
+
+    /**
+     * This method is called before walking each child of the argument
+     * <code>node</code>. The return value of this method determines if
+     * the next child of the argument <code>node</code> should be walked.
+     *  The argument <code>resultOfPreviousChild</code>
+     * holds the result of walking the previous child of the argument
+     * <code>node</code>. Usually, it is used to determine the return value
+     * of this method. The argument <code>indexOfNextChild</code>
+     * determines the index of the next child to be walked. This index
+     * determines the position in the children array of the argument <code>node</code>.
+     * Note: The index of the first child is 0.
+     *
+     * @param node                  the parent node of the children currently walked
+     * @param resultOfPreviousChild the result of walking the node's previous child
+     * @param indexOfNextChild      the index of the next child to be walked
+     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     */
+    boolean walkNextChild(JOSSO2Resource node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+
+    /**
+     * This method is called before walking any children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to perform any initialization tasks it needs for walking the node's
+     * children.
+     *
+     * @param node the node to be walked
+     */
+    void arrive(ServiceConnection node) throws Exception;
+
+    /**
+     * This method is called after walking the children of the argument
+     * <code>node</code>. A node visitor instance uses this method
+     * to compute the result of walking the argument <code>node</code>
+     * and it's children. This result is returned by the tree walker's
+     * <code>walk</code> method. The argument <code>results</code> holds
+     * the results of walking the children of the argument <code>node</code>.
+     * Usually, the result of the argument <code>node</code> is computed in
+     * consideration of the results of its' children.
+     *
+     * @param node the node having been walked
+     * @param results the results of walking the node's children
+     * @return the result of walking the node and it's children
+     */
+    Object[] leave(ServiceConnection node, Object[] results) throws Exception;
+
+    /**
+     * This method is called before walking each child of the argument
+     * <code>node</code>. The return value of this method determines if
+     * the next child of the argument <code>node</code> should be walked.
+     *  The argument <code>resultOfPreviousChild</code>
+     * holds the result of walking the previous child of the argument
+     * <code>node</code>. Usually, it is used to determine the return value
+     * of this method. The argument <code>indexOfNextChild</code>
+     * determines the index of the next child to be walked. This index
+     * determines the position in the children array of the argument <code>node</code>.
+     * Note: The index of the first child is 0.
+     *
+     * @param node                  the parent node of the children currently walked
+     * @param resultOfPreviousChild the result of walking the node's previous child
+     * @param indexOfNextChild      the index of the next child to be walked
+     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     */
+    boolean walkNextChild(ServiceConnection node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
     /**
      * This method is called before walking any children of the argument

@@ -32,6 +32,7 @@ import com.atricore.idbus.console.services.dto.JOSSOActivation;
 
 import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.ServiceResource;
 
 import flash.events.MouseEvent;
 
@@ -44,7 +45,7 @@ public class ActivationCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
 
-    private var _sp:ServiceProvider;
+    private var _resource:ServiceResource;
     private var _execEnv:ExecutionEnvironment;
 
     private var _jossoActivation:JOSSOActivation;
@@ -93,17 +94,26 @@ public class ActivationCreateMediator extends IocFormMediator {
     }
 
     override public function bindForm():void {
-        view.activationPartnerAppId.text = _sp.name;
-//        view.activationProtocol.selectedIndex = 0;
-        for (var i:int = 0; i < view.activationProtocol.dataProvider.length; i++) {
-            if (_sp.location != null && view.activationProtocol.dataProvider[i].data == _sp.location.protocol) {
-                view.activationProtocol.selectedIndex = i;
-                break;
-            }
+        var sp:ServiceProvider = null;
+        var name:String = _resource.name;
+        if (_resource.serviceConnection != null && _resource.serviceConnection.sp != null) {
+            sp = _resource.serviceConnection.sp;
+            name = sp.name;
         }
-        view.activationDomain.text = _sp.location.host;
+        view.activationPartnerAppId.text = name;
+//        view.activationProtocol.selectedIndex = 0;
+        if (sp != null) {
+            for (var i:int = 0; i < view.activationProtocol.dataProvider.length; i++) {
+                if (sp.location != null && view.activationProtocol.dataProvider[i].data == sp.location.protocol) {
+                    view.activationProtocol.selectedIndex = i;
+                    break;
+                }
+            }
+            view.activationDomain.text = sp.location.host;
+
+        }
         view.activationPort.text = "8080";
-        view.activationName.text = _sp.name.toLowerCase().replace(/\s+/g, "-") + "-" +
+        view.activationName.text = name.toLowerCase().replace(/\s+/g, "-") + "-" +
                 _execEnv.name.toLowerCase().replace(/\s+/g, "-") + "-activation";
     }
 
@@ -131,15 +141,15 @@ public class ActivationCreateMediator extends IocFormMediator {
     private function handleJOSSOActivationSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            _jossoActivation.sp = _sp;
+            _jossoActivation.resource = _resource;
             _jossoActivation.executionEnv = _execEnv;
 
             if(_execEnv.activations == null){
                 _execEnv.activations = new ArrayCollection();
             }
             _execEnv.activations.addItem(_jossoActivation);
-            _sp.activation = _jossoActivation;
-            
+            _resource.activation = _jossoActivation;
+
             _projectProxy.currentIdentityApplianceElement = _jossoActivation;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
@@ -184,7 +194,7 @@ public class ActivationCreateMediator extends IocFormMediator {
     override public function handleNotification(notification:INotification):void {
         super.handleNotification(notification);
         var car:CreateActivationElementRequest = notification.getBody() as CreateActivationElementRequest;
-        _sp = car.sp;
+        _resource = car.serviceResource;
         _execEnv = car.executionEnvironment;
         bindForm();
     }

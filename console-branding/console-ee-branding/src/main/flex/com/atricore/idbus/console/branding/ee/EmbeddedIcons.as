@@ -43,6 +43,30 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
     public static var externalSpMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
+    public static var saml2IdpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
+    public static var saml2SpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
+    public static var openidIdpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
+    public static var openidSpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
+    public static var oauth2IdpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
+    public static var oauth2SpMiniIcon:Class;
+
     // Cloud entities
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/salesforce.png")]
@@ -86,10 +110,23 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/xml_identity_source.png")]
     public static var xmlIdentitySourceMiniIcon:Class;
 
+    // Resources
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/activation.png")]
+    public static var josso1ResourceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/activation.png")]
+    public static var josso2ResourceMiniIcon:Class;
+
     // Connections
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/connection.png")]
     public static var connectionFederatedMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    public static var connectionServiceMiniIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/activation.png")]

@@ -2318,7 +2318,8 @@ public class IdentityApplianceManagementServiceImpl implements
                 return 0;
 
             // TODO : Is this OK  !!
-            if (((ServiceProvider)sp1).getActivation().getSp().equals(((ServiceProvider)sp2).getActivation().getSp())) return 0;
+            //if (((ServiceProvider)sp1).getActivation().getSp().equals(((ServiceProvider)sp2).getActivation().getSp())) return 0;
+            if (((ServiceProvider)sp1).getServiceConnection().getSp().equals(((ServiceProvider)sp2).getServiceConnection().getSp())) return 0;
 
             return 1;
         }

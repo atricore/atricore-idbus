@@ -61,6 +61,12 @@
         <property name="diagramMediator" ref="diagramMediator"/>
         <property name="identityProviderCreateMediator" ref="identityProviderCreateMediator"/>
         <property name="externalIdentityProviderCreateMediator" ref="externalIdentityProviderCreateMediator"/>
+        <property name="saml2IdentityProviderCreateMediator" ref="saml2IdentityProviderCreateMediator"/>
+        <property name="saml2ServiceProviderCreateMediator" ref="saml2ServiceProviderCreateMediator"/>
+        <property name="openIDIdentityProviderCreateMediator" ref="openIDIdentityProviderCreateMediator"/>
+        <property name="openIDServiceProviderCreateMediator" ref="openIDServiceProviderCreateMediator"/>
+        <property name="oauth2IdentityProviderCreateMediator" ref="oauth2IdentityProviderCreateMediator"/>
+        <property name="oauth2ServiceProviderCreateMediator" ref="oauth2ServiceProviderCreateMediator"/>
         <property name="salesforceCreateMediator" ref="salesforceCreateMediator"/>
         <property name="googleAppsCreateMediator" ref="googleAppsCreateMediator"/>
         <property name="sugarCRMCreateMediator" ref="sugarCRMCreateMediator"/>
@@ -68,6 +74,8 @@
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator"/>
         <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator"/>
+        <property name="josso1ResourceCreateMediator" ref="josso1ResourceCreateMediator"/>
+        <property name="josso2ResourceCreateMediator" ref="josso2ResourceCreateMediator"/>
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
         <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />
@@ -110,10 +118,20 @@
         <property name="identityApplianceImportCommand" ref="identityApplianceImportCommand"/>
         <property name="identityProviderRemoveCommand" ref="identityProviderRemoveCommand"/>
         <property name="externalIdentityProviderRemoveCommand" ref="externalIdentityProviderRemoveCommand"/>
+        <property name="saml2IdentityProviderRemoveCommand" ref="saml2IdentityProviderRemoveCommand"/>
+        <property name="saml2ServiceProviderRemoveCommand" ref="saml2ServiceProviderRemoveCommand"/>
+        <property name="openIDIdentityProviderRemoveCommand" ref="openIDIdentityProviderRemoveCommand"/>
+        <property name="openIDServiceProviderRemoveCommand" ref="openIDServiceProviderRemoveCommand"/>
+        <property name="oauth2IdentityProviderRemoveCommand" ref="oauth2IdentityProviderRemoveCommand"/>
+        <property name="oauth2ServiceProviderRemoveCommand" ref="oauth2ServiceProviderRemoveCommand"/>
+        <property name="josso1ResourceRemoveCommand" ref="josso1ResourceRemoveCommand"/>
+        <property name="josso2ResourceRemoveCommand" ref="josso2ResourceRemoveCommand"/>
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
         <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
+        <property name="serviceConnectionRemoveCommand" ref="serviceConnectionRemoveCommand"/>
         <property name="federatedConnectionRemoveCommand" ref="federatedConnectionRemoveCommand"/>
         <property name="delegatedAuthenticationRemoveCommand" ref="delegatedAuthenticationRemoveCommand"/>
+        <property name="createServiceConnectionCommand" ref="createServiceConnectionCommand" />
         <property name="lookupIdentityApplianceByIdCommand" ref="lookupIdentityApplianceByIdCommand"/>
         <property name="createIdentityLookupCommand" ref="createIdentityLookupCommand" />
         <property name="createDelegatedAuthenticationCommand" ref="createDelegatedAuthenticationCommand" />
@@ -310,12 +328,48 @@
             class="com.atricore.idbus.console.modeling.main.controller.ExternalIdentityProviderRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="saml2IdentityProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.Saml2IdentityProviderRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="saml2ServiceProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.Saml2ServiceProviderRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="openIDIdentityProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.OpenIDIdentityProviderRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="openIDServiceProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.OpenIDServiceProviderRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="oauth2IdentityProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.OAuth2IdentityProviderRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="oauth2ServiceProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.OAuth2ServiceProviderRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="josso1ResourceRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.JOSSO1ResourceRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="josso2ResourceRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.JOSSO2ResourceRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="activationRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.ActivationRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="identityLookupRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.IdentityLookupRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="serviceConnectionRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ServiceConnectionRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="federatedConnectionRemoveCommand"
@@ -410,6 +464,11 @@
             class="com.atricore.idbus.console.modeling.main.controller.ActivateExecEnvironmentCommand">
         <property name="projectProxy" ref="projectProxy"/>
         <property name="registry" ref="serviceRegistry"/>
+    </object>
+
+    <object id="createServiceConnectionCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.CreateServiceConnectionCommand">
+        <property name="projectProxy" ref="projectProxy"/>
     </object>
 
     <object id="createIdentityLookupCommand"
@@ -549,6 +608,30 @@
             class="com.atricore.idbus.console.modeling.diagram.view.externalidp.ExternalIdentityProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="saml2IdentityProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.saml2.Saml2IdentityProviderCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="saml2ServiceProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.saml2.Saml2ServiceProviderCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="openIDIdentityProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDIdentityProviderCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="openIDServiceProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDServiceProviderCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="oauth2IdentityProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.oauth2.OAuth2IdentityProviderCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="oauth2ServiceProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.oauth2.OAuth2ServiceProviderCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="identityVaultCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -563,6 +646,14 @@
     </object>
     <object id="xmlIdentitySourceCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="josso1ResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.JOSSO1ResourceCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="josso2ResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.JOSSO2ResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="jbossExecutionEnvironmentCreateMediator"
@@ -858,6 +949,12 @@
         <property name="serviceProviderMediator" ref="serviceProviderCreateMediator"/>
         <property name="externalIdentityProviderMediator" ref="externalIdentityProviderCreateMediator"/>
         <property name="externalServiceProviderMediator" ref="externalServiceProviderCreateMediator"/>
+        <property name="saml2IdentityProviderMediator" ref="saml2IdentityProviderCreateMediator"/>
+        <property name="saml2ServiceProviderMediator" ref="saml2ServiceProviderCreateMediator"/>
+        <property name="openIDIdentityProviderMediator" ref="openIDIdentityProviderCreateMediator"/>
+        <property name="openIDServiceProviderMediator" ref="openIDServiceProviderCreateMediator"/>
+        <property name="oauth2IdentityProviderMediator" ref="oauth2IdentityProviderCreateMediator"/>
+        <property name="oauth2ServiceProviderMediator" ref="oauth2ServiceProviderCreateMediator"/>
         <property name="salesforceMediator" ref="salesforceCreateMediator"/>
         <property name="googleAppsMediator" ref="googleAppsCreateMediator"/>
         <property name="sugarCRMMediator" ref="sugarCRMCreateMediator"/>
@@ -871,6 +968,8 @@
         <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator"/>
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator"/>
         <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator"/>
+        <property name="josso1ResourceMediator" ref="josso1ResourceCreateMediator"/>
+        <property name="josso2ResourceMediator" ref="josso2ResourceCreateMediator"/>
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator"/>
         <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator"/>

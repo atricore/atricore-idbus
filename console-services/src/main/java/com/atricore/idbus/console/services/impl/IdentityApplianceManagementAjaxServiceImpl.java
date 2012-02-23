@@ -984,8 +984,8 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     }
 
     private JOSSOActivationDTO populateJOSSOActivation(IdentityApplianceDefinitionDTO iad, ServiceProviderDTO sp) {
-        JOSSOActivationDTO activation = (JOSSOActivationDTO)sp.getActivation();
-        activation.setSp(sp);
+        JOSSOActivationDTO activation = (JOSSOActivationDTO)sp.getServiceConnection().getResource().getActivation();
+        activation.setResource(sp.getServiceConnection().getResource());
         activation.getPartnerAppLocation().setUri("");
 
         if (iad.getExecutionEnvironments() == null) {

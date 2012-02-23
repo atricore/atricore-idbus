@@ -1,23 +1,22 @@
 package com.atricore.idbus.console.modeling.diagram.model.request {
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.ServiceResource;
 
 public class CreateActivationElementRequest {
 
-    private var _sp:ServiceProvider;
+    private var _serviceResource:ServiceResource;
     private var _executionEnvironment:ExecutionEnvironment;
     private var _notationalElementId:String;
-
 
     public function CreateActivationElementRequest() {
     }
 
-    public function get sp():ServiceProvider {
-        return _sp;
+    public function get serviceResource():ServiceResource {
+        return _serviceResource;
     }
 
-    public function set sp(value:ServiceProvider):void {
-        _sp = value;
+    public function set serviceResource(value:ServiceResource):void {
+        _serviceResource = value;
     }
 
     public function get executionEnvironment():ExecutionEnvironment {

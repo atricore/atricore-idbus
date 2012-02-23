@@ -28,6 +28,8 @@ public class ServiceProviderDTO extends FederatedProviderDTO {
 
     private ActivationDTO activation;
 
+    private ServiceConnectionDTO serviceConnection;
+
     private AccountLinkagePolicyDTO accountLinkagePolicy;
 
     private IdentityMappingPolicyDTO identityMappingPolicy;
@@ -62,6 +64,14 @@ public class ServiceProviderDTO extends FederatedProviderDTO {
 
     public void setActivation(ActivationDTO activation) {
         this.activation = activation;
+    }
+
+    public ServiceConnectionDTO getServiceConnection() {
+        return serviceConnection;
+    }
+
+    public void setServiceConnection(ServiceConnectionDTO serviceConnection) {
+        this.serviceConnection = serviceConnection;
     }
 
     public AccountLinkagePolicyDTO getAccountLinkagePolicy() {

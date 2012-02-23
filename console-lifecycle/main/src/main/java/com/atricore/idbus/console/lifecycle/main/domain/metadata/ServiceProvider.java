@@ -29,6 +29,8 @@ public class ServiceProvider extends FederatedProvider {
 
     private Activation activation;
 
+    private ServiceConnection serviceConnection;
+
     private AccountLinkagePolicy accountLinkagePolicy;
 
     private IdentityMappingPolicy identityMappingPolicy;
@@ -63,6 +65,14 @@ public class ServiceProvider extends FederatedProvider {
 
     public void setActivation(Activation activation) {
         this.activation = activation;
+    }
+
+    public ServiceConnection getServiceConnection() {
+        return serviceConnection;
+    }
+
+    public void setServiceConnection(ServiceConnection serviceConnection) {
+        this.serviceConnection = serviceConnection;
     }
 
     public AccountLinkagePolicy getAccountLinkagePolicy() {

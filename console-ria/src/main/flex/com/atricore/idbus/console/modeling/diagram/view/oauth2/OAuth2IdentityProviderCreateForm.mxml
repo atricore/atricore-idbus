@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*"
+         defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
+
+    <fx:Declarations>
+        <utils:NameValidator id="nameValidator" source="{identityProviderName}" required="true" property="text" trigger="{btnOk}"
+                        triggerEvent="click"/>
+        <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <utils:URLPartValidator id="domainValidator" source="{idpLocationDomain}" required="true" property="text"
+                                trigger="{btnOk}" triggerEvent="click"/>
+        <utils:URLPartValidator id="contextValidator" source="{idpLocationContext}" required="true" property="text"
+                                trigger="{btnOk}" triggerEvent="click"/>
+        <utils:URLMultipartValidator id="pathValidator" source="{idpLocationPath}" required="false" property="text"
+                                     trigger="{btnOk}" triggerEvent="click"/>
+    </fx:Declarations>
+
+    <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2IdentityProv.name')}:" required="true">
+        <s:TextInput id="identityProviderName" width="300"/>
+    </mx:FormItem>
+
+    <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2IdentityProv.description')}:">
+        <s:TextInput id="identityProvDescription" width="300"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:" required="true"
+                 direction="horizontal" labelWidth="80">
+        <s:DropDownList id="idpLocationProtocol" width="70" selectedIndex="0">
+            <s:dataProvider>
+                <mx:ArrayCollection>
+                    <fx:Object label="http" data="http"/>
+                    <fx:Object label="https" data="https"/>
+                </mx:ArrayCollection>
+            </s:dataProvider>
+        </s:DropDownList>
+        <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="idpLocationDomain" width="130"/>
+        <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="idpLocationPort" width="40"/>
+        <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="idpLocationContext" width="100"/>
+        <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="idpLocationPath" width="130"/>
+    </mx:FormItem>
+
+    <!--<mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2IdentityProv.metadata')}:">
+        <s:DropDownList id="metadataFile" width="170" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2IdentityProv.metadata.browseFile')}"
+                        requireSelection="true"/>
+    </mx:FormItem>
+    <s:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2IdentityProv.metadata.uploadSuccess')}" visible="false" paddingLeft="95"/>-->
+
+    <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
+        <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}"/>
+        <s:Button id="btnCancel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
+    </mx:ControlBar>
+    
+</mx:Form>

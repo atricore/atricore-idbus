@@ -55,6 +55,8 @@ public class IdentityApplianceDefinition implements Serializable {
     private Set<Provider> providers;
 
     private Set<IdentitySource> identitySources;
+    
+    private Set<ServiceResource> serviceResources;
 
     private Set<ExecutionEnvironment> executionEnvironments;
 
@@ -160,6 +162,17 @@ public class IdentityApplianceDefinition implements Serializable {
 
     public void setIdentitySources(Set<IdentitySource> identitySources) {
         this.identitySources = identitySources;
+    }
+
+    public Set<ServiceResource> getServiceResources() {
+        if (serviceResources == null) {
+            serviceResources = new HashSet<ServiceResource>();
+        }
+        return serviceResources;
+    }
+
+    public void setServiceResources(Set<ServiceResource> serviceResources) {
+        this.serviceResources = serviceResources;
     }
 
     public Set<ExecutionEnvironment> getExecutionEnvironments() {

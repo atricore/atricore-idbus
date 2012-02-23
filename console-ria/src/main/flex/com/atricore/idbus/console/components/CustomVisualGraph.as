@@ -30,6 +30,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     private static var ACTIVATION_MODE:uint = 2;
     private static var IDENTITY_LOOKUP_MODE:uint = 3;
     private static var DELEGATED_AUTHENTICATION_MODE:uint = 4;
+    private static var SERVICE_CONNECTION_MODE:uint = 5;
     
     private var _isConnectionMode:Boolean;
     private var _connectionMode:uint;
@@ -97,6 +98,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
 //                    GraphDataManager.linkVNodes(this, _connectionSourceNode, _connectionTargetNode);
                     if(_connectionMode == FEDERATED_CONNECTION_MODE){
                         dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.FEDERATED_CONNECTION_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
+                    } else if(_connectionMode == SERVICE_CONNECTION_MODE){
+                        dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.SERVICE_CONNECTION_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
                     } else if(_connectionMode == ACTIVATION_MODE){
                         dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.ACTIVATION_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
                     } else if(_connectionMode == IDENTITY_LOOKUP_MODE){
@@ -170,6 +173,12 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     public function enterFederatedConnectionMode():void {
         exitNodeCreationMode();
         _connectionMode = FEDERATED_CONNECTION_MODE;
+        enterConnectionMode();
+    }
+
+    public function enterServiceConnectionMode():void {
+        exitNodeCreationMode();
+        _connectionMode = SERVICE_CONNECTION_MODE;
         enterConnectionMode();
     }
 
@@ -390,6 +399,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     private function canConnect(sourceNode:IVisualNode, targetNode:IVisualNode):Boolean {
         var canConnect:Boolean = false;
         if(_connectionMode == FEDERATED_CONNECTION_MODE && DiagramUtil.nodesCanBeLinkedWithFederatedConnection(sourceNode, targetNode)) {
+            canConnect = true;
+        } else if (_connectionMode == SERVICE_CONNECTION_MODE && DiagramUtil.nodesCanBeLinkedWithServiceConnection(sourceNode, targetNode)){
             canConnect = true;
         } else if (_connectionMode == ACTIVATION_MODE && DiagramUtil.nodesCanBeLinkedWithActivation(sourceNode, targetNode)){
             canConnect = true;

@@ -23,6 +23,12 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _serviceProviderCreateMediator:IIocMediator;
     private var _externalIdentityProviderCreateMediator:IIocMediator;
     private var _externalServiceProviderCreateMediator:IIocMediator;
+    private var _saml2IdentityProviderCreateMediator:IIocMediator;
+    private var _saml2ServiceProviderCreateMediator:IIocMediator;
+    private var _openIDIdentityProviderCreateMediator:IIocMediator;
+    private var _openIDServiceProviderCreateMediator:IIocMediator;
+    private var _oauth2IdentityProviderCreateMediator:IIocMediator;
+    private var _oauth2ServiceProviderCreateMediator:IIocMediator;
     private var _salesforceCreateMediator:IIocMediator;
     private var _googleAppsCreateMediator:IIocMediator;
     private var _sugarCRMCreateMediator:IIocMediator;
@@ -30,6 +36,8 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _dbIdentitySourceCreateMediator:IIocMediator;
     private var _ldapIdentitySourceCreateMediator:IIocMediator;
     private var _xmlIdentitySourceCreateMediator:IIocMediator;
+    private var _josso1ResourceCreateMediator:IIocMediator;
+    private var _josso2ResourceCreateMediator:IIocMediator;
     private var _jbossExecutionEnvironmentCreateMediator:IIocMediator;
     private var _weblogicExecutionEnvironmentCreateMediator:IIocMediator;
     private var _tomcatExecutionEnvironmentCreateMediator:IIocMediator;
@@ -65,16 +73,26 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _serviceProviderRemoveCommand:IIocCommand;
     private var _externalIdentityProviderRemoveCommand:IIocCommand;
     private var _externalServiceProviderRemoveCommand:IIocCommand;
+    private var _saml2IdentityProviderRemoveCommand:IIocCommand;
+    private var _saml2ServiceProviderRemoveCommand:IIocCommand;
+    private var _openIDIdentityProviderRemoveCommand:IIocCommand;
+    private var _openIDServiceProviderRemoveCommand:IIocCommand;
+    private var _oauth2IdentityProviderRemoveCommand:IIocCommand;
+    private var _oauth2ServiceProviderRemoveCommand:IIocCommand;
+    private var _josso1ResourceRemoveCommand:IIocCommand;
+    private var _josso2ResourceRemoveCommand:IIocCommand;
     private var _lookupIdentityApplianceByIdCommand:IIocCommand;
     private var _identityApplianceUpdateCommand:IIocCommand;
     private var _identityVaultRemoveCommand:IIocCommand;
     private var _activationRemoveCommand:IIocCommand;
+    private var _serviceConnectionRemoveCommand:IIocCommand;
     private var _identityLookupRemoveCommand:IIocCommand;
     private var _federatedConnectionRemoveCommand:IIocCommand;
     private var _delegatedAuthenticationRemoveCommand:IIocCommand;
     private var _executionEnvironmentRemoveCommand:IIocCommand;
     private var _authenticationServiceRemoveCommand:IIocCommand;
     private var _activateExecEnvironmentCommand:IIocCommand;
+    private var _createServiceConnectionCommand:IIocCommand;
     private var _createIdentityLookupCommand:IIocCommand;
     private var _createDelegatedAuthenticationCommand:IIocCommand;
     private var _folderExistsCommand:IIocCommand;
@@ -115,6 +133,12 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(serviceProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(externalIdentityProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(externalServiceProviderCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(saml2IdentityProviderCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(saml2ServiceProviderCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(openIDIdentityProviderCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(openIDServiceProviderCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(oauth2IdentityProviderCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(oauth2ServiceProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(salesforceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(googleAppsCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(sugarCRMCreateMediator.getConfigName());
@@ -122,6 +146,8 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(dbIdentitySourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(ldapIdentitySourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(xmlIdentitySourceCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(josso1ResourceCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(josso2ResourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(jbossExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(weblogicExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(tomcatExecutionEnvironmentCreateMediator.getConfigName());
@@ -156,8 +182,17 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_PROVIDER_REMOVE, serviceProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.EXTERNAL_IDENTITY_PROVIDER_REMOVE, externalIdentityProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, externalServiceProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SAML2_IDENTITY_PROVIDER_REMOVE, saml2IdentityProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SAML2_SERVICE_PROVIDER_REMOVE, saml2ServiceProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.OPENID_IDENTITY_PROVIDER_REMOVE, openIDIdentityProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.OPENID_SERVICE_PROVIDER_REMOVE, openIDServiceProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.OAUTH2_IDENTITY_PROVIDER_REMOVE, oauth2IdentityProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.OAUTH2_SERVICE_PROVIDER_REMOVE, oauth2ServiceProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.JOSSO1_RESOURCE_REMOVE, josso1ResourceRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.JOSSO2_RESOURCE_REMOVE, josso2ResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_SOURCE_REMOVE, identityVaultRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATION_REMOVE, activationRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_CONNECTION_REMOVE, serviceConnectionRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_LOOKUP_REMOVE, identityLookupRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.FEDERATED_CONNECTION_REMOVE, federatedConnectionRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DELEGATED_AUTHENTICATION_REMOVE, delegatedAuthenticationRemoveCommand.getConfigName());
@@ -167,6 +202,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD, identityApplianceListLoadCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE, identityApplianceUpdateCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvironmentCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_SERVICE_CONNECTION, createServiceConnectionCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_LOOKUP, createIdentityLookupCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_DELEGATED_AUTHENTICATION, createDelegatedAuthenticationCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, folderExistsCommand.getConfigName());
@@ -255,6 +291,54 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _externalServiceProviderCreateMediator = value;
     }
 
+    public function get saml2IdentityProviderCreateMediator():IIocMediator {
+        return _saml2IdentityProviderCreateMediator;
+    }
+
+    public function set saml2IdentityProviderCreateMediator(value:IIocMediator):void {
+        _saml2IdentityProviderCreateMediator = value;
+    }
+
+    public function get saml2ServiceProviderCreateMediator():IIocMediator {
+        return _saml2ServiceProviderCreateMediator;
+    }
+
+    public function set saml2ServiceProviderCreateMediator(value:IIocMediator):void {
+        _saml2ServiceProviderCreateMediator = value;
+    }
+
+    public function get openIDIdentityProviderCreateMediator():IIocMediator {
+        return _openIDIdentityProviderCreateMediator;
+    }
+
+    public function set openIDIdentityProviderCreateMediator(value:IIocMediator):void {
+        _openIDIdentityProviderCreateMediator = value;
+    }
+
+    public function get openIDServiceProviderCreateMediator():IIocMediator {
+        return _openIDServiceProviderCreateMediator;
+    }
+
+    public function set openIDServiceProviderCreateMediator(value:IIocMediator):void {
+        _openIDServiceProviderCreateMediator = value;
+    }
+
+    public function get oauth2IdentityProviderCreateMediator():IIocMediator {
+        return _oauth2IdentityProviderCreateMediator;
+    }
+
+    public function set oauth2IdentityProviderCreateMediator(value:IIocMediator):void {
+        _oauth2IdentityProviderCreateMediator = value;
+    }
+
+    public function get oauth2ServiceProviderCreateMediator():IIocMediator {
+        return _oauth2ServiceProviderCreateMediator;
+    }
+
+    public function set oauth2ServiceProviderCreateMediator(value:IIocMediator):void {
+        _oauth2ServiceProviderCreateMediator = value;
+    }
+
     public function get salesforceCreateMediator():IIocMediator {
         return _salesforceCreateMediator;
     }
@@ -309,6 +393,22 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set xmlIdentitySourceCreateMediator(value:IIocMediator):void {
         _xmlIdentitySourceCreateMediator = value;
+    }
+
+    public function get josso1ResourceCreateMediator():IIocMediator {
+        return _josso1ResourceCreateMediator;
+    }
+
+    public function set josso1ResourceCreateMediator(value:IIocMediator):void {
+        _josso1ResourceCreateMediator = value;
+    }
+
+    public function get josso2ResourceCreateMediator():IIocMediator {
+        return _josso2ResourceCreateMediator;
+    }
+
+    public function set josso2ResourceCreateMediator(value:IIocMediator):void {
+        _josso2ResourceCreateMediator = value;
     }
 
     public function get jbossExecutionEnvironmentCreateMediator():IIocMediator {
@@ -577,6 +677,70 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _externalServiceProviderRemoveCommand = value;
     }
 
+    public function get saml2IdentityProviderRemoveCommand():IIocCommand {
+        return _saml2IdentityProviderRemoveCommand;
+    }
+
+    public function set saml2IdentityProviderRemoveCommand(value:IIocCommand):void {
+        _saml2IdentityProviderRemoveCommand = value;
+    }
+
+    public function get saml2ServiceProviderRemoveCommand():IIocCommand {
+        return _saml2ServiceProviderRemoveCommand;
+    }
+
+    public function set saml2ServiceProviderRemoveCommand(value:IIocCommand):void {
+        _saml2ServiceProviderRemoveCommand = value;
+    }
+
+    public function get openIDIdentityProviderRemoveCommand():IIocCommand {
+        return _openIDIdentityProviderRemoveCommand;
+    }
+
+    public function set openIDIdentityProviderRemoveCommand(value:IIocCommand):void {
+        _openIDIdentityProviderRemoveCommand = value;
+    }
+
+    public function get openIDServiceProviderRemoveCommand():IIocCommand {
+        return _openIDServiceProviderRemoveCommand;
+    }
+
+    public function set openIDServiceProviderRemoveCommand(value:IIocCommand):void {
+        _openIDServiceProviderRemoveCommand = value;
+    }
+
+    public function get oauth2IdentityProviderRemoveCommand():IIocCommand {
+        return _oauth2IdentityProviderRemoveCommand;
+    }
+
+    public function set oauth2IdentityProviderRemoveCommand(value:IIocCommand):void {
+        _oauth2IdentityProviderRemoveCommand = value;
+    }
+
+    public function get oauth2ServiceProviderRemoveCommand():IIocCommand {
+        return _oauth2ServiceProviderRemoveCommand;
+    }
+
+    public function set oauth2ServiceProviderRemoveCommand(value:IIocCommand):void {
+        _oauth2ServiceProviderRemoveCommand = value;
+    }
+
+    public function get josso1ResourceRemoveCommand():IIocCommand {
+        return _josso1ResourceRemoveCommand;
+    }
+
+    public function set josso1ResourceRemoveCommand(value:IIocCommand):void {
+        _josso1ResourceRemoveCommand = value;
+    }
+
+    public function get josso2ResourceRemoveCommand():IIocCommand {
+        return _josso2ResourceRemoveCommand;
+    }
+
+    public function set josso2ResourceRemoveCommand(value:IIocCommand):void {
+        _josso2ResourceRemoveCommand = value;
+    }
+
     public function get lookupIdentityApplianceByIdCommand():IIocCommand {
         return _lookupIdentityApplianceByIdCommand;
     }
@@ -607,6 +771,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set activationRemoveCommand(value:IIocCommand):void {
         _activationRemoveCommand = value;
+    }
+
+    public function get serviceConnectionRemoveCommand():IIocCommand {
+        return _serviceConnectionRemoveCommand;
+    }
+
+    public function set serviceConnectionRemoveCommand(value:IIocCommand):void {
+        _serviceConnectionRemoveCommand = value;
     }
 
     public function get identityLookupRemoveCommand():IIocCommand {
@@ -655,6 +827,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set activateExecEnvironmentCommand(value:IIocCommand):void {
         _activateExecEnvironmentCommand = value;
+    }
+
+    public function get createServiceConnectionCommand():IIocCommand {
+        return _createServiceConnectionCommand;
+    }
+
+    public function set createServiceConnectionCommand(value:IIocCommand):void {
+        _createServiceConnectionCommand = value;
     }
 
     public function get createIdentityLookupCommand():IIocCommand {

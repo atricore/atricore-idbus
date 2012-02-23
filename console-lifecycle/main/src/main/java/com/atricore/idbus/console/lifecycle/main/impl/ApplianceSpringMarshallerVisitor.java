@@ -320,6 +320,280 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
+    public void arrive(Saml2IdentityProvider node) throws Exception {
+
+        Bean providerBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(providerBean, node.toString());
+
+        setPropertyValue(providerBean, "id", node.getId() + "");
+        setPropertyValue(providerBean, "name", node.getName());
+        setPropertyValue(providerBean, "displayName", node.getDisplayName());
+        setPropertyValue(providerBean, "description", node.getDescription());
+        setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
+        setPropertyValue(providerBean, "remote", node.isRemote());
+
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
+
+        // Federated Connections
+        if (node.getFederatedConnectionsA() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsA()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsA", fc.getName() );
+            }
+        }
+
+        if (node.getFederatedConnectionsB() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsB()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsB", fc.getName() );
+            }
+        }
+
+        // Location
+        if (node.getLocation() != null)
+            setLocationPropertyValue(providerBean, "location", node.getLocation());
+
+        // Config
+        if (node.getConfig() != null)
+            setSamlR2ConfigurationPropertyValue(providerBean, "config", (SamlR2ProviderConfig) node.getConfig());
+
+        // TODO : node.getMetadata();
+
+        addPropertyBeansAsRefsToSet(applianceDefBean, "providers", providerBean);
+    }
+
+    @Override
+    public Object[] leave(Saml2IdentityProvider node, Object[] results) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void arrive(Saml2ServiceProvider node) throws Exception {
+
+        Bean providerBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(providerBean, node.toString());
+
+        setPropertyValue(providerBean, "id", node.getId() + "");
+        setPropertyValue(providerBean, "name", node.getName());
+        setPropertyValue(providerBean, "displayName", node.getDisplayName());
+        setPropertyValue(providerBean, "description", node.getDescription());
+        setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
+        setPropertyValue(providerBean, "remote", node.isRemote());
+
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
+
+        // Federated Connections
+        if (node.getFederatedConnectionsA() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsA()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsA", fc.getName() );
+            }
+        }
+
+        if (node.getFederatedConnectionsB() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsB()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsB", fc.getName() );
+            }
+        }
+
+        // Location
+        if (node.getLocation() != null)
+            setLocationPropertyValue(providerBean, "location", node.getLocation());
+
+        // Config
+        if (node.getConfig() != null)
+            setSamlR2ConfigurationPropertyValue(providerBean, "config", (SamlR2ProviderConfig) node.getConfig());
+
+        // TODO : node.getMetadata();
+
+        addPropertyBeansAsRefsToSet(applianceDefBean, "providers", providerBean);
+    }
+
+    @Override
+    public Object[] leave(Saml2ServiceProvider node, Object[] results) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void arrive(OpenIDIdentityProvider node) throws Exception {
+
+        Bean providerBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(providerBean, node.toString());
+
+        setPropertyValue(providerBean, "id", node.getId() + "");
+        setPropertyValue(providerBean, "name", node.getName());
+        setPropertyValue(providerBean, "displayName", node.getDisplayName());
+        setPropertyValue(providerBean, "description", node.getDescription());
+        setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
+        setPropertyValue(providerBean, "remote", node.isRemote());
+
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
+
+        // Federated Connections
+        if (node.getFederatedConnectionsA() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsA()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsA", fc.getName() );
+            }
+        }
+
+        if (node.getFederatedConnectionsB() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsB()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsB", fc.getName() );
+            }
+        }
+
+        // Location
+        if (node.getLocation() != null)
+            setLocationPropertyValue(providerBean, "location", node.getLocation());
+
+        // TODO: Config not saml?
+        if (node.getConfig() != null)
+            setSamlR2ConfigurationPropertyValue(providerBean, "config", (SamlR2ProviderConfig) node.getConfig());
+
+        addPropertyBeansAsRefsToSet(applianceDefBean, "providers", providerBean);
+    }
+
+    @Override
+    public Object[] leave(OpenIDIdentityProvider node, Object[] results) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void arrive(OpenIDServiceProvider node) throws Exception {
+
+        Bean providerBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(providerBean, node.toString());
+
+        setPropertyValue(providerBean, "id", node.getId() + "");
+        setPropertyValue(providerBean, "name", node.getName());
+        setPropertyValue(providerBean, "displayName", node.getDisplayName());
+        setPropertyValue(providerBean, "description", node.getDescription());
+        setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
+        setPropertyValue(providerBean, "remote", node.isRemote());
+
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
+
+        // Federated Connections
+        if (node.getFederatedConnectionsA() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsA()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsA", fc.getName() );
+            }
+        }
+
+        if (node.getFederatedConnectionsB() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsB()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsB", fc.getName() );
+            }
+        }
+
+        // Location
+        if (node.getLocation() != null)
+            setLocationPropertyValue(providerBean, "location", node.getLocation());
+
+        // TODO: Config not saml?
+        if (node.getConfig() != null)
+            setSamlR2ConfigurationPropertyValue(providerBean, "config", (SamlR2ProviderConfig) node.getConfig());
+
+        addPropertyBeansAsRefsToSet(applianceDefBean, "providers", providerBean);
+    }
+
+    @Override
+    public Object[] leave(OpenIDServiceProvider node, Object[] results) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void arrive(OAuth2IdentityProvider node) throws Exception {
+
+        Bean providerBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(providerBean, node.toString());
+
+        setPropertyValue(providerBean, "id", node.getId() + "");
+        setPropertyValue(providerBean, "name", node.getName());
+        setPropertyValue(providerBean, "displayName", node.getDisplayName());
+        setPropertyValue(providerBean, "description", node.getDescription());
+        setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
+        setPropertyValue(providerBean, "remote", node.isRemote());
+
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
+
+        // Federated Connections
+        if (node.getFederatedConnectionsA() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsA()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsA", fc.getName() );
+            }
+        }
+
+        if (node.getFederatedConnectionsB() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsB()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsB", fc.getName() );
+            }
+        }
+
+        // Location
+        if (node.getLocation() != null)
+            setLocationPropertyValue(providerBean, "location", node.getLocation());
+
+        // TODO: Config not saml?
+        if (node.getConfig() != null)
+            setSamlR2ConfigurationPropertyValue(providerBean, "config", (SamlR2ProviderConfig) node.getConfig());
+
+        addPropertyBeansAsRefsToSet(applianceDefBean, "providers", providerBean);
+    }
+
+    @Override
+    public Object[] leave(OAuth2IdentityProvider node, Object[] results) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void arrive(OAuth2ServiceProvider node) throws Exception {
+
+        Bean providerBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(providerBean, node.toString());
+
+        setPropertyValue(providerBean, "id", node.getId() + "");
+        setPropertyValue(providerBean, "name", node.getName());
+        setPropertyValue(providerBean, "displayName", node.getDisplayName());
+        setPropertyValue(providerBean, "description", node.getDescription());
+        setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
+        setPropertyValue(providerBean, "remote", node.isRemote());
+
+        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
+
+        // Federated Connections
+        if (node.getFederatedConnectionsA() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsA()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsA", fc.getName() );
+            }
+        }
+
+        if (node.getFederatedConnectionsB() != null) {
+            for (FederatedConnection fc : node.getFederatedConnectionsB()) {
+                addPropertyRefsToSet(providerBean, "federatedConnectionsB", fc.getName() );
+            }
+        }
+
+        // Location
+        if (node.getLocation() != null)
+            setLocationPropertyValue(providerBean, "location", node.getLocation());
+
+        // TODO: Config not saml?
+        if (node.getConfig() != null)
+            setSamlR2ConfigurationPropertyValue(providerBean, "config", (SamlR2ProviderConfig) node.getConfig());
+
+        addPropertyBeansAsRefsToSet(applianceDefBean, "providers", providerBean);
+    }
+
+    @Override
+    public Object[] leave(OAuth2ServiceProvider node, Object[] results) throws Exception {
+        return null;
+    }
+
+    @Override
     public void arrive(SalesforceServiceProvider node) throws Exception {
 
         Bean providerBean = newBean(beans, node.getName(), node.getClass());
@@ -468,6 +742,29 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
+    public void arrive(ServiceConnection node) throws Exception {
+
+        Bean oldServiceConnectionBean = getBean(beans, node.getName());
+        // Is it the exact same bean !?
+        if (oldServiceConnectionBean != null && getBeanDescription(oldServiceConnectionBean).equals(node.toString()))
+            return;
+
+        Bean serviceConnectionBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(serviceConnectionBean, node.toString());
+
+        setPropertyValue(serviceConnectionBean, "id", node.getId() + "");
+        setPropertyValue(serviceConnectionBean, "name", node.getName());
+        setPropertyValue(serviceConnectionBean, "displayName", node.getDisplayName());
+        setPropertyValue(serviceConnectionBean, "description", node.getDescription());
+
+        if (node.getResource() != null)
+            setPropertyRef(serviceConnectionBean, "resource", node.getResource().getName());
+
+        if (node.getSp() != null)
+            setPropertyRef(serviceConnectionBean, "sp", node.getSp().getName());
+    }
+
+    @Override
     public void arrive(JOSSOActivation node) throws Exception {
 
         Bean oldActivationBean = getBean(beans, node.getName());
@@ -483,8 +780,8 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(activationBean, "displayName", node.getDisplayName());
         setPropertyValue(activationBean, "description", node.getDescription());
 
-        if (node.getExecutionEnv() != null)
-            setPropertyRef(activationBean, "executionEnv", node.getExecutionEnv().getName());
+        if (node.getResource() != null)
+            setPropertyRef(activationBean, "resource", node.getResource().getName());
 
         if (node.getSp() != null)
         setPropertyRef(activationBean, "sp", node.getSp().getName());
@@ -665,6 +962,31 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(idSourceBean, "description", node.getDescription());
 
         setPropertyRef(idSourceBean, "xmlUrl", node.getXmlUrl());
+
+        setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));
+    }
+
+    @Override
+    public void arrive(JOSSO1Resource node) throws Exception {
+        Bean idSourceBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(idSourceBean, node.toString());
+
+        setPropertyValue(idSourceBean, "id", node.getId() + "");
+        setPropertyValue(idSourceBean, "name", node.getName());
+        setPropertyValue(idSourceBean, "description", node.getDescription());
+
+        setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));
+    }
+
+    public void arrive(JOSSO2Resource node) throws Exception {
+        Bean idSourceBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(idSourceBean, node.toString());
+
+        setPropertyValue(idSourceBean, "id", node.getId() + "");
+        setPropertyValue(idSourceBean, "name", node.getName());
+        setPropertyValue(idSourceBean, "description", node.getDescription());
 
         setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
         setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));

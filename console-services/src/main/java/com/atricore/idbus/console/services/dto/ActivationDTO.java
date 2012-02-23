@@ -9,6 +9,8 @@ public class ActivationDTO extends ConnectionDTO {
 
     private ExecutionEnvironmentDTO executionEnv;
 
+    private ServiceResourceDTO resource;
+
     private ServiceProviderDTO sp;
 
     public ExecutionEnvironmentDTO getExecutionEnv() {
@@ -17,6 +19,14 @@ public class ActivationDTO extends ConnectionDTO {
 
     public void setExecutionEnv(ExecutionEnvironmentDTO executionEnv) {
         this.executionEnv = executionEnv;
+    }
+
+    public ServiceResourceDTO getResource() {
+        return resource;
+    }
+
+    public void setResource(ServiceResourceDTO resource) {
+        this.resource = resource;
     }
 
     public ServiceProviderDTO getSp() {

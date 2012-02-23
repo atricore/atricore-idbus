@@ -4,12 +4,17 @@ import com.atricore.idbus.console.base.diagram.DiagramElementTypes;
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
-import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
-import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
+import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
+import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
+import com.atricore.idbus.console.services.dto.OpenIDServiceProvider;
 import com.atricore.idbus.console.services.dto.Provider;
+import com.atricore.idbus.console.services.dto.Saml2IdentityProvider;
+import com.atricore.idbus.console.services.dto.Saml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.ServiceResource;
 
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
@@ -23,11 +28,33 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id && !nodeLinkExists(node1.node, node2.node) && !nodeLinkExists(node2.node, node1.node)) {
             // TODO: finish this
-            if ((node1.data is ServiceProvider && (node2.data is IdentityProvider || node2.data is ExternalIdentityProvider))
-                    || (node1.data is IdentityProvider && (node2.data is ServiceProvider || node2.data is ExternalServiceProvider))
-                    || (node1.data is ExternalServiceProvider && node2.data is IdentityProvider)
-                    || (node1.data is ExternalIdentityProvider && node2.data is ServiceProvider)) {
+            if ((node1.data is ServiceProvider && (node2.data is IdentityProvider || node2.data is Saml2IdentityProvider
+                            || node2.data is OpenIDIdentityProvider || node2.data is OAuth2IdentityProvider))
+                    || (node1.data is IdentityProvider && (node2.data is ServiceProvider || node2.data is Saml2ServiceProvider
+                            || node2.data is OpenIDServiceProvider || node2.data is OAuth2ServiceProvider))
+                    || ((node1.data is Saml2ServiceProvider || node1.data is OpenIDServiceProvider || node1.data is OAuth2ServiceProvider)
+                            && node2.data is IdentityProvider)
+                    || ((node1.data is Saml2IdentityProvider || node1.data is OpenIDIdentityProvider || node1.data is OAuth2IdentityProvider)
+                            && node2.data is ServiceProvider)) {
                 canBeLinked = true;
+            }
+        }
+        return canBeLinked;
+    }
+
+    public static function nodesCanBeLinkedWithServiceConnection(node1:IVisualNode, node2:IVisualNode):Boolean {
+        var canBeLinked:Boolean = false;
+        if (node1 != null && node2 != null && node1.id != node2.id) {
+            if (node1.data is ServiceProvider && node2.data is ServiceResource){
+                var sp1:ServiceProvider = node1.data as ServiceProvider;
+                if(sp1.serviceConnection == null){
+                    canBeLinked = true;
+                }
+            } else if (node1.data is ServiceResource && node2.data is ServiceProvider) {
+                var sp2:ServiceProvider = node2.data as ServiceProvider;
+                if(sp2.serviceConnection == null){
+                    canBeLinked = true;
+                }
             }
         }
         return canBeLinked;
@@ -36,14 +63,14 @@ public class DiagramUtil {
     public static function nodesCanBeLinkedWithActivation(node1:IVisualNode, node2:IVisualNode):Boolean {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
-            if (node1.data is ServiceProvider && node2.data is ExecutionEnvironment){
-                var sp1:ServiceProvider = node1.data as ServiceProvider;
-                if(sp1.activation == null){
+            if (node1.data is ServiceResource && node2.data is ExecutionEnvironment){
+                var sr1:ServiceResource = node1.data as ServiceResource;
+                if(sr1.activation == null){
                     canBeLinked = true;
                 }
-            } else if (node1.data is ExecutionEnvironment && node2.data is ServiceProvider) {
-                var sp2:ServiceProvider = node2.data as ServiceProvider;
-                if(sp2.activation == null){
+            } else if (node1.data is ExecutionEnvironment && node2.data is ServiceResource) {
+                var sr2:ServiceResource = node2.data as ServiceResource;
+                if(sr2.activation == null){
                     canBeLinked = true;
                 }
             }
@@ -98,6 +125,18 @@ public class DiagramUtil {
                 return EmbeddedIcons.externalIdpMiniIcon;
             case DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.externalSpMiniIcon;
+            case DiagramElementTypes.SAML_2_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.saml2IdpMiniIcon;
+            case DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.saml2SpMiniIcon;
+            case DiagramElementTypes.OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.openidIdpMiniIcon;
+            case DiagramElementTypes.OPENID_SERVICE_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.openidSpMiniIcon;
+            case DiagramElementTypes.OAUTH_2_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.oauth2IdpMiniIcon;
+            case DiagramElementTypes.OAUTH_2_SERVICE_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.oauth2SpMiniIcon;
             case DiagramElementTypes.SALESFORCE_ELEMENT_TYPE:
                 return EmbeddedIcons.salesforceMiniIcon;
             case DiagramElementTypes.GOOGLE_APPS_ELEMENT_TYPE:
@@ -112,6 +151,10 @@ public class DiagramUtil {
                 return EmbeddedIcons.ldapIdentitySourceMiniIcon;
             case DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE:
                 return EmbeddedIcons.xmlIdentitySourceMiniIcon;
+            case DiagramElementTypes.JOSSO1_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.josso1ResourceMiniIcon;
+            case DiagramElementTypes.JOSSO2_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.josso2ResourceMiniIcon;
             case DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.jbossEnvironmentMiniIcon;
             case DiagramElementTypes.WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:

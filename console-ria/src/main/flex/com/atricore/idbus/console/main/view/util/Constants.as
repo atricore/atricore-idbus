@@ -32,7 +32,9 @@ package com.atricore.idbus.console.main.view.util {
         public static const CHANNEL_DEEP:uint=2;
 
         public static const IDENTITY_VAULT_DEEP:uint=2;
-        
+
+        public static const SERVICE_RESOURCE_DEEP:uint=2;
+
         public static const IDENTITY_VAULT_CHANNEL_DEEP:uint=3;
         
         public static const EXEC_ENVIRONMENT_DEEP:uint=2;

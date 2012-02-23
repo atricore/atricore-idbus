@@ -56,5 +56,14 @@ public class DiagramElementTypes {
     public static const DIRECTORY_SERVICE_ELEMENT_TYPE:int = 32;
     public static const WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:int =33;
     public static const SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int =34;
+    public static const SAML_2_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 35;
+    public static const SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE:int = 36;
+    public static const OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 37;
+    public static const OPENID_SERVICE_PROVIDER_ELEMENT_TYPE:int = 38;
+    public static const OAUTH_2_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 39;
+    public static const OAUTH_2_SERVICE_PROVIDER_ELEMENT_TYPE:int = 40;
+    public static const SERVICE_CONNECTION_ELEMENT_TYPE:int = 41;
+    public static const JOSSO1_RESOURCE_ELEMENT_TYPE:int = 42;
+    public static const JOSSO2_RESOURCE_ELEMENT_TYPE:int = 43;
 }
 }

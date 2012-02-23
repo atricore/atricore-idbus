@@ -37,10 +37,13 @@
             import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
             import com.atricore.idbus.console.modeling.main.view.sso.event.SsoEvent;
             import com.atricore.idbus.console.services.dto.ExecEnvType;
+            import com.atricore.idbus.console.services.dto.JOSSO1Resource;
             import com.atricore.idbus.console.services.dto.JOSSOActivation;
             import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
             import com.atricore.idbus.console.services.dto.Location;
+            import com.atricore.idbus.console.services.dto.ServiceConnection;
             import com.atricore.idbus.console.services.dto.ServiceProvider;
+            import com.atricore.idbus.console.services.dto.ServiceResource;
             import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 
             [Bindable]
@@ -147,9 +150,17 @@
                 spLoc.uri = "";
                 sp.location = spLoc;
 
+                var resource:ServiceResource = new JOSSO1Resource();
+                resource.name = sp.name.replace(/\s+/g, "-") + "-josso1-resource";
 
-                sp.activation = new JOSSOActivation();
-                sp.activation.name = sp.name + "-josso";
+                sp.serviceConnection = new ServiceConnection();
+                sp.serviceConnection.name = resource.name.replace(/\s+/g, "-") + "-service-connection";
+                sp.serviceConnection.sp = sp;
+                sp.serviceConnection.resource = resource;
+                resource.serviceConnection = sp.serviceConnection;
+
+                resource.activation = new JOSSOActivation();
+                resource.activation.name = sp.name + "-josso";
                 var loc:Location = new Location();
                 loc.protocol = partnerappLocationProtocol.labelDisplay.text;
                 loc.host = partnerappLocationDomain.text;
@@ -157,20 +168,23 @@
                 loc.context = partnerappLocationContext.text;
                 loc.uri = "";
 
-                (sp.activation as JOSSOActivation).partnerAppLocation = loc;
-                (sp.activation as JOSSOActivation).partnerAppId = partnerAppId.text;
+                (resource.activation as JOSSOActivation).partnerAppLocation = loc;
+                (resource.activation as JOSSOActivation).partnerAppId = partnerAppId.text;
 
                 if (jossoSPPlatform.selectedItem.@data.indexOf("jb") == 0) {
-                    sp.activation.executionEnv = new JbossExecutionEnvironment();
-                    (sp.activation.executionEnv as JbossExecutionEnvironment).instance = "default";
+                    resource.activation.executionEnv = new JbossExecutionEnvironment();
+                    (resource.activation.executionEnv as JbossExecutionEnvironment).instance = "default";
                 } else if (jossoSPPlatform.selectedItem.@data.indexOf("tc") == 0) {
-                    sp.activation.executionEnv = new TomcatExecutionEnvironment();
+                    resource.activation.executionEnv = new TomcatExecutionEnvironment();
                 }
-                sp.activation.executionEnv.name = jossoSPPlatform.selectedItem.@data + "-execenv";
-                sp.activation.executionEnv.type = ExecEnvType.LOCAL;
-                sp.activation.executionEnv.installUri = homeDir.text;
+                resource.activation.executionEnv.name = jossoSPPlatform.selectedItem.@data + "-execenv";
+                resource.activation.executionEnv.type = ExecEnvType.LOCAL;
+                resource.activation.executionEnv.installUri = homeDir.text;
 
-                sp.activation.executionEnv.platformId = jossoSPPlatform.selectedItem.@data;
+                resource.activation.executionEnv.platformId = jossoSPPlatform.selectedItem.@data;
+
+                resource.activation.resource = resource;
+
                 serviceProviderArray.push(sp);
             }
 

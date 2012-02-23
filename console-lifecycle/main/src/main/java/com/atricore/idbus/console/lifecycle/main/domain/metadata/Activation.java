@@ -9,6 +9,8 @@ public class Activation extends Connection {
 
     private ExecutionEnvironment executionEnv;
 
+    private ServiceResource resource;
+
     private ServiceProvider sp;
 
     public ExecutionEnvironment getExecutionEnv() {
@@ -19,6 +21,14 @@ public class Activation extends Connection {
         this.executionEnv = executionEnv;
     }
 
+    public ServiceResource getResource() {
+        return resource;
+    }
+
+    public void setResource(ServiceResource resource) {
+        this.resource = resource;
+    }
+
     public ServiceProvider getSp() {
         return sp;
     }
@@ -26,5 +36,4 @@ public class Activation extends Connection {
     public void setSp(ServiceProvider sp) {
         this.sp = sp;
     }
-
 }

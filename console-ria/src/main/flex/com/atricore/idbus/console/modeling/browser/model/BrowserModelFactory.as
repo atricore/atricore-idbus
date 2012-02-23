@@ -44,13 +44,23 @@ import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.JOSSO1Resource;
+import com.atricore.idbus.console.services.dto.JOSSO2Resource;
 import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
+import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
+import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
+import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
+import com.atricore.idbus.console.services.dto.OpenIDServiceProvider;
 import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
+import com.atricore.idbus.console.services.dto.Saml2IdentityProvider;
+import com.atricore.idbus.console.services.dto.Saml2ServiceProvider;
+import com.atricore.idbus.console.services.dto.ServiceConnection;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.ServiceResource;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
@@ -122,6 +132,18 @@ public class BrowserModelFactory {
                 providerNode.icon = EmbeddedIcons.externalSpMiniIcon;
             } else if (provider is ExternalIdentityProvider) {
                 providerNode.icon = EmbeddedIcons.externalIdpMiniIcon;
+            } else if (provider is Saml2ServiceProvider) {
+                providerNode.icon = EmbeddedIcons.saml2SpMiniIcon;
+            } else if (provider is Saml2IdentityProvider) {
+                providerNode.icon = EmbeddedIcons.saml2IdpMiniIcon;
+            } else if (provider is OpenIDServiceProvider) {
+                providerNode.icon = EmbeddedIcons.openidSpMiniIcon;
+            } else if (provider is OpenIDIdentityProvider) {
+                providerNode.icon = EmbeddedIcons.openidIdpMiniIcon;
+            } else if (provider is OAuth2ServiceProvider) {
+                providerNode.icon = EmbeddedIcons.oauth2SpMiniIcon;
+            } else if (provider is OAuth2IdentityProvider) {
+                providerNode.icon = EmbeddedIcons.oauth2IdpMiniIcon;
             } else if (provider is SalesforceServiceProvider) {
                 providerNode.icon = EmbeddedIcons.salesforceMiniIcon;
             } else if (provider is GoogleAppsServiceProvider) {
@@ -170,6 +192,22 @@ public class BrowserModelFactory {
                 identityVaultNode.icon = EmbeddedIcons.vaultMiniIcon;
             }
             return identityVaultNode;
+        }
+
+        public static function createServiceResourceNode(serviceResource:ServiceResource, selectable:Boolean, parentNode:BrowserNode):BrowserNode {
+            var resourceNode:BrowserNode = new BrowserNode();
+            resourceNode.id = Number(serviceResource.id);
+            resourceNode.label = serviceResource.name;
+            resourceNode.type = Constants.SERVICE_RESOURCE_DEEP;
+            resourceNode.data = serviceResource;
+            resourceNode.selectable = selectable;
+            resourceNode.parentNode = parentNode;
+            if (serviceResource is JOSSO1Resource) {
+                resourceNode.icon = EmbeddedIcons.josso1ResourceMiniIcon;
+            } else if (serviceResource is JOSSO2Resource) {
+                resourceNode.icon = EmbeddedIcons.josso2ResourceMiniIcon;
+            }
+            return resourceNode;
         }
 
         public static function createExecutionEnvironmentNode(executionEnvironment:ExecutionEnvironment, selectable:Boolean, parentNode:BrowserNode):BrowserNode {
@@ -227,6 +265,8 @@ public class BrowserModelFactory {
             connectionNode.parentNode = parentNode;
             if (connection is FederatedConnection) {
                 connectionNode.icon = EmbeddedIcons.connectionFederatedMiniIcon;
+            } else if (connection is ServiceConnection) {
+                connectionNode.icon = EmbeddedIcons.connectionServiceMiniIcon;
             } else if (connection is Activation) {
                 connectionNode.icon = EmbeddedIcons.connectionActivationMiniIcon;
             } else if (connection is IdentityLookup) {

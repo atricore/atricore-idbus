@@ -68,6 +68,78 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;
     }
 
+    public void arrive(Saml2IdentityProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(Saml2IdentityProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(Saml2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(Saml2ServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(Saml2ServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(Saml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(OpenIDIdentityProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(OpenIDIdentityProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(OpenIDIdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(OpenIDServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(OpenIDServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(OpenIDServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(OAuth2IdentityProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(OAuth2IdentityProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(OAuth2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(OAuth2ServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(OAuth2ServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(OAuth2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
     public void arrive(SalesforceServiceProvider node) throws Exception {
 
     }
@@ -188,6 +260,41 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;
     }
 
+    public void arrive(JOSSO1Resource node) throws Exception {
+
+    }
+
+    public Object[] leave(JOSSO1Resource node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(JOSSO1Resource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(JOSSO2Resource node) throws Exception {
+
+    }
+
+    public Object[] leave(JOSSO2Resource node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(JOSSO2Resource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(ServiceConnection node) throws Exception {
+
+    }
+
+    public Object[] leave(ServiceConnection node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(ServiceConnection node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
 
     public void arrive(JOSSOActivation node) throws Exception {
         

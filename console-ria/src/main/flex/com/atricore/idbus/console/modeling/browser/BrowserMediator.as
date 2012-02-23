@@ -24,8 +24,10 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.browser.model.BrowserModelFactory;
 import com.atricore.idbus.console.modeling.browser.model.BrowserNode;
+import com.atricore.idbus.console.services.dto.Activation;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
+import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
@@ -34,6 +36,7 @@ import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.ServiceResource;
 
 import flash.events.Event;
 import flash.utils.Dictionary;
@@ -135,6 +138,7 @@ public class BrowserMediator extends IocMediator implements IDisposable {
             _applianceRootNode = BrowserModelFactory.createIdentityApplianceNode(_identityAppliance, true, null);
 
             var idSourceConnections:Dictionary = new Dictionary();  //[idSource, array of connections]
+            var serviceResourceConnections:Dictionary = new Dictionary();  //[serviceResource, array of connections]
             var execEnvConnections:Dictionary = new Dictionary();  //[execEnv, array of connections]
             var authnServiceConnections:Dictionary = new Dictionary();  //[authnService, array of connections]
 
@@ -190,9 +194,32 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                             idLookupConnections.addItem(locProv.identityLookup);
                             idSourceConnections[idSource] = idLookupConnections;
                         }
-                        // add execution environment to service provider node and activation to connections node
                         if (locProv is ServiceProvider) {
                             var sp:ServiceProvider = locProv as ServiceProvider;
+
+                            // add service resource to provider node and service connection to connections node
+                            if (sp.serviceConnection != null && sp.serviceConnection.resource != null) {
+                                // add connections node to provider if not already added
+                                if (!connectionsNodeAdded) {
+                                    providerNode.addChild(connectionsNode);
+                                    connectionsNodeAdded = true;
+                                }
+                                var serviceResource:ServiceResource = sp.serviceConnection.resource;
+                                var newServiceResourceNode:BrowserNode = BrowserModelFactory.createServiceResourceNode(serviceResource, true, providerNode);
+                                providerNode.addChild(newServiceResourceNode);
+                                // add serviceConnection to connections node
+                                var serviceConnectionNode:BrowserNode = BrowserModelFactory.createConnectionNode(sp.serviceConnection, true, connectionsNode);
+                                connectionsNode.addChild(serviceConnectionNode);
+                                // add serviceConnection to serviceResourceConnections map
+                                var serviceConnections:ArrayCollection = serviceResourceConnections[serviceResource];
+                                if (serviceConnections == null) {
+                                    serviceConnections = new ArrayCollection();
+                                }
+                                serviceConnections.addItem(sp.serviceConnection);
+                                serviceResourceConnections[serviceResource] = serviceConnections;
+                            }
+
+                            /*// add execution environment to service provider node and activation to connections node
                             if (sp.activation != null && sp.activation.executionEnv != null) {
                                 // add connections node to provider if not already added
                                 if (!connectionsNodeAdded) {
@@ -212,7 +239,7 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                                 }
                                 activationConnections.addItem(sp.activation);
                                 execEnvConnections[sp.activation.executionEnv] = activationConnections;
-                            }
+                            }*/
                         }
                         // add authentication service to identity provider node and delegated authn. connection to connections node
                         if (locProv is IdentityProvider) {
@@ -265,13 +292,43 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                     var executionNode2:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(identityApplianceDefinition.executionEnvironments[j], true, _applianceRootNode);
                     _applianceRootNode.addChild(executionNode2);
                     // set connections
-                    var connections2:ArrayCollection = execEnvConnections[identityApplianceDefinition.executionEnvironments[j]];
-                    if (connections2 != null && connections2.length > 0) {
-                        var execEnvConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false,executionNode2 );
-                        for each (var connection2:Connection in connections2) {
-                            execEnvConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(connection2, true, execEnvConnectionsNode));
+                    if (identityApplianceDefinition.executionEnvironments[j].activations != null &&
+                            identityApplianceDefinition.executionEnvironments[j].activations.length > 0) {
+                        var execEnvConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false,executionNode2);
+                        for each (var activation:Activation in identityApplianceDefinition.executionEnvironments[j].activations) {
+                            execEnvConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(activation, true, execEnvConnectionsNode));
+                            // add activation to serviceResourceConnections map
+                            var serviceResourceConnections2:ArrayCollection = serviceResourceConnections[activation.resource];
+                            if (serviceResourceConnections2 == null) {
+                                serviceResourceConnections2 = new ArrayCollection();
+                            }
+                            serviceResourceConnections2.addItem(activation);
+                            serviceResourceConnections[activation.resource] = serviceResourceConnections2;
                         }
                         executionNode2.addChild(execEnvConnectionsNode);
+                    }
+                        /*var connections2:ArrayCollection = execEnvConnections[identityApplianceDefinition.executionEnvironments[j]];
+                        if (connections2 != null && connections2.length > 0) {
+                            var execEnvConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false,executionNode2 );
+                            for each (var connection2:Connection in connections2) {
+                                execEnvConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(connection2, true, execEnvConnectionsNode));
+                            }
+                            executionNode2.addChild(execEnvConnectionsNode);
+                        }*/
+                }
+            }
+            if (identityApplianceDefinition.serviceResources != null) {
+                for (i = 0; i < identityApplianceDefinition.serviceResources.length; i++) {
+                    var serviceResourceNode:BrowserNode = BrowserModelFactory.createServiceResourceNode(identityApplianceDefinition.serviceResources[i], true, _applianceRootNode);
+                    _applianceRootNode.addChild(serviceResourceNode);
+                    // set connections
+                    var sResourceConnections:ArrayCollection = serviceResourceConnections[identityApplianceDefinition.serviceResources[i]];
+                    if (sResourceConnections != null && sResourceConnections.length > 0) {
+                        var serviceResourceConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false, serviceResourceNode);
+                        for each (var sResourceConnection:Connection in sResourceConnections) {
+                            serviceResourceConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(sResourceConnection, true, serviceResourceConnectionsNode));
+                        }
+                        serviceResourceNode.addChild(serviceResourceConnectionsNode);
                     }
                 }
             }

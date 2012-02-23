@@ -13,8 +13,6 @@ import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.atricore.idbus.capabilities.oauth2.main.OAuth2Client;
 import org.atricore.idbus.capabilities.oauth2.main.util.JasonUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 
@@ -253,8 +251,8 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
             }
         }
 
-        if (node.getActivation() == null) {
-            addError("Local Serivice Provider requires an activation connection " + node.getName());
+        if (node.getServiceConnection() == null) {
+            addError("Local Serivice Provider requires an service connection " + node.getName());
         }
 
         if (node.getAccountLinkagePolicy() == null)
@@ -277,6 +275,48 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         validateDisplayName("SP display name", node.getDisplayName());
         validateMetadata("Metadata", node.getMetadata(), node);
         validateIDPChannels(node);
+    }
+
+    @Override
+    public void arrive(Saml2IdentityProvider node) throws Exception {
+        validateName("Saml2 IDP name", node.getName(), node);
+        validateDisplayName("Saml2 IDP display name", node.getDisplayName());
+        validateMetadata("Saml2 IDP metadata", node.getMetadata(), node);
+    }
+
+    @Override
+    public void arrive(Saml2ServiceProvider node) throws Exception {
+        validateName("Saml2 SP name", node.getName(), node);
+        validateDisplayName("Saml2 SP display name", node.getDisplayName());
+        validateMetadata("Saml2 SP metadata", node.getMetadata(), node);
+    }
+
+    @Override
+    public void arrive(OpenIDIdentityProvider node) throws Exception {
+        validateName("OpenID IDP name", node.getName(), node);
+        validateDisplayName("OpenID IDP display name", node.getDisplayName());
+        validateLocation("OpenID IDP", node.getLocation(), node, true);
+    }
+
+    @Override
+    public void arrive(OpenIDServiceProvider node) throws Exception {
+        validateName("OpenID SP name", node.getName(), node);
+        validateDisplayName("OpenID SP display name", node.getDisplayName());
+        validateLocation("OpenID SP", node.getLocation(), node, true);
+    }
+
+    @Override
+    public void arrive(OAuth2IdentityProvider node) throws Exception {
+        validateName("OAuth2 IDP name", node.getName(), node);
+        validateDisplayName("OAuth2 IDP display name", node.getDisplayName());
+        validateLocation("OAuth2 IDP", node.getLocation(), node, true);
+    }
+
+    @Override
+    public void arrive(OAuth2ServiceProvider node) throws Exception {
+        validateName("OAuth2 SP name", node.getName(), node);
+        validateDisplayName("OAuth2 SP display name", node.getDisplayName());
+        validateLocation("OAuth2 SP", node.getLocation(), node, true);
     }
 
     @Override
@@ -349,6 +389,33 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
+    public void arrive(ServiceConnection node) throws Exception {
+
+        validateName("Service Connection name", node.getName(), node);
+        validateDisplayName("Service Connection display name", node.getDisplayName());
+
+        if (node.getSp() == null)
+            addError("Service Connection " + node.getName() + " Service Provider cannot be null");
+        else {
+            if (node.getSp().getServiceConnection() != node) {
+                addError("Service Provider Connection is not this connection " +
+                        node.getName() +
+                        " ["+node.getSp().getServiceConnection().getName()+"]");
+            }
+        }
+
+        if (node.getResource() == null)
+            addError("Service Connection " + node.getName() + " Service Resource cannot be null");
+        else {
+            if (node.getResource().getServiceConnection() != node) {
+                addError("Service Resource Connection is not this connection " +
+                        node.getName() +
+                        " ["+node.getResource().getServiceConnection().getName()+"]");
+            }
+        }
+    }
+
+    @Override
     public void arrive(JOSSOActivation node) throws Exception {
 
         validateName("JOSSO Activation name", node.getName(), node);
@@ -359,13 +426,13 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
         validateLocation("JOSSO Activation partner app.", node.getPartnerAppLocation(), node, false);
 
-        if (node.getSp() == null)
-            addError("JOSSO Activation " + node.getName() + " SP cannot be null");
+        if (node.getResource() == null)
+            addError("JOSSO Activation " + node.getName() + " Service Resource cannot be null");
         else {
-            if (node.getSp().getActivation() != node) {
-                addError("SP Activation is not this activation " +
+            if (node.getResource().getActivation() != node) {
+                addError("Service Resource Activation is not this activation " +
                         node.getName() +
-                        " ["+node.getSp().getActivation().getName()+"]");
+                        " ["+node.getResource().getActivation().getName()+"]");
             }
         }
 
@@ -571,6 +638,15 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
             addError("XML Idenity Source must define a XML Url");
     }
 
+    @Override
+    public void arrive(JOSSO1Resource node) throws Exception {
+        validateName("JOSSO1 Resource name" , node.getName(), node);
+    }
+
+    @Override
+    public void arrive(JOSSO2Resource node) throws Exception {
+        validateName("JOSSO2 Resource name" , node.getName(), node);
+    }
 
     @Override
     public void arrive(ServiceProviderChannel node) throws Exception {
@@ -787,9 +863,9 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 MetadataUtil.findEntityId(md);
                 // find SSODescriptor
                 String descriptorName = null;
-                if (obj instanceof ExternalIdentityProvider) {
+                if (obj instanceof ExternalIdentityProvider || obj instanceof Saml2IdentityProvider) {
                     descriptorName = "IDPSSODescriptor";
-                } else if (obj instanceof ExternalServiceProvider) {
+                } else if (obj instanceof ExternalServiceProvider || obj instanceof Saml2ServiceProvider) {
                     descriptorName = "SPSSODescriptor";
                 }
                 MetadataUtil.findSSODescriptor(md, descriptorName);
