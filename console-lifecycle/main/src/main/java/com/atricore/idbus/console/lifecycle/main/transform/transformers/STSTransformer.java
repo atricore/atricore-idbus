@@ -95,7 +95,7 @@ public class STSTransformer extends AbstractTransformer {
         // JOSSO Legacy authenticator
         // ----------------------------------------
 
-        Bean legacyAuthenticator = newBean(idpBeans, "authenticator", AuthenticatorImpl.class.getName());
+        Bean legacyAuthenticator = newBean(idpBeans, idpBean.getName() + "-authenticator", AuthenticatorImpl.class.getName());
         List<Ref> authnSchemes = new ArrayList<Ref>();
 
         if (provider.getAuthenticationMechanisms().size() < 1)

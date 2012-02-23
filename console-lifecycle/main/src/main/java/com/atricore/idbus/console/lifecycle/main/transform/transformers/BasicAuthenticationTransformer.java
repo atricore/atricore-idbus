@@ -27,6 +27,7 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
     @Override
     public boolean accept(TransformEvent event) {
         return event.getData() instanceof BasicAuthentication &&
+                ((BasicAuthentication) event.getData()).isEnabled() &&
                event.getContext().getParentNode() instanceof IdentityProvider;
     }
 
