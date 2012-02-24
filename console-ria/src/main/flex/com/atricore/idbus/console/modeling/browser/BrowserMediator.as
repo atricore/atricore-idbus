@@ -25,6 +25,7 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.browser.model.BrowserModelFactory;
 import com.atricore.idbus.console.modeling.browser.model.BrowserNode;
 import com.atricore.idbus.console.services.dto.Connection;
+import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
@@ -216,25 +217,27 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                         // add authentication service to identity provider node and delegated authn. connection to connections node
                         if (locProv is IdentityProvider) {
                             var idp:IdentityProvider = locProv as IdentityProvider;
-                            if (idp.delegatedAuthentication != null && idp.delegatedAuthentication.authnService != null) {
+                            if (idp.delegatedAuthentications != null && idp.delegatedAuthentications.length > 0) {
                                 // add connections node to provider if not already added
                                 if (!connectionsNodeAdded) {
                                     providerNode.addChild(connectionsNode);
                                     connectionsNodeAdded = true;
                                 }
-                                // add authentication service to provider node
-                                var authnServiceNode1:BrowserNode = BrowserModelFactory.createAuthenticationServiceNode(idp.delegatedAuthentication.authnService, true, providerNode);
-                                providerNode.addChild(authnServiceNode1);
-                                // add delegated authn. connection to connections node
-                                var delegatedAuthnNode:BrowserNode = BrowserModelFactory.createConnectionNode(idp.delegatedAuthentication, true, connectionsNode);
-                                connectionsNode.addChild(delegatedAuthnNode);
-                                // add delegated authn. connection to authnServiceConnections map
-                                var delegatedAuthnConnections:ArrayCollection = authnServiceConnections[idp.delegatedAuthentication.authnService];
-                                if (delegatedAuthnConnections == null) {
-                                    delegatedAuthnConnections = new ArrayCollection();
+                                // add authentication services to provider node
+                                for each (var delegatedAuthentication:DelegatedAuthentication in idp.delegatedAuthentications) {
+                                    var authnServiceNode1:BrowserNode = BrowserModelFactory.createAuthenticationServiceNode(delegatedAuthentication.authnService, true, providerNode);
+                                    providerNode.addChild(authnServiceNode1);
+                                    // add delegated authn. connection to connections node
+                                    var delegatedAuthnNode:BrowserNode = BrowserModelFactory.createConnectionNode(delegatedAuthentication, true, connectionsNode);
+                                    connectionsNode.addChild(delegatedAuthnNode);
+                                    // add delegated authn. connection to authnServiceConnections map
+                                    var delegatedAuthnConnections:ArrayCollection = authnServiceConnections[delegatedAuthentication.authnService];
+                                    if (delegatedAuthnConnections == null) {
+                                        delegatedAuthnConnections = new ArrayCollection();
+                                    }
+                                    delegatedAuthnConnections.addItem(delegatedAuthentication);
+                                    authnServiceConnections[delegatedAuthentication.authnService] = delegatedAuthnConnections;
                                 }
-                                delegatedAuthnConnections.addItem(idp.delegatedAuthentication);
-                                authnServiceConnections[idp.delegatedAuthentication.authnService] = delegatedAuthnConnections;
                             }
                         }
                     }

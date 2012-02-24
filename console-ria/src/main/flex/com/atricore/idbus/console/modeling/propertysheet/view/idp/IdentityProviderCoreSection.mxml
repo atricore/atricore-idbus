@@ -115,14 +115,14 @@
                     <!--label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:">-->
                 <!--<s:DropDownList id="authMechanismCombo" labelField="name" width="200" selectedIndex="0"/>-->
             <!--</mx:FormItem>-->
-            <s:HGroup width="100%">
+            <!--<s:HGroup width="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="230">
                     <s:DropDownList id="authMechanismCombo"
                             dataProvider="{authMechanismColl}"
                             selectedIndex="0"
                             width="200"
                             enabled="false"/>
-                    <!--s:List id="authMechanismCombo"
+                    &lt;!&ndash;s:List id="authMechanismCombo"
                                    dataProvider="{authMechanismColl}"
                                    itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
                                    alternatingItemColors="[#EEEEEE, white]"
@@ -130,11 +130,11 @@
                         <s:layout>
                            <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
                        </s:layout>
-                    </s:List-->
+                    </s:List&ndash;&gt;
                 </mx:FormItem>
-                <!--s:Button id="configureAuthMechanism"
-                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/-->
-            </s:HGroup>
+                &lt;!&ndash;s:Button id="configureAuthMechanism"
+                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/&ndash;&gt;
+            </s:HGroup>-->
 
             <mx:FormItem
                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:">

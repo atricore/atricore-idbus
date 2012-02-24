@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+
+<s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
+         paddingRight="5" paddingTop="5" paddingBottom="5">
+
+    <fx:Declarations>
+        <utils:NameValidator id="nameValidator" source="{simpleAuthnName}" required="true" property="text"/>
+    </fx:Declarations>
+
+    <fx:Script>
+        <![CDATA[
+        import com.atricore.idbus.console.main.EmbeddedIcons;
+        import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
+        import com.atricore.idbus.console.services.dto.BasicAuthentication;
+        import com.atricore.idbus.console.services.dto.BindAuthentication;
+        import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
+        import com.atricore.idbus.console.services.dto.WindowsAuthentication;
+
+        private function authenticationMechanismsIconFunction(item:AuthenticationMechanism):Class {
+            var iconClass:Class;
+            if (item is BasicAuthentication) {
+                iconClass = EmbeddedIcons.connectionDelegatedAuthnMiniIcon;
+            } else if (item is BindAuthentication) {
+                iconClass = EmbeddedIcons.directoryServiceMiniIcon;
+            } else if (item is TwoFactorAuthentication) {
+                iconClass = EmbeddedIcons.wikidMiniIcon;
+            } else if (item is WindowsAuthentication) {
+                iconClass = EmbeddedIcons.windowsIntegratedAuthnMiniIcon;
+            }
+            return iconClass;
+        }
+        ]]>
+    </fx:Script>
+
+    <utils:TitledBorderBox title="Basic Authentication" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
+                           paddingBottom="5">
+        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.name')}:" required="true">
+                <s:TextInput id="simpleAuthnName" width="200" editable="false"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.enabled')}:">
+                <s:CheckBox id="simpleAuthnEnabled"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.hashAlgorithm')}:">
+                <s:DropDownList id="simpleAuthnHashAlgorithm" width="140" selectedIndex="0">
+                    <s:dataProvider>
+                        <mx:ArrayCollection>
+
+                            <fx:Object label="MD5" data="MD5"/>
+                            <fx:Object label="SHA1" data="SHA1"/>
+                            <fx:Object label="CRYPT (LDAP Only)" data="CRYPT"/>
+                            <fx:Object label="PLain Text (none)" data="NONE"/>
+                        </mx:ArrayCollection>
+                    </s:dataProvider>
+                </s:DropDownList>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.hashEncoding')}:">
+                <s:DropDownList id="simpleAuthnHashEncoding" width="140" selectedIndex="0">
+                    <s:dataProvider>
+                        <mx:ArrayCollection>
+                            <fx:Object label="HEX" data="HEX"/>
+                            <fx:Object label="BASE64" data="BASE64"/>
+                            <fx:Object label="Plain Text (none)" data="NONE"/>
+                        </mx:ArrayCollection>
+                    </s:dataProvider>
+                </s:DropDownList>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.ignoreUsernameCase')}:">
+                <s:CheckBox id="simpleAuthnIgnoreUsernameCase"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.ignorePasswordCase')}:">
+                <s:CheckBox id="simpleAuthnIgnorePasswordCase"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.impersonateUserPolicy')}:">
+                <s:DropDownList id="simpleAuthnImpersonateUserPoliciesCombo" width="240" labelField="name" selectedIndex="0" requireSelection="true"/>
+            </mx:FormItem>
+
+
+        </mx:Form>
+    </utils:TitledBorderBox>
+    <utils:TitledBorderBox title="Authentication schemes" height="100%" width="50%" paddingLeft="5"
+                           paddingRight="5" paddingTop="5" paddingBottom="5">
+        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5" width="100%" height="100%"
+                 verticalGap="8">
+
+            <mx:Tree id="authenticationMechanisms"
+                     showRoot="false"
+                     labelField="name"
+                     iconFunction="authenticationMechanismsIconFunction"
+                     alternatingItemColors="[0xEFF3FA, 0xFFFFFF]"
+                     dragEnabled="true"
+                     dropEnabled="true"
+                     allowMultipleSelection="true"
+                     width="250"
+                     height="100%"/>
+
+        </mx:Form>
+    </utils:TitledBorderBox>
+</s:HGroup>

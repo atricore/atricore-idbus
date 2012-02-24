@@ -1,6 +1,8 @@
 package com.atricore.idbus.console.modeling.main.controller {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.modeling.main.view.Util;
+import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
@@ -36,16 +38,28 @@ public class AuthenticationServiceRemoveCommand extends IocSimpleCommand {
                 identityAppliance.idApplianceDefinition.authenticationServices.removeItemAt(i);
                 if (authnService.delegatedAuthentications != null) {
                     for each (var da:DelegatedAuthentication in authnService.delegatedAuthentications) {
-                        da.idp.delegatedAuthentication = null;
+                        var removedAuthnMechanismPriority:int = -1;
+                        da.idp.delegatedAuthentications.removeItemAt(da.idp.delegatedAuthentications.getItemIndex(da));
+                        for (var j:int=0; j<da.idp.authenticationMechanisms.length; j++) {
+                            //if (da.idp.authenticationMechanisms[j].name == Util.getAuthnMechanismName(da.idp.authenticationMechanisms[j], da.idp.name, da.authnService.name)) {
+                            if (da.idp.authenticationMechanisms[j].delegatedAuthentication == da) {
+                                removedAuthnMechanismPriority = da.idp.authenticationMechanisms[j].priority;
+                                da.idp.authenticationMechanisms.removeItemAt(j);
+                                break;
+                            }
+                        }
+                        
+                        if (removedAuthnMechanismPriority > -1) {
+                            for each (var authnMechanism:AuthenticationMechanism in da.idp.authenticationMechanisms) {
+                                if (authnMechanism.priority > removedAuthnMechanismPriority) {
+                                    authnMechanism.priority = authnMechanism.priority - 1;
+                                }
+                            }
+                        }
 
-                        // set authentication mechanism
-                        var basicAuthn:BasicAuthentication = new BasicAuthentication();
-                        basicAuthn.name = da.idp.name.replace(/\s+/g, "-").toLowerCase() + "-basic-authn";
-                        basicAuthn.hashAlgorithm = "MD5";
-                        basicAuthn.hashEncoding = "HEX";
-                        basicAuthn.ignoreUsernameCase = false;
-                        da.idp.authenticationMechanisms.removeAll();
-                        da.idp.authenticationMechanisms.addItem(basicAuthn);
+                        if (da.idp.authenticationMechanisms.length == 1) {
+                            (da.idp.authenticationMechanisms[0] as BasicAuthentication).enabled = true;
+                        }
                     }
                 }
                 sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, authnService);

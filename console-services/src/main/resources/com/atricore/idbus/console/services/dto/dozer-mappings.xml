@@ -204,6 +204,10 @@
                 com.atricore.idbus.console.services.dto.WindowsAuthenticationDTO
             </b-hint>
         </field>
+        <field relationship-type="non-cumulative" remove-orphans="true">
+            <a>delegatedAuthentications</a>
+            <b>delegatedAuthentications</b>
+        </field>
     </mapping>
 
     <mapping>

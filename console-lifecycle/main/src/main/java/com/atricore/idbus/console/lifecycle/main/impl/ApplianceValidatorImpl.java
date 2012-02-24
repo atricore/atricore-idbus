@@ -377,11 +377,20 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
         if (node.getIdp() == null)
             addError("Delegated Authentication " + node.getName() + " IDP cannot be null");
-        else if (node.getIdp().getDelegatedAuthentication() != node) {
-            addError("IDP Delegated Authentication is not this Delegated Authentication " +
-                    node.getName() +
-                    " [" +node.getIdp().getDelegatedAuthentication() + "]");
-        }
+        else if (node.getIdp().getDelegatedAuthentications() != null) {
+            boolean found = false;
+            for (DelegatedAuthentication delegatedAuthentication : node.getIdp().getDelegatedAuthentications()) {
+                if (delegatedAuthentication.equals(node)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                addError("Delegated Authentication [" + node.getName() +
+                        "] isn't correctly linked to IDP [" + node.getIdp().getName() + "]");
+        } else
+            addError("Delegated Authentication [" + node.getName() +
+                    "] isn't correctly linked to IDP [" + node.getIdp().getName() + "]");
 
         if (node.getAuthnService() == null)
             addError("Delegated Authentication " + node.getName() + " Authentication Service cannot be null");

@@ -24,6 +24,8 @@ import org.atricore.idbus.capabilities.sso.main.emitter.plans.EmailNameIDBuilder
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.UnspecifiedNameIDBuiler;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
@@ -630,15 +632,17 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         Beans beans = (Beans) event.getContext().get("beans");
 
-        // TODO : For now, the same Claims provider and STS are used for ALL channels!
+        // The same Claim Providers and STS are used for the IDP in all channels!
 
         // claimsProvider
-        String claimsChannelName = idpBean.getName() + "-claims-channel";
+        String claimChannelName = idpBean.getName() + "-claim-channel";
+        Collection<Bean> claimChannels = getBeansOfType(idpBeans, ClaimChannelImpl.class.getName());
 
-        Bean claimsChannel = getBean(idpBeans, claimsChannelName);
-        if (claimsChannel == null)
-            throw new TransformException("No claims channel defined as " + claimsChannelName);
-        setPropertyRef(spChannelBean, "claimsProvider", claimsChannel.getName());
+        for (Bean claimChannel : claimChannels) {
+            if (claimChannel == null)
+                throw new TransformException("No claim channel defined as " + claimChannelName);
+            addPropertyBeansAsRefs(spChannelBean, "claimProviders", claimChannel);
+        }
 
         // STS
         Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
