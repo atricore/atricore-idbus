@@ -140,6 +140,25 @@ public class SpnegoMediator extends AbstractCamelMediator {
                                             "?channelRef=" + claimChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
+                            if (ed.getResponseLocation() != null) {
+
+                                // FROM idbus-http TO idbus-bind
+                                from("idbus-http:" + ed.getResponseLocation()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("direct:" + ed.getName() + "-response");
+
+                                // FROM idbus-bind TO spnego (token negotiation)
+                                from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
+                                        "?binding=" + ed.getBinding() +
+                                        "&channelRef=" + claimChannel.getName()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("spnego:" + ed.getType() +
+                                                "?channelRef=" + claimChannel.getName() +
+                                                "&endpointRef=" + endpoint.getName() +
+                                                "&response=true");
+                            }
+
+
                             break;
                         default:
                             throw new SpnegoException("Unsupported Spnego Binding " + binding.getValue());

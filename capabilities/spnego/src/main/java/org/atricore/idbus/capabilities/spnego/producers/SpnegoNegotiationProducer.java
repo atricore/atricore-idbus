@@ -75,64 +75,70 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
         }
 
         if (content instanceof SSOClaimsRequest) {
-            SpnegoMessage spnegoResponse = null;
-            IdentityMediationEndpoint targetEndpoint = endpoint;
-
-            SSOClaimsRequest claimsRequest = (SSOClaimsRequest) content;
-            in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", claimsRequest);
-            spnegoResponse = doProcessClaimsRequest(exchange, claimsRequest);
-            targetEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_NEGOTIATION.getValue());
-
-            EndpointDescriptor ed = new EndpointDescriptorImpl(targetEndpoint.getName(),
-                    targetEndpoint.getType(), targetEndpoint.getBinding(), null, null);
-
-            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                    spnegoResponse,
-                    null,
-                    null,
-                    ed,
-                    in.getMessage().getState()));
-            exchange.setOut(out);
+            doProcessClaimsRequest(exchange, (SSOClaimsRequest) content);
 
         } else if (content instanceof UnauthenticatedRequest) {
-            SpnegoMessage spnegoResponse = null;
-            IdentityMediationEndpoint targetEndpoint = endpoint;
-
-            spnegoResponse = doProcessUnauthenticatedRequest(exchange, (UnauthenticatedRequest) content);
-
-            EndpointDescriptor ed = new EndpointDescriptorImpl(targetEndpoint.getName(),
-                    targetEndpoint.getType(), targetEndpoint.getBinding(), null, null);
-
-            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                    spnegoResponse,
-                    null,
-                    null,
-                    ed,
-                    in.getMessage().getState()));
-            exchange.setOut(out);
+            doProcessUnauthenticatedRequest(exchange, (UnauthenticatedRequest) content);
 
         } else if (content instanceof AuthenticatedRequest) {
             doProcessAuthenticatedRequest(exchange, (AuthenticatedRequest) content);
+
         } else {
             throw new SpnegoException("Unknown message received by Spnego Capability : " + content.getClass().getName());
         }
 
     }
 
-    protected SpnegoMessage doProcessClaimsRequest(CamelMediationExchange exchange, ClaimsRequest claimsRequest) throws Exception {
-        IdentityMediationEndpoint spnegoNegotiationEndpoint = null;
+    protected void doProcessClaimsRequest(CamelMediationExchange exchange, ClaimsRequest claimsRequest) throws Exception {
 
-        spnegoNegotiationEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_NEGOTIATION.getValue());
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", claimsRequest);
+
+        EndpointDescriptor spnegoNegotiationEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_NEGOTIATION.getValue());
 
         if (spnegoNegotiationEndpoint != null) {
-            return new InitiateSpnegoNegotiation(channel.getLocation() + spnegoNegotiationEndpoint.getLocation());
+            SpnegoMessage spnegoResponse = new InitiateSpnegoNegotiation(spnegoNegotiationEndpoint.getLocation());
+
+            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                    spnegoResponse,
+                    null,
+                    null,
+                    spnegoNegotiationEndpoint,
+                    in.getMessage().getState()));
+            exchange.setOut(out);
+
         } else {
             throw new SpnegoException("No SPNEGO/Negotiation endpoint defined for claim channel " + channel.getName());
         }
+
+
     }
 
-    protected SpnegoMessage doProcessUnauthenticatedRequest(CamelMediationExchange exchange, UnauthenticatedRequest content) throws Exception {
-        return new RequestToken();
+    protected void doProcessUnauthenticatedRequest(CamelMediationExchange exchange, UnauthenticatedRequest content) throws Exception {
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+        if (content.isSpnegoAvailable()) {
+
+            SpnegoMessage spnegoResponse = new RequestToken();
+            EndpointDescriptor targetEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_NEGOTIATION.getValue());
+
+            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                    spnegoResponse,
+                    null,
+                    null,
+                    targetEndpoint,
+                    in.getMessage().getState()));
+            exchange.setOut(out);
+        } else {
+            // We don't have spnego available, send a fake token to fail authn and fall back to the next scheme.
+            AuthenticatedRequest ar = new AuthenticatedRequest(new byte[0]);
+            doProcessAuthenticatedRequest(exchange, ar);
+        }
+
+
     }
 
     /* Factor out authentication to STS */
@@ -210,20 +216,26 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
     }
 
 
-    private IdentityMediationEndpoint resolveSpnegoEndpoint(String binding) throws Exception {
-        IdentityMediationEndpoint foundEndpoint = null;
+    private EndpointDescriptor resolveSpnegoEndpoint(String binding) throws Exception {
 
         for (IdentityMediationEndpoint endpoint : channel.getEndpoints()) {
 
-            // As a work around, ignore endpoints not using artifact binding
-            if (!endpoint.getBinding().equals(binding))
-                continue;
+            if (endpoint.getBinding().equals(binding)) {
 
-            foundEndpoint = endpoint;
-            break;
+                EndpointDescriptor ed = new EndpointDescriptorImpl(
+                        endpoint.getName(),
+                        endpoint.getType(),
+                        endpoint.getBinding(),
+                        channel.getLocation() + endpoint.getLocation(),
+                        endpoint.getResponseLocation() != null ?
+                                channel.getLocation() + endpoint.getResponseLocation() : null);
+
+                return ed;
+            }
+
         }
 
-        return foundEndpoint;
+        return null;
     }
 
 }

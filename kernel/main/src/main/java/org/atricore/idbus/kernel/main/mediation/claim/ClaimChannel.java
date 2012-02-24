@@ -31,6 +31,8 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
  */
 public interface ClaimChannel extends Channel {
 
+    int getPriority();
+
     FederatedLocalProvider getProvider();
 
 }

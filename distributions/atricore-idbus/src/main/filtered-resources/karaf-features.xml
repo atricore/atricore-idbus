@@ -123,7 +123,8 @@
         <bundle start-level="40">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jetty-bundle/${jetty.bundle.version}</bundle>
         <bundle start-level="40">mvn:org.ops4j.pax.web/pax-web-api/${pax.web.version}</bundle>
         <bundle start-level="40">mvn:org.ops4j.pax.web/pax-web-spi/${pax.web.version}</bundle>
-        <bundle start-level="40">mvn:org.ops4j.pax.web/pax-web-runtime/${pax.web.version}</bundle>
+        <!--bundle start-level="40">mvn:org.ops4j.pax.web/pax-web-runtime/${pax.web.version}</bundle-->
+        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.pax-web-runtime-v0_7_2/${idbus.bundle.pax-web-runtime-v0_7_2.version}</bundle>
         <!--bundle>mvn:org.ops4j.pax.web/pax-web-jetty/${pax.web.version}</bundle-->
         <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.pax-web-jetty-v0_7_2/${idbus.bundle.pax-web-jetty-v0_7_2.version}</bundle>
     </feature>

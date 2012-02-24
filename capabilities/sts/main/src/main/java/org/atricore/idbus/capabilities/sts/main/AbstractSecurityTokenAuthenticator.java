@@ -26,6 +26,7 @@ public abstract class AbstractSecurityTokenAuthenticator implements SecurityToke
 
     private Authenticator auth;
 
+    // This is actually the scheme type, like basic-authentication, etc.
     private String scheme;
 
     public String getId() {

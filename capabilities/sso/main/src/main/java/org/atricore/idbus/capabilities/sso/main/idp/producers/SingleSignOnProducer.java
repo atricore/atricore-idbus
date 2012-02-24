@@ -601,6 +601,7 @@ public class SingleSignOnProducer extends SSOProducer {
         // TODO : On IDP Initiated, there is no AuthnRequest
         AuthenticationState authnState = getAuthnState(exchange);
         AuthnRequestType authnRequest = authnState.getAuthnRequest();
+        IdentityMediationEndpoint prevClaimsEndpoint = authnState.getCurrentClaimsEndpoint();
 
         NameIDType issuer = authnRequest.getIssuer();
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(issuer);
@@ -778,7 +779,6 @@ public class SingleSignOnProducer extends SSOProducer {
             }
 
             // We have another Claim endpoint to try, let's send the request.
-
             logger.debug("Selecting claims endpoint : " + endpoint.getName());
             SSOClaimsRequest claimsRequest = new SSOClaimsRequest(authnRequest.getID(),
                     channel,
@@ -786,7 +786,10 @@ public class SingleSignOnProducer extends SSOProducer {
                     claimChannel,
                     uuidGenerator.generateId());
 
-            claimsRequest.setLastErrorId("AUTHN_FAILED");
+            // We're retrying the same endpoint type, mark the authentication as failed
+            if (prevClaimsEndpoint != null && prevClaimsEndpoint.getType().equals(claimEndpoint.getType()))
+                claimsRequest.setLastErrorId("AUTHN_FAILED");
+
             claimsRequest.setLastErrorMsg(e.getMessage());
             claimsRequest.getSsoPolicyEnforcements().addAll(ssoPolicyEnforcements);
 
@@ -1224,14 +1227,15 @@ public class SingleSignOnProducer extends SSOProducer {
         if (logger.isTraceEnabled())
             logger.trace("Starting to select next claims endpoint ...");
 
+        ClaimChannel requestedChannel = null;
         IdentityMediationEndpoint requestedEndpoint = null;
+        ClaimChannel availableChannel = null;
         IdentityMediationEndpoint availableEndpoint = null;
 
-        ClaimChannel claimChannel = null;
-        for (ClaimChannel c : claimChannels) {
-            claimChannel = c;
 
-            for (IdentityMediationEndpoint endpoint : claimChannel.getEndpoints()) {
+        for (ClaimChannel c : claimChannels) {
+
+            for (IdentityMediationEndpoint endpoint : c.getEndpoints()) {
 
                 if (logger.isTraceEnabled())
                     logger.trace("Processing claims endpoint " + endpoint);
@@ -1268,6 +1272,7 @@ public class SingleSignOnProducer extends SSOProducer {
                                 logger.trace("Found requested AuthnCtxClass for claiming " + reqAuthnCtxClass);
 
                             requestedEndpoint = endpoint;
+                            requestedChannel = c;
                             break;
                         }
                     }
@@ -1279,7 +1284,6 @@ public class SingleSignOnProducer extends SSOProducer {
                 // Only use endpoints that are 'passive' when 'passive' was requested.
                 if (status.getAuthnRequest().isIsPassive() != null &&
                         status.getAuthnRequest().isIsPassive()) {
-
 
                     if (!authnCtxClass.isPassive()) {
                         if (logger.isTraceEnabled())
@@ -1301,17 +1305,20 @@ public class SingleSignOnProducer extends SSOProducer {
                         logger.debug("Selecting available endpoint : " + endpoint.getName());
 
                     availableEndpoint = endpoint;
+                    availableChannel = c;
                 }
 
             }
         }
 
+        ClaimChannel claimChannel = null;
         if (requestedEndpoint != null) {
             if (logger.isTraceEnabled())
                 logger.trace("Selecting requested endpoint : " + requestedEndpoint);
 
             status.setCurrentClaimsEndpoint(requestedEndpoint);
             status.setCurrentClaimsEndpointTryCount(0);
+            claimChannel = requestedChannel;
 
         } else if (availableEndpoint != null) {
             if (logger.isTraceEnabled())
@@ -1319,6 +1326,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             status.setCurrentClaimsEndpoint(availableEndpoint);
             status.setCurrentClaimsEndpointTryCount(0);
+            claimChannel = availableChannel;
 
         } else {
             if (logger.isDebugEnabled())

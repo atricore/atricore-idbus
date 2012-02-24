@@ -31,6 +31,8 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
  */
 public class AbstractClaimChannel extends AbstractChannel implements ClaimChannel {
 
+    private int priority;
+
     private FederatedLocalProvider provider;
 
     public FederatedLocalProvider getProvider() {
@@ -41,4 +43,11 @@ public class AbstractClaimChannel extends AbstractChannel implements ClaimChanne
         this.provider = provider;
     }
 
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 }

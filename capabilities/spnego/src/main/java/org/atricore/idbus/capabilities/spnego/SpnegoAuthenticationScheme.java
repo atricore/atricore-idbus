@@ -52,7 +52,7 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
             byte[] binarySpnegoToken = Base64.decodeBase64(spnegoToken.getBytes());
 
             if (logger.isTraceEnabled())
-                logger.trace("Authenticate Spnego Token : " + spnegoToken);
+                logger.trace("Authenticate Spnego Token with realm/principal [" + realm + "/" + principalName + "] : " + spnegoToken);
 
             // NTLM tokens start with 'NTLM'string base64 encoded ... => TlRMT
             if (spnegoToken.startsWith("TlRMT")) {
@@ -61,6 +61,7 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
                 throw new AuthenticationFailureException("Authentication failed, NTLM token recieved " + spnegoToken);
             }
 
+            // Create JAAS Login context for realm
             LoginContext loginContext = new LoginContext(realm, new CallbackHandler() {
 
                 public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
@@ -105,6 +106,9 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
 
     public Principal getPrincipal() {
         // TODO : Look for GSSNAME oid format
+        if (clientName == null)
+            return null;
+
         String pName = clientName.toString();
         pName = pName.substring(0, pName.indexOf("@"));
         return new SimplePrincipal(pName);
@@ -201,14 +205,25 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 HexDump.dump(outputToken, 0, baos, 0);
                 logger.debug("Kerberos Service Ticket Successfully relayed (hex) : " + baos.toString());
+
                 return serverGSSContext.getSrcName();
             } catch (GSSException e) {
                 if (logger.isDebugEnabled())
-                    logger.error("Fatal Error creating GSS security context : " + e.getMessage(), e);
+                    logger.debug("Error creating GSS security context : " + e.getMessage(), e);
             } catch (IOException e) {
                 logger.error("I/O Error creating GSS security context : " + e.getMessage(), e);
             } catch (Exception e) {
                 logger.error("Fatal Error creating GSS security context : " + e.getMessage(), e);
+            } finally {
+                if (serverGSSContext != null) {
+
+                    try {
+                        serverGSSContext.dispose();
+                    } catch (GSSException e) {
+                        if (logger.isDebugEnabled())
+                            logger.error("Error while disposing GSS security context : " + e.getMessage(), e);
+                    }
+                }
             }
 
             return null;

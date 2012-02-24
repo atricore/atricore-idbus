@@ -202,6 +202,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                 if (header.getName().equals("FollowRedirect")) {
                     // Set 'followTargetUrl' to false
                     followTargetUrl = false;
+                    continue;
                 }
 
                 storedHeaders.add(header);
@@ -217,19 +218,13 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                 case 200:
                     followTargetUrl = false;
                     break;
-                case 404:
-                    followTargetUrl = false;
-                    break;
-                case 500:
-                    followTargetUrl = false;
-                    break;
                 case 302:
                     // See if we have to proxy the response
                     Header location = proxyRes.getFirstHeader("Location");
                     targetUrl = location.getValue();
 
                     // Just in case the value was already set to false
-                    if (followTargetUrl && !internalProcessingPolicy.match(req, targetUrl)) {
+                    if (!followTargetUrl || !internalProcessingPolicy.match(req, targetUrl)) {
 
                         // This is outside our scope, send the response to the browser ...
                         if (logger.isTraceEnabled())
@@ -246,6 +241,15 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
                     }
 
+                    break;
+                case 401:
+                    followTargetUrl = false;
+                    break;
+                case 404:
+                    followTargetUrl = false;
+                    break;
+                case 500:
+                    followTargetUrl = false;
                     break;
                 default:
                     followTargetUrl = false;
