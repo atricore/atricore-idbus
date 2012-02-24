@@ -208,7 +208,8 @@
         <jetty.bundle.version>6.1.22_2</jetty.bundle.version>
         <neethi.version>2.0.4_1</neethi.version>
         <pax.web.extender.version>0.7.2</pax.web.extender.version>
-        <pax.wicket.service.version>0.8.0-SNAPSHOT</pax.wicket.service.version>
+        <!--pax.wicket.service.version>0.8.0-SNAPSHOT</pax.wicket.service.version-->
+        <pax.wicket.service.version>0.8.1</pax.wicket.service.version>
         <saaj.impl.version>1.3_1</saaj.impl.version>
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <velocity.version>1.6.2</velocity.version>
