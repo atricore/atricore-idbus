@@ -30,6 +30,7 @@ import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.addPropertyBeansAsRefs;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -84,8 +85,17 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
         }
         idpBean = b.iterator().next();
 
+        String claimChannelBeanName = normalizeBeanName(idpBean.getName() + "-2fa-authn-claim-channel");
+        if (getBean(idpBeans, claimChannelBeanName) != null) {
+            // We already created the basic authentication claim channel ..
+            if (logger.isDebugEnabled())
+                logger.debug("2FA claim channel already created");
+            return;
+        }
 
 
+
+        Bean claimChannelBean = null;
         for (AuthenticationMechanism authnMechanism : provider.getAuthenticationMechanisms()) {
             // Bind authn is a variant of basic authn
             if (authnMechanism instanceof TwoFactorAuthentication) {
@@ -93,9 +103,20 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
                 // ----------------------------------------
                 // Claims Channel
                 // ----------------------------------------
-                String claimChannelBeanName = normalizeBeanName(authnMechanism.getName() + "-claims-channel");
 
-                Bean claimChannelBean = newBean(idpBeans, claimChannelBeanName, ClaimChannelImpl.class);
+                if (claimChannelBean != null) {
+                    int currentPriority = Integer.parseInt(getPropertyValue(claimChannelBean, "priority"));
+                    if (authnMechanism.getPriority() < currentPriority)
+                        setPropertyValue(claimChannelBean, "priority",  authnMechanism.getPriority() + "");
+
+                    // Only create one channel
+                    continue;
+                }
+
+                claimChannelBean = newBean(idpBeans, claimChannelBeanName, ClaimChannelImpl.class);
+
+                // priority
+                setPropertyValue(claimChannelBean, "priority",  authnMechanism.getPriority() + "");
 
                 // name
                 setPropertyValue(claimChannelBean, "name", claimChannelBean.getName());
@@ -179,6 +200,7 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
                 } else {
                     throw new TransformException("One and only one Identity Mediation Unit is expected, found " + mus.size());
                 }
+
             }
         }
 

@@ -39,6 +39,8 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alf
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.coldfusion.ColdfusionExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.coldfusion.ColdfusionExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
@@ -175,6 +177,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _directoryServiceCreateMediator:DirectoryServiceCreateMediator;
     private var _windowsIntegratedAuthnCreateMediator:WindowsIntegratedAuthnCreateMediator;
     private var _sharepoint2010ExecutionEnvironmentCreateMediator:Sharepoint2010ExecutionEnvironmentCreateMediator;
+    private var _coldfusionExecutionEnvironmentCreateMediator:ColdfusionExecutionEnvironmentCreateMediator;
 
     // views
     private var _simpleSSOWizardView:SimpleSSOWizardView;
@@ -225,6 +228,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _directoryServiceCreateForm:DirectoryServiceCreateForm;
     private var _windowsIntegratedAuthnCreateForm:WindowsIntegratedAuthnCreateForm;
     private var _sharepoint2010ExecutionEnvironmentCreateForm:Sharepoint2010ExecutionEnvironmentCreateForm;
+    private var _coldfusionExecutionEnvironmentCreateForm:ColdfusionExecutionEnvironmentCreateForm;
 
     public function ModelerPopUpManager() {
         super();
@@ -619,6 +623,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set sharepoint2010ExecutionEnvironmentCreateMediator(value:Sharepoint2010ExecutionEnvironmentCreateMediator):void {
         _sharepoint2010ExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get coldfusionExecutionEnvironmentCreateMediator():ColdfusionExecutionEnvironmentCreateMediator {
+        return _coldfusionExecutionEnvironmentCreateMediator;
+    }
+
+    public function set coldfusionExecutionEnvironmentCreateMediator(value:ColdfusionExecutionEnvironmentCreateMediator):void {
+        _coldfusionExecutionEnvironmentCreateMediator = value;
     }
 
     public function showSimpleSSOWizardWindow(notification:INotification):void {
@@ -1334,6 +1346,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleSharepoint2010ExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
         sharepoint2010ExecutionEnvironmentCreateMediator.setViewComponent(_sharepoint2010ExecutionEnvironmentCreateForm);
         sharepoint2010ExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateColdfusionExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createColdfusionExecutionEnvironmentCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.coldfusion");
+        _popup.width = 500;
+        _popup.height = 350;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_coldfusionExecutionEnvironmentCreateForm);
+    }
+
+    private function createColdfusionExecutionEnvironmentCreateForm():void {
+        _coldfusionExecutionEnvironmentCreateForm = new ColdfusionExecutionEnvironmentCreateForm();
+        _coldfusionExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleColdfusionExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleColdfusionExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        coldfusionExecutionEnvironmentCreateMediator.setViewComponent(_coldfusionExecutionEnvironmentCreateForm);
+        coldfusionExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
     }
 
 

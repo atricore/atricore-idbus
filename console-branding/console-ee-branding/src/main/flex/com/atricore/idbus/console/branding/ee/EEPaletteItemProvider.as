@@ -130,6 +130,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
         );
 
         environmentsPaletteDrawer.add(
+                new PaletteEntry("Coldfusion", EmbeddedIcons.coldfusionEnvironmentMiniIcon, "Coldfusion Environment Entry", DiagramElementTypes.COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                );
+
+        environmentsPaletteDrawer.add(
                 new PaletteEntry("Java EE", EmbeddedIcons.javaEnvironmentMiniIcon, "Java EE Environment Entry", DiagramElementTypes.JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
         );
 

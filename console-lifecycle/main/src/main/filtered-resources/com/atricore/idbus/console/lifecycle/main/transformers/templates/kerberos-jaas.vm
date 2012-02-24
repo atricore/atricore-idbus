@@ -23,6 +23,27 @@
            xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0">
 
     <ext:property-placeholder placeholder-prefix="\$[" placeholder-suffix="]"/>
+    <!-- Support multiple realms : $wiaRealms -->
+
+#set ($wiaRealmDefs = $wiaRealms.getDefinitionsAsArray())
+
+#foreach($wiaRealmDef in $wiaRealmDefs)
+#set ($realmName = $wiaRealmDef.getRealmName())
+#set ($servicePrincipalName = $wiaRealmDef.getServicePrincipalName())
+#set ($kerberosRealm= $wiaRealmDef.getKerberosRealm())
+#set ($keyDistributionCenter = $wiaRealmDef.getKeyDistributionCenter())
+#set ($keyTabName = $wiaRealmDef.getKeyTabName())
+#set ($configureKerberos = $wiaRealmDef.getConfigureKerberos())
+#set ($keyTabsRepository = $wiaRealmDef.getKeyTabsRepository())
+#set ($defaultKrb5Config = $wiaRealmDef.getDefaultKrb5Config())
+#set ($krbSvcName = $realmName + "-krb")
+
+    <!-- ===================================================================== -->
+    <!--  $realmName                                                           -->
+    <!--  SPN        : $servicePrincipalName                                   -->
+    <!--  KeyTab     : $keyTabsRepository$keyTabName                           -->
+    <!--  Kerberos   : $defaultKrb5Config                                      -->
+    <!-- ===================================================================== -->
 
     <jaas:config name="$realmName">
         <jaas:module className="com.sun.security.auth.module.Krb5LoginModule" flags="required">
@@ -34,7 +55,7 @@
         </jaas:module>
     </jaas:config>
 
-    <bean id="kerberosFactory" class="org.atricore.idbus.capabilities.spnego.jaas.KerberosServiceInit"
+    <bean id="$krbSvcName" class="org.atricore.idbus.capabilities.spnego.jaas.KerberosServiceInit"
           init-method="init"
           activation="eager">
         <!-- Already available blueprint variable -->
@@ -52,9 +73,10 @@
         <!-- Kerberos config file-->
         <property name="defaultKrb5Config" value="$defaultKrb5Config"/>
 
-
         <property name="configureKerberos" value="$configureKerberos"/>
         <property name="authenticatOnInit" value="true"/>
 
     </bean>
+#end
+
 </blueprint>

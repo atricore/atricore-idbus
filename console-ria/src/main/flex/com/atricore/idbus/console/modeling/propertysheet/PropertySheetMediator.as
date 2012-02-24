@@ -50,6 +50,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.delegatedauthentic
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.alfresco.AlfrescoExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.coldfusion.ColdfusionExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.javaee.JavaEEExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jboss.JBossExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jbossportal.JBossPortalExecEnvCoreSection;
@@ -112,6 +113,7 @@ import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.BindAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
+import com.atricore.idbus.console.services.dto.ColdfusionExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
@@ -267,6 +269,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _phpBBExecEnvCoreSection:PhpBBExecEnvCoreSection;
     private var _webserverExecEnvCoreSection:WebserverExecEnvCoreSection;
     private var _sharepoint2010ExecEnvCoreSection:Sharepoint2010ExecEnvCoreSection;
+    private var _coldfusionExecEnvCoreSection:ColdfusionExecEnvCoreSection;
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     //private var _authenticationPropertyTab:Group;
     private var _authenticationSection:AuthenticationSection;
@@ -525,7 +528,10 @@ public class PropertySheetMediator extends IocMediator {
                         enableWebserverExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is Sharepoint2010ExecutionEnvironment) {
                         enableSharepoint2010ExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is ColdfusionExecutionEnvironment) {
+                        enableColdfusionExecEnvPropertyTabs();
                     }
+
                 }
                 break;
             case FolderExistsCommand.FOLDER_EXISTS:
@@ -6757,6 +6763,139 @@ public class PropertySheetMediator extends IocMediator {
             sharepoint2010ExecEnv.location = _sharepoint2010ExecEnvCoreSection.location.text;
         } else {
             sharepoint2010ExecEnv.location = null;
+        }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
+    private function enableColdfusionExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _coldfusionExecEnvCoreSection = new ColdfusionExecEnvCoreSection();
+        corePropertyTab.addElement(_coldfusionExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _coldfusionExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleColdfusionExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleColdfusionExecEnvCorePropertyTabRollOut);
+
+        // Exec.Environment Activation Tab
+        var execEnvActivationPropertyTab:Group = new Group();
+        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+        execEnvActivationPropertyTab.name = "Activation";
+        execEnvActivationPropertyTab.width = Number("100%");
+        execEnvActivationPropertyTab.height = Number("100%");
+        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+
+        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+
+    }
+
+    private function handleColdfusionExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var coldfusionExecEnv:ColdfusionExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ColdfusionExecutionEnvironment;
+
+        if (coldfusionExecEnv != null) {
+            // bind view
+            _coldfusionExecEnvCoreSection.executionEnvironmentName.text = coldfusionExecEnv.name;
+            _coldfusionExecEnvCoreSection.executionEnvironmentDescription.text = coldfusionExecEnv.description;
+
+            for (var i:int=0; i < _coldfusionExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
+                if (_coldfusionExecEnvCoreSection.selectedHost.dataProvider[i].data == coldfusionExecEnv.type.toString()) {
+                    _coldfusionExecEnvCoreSection.selectedHost.selectedIndex = i;
+                    break;
+                }
+            }
+
+            if (_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _coldfusionExecEnvCoreSection.locationItem.includeInLayout = true;
+                _coldfusionExecEnvCoreSection.locationItem.visible = true;
+            }
+
+            _coldfusionExecEnvCoreSection.homeDirectory.text = coldfusionExecEnv.installUri;
+            if (coldfusionExecEnv.type.name == ExecEnvType.REMOTE.name)
+                _coldfusionExecEnvCoreSection.location.text = coldfusionExecEnv.location;
+            
+            _execEnvLocationValidator = new URLValidator();
+            _execEnvLocationValidator.required = true;
+
+
+            _coldfusionExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _coldfusionExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _coldfusionExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _coldfusionExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _coldfusionExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _coldfusionExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_coldfusionExecEnvCoreSection);
+            });
+
+            _validators = [];
+            _validators.push(_coldfusionExecEnvCoreSection.nameValidator);
+            _validators.push(_coldfusionExecEnvCoreSection.homeDirValidator);
+        }
+    }
+
+    private function handleColdfusionExecEnvCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        _coldfusionExecEnvCoreSection.homeDirectory.errorString = "";
+        _coldfusionExecEnvCoreSection.location.errorString = "";
+        if (_dirty && validate(true)) {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _coldfusionExecEnvCoreSection.homeDirValidator.validate(_coldfusionExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _coldfusionExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+            
+            if (_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_coldfusionExecEnvCoreSection.location.text);
+                if (lvResult.type != ValidationResultEvent.VALID) {
+                    _coldfusionExecEnvCoreSection.location.errorString = lvResult.results[0].errorMessage;
+                    return;
+                }
+            }
+
+            _execEnvSaveFunction = coldfusionSave;
+
+            var cf:CheckFoldersRequest = new CheckFoldersRequest();
+            var folders:ArrayCollection = new ArrayCollection();
+
+            if (_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
+                folders.addItem(_coldfusionExecEnvCoreSection.homeDirectory.text);
+            }
+            
+            cf.folders = folders;
+            cf.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, cf);
+        }
+    }
+
+    private function coldfusionSave(): void {
+         // bind model
+        var coldfusionExecEnv:ColdfusionExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ColdfusionExecutionEnvironment;
+        coldfusionExecEnv.name = _coldfusionExecEnvCoreSection.executionEnvironmentName.text;
+        coldfusionExecEnv.description = _coldfusionExecEnvCoreSection.executionEnvironmentDescription.text;
+        coldfusionExecEnv.platformId = "coldfusion";
+
+        coldfusionExecEnv.type = ExecEnvType.valueOf(_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data);
+        coldfusionExecEnv.installUri = _coldfusionExecEnvCoreSection.homeDirectory.text;
+        if (coldfusionExecEnv.type.name == ExecEnvType.REMOTE.name) {
+            coldfusionExecEnv.location = _coldfusionExecEnvCoreSection.location.text;
+        } else {
+            coldfusionExecEnv.location = null;
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);

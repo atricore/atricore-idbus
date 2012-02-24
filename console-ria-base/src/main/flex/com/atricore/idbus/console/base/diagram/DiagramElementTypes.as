@@ -65,5 +65,7 @@ public class DiagramElementTypes {
     public static const SERVICE_CONNECTION_ELEMENT_TYPE:int = 41;
     public static const JOSSO1_RESOURCE_ELEMENT_TYPE:int = 42;
     public static const JOSSO2_RESOURCE_ELEMENT_TYPE:int = 43;
+    public static const COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int =35;
+
 }
 }

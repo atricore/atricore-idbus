@@ -259,6 +259,18 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                 setPropertyValue(agentBean, "sessionAccessMinInterval", "1000");
                 setPropertyValue(agentBean, "isStateOnClient", "true");
 
+                if (execEnvProps.isDisableJaas())
+                    setPropertyValue(agentBean, "disableJaas", "true");
+
+                if (execEnvProps.getLoginUri() != null)
+                    setPropertyValue(agentBean, "jossoLoginUri", execEnvProps.getLoginUri());
+
+                if (execEnvProps.getLogoutUri() != null)
+                    setPropertyValue(agentBean, "jossoLogoutUri", execEnvProps.getLogoutUri());
+
+                if (execEnvProps.getSecurityCheckUri() != null)
+                    setPropertyValue(agentBean, "jossoSecurityCheckUri", execEnvProps.getSecurityCheckUri());
+
                 setPropertyValue(agentBean, "gatewayLoginUrl", location + "/JOSSO/SSO/REDIR");
                 setPropertyValue(agentBean, "gatewayLogoutUrl", location + "/JOSSO/SLO/REDIR");
 
@@ -271,7 +283,12 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                 //    identityManagerServicePath
                 //    identityProviderServicePath
 
-                Bean gatewayServiceLocator = newAnonymousBean("org.josso.gateway.WebserviceGatewayServiceLocator");
+                Bean gatewayServiceLocator;
+                if (execEnvProps.isEnableJaxws()) {
+                    gatewayServiceLocator = newAnonymousBean("org.josso.gateway.jaxws.JAXWSWebserviceGatewayServiceLocator");
+                } else {
+                    gatewayServiceLocator = newAnonymousBean("org.josso.gateway.WebserviceGatewayServiceLocator");
+                }
 
                 setPropertyValue(gatewayServiceLocator, "endpoint",
                         applianceDef.getLocation().getHost() + ":" + applianceDef.getLocation().getPort());

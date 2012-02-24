@@ -644,8 +644,6 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             addPropertyBeansAsRefs(spChannelBean, "claimProviders", claimChannel);
         }
 
-
-
         // STS
         Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
         if (sts == null)

@@ -27,6 +27,7 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
     @Override
     public boolean accept(TransformEvent event) {
         return event.getData() instanceof BasicAuthentication &&
+                ((BasicAuthentication) event.getData()).isEnabled() &&
                event.getContext().getParentNode() instanceof IdentityProvider;
     }
 
@@ -48,6 +49,9 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
             logger.trace("Generating Basic Authentication Scheme for IdP " + idpBean.getName());
         
         Bean basicAuthnBean = newBean(idpBeans, normalizeBeanName(basicAuthn.getName()), UsernamePasswordAuthScheme.class);
+
+        // priority
+        setPropertyValue(basicAuthnBean, "priority", basicAuthn.getPriority() + "");
 
         // Auth scheme name cannot be changed!
         setPropertyValue(basicAuthnBean, "name", "basic-authentication");
