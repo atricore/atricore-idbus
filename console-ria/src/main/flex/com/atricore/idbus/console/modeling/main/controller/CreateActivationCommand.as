@@ -2,12 +2,13 @@ package com.atricore.idbus.console.modeling.main.controller {
 
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceConnectionElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
-import com.atricore.idbus.console.services.dto.ServiceConnection;
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.JOSSOActivation;
 import com.atricore.idbus.console.services.dto.ServiceResource;
 
+import mx.collections.ArrayCollection;
 import mx.rpc.Fault;
 import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
@@ -15,10 +16,10 @@ import mx.rpc.events.FaultEvent;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class CreateServiceConnectionCommand extends IocSimpleCommand implements IResponder {
+public class CreateActivationCommand extends IocSimpleCommand implements IResponder {
 
-    public static const SUCCESS:String = "CreateServiceConnectionCommand.SUCCESS";
-    public static const FAILURE:String = "CreateServiceConnectionCommand.FAILURE";
+    public static const SUCCESS:String = "CreateActivationCommand.SUCCESS";
+    public static const FAILURE:String = "CreateActivationCommand.FAILURE";
 
     private var _projectProxy:ProjectProxy;
 
@@ -30,25 +31,31 @@ public class CreateServiceConnectionCommand extends IocSimpleCommand implements 
         _projectProxy = value;
     }    
 
-    public function CreateServiceConnectionCommand() {
+    public function CreateActivationCommand() {
     }
 
     override public function execute(notification:INotification):void {
-        var cscr:CreateServiceConnectionElementRequest = notification.getBody() as CreateServiceConnectionElementRequest;
-        var sp:ServiceProvider = cscr.sp;
-        var resource:ServiceResource = cscr.resource;
+        var car:CreateActivationElementRequest = notification.getBody() as CreateActivationElementRequest;
+        var resource:ServiceResource = car.serviceResource;
+        var execEnv:ExecutionEnvironment = car.executionEnvironment;
 
         var resourceIndex:int = _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.getItemIndex(resource);
-        var spIndex:int = _projectProxy.currentIdentityAppliance.idApplianceDefinition.providers.getItemIndex(sp);
+        var execEnvIndex:int = _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.getItemIndex(execEnv);
 
-        if (resourceIndex > -1 && spIndex > -1) {
-            var serviceConnection:ServiceConnection = new ServiceConnection();
-            serviceConnection.name = sp.name.replace(/\s+/g, "-") + "-" + resource.name.replace(/\s+/g, "-") + "-service-connection";
-            serviceConnection.sp = sp;
-            serviceConnection.resource = resource;
-            sp.serviceConnection = serviceConnection;
-            resource.serviceConnection = serviceConnection;
-            _projectProxy.currentIdentityApplianceElement = serviceConnection;
+        if (resourceIndex > -1 && execEnvIndex > -1) {
+            var activation:JOSSOActivation = new JOSSOActivation();
+
+            activation.name = resource.name.toLowerCase().replace(/\s+/g, "-") + "-activation";
+            activation.resource = resource;
+            activation.executionEnv = execEnv;
+
+            if (execEnv.activations == null){
+                execEnv.activations = new ArrayCollection();
+            }
+            execEnv.activations.addItem(activation);
+            resource.activation = activation;
+
+            _projectProxy.currentIdentityApplianceElement = activation;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         }
 

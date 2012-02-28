@@ -5,6 +5,7 @@ import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.JOSSO2Resource;
+import com.atricore.idbus.console.services.dto.Location;
 
 import flash.events.MouseEvent;
 
@@ -49,6 +50,11 @@ public class JOSSO2ResourceCreateMediator extends IocFormMediator {
     private function resetForm():void {
         view.resourceName.text = "";
         view.resourceDescription.text = "";
+        view.resourceProtocol.selectedIndex = 0;
+        view.resourceDomain.text = "";
+        view.resourcePort.text = "8080";
+        view.resourceContext.text = "";
+        view.resourcePath.text = "";
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -58,6 +64,15 @@ public class JOSSO2ResourceCreateMediator extends IocFormMediator {
 
         resource.name = view.resourceName.text;
         resource.description = view.resourceDescription.text;
+
+        //location
+        var loc:Location = new Location();
+        loc.protocol = view.resourceProtocol.labelDisplay.text;
+        loc.host = view.resourceDomain.text;
+        loc.port = parseInt(view.resourcePort.text);
+        loc.context = view.resourceContext.text;
+        loc.uri = view.resourcePath.text;
+        resource.partnerAppLocation = loc;
 
         _newResource = resource;
     }
@@ -93,6 +108,10 @@ public class JOSSO2ResourceCreateMediator extends IocFormMediator {
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
+        _validators.push(view.portValidator);
+        _validators.push(view.domainValidator);
+        _validators.push(view.contextValidator);
+        _validators.push(view.pathValidator);
     }
 
     override public function listNotificationInterests():Array {

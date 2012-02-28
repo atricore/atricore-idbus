@@ -94,6 +94,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _authenticationServiceRemoveCommand:IIocCommand;
     private var _activateExecEnvironmentCommand:IIocCommand;
     private var _createServiceConnectionCommand:IIocCommand;
+    private var _createActivationCommand:IIocCommand;
     private var _createIdentityLookupCommand:IIocCommand;
     private var _createDelegatedAuthenticationCommand:IIocCommand;
     private var _folderExistsCommand:IIocCommand;
@@ -205,6 +206,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE, identityApplianceUpdateCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvironmentCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_SERVICE_CONNECTION, createServiceConnectionCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_ACTIVATION, createActivationCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_LOOKUP, createIdentityLookupCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_DELEGATED_AUTHENTICATION, createDelegatedAuthenticationCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, folderExistsCommand.getConfigName());
@@ -845,6 +847,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set createServiceConnectionCommand(value:IIocCommand):void {
         _createServiceConnectionCommand = value;
+    }
+
+    public function get createActivationCommand():IIocCommand {
+        return _createActivationCommand;
+    }
+
+    public function set createActivationCommand(value:IIocCommand):void {
+        _createActivationCommand = value;
     }
 
     public function get createIdentityLookupCommand():IIocCommand {

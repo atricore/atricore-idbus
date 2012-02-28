@@ -28,13 +28,13 @@
 
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{connectionName}" required="true" property="text"/>
-        <utils:URLPartValidator id="domainValidator" source="{partnerAppLocationDomain}" required="true" property="text"/>
+        <!--<utils:URLPartValidator id="domainValidator" source="{partnerAppLocationDomain}" required="true" property="text"/>
         <utils:URLPartValidator id="contextValidator" source="{partnerAppLocationContext}" required="false" property="text"/>
         <utils:URLMultipartValidator id="pathValidator" source="{partnerAppLocationPath}" required="false" property="text"/>
 
         <mx:NumberValidator id="portValidator" source="{partnerAppLocationPort}" required="false" property="text"
                             minValue="1" maxValue="65535"
-                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.portValidationError')}"/>
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.portValidationError')}"/>-->
     </fx:Declarations>
 
     <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
@@ -46,7 +46,7 @@
             <s:TextInput id="connectionDescription" width="150"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'connection.activation.josso.partnerAppId')}:">
+        <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'connection.activation.josso.partnerAppId')}:">
             <s:TextInput id="partnerAppId" width="150"/>
         </mx:FormItem>
 
@@ -73,8 +73,8 @@
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'connection.activation.josso.ignoredWebResources')}:">
             <s:HGroup>
                 <s:TextInput id="ignoredWebResources" width="420"/>
-                <!--s:Label text="(comma separated)" paddingTop="5"/-->
+                &lt;!&ndash;s:Label text="(comma separated)" paddingTop="5"/&ndash;&gt;
             </s:HGroup>
-        </mx:FormItem>
+        </mx:FormItem>-->
     </mx:Form>
 </s:Group>

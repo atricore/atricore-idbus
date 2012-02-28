@@ -385,7 +385,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.MANAGE_CERTIFICATE,
             ApplicationFacade.SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
-            ApplicationFacade.CREATE_ACTIVATION,
+            //ApplicationFacade.CREATE_ACTIVATION,
             ApplicationFacade.APPLIANCE_VALIDATION_ERRORS,
             //ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT,
             ApplicationFacade.LOGOUT,
@@ -632,9 +632,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case ApplicationFacade.CREATE_COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateColdfusionExecutionEnvironmentWindow(notification);
                 break;
-            case ApplicationFacade.CREATE_ACTIVATION:
+            /*case ApplicationFacade.CREATE_ACTIVATION:
                 popupManager.showCreateActivationWindow(notification);
-                break;
+                break;*/
             case ApplicationFacade.REMOVE_ACTIVATION_ELEMENT:
                 var ract:RemoveActivationElementRequest = RemoveActivationElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.ACTIVATION_REMOVE, ract.activation);

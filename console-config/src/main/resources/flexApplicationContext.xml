@@ -127,6 +127,7 @@
         <property name="oauth2ServiceProviderRemoveCommand" ref="oauth2ServiceProviderRemoveCommand"/>
         <property name="josso1ResourceRemoveCommand" ref="josso1ResourceRemoveCommand"/>
         <property name="josso2ResourceRemoveCommand" ref="josso2ResourceRemoveCommand"/>
+        <property name="createActivationCommand" ref="createActivationCommand" />
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
         <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
         <property name="serviceConnectionRemoveCommand" ref="serviceConnectionRemoveCommand"/>
@@ -465,6 +466,11 @@
             class="com.atricore.idbus.console.modeling.main.controller.ActivateExecEnvironmentCommand">
         <property name="projectProxy" ref="projectProxy"/>
         <property name="registry" ref="serviceRegistry"/>
+    </object>
+
+    <object id="createActivationCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.CreateActivationCommand">
+        <property name="projectProxy" ref="projectProxy"/>
     </object>
 
     <object id="createServiceConnectionCommand"

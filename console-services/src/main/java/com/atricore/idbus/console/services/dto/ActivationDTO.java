@@ -11,6 +11,7 @@ public class ActivationDTO extends ConnectionDTO {
 
     private ServiceResourceDTO resource;
 
+    // TODO: Remove me!!! [JOSSO-370]
     private ServiceProviderDTO sp;
 
     public ExecutionEnvironmentDTO getExecutionEnv() {

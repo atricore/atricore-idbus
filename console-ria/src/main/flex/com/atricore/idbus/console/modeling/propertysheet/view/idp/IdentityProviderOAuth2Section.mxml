@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:Group xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*"
+         width="100%" height="100%">
+
+    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.enabled')}:"
+                     labelWidth="160" direction="horizontal">
+            <s:CheckBox id="oauth2Enabled"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.oauth2.flows')}:"
+                     labelWidth="160" direction="horizontal">
+            <!--
+            <s:CheckBox id="oauth2UserAgentFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.user-agent')}" selected="false" enabled="false"/>
+            <s:CheckBox id="oauth2WebServerFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.webServer')}" selected="false" enabled="false"/>
+            <s:CheckBox id="oauth2DeviceFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.device')}" selected="false" enabled="false"/>
+            -->
+            <s:CheckBox id="oauth2UsernamePasswordFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.usernamePassword')}" selected="true"/>
+            <!--
+            <s:CheckBox id="oauth2clientCredentialsFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.clientCredentials')}" selected="false" enabled="false"/>
+            <s:CheckBox id="oauth2AssertionFlow" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.flow.assertion')}" selected="false" enabled="false"/>
+            -->
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.oauth2.bindings')}:"
+                     labelWidth="160" direction="horizontal">
+            <s:CheckBox id="oauth2BindingSoapCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.binding.soap')}" selected="true"/>
+            <s:CheckBox id="oauth2BindingRestfulCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'oauth2.binding.restful')}" selected="true"/>
+
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.oauth2.key')}:" required="true"
+                labelWidth="160" direction="horizontal">
+            <s:TextInput id="oauth2Key" width="300"/>
+        </mx:FormItem>
+
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.oauth2.clients.config')}:"
+                labelWidth="160" >
+            <s:TextArea id="oauth2ClientsConfig" heightInLines="6" width="100%" />
+        </mx:FormItem>
+
+    </mx:Form>
+</s:Group>

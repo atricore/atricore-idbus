@@ -23,4 +23,5 @@ package com.atricore.idbus.console.services.dto;
 
 public class OpenIDIdentityProviderDTO extends FederatedProviderDTO {
 
+    private static final long serialVersionUID = 66923408997777740L;
 }

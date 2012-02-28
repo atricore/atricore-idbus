@@ -91,6 +91,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOSetupCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.CreateActivationCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ActivationRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityLookupRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.FederatedConnectionRemoveCommand</symbol>

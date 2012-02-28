@@ -29,6 +29,17 @@
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{resourceName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
+        <utils:NameValidator id="appIdValidator" source="{resourcePartnerAppId}" required="true" property="text" trigger="{btnOk}"
+                             triggerEvent="click"/>
+        <mx:NumberValidator id="portValidator" source="{resourcePort}" required="false" property="text"
+                            trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <utils:URLPartValidator id="domainValidator" source="{resourceDomain}" required="true" property="text"
+                                trigger="{btnOk}" triggerEvent="click"/>
+        <utils:URLPartValidator id="contextValidator" source="{resourceContext}" required="true" property="text"
+                                trigger="{btnOk}" triggerEvent="click"/>
+        <utils:URLMultipartValidator id="pathValidator" source="{resourcePath}" required="false" property="text"
+                                     trigger="{btnOk}" triggerEvent="click"/>
     </fx:Declarations>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.name')}:" required="true">
@@ -37,6 +48,30 @@
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.description')}:">
         <s:TextInput id="resourceDescription" width="300"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.partnerappid')}:" required="true">
+        <s:TextInput id="resourcePartnerAppId" width="300"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.location')}:" required="true"
+                 direction="horizontal" >
+        <s:DropDownList id="resourceProtocol" width="70" selectedIndex="0">
+            <s:dataProvider>
+                <mx:ArrayCollection>
+                    <fx:Object label="http" data="http"/>
+                    <fx:Object label="https" data="https"/>
+                </mx:ArrayCollection>
+            </s:dataProvider>
+        </s:DropDownList>
+        <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="resourceDomain" width="150"/>
+        <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="resourcePort" width="40" text="8080"/>
+        <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="resourceContext" width="100"/>
+        <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="resourcePath" width="140"/>
     </mx:FormItem>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">

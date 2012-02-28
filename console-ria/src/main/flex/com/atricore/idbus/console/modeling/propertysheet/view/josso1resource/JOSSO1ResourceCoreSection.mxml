@@ -29,18 +29,55 @@
 
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{resourceName}" required="true" property="text"/>
+        <utils:NameValidator id="appIdValidator" source="{partnerAppId}" required="true" property="text"/>
+        <mx:NumberValidator id="portValidator" source="{partnerAppLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <utils:URLPartValidator id="domainValidator" source="{partnerAppLocationDomain}" required="true" property="text"/>
+        <utils:URLPartValidator id="contextValidator" source="{partnerAppLocationContext}" required="true" property="text"/>
+        <utils:URLMultipartValidator id="pathValidator" source="{partnerAppLocationPath}" required="false" property="text"/>
     </fx:Declarations>
 
     <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
              verticalGap="8">
 
-        <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.name')}:"
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.name')}:"
                      required="true">
-            <s:TextInput id="resourceName" width="200"/>
+            <s:TextInput id="resourceName" width="150"/>
         </mx:FormItem>
 
-        <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.description')}:">
-            <s:TextInput id="resourceDescription" width="200"/>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.description')}:">
+            <s:TextInput id="resourceDescription" width="150"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.partnerappid')}:" required="true">
+            <s:TextInput id="partnerAppId" width="150"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.location')}:" required="true"
+                     direction="horizontal" >
+            <s:DropDownList id="partnerAppLocationProtocol" width="70" selectedIndex="0">
+                <s:dataProvider>
+                    <mx:ArrayCollection>
+                        <fx:Object label="http" data="http"/>
+                        <fx:Object label="https" data="https"/>
+                    </mx:ArrayCollection>
+                </s:dataProvider>
+            </s:DropDownList>
+            <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
+            <s:TextInput id="partnerAppLocationDomain" width="150"/>
+            <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
+            <s:TextInput id="partnerAppLocationPort" width="40"/>
+            <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+            <s:TextInput id="partnerAppLocationContext" width="100"/>
+            <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+            <s:TextInput id="partnerAppLocationPath" width="140"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.ignoredWebResources')}:">
+            <s:HGroup>
+                <s:TextInput id="ignoredWebResources" width="420"/>
+                <!--s:Label text="(comma separated)" paddingTop="5"/-->
+            </s:HGroup>
         </mx:FormItem>
 
     </mx:Form>

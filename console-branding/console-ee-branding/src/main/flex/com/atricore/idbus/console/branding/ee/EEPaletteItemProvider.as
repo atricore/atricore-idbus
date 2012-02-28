@@ -29,37 +29,37 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
         var saml2PaletteDrawer:PaletteDrawer = new PaletteDrawer("SAML 2.0", null, null);
 
         saml2PaletteDrawer.add(
-                new PaletteEntry("Saml 2.0 IdP", EmbeddedIcons.saml2IdpMiniIcon, "Saml 2.0 IdP Entry", DiagramElementTypes.SAML_2_IDENTITY_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("Saml 2.0 Identity Provider", EmbeddedIcons.saml2IdpMiniIcon, "Saml 2.0 IdP Entry", DiagramElementTypes.SAML_2_IDENTITY_PROVIDER_ELEMENT_TYPE)
         );
         saml2PaletteDrawer.add(
-                new PaletteEntry("Saml 2.0 SP", EmbeddedIcons.saml2SpMiniIcon, "Saml 2.0 SP Entry", DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("Saml 2.0 Service Provider", EmbeddedIcons.saml2SpMiniIcon, "Saml 2.0 SP Entry", DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE)
         );
 
         pr.add(saml2PaletteDrawer);
 
-        // OpenID drawer
-        var openidPaletteDrawer:PaletteDrawer = new PaletteDrawer("OpenID", null, null);
-
-        openidPaletteDrawer.add(
-                new PaletteEntry("OpenID IdP", EmbeddedIcons.openidIdpMiniIcon, "OpenID IdP Entry", DiagramElementTypes.OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE)
-        );
-        openidPaletteDrawer.add(
-                new PaletteEntry("OpenID SP", EmbeddedIcons.openidSpMiniIcon, "OpenID SP Entry", DiagramElementTypes.OPENID_SERVICE_PROVIDER_ELEMENT_TYPE)
-        );
-
-        pr.add(openidPaletteDrawer);
-
         // OAuth2 drawer
-        var oauth2PaletteDrawer:PaletteDrawer = new PaletteDrawer("OAuth2", null, null);
+        var oauth2PaletteDrawer:PaletteDrawer = new PaletteDrawer("OAuth 2.0", null, null);
 
         oauth2PaletteDrawer.add(
-                new PaletteEntry("OAuth2 IdP", EmbeddedIcons.oauth2IdpMiniIcon, "OAuth2 IdP Entry", DiagramElementTypes.OAUTH_2_IDENTITY_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("OAuth 2.0 Identity Provider", EmbeddedIcons.oauth2IdpMiniIcon, "OAuth 2.0 IdP Entry", DiagramElementTypes.OAUTH_2_IDENTITY_PROVIDER_ELEMENT_TYPE)
         );
         oauth2PaletteDrawer.add(
-                new PaletteEntry("OAuth2 SP", EmbeddedIcons.oauth2SpMiniIcon, "OAuth2 SP Entry", DiagramElementTypes.OAUTH_2_SERVICE_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("OAuth 2.0 Service Provider", EmbeddedIcons.oauth2SpMiniIcon, "OAuth 2.0 SP Entry", DiagramElementTypes.OAUTH_2_SERVICE_PROVIDER_ELEMENT_TYPE)
         );
 
         pr.add(oauth2PaletteDrawer);
+
+        // OpenID drawer
+        var openidPaletteDrawer:PaletteDrawer = new PaletteDrawer("OpenID 2.0", null, null);
+
+        openidPaletteDrawer.add(
+                new PaletteEntry("OpenID 2.0 Identity Provider", EmbeddedIcons.openidIdpMiniIcon, "OpenID 2.0 IdP Entry", DiagramElementTypes.OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE)
+        );
+        openidPaletteDrawer.add(
+                new PaletteEntry("OpenID 2.0 Service Provider", EmbeddedIcons.openidSpMiniIcon, "OpenID 2.0 SP Entry", DiagramElementTypes.OPENID_SERVICE_PROVIDER_ELEMENT_TYPE)
+        );
+
+        pr.add(openidPaletteDrawer);
 
         // Cloud Entities drawer
         var cloudPaletteDrawer:PaletteDrawer = new PaletteDrawer("Cloud Entities", null, null);

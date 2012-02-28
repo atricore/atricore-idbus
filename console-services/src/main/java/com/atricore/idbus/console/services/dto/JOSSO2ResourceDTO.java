@@ -22,4 +22,16 @@
 package com.atricore.idbus.console.services.dto;
 
 public class JOSSO2ResourceDTO extends ServiceResourceDTO {
+
+    private static final long serialVersionUID = 5700756153225075302L;
+
+    private LocationDTO partnerAppLocation;
+
+    public LocationDTO getPartnerAppLocation() {
+        return partnerAppLocation;
+    }
+
+    public void setPartnerAppLocation(LocationDTO partnerAppLocation) {
+        this.partnerAppLocation = partnerAppLocation;
+    }
 }
