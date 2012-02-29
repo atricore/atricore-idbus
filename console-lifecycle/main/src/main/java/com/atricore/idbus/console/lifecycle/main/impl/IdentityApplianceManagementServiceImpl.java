@@ -145,6 +145,8 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private ImpersonateUserPoliciesRegistry impersonateUserPoliciesRegistry;
 
+    private UserDashboardBrandingRegistry userDashboardBrandingRegistry;
+
     private SubjectNameIdentifierPolicyRegistry  subjectNameIdentifierPolicyRegistry;
 
     public void afterPropertiesSet() throws Exception {
@@ -612,6 +614,12 @@ public class IdentityApplianceManagementServiceImpl implements
             else
                 applianceDef.setName(appliance.getName());
 
+            // Namespace
+            if (appliance.getNamespace() == null)
+                appliance.setNamespace(applianceDef.getNamespace());
+            else
+                applianceDef.setNamespace(appliance.getNamespace());
+
             // Displayname
             if (appliance.getDisplayName() == null)
                 appliance.setDisplayName(applianceDef.getDisplayName());
@@ -963,6 +971,19 @@ public class IdentityApplianceManagementServiceImpl implements
         // Add policies to response
         for (ImpersonateUserPolicy policy : impersonateUserPoliciesRegistry.getPolicies()) {
             res.getImpersonateUserPolicies().add(policy);
+        }
+
+        return res;
+    }
+
+    public ListUserDashboardBrandingsResponse listUserDashboardBrandings(ListUserDashboardBrandingsRequest req) throws IdentityServerException {
+        ListUserDashboardBrandingsResponse res = new ListUserDashboardBrandingsResponse();
+
+        logger.debug("Listing all user dashboard brandings");
+
+        // Add policies to response
+        for (UserDashboardBranding branding : userDashboardBrandingRegistry.getBrandings()) {
+            res.getBrandings().add(branding);
         }
 
         return res;
@@ -1468,6 +1489,14 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setImpersonateUserPoliciesRegistry(ImpersonateUserPoliciesRegistry impersonateUserPoliciesRegistry) {
         this.impersonateUserPoliciesRegistry = impersonateUserPoliciesRegistry;
+    }
+
+    public UserDashboardBrandingRegistry getUserDashboardBrandingRegistry() {
+        return userDashboardBrandingRegistry;
+    }
+
+    public void setUserDashboardBrandingRegistry(UserDashboardBrandingRegistry userDashboardBrandingRegistry) {
+        this.userDashboardBrandingRegistry = userDashboardBrandingRegistry;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {

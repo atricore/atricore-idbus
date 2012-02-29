@@ -100,6 +100,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExportMetadataCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.UserDashboardBrandingsListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityMappingPoliciesListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ImpersonateUserPoliciesListCommand</symbol>
 

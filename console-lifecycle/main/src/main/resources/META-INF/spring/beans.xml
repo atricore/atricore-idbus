@@ -81,6 +81,7 @@
         <property name="sampleKeystore" ref="sampleKeystore"/>
 
         <property name="identityMappingPoliciesRegistry" ref="identityMappingPoliciesRegistry"/>
+        <property name="userDashboardBrandingRegistry" ref="userDashboardBrandingsRegistry"/>
         <property name="accountLinkagePoliciesRegistry" ref="accountLinkagePoliciesRegistry"/>
         <property name="subjectNameIdentifierPolicyRegistry" ref="subjectNameIdentifierPolicyRegistry"/>
         <property name="impersonateUserPoliciesRegistry" ref="impersonateUserPoliciesRegistry"/>
@@ -142,6 +143,15 @@
 
     <osgi:service id="osgiServicesLifecycelMgr" ref="servicesLifecycelMgr"
                   interface="org.springframework.osgi.context.event.OsgiBundleApplicationContextListener" />
+
+    <!-- The default branding has no skin -->
+    <bean name="josso2-default-branding" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding">
+        <property name="id" value="josso2-default-branding"/>
+        <property name="description" value="JOSSO 2 Default"/>
+        <property name="name" value="josso2-default-branding"/>
+    </bean>
+    <osgi:service id="josso2-default-branding-osgi" ref="josso2-default-branding"
+                  interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding"/>
 
     <!-- ===================================================================== -->
     <!-- Lifecycle  Management Components imported  as OSGI Services           -->

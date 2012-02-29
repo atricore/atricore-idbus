@@ -128,6 +128,7 @@
         <property name="exportIdentityApplianceCommand" ref="exportIdentityApplianceCommand"/>
         <property name="exportMetadataCommand" ref="exportMetadataCommand"/>
         <property name="accountLinkagePolicyListCommand" ref="accountLinkagePolicyListCommand"/>
+        <property name="userDashboardBrandingsListCommand" ref="userDashboardBrandingsListCommand"/>
         <property name="subjectNameIDPolicyListCommand" ref="subjectNameIDPolicyListCommand"/>
         <property name="identityMappingPoliciesListCommand" ref="identityMappingPoliciesListCommand"/>
         <property name="impersonateUserPoliciesListCommand" ref="impersonateUserPoliciesListCommand"/>
@@ -484,6 +485,12 @@
 
     <object id="accountLinkagePolicyListCommand"
             class="com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
+    <object id="userDashboardBrandingsListCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.UserDashboardBrandingsListCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>

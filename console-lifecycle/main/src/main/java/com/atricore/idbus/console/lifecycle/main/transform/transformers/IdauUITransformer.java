@@ -73,14 +73,16 @@ public class IdauUITransformer extends AbstractTransformer {
         ssoUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/SSO");
 
         // If the appliance has a defined skin, configure it for this application!
-        if (ida.getUserDashboardBranding() != null) {
+        if (ida.getUserDashboardBranding() != null && ida.getUserDashboardBranding().getSkin() != null) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Using 'SKIN' " + ida.getUserDashboardBranding().getSkin() + " from branding " + ida.getUserDashboardBranding().getId());
+
             ContextParam skin = new ContextParam();
             skin.setParamName("skin");
             skin.setParamValue(ida.getUserDashboardBranding().getSkin());
             ssoUiApp.getContextParams().add(skin);
         }
-
-
 
         idauBeansUi.getImportsAndAliasAndBeen().add(ssoUiApp);
 
