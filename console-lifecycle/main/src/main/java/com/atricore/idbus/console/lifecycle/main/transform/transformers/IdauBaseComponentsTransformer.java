@@ -20,15 +20,13 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
-import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceTransformationContext;
-import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
-import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
-import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Import;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
+import com.atricore.idbus.console.lifecycle.main.transform.*;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Service;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket.Application;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket.ContextParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
@@ -38,6 +36,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.OsgiCamelIdentityMediation
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 

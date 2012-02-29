@@ -43,4 +43,10 @@
             <jaxb:package name="com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="pax-wicket-0.8.1.xsd" node="/xsd:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
 </jaxb:bindings>

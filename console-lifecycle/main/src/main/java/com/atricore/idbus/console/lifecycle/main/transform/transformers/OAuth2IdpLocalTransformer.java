@@ -99,10 +99,10 @@ public class OAuth2IdpLocalTransformer extends AbstractTransformer implements In
         setPropertyBean(idpMediator, "logger", idpLogger);
 
         // errorUrl
-        setPropertyValue(idpMediator, "errorUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/error.do");
+        setPropertyValue(idpMediator, "errorUrl", resolveUiErrorLocation(appliance));
 
         // warningUrl
-        setPropertyValue(idpMediator, "warningUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/warn/policy-enforcement.do");
+        setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
         // we need to create OAuth2 Client definitions, for now use Client Config string as JSON serialization
 

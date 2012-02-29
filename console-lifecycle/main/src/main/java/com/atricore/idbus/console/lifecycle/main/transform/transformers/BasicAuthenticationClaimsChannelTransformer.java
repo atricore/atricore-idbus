@@ -180,7 +180,8 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 setPropertyValue(ccMediator, "logMessages", true);
 
                 // basicAuthnUILocation
-                setPropertyValue(ccMediator, "basicAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-password.do");
+                //setPropertyValue(ccMediator, "basicAuthnUILocation", resolveUiLocationPath(appliance) + "/idbus-ui/claims/username-password.do");
+                setPropertyValue(ccMediator, "basicAuthnUILocation", resolveUiLocationPath(appliance) + "/SSO/LOGIN/SIMPLE");
 
                 // artifactQueueManager
                 setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
@@ -201,10 +202,10 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 setPropertyBean(ccMediator, "logger", ccLogger);
 
                 // errorUrl
-                setPropertyValue(ccMediator, "errorUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/error.do");
+                setPropertyValue(ccMediator, "errorUrl", resolveUiErrorLocation(appliance));
 
                 // warningUrl
-                setPropertyValue(ccMediator, "warningUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/warn/policy-enforcement.do");
+                setPropertyValue(ccMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
                 // identityMediator
                 setPropertyRef(claimChannelBean, "identityMediator", ccMediator.getName());

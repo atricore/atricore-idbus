@@ -34,10 +34,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
@@ -160,10 +157,10 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         setPropertyBean(idpMediator, "logger", idpLogger);
 
         // errorUrl
-        setPropertyValue(idpMediator, "errorUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/error.do");
+        setPropertyValue(idpMediator, "errorUrl", resolveUiErrorLocation(appliance));
 
         // warningUrl
-        setPropertyValue(idpMediator, "warningUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/warn/policy-enforcement.do");
+        setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
@@ -323,6 +320,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         // Wiring
         setPropertyBean(sessionManager, "sessionIdGenerator", sessionIdGenerator);
         setPropertyBean(sessionManager, "sessionStore", sessionStore);
+
     }
 
     @Override

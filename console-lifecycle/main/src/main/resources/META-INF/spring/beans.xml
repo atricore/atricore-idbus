@@ -176,6 +176,11 @@
 
     </bean>
 
+    <bean name="userDashboardBrandingsRegistry"
+          class="com.atricore.idbus.console.lifecycle.main.impl.UserDashboardBrandingRegistry">
+
+    </bean>
+
     <osgi:list id="customAccountLinkagePolicies" cardinality="0..N"
                interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.AccountLinkagePolicy">
         <osgi:listener ref="accountLinkagePoliciesRegistry"
@@ -202,6 +207,14 @@
         <osgi:listener ref="impersonateUserPoliciesRegistry"
                        bind-method="register"
                        unbind-method="unregister"/>
+    </osgi:list>
+
+    <osgi:list id="userDashboardBrandings" cardinality="0..N"
+               interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding">
+        <osgi:listener ref="userDashboardBrandingsRegistry"
+                       bind-method="register"
+                       unbind-method="unregister"/>
+
     </osgi:list>
 
 

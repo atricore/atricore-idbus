@@ -27,6 +27,7 @@
         <idbus.cap.saml2.version>${idbus.cap.josso.version}</idbus.cap.saml2.version>
         <idbus.cap.sts.version>${idbus.cap.sts.version}</idbus.cap.sts.version>
         <idbus.cap.spml2.version>${idbus.cap.spml2.version}</idbus.cap.spml2.version>
+        <idbus.cap.openid.version>${idbus.cap.openid.version}</idbus.cap.openid.version>
 
         <!-- Atricore IDOJOs -->
         <idbus.idojo.dbidentitystore.version>${idbus.idojo.dbidentitystore.version}</idbus.idojo.dbidentitystore.version>

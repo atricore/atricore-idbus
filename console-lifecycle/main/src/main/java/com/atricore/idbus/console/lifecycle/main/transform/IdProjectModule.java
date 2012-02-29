@@ -31,6 +31,8 @@ public class IdProjectModule {
 
     private Map<String, IdProjectResource> resources;
 
+    private Map<String, IdProjectSource> sources;
+
     private List<IdProjectModule> modules;
 
     private ProjectModuleLayout layout;
@@ -41,6 +43,7 @@ public class IdProjectModule {
         this.id = id;
         modules = new ArrayList<IdProjectModule>();
         resources = new HashMap<String, IdProjectResource>();
+        sources = new HashMap<String, IdProjectSource>();
         embeddedDependencies = new ArrayList<String>();
     }
 
@@ -144,6 +147,28 @@ public class IdProjectModule {
 
         return null;
     }
+
+    public void addSource(IdProjectSource r) {
+        this.sources.put(r.getId(), r);
+    }
+
+    public Collection<IdProjectSource> getSources() {
+        return sources.values();
+    }
+
+    public IdProjectSource getSourceById(String id) {
+        return sources.get(id);
+    }
+
+    public IdProjectSource getSourceByName(String name) {
+        for (IdProjectSource idProjectSource : sources.values()) {
+            if (idProjectSource.getName().equals(name))
+                return idProjectSource;
+        }
+
+        return null;
+    }
+
 
     public List<IdProjectModule> getModules() {
         return modules;
