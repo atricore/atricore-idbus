@@ -52,8 +52,6 @@ public abstract class LoginPage extends BasePage {
     @PaxWicketBean(name = "artifactQueueManager")
     private MessageQueueManager artifactQueueManager;
 
-    private String variant;
-
     public LoginPage() throws Exception {
         this(null);
     }
@@ -93,7 +91,7 @@ public abstract class LoginPage extends BasePage {
                         parameters.put("statusMessageKey", "claims.text.invalidCredentials");
                     }
 
-                    variant = claimsRequest.getIssuerChannel().getSkin();
+                    //variant = claimsRequest.getIssuerChannel().getSkin();
                 } else {
                     logger.debug("No claims request received!");
                 }
@@ -107,11 +105,6 @@ public abstract class LoginPage extends BasePage {
         logger.info("claimsRequest = " + claimsRequest);
 
         add(prepareSignInPanel("signIn", claimsRequest, artifactQueueManager, idsuRegistry));
-    }
-
-    @Override
-    public String getVariation() {
-        return variant;
     }
 
     abstract protected Panel prepareSignInPanel(final String id, ClaimsRequest claimsRequest, MessageQueueManager artifactQueueManager,

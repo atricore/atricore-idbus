@@ -3,7 +3,7 @@
 
     <wicket:application id="openIDWebUI"
         class="org.atricore.idbus.capabilities.openid.ui.internal.OpenIDUIApplication"
-        applicationName="openIdWebUI" mountPoint="openid" />
+        applicationName="openIdWebUI" mountPoint="IDBUS-UI/OPENID" />
 
     <reference id="artifactQueueManager" timeout="60"
                interface="org.atricore.idbus.kernel.main.mediation.MessageQueueManager"

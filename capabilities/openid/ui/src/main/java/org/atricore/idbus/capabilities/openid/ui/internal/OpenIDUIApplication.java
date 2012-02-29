@@ -42,9 +42,9 @@ public class OpenIDUIApplication extends WebApplication {
         super.init();
 
 
-        mountBookmarkablePage("/login", OpenIDLoginPage.class);
-        mountBookmarkablePage("/error/401", AccessDeniedPage.class);
-        mountBookmarkablePage("/error/404", PageExpiredErrorPage.class);
+        mountBookmarkablePage("/LOGIN", OpenIDLoginPage.class);
+        mountBookmarkablePage("/ERROR/401", AccessDeniedPage.class);
+        mountBookmarkablePage("/ERROR/404", PageExpiredErrorPage.class);
 
         getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
         getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);

@@ -33,6 +33,8 @@ import org.apache.wicket.markup.html.image.Image;
  */
 public class BasePage extends WebPage {
 
+    private String variation;
+
     @SuppressWarnings("serial")
     public BasePage() {
         add(CSSPackageResource.getHeaderContribution(BasePage.class, "ie6.css"));
@@ -47,4 +49,15 @@ public class BasePage extends WebPage {
         add(new Label("footer", "Atricore"));
 
     }
+
+    public void setVariation(String variation) {
+        this.variation = variation;
+    }
+
+    @Override
+    public String getVariation() {
+        return variation;
+    }
+
+
 }

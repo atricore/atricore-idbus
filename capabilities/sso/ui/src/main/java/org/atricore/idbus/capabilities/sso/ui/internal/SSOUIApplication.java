@@ -29,6 +29,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.atricore.idbus.capabilities.sso.ui.page.ErrorPage;
 import org.atricore.idbus.capabilities.sso.ui.page.SimpleLoginPage;
 import org.atricore.idbus.capabilities.sso.ui.page.StrongLoginPage;
+import org.atricore.idbus.capabilities.sso.ui.page.TwoFactorLoginPage;
 
 /**
  * Entry point for the Wicket-based SSO front-end.
@@ -45,13 +46,14 @@ public class SSOUIApplication extends WebApplication {
     protected void init() {
         super.init();
 
+        // SSO Authentication pages: SIMPLE (usr/pwd), STRONG (x509 cert, SSL), 2FA (2 factor pass code)
+        mountBookmarkablePage("/LOGIN/SIMPLE", SimpleLoginPage.class);
+        mountBookmarkablePage("/LOGIN/STRONG", StrongLoginPage.class);
+        mountBookmarkablePage("/LOGIN/2FA", TwoFactorLoginPage.class);
 
-        mountBookmarkablePage("/login/simple", SimpleLoginPage.class);
-        mountBookmarkablePage("/login/strong", StrongLoginPage.class);
-
-        mountBookmarkablePage("/error", ErrorPage.class);
-        mountBookmarkablePage("/error/401", AccessDeniedPage.class);
-        mountBookmarkablePage("/error/404", PageExpiredErrorPage.class);
+        mountBookmarkablePage("/ERROR", ErrorPage.class);
+        mountBookmarkablePage("/ERROR/401", AccessDeniedPage.class);
+        mountBookmarkablePage("/ERROR/404", PageExpiredErrorPage.class);
 
         getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
         getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
