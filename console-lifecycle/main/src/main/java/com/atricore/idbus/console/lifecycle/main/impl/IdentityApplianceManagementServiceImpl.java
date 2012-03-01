@@ -683,9 +683,26 @@ public class IdentityApplianceManagementServiceImpl implements
             IdentityAppliance appliance = request.getAppliance();
 
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
-            if (applianceDef.getDisplayName() == null)
-                applianceDef.setDisplayName(applianceDef.getName());
 
+            // We need to keep in sync appliance and appliance definition:
+            if (applianceDef.getDisplayName() == null)
+                applianceDef.setDisplayName(appliance.getName());
+
+            if (applianceDef.getNamespace() == null)
+                applianceDef.setNamespace(appliance.getNamespace());
+
+            if (applianceDef.getDescription() == null)
+                applianceDef.setDescription(appliance.getDescription());
+
+            if (applianceDef.getName() == null)
+                applianceDef.setName(appliance.getName());
+
+            appliance.setName(applianceDef.getName());
+            appliance.setDescription(applianceDef.getDescription());
+            appliance.setNamespace(applianceDef.getNamespace());
+            appliance.setDisplayName(applianceDef.getDisplayName());
+
+            // Set some defaults
             for (Provider p : applianceDef.getProviders()) {
                 if (p.getDisplayName() == null)
                     p.setDisplayName(p.getName());

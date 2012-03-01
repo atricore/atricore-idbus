@@ -655,8 +655,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
-        ListUserDashboardBrandingsResponse r = dozerMapper.map(beRes, ListUserDashboardBrandingsResponse.class);
-        return r;
+        return dozerMapper.map(beRes, ListUserDashboardBrandingsResponse.class);
     }
 
     /****************************
