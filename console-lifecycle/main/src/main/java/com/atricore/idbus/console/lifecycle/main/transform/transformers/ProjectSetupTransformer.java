@@ -101,17 +101,5 @@ public class ProjectSetupTransformer extends AbstractTransformer {
         return event.getContext().getProject();
     }
 
-    protected String toPackageName(String namespace) {
-        namespace = namespace.replace(':', '.');
-        namespace = namespace.replace('/', '.');
-        return namespace;
-    }
-
-    protected String toFolderName(String namespace) {
-        namespace = namespace.replace(':', '/');
-        namespace = namespace.replace('.', '/');
-        return namespace;
-    }
-
 }
 

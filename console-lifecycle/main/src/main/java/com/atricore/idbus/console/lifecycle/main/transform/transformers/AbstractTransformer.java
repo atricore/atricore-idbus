@@ -226,4 +226,17 @@ public abstract class AbstractTransformer implements Transformer {
         return name.replaceAll(regex, "-").toLowerCase();
     }
 
+    protected String toPackageName(String namespace) {
+        namespace = namespace.replace(':', '.');
+        namespace = namespace.replace('/', '.');
+        return namespace;
+    }
+
+    protected String toFolderName(String namespace) {
+        namespace = namespace.replace(':', '/');
+        namespace = namespace.replace('.', '/');
+        return namespace;
+    }
+
+
 }
