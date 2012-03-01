@@ -10,8 +10,10 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wic
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBeans;
 
@@ -63,6 +65,32 @@ public class IdauUITransformer extends AbstractTransformer {
             uiBasePath = resolveLocationPath(uiLocation);
         }
 
+        // Branding configuration
+        // If the appliance has a defined skin, configure it for this application!
+        List<ContextParam> appParams = new ArrayList<ContextParam>();
+        if (ida.getUserDashboardBranding() != null) {
+
+            ContextParam branding = new ContextParam();
+            branding.setParamName("branding");
+            branding.setParamValue(ida.getUserDashboardBranding().getId());
+            appParams.add(branding);
+
+
+            if (ida.getUserDashboardBranding().getSkin() != null) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Using 'SKIN' " + ida.getUserDashboardBranding().getSkin() + " from branding " + ida.getUserDashboardBranding().getId());
+
+                ContextParam skin = new ContextParam();
+                skin.setParamName("skin");
+                skin.setParamValue(ida.getUserDashboardBranding().getSkin());
+                appParams.add(skin);
+            }
+
+
+        }
+
+
         // ----------------------------------------
         // SSO Capability application
         // ----------------------------------------
@@ -71,20 +99,22 @@ public class IdauUITransformer extends AbstractTransformer {
         ssoUiApp.setApplicationName(ida.getName().toLowerCase() + "-sso-ui");
         ssoUiApp.setClazz("org.atricore.idbus.capabilities.sso.ui.internal.SSOUIApplication");
         ssoUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/SSO");
-
-        // If the appliance has a defined skin, configure it for this application!
-        if (ida.getUserDashboardBranding() != null && ida.getUserDashboardBranding().getSkin() != null) {
-
-            if (logger.isDebugEnabled())
-                logger.debug("Using 'SKIN' " + ida.getUserDashboardBranding().getSkin() + " from branding " + ida.getUserDashboardBranding().getId());
-
-            ContextParam skin = new ContextParam();
-            skin.setParamName("skin");
-            skin.setParamValue(ida.getUserDashboardBranding().getSkin());
-            ssoUiApp.getContextParams().add(skin);
-        }
+        ssoUiApp.getContextParams().addAll(appParams);
 
         idauBeansUi.getImportsAndAliasAndBeen().add(ssoUiApp);
+
+        // ----------------------------------------
+        // OpenID Capability application
+        // ----------------------------------------
+        Application openIdUiApp = new Application();
+        openIdUiApp.setId(ida.getName().toLowerCase() + "-openid-ui");
+        openIdUiApp.setApplicationName(ida.getName().toLowerCase() + "-openid-ui");
+        openIdUiApp.setClazz("org.atricore.idbus.capabilities.openid.ui.internal.OpenIDUIApplication");
+        openIdUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/OPENID");
+        openIdUiApp.getContextParams().addAll(appParams);
+
+        idauBeansUi.getImportsAndAliasAndBeen().add(openIdUiApp);
+
 
         // ----------------------------------------
         // Add all the beans to the list

@@ -153,6 +153,17 @@
     <osgi:service id="josso2-default-branding-osgi" ref="josso2-default-branding"
                   interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding"/>
 
+    <!-- The default branding has no skin -->
+    <bean name="josso2-alt-branding" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding">
+        <property name="id" value="josso2-alt-branding"/>
+        <property name="description" value="JOSSO 2 Alternative"/>
+        <property name="name" value="josso2-alt-branding"/>
+        <property name="skin" value="alt_1"/>
+    </bean>
+    <osgi:service id="josso2-alt-branding-osgi" ref="josso2-alt-branding"
+                  interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding"/>
+
+
     <!-- ===================================================================== -->
     <!-- Lifecycle  Management Components imported  as OSGI Services           -->
     <!-- ===================================================================== -->
