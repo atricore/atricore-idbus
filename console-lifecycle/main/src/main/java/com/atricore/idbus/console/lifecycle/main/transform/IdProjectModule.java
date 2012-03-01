@@ -39,6 +39,12 @@ public class IdProjectModule {
 
     private List<String> embeddedDependencies;
 
+    // Module path will be used when creating resources/sources, based on the project layout.
+    private String path;
+
+    private String pkg;
+
+
     public IdProjectModule(String id) {
         this.id = id;
         modules = new ArrayList<IdProjectModule>();
@@ -180,6 +186,22 @@ public class IdProjectModule {
 
     public List<String> getEmbeddedDependencies() {
         return embeddedDependencies;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getPackage() {
+        return pkg;
+    }
+
+    public void setPackage(String pkg) {
+        this.pkg = pkg;
     }
 
     @Override

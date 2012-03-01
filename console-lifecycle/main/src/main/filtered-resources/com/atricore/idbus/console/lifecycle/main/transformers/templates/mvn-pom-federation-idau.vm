@@ -327,9 +327,8 @@
                         -->
 
                         <Private-Package>!*</Private-Package>
-
                         <Export-Package>
-                            $module.getName()
+                            $module.getPackage()
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,

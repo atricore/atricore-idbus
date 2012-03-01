@@ -41,10 +41,10 @@ public class IdauUITransformer extends AbstractTransformer {
 
         // ----------------------------------------
         // Work-around for pax-wicket 305, create a dummy class in the bundle.
-        String ns = event.getContext().get("idaBasePath") + "/idau/ui";
-        String pkg = toPackageName(ns);
+        String path = module.getPath();
+        String pkg = module.getPackage();
 
-        IdProjectSource s = new IdProjectSource("Dummy", ns, "Dummy", "java", "dummy");
+        IdProjectSource s = new IdProjectSource("Dummy", path, "Dummy", "java", "dummy");
         s.setExtension("java");
         s.setClassifier("velocity");
 

@@ -78,8 +78,14 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         String idauName = ida.getName();
 
         // Set the IdAU path/package name
-        event.getContext().put("idauPath", event.getContext().get("idaBasePath") + "/idau/");
-        event.getContext().put("idauPackage", event.getContext().get("idaBasePackage") + "." + idauName + ".idau");
+        String idauPath = event.getContext().get("idaBasePath") + "/idau/";
+        String idauPackage = event.getContext().get("idaBasePackage") + ".idau";
+        event.getContext().put("idauPath", idauPath);
+        event.getContext().put("idauPackage", idauPackage);
+
+        // Set the module package and base path based on the previous properties
+        module.setPath(idauPath);
+        module.setPackage(idauPackage);
 
         // -------------------------------------------------------
         // Define Identity Mediation Unit bean
