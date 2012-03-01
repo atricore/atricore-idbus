@@ -150,7 +150,7 @@
                 spLoc.uri = "";
                 sp.location = spLoc;
 
-                var resource:ServiceResource = new JOSSO1Resource();
+                var resource:JOSSO1Resource = new JOSSO1Resource();
                 resource.name = sp.name.replace(/\s+/g, "-") + "-josso1-resource";
 
                 sp.serviceConnection = new ServiceConnection();
@@ -168,8 +168,8 @@
                 loc.context = partnerappLocationContext.text;
                 loc.uri = "";
 
-                (resource.activation as JOSSOActivation).partnerAppLocation = loc;
-                (resource.activation as JOSSOActivation).partnerAppId = partnerAppId.text;
+                resource.partnerAppLocation = loc;
+                resource.partnerAppId = partnerAppId.text;
 
                 if (jossoSPPlatform.selectedItem.@data.indexOf("jb") == 0) {
                     resource.activation.executionEnv = new JbossExecutionEnvironment();

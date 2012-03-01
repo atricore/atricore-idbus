@@ -1190,19 +1190,10 @@ public class PropertySheetMediator extends IocMediator {
                     identityProvider.delegatedAuthentications != null &&
                     identityProvider.delegatedAuthentications.length > 0) {
                 for each (var delegatedAuthentication:DelegatedAuthentication in identityProvider.delegatedAuthentications) {
-                    var authnMechanism:AuthenticationMechanism = null;
-                    if (delegatedAuthentication.authnService is DirectoryAuthenticationService) {
-                        authnMechanism = new BindAuthentication();
-                    } else if (delegatedAuthentication.authnService is WindowsIntegratedAuthentication) {
-                        authnMechanism = new WindowsAuthentication();
-                    } else if (delegatedAuthentication.authnService is WikidAuthenticationService) {
-                        authnMechanism = new TwoFactorAuthentication();
-                    }
-                    //var oldAuthnMechanismName:String = Util.getAuthnMechanismName(authnMechanism, oldName, delegatedAuthentication.authnService.name);
                     for each (var authenticationMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
-                        //if (authenticationMechanism.name == oldAuthnMechanismName) {
                         if (authenticationMechanism.delegatedAuthentication == delegatedAuthentication) {
                             authenticationMechanism.name = Util.getAuthnMechanismName(authenticationMechanism, identityProvider.name, delegatedAuthentication.authnService.name);
+                            authenticationMechanism.displayName = Util.getAuthnMechanismDisplayName(authenticationMechanism, identityProvider.name, delegatedAuthentication.authnService.name);
                             break;
                         }
                     }
@@ -1210,6 +1201,7 @@ public class PropertySheetMediator extends IocMediator {
                 for each (var authnMech:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
                     if (authnMech is BasicAuthentication) {
                         authnMech.name = Util.getAuthnMechanismName(authnMech, identityProvider.name, null);
+                        authnMech.displayName = Util.getAuthnMechanismDisplayName(authnMech, identityProvider.name, null);
                         if (_authenticationSection != null) {
                             _authenticationSection.simpleAuthnName.text = authnMech.name;
                         }
@@ -3762,11 +3754,10 @@ public class PropertySheetMediator extends IocMediator {
                 for each (var delegatedAuthentication:DelegatedAuthentication in wikidAuthnService.delegatedAuthentications) {
                     var idp:IdentityProvider = delegatedAuthentication.idp;
                     if (idp.authenticationMechanisms != null) {
-                        //var oldAuthnMechanismName:String = Util.getAuthnMechanismName(new TwoFactorAuthentication(), idp.name, oldName);
                         for each (var authenticationMechanism:AuthenticationMechanism in idp.authenticationMechanisms) {
-                            //if (authenticationMechanism.name == oldAuthnMechanismName) {
                             if (authenticationMechanism.delegatedAuthentication == delegatedAuthentication) {
                                 authenticationMechanism.name = Util.getAuthnMechanismName(authenticationMechanism, idp.name, wikidAuthnService.name);
+                                authenticationMechanism.displayName = Util.getAuthnMechanismDisplayName(authenticationMechanism, idp.name, wikidAuthnService.name);
                                 break;
                             }
                         }
@@ -3885,11 +3876,10 @@ public class PropertySheetMediator extends IocMediator {
                 for each (var delegatedAuthentication:DelegatedAuthentication in directoryAuthnService.delegatedAuthentications) {
                     var idp:IdentityProvider = delegatedAuthentication.idp;
                     if (idp.authenticationMechanisms != null) {
-                        //var oldAuthnMechanismName:String = Util.getAuthnMechanismName(new BindAuthentication(), idp.name, oldName);
                         for each (var authenticationMechanism:AuthenticationMechanism in idp.authenticationMechanisms) {
-                            //if (authenticationMechanism.name == oldAuthnMechanismName) {
                             if (authenticationMechanism.delegatedAuthentication == delegatedAuthentication) {
                                 authenticationMechanism.name = Util.getAuthnMechanismName(authenticationMechanism, idp.name, directoryAuthnService.name);
+                                authenticationMechanism.displayName = Util.getAuthnMechanismDisplayName(authenticationMechanism, idp.name, directoryAuthnService.name);
                                 break;
                             }
                         }
@@ -4097,11 +4087,10 @@ public class PropertySheetMediator extends IocMediator {
             for each (var delegatedAuthentication:DelegatedAuthentication in windowsIntegratedAuthn.delegatedAuthentications) {
                 var idp:IdentityProvider = delegatedAuthentication.idp;
                 if (idp.authenticationMechanisms != null) {
-                    //var oldAuthnMechanismName:String = Util.getAuthnMechanismName(new WindowsAuthentication(), idp.name, oldName);
                     for each (var authenticationMechanism:AuthenticationMechanism in idp.authenticationMechanisms) {
-                        //if (authenticationMechanism.name == oldAuthnMechanismName) {
                         if (authenticationMechanism.delegatedAuthentication == delegatedAuthentication) {
                             authenticationMechanism.name = Util.getAuthnMechanismName(authenticationMechanism, idp.name, windowsIntegratedAuthn.name);
+                            authenticationMechanism.displayName = Util.getAuthnMechanismDisplayName(authenticationMechanism, idp.name, windowsIntegratedAuthn.name);
                             break;
                         }
                     }
