@@ -41,7 +41,7 @@ public class URLValidator extends Validator	{
 				return results;
 
             /*"^(http(s?)://)(www.)?([A-Za-z0-9\\.\\-_]+)+([A-Za-z]{2,3})?(:[\\d]{1,5})?(/[A-Za-z0-9\\.\\-_]*)*"*/
-			var pattern:RegExp = new RegExp("^(http(s?))://(www.)?[\\w.-]+(:[\\d]{1,4})?(/([\\w.-])*)*\\b$");
+			var pattern:RegExp = new RegExp("^(http(s?))://(www.)?[\\w.-]+(:[\\d]{1,5})?(/([\\w.-])*)*\\b$");
 
             var patternResult:Object = pattern.exec(String(value));
 			// run the pattern, but don't error if there is no value and this is not required

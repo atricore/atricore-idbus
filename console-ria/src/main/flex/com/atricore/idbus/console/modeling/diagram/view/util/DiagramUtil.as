@@ -6,6 +6,7 @@ import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.JOSSO1Resource;
 import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
 import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
@@ -63,14 +64,14 @@ public class DiagramUtil {
     public static function nodesCanBeLinkedWithActivation(node1:IVisualNode, node2:IVisualNode):Boolean {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
-            if (node1.data is ServiceResource && node2.data is ExecutionEnvironment){
-                var sr1:ServiceResource = node1.data as ServiceResource;
-                if(sr1.activation == null){
+            if (node1.data is JOSSO1Resource && node2.data is ExecutionEnvironment){
+                var josso1Resource1:JOSSO1Resource = node1.data as JOSSO1Resource;
+                if(josso1Resource1.activation == null){
                     canBeLinked = true;
                 }
-            } else if (node1.data is ExecutionEnvironment && node2.data is ServiceResource) {
-                var sr2:ServiceResource = node2.data as ServiceResource;
-                if(sr2.activation == null){
+            } else if (node1.data is ExecutionEnvironment && node2.data is JOSSO1Resource) {
+                var josso1Resource2:JOSSO1Resource = node2.data as JOSSO1Resource;
+                if(josso1Resource2.activation == null){
                     canBeLinked = true;
                 }
             }

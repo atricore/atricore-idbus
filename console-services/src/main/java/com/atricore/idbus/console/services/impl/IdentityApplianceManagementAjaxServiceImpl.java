@@ -974,6 +974,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         }
         BasicAuthenticationDTO authMechanism = new BasicAuthenticationDTO();
         authMechanism.setName(createUrlSafeString(idp.getName()) + "-basic-authn");
+        authMechanism.setDisplayName("basic");
         authMechanism.setEnabled(true);
         authMechanism.setPriority(1);
         authMechanism.setHashAlgorithm("MD5");
@@ -996,7 +997,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     private JOSSOActivationDTO populateJOSSOActivation(IdentityApplianceDefinitionDTO iad, ServiceProviderDTO sp) {
         JOSSOActivationDTO activation = (JOSSOActivationDTO)sp.getServiceConnection().getResource().getActivation();
         activation.setResource(sp.getServiceConnection().getResource());
-        activation.getPartnerAppLocation().setUri("");
+        //activation.getPartnerAppLocation().setUri("");
 
         if (iad.getExecutionEnvironments() == null) {
             iad.setExecutionEnvironments(new HashSet<ExecutionEnvironmentDTO>());
@@ -1034,8 +1035,9 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     }
 
     private String createTempExecutionEnvName(JOSSOActivationDTO activation) {
+        JOSSO1ResourceDTO resource = (JOSSO1ResourceDTO) activation.getResource();
         return activation.getExecutionEnv().getPlatformId() + "-" +
-                activation.getPartnerAppLocation().getHost() + "-" + activation.getPartnerAppLocation().getPort();
+                resource.getPartnerAppLocation().getHost() + "-" + resource.getPartnerAppLocation().getPort();
     }
 
     private void updateExecutionEnvNames(IdentityApplianceDefinitionDTO iad) {

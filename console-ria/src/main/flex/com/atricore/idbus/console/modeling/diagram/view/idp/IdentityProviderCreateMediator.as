@@ -229,8 +229,11 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         identityProvider.ignoreRequestedNameIDPolicy = view.ignoreRequestedNameIDPolicy.selected;
         identityProvider.subjectNameIDPolicy = view.subjectNameIdPolicyCombo.selectedItem;
 
+        identityProvider.oauth2Enabled = view.oauth2Enabled.selected;
         identityProvider.oauth2ClientsConfig = view.oauth2ClientsConfig.text;
         identityProvider.oauth2Key = view.oauth2Key.text;
+
+        identityProvider.openIdEnabled = view.openidEnabled.selected;
 
         identityProvider.activeBindings = new ArrayCollection();
 
@@ -276,6 +279,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         if (view.authMechanism.selectedItem.data == "basic") {
             var basicAuth:BasicAuthentication = new BasicAuthentication();
             basicAuth.name = Util.getAuthnMechanismName(basicAuth, identityProvider.name, null);
+            basicAuth.displayName = Util.getAuthnMechanismDisplayName(basicAuth, identityProvider.name, null);
             basicAuth.enabled = true;
             basicAuth.priority = 1;
             basicAuth.hashAlgorithm = "MD5";

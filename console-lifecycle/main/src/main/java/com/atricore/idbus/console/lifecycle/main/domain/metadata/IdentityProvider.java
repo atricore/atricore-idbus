@@ -42,6 +42,10 @@ public class IdentityProvider extends FederatedProvider {
 
     private String oauth2Key;
 
+    private boolean oauth2Enabled;
+
+    private boolean openIdEnabled;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicy subjectNameIDPolicy;
 
@@ -180,5 +184,21 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setOauth2Key(String oauth2Key) {
         this.oauth2Key = oauth2Key;
+    }
+
+    public boolean isOauth2Enabled() {
+        return oauth2Enabled;
+    }
+
+    public void setOauth2Enabled(boolean oauth2Enabled) {
+        this.oauth2Enabled = oauth2Enabled;
+    }
+
+    public boolean isOpenIdEnabled() {
+        return openIdEnabled;
+    }
+
+    public void setOpenIdEnabled(boolean openIdEnabled) {
+        this.openIdEnabled = openIdEnabled;
     }
 }

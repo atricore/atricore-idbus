@@ -1034,8 +1034,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createJOSSO1ResourceCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.josso1Resource");
-        _popup.width = 410;
-        _popup.height = 140;
+        _popup.width = 800;
+        _popup.height = 200;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_josso1ResourceCreateForm);
@@ -1056,8 +1056,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createJOSSO2ResourceCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.josso2Resource");
-        _popup.width = 410;
-        _popup.height = 140;
+        _popup.width = 800;
+        _popup.height = 170;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_josso2ResourceCreateForm);

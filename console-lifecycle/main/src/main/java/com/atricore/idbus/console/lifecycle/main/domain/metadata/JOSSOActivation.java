@@ -10,10 +10,13 @@ public class JOSSOActivation extends Activation {
 
     private static final long serialVersionUID = 3879493989758674128L;
 
+    // TODO: Remove me!!! [JOSSO-370]
     private String partnerAppId;
 
+    // TODO: Remove me!!! [JOSSO-370]
     private Location partnerAppLocation;
 
+    // TODO: Remove me!!! [JOSSO-370]
     private Set<String> ignoredWebResources;
 
     // TODO : Add other properties used to create JOSSO Agent config (PHP, ISAPI, Java, etc)

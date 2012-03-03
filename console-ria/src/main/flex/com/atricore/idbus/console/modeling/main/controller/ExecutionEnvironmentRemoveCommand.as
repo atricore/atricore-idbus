@@ -36,7 +36,7 @@ public class ExecutionEnvironmentRemoveCommand extends IocSimpleCommand {
                 identityAppliance.idApplianceDefinition.executionEnvironments.removeItemAt(i);
                 if (execEnv.activations != null) {
                     for each (var activation:Activation in execEnv.activations) {
-                        activation.sp.activation = null;
+                        activation.resource.activation = null;
                     }
                 }
                 sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, execEnv);

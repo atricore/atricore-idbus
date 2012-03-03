@@ -6,6 +6,7 @@ import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
 
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.ServiceResource;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
@@ -31,10 +32,10 @@ public class ActivationRemoveCommand extends IocSimpleCommand {
     override public function execute(notification:INotification):void {
         var activation:JOSSOActivation = notification.getBody() as JOSSOActivation;
 
-        var sp:ServiceProvider = activation.sp;
+        var resource:ServiceResource = activation.resource;
         var execEnv:ExecutionEnvironment = activation.executionEnv;
 
-        sp.activation = null;
+        resource.activation = null;
         execEnv.activations.removeItemAt(execEnv.activations.getItemIndex(activation));        
 
         projectProxy.currentIdentityApplianceElement = null;

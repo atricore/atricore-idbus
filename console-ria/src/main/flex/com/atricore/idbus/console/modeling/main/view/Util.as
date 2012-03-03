@@ -49,5 +49,17 @@ public class Util {
 
         return name;
     }
+
+    public static function getAuthnMechanismDisplayName(authnMechanism:AuthenticationMechanism, idpName:String, authnServiceName:String):String {
+        var displayName:String = null;
+
+        if (authnMechanism is BasicAuthentication) {
+            displayName = "basic";
+        } else {
+            displayName = authnServiceName;
+        }
+
+        return displayName;
+    }
 }
 }

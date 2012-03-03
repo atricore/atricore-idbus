@@ -23,4 +23,5 @@ package com.atricore.idbus.console.services.dto;
 
 public class Saml2ServiceProviderDTO extends FederatedProviderDTO {
 
+    private static final long serialVersionUID = -4899151664758478860L;
 }

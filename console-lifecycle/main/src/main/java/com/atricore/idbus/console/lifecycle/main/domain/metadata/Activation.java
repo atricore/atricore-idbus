@@ -11,6 +11,7 @@ public class Activation extends Connection {
 
     private ServiceResource resource;
 
+    // TODO: Remove me!!! [JOSSO-370]
     private ServiceProvider sp;
 
     public ExecutionEnvironment getExecutionEnv() {

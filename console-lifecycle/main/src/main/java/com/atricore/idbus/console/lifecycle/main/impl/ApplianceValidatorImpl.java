@@ -421,7 +421,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         validateName("JOSSO Activation name", node.getName(), node);
         validateDisplayName("JOSSO Activation display name", node.getDisplayName());
 
-        if (node.getPartnerAppId() == null)
+        /*if (node.getPartnerAppId() == null)
             addError("JOSSO Activation partner app. ID cannot be null ");
 
         validateLocation("JOSSO Activation partner app.", node.getPartnerAppLocation(), node, false);
@@ -434,7 +434,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                         node.getName() +
                         " ["+node.getResource().getActivation().getName()+"]");
             }
-        }
+        }*/
 
     }
 
@@ -641,11 +641,27 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     @Override
     public void arrive(JOSSO1Resource node) throws Exception {
         validateName("JOSSO1 Resource name" , node.getName(), node);
+
+        if (node.getPartnerAppId() == null)
+            addError("JOSSO1 Resource partner app. ID cannot be null");
+
+        validateLocation("JOSSO1 Resource partner app.", node.getPartnerAppLocation(), node, false);
+
+        if (node.getServiceConnection() == null)
+            addError("JOSSO1 Resource [" + node.getName() + "] Service Connection cannot be null");
+
+        if (node.getActivation() == null)
+            addError("JOSSO1 Resource [" + node.getName() + "] Activation cannot be null");
     }
 
     @Override
     public void arrive(JOSSO2Resource node) throws Exception {
         validateName("JOSSO2 Resource name" , node.getName(), node);
+
+        validateLocation("JOSSO2 Resource partner app.", node.getPartnerAppLocation(), node, false);
+
+        if (node.getServiceConnection() == null)
+            addError("JOSSO2 Resource [" + node.getName() + "] Service Connection cannot be null");
     }
 
     @Override
