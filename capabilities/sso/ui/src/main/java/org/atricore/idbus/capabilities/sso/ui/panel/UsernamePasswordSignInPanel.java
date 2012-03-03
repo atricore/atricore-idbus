@@ -22,6 +22,8 @@ package org.atricore.idbus.capabilities.sso.ui.panel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -54,11 +56,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
     /**
      * Field for password.
      */
-    private RequiredTextField<String> password;
-
-    private ClaimsRequest claimsRequest;
-    private MessageQueueManager artifactQueueManager;
-    private IdentityMediationUnitRegistry idsuRegistry;
+    private PasswordTextField password;
 
     /**
      * Sign in form.
@@ -86,7 +84,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
             username.setType(String.class);
             username.setOutputMarkupId(true);
 
-            add(password = new RequiredTextField<String>("password", new PropertyModel<String>(properties,
+            add(password = new PasswordTextField("password", new PropertyModel<String>(properties,
                     "password")));
             password.setType(String.class);
 
@@ -102,6 +100,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
                 String claimsConsumerUrl = signIn(getUsername(), getPassword());
                 onSignInSucceeded(claimsConsumerUrl);
             } catch (Exception e) {
+                logger.error("Fatal error during signIn : " + e.getMessage(), e);
                 onSignInFailed();
             }
         }
@@ -121,10 +120,31 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         this.artifactQueueManager = artifactQueueManager;
         this.idsuRegistry = idsuRegistry;
 
-        // Create feedback panel and add to page
+        // Create feedback panel and add it to page
+        final WebMarkupContainer feedbackBox = new WebMarkupContainer("feedbackBox");
+        add(feedbackBox);
+
         final FeedbackPanel feedback = new FeedbackPanel("feedback");
         feedback.setOutputMarkupId(true);
-        add(feedback);
+        feedbackBox.add(feedback);
+
+        if (claimsRequest.getLastErrorId() != null) {
+            if (logger.isDebugEnabled())
+                logger.info("Received last error ID : " +
+                    claimsRequest.getLastErrorId() +
+                    " ("+claimsRequest.getLastErrorMsg()+")");
+
+            feedbackBox.setVisible(true);
+
+            String errmsg = getString("claims.text.invalidCredentials", null, "Unable to sign you in");
+            feedback.error(errmsg);
+            feedback.setVisible(true);
+
+        } else {
+            feedbackBox.setVisible(false);
+            feedback.setVisible(false);
+        }
+
 
         // Add sign-in form to page, passing feedback panel as
         // validation error handler
@@ -174,7 +194,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
      * Sign in user if possible.
      *
      * @param username The username
-     * @return True if signin was successful
+     * @return True if sign-in was successful (doesn't imply that the credentials are valid!)
      */
     public String signIn(String username, String password) throws Exception {
 

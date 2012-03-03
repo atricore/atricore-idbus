@@ -22,6 +22,7 @@ package org.atricore.idbus.capabilities.sso.ui.panel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -54,7 +55,7 @@ public class UsernamePasscodeSignInPanel extends BaseSignInPanel {
     /**
      * Field for passcode.
      */
-    private RequiredTextField<String> passcode;
+    private PasswordTextField passcode;
 
 
     /**
@@ -83,7 +84,7 @@ public class UsernamePasscodeSignInPanel extends BaseSignInPanel {
             username.setType(String.class);
             username.setOutputMarkupId(true);
 
-            add(passcode = new RequiredTextField<String>("passcode", new PropertyModel<String>(properties,
+            add(passcode = new PasswordTextField("passcode", new PropertyModel<String>(properties,
                     "passcode")));
             passcode.setType(String.class);
 
@@ -99,6 +100,7 @@ public class UsernamePasscodeSignInPanel extends BaseSignInPanel {
                 String claimsConsumerUrl = signIn(getUsername(), getPasscode());
                 onSignInSucceeded(claimsConsumerUrl);
             } catch (Exception e) {
+                logger.error("Fatal error during signIn : " + e.getMessage(), e);
                 onSignInFailed();
             }
         }

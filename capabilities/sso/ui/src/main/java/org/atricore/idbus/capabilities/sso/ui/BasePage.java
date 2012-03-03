@@ -22,9 +22,14 @@ package org.atricore.idbus.capabilities.sso.ui;
 
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.html.CSSPackageResource;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOUIApplication;
+import org.ops4j.pax.wicket.api.PaxWicketBean;
+
+import javax.servlet.ServletContext;
 
 /**
  * Convenience base page for concrete SSO pages requiring a common layout and theme.
@@ -33,18 +38,20 @@ import org.apache.wicket.markup.html.image.Image;
  */
 public class BasePage extends WebPage {
 
+    protected WebAppBranding branding;
+
     @SuppressWarnings("serial")
     public BasePage() {
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "ie6.css"));
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "ie7.css"));
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "processing.css"));
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "reset.css"));
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "screen.css"));
-
-        add(new Image("jossoLogo", new ResourceReference(BasePage.class, "images/josso-logo.png")));
-        add(new Image("atricoreLogo", new ResourceReference(BasePage.class, "images/atricore-logo.gif")));
-
-        add(new Label("footer", "Atricore"));
 
     }
+
+    @Override
+    public String getVariation() {
+        if (branding != null)
+            return branding.getSkin();
+
+        return null;
+    }
+
+
 }
