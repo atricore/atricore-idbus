@@ -218,7 +218,8 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         setPropertyBean(bindingMediator, "bindingFactory", newAnonymousBean(JossoBindingFactory.class));
 
         // artifactQueueManager
-        setPropertyRef(bindingMediator, "artifactQueueManager", applianceDef.getName() + "-aqm");
+        // setPropertyRef(bindingMediator, "artifactQueueManager", applianceDef.getName() + "-aqm");
+        setPropertyRef(bindingMediator, "artifactQueueManager", "artifactQueueManager");
 
         // errorUrl
         setPropertyValue(bindingMediator, "errorUrl", resolveUiErrorLocation(appliance));

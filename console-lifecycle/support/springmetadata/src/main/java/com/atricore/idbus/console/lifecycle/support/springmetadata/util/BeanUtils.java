@@ -283,6 +283,19 @@ public class BeanUtils {
 
     }
 
+    public static void setConstructorArgBean(Bean bean, int index, Bean value) {
+        ConstructorArg cArg = new ConstructorArg();
+        cArg.setBean(value);
+        cArg.setIndex(index + "");
+
+        bean.getMetasAndConstructorArgsAndProperties().add(cArg);
+
+        if (logger.isTraceEnabled())
+            logger.trace("created new constructor arg referencing [" + index + "] with bean:" + bean.getName());
+
+    }
+
+
     public static void setConstructorArg(Bean bean, int index, String type, String value){
         ConstructorArg cArg = new ConstructorArg();
         Value valueObj = new Value();

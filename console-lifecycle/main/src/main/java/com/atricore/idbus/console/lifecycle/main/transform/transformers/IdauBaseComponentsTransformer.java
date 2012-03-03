@@ -222,13 +222,25 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // Message Queue Manager
         // ----------------------------------------
         Reference messageQueueManager = new Reference();
-        messageQueueManager.setId(idauName + "-aqm");
+        //messageQueueManager.setId(idauName + "-aqm");
+        messageQueueManager.setId("artifactQueueManager");
         messageQueueManager.setCardinality("1..1");
         messageQueueManager.setTimeout(60L);
         messageQueueManager.setInterface("org.atricore.idbus.kernel.main.mediation.MessageQueueManager");
 
         idauBeansOsgi.getImportsAndAliasAndBeen().add(messageQueueManager);
-        
+
+        // ----------------------------------------
+        // Identity Appliance Unit registry
+        // ----------------------------------------
+        Reference idmuRegistry = new Reference();
+        idmuRegistry.setId("idsuRegistry");
+        idmuRegistry.setCardinality("1..1");
+        idmuRegistry.setTimeout(60L);
+        idmuRegistry.setInterface("org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry");
+
+        idauBeansOsgi.getImportsAndAliasAndBeen().add(idmuRegistry);
+
         // ----------------------------------------
         // Cache Manager Factory
         // ----------------------------------------

@@ -138,7 +138,8 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         setPropertyValue(idpMediator, "logMessages", true);
 
         // artifactQueueManager
-        setPropertyRef(idpMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+        // setPropertyRef(idpMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+        setPropertyRef(idpMediator, "artifactQueueManager", "artifactQueueManager");
 
         // bindingFactory
         setPropertyBean(idpMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));

@@ -97,6 +97,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.atricore.idbus.capabilities.sso</groupId>
+                <artifactId>org.atricore.idbus.capabilities.sso.ui</artifactId>
+                <version>${idbus.cap.saml2.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.atricore.idbus.capabilities.spnego</groupId>
                 <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
                 <version>${idbus.cap.spnego.version}</version>

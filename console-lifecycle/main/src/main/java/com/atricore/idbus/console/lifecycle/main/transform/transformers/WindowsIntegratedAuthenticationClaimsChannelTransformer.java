@@ -174,7 +174,8 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
                 setPropertyValue(ccMediator, "logMessages", true);
 
                 // artifactQueueManager
-                setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+                // setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+                setPropertyRef(ccMediator, "artifactQueueManager", "artifactQueueManager");
 
                 // bindingFactory
                 setPropertyBean(ccMediator, "bindingFactory", newAnonymousBean("org.atricore.idbus.capabilities.spnego.SpnegoBindingFactory"));

@@ -184,7 +184,8 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 setPropertyValue(ccMediator, "basicAuthnUILocation", resolveUiLocationPath(appliance) + "/SSO/LOGIN/SIMPLE");
 
                 // artifactQueueManager
-                setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+                //setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+                setPropertyRef(ccMediator, "artifactQueueManager", "artifactQueueManager");
 
                 // bindingFactory
                 setPropertyBean(ccMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));

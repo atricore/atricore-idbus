@@ -42,7 +42,11 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <osgi:reference id="bpms-manager" cardinality="1..1" timeout="60" 
                     interface="org.atricore.idbus.kernel.planning.jbpm.BPMSManager" />
 
+    <!--
     <osgi:reference id="idau-default-aqm" cardinality="1..1" timeout="60"
+                    interface="org.atricore.idbus.kernel.main.mediation.MessageQueueManager" />
+    -->
+    <osgi:reference id="artifactQueueManager" cardinality="1..1" timeout="60"
                     interface="org.atricore.idbus.kernel.main.mediation.MessageQueueManager" />
 
     <osgi:reference id="cache-manager-factory" cardinality="1..1" timeout="60"

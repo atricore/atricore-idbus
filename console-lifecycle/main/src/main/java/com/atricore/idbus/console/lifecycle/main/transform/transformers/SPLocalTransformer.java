@@ -213,7 +213,8 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         setPropertyValue(spMediator, "logMessages", true);
 
         // artifactQueueManager
-        setPropertyRef(spMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+        // setPropertyRef(spMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+        setPropertyRef(spMediator, "artifactQueueManager", "artifactQueueManager");
 
         // bindingFactory
         setPropertyBean(spMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));

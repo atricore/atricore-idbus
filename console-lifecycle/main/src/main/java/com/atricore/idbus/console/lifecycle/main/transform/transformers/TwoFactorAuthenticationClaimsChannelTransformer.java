@@ -161,7 +161,8 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
                 setPropertyValue(ccMediator, "twoFactorAuthnUILocation", resolveUiLocationPath(appliance) + "/SSO/LOGIN/2FA");
 
                 // artifactQueueManager
-                setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+                // setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+                setPropertyRef(ccMediator, "artifactQueueManager", "artifactQueueManager");
 
                 // bindingFactory
                 setPropertyBean(ccMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));
