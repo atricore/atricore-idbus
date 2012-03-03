@@ -19,10 +19,8 @@
 
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Channel;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource;
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.Transformer;
@@ -72,6 +70,30 @@ public abstract class AbstractTransformer implements Transformer {
         }
 
     }
+
+    // -----------------------------------------------------------------------
+    // UI Location Utilities
+    // -----------------------------------------------------------------------
+
+    protected String resolveUiLocationPath(IdentityAppliance appliance) {
+        IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
+        if (applianceDef.getUiLocation() == null) {
+            return "/IDBUS-UI/" + appliance.getName().toUpperCase();
+        }
+        return resolveLocationPath(applianceDef.getUiLocation());
+    }
+
+    protected String resolveUiErrorLocation(IdentityAppliance appliance) {
+        return resolveLocationBaseUrl(appliance.getIdApplianceDefinition().getLocation()) + "/SSO/ERROR";
+    }
+
+    protected String resolveUiWarningLocation(IdentityAppliance appliance) {
+        return resolveLocationBaseUrl(appliance.getIdApplianceDefinition().getLocation()) + "/SSO/WARN/POLICY-ENFORCEMENT";
+    }
+
+    // -----------------------------------------------------------------------
+    // Location Utilities
+    // -----------------------------------------------------------------------
 
     protected String resolveLocationUrl(Provider provider, Channel channel) {
 
@@ -160,9 +182,6 @@ public abstract class AbstractTransformer implements Transformer {
             return "/" + contextString;
         }
 
-
-
-
     }
 
     protected String resolveLocationUrl(Location location) {
@@ -206,5 +225,18 @@ public abstract class AbstractTransformer implements Transformer {
         String regex = "[ .]";
         return name.replaceAll(regex, "-").toLowerCase();
     }
+
+    protected String toPackageName(String namespace) {
+        namespace = namespace.replace(':', '.');
+        namespace = namespace.replace('/', '.');
+        return namespace;
+    }
+
+    protected String toFolderName(String namespace) {
+        namespace = namespace.replace(':', '/');
+        namespace = namespace.replace('.', '/');
+        return namespace;
+    }
+
 
 }

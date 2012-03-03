@@ -112,7 +112,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityMappingPoliciesListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ImpersonateUserPoliciesListCommand</symbol>
-
+        <symbol>com.atricore.idbus.console.modeling.main.controller.UserDashboardBrandingsListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator</symbol>

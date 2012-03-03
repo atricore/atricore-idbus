@@ -105,6 +105,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _exportProviderCertificateCommand:IIocCommand;
     private var _exportMetadataCommand:IIocCommand;
     private var _accountLinkagePolicyListCommand:IIocCommand;
+    private var _userDashboardBrandingsListCommand:IIocCommand;
     private var _identityMappingPoliciesListCommand:IIocCommand;
     private var _subjectNameIDPolicyListCommand:IIocCommand;
     private var _impersonateUserPoliciesListCommand:IIocCommand;
@@ -216,6 +217,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.PROVIDER_CERTIFICATE_EXPORT, exportProviderCertificateCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.METADATA_EXPORT, exportMetadataCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES, accountLinkagePolicyListCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_USER_DASHBOARD_BRANDINGS, userDashboardBrandingsListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_NAMEID_POLICIES, subjectNameIDPolicyListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES, identityMappingPoliciesListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IMPERSONATE_USER_POLICIES, impersonateUserPoliciesListCommand.getConfigName());
@@ -933,6 +935,15 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set accountLinkagePolicyListCommand(value:IIocCommand):void {
         _accountLinkagePolicyListCommand = value;
+    }
+
+
+    public function get userDashboardBrandingsListCommand():IIocCommand {
+        return _userDashboardBrandingsListCommand;
+    }
+
+    public function set userDashboardBrandingsListCommand(value:IIocCommand):void {
+        _userDashboardBrandingsListCommand = value;
     }
 
     public function get impersonateUserPoliciesListCommand():IIocCommand {

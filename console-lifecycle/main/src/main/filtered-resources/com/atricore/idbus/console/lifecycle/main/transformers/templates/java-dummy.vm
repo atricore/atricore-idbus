@@ -1,0 +1,6 @@
+package $package;
+
+/** Dummy java class */
+public class Dummy {
+
+}

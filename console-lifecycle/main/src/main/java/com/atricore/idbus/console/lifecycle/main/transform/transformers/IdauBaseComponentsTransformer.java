@@ -20,15 +20,13 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
-import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceTransformationContext;
-import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
-import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
-import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Import;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
+import com.atricore.idbus.console.lifecycle.main.transform.*;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Service;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket.Application;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket.ContextParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
@@ -38,6 +36,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.OsgiCamelIdentityMediation
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
@@ -79,8 +78,14 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         String idauName = ida.getName();
 
         // Set the IdAU path/package name
-        event.getContext().put("idauPath", event.getContext().get("idaBasePath") + "/idau/");
-        event.getContext().put("idauPackage", event.getContext().get("idaBasePackage") + "." + idauName + ".idau");
+        String idauPath = event.getContext().get("idaBasePath") + "/idau/";
+        String idauPackage = event.getContext().get("idaBasePackage") + ".idau";
+        event.getContext().put("idauPath", idauPath);
+        event.getContext().put("idauPackage", idauPackage);
+
+        // Set the module package and base path based on the previous properties
+        module.setPath(idauPath);
+        module.setPackage(idauPackage);
 
         // -------------------------------------------------------
         // Define Identity Mediation Unit bean
@@ -217,13 +222,25 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // Message Queue Manager
         // ----------------------------------------
         Reference messageQueueManager = new Reference();
-        messageQueueManager.setId(idauName + "-aqm");
+        //messageQueueManager.setId(idauName + "-aqm");
+        messageQueueManager.setId("artifactQueueManager");
         messageQueueManager.setCardinality("1..1");
         messageQueueManager.setTimeout(60L);
         messageQueueManager.setInterface("org.atricore.idbus.kernel.main.mediation.MessageQueueManager");
 
         idauBeansOsgi.getImportsAndAliasAndBeen().add(messageQueueManager);
-        
+
+        // ----------------------------------------
+        // Identity Appliance Unit registry
+        // ----------------------------------------
+        Reference idmuRegistry = new Reference();
+        idmuRegistry.setId("idsuRegistry");
+        idmuRegistry.setCardinality("1..1");
+        idmuRegistry.setTimeout(60L);
+        idmuRegistry.setInterface("org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry");
+
+        idauBeansOsgi.getImportsAndAliasAndBeen().add(idmuRegistry);
+
         // ----------------------------------------
         // Cache Manager Factory
         // ----------------------------------------

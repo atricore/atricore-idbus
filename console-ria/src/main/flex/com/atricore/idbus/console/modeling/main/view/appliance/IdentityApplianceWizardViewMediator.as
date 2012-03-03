@@ -28,6 +28,9 @@ import com.atricore.idbus.console.services.dto.IdentityAppliance;
 
 import flash.events.Event;
 
+import mx.binding.utils.BindingUtils;
+import mx.collections.ArrayCollection;
+
 import mx.events.CloseEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
@@ -97,10 +100,14 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
 
     private function onIdentityApplianceWizardComplete(event:WizardEvent):void {
         _processingStarted = true;
+
+        var idaView:IdentityApplianceWizardView = view as IdentityApplianceWizardView;
+
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
         sendNotification(ProcessingMediator.START,
                          resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.wizard.saving"));
         var identityAppliance:IdentityAppliance = _wizardDataModel.applianceData;
+
         sendNotification(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityAppliance);
     }
 

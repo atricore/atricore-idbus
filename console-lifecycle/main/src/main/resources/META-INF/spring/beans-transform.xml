@@ -30,6 +30,9 @@
     <bean name="idauBaseComponentsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
+    <bean name="idauUiTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauUITransformer"/>
+
     <bean name="idpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer">
         <property name="sampleKeystore" ref="sampleKeystore"/>
@@ -374,6 +377,7 @@
                                         <!-- Project Transformers -->
                                         <ref bean="projectSetupTransformer"/>
                                         <ref bean="idauBaseComponentsTransformer"/>
+                                        <ref bean="idauUiTransformer"/>
 
                                         <!-- IDP Transformers -->
                                         <ref bean="idpLocalTransformer"/>

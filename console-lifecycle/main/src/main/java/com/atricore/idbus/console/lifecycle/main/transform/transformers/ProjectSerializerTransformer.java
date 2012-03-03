@@ -99,6 +99,7 @@ public class ProjectSerializerTransformer extends AbstractTransformer {
         } else {
             moduleDir = workDir.resolveFile(toFolderName(module.getId()));
             moduleResourceDir = moduleDir.resolveFile("src/main/resources");
+            moduleSourceDir = moduleDir.resolveFile("src/main/java");
         }
 
         if (!moduleDir.exists())
@@ -125,6 +126,7 @@ public class ProjectSerializerTransformer extends AbstractTransformer {
 
         module.setLayout(layout);
 
+        serializeSources(prj, module, layout);
         serializeResources(prj, module, layout);
 
         for (IdProjectModule child : module.getModules()) {
@@ -132,6 +134,61 @@ public class ProjectSerializerTransformer extends AbstractTransformer {
         }
 
     }
+
+    protected void serializeSources(IdApplianceProject prj, IdProjectModule module, ProjectModuleLayout layout)
+            throws IdResourceSerializationException {
+        try {
+            for (IdProjectSource source : module.getSources()) {
+
+                IdResourceSerializerContext ctx = new VfsIdResourceSerializerContext (prj, module, layout);
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Serializing source " + source);
+
+                // Define resource locations
+                for (IdResourceSerializer serializer : serializers) {
+                    if (serializer.canHandle(source)) {
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Resolve source location ["+serializer.getClass().getSimpleName()+"] " + source);
+
+                        serializer.resolveLocation(ctx, source);
+                        break;
+                    }
+                }
+            }
+
+            for (IdProjectSource source : module.getSources()) {
+
+                IdResourceSerializerContext ctx = new VfsIdResourceSerializerContext (prj, module, layout);
+                boolean handled = false;
+
+                // Serialize resources
+                for (IdResourceSerializer serializer : serializers) {
+                    if (serializer.canHandle(source)) {
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Serializing source ["+serializer.getClass().getSimpleName()+"] " + source);
+
+                        serializer.serialize(ctx, source);
+                        handled = true;
+                        break;
+                    }
+                }
+
+
+                if (!handled) {
+                    logger.warn("Source was not serialized : " + source);
+                }
+
+            }
+
+
+        } catch (Exception e) {
+            throw new IdResourceSerializationException(e);
+        }
+    }
+
 
     protected void serializeResources(IdApplianceProject prj, IdProjectModule module, ProjectModuleLayout layout)
             throws IdResourceSerializationException {
@@ -193,8 +250,8 @@ public class ProjectSerializerTransformer extends AbstractTransformer {
                     logger.warn("Resource was not serialized : " + resource);
                 }
 
-
             }
+
         } catch (Exception e) {
             throw new IdResourceSerializationException(e);
         }

@@ -77,15 +77,16 @@ public class SpringSerializer extends VfsIdProjectResourceSerializer {
                     "com.atricore.idbus.console.lifecycle.support.springmetadata.model.tool",
                     getClass().getClassLoader());
 
+            // Add support for spring, spring tools, spring osgi ans pax-wicket
             Marshaller m = jaxbCtx.createMarshaller();
             m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            // No good ... :(
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
             m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "http://www.springframework.org/schema/beans " +
                 "http://www.springframework.org/schema/beans/spring-beans-2.5.xsd " +
                 "http://www.springframework.org/schema/osgi " +
-                "http://www.springframework.org/schema/osgi/spring-osgi.xsd");
+                "http://www.springframework.org/schema/osgi/spring-osgi.xsd " +
+                "http://www.ops4j.org/schema/wicket " +
+                "http://www.ops4j.org/schema/wicket/wicket.xsd ");
 
             Beans beans = (Beans) resource.getValue();
 

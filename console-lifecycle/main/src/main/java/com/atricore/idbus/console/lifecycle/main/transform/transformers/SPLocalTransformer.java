@@ -213,7 +213,8 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         setPropertyValue(spMediator, "logMessages", true);
 
         // artifactQueueManager
-        setPropertyRef(spMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+        // setPropertyRef(spMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+        setPropertyRef(spMediator, "artifactQueueManager", "artifactQueueManager");
 
         // bindingFactory
         setPropertyBean(spMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));
@@ -232,10 +233,10 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         setPropertyBean(spMediator, "logger", spLogger);
 
         // errorUrl
-        setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getIdentityAppliance().getLocation()) + "/idbus-ui/error.do");
+        setPropertyValue(spMediator, "errorUrl", resolveUiErrorLocation(appliance));
 
         // warningUrl
-        setPropertyValue(spMediator, "warningUrl", resolveLocationBaseUrl(provider.getIdentityAppliance().getLocation()) + "/idbus-ui/warn/policy-enforcement.do");
+        setPropertyValue(spMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
 
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();

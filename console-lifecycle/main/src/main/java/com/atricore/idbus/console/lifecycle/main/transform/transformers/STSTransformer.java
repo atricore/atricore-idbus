@@ -114,6 +114,7 @@ public class STSTransformer extends AbstractTransformer {
         setPropertyAsBeans(sts, "authenticators", authenticators);
 
         // artifactQueueManager
-        setPropertyRef(sts, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+        // setPropertyRef(sts, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+        setPropertyRef(sts, "artifactQueueManager", "artifactQueueManager");
     }
 }

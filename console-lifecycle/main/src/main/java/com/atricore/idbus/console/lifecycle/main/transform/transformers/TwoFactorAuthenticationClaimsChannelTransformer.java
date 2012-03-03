@@ -157,10 +157,12 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
                 setPropertyValue(ccMediator, "logMessages", true);
 
                 // 2faAuthnUILocation
-                setPropertyValue(ccMediator, "twoFactorAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-passcode.do");
+                // setPropertyValue(ccMediator, "twoFactorAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-passcode.do");
+                setPropertyValue(ccMediator, "twoFactorAuthnUILocation", resolveUiLocationPath(appliance) + "/SSO/LOGIN/2FA");
 
                 // artifactQueueManager
-                setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+                // setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+                setPropertyRef(ccMediator, "artifactQueueManager", "artifactQueueManager");
 
                 // bindingFactory
                 setPropertyBean(ccMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));
@@ -178,10 +180,10 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
                 setPropertyBean(ccMediator, "logger", ccLogger);
 
                 // errorUrl
-                setPropertyValue(ccMediator, "errorUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/error.do");
+                setPropertyValue(ccMediator, "errorUrl", resolveUiErrorLocation(appliance));
 
                 // warningUrl
-                setPropertyValue(ccMediator, "warningUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/warn/policy-enforcement.do");
+                setPropertyValue(ccMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
                 // identityMediator
                 setPropertyRef(claimChannelBean, "identityMediator", ccMediator.getName());

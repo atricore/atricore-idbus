@@ -145,6 +145,8 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private ImpersonateUserPoliciesRegistry impersonateUserPoliciesRegistry;
 
+    private UserDashboardBrandingRegistry userDashboardBrandingRegistry;
+
     private SubjectNameIdentifierPolicyRegistry  subjectNameIdentifierPolicyRegistry;
 
     public void afterPropertiesSet() throws Exception {
@@ -612,6 +614,12 @@ public class IdentityApplianceManagementServiceImpl implements
             else
                 applianceDef.setName(appliance.getName());
 
+            // Namespace
+            if (appliance.getNamespace() == null)
+                appliance.setNamespace(applianceDef.getNamespace());
+            else
+                applianceDef.setNamespace(appliance.getNamespace());
+
             // Displayname
             if (appliance.getDisplayName() == null)
                 appliance.setDisplayName(applianceDef.getDisplayName());
@@ -675,9 +683,26 @@ public class IdentityApplianceManagementServiceImpl implements
             IdentityAppliance appliance = request.getAppliance();
 
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
-            if (applianceDef.getDisplayName() == null)
-                applianceDef.setDisplayName(applianceDef.getName());
 
+            // We need to keep in sync appliance and appliance definition:
+            if (applianceDef.getDisplayName() == null)
+                applianceDef.setDisplayName(appliance.getName());
+
+            if (applianceDef.getNamespace() == null)
+                applianceDef.setNamespace(appliance.getNamespace());
+
+            if (applianceDef.getDescription() == null)
+                applianceDef.setDescription(appliance.getDescription());
+
+            if (applianceDef.getName() == null)
+                applianceDef.setName(appliance.getName());
+
+            appliance.setName(applianceDef.getName());
+            appliance.setDescription(applianceDef.getDescription());
+            appliance.setNamespace(applianceDef.getNamespace());
+            appliance.setDisplayName(applianceDef.getDisplayName());
+
+            // Set some defaults
             for (Provider p : applianceDef.getProviders()) {
                 if (p.getDisplayName() == null)
                     p.setDisplayName(p.getName());
@@ -963,6 +988,19 @@ public class IdentityApplianceManagementServiceImpl implements
         // Add policies to response
         for (ImpersonateUserPolicy policy : impersonateUserPoliciesRegistry.getPolicies()) {
             res.getImpersonateUserPolicies().add(policy);
+        }
+
+        return res;
+    }
+
+    public ListUserDashboardBrandingsResponse listUserDashboardBrandings(ListUserDashboardBrandingsRequest req) throws IdentityServerException {
+        ListUserDashboardBrandingsResponse res = new ListUserDashboardBrandingsResponse();
+
+        logger.debug("Listing all user dashboard brandings");
+
+        // Add policies to response
+        for (UserDashboardBranding branding : userDashboardBrandingRegistry.getBrandings()) {
+            res.getBrandings().add(branding);
         }
 
         return res;
@@ -1468,6 +1506,14 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setImpersonateUserPoliciesRegistry(ImpersonateUserPoliciesRegistry impersonateUserPoliciesRegistry) {
         this.impersonateUserPoliciesRegistry = impersonateUserPoliciesRegistry;
+    }
+
+    public UserDashboardBrandingRegistry getUserDashboardBrandingRegistry() {
+        return userDashboardBrandingRegistry;
+    }
+
+    public void setUserDashboardBrandingRegistry(UserDashboardBrandingRegistry userDashboardBrandingRegistry) {
+        this.userDashboardBrandingRegistry = userDashboardBrandingRegistry;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {
