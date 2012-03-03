@@ -27,11 +27,12 @@ import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.atricore.idbus.capabilities.openid.ui.page.OpenIDLoginPage;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 
 /**
  * Entry point for the Wicket-based OpenID front-end.
  */
-public class OpenIDUIApplication extends WebApplication {
+public class OpenIDUIApplication extends BaseWebApplication {
 
     public OpenIDUIApplication() {
         super();

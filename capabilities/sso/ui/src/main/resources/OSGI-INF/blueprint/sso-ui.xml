@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:wicket="http://www.ops4j.org/schema/wicket">
 
-    <wicket:application id="SSOWebUI"
+    <!--
+    <wicket:application id="ssoWebUi"
         class="org.atricore.idbus.capabilities.sso.ui.internal.SSOUIApplication"
-        applicationName="ssoWebUI" mountPoint="IDBUS-UI/SSO" >
+        applicationName="ssoWebUI" mountPoint="IDBUS-UI/SSO">
     </wicket:application>
+    -->
 
+    <!-- UI Application use the bundle context associated with the application class, not the appliance's -->
     <reference id="artifactQueueManager" timeout="60"
                interface="org.atricore.idbus.kernel.main.mediation.MessageQueueManager"
         availability="mandatory" />
@@ -13,6 +16,5 @@
     <reference id="idsuRegistry" timeout="60"
                   interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry"
             availability="mandatory"/>
-
 
 </blueprint>

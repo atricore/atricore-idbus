@@ -60,11 +60,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
      */
     private RequiredTextField<String> openid;
 
-    private ClaimsRequest claimsRequest;
-    private MessageQueueManager artifactQueueManager;
-    private IdentityMediationUnitRegistry idsuRegistry;
     private AjaxButton submit;
-
     /**
      * Sign in form.
      */
@@ -145,6 +141,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
                     String claimsConsumerUrl = signIn(getOpenid());
                     onSignInSucceeded(claimsConsumerUrl);
                 } catch (Exception e) {
+                    logger.error("Fatal error during signIn : " + e.getMessage(), e);
                     onSignInFailed();
                 }
 

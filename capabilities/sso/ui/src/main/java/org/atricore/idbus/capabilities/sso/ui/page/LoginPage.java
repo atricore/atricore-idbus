@@ -43,13 +43,18 @@ public abstract class LoginPage extends BasePage {
 
     private static final Log logger = LogFactory.getLog(LoginPage.class);
 
-    @PaxWicketBean(name = "blueprintBundleContext")
+    // We can use spring or blueprint to resolve beans
+
+    //@PaxWicketBean(name = "blueprintBundleContext", injectionSource = "blueprint")
+    @PaxWicketBean(name = "bundleContext", injectionSource = "spring")
     private BundleContext context;
 
-    @PaxWicketBean(name = "idsuRegistry")
+    //@PaxWicketBean(name = "idsuRegistry", injectionSource = "blueprint")
+    @PaxWicketBean(name = "idsuRegistry", injectionSource = "spring")
     private IdentityMediationUnitRegistry idsuRegistry;
 
-    @PaxWicketBean(name = "artifactQueueManager")
+    //@PaxWicketBean(name = "artifactQueueManager", injectionSource = "blueprint")
+    @PaxWicketBean(name = "artifactQueueManager", injectionSource = "spring")
     private MessageQueueManager artifactQueueManager;
 
     public LoginPage() throws Exception {
@@ -57,6 +62,7 @@ public abstract class LoginPage extends BasePage {
     }
 
     public LoginPage(PageParameters parameters) throws Exception {
+        super();
 
         ClaimsRequest claimsRequest = null;
 
@@ -65,7 +71,6 @@ public abstract class LoginPage extends BasePage {
         if (parameters != null) {
 
             String artifactId = parameters.getString(SsoHttpArtifactBinding.SSO_ARTIFACT_ID);
-
 
             if (artifactId != null) {
                 logger.info("Artifact ID = " + artifactId);
@@ -81,16 +86,6 @@ public abstract class LoginPage extends BasePage {
                         logger.info("Received claims request " + claimsRequest.getId() +
                                 " from " + claimsRequest.getIssuerChannel() +
                                 " at " + claimsRequest.getIssuerEndpoint());
-
-                    if (claimsRequest.getLastErrorId() != null) {
-                        if (logger.isDebugEnabled())
-                            logger.info("Received last error ID : " +
-                                claimsRequest.getLastErrorId() +
-                                " ("+claimsRequest.getLastErrorMsg()+")");
-
-                        parameters.put("statusMessageKey", "claims.text.invalidCredentials");
-                    }
-
                     //variant = claimsRequest.getIssuerChannel().getSkin();
                 } else {
                     logger.debug("No claims request received!");
@@ -100,10 +95,13 @@ public abstract class LoginPage extends BasePage {
                 claimsRequest = ((SSOWebSession)getSession()).getClaimsRequest();
             }
 
+        } else {
+            claimsRequest = ((SSOWebSession)getSession()).getClaimsRequest();
         }
 
         logger.info("claimsRequest = " + claimsRequest);
 
+        // Add signIn panel to page
         add(prepareSignInPanel("signIn", claimsRequest, artifactQueueManager, idsuRegistry));
     }
 

@@ -36,7 +36,7 @@ import org.atricore.idbus.capabilities.sso.ui.page.TwoFactorLoginPage;
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-public class SSOUIApplication extends WebApplication {
+public class SSOUIApplication extends BaseWebApplication {
 
     public SSOUIApplication() {
         super();
