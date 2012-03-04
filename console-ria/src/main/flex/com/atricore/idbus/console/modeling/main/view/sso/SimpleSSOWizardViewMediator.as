@@ -29,6 +29,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFol
 import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
+import com.atricore.idbus.console.modeling.main.controller.UserDashboardBrandingsListCommand;
 import com.atricore.idbus.console.modeling.main.view.sso.event.SsoEvent;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
@@ -101,6 +102,9 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     [Bindable]
     public var _jdbcDrivers:ArrayCollection;
 
+    [Bindable]
+    public var _userDashboardBrandings:ArrayCollection;
+
     public function get projectProxy():ProjectProxy {
         return _projectProxy;
     }
@@ -143,7 +147,10 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         view.addEventListener(SsoEvent.VALIDATE_HOME_DIR, validateHomeDir);
 
         view.steps[0].applianceNamespace.text = "com.mycompany.myrealm";
-        
+
+        BindingUtils.bindProperty(view.steps[0].userDashboardBrandingCombo, "dataProvider", this, "_userDashboardBrandings");
+        sendNotification(ApplicationFacade.LIST_USER_DASHBOARD_BRANDINGS);
+
         // upload bindings
         view.steps[1].certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
         BindingUtils.bindProperty(view.steps[1], "uploadedFile", this, "_uploadedFile");
@@ -171,7 +178,8 @@ public class SimpleSSOWizardViewMediator extends IocMediator
             CreateSimpleSSOIdentityApplianceCommand.SUCCESS,
             FolderExistsCommand.FOLDER_EXISTS,
             FolderExistsCommand.FOLDER_DOESNT_EXISTS,
-            JDBCDriversListCommand.SUCCESS
+            JDBCDriversListCommand.SUCCESS,
+            UserDashboardBrandingsListCommand.SUCCESS
         ];
     }
 
@@ -199,6 +207,9 @@ public class SimpleSSOWizardViewMediator extends IocMediator
                 break;
             case JDBCDriversListCommand.SUCCESS:
                 _jdbcDrivers = projectProxy.jdbcDrivers;
+                break;
+            case UserDashboardBrandingsListCommand.SUCCESS:
+                _userDashboardBrandings = projectProxy.userDashboardBrandings;
                 break;
         }
     }
