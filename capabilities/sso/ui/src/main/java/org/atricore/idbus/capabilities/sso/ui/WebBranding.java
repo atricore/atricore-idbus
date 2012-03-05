@@ -2,8 +2,8 @@ package org.atricore.idbus.capabilities.sso.ui;
 
 import org.apache.wicket.IClusterable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -16,7 +16,8 @@ public class WebBranding implements IClusterable {
 
     private String skin;
 
-    private Set<BrandingResource> resources = new HashSet<BrandingResource>();
+    // Be careful, the order DOES matter here!
+    private List<BrandingResource> resources = new ArrayList<BrandingResource>();
 
     public String getId() {
         return id;
@@ -42,11 +43,11 @@ public class WebBranding implements IClusterable {
         this.skin = skin;
     }
 
-    public Set<BrandingResource> getResources() {
+    public List<BrandingResource> getResources() {
         return resources;
     }
 
-    public void setResources(Set<BrandingResource> resources) {
+    public void setResources(List<BrandingResource> resources) {
         this.resources = resources;
     }
 }

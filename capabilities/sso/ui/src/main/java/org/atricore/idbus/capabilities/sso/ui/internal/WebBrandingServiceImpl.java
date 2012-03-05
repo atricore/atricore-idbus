@@ -38,8 +38,8 @@ public class WebBrandingServiceImpl implements WebBrandingService {
         branding.getResources().add(new BrandingResource("screen", "screen.css", "",  BrandingResourceType.CSS));
 
         // Images
-        branding.getResources().add(new BrandingResource("jossoLogo", "images/josso-logo.png", "",  BrandingResourceType.CSS));
-        branding.getResources().add(new BrandingResource("atricoreLogo", "images/atricore-logo.png", "",  BrandingResourceType.CSS));
+        branding.getResources().add(new BrandingResource("jossoLogo", "images/josso-logo.png", "",  BrandingResourceType.IMAGE));
+        branding.getResources().add(new BrandingResource("atricoreLogo", "images/atricore-logo.gif", "",  BrandingResourceType.IMAGE));
 
         // Labels
         branding.getResources().add(new BrandingResource("footer", "", "Atricore, Inc.", BrandingResourceType.LABEL));
