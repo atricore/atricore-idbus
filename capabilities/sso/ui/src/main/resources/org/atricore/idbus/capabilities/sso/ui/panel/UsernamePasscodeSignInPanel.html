@@ -3,51 +3,27 @@
 <body>
 <wicket:panel>
 
-    <div id="authentication">
-
-        <div class="message error">
+        <div class="message error" wicket:id="feedbackBox">
             <span wicket:id="feedback"/>
         </div>
 
-        <div id="subwrapper">
-
-            <div class="main">
-                <h2><wicket:message key="claims.title.userLogin"/></h2>
-
-                <p><wicket:message key="claims.text.userLogin"/></p>
-
-                <form wicket:id="signInForm">
-                    <fieldset>
-                        <div><label for="username"><wicket:message key="claims.label.username"/></label><input wicket:id="username" cssClass="text" path="username"
-                                                                      tabindex="10"/>
-                        </div>
-                        <div><label for="passcode"><wicket:message key="claims.label.passcode"/></label><input wicket:id="passcode" type="password" cssClass="text error" path="passcode"
-                                                                      tabindex="10"/>
-                        </div>
-                    </fieldset>
-                    <div>
-                        <input class="button indent" type="submit" value="Login"/>
-                    </div>
-                    <br/>
-                    <br/>
-                </form>
-
-                <div class="highlight">
-                    <h3 class="help"><wicket:message key="claims.title.help"/></h3>
-
-                    <p><wicket:message key="claims.text.login.help"/></p>
-
-                    <div class="footer"></div>
-
+        <form wicket:id="signInForm">
+            <fieldset>
+                <div>
+                    <label for="username"><wicket:message key="claims.label.username"/></label><input wicket:id="username" cssClass="text" path="username"
+                                                              tabindex="10"/>
                 </div>
-                <!-- /highlight -->
-
+                <div><label for="passcode"><wicket:message key="claims.label.passcode"/></label><input wicket:id="passcode" type="password" cssClass="text error" path="passcode"
+                                                              tabindex="10"/>
+                </div>
+            </fieldset>
+            <div>
+                <input class="button indent" type="submit" value="Login"/>
             </div>
-            <!-- /main -->
-        </div>
+            <br/>
+            <br/>
+        </form>
 
-    </div>
-    <!-- /authentication -->
 </wicket:panel>
 </body>
 </html>

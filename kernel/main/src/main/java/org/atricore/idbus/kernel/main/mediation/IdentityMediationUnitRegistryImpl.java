@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -39,7 +40,7 @@ public class IdentityMediationUnitRegistryImpl implements IdentityMediationUnitR
 
     private static final Log logger = LogFactory.getLog(IdentityMediationUnitRegistryImpl.class);
 
-    private Map<String, IdentityMediationUnit> identityMediationUnits = new HashMap<String, IdentityMediationUnit>();
+    private Map<String, IdentityMediationUnit> identityMediationUnits = new ConcurrentHashMap<String, IdentityMediationUnit>();
 
     private Set<MediationUnitLifecycleListener> listeners;
 

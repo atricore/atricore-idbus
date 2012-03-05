@@ -43,20 +43,6 @@ public abstract class LoginPage extends BasePage {
 
     private static final Log logger = LogFactory.getLog(LoginPage.class);
 
-    // We can use spring or blueprint to resolve beans
-
-    //@PaxWicketBean(name = "blueprintBundleContext", injectionSource = "blueprint")
-    @PaxWicketBean(name = "bundleContext", injectionSource = "spring")
-    private BundleContext context;
-
-    //@PaxWicketBean(name = "idsuRegistry", injectionSource = "blueprint")
-    @PaxWicketBean(name = "idsuRegistry", injectionSource = "spring")
-    private IdentityMediationUnitRegistry idsuRegistry;
-
-    //@PaxWicketBean(name = "artifactQueueManager", injectionSource = "blueprint")
-    @PaxWicketBean(name = "artifactQueueManager", injectionSource = "spring")
-    private MessageQueueManager artifactQueueManager;
-
     public LoginPage() throws Exception {
         this(null);
     }

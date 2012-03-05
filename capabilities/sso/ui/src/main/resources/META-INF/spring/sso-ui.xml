@@ -10,4 +10,21 @@
     <osgi:reference timeout="60" cardinality="1..1"
                    interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry"
                    id="idsuRegistry"/>
+
+    <!-- Get application configurations -->
+    <bean id="webAppConfigRegistry" class="org.atricore.idbus.capabilities.sso.ui.internal.ApplicationRegistryImpl" >
+    </bean>
+
+    <bean id="osgiWebAppConfigRegistry" class="org.atricore.idbus.capabilities.sso.ui.internal.OsgiApplicationRegistry">
+        <constructor-arg ref="webAppConfigRegistry" />
+    </bean>
+
+    <osgi:service id="webAppConfigRegistryExporter" ref="webAppConfigRegistry"
+                  interface="org.atricore.idbus.capabilities.sso.ui.ApplicationRegistry" />
+
+    <osgi:list id="appConfigs" interface="org.atricore.idbus.capabilities.sso.ui.WebAppConfig"
+               cardinality="0..N" >
+        <osgi:listener ref="osgiWebAppConfigRegistry" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
+
 </beans>
