@@ -78,7 +78,7 @@
                         ((applianceLocationPort.text != null && applianceLocationPort.text != "") ?
                                 ":" + applianceLocationPort.text : "") + "/IDBUS/" + applianceName.text.toUpperCase());
                 if (userDashboardBrandingCombo.dataProvider.length > 0) {
-                    readableDecisionArray.push("Appliance branding: " + userDashboardBrandingCombo.selectedItem.description);
+                    readableDecisionArray.push("Appliance branding: " + userDashboardBrandingCombo.selectedItem.name);
                 }
                 return readableDecisionArray.join("\n").toString();
             }
@@ -148,7 +148,7 @@
             </mx:FormItem>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.branding')}:">
-                <s:DropDownList id="userDashboardBrandingCombo" width="200" labelField="description" selectedIndex="0" requireSelection="true" />
+                <s:DropDownList id="userDashboardBrandingCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" />
             </mx:FormItem>
 
         </utils:ValidatingForm>

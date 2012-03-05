@@ -154,7 +154,7 @@
             </mx:FormItem>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.branding')}:">
-                <s:DropDownList id="userDashboardBrandingCombo" width="200" labelField="description" selectedIndex="0" requireSelection="true" />
+                <s:DropDownList id="userDashboardBrandingCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" />
             </mx:FormItem>
 
         </utils:ValidatingForm>
