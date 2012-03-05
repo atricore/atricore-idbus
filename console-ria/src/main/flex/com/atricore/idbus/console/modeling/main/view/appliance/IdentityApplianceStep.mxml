@@ -81,7 +81,7 @@
                                 ":" + applianceLocationPort.text : "") + "/" + DEFAULT_CONTEXT + "/" +
                                 createApplianceLocationURI());
                 if (userDashboardBrandingCombo.dataProvider.length > 0) {
-                    readableDecisionArray.push("Appliance branding: " + userDashboardBrandingCombo.selectedItem.description);
+                    readableDecisionArray.push("Appliance branding: " + userDashboardBrandingCombo.selectedItem.name);
                 }
                 return readableDecisionArray.join("\n").toString();
             }
