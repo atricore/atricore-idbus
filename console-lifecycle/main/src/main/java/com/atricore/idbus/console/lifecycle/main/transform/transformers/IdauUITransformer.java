@@ -11,7 +11,7 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wic
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket.ContextParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.ui.WebAppBranding;
+import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 
 import java.util.ArrayList;
@@ -59,38 +59,6 @@ public class IdauUITransformer extends AbstractTransformer {
             uiBasePath = resolveLocationPath(uiLocation);
         }
 
-        // Branding configuration
-        // If the appliance has a defined skin, configure it for this application!
-        List<ContextParam> appParams = new ArrayList<ContextParam>();
-        if (ida.getUserDashboardBranding() != null) {
-
-            ContextParam branding = new ContextParam();
-            branding.setParamName("branding");
-            branding.setParamValue(ida.getUserDashboardBranding().getId());
-            appParams.add(branding);
-
-
-            if (ida.getUserDashboardBranding().getSkin() != null) {
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Using 'SKIN' " + ida.getUserDashboardBranding().getSkin() + " from branding " + ida.getUserDashboardBranding().getId());
-
-                ContextParam skin = new ContextParam();
-                skin.setParamName("skin");
-                skin.setParamValue(ida.getUserDashboardBranding().getSkin());
-                appParams.add(skin);
-            }
-
-
-        }
-
-        Bean appBrandingBean = null;
-        if (ida.getUserDashboardBranding() != null) {
-            appBrandingBean = newAnonymousBean(WebAppBranding.class);
-            setPropertyValue(appBrandingBean, "skin", ida.getUserDashboardBranding().getSkin());
-            setPropertyValue(appBrandingBean, "brandingId", ida.getUserDashboardBranding().getId());
-        }
-
         // ----------------------------------------
         // SSO Capability application
         // ----------------------------------------
@@ -117,7 +85,6 @@ public class IdauUITransformer extends AbstractTransformer {
             ssoUiApp.setApplicationName(ida.getName().toLowerCase() + "-sso-ui");
             ssoUiApp.setClazz(pkg + "." + clazz);
             ssoUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/SSO");
-            ssoUiApp.getContextParams().addAll(appParams);
             ssoUiApp.setInjectionSource("spring");
 
             idauBeansUi.getImportsAndAliasAndBeen().add(ssoUiApp);
@@ -125,8 +92,8 @@ public class IdauUITransformer extends AbstractTransformer {
             // App Configuration
             Bean appCfgBean = newBean(idauBeansUi, ssoUiApp.getId() + "-cfg", WebAppConfig.class);
             setPropertyValue(appCfgBean, "appName", ssoUiApp.getId());
-            if (appBrandingBean != null)
-                setPropertyBean(appCfgBean, "branding", appBrandingBean);
+            if (ida.getUserDashboardBranding() != null)
+                setPropertyValue(appCfgBean, "brandingId", ida.getUserDashboardBranding().getId());
 
             // Export App Configuration
             Service appCfgBeanOsgi = new Service();
@@ -165,7 +132,6 @@ public class IdauUITransformer extends AbstractTransformer {
             openIdUiApp.setApplicationName(ida.getName().toLowerCase() + "-openid-ui");
             openIdUiApp.setClazz(pkg + "." + clazz);
             openIdUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/OPENID");
-            openIdUiApp.getContextParams().addAll(appParams);
             openIdUiApp.setInjectionSource("spring");
 
             idauBeansUi.getImportsAndAliasAndBeen().add(openIdUiApp);
@@ -173,8 +139,8 @@ public class IdauUITransformer extends AbstractTransformer {
             // App Configuration
             Bean appCfgBean = newBean(idauBeansUi, openIdUiApp.getId() + "-cfg", WebAppConfig.class);
             setPropertyValue(appCfgBean, "appName", openIdUiApp.getId());
-            if (appBrandingBean != null)
-                setPropertyBean(appCfgBean, "branding", appBrandingBean);
+            if (ida.getUserDashboardBranding() != null)
+                setPropertyValue(appCfgBean, "brandingId", ida.getUserDashboardBranding().getId());
 
             // Export App Configuration
             Service appCfgBeanOsgi = new Service();
@@ -186,14 +152,6 @@ public class IdauUITransformer extends AbstractTransformer {
 
 
         }
-
-        // ----------------------------------------
-        // WebApp branding
-        // ----------------------------------------
-        UserDashboardBranding branding = appliance.getIdApplianceDefinition().getUserDashboardBranding();
-        // The name 'branding' is expected in by the UI components defined in the capabilities.
-        Bean brandingBean = newBean(idauBeansUi, "branding", org.atricore.idbus.capabilities.sso.ui.WebAppBranding.class);
-        setPropertyValue(brandingBean, "skin", branding.getSkin());
 
         // ----------------------------------------
         // Add all the beans to the list

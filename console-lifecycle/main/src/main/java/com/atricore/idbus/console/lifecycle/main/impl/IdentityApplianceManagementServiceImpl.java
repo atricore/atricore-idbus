@@ -56,7 +56,8 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
-import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
+import org.atricore.idbus.capabilities.sso.ui.WebBranding;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
@@ -145,7 +146,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private ImpersonateUserPoliciesRegistry impersonateUserPoliciesRegistry;
 
-    private UserDashboardBrandingRegistry userDashboardBrandingRegistry;
+    private WebBrandingService webBrandingService;
 
     private SubjectNameIdentifierPolicyRegistry  subjectNameIdentifierPolicyRegistry;
 
@@ -1003,8 +1004,10 @@ public class IdentityApplianceManagementServiceImpl implements
         logger.debug("Listing all user dashboard brandings");
 
         // Add policies to response
-        for (UserDashboardBranding branding : userDashboardBrandingRegistry.getBrandings()) {
-            res.getBrandings().add(branding);
+        Collection<WebBranding> brandings = webBrandingService.list();
+
+        for (WebBranding branding : brandings) {
+            res.getBrandings().add(new UserDashboardBranding(branding.getId(), branding.getDescription()));
         }
 
         return res;
@@ -1512,12 +1515,12 @@ public class IdentityApplianceManagementServiceImpl implements
         this.impersonateUserPoliciesRegistry = impersonateUserPoliciesRegistry;
     }
 
-    public UserDashboardBrandingRegistry getUserDashboardBrandingRegistry() {
-        return userDashboardBrandingRegistry;
+    public WebBrandingService getWebBrandingService() {
+        return webBrandingService;
     }
 
-    public void setUserDashboardBrandingRegistry(UserDashboardBrandingRegistry userDashboardBrandingRegistry) {
-        this.userDashboardBrandingRegistry = userDashboardBrandingRegistry;
+    public void setWebBrandingService(WebBrandingService webBrandingService) {
+        this.webBrandingService = webBrandingService;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {
