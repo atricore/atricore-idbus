@@ -1,4 +1,6 @@
-package org.atricore.idbus.capabilities.sso.ui;
+package org.atricore.idbus.capabilities.sso.ui.spi;
+
+import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 
 import java.util.Set;
 

@@ -2,7 +2,7 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.ui.ApplicationRegistry;
+import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 
 import java.util.Map;

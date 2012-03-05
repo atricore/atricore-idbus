@@ -27,7 +27,8 @@ import org.apache.wicket.markup.html.CSSPackageResource;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
-import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
+import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.ops4j.pax.wicket.api.PaxWicketBean;
@@ -54,36 +55,50 @@ public class BasePage extends WebPage {
     @PaxWicketBean(name = "webAppConfigRegistry", injectionSource = "spring")
     protected ApplicationRegistry appConfigRegistry;
 
+    @PaxWicketBean(name = "webBrandingService", injectionSource = "spring")
+    protected WebBrandingService brandingService;
+
     private String variant;
 
     @SuppressWarnings("serial")
     public BasePage() {
-        BaseWebApplication app = (BaseWebApplication) getApplication();
-        app.getBranding();
 
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "ie6.css"));
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "ie7.css"));
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "processing.css"));
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "reset.css"));
-        add(CSSPackageResource.getHeaderContribution(BasePage.class, "screen.css"));
-
-        add(new Image("jossoLogo", new ResourceReference(BasePage.class, "images/josso-logo.png")));
-        add(new Image("atricoreLogo", new ResourceReference(BasePage.class, "images/atricore-logo.gif")));
-
-        add(new Label("footer", "Atricore"));
     }
 
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        WebAppConfig myCfg = getAppConfig();
-        if (myCfg.getBranding() != null) {
+
+        String brandingId = getAppConfig().getBrandingId();
+
+        WebBranding branding = brandingService.lookup(brandingId);
+        if (branding != null) {
 
             if (logger.isTraceEnabled())
-                logger.trace("Using 'variant' ["+myCfg.getBranding().getSkin()+"] based on " + myCfg.getBranding().getBrandingId());
+                logger.trace("Using 'variant' ["+branding.getSkin()+"] based on " + branding.getId());
 
-            setVariation(myCfg.getBranding().getSkin());
+            if (branding.getSkin() != null)
+                setVariation(branding.getSkin());
+
+            for (BrandingResource resource : branding.getResources()) {
+                switch (resource.getType()) {
+                    case CSS:
+                        add(CSSPackageResource.getHeaderContribution(BasePage.class, resource.getPath()));
+                        break;
+                    case IMAGE:
+                        add(new Image(resource.getId(), new ResourceReference(BasePage.class, resource.getPath())));
+                        break;
+                    case LABEL:
+                        add(new Label(resource.getId(), resource.getValue()));
+                        break;
+                    default:
+                        logger.error("Unknown resource type : " + resource.getType().name());
+                        break;
+                }
+            }
+
         }
+
     }
 
 

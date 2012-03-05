@@ -9,7 +9,7 @@ public class WebAppConfig implements IClusterable {
 
     private String appName;
 
-    private WebAppBranding branding;
+    private String brandingId;
 
     public String getAppName() {
         return appName;
@@ -19,11 +19,11 @@ public class WebAppConfig implements IClusterable {
         this.appName = appName;
     }
 
-    public WebAppBranding getBranding() {
-        return branding;
+    public String getBrandingId() {
+        return brandingId;
     }
 
-    public void setBranding(WebAppBranding branding) {
-        this.branding = branding;
+    public void setBrandingId(String brandingId) {
+        this.brandingId = brandingId;
     }
 }
