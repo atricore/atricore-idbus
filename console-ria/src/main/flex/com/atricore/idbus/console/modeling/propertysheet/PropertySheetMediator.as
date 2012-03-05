@@ -628,7 +628,7 @@ public class PropertySheetMediator extends IocMediator {
                     if (_currentIdentityApplianceElement is IdentityAppliance) {
                         _userDashboardBrandings = projectProxy.userDashboardBrandings;
 
-                        var ida1 = _currentIdentityApplianceElement as IdentityAppliance;
+                        var ida1:IdentityAppliance = _currentIdentityApplianceElement as IdentityAppliance;
                         var idaDef1:IdentityApplianceDefinition = ida1.idApplianceDefinition;
 
                         if (idaDef1.userDashboardBranding != null) {
