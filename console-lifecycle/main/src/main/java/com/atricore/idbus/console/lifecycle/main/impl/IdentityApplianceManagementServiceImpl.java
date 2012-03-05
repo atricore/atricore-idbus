@@ -169,7 +169,11 @@ public class IdentityApplianceManagementServiceImpl implements
     @Transactional
     public void boot() throws IdentityServerException {
         logger.info("Initializing Identity Appliance Management serivce ....");
-        syncAppliances();
+        try {
+            syncAppliances();
+        } catch (IdentityServerException e) {
+            logger.error(e.getMessage(), e);
+        }
 
         // Register buil-in Subject NameID Policies
 

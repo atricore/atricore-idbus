@@ -144,11 +144,12 @@
     <osgi:service id="osgiServicesLifecycelMgr" ref="servicesLifecycelMgr"
                   interface="org.springframework.osgi.context.event.OsgiBundleApplicationContextListener" />
 
-    <!-- The default branding has no skin -->
+    <!-- The default branding, uses 'josso2' skin -->
     <bean name="josso2-default-branding" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding">
         <property name="id" value="josso2-default-branding"/>
-        <property name="description" value="JOSSO 2 Default"/>
+        <property name="description" value="JOSSO 2 Default (A)"/>
         <property name="name" value="josso2-default-branding"/>
+        <property name="skin" value="josso2"/>
     </bean>
     <osgi:service id="josso2-default-branding-osgi" ref="josso2-default-branding"
                   interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding"/>

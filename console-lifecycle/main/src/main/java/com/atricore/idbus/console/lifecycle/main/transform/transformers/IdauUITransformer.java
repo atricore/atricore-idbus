@@ -6,10 +6,13 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding;
 import com.atricore.idbus.console.lifecycle.main.transform.*;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Service;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket.Application;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket.ContextParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.ui.WebAppBranding;
+import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -80,12 +84,17 @@ public class IdauUITransformer extends AbstractTransformer {
 
         }
 
+        Bean appBrandingBean = null;
+        if (ida.getUserDashboardBranding() != null) {
+            appBrandingBean = newAnonymousBean(WebAppBranding.class);
+            setPropertyValue(appBrandingBean, "skin", ida.getUserDashboardBranding().getSkin());
+            setPropertyValue(appBrandingBean, "brandingId", ida.getUserDashboardBranding().getId());
+        }
 
         // ----------------------------------------
         // SSO Capability application
         // ----------------------------------------
         {
-
 
             String path = module.getPath();
             String pkg = module.getPackage();
@@ -104,7 +113,7 @@ public class IdauUITransformer extends AbstractTransformer {
             module.addSource(s);
 
             Application ssoUiApp = new Application();
-            ssoUiApp.setId(ida.getName().toLowerCase() + "-sso-ui");
+            ssoUiApp.setId(normalizeBeanName(ida.getName() + "-sso-ui"));
             ssoUiApp.setApplicationName(ida.getName().toLowerCase() + "-sso-ui");
             ssoUiApp.setClazz(pkg + "." + clazz);
             ssoUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/SSO");
@@ -112,6 +121,22 @@ public class IdauUITransformer extends AbstractTransformer {
             ssoUiApp.setInjectionSource("spring");
 
             idauBeansUi.getImportsAndAliasAndBeen().add(ssoUiApp);
+
+            // App Configuration
+            Bean appCfgBean = newBean(idauBeansUi, ssoUiApp.getId() + "-cfg", WebAppConfig.class);
+            setPropertyValue(appCfgBean, "appName", ssoUiApp.getId());
+            if (appBrandingBean != null)
+                setPropertyBean(appCfgBean, "branding", appBrandingBean);
+
+            // Export App Configuration
+            Service appCfgBeanOsgi = new Service();
+            appCfgBeanOsgi.setId(appCfgBean.getName() + "-osgi");
+            appCfgBeanOsgi.setRef(appCfgBean.getName());
+            appCfgBeanOsgi.setInterface(WebAppConfig.class.getName());
+
+            idauBeansUi.getImportsAndAliasAndBeen().add(appCfgBeanOsgi);
+
+
         }
 
         // ----------------------------------------
@@ -144,6 +169,22 @@ public class IdauUITransformer extends AbstractTransformer {
             openIdUiApp.setInjectionSource("spring");
 
             idauBeansUi.getImportsAndAliasAndBeen().add(openIdUiApp);
+
+            // App Configuration
+            Bean appCfgBean = newBean(idauBeansUi, openIdUiApp.getId() + "-cfg", WebAppConfig.class);
+            setPropertyValue(appCfgBean, "appName", openIdUiApp.getId());
+            if (appBrandingBean != null)
+                setPropertyBean(appCfgBean, "branding", appBrandingBean);
+
+            // Export App Configuration
+            Service appCfgBeanOsgi = new Service();
+            appCfgBeanOsgi.setId(appCfgBean.getName() + "-osgi");
+            appCfgBeanOsgi.setRef(appCfgBean.getName());
+            appCfgBeanOsgi.setInterface(WebAppConfig.class.getName());
+
+            idauBeansUi.getImportsAndAliasAndBeen().add(appCfgBeanOsgi);
+
+
         }
 
         // ----------------------------------------

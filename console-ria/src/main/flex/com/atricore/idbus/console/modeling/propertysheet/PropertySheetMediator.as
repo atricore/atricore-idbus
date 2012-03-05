@@ -875,6 +875,8 @@ public class PropertySheetMediator extends IocMediator {
             identityAppliance.idApplianceDefinition.location.port = parseInt(_iaCoreSection.applianceLocationPort.text);
             identityAppliance.idApplianceDefinition.location.context = _iaCoreSection.applianceLocationContext.text;
             identityAppliance.idApplianceDefinition.location.uri = _iaCoreSection.applianceLocationPath.text;
+
+            var b:UserDashboardBranding = _iaCoreSection.userDashboardBrandingCombo.selectedItem;
             identityAppliance.idApplianceDefinition.userDashboardBranding = _iaCoreSection.userDashboardBrandingCombo.selectedItem;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
