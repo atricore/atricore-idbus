@@ -39,9 +39,7 @@ public class OpenIDUIApplication extends BaseWebApplication {
     }
 
     @Override
-    protected void init() {
-        super.init();
-
+    protected void mountPages() {
 
         mountBookmarkablePage("/LOGIN", OpenIDLoginPage.class);
         mountBookmarkablePage("/ERROR/401", AccessDeniedPage.class);

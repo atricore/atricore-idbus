@@ -8,5 +8,7 @@ public enum BrandingResourceType {
     CSS,
     IMAGE,
     SCRIPT,
-    LABEL
+    LABEL,
+    LINK,
+    FONT,
 }

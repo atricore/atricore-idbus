@@ -22,24 +22,26 @@ package org.atricore.idbus.capabilities.sso.ui;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.wicket.ResourceReference;
-import org.apache.wicket.markup.html.CSSPackageResource;
-import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.PageParameters;
+import org.apache.wicket.markup.html.*;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOUIApplication;
 import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
+import org.atricore.idbus.capabilities.sso.ui.spi.IPageHeaderContributor;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.ops4j.pax.wicket.api.PaxWicketBean;
 import org.osgi.framework.BundleContext;
 
+import java.util.Locale;
+
 /**
  * Convenience base page for concrete SSO pages requiring a common layout and theme.
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-public class BasePage extends WebPage {
+public class BasePage extends WebPage implements IHeaderContributor {
 
     private static final Log logger = LogFactory.getLog(BasePage.class);
 
@@ -57,21 +59,47 @@ public class BasePage extends WebPage {
 
     @PaxWicketBean(name = "webBrandingService", injectionSource = "spring")
     protected WebBrandingService brandingService;
+    
+    private IPageHeaderContributor headerContributors;
 
     private String variant;
+    
+    @SuppressWarnings("serial")
+    public BasePage() throws Exception {
+        this(null);
+    }
 
     @SuppressWarnings("serial")
-    public BasePage() {
+    public BasePage(PageParameters parameters) throws Exception {
+        // -------------------------------------------------------------------
+        // The very first thing to do is set the application ready if it's not
+        //
+        // Pax-wicket does not support dependency injection in the app. object.
+        // -------------------------------------------------------------------
+        BaseWebApplication app = (BaseWebApplication) getApplication();
+        if (!app.isReady()) {
+            app.config(appConfigRegistry, brandingService);
+        }
 
+        // Handle internationalization
+        if (parameters != null) {
+            String lang = parameters.getString("lang");
+            if (lang != null) {
+                getSession().setLocale(new Locale(lang));
+            } else {
+                String defaultLocale = app.getBranding().getDefaultLocale();
+                if (defaultLocale != null)
+                    getSession().setLocale(new Locale(defaultLocale));
+            }
+        }
     }
 
     @Override
     protected void onInitialize() {
         super.onInitialize();
 
-        String brandingId = getAppConfig().getBrandingId();
-
-        WebBranding branding = brandingService.lookup(brandingId);
+        BaseWebApplication app = (BaseWebApplication) getApplication();
+        WebBranding branding = app.getBranding();
         if (branding != null) {
 
             if (logger.isTraceEnabled())
@@ -80,27 +108,27 @@ public class BasePage extends WebPage {
             if (branding.getSkin() != null)
                 setVariation(branding.getSkin());
 
-            for (BrandingResource resource : branding.getResources()) {
-                switch (resource.getType()) {
-                    case CSS:
-                        add(CSSPackageResource.getHeaderContribution(BasePage.class, resource.getPath()));
-                        break;
-                    case IMAGE:
-                        add(new Image(resource.getId(), new ResourceReference(BasePage.class, resource.getPath())));
-                        break;
-                    case LABEL:
-                        add(new Label(resource.getId(), resource.getValue()));
-                        break;
-                    default:
-                        logger.error("Unknown resource type : " + resource.getType().name());
-                        break;
-                }
-            }
-
         }
 
     }
 
+    public void renderHead(IHeaderResponse response) {
+        if ( ((BaseWebApplication)getApplication()).getBranding() == null)
+            return;
+
+        SSOUIApplication app = (SSOUIApplication) getApplication();
+        
+        WebBranding branding = app.getBranding();
+        
+        if (branding == null)
+            return;
+        
+        for (IPageHeaderContributor c : branding.getPageHeaderContributors()) {
+            c.renderHead(response, this);
+        }
+
+
+    }
 
     public void setVariation(String variation) {
         this.variant = variation;

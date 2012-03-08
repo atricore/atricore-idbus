@@ -13,8 +13,22 @@ public class BrandingResource {
 
     private BrandingResourceType type;
 
+    private String mimeType;
+
+    private String condition;
+
+    private boolean shared;
+
     public BrandingResource() {
 
+    }
+
+    public BrandingResource(String id, String path, String value, BrandingResourceType type, String mimeType) {
+        this.id = id;
+        this.path = path;
+        this.value = value;
+        this.type = type;
+        this.mimeType = mimeType;
     }
 
     public BrandingResource(String id, String path, String value, BrandingResourceType type) {
@@ -23,6 +37,7 @@ public class BrandingResource {
         this.value = value;
         this.type = type;
     }
+
 
     public String getId() {
         return id;
@@ -54,5 +69,29 @@ public class BrandingResource {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
+    public boolean isShared() {
+        return shared;
+    }
+
+    public void setShared(boolean shared) {
+        this.shared = shared;
     }
 }

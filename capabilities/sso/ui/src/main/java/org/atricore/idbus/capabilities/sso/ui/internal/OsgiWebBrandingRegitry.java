@@ -4,6 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingRegistry;
+import org.osgi.framework.BundleContext;
+import org.springframework.osgi.context.BundleContextAware;
 
 import java.util.Map;
 
@@ -27,7 +29,6 @@ public class OsgiWebBrandingRegitry {
         if (logger.isDebugEnabled()) {
             logger.debug("Web Branding registered " + branding);
         }
-
         registry.register(branding);
     }
 
