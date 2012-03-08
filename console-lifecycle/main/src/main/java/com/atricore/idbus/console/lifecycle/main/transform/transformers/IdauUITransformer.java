@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,7 +26,10 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
+
 public class IdauUITransformer extends AbstractTransformer {
+
+    private WebBrandingService brandingService;
 
     private static Log logger = LogFactory.getLog(IdauBaseComponentsTransformer.class);
 
@@ -57,6 +61,12 @@ public class IdauUITransformer extends AbstractTransformer {
         Location uiLocation = ida.getUiLocation();
         if (uiLocation != null) {
             uiBasePath = resolveLocationPath(uiLocation);
+        }
+
+
+        WebBranding branding = null;
+        if (ida.getUserDashboardBranding() != null) {
+            branding = brandingService.lookup(ida.getUserDashboardBranding().getId());
         }
 
         // ----------------------------------------
@@ -92,14 +102,22 @@ public class IdauUITransformer extends AbstractTransformer {
             // App Configuration
             Bean appCfgBean = newBean(idauBeansUi, ssoUiApp.getId() + "-cfg", WebAppConfig.class);
             setPropertyValue(appCfgBean, "appName", ssoUiApp.getId());
-            if (ida.getUserDashboardBranding() != null)
+            setPropertyValue(appCfgBean, "mountPoint", ssoUiApp.getMountPoint());
+            if (ida.getUserDashboardBranding() != null) {
                 setPropertyValue(appCfgBean, "brandingId", ida.getUserDashboardBranding().getId());
+                if (branding != null) {
+                    if (branding.getCustomSsoAppClazz() != null) {
+                        ssoUiApp.setClazz(branding.getCustomSsoAppClazz());
+                    }
+                }
+            }
 
             // Export App Configuration
             Service appCfgBeanOsgi = new Service();
             appCfgBeanOsgi.setId(appCfgBean.getName() + "-osgi");
             appCfgBeanOsgi.setRef(appCfgBean.getName());
             appCfgBeanOsgi.setInterface(WebAppConfig.class.getName());
+
 
             idauBeansUi.getImportsAndAliasAndBeen().add(appCfgBeanOsgi);
 
@@ -139,8 +157,16 @@ public class IdauUITransformer extends AbstractTransformer {
             // App Configuration
             Bean appCfgBean = newBean(idauBeansUi, openIdUiApp.getId() + "-cfg", WebAppConfig.class);
             setPropertyValue(appCfgBean, "appName", openIdUiApp.getId());
-            if (ida.getUserDashboardBranding() != null)
+            setPropertyValue(appCfgBean, "mountPoint", openIdUiApp.getMountPoint());
+            if (ida.getUserDashboardBranding() != null) {
                 setPropertyValue(appCfgBean, "brandingId", ida.getUserDashboardBranding().getId());
+                if (branding != null) {
+                    if (branding.getCustomOpenIdAppClazz() != null) {
+                        openIdUiApp.setClazz(branding.getCustomOpenIdAppClazz());
+                    }
+                }
+
+            }
 
             // Export App Configuration
             Service appCfgBeanOsgi = new Service();
@@ -149,6 +175,7 @@ public class IdauUITransformer extends AbstractTransformer {
             appCfgBeanOsgi.setInterface(WebAppConfig.class.getName());
 
             idauBeansUi.getImportsAndAliasAndBeen().add(appCfgBeanOsgi);
+
 
 
         }
@@ -162,4 +189,11 @@ public class IdauUITransformer extends AbstractTransformer {
 
     }
 
+    public WebBrandingService getBrandingService() {
+        return brandingService;
+    }
+
+    public void setBrandingService(WebBrandingService brandingService) {
+        this.brandingService = brandingService;
+    }
 }
