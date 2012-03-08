@@ -253,6 +253,24 @@
             <version>${idbus.bundle.apache-derby-network-v10_5_3_0_1.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- ================================================================== -->
+        <!-- 3rd party components, used during compile time -->
+        <!-- ================================================================== -->
+
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket</artifactId>
+            <version>${apache-wicket.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
 
     <build>

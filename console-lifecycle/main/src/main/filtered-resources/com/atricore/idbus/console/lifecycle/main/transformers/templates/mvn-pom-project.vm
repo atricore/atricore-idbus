@@ -45,6 +45,9 @@
 
         <felix.plugin.version>2.1.0</felix.plugin.version>
 
+        <!-- 3rd party components -->
+        <apache-wicket.version>${apache.wicket.version}</apache-wicket.version>
+
     </properties>
 
     <distributionManagement>
