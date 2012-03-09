@@ -116,6 +116,7 @@ import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.BindAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
+import com.atricore.idbus.console.services.dto.Channel;
 import com.atricore.idbus.console.services.dto.ColdfusionExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
@@ -170,7 +171,6 @@ import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
-import com.atricore.idbus.console.services.dto.UserDashboardBranding;
 import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
@@ -1428,6 +1428,10 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
+            var location:String = resolveProviderLocationUrl(identityProvider);
+            _ipSaml2Section.entityID.text = location + "/SAML2/MD";
+            _ipSaml2Section.idpInitiatedUrl.text = location + "/SAML2/SSO/IDP_INITIATE?atricore_sp_alias=";
+
             if (_applianceSaved) {
                 _ipSaml2Section.btnExportMetadata.enabled = true;
                 _ipSaml2Section.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
@@ -2406,6 +2410,17 @@ public class PropertySheetMediator extends IocMediator {
                 if (tmpProfile.name == Profile.SSO_SLO.name) {
                     _spSaml2Section.samlProfileSLOCheck.selected = true;
                 }
+            }
+
+            if (serviceProvider.serviceConnection != null &&
+                    serviceProvider.serviceConnection.resource is JOSSO1Resource) {
+                var location:String = resolveProviderLocationUrl(serviceProvider);
+                _spSaml2Section.entityID.text = location + "/SAML2/MD";
+                location += "/" + (serviceProvider.serviceConnection.resource as JOSSO1Resource).partnerAppId.toUpperCase();
+                _spSaml2Section.spInitiatedSsoRedirectUrl.text = location + "/SSO/SSO/REDIR";
+                _spSaml2Section.spInitiatedSsoArtifactUrl.text = location + "/SSO/SSO/ARTIFACT";
+                _spSaml2Section.spInitiatedSloRedirectUrl.text = location + "/SSO/SLO/REDIR";
+                _spSaml2Section.spInitiatedSloArtifactUrl.text = location + "/SSO/SLO/ARTIFACT";
             }
 
             if (_applianceSaved) {
@@ -4278,6 +4293,7 @@ public class PropertySheetMediator extends IocMediator {
             _externalDbVaultCoreSection.connectionUrl.text = dbIdentityVault.connectionUrl;
             _externalDbVaultCoreSection.dbUsername.text = dbIdentityVault.admin;
             _externalDbVaultCoreSection.dbPassword.text = dbIdentityVault.password;
+            _externalDbVaultCoreSection.dbPasswordRetype.text = dbIdentityVault.password;
 
             _externalDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.driver.addEventListener(Event.CHANGE, handleSectionChange);
@@ -4285,6 +4301,7 @@ public class PropertySheetMediator extends IocMediator {
             _externalDbVaultCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.dbUsername.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.dbPassword.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultCoreSection.dbPasswordRetype.addEventListener(Event.CHANGE, handleSectionChange);
 
             //_externalDbVaultCoreSection.driver.addEventListener(MouseEvent.CLICK, browseDriverHandler);
             //BindingUtils.bindProperty(_externalDbVaultCoreSection.driver, "dataProvider", this, "_selectedDriverFiles");
@@ -4298,7 +4315,7 @@ public class PropertySheetMediator extends IocMediator {
             _validators.push(_externalDbVaultCoreSection.driverValidator);
             _validators.push(_externalDbVaultCoreSection.connUrlValidator);
             _validators.push(_externalDbVaultCoreSection.dbUsernameValidator);
-            _validators.push(_externalDbVaultCoreSection.dbPasswordValidator);
+            _validators.push(_externalDbVaultCoreSection.pwvPasswords);
         }
     }
 
@@ -8553,6 +8570,120 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    private function resolveLocationUrl(provider:Provider, channel:Channel):String {
+
+        if (channel == null)
+            return resolveProviderLocationUrl(provider);
+
+        var cl:Location = channel.location;
+        var pl:Location = provider.location;
+        var al:Location = provider.identityAppliance.location;
+
+        var location:String = "";
+
+        if (cl != null)
+            location = resolveLocation(cl);
+
+        if (location != "" && location.charAt(0) != "/")
+            return location;
+
+        if (pl != null)
+            location = resolveLocation(pl) + location;
+
+        if (location != "" && location.charAt(0) != "/")
+            return location;
+
+        if (al != null)
+            location = resolveLocation(al) + location;
+
+        return location;
+    }
+
+    private function resolveProviderLocationUrl(provider:Provider):String {
+
+        var pl:Location = provider.location;
+        var al:Location = provider.identityAppliance.location;
+
+        var location:String = "";
+
+        if (pl != null)
+            location = resolveLocation(pl);
+
+        if (location != "" && location.charAt(0) != "/")
+            return location;
+
+        if (al != null)
+            location = resolveLocation(al) + location;
+
+        return location;
+    }
+
+    private function resolveLocation(location:Location):String {
+        if (location == null) {
+            return "";
+        }
+
+        var path:String = resolveLocationPath(location);
+
+        return resolveLocationBaseUrl(location) + path;
+    }
+
+    private function resolveLocationPath(location:Location):String {
+        if (location == null) {
+            return "";
+        }
+
+        var contextString:String = "";
+        if (location.context != null && location.context != "") {
+            contextString = (location.context.charAt(0) == "/") ? location.context.substring(1) : location.context;
+            contextString = (contextString.charAt(contextString.length - 1) == "/") ? contextString.substring(0, contextString.length - 1) : contextString;
+        }
+
+        var uriString:String = "";
+        if (location.uri != null && location.uri != "") {
+
+            uriString = location.uri != null ? location.uri : "";
+
+            if (uriString.charAt(0) == "/")
+                uriString = uriString.substring(1);
+
+            if (uriString.charAt(uriString.length - 1) == "/")
+                uriString = uriString.substring(0, uriString.length - 1);
+
+            return "/" + contextString + "/" + uriString;
+        } else {
+
+            return "/" + contextString;
+        }
+
+    }
+
+    private function resolveLocationBaseUrl(location:Location):String {
+
+        if (location == null) {
+            return "";
+        }
+
+        var portString:String = "";
+        if (location.port > 0)
+            portString = location.port + "";
+
+        var protocolString:String = "";
+        if (location.protocol != null) {
+            protocolString = location.protocol + "://";
+            // For HTTP, remove default ports
+            if (location.protocol.toLowerCase() == "http")
+                portString = (location.port == 80 ? "" :  ":" + location.port);
+            if (location.protocol.toLowerCase() == "https")
+                portString = (location.port == 443 ? "" :  ":" + location.port);
+        }
+
+        var hostString:String = "";
+        if (location.host != null)
+            hostString = location.host;
+
+        return protocolString  + hostString + portString;
+    }
 
 }
 }

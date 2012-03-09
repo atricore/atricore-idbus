@@ -33,7 +33,10 @@
                 lowerThanMinError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.driverName.errorMsg')}"/>
         <mx:StringValidator id="connUrlValidator" source="{connectionUrl}" required="true" property="text"/>
         <mx:StringValidator id="dbUsernameValidator" source="{dbUsername}" required="true" property="text"/>
-        <mx:StringValidator id="dbPasswordValidator" source="{dbPassword}" required="true" property="text"/>
+
+        <utils:PasswordValidator id="pwvPasswords" source="{dbPassword}" property="text" required="true"
+                                 matchSource="{dbPasswordRetype}" matchProperty="text" defaultLength="-1"
+                                 noMatchError="Passwords do not match"/>
 
         <s:Fade id="fadeFx" alphaFrom="1" alphaTo="0" duration="2000" startDelay="2000"/>
     </fx:Declarations>
@@ -71,7 +74,11 @@
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.dbPassword')}:" required="true">
-            <s:TextInput id="dbPassword" width="200"/>
+            <s:TextInput id="dbPassword" width="200" displayAsPassword="true"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.dbPasswordRetype')}:" required="true">
+            <mx:TextInput id="dbPasswordRetype" width="200" displayAsPassword="true"/>
         </mx:FormItem>
 
     </mx:Form>
