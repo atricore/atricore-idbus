@@ -22,10 +22,8 @@ public class OsgiWagon
 
         InputStream is;
         Resource resource = inputData.getResource();
-
+        String name = resource.getName();
         try {
-
-            String name = resource.getName();
             String url = buildMvnUrl(resource);
 
             if (name.endsWith(".sha1") || name.contains("maven-metadata")) {
@@ -35,8 +33,9 @@ public class OsgiWagon
                 // We have a URL, open a stream, this will be handled by PAX URL.
                 // TODO : Do we have to keep track of IS and close it later?
                 is = new URL(url).openStream();
-                if (is == null)
+                if (is == null) {
                     throw new ResourceDoesNotExistException(resource.getName());
+                }
             }
             
         } catch (IOException e) {

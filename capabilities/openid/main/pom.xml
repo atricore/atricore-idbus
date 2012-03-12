@@ -51,11 +51,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.openid4java</groupId>
-            <artifactId>openid4java-consumer</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.openxri</groupId>
             <artifactId>openxri-syntax</artifactId>
         </dependency>
