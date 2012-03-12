@@ -194,10 +194,6 @@ public class ProjectSerializerTransformer extends AbstractTransformer {
             throws IdResourceSerializationException {
 
         // ----------------------------------------
-        // Create settings.xml for project ?
-        // ----------------------------------------
-
-        // ----------------------------------------
         // Create POM resource for module
         // ----------------------------------------
 

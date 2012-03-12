@@ -227,7 +227,12 @@
 
     <!-- Expose JDO Properties as OSGi configuration properties -->
     <osgix:cm-properties id="lifecycleProps"
-                         persistent-id="com.atricore.idbus.console.lifecycle"/>
+                         persistent-id="com.atricore.idbus.console.lifecycle">
+        <prop key="maven.proxy.host">localhost</prop>
+        <prop key="maven.proxy.port">8081</prop>
+        <prop key="maven.proxy.active">false</prop>
+
+    </osgix:cm-properties>
 
     <osgix:cm-properties id="lifecycleJdoProps"
                          persistent-id="com.atricore.idbus.console.db">
