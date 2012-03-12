@@ -7,13 +7,10 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.cli.MavenLoggerManager;
-import org.apache.maven.execution.DefaultMavenExecutionRequest;
-import org.apache.maven.execution.MavenExecutionRequest;
-import org.apache.maven.execution.MavenExecutionRequestPopulator;
-import org.apache.maven.execution.MavenExecutionResult;
+import org.apache.maven.execution.*;
 import org.apache.maven.model.building.ModelProcessor;
 import org.apache.maven.settings.Mirror;
-import org.apache.maven.settings.building.SettingsBuilder;
+import org.apache.maven.settings.building.*;
 import org.atricore.idbus.kernel.common.support.osgi.OsgiBundleClassLoader;
 import org.codehaus.plexus.ContainerConfiguration;
 import org.codehaus.plexus.DefaultContainerConfiguration;
@@ -28,13 +25,12 @@ import org.osgi.framework.Bundle;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 
+import java.beans.PropertyEditorSupport;
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 import org.osgi.framework.BundleContext;
 
@@ -73,7 +69,7 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
     private ModelProcessor modelProcessor;
 
     private Maven maven;
-
+    
     private MavenExecutionRequestPopulator executionRequestPopulator;
 
     private SettingsBuilder settingsBuilder;
@@ -116,21 +112,21 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
     }
 
     public MavenRuntimeExecutionOutcome doExecute() throws Exception {
+        
+        MavenEmbeddedRequest cliRequest = new MavenEmbeddedRequest();
 
         // logging( cliRequest );
         // properties( cliRequest );
-        prepareMavenContainer();
-        // settings( );
-        // populateRequest( );
+        prepareMavenContainer(cliRequest);
+        settings( cliRequest);
+        // populateRequest( cliRequest);
         // encryption( );
-        return executeMaven();
+        return executeMaven(cliRequest);
 
     }
 
 
     protected void initialize() {
-
-
 
         if (workingDirectory == null) {
             workingDirectory = System.getProperty("karaf.home");
@@ -228,7 +224,7 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
     }
 
 
-    protected void prepareMavenContainer() throws Exception {
+    protected void prepareMavenContainer(MavenEmbeddedRequest cliRequest) throws Exception {
 
         // Build class world for plexus using special classloader, OSGi friendly.
         if (classWorld == null) {
@@ -278,7 +274,7 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
                 logger.debug("Reusing Plexus Container instance ...");
         }
 
-
+        
         // Lookup Maven
         maven = container.lookup(org.apache.maven.Maven.class);
 
@@ -290,6 +286,33 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
         settingsBuilder = container.lookup(SettingsBuilder.class);
         dispatcher = (DefaultSecDispatcher) container.lookup(SecDispatcher.class, "maven");
 
+    }
+    
+    protected void settings(MavenEmbeddedRequest cliRequest) 
+        throws Exception{
+        
+        SettingsBuildingRequest settingsRequest = new DefaultSettingsBuildingRequest();
+        settingsRequest.setGlobalSettingsFile( new File(baseDirectory + "/settings.xml" ));
+        settingsRequest.setUserSettingsFile( new File(baseDirectory + "/settings.xml"));
+        settingsRequest.setSystemProperties( new Properties());
+        settingsRequest.setUserProperties( new Properties() );
+
+        SettingsBuildingResult settingsResult = settingsBuilder.build( settingsRequest );
+
+        executionRequestPopulator.populateFromSettings( cliRequest.request, settingsResult.getEffectiveSettings() );
+
+        if ( !settingsResult.getProblems().isEmpty() && logger.isWarnEnabled() )
+        {
+            logger.warn( "" );
+            logger.warn( "Some problems were encountered while building the effective settings" );
+
+            for ( SettingsProblem problem : settingsResult.getProblems() )
+            {
+                logger.warn( problem.getMessage() + " @ " + problem.getLocation() );
+            }
+
+            logger.warn( "" );
+        }
     }
 
     protected void customizeContainer(PlexusContainer container) {
@@ -332,10 +355,10 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
         }
     }
 
-    protected MavenRuntimeExecutionOutcome executeMaven() throws Exception {
+    protected MavenRuntimeExecutionOutcome executeMaven(MavenEmbeddedRequest cliRequest) throws Exception {
 
         MavenRuntimeExecutionOutcome outcome = new MavenRuntimeExecutionOutcomeImpl();
-        MavenExecutionRequest request = new DefaultMavenExecutionRequest();
+        MavenExecutionRequest request = cliRequest.request;
 
         // TODO : Listen for upload events when deploying the artifacts ?
         PrintStream out = new PrintStream(System.out);
@@ -431,7 +454,7 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
             logger.trace("Executing MAVEN ... " + request);
 
         MavenExecutionResult result = maven.execute(request);
-
+        
         // 6. Check results
         if (result.hasExceptions()) {
 
@@ -446,6 +469,15 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
         }
 
         return outcome;
+    }
+    
+    static class MavenEmbeddedRequest {
+        
+        MavenExecutionRequest request; 
+        
+        MavenEmbeddedRequest () {
+            this.request = new DefaultMavenExecutionRequest();
+        }
     }
 
 
