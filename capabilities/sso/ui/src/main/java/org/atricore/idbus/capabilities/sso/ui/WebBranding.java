@@ -43,7 +43,7 @@ public class WebBranding implements IClusterable, BundleContextAware {
     // Be careful, the order DOES matter here!
     private List<BrandingResource> resources = new ArrayList<BrandingResource>();
 
-    private List<IPageHeaderContributor> pageHeaderContributors;
+    private List<IPageHeaderContributor> pageHeaderContributors = new ArrayList<IPageHeaderContributor>();
 
     public List<IPageHeaderContributor> getPageHeaderContributors() {
         return pageHeaderContributors;

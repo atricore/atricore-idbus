@@ -122,7 +122,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
         
         if (branding == null)
             return;
-        
+
         for (IPageHeaderContributor c : branding.getPageHeaderContributors()) {
             c.renderHead(response, this);
         }
