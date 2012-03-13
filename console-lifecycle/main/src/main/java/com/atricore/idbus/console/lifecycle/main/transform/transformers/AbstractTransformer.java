@@ -84,11 +84,11 @@ public abstract class AbstractTransformer implements Transformer {
     }
 
     protected String resolveUiErrorLocation(IdentityAppliance appliance) {
-        return resolveLocationBaseUrl(appliance.getIdApplianceDefinition().getLocation()) + "/SSO/ERROR";
+        return resolveLocationBaseUrl(appliance.getIdApplianceDefinition().getLocation()) + "/IDBUS-UI/" + appliance.getName().toUpperCase() + "/SSO/ERROR";
     }
 
     protected String resolveUiWarningLocation(IdentityAppliance appliance) {
-        return resolveLocationBaseUrl(appliance.getIdApplianceDefinition().getLocation()) + "/SSO/WARN/POLICY-ENFORCEMENT";
+        return resolveLocationBaseUrl(appliance.getIdApplianceDefinition().getLocation()) + "/IDBUS-UI/" + appliance.getName().toUpperCase() + "/SSO/WARN/POLICY-ENFORCEMENT";
     }
 
     // -----------------------------------------------------------------------
