@@ -120,6 +120,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const IDENTITY_APPLIANCE_EXPORT:String = "identityApplianceExport";
     public static const PROVIDER_CERTIFICATE_EXPORT:String = "providerCertificateExport";
     public static const METADATA_EXPORT:String = "metadataExport";
+    public static const AGENT_CONFIG_EXPORT:String = "agentConfigExport";
 
     public static const LIST_ACCOUNT_LINKAGE_POLICIES:String = "listAccountLinkagePolicies";
     public static const LIST_USER_DASHBOARD_BRANDINGS:String = "listUserDashboardBrandings"
@@ -247,6 +248,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
     public static const EXPORT_PROVIDER_CERTIFICATE:String = "exportProviderCertificate";
     public static const EXPORT_METADATA:String = "exportMetadata";
+    public static const EXPORT_AGENT_CONFIG:String = "exportAgentConfig";
     public static const DISPLAY_UPDATE_NOTIFICATIONS:String = "displayUpdateNotifications";
     public static const SETTINGS_MENU_ELEMENT_SELECTED:String = "settingsMenuElementSelected";
     public static const DISPLAY_ACTIVATION_DIALOG:String = "displayActivationDialog";

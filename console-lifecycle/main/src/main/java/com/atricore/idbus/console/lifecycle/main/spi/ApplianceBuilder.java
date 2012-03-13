@@ -16,4 +16,6 @@ public interface ApplianceBuilder {
     public byte[] exportProject(IdentityAppliance appliance);
 
     public byte[] exportMetadata(IdentityAppliance appliance, String providerName, String channelName);
+
+    public byte[] exportJosso1Configuration(IdentityAppliance appliance, String execEnvName);
 }

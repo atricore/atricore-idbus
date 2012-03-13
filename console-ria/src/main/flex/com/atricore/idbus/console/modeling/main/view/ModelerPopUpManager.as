@@ -115,6 +115,8 @@ import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardView;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.activation.ExecEnvActivationMediator;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.activation.ExecEnvActivationView;
+import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportAgentConfigMediator;
+import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportAgentConfigView;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataMediator;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataView;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateMediator;
@@ -172,6 +174,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportIdentityApplianceMediator:ExportIdentityApplianceMediator;
     private var _exportProviderCertificateMediator:ExportProviderCertificateMediator;
     private var _exportMetadataMediator:ExportMetadataMediator;
+    private var _exportAgentConfigMediator:ExportAgentConfigMediator;
     private var _activationMediator:ExecEnvActivationMediator;
     private var _wikidCreateMediator:WikidCreateMediator;
     private var _directoryServiceCreateMediator:DirectoryServiceCreateMediator;
@@ -223,6 +226,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportIdentityApplianceView:ExportIdentityApplianceView;
     private var _exportProviderCertificateView:ExportProviderCertificateView;
     private var _exportMetadataView:ExportMetadataView;
+    private var _exportAgentConfigView:ExportAgentConfigView;
     private var _activationView:ExecEnvActivationView;
     private var _wikidCreateForm:WikidCreateForm;
     private var _directoryServiceCreateForm:DirectoryServiceCreateForm;
@@ -581,6 +585,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set exportMetadataMediator(value:ExportMetadataMediator):void {
         _exportMetadataMediator = value;
+    }
+
+    public function get exportAgentConfigMediator():ExportAgentConfigMediator {
+        return _exportAgentConfigMediator;
+    }
+
+    public function set exportAgentConfigMediator(value:ExportAgentConfigMediator):void {
+        _exportAgentConfigMediator = value;
     }
 
     public function get activationMediator():ExecEnvActivationMediator {
@@ -1577,6 +1589,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleExportMetadataViewCreated(event:FlexEvent):void {
         exportMetadataMediator.setViewComponent(_exportMetadataView);
         exportMetadataMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateExportAgentConfigWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createExportAgentConfigView();
+        _progress.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.export.execEnv.config");
+        _progress.width = 300;
+        _progress.height = 150;
+//        _popup.x = (_popupParent.width / 2) - 225;
+//        _popup.y = 80;
+        showProgress(_exportAgentConfigView);
+    }
+
+    private function createExportAgentConfigView():void {
+        _exportAgentConfigView = new ExportAgentConfigView();
+        _exportAgentConfigView.addEventListener(FlexEvent.CREATION_COMPLETE, handleExportAgentConfigViewCreated);
+    }
+
+    private function handleExportAgentConfigViewCreated(event:FlexEvent):void {
+        exportAgentConfigMediator.setViewComponent(_exportAgentConfigView);
+        exportAgentConfigMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showActivationWindow(notification:INotification):void {

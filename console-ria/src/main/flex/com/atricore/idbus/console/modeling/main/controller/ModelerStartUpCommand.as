@@ -59,6 +59,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _exportIdentityApplianceMediator:IIocMediator;
     private var _exportProviderCertificateMediator:IIocMediator;
     private var _exportMetadataMediator:IIocMediator;
+    private var _exportAgentConfigMediator:IIocMediator;
     private var _activationMediator:IIocMediator;
     private var _wikidCreateMediator:IIocMediator;
     private var _directoryServiceCreateMediator:IIocMediator;
@@ -105,6 +106,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _exportIdentityApplianceCommand:IIocCommand;
     private var _exportProviderCertificateCommand:IIocCommand;
     private var _exportMetadataCommand:IIocCommand;
+    private var _exportAgentConfigCommand:IIocCommand;
     private var _accountLinkagePolicyListCommand:IIocCommand;
     private var _userDashboardBrandingsListCommand:IIocCommand;
     private var _identityMappingPoliciesListCommand:IIocCommand;
@@ -171,6 +173,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(exportIdentityApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(exportProviderCertificateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(exportMetadataMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(exportAgentConfigMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(activationMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(wikidCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(directoryServiceCreateMediator.getConfigName());
@@ -218,6 +221,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_EXPORT, exportIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.PROVIDER_CERTIFICATE_EXPORT, exportProviderCertificateCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.METADATA_EXPORT, exportMetadataCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.AGENT_CONFIG_EXPORT, exportAgentConfigCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES, accountLinkagePolicyListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_USER_DASHBOARD_BRANDINGS, userDashboardBrandingsListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_NAMEID_POLICIES, subjectNameIDPolicyListCommand.getConfigName());
@@ -586,6 +590,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _exportMetadataMediator = value;
     }
 
+    public function get exportAgentConfigMediator():IIocMediator {
+        return _exportAgentConfigMediator;
+    }
+
+    public function set exportAgentConfigMediator(value:IIocMediator):void {
+        _exportAgentConfigMediator = value;
+    }
+
     public function get activationMediator():IIocMediator {
         return _activationMediator;
     }
@@ -937,6 +949,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set exportMetadataCommand(value:IIocCommand):void {
         _exportMetadataCommand = value;
+    }
+
+    public function get exportAgentConfigCommand():IIocCommand {
+        return _exportAgentConfigCommand;
+    }
+
+    public function set exportAgentConfigCommand(value:IIocCommand):void {
+        _exportAgentConfigCommand = value;
     }
 
     public function get accountLinkagePolicyListCommand():IIocCommand {

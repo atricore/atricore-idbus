@@ -100,6 +100,6 @@ public interface IdentityApplianceManagementAjaxService {
     GetCertificateInfoResponse getCertificateInfo(GetCertificateInfoRequest req) throws IdentityServerException;
 
     ExportProviderCertificateResponse exportProviderCertificate(ExportProviderCertificateRequest req) throws IdentityServerException;
-
     ExportMetadataResponse exportMetadata(ExportMetadataRequest req) throws IdentityServerException;
+    ExportAgentConfigResponse exportAgentConfig(ExportAgentConfigRequest req) throws IdentityServerException;
 }

@@ -56,7 +56,6 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
-import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
@@ -69,7 +68,6 @@ import sun.security.provider.X509Factory;
 import javax.jdo.FetchPlan;
 import javax.xml.bind.JAXBElement;
 import java.io.*;
-import java.io.ByteArrayOutputStream;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -1353,6 +1351,36 @@ public class IdentityApplianceManagementServiceImpl implements
             response.setMetadata(builder.exportMetadata(appliance, request.getProviderName(), request.getChannelName()));
         } catch (Exception e){
             logger.error("Error exporting SAML metadata", e);
+            throw new IdentityServerException(e);
+        }
+        return response;
+    }
+
+    public ExportAgentConfigResponse exportAgentConfig(ExportAgentConfigRequest request) throws IdentityServerException {
+        ExportAgentConfigResponse response = new ExportAgentConfigResponse();
+        try {
+            syncAppliances();
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
+            ExecutionEnvironment execEnv = null;
+            for (ExecutionEnvironment executionEnvironment : appliance.getIdApplianceDefinition().getExecutionEnvironments()) {
+                if (executionEnvironment.getName().equals(request.getExecEnvName())) {
+                    execEnv = executionEnvironment;
+                    break;
+                }
+            }
+            if (execEnv != null) {
+                String fileExtension = "xml";
+                if (execEnv.getPlatformId().startsWith("iis")) {
+                    fileExtension = "ini";
+                }
+                response.setFileName("josso-agent-" + execEnv.getName().replaceAll("[ .]", "-").toLowerCase() + "-config." + fileExtension);
+                response.setAgentConfig(builder.exportJosso1Configuration(appliance, execEnv.getName()));
+            } else {
+                response.setStatusCode(StatusCode.STS_ERROR);
+                response.setErrorMsg("Error exporting agent config: no execution environment with the given name!!!");
+            }
+        } catch (Exception e){
+            logger.error("Error exporting agent config", e);
             throw new IdentityServerException(e);
         }
         return response;

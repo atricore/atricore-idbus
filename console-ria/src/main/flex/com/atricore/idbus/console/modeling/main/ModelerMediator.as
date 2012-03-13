@@ -393,6 +393,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.EXPORT_IDENTITY_APPLIANCE,
             ApplicationFacade.EXPORT_PROVIDER_CERTIFICATE,
             ApplicationFacade.EXPORT_METADATA,
+            ApplicationFacade.EXPORT_AGENT_CONFIG,
             ApplicationFacade.DISPLAY_ACTIVATION_DIALOG,
             ApplicationFacade.CREATE_WIKID_ELEMENT,
             ApplicationFacade.REMOVE_WIKID_ELEMENT,
@@ -813,6 +814,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.EXPORT_METADATA:
                 popupManager.showCreateExportMetadataWindow(notification);
+                break;
+            case ApplicationFacade.EXPORT_AGENT_CONFIG:
+                popupManager.showCreateExportAgentConfigWindow(notification);
                 break;
             case ApplicationFacade.DISPLAY_ACTIVATION_DIALOG:
                 popupManager.showActivationWindow(notification);

@@ -109,6 +109,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExportIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExportProviderCertificateCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExportMetadataCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.ExportAgentConfigCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityMappingPoliciesListCommand</symbol>
@@ -124,6 +125,7 @@
         <symbol>com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.propertysheet.view.export.ExportAgentConfigMediator</symbol>
 
         <symbol>com.atricore.idbus.console.modeling.diagram.DiagramMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator</symbol>

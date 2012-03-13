@@ -2042,7 +2042,15 @@ public class PropertySheetMediator extends IocMediator {
             sendNotification(ApplicationFacade.EXPORT_METADATA, [applianceId, provider.name, idpChannel.name, idpChannel.overrideProviderSetup]);
         }
     }
-    
+
+    private function handleExportAgentConfigClick(event:MouseEvent):void {
+        if (_currentIdentityApplianceElement is ExecutionEnvironment) {
+            var applianceId:String = projectProxy.currentIdentityAppliance.id.toString();
+            sendNotification(ApplicationFacade.EXPORT_AGENT_CONFIG, [applianceId, _currentIdentityApplianceElement.name,
+                (_currentIdentityApplianceElement as ExecutionEnvironment).platformId]);
+        }
+    }
+
     private function handleExportCertificateClick(event:MouseEvent):void {
         var provider:Provider = _currentIdentityApplianceElement as Provider;
         if (provider != null) {
@@ -7414,6 +7422,12 @@ public class PropertySheetMediator extends IocMediator {
                 _executionEnvironmentActivateSection.installSamples.selected = false;
                 _executionEnvironmentActivateSection.installSamples.enabled = false;
             }
+
+            if (_applianceSaved) {
+                _executionEnvironmentActivateSection.btnExportConfig.enabled = true;
+                _executionEnvironmentActivateSection.btnExportConfig.addEventListener(MouseEvent.CLICK, handleExportAgentConfigClick);
+            }
+
             //TODO add click handler for _executionEnvironmentActivateSection.activate checkbox
             _executionEnvironmentActivateSection.reactivate.addEventListener(MouseEvent.CLICK, reactivateClickHandler);
             _executionEnvironmentActivateSection.installSamples.addEventListener(Event.CHANGE, handleSectionChange);
@@ -8181,6 +8195,8 @@ public class PropertySheetMediator extends IocMediator {
             _googleAppsContractSection.btnExportMetadata.enabled = false;
         if (_sugarCRMContractSection != null)
             _sugarCRMContractSection.btnExportMetadata.enabled = false;
+        if (_executionEnvironmentActivateSection != null)
+            _executionEnvironmentActivateSection.btnExportConfig.enabled = false;
     }
 
     private function handleHostChange(execEnvView:Object):void {

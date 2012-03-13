@@ -40,5 +40,7 @@
             <s:CheckBox id="installSamples" />
         </mx:FormItem>
 
+        <s:Button id="btnExportConfig" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.activation.export')}" enabled="false"/>
+
     </mx:Form>
 </s:Group>

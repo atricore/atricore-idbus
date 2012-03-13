@@ -100,6 +100,7 @@
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
         <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
         <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
+        <property name="exportAgentConfigMediator" ref="exportAgentConfigMediator"/>
         <property name="activationMediator" ref="activationMediator"/>
         <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
         <property name="directoryServiceCreateMediator" ref="directoryServiceCreateMediator"/>
@@ -146,6 +147,7 @@
         <property name="exportProviderCertificateCommand" ref="exportProviderCertificateCommand"/>
         <property name="exportIdentityApplianceCommand" ref="exportIdentityApplianceCommand"/>
         <property name="exportMetadataCommand" ref="exportMetadataCommand"/>
+        <property name="exportAgentConfigCommand" ref="exportAgentConfigCommand"/>
         <property name="accountLinkagePolicyListCommand" ref="accountLinkagePolicyListCommand"/>
         <property name="userDashboardBrandingsListCommand" ref="userDashboardBrandingsListCommand"/>
         <property name="subjectNameIDPolicyListCommand" ref="subjectNameIDPolicyListCommand"/>
@@ -548,6 +550,12 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
+    <object id="exportAgentConfigCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExportAgentConfigCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
     <object id="accountLinkagePolicyListCommand"
             class="com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -792,6 +800,10 @@
             class="com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="exportAgentConfigMediator"
+            class="com.atricore.idbus.console.modeling.propertysheet.view.export.ExportAgentConfigMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="browserMediator" class="com.atricore.idbus.console.modeling.browser.BrowserMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
@@ -1012,6 +1024,7 @@
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
         <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
         <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
+        <property name="exportAgentConfigMediator" ref="exportAgentConfigMediator"/>
         <property name="activationMediator" ref="activationMediator"/>
         <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
         <property name="directoryServiceCreateMediator" ref="directoryServiceCreateMediator"/>

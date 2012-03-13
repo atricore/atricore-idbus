@@ -48,6 +48,8 @@ public interface IdentityApplianceManagementService {
 
     ExportMetadataResponse exportMetadata(ExportMetadataRequest request) throws IdentityServerException;
 
+    ExportAgentConfigResponse exportAgentConfig(ExportAgentConfigRequest request) throws IdentityServerException;
+
     //-----------------------< CRUD Operations >
 
     /**

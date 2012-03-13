@@ -135,6 +135,52 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
         return null;
     }
 
+    public byte[] exportJosso1Configuration(IdentityAppliance appliance, String execEnvName) {
+        IdApplianceTransformationContext ctx = buildAppliance(appliance);
+
+        IdApplianceProject prj = ctx.getProject();
+        ProjectModuleLayout layout = prj.getRootModule().getLayout();
+
+        if (layout.getWorkDir() != null) {
+            ExecutionEnvironment execEnv = null;
+
+            for (ExecutionEnvironment executionEnvironment : appliance.getIdApplianceDefinition().getExecutionEnvironments()) {
+                if (executionEnvironment.getName().equals(execEnvName)) {
+                    execEnv = executionEnvironment;
+                    break;
+                }
+            }
+
+            if (execEnv == null) {
+                logger.error("Error exporting JOSSO1 configuration: no execution environment with the given name.");
+                return new byte[0];
+            }
+
+            String execEnvBeanName = normalizeBeanName(execEnv.getName());
+
+            String configExtension = "xml";
+            if (execEnv.getPlatformId().startsWith("iis")) {
+                configExtension = "ini";
+            }
+            String configFile = layout.getWorkDir() + "/idau/src/main/resources/META-INF/spring/" +
+                    execEnvBeanName + "/josso/josso-agent-" + execEnvBeanName + "-config." + configExtension;
+
+            FileInputStream is = null;
+            try {
+                File file = new File(new URI(configFile));
+                is = new FileInputStream(file);
+                return IOUtils.toByteArray(is);
+            } catch (Exception e) {
+                logger.error("Error exporting JOSSO1 configuration: error reading file [" + configFile + "].");
+                return new byte[0];
+            } finally {
+                IOUtils.closeQuietly(is);
+            }
+        }
+
+        return null;
+    }
+
     protected IdApplianceTransformationContext buildAppliance(IdentityAppliance appliance) {
 
         try {

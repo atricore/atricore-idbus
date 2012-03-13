@@ -479,7 +479,20 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         }
         return dozerMapper.map(emRes, ExportMetadataResponse.class);
     }
-    
+
+    public ExportAgentConfigResponse exportAgentConfig(ExportAgentConfigRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ExportAgentConfigRequest eacReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ExportAgentConfigRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ExportAgentConfigResponse eacRes;
+        try {
+            eacRes = idApplianceManagementService.exportAgentConfig(eacReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(eacRes, ExportAgentConfigResponse.class);
+    }
+
     /****************************
      * List methods
      ***************************/
