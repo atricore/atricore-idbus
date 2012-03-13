@@ -76,8 +76,10 @@ public class IdBusRelativePathPrefixHandler extends AbstractMarkupFilter impleme
                 if ((attrValue != null) && (attrValue.startsWith("/") == false) &&
                         (attrValue.indexOf(":") < 0) && !(attrValue.startsWith("#"))) {
                     if (UrlUtils.isRelative(attrValue)) {
-                        // Remove the trailing slash from mount point
-                        tag.getAttributes().put(attrName, mountPoint.substring(1) + "/" + attrValue);
+                        // All resources MUST be relative to mount point, just remove all the ../ added by wicket:
+                        int idx = attrValue.lastIndexOf("../");
+                        String newPath = attrValue.substring(idx + 1);
+                        tag.getAttributes().put(attrName, mountPoint + "/" + newPath);
                     }
                 }
             }
