@@ -284,6 +284,11 @@
                 <version>${pom.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.atricore.idbus.console.settings</groupId>
+                <artifactId>com.atricore.idbus.console.settings.main</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.lifecycle</groupId>

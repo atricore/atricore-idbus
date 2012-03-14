@@ -27,6 +27,9 @@
         </property>
     </bean>
 
+    <osgi:service id="console-svc-config-mg-osgir"  ref="console-svc-config-mgr"
+                  interface="com.atricore.idbus.console.settings.main.spi.ServiceConfigurationManager"/>
+
     <osgi:reference id="osgiCfgAdmin" timeout="60" cardinality="1..1"
                     interface="org.osgi.service.cm.ConfigurationAdmin" />
 
