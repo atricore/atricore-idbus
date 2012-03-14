@@ -114,6 +114,7 @@
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.14</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
+        <osgi.version>4.2.0</osgi.version>
         <ravis.version>1.0.0.RC2-20100628</ravis.version>
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <spring.security.version>2.0.4</spring.security.version>
@@ -354,6 +355,17 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${felix.osgi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${osgi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>${osgi.version}</version>
             </dependency>
 
             <dependency>
@@ -1616,6 +1628,7 @@
                 <module>console-tooling</module>
                 <module>console-licensing</module>
                 <module>console-liveservices/liveupdate</module>
+                <module>console-settings</module>
                 <module>console-lifecycle</module>
                 <module>console-activation</module>
                 <module>console-2factor</module>
