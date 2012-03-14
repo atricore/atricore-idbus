@@ -131,9 +131,9 @@ public class ActivationCreateMediator extends IocFormMediator {
         loc.context = view.activationContext.text;
         loc.uri = view.activationPath.text;
 
-        activation.partnerAppId = view.activationPartnerAppId.text;
+        //activation.partnerAppId = view.activationPartnerAppId.text;
 
-        activation.partnerAppLocation = loc;
+        //activation.partnerAppLocation = loc;
 
         _jossoActivation = activation;
     }

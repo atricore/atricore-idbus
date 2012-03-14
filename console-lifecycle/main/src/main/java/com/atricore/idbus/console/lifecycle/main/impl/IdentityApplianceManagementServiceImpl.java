@@ -1377,11 +1377,13 @@ public class IdentityApplianceManagementServiceImpl implements
                 }
             }
             if (execEnv != null) {
-                String fileExtension = "xml";
+                String configFileName = "josso-agent-";
                 if (execEnv.getPlatformId().startsWith("iis")) {
-                    fileExtension = "ini";
+                    configFileName += "config.ini";
+                } else {
+                    configFileName += execEnv.getName().replaceAll("[ .]", "-").toLowerCase() + "-config.xml";
                 }
-                response.setFileName("josso-agent-" + execEnv.getName().replaceAll("[ .]", "-").toLowerCase() + "-config." + fileExtension);
+                response.setFileName(configFileName);
                 response.setAgentConfig(builder.exportJosso1Configuration(appliance, execEnv.getName()));
             } else {
                 response.setStatusCode(StatusCode.STS_ERROR);

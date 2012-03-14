@@ -158,12 +158,14 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
 
             String execEnvBeanName = normalizeBeanName(execEnv.getName());
 
-            String configExtension = "xml";
+            String configFileName = "josso-agent-";
             if (execEnv.getPlatformId().startsWith("iis")) {
-                configExtension = "ini";
+                configFileName += "config.ini";
+            } else {
+                configFileName += execEnvBeanName + "-config.xml";
             }
             String configFile = layout.getWorkDir() + "/idau/src/main/resources/META-INF/spring/" +
-                    execEnvBeanName + "/josso/josso-agent-" + execEnvBeanName + "-config." + configExtension;
+                    execEnvBeanName + "/josso/" + configFileName;
 
             FileInputStream is = null;
             try {
