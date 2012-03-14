@@ -51,10 +51,6 @@ public class ErrorPage extends BasePage {
 
     private static final Log logger = LogFactory.getLog(ErrorPage.class);
 
-    @PaxWicketBean(name = "artifactQueueManager")
-    private MessageQueueManager artifactQueueManager;
-
-
     public ErrorPage() throws Exception {
         this(null);
     }

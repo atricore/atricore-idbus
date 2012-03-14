@@ -164,6 +164,7 @@
         <!-- IDBUS 3rd party -->
 
         <abdera.version>0.4.0-incubating_1</abdera.version>
+        <apache-wicket.version>1.4.19</apache-wicket.version>
         <asm.version>3.3_2</asm.version>
         <activemq.version>5.3.2</activemq.version>
         <antlr.version>2.7.7_3</antlr.version>
@@ -209,7 +210,7 @@
         <neethi.version>2.0.4_1</neethi.version>
         <pax.web.extender.version>0.7.2</pax.web.extender.version>
         <!--pax.wicket.service.version>0.8.0-SNAPSHOT</pax.wicket.service.version-->
-        <pax.wicket.service.version>0.8.1</pax.wicket.service.version>
+        <pax.wicket.service.version>0.8.2</pax.wicket.service.version>
         <saaj.impl.version>1.3_1</saaj.impl.version>
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <velocity.version>1.6.2</velocity.version>
@@ -976,6 +977,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-parent</artifactId>
+            <type>pom</type>
+            <version>${apache-wicket.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-finder-shaded</artifactId>
             <version>${xbean.version}</version>
@@ -1515,7 +1523,12 @@
         </dependency>
 
 
-
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>sso</artifactId>
+            <type>pom</type>
+            <version>${idbus.cap.sso.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
@@ -1602,6 +1615,12 @@
             <groupId>org.atricore.idbus.capabilities.spnego</groupId>
             <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
             <version>${idbus.cap.spnego.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.openid</groupId>
+            <artifactId>openid</artifactId>
+            <type>pom</type>
+            <version>${idbus.cap.openid.version}</version>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.openid</groupId>
@@ -1767,65 +1786,19 @@
             <artifactId>geronimo-jaxrpc_1.1_spec</artifactId>
             <version>2.0.0</version>
         </dependency>
-        <!--  old
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.jetty-bundle</artifactId>
-            <version>${jetty.bundle.version}</version>
-        </dependency>
-        -->
-        <!--     new
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-http</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-continuation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-xml</artifactId>
-        </dependency>
-        -->
 
         <dependency>
             <groupId>org.ops4j.pax.web</groupId>
             <artifactId>pax-web-jsp</artifactId>
             <version>${pax.web.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-bundle</artifactId>
-            <version>${pax.web.version}</version>
-        </dependency>
-        -->
+
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-el_1.0_spec</artifactId>
             <version>1.0.1</version>
         </dependency>
+
         <dependency>
             <groupId>javax.portlet</groupId>
             <artifactId>com.springsource.javax.portlet</artifactId>
@@ -1836,29 +1809,13 @@
             <artifactId>org.atricore.idbus.bundles.javax-jstl-v1_2</artifactId>
             <version>${idbus.bundle.javax-jstl-v1_2.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.ops4j.pax.web-extender</groupId>
-            <artifactId>pax-web-ex-war</artifactId>
-            <version>${pax.web.extender.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.web-extender</groupId>
-            <artifactId>pax-web-ex-whiteboard</artifactId>
-            <version>${pax.web.extender.version}</version>
-        </dependency>
-        -->
+
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-war</artifactId>
             <version>${pax.url.version}</version>
         </dependency>
 
-        <!--dependency>
-            <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.apache-tiles-jsp-v2_0_6</artifactId>
-            <version>${idbus.bundle.apache-tiles-jsp-v2_0_6.version}</version>
-        </dependency-->
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.apache-tiles-jsp-v2_2_2</artifactId>
@@ -1984,13 +1941,6 @@
             <artifactId>pax-web-jetty-bundle</artifactId>
             <version>${pax.web.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-bundle</artifactId>
-            <version>${pax.web.version}</version>
-        </dependency>
-        -->
 
         <dependency>
             <groupId>org.ops4j.pax.web</groupId>
@@ -2065,13 +2015,7 @@
             <artifactId>geronimo-servlet_2.5_spec</artifactId>
             <version>${geronimo.servlet.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.jencks</groupId>
-            <artifactId>jencks</artifactId>
-            <version>${jencks.version}</version>
-        </dependency>
-        -->
+
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
@@ -2364,8 +2308,16 @@
             <version>${commons-vfs.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>eu.cedarsoft</groupId>
+            <artifactId>open</artifactId>
+            <version>1.1</version>
+            <type>pom</type>
+        </dependency>
 
+        <!-- ============================================ -->
         <!-- Extra dependencies, needed by embedded maven -->
+        <!-- ============================================ -->
 
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>

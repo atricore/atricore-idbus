@@ -10,4 +10,219 @@
     <osgi:reference timeout="60" cardinality="1..1"
                    interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry"
                    id="idsuRegistry"/>
+
+    <!-- Get application configurations -->
+    <bean id="webAppConfigRegistry" class="org.atricore.idbus.capabilities.sso.ui.internal.ApplicationRegistryImpl" >
+    </bean>
+
+    <!-- Application configuration registry -->
+    <bean id="osgiWebAppConfigRegistry" class="org.atricore.idbus.capabilities.sso.ui.internal.OsgiApplicationRegistry">
+        <constructor-arg ref="webAppConfigRegistry" />
+    </bean>
+
+    <osgi:service id="webAppConfigRegistryExporter" ref="webAppConfigRegistry"
+                  interface="org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry" />
+
+    <osgi:list id="appConfigs" interface="org.atricore.idbus.capabilities.sso.ui.WebAppConfig"
+               cardinality="0..N" >
+        <osgi:listener ref="osgiWebAppConfigRegistry" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
+
+    <!-- ============================================== -->
+    <!-- Web Branding service                           -->
+    <!-- ============================================== -->
+    <bean id="webBrandingService" init-method="init"
+          class="org.atricore.idbus.capabilities.sso.ui.internal.WebBrandingServiceImpl"/>
+
+    <osgi:service id="webBrandingServiceOsgi"
+                  ref="webBrandingService"
+                  interface="org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService"/>
+
+    <bean id="webBrandingRegistry" class="org.atricore.idbus.capabilities.sso.ui.internal.WebBrandingRegistryImpl">
+        <property name="service" ref="webBrandingService"/>
+    </bean>
+
+    <bean id="osgiWebBrandingRegitry" class="org.atricore.idbus.capabilities.sso.ui.internal.OsgiWebBrandingRegitry">
+        <constructor-arg ref="webBrandingRegistry" />
+    </bean>
+
+    <osgi:list id="webBrandings" interface="org.atricore.idbus.capabilities.sso.ui.WebBranding"
+               cardinality="0..N" >
+        <osgi:listener ref="osgiWebBrandingRegitry" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
+    
+    <bean id="josso2-default-branding" class="org.atricore.idbus.capabilities.sso.ui.WebBranding">
+        <property name="id" value="josso2-default-branding"/>
+        <property name="description" value="JOSSO 2.x Default"/>
+        <property name="skin" value="josso2"/>
+
+        <property name="resources">
+            <list>
+
+                <!--bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="favicon-ico"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="Images/favicon.ico"/>
+                    <property name="shared" value="true"/>
+                </bean-->
+
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-atricore-logo-2-png"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/atricore-logo-2.png"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-atricore-log-gif"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/atricore-logo.gif"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-atricore-logo-png"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/atricore-logo.png"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-body-gif"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/body.gif"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-body-jpg"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/body.jpg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-buttons-jpg"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/buttons.jpg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-footer-gif"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/footer.gif"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-header-jpg"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/header.jpg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-highlight-shadow-jpg"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/highlight-shadow.jpg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-highlight-top-jpg"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/highlight-top.jpg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-html-gif"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/html.gif"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-icon-alert-gif"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/icon-alert.gif"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-icons-gif"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/icons.gif"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-josso-logo-png"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/josso-logo.png"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-processing-01-gif"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/processing-01.gif"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-processing-02.gif"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/processing-02.gif"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-processing-03-gif"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images-processsing-03-gif"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-processing-04-gif"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/processing-04.gif"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="images-processing-logo-jpg"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="images/processing-logo.jpg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+
+                <!-- css -->
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="ie6-css"/>
+                    <property name="type" value="CSS"/>
+                    <property name="path" value="ie6.css"/>
+                    <property name="shared" value="true"/>
+                </bean>
+
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="ie7-css"/>
+                    <property name="type" value="CSS"/>
+                    <property name="path" value="ie7.css"/>
+                    <property name="shared" value="true"/>
+                </bean>
+
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="processing-css"/>
+                    <property name="type" value="CSS"/>
+                    <property name="path" value="processing.css"/>
+                    <property name="shared" value="true"/>
+                </bean>
+
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="reset-css"/>
+                    <property name="type" value="CSS"/>
+                    <property name="path" value="reset.css"/>
+                    <property name="shared" value="true"/>
+                </bean>
+
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="screen-css"/>
+                    <property name="type" value="CSS"/>
+                    <property name="path" value="screen.css"/>
+                    <property name="shared" value="true"/>
+                </bean>
+
+            </list>
+        </property>
+
+    </bean>
+
+    <osgi:service id="josso2-default-branding-osgi" ref="josso2-default-branding"
+                  interface="org.atricore.idbus.capabilities.sso.ui.WebBranding"/>
+
 </beans>

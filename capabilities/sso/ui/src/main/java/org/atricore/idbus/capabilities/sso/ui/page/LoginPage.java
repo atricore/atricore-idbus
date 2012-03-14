@@ -23,9 +23,12 @@ package org.atricore.idbus.capabilities.sso.ui.page;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.ui.BasePage;
+import org.atricore.idbus.capabilities.sso.ui.WebBranding;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
@@ -42,41 +45,38 @@ import org.osgi.framework.BundleContext;
 public abstract class LoginPage extends BasePage {
 
     private static final Log logger = LogFactory.getLog(LoginPage.class);
-
-    // We can use spring or blueprint to resolve beans
-
-    //@PaxWicketBean(name = "blueprintBundleContext", injectionSource = "blueprint")
-    @PaxWicketBean(name = "bundleContext", injectionSource = "spring")
-    private BundleContext context;
-
-    //@PaxWicketBean(name = "idsuRegistry", injectionSource = "blueprint")
-    @PaxWicketBean(name = "idsuRegistry", injectionSource = "spring")
-    private IdentityMediationUnitRegistry idsuRegistry;
-
-    //@PaxWicketBean(name = "artifactQueueManager", injectionSource = "blueprint")
-    @PaxWicketBean(name = "artifactQueueManager", injectionSource = "spring")
-    private MessageQueueManager artifactQueueManager;
+    
+    private String artifactId;
 
     public LoginPage() throws Exception {
         this(null);
     }
 
     public LoginPage(PageParameters parameters) throws Exception {
-        super();
+        super(parameters);
+        if (parameters != null)
+            artifactId = parameters.getString(SsoHttpArtifactBinding.SSO_ARTIFACT_ID);
+    }
+
+    @Override
+    protected void onInitialize()  {
+
+        super.onInitialize();
 
         ClaimsRequest claimsRequest = null;
-
         getSession().bind();
 
-        if (parameters != null) {
-
-            String artifactId = parameters.getString(SsoHttpArtifactBinding.SSO_ARTIFACT_ID);
+        if (artifactId != null) {
 
             if (artifactId != null) {
                 logger.info("Artifact ID = " + artifactId);
 
                 // Lookup for ClaimsRequest!
-                claimsRequest = (ClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
+                try {
+                    claimsRequest = (ClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
+                } catch (Exception e) {
+                    logger.error("Cannot resolve artifact id ["+artifactId+"] : " + e.getMessage(), e);
+                }
 
                 if (claimsRequest != null) {
 
@@ -100,6 +100,18 @@ public abstract class LoginPage extends BasePage {
         }
 
         logger.info("claimsRequest = " + claimsRequest);
+        
+        if (claimsRequest == null) {
+            // No way to process this page, fall-back
+            WebBranding branding = ((BaseWebApplication) getApplication()).getBranding();
+            if (branding.getFallbackUrl() != null) {
+                // Redirect to fall-back (session expired !)
+                throw new RestartResponseAtInterceptPageException(SessionExpiredPage.class);
+
+            }
+            // Redirect to Session Expired Page
+            throw new RestartResponseAtInterceptPageException(SessionExpiredPage.class);
+        }
 
         // Add signIn panel to page
         add(prepareSignInPanel("signIn", claimsRequest, artifactQueueManager, idsuRegistry));

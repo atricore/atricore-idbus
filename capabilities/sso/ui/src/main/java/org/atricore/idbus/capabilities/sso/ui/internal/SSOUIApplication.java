@@ -21,15 +21,14 @@
 package org.atricore.idbus.capabilities.sso.ui.internal;
 
 import org.apache.wicket.Request;
+import org.apache.wicket.ResourceReference;
 import org.apache.wicket.Response;
 import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.atricore.idbus.capabilities.sso.ui.page.ErrorPage;
-import org.atricore.idbus.capabilities.sso.ui.page.SimpleLoginPage;
-import org.atricore.idbus.capabilities.sso.ui.page.StrongLoginPage;
-import org.atricore.idbus.capabilities.sso.ui.page.TwoFactorLoginPage;
+import org.atricore.idbus.capabilities.sso.ui.BasePage;
+import org.atricore.idbus.capabilities.sso.ui.page.*;
 
 /**
  * Entry point for the Wicket-based SSO front-end.
@@ -43,9 +42,22 @@ public class SSOUIApplication extends BaseWebApplication {
     }
 
     @Override
+    protected void preInit() {
+        super.preInit();
+    }
+
+    @Override
+    protected void postInit() {
+        super.postInit();
+    }
+
+    @Override
     protected void init() {
         super.init();
+    }
 
+    @Override
+    protected void mountPages() {
         // SSO Authentication pages: SIMPLE (usr/pwd), STRONG (x509 cert, SSL), 2FA (2 factor pass code)
         mountBookmarkablePage("/LOGIN/SIMPLE", SimpleLoginPage.class);
         mountBookmarkablePage("/LOGIN/STRONG", StrongLoginPage.class);
@@ -54,10 +66,10 @@ public class SSOUIApplication extends BaseWebApplication {
         mountBookmarkablePage("/ERROR", ErrorPage.class);
         mountBookmarkablePage("/ERROR/401", AccessDeniedPage.class);
         mountBookmarkablePage("/ERROR/404", PageExpiredErrorPage.class);
+        mountBookmarkablePage("/ERROR/SESSION", SessionExpiredPage.class);
 
         getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
         getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
-
     }
 
     /**
