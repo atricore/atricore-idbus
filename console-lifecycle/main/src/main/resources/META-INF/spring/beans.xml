@@ -81,10 +81,10 @@
         <property name="sampleKeystore" ref="sampleKeystore"/>
 
         <property name="identityMappingPoliciesRegistry" ref="identityMappingPoliciesRegistry"/>
-        <property name="userDashboardBrandingRegistry" ref="userDashboardBrandingsRegistry"/>
         <property name="accountLinkagePoliciesRegistry" ref="accountLinkagePoliciesRegistry"/>
         <property name="subjectNameIdentifierPolicyRegistry" ref="subjectNameIdentifierPolicyRegistry"/>
         <property name="impersonateUserPoliciesRegistry" ref="impersonateUserPoliciesRegistry"/>
+        <property name="webBrandingService" ref="brandingService"/>
 
         <!-- DAO's -->
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
@@ -144,30 +144,12 @@
     <osgi:service id="osgiServicesLifecycelMgr" ref="servicesLifecycelMgr"
                   interface="org.springframework.osgi.context.event.OsgiBundleApplicationContextListener" />
 
-    <!-- The default branding has no skin -->
-    <bean name="josso2-default-branding" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding">
-        <property name="id" value="josso2-default-branding"/>
-        <property name="description" value="JOSSO 2 Default"/>
-        <property name="name" value="josso2-default-branding"/>
-    </bean>
-    <osgi:service id="josso2-default-branding-osgi" ref="josso2-default-branding"
-                  interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding"/>
-
-    <!-- Alternative branding
-    <bean name="josso2-alt-branding" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding">
-        <property name="id" value="josso2-alt-branding"/>
-        <property name="description" value="JOSSO 2 Alternative"/>
-        <property name="name" value="josso2-alt-branding"/>
-        <property name="skin" value="alt_1"/>
-    </bean>
-    <osgi:service id="josso2-alt-branding-osgi" ref="josso2-alt-branding"
-                  interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding"/>
-    -->
-
-
     <!-- ===================================================================== -->
     <!-- Lifecycle  Management Components imported  as OSGI Services           -->
     <!-- ===================================================================== -->
+
+    <osgi:reference id="brandingService" cardinality="1..1" timeout="60"
+                    interface="org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService"/>
 
     <osgi:reference id="activationService" cardinality="1..1" timeout="60"
                     interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
@@ -195,11 +177,6 @@
 
     <bean name="identityMappingPoliciesRegistry"
           class="com.atricore.idbus.console.lifecycle.main.impl.IdentityMappingPoliciesRegistry">
-
-    </bean>
-
-    <bean name="userDashboardBrandingsRegistry"
-          class="com.atricore.idbus.console.lifecycle.main.impl.UserDashboardBrandingRegistry">
 
     </bean>
 
@@ -231,15 +208,6 @@
                        unbind-method="unregister"/>
     </osgi:list>
 
-    <osgi:list id="userDashboardBrandings" cardinality="0..N"
-               interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding">
-        <osgi:listener ref="userDashboardBrandingsRegistry"
-                       bind-method="register"
-                       unbind-method="unregister"/>
-
-    </osgi:list>
-
-
     <!-- =================================================================== -->
     <!-- Configuration Admin entry                                           -->
     <!-- =================================================================== -->
@@ -259,7 +227,12 @@
 
     <!-- Expose JDO Properties as OSGi configuration properties -->
     <osgix:cm-properties id="lifecycleProps"
-                         persistent-id="com.atricore.idbus.console.lifecycle"/>
+                         persistent-id="com.atricore.idbus.console.lifecycle">
+        <prop key="maven.proxy.host">localhost</prop>
+        <prop key="maven.proxy.port">8081</prop>
+        <prop key="maven.proxy.active">false</prop>
+
+    </osgix:cm-properties>
 
     <osgix:cm-properties id="lifecycleJdoProps"
                          persistent-id="com.atricore.idbus.console.db">

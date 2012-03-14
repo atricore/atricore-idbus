@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO1Resource;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
@@ -26,13 +27,14 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class SPJOSSOActivationTransformer extends AbstractTransformer {
+public class JOSSO1ResourceTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(SPJOSSOActivationTransformer.class);
+    private static final Log logger = LogFactory.getLog(JOSSO1ResourceTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof JOSSOActivation &&
+        // TODO [JOSSO-370] Parent node may be the serviceresource connection
+        return event.getData() instanceof JOSSO1Resource &&
                 event.getContext().getParentNode() instanceof ServiceProvider;
     }
 
@@ -40,11 +42,11 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
     public void before(TransformEvent event) throws TransformException {
         Beans spBeans = (Beans) event.getContext().get("spBeans");
 
-        JOSSOActivation activation = (JOSSOActivation) event.getData();
-        ServiceProvider sp = activation.getSp();
+        JOSSO1Resource josso1Resource = (JOSSO1Resource) event.getData();
+        ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating Beans for JOSSO Activation " + activation.getName()  + " of SP " + sp.getName());
+            logger.trace("Generating Beans for JOSSO Activation " + josso1Resource.getName()  + " of SP " + sp.getName());
 
         Bean spBean = null;
         Collection<Bean> b = getBeansOfType(spBeans, ServiceProviderImpl.class.getName());
@@ -53,15 +55,15 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         }
         spBean = b.iterator().next();
 
-        Bean bc = newBean(spBeans, normalizeBeanName(activation.getName()),
+        Bean bc = newBean(spBeans, normalizeBeanName(josso1Resource.getName()),
                 "org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl");
 
         setPropertyValue(bc, "name", bc.getName());
-        setPropertyValue(bc, "description", activation.getDisplayName());
+        //setPropertyValue(bc, "description", josso1Resource.getDisplayName());
         setPropertyRef(bc, "unitContainer", sp.getIdentityAppliance().getName() + "-container");
 
         setPropertyRef(bc, "provider", spBean.getName());
-        setPropertyValue(bc, "location", resolveLocationUrl(sp) + "/" + activation.getPartnerAppId().toUpperCase());
+        setPropertyValue(bc, "location", resolveLocationUrl(sp) + "/" + josso1Resource.getPartnerAppId().toUpperCase());
 
         setPropertyRef(bc, "identityMediator", spBean.getName() + "-samlr2-mediator");
 

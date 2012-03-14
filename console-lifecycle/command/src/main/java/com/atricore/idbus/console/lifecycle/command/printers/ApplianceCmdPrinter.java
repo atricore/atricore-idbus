@@ -143,30 +143,43 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
 
                 if (p instanceof ServiceProvider) {
                     ServiceProvider sp = (ServiceProvider) p;
-                    if (sp.getActivation() != null ) {
-
-                        ExecutionEnvironment execEnv = sp.getActivation().getExecutionEnv();
-                        sb.append("\n");
-                        sb.append("            ");
-                        sb.append(getNameString(execEnv.getName(), 10));
-
-                        if (sp.getActivation() instanceof JOSSOActivation) {
-
-                            JOSSOActivation jossoActivation = (JOSSOActivation) sp.getActivation();
-                            sb.append(getNameString(jossoActivation.getPartnerAppId()));
-                            sb.append(" JOSSO ");
+                    if (sp.getServiceConnection() != null && sp.getServiceConnection().getResource() != null) {
+                        
+                        if (sp.getServiceConnection().getResource() instanceof JOSSO1Resource) {
+                            
+                            JOSSO1Resource r = (JOSSO1Resource) sp.getServiceConnection().getResource();
+                            
+                            ExecutionEnvironment execEnv = r.getActivation().getExecutionEnv();
+                            sb.append("\n");
+                            sb.append("            ");
+                            sb.append(getNameString(execEnv.getName(), 10));
+    
+                            sb.append(getNameString(r.getPartnerAppId()));
+                            sb.append(" JOSSO 1.x");
                             sb.append(execEnv.getPlatformId());
                             sb.append(" ");
-                            sb.append(getLocationString(jossoActivation.getPartnerAppLocation()));
+                            sb.append(getLocationString(r.getPartnerAppLocation()));
                             sb.append(" [");
                             sb.append(execEnv.isActive() ? "\u001B[32mACTIVATED\u001B[0m" : "\u001B[31mNOT ACTIVATED\u001B[0m");
                             sb.append("] ");
-
-                        } else {
-                            sb.append(execEnv.getPlatformId());
+        
+                        } else if (sp.getServiceConnection().getResource() instanceof JOSSO2Resource) {
+                            // TODO [JOSSO-370] FIX Print-out
+                            JOSSO2Resource r = (JOSSO2Resource) sp.getServiceConnection().getResource();
+                            sb.append(r.getPartnerAppLocation());
                             sb.append(" [");
-                            sb.append(execEnv.isActive() ? "\u001B[32mACTIVATED\u001B[0m" : "\u001B[31mNOT ACTIVATED\u001B[0m");
+                            //sb.append(r.isActive() ? "\u001B[32mACTIVATED\u001B[0m" : "\u001B[31mNOT ACTIVATED\u001B[0m");
                             sb.append("]");
+
+                        
+                        } else {
+                            // TODO [JOSSO-370] FIX Print-out
+                            ServiceResource svcR = sp.getServiceConnection().getResource(); 
+                            sb.append(svcR.getId());
+                            sb.append(" [");
+                            sb.append(svcR.getName());
+                            sb.append("]");
+                            
                         }
                     }
 

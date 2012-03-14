@@ -59,6 +59,8 @@
                 location.uri = applianceName.text.toUpperCase();
                 idApplianceDef.location = location;
 
+                idApplianceDef.userDashboardBranding = userDashboardBrandingCombo.selectedItem;
+
                 var identityAppliance:IdentityAppliance = new IdentityAppliance();
                 identityAppliance.namespace = applianceNamespace.text;
                 identityAppliance.idApplianceDefinition = idApplianceDef;
@@ -75,6 +77,9 @@
                         applianceLocationDomain.text +
                         ((applianceLocationPort.text != null && applianceLocationPort.text != "") ?
                                 ":" + applianceLocationPort.text : "") + "/IDBUS/" + applianceName.text.toUpperCase());
+                if (userDashboardBrandingCombo.dataProvider.length > 0) {
+                    readableDecisionArray.push("Appliance branding: " + userDashboardBrandingCombo.selectedItem.name);
+                }
                 return readableDecisionArray.join("\n").toString();
             }
 
@@ -141,7 +146,11 @@
                 <!--<s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>-->
                 <!--<s:TextInput id="applianceLocationPath" styleName="locationInput" width="100" change="handleFormChange(event);"/>-->
             </mx:FormItem>
-            
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.branding')}:">
+                <s:DropDownList id="userDashboardBrandingCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" />
+            </mx:FormItem>
+
         </utils:ValidatingForm>
     </s:VGroup>
 </WizardStep>

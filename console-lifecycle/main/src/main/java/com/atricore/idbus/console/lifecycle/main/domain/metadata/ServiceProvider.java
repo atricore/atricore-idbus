@@ -59,14 +59,6 @@ public class ServiceProvider extends FederatedProvider {
         throw new UnsupportedOperationException("Cannot change provider role");
     }
 
-    public Activation getActivation() {
-        return activation;
-    }
-
-    public void setActivation(Activation activation) {
-        this.activation = activation;
-    }
-
     public ServiceConnection getServiceConnection() {
         return serviceConnection;
     }

@@ -93,10 +93,10 @@
     </bean>
 
     <bean name="spJOSSOActivationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPJOSSOActivationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSO1ResourceTransformer"/>
 
     <bean name="execEnvJOSSOActivationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSOActivationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSO1ResourceBindingTransformer"/>
 
     <bean name="execEnvJOSSOTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSOExecEnvransformer"/>

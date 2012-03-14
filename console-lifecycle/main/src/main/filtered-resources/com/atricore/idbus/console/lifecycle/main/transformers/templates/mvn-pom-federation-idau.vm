@@ -125,6 +125,24 @@
             <artifactId>org.atricore.idbus.capabilities.openid.main</artifactId>
             <version>${idbus.cap.openid.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openid4java</groupId>
+                    <artifactId>openid4java-consumer</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.openxri</groupId>
+                    <artifactId>openxri-syntax</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.openxri</groupId>
+                    <artifactId>openxri-client</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>eu.cedarsoft</groupId>
+                    <artifactId>guice-annotations</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -253,6 +271,24 @@
             <version>${idbus.bundle.apache-derby-network-v10_5_3_0_1.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- ================================================================== -->
+        <!-- 3rd party components, used during compile time -->
+        <!-- ================================================================== -->
+
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket</artifactId>
+            <version>${apache-wicket.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
 
     <build>

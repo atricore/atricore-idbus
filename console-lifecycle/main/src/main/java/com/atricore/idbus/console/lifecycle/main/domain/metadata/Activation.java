@@ -11,9 +11,6 @@ public class Activation extends Connection {
 
     private ServiceResource resource;
 
-    // TODO: Remove me!!! [JOSSO-370]
-    private ServiceProvider sp;
-
     public ExecutionEnvironment getExecutionEnv() {
         return executionEnv;
     }
@@ -30,11 +27,4 @@ public class Activation extends Connection {
         this.resource = resource;
     }
 
-    public ServiceProvider getSp() {
-        return sp;
-    }
-
-    public void setSp(ServiceProvider sp) {
-        this.sp = sp;
-    }
 }

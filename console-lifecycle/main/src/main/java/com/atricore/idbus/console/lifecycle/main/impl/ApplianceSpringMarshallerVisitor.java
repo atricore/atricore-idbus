@@ -176,8 +176,11 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         }
 
         // Activation
+        // TODO [JOSSO-370]
+        /*
         if (node.getActivation() != null)
             setPropertyRef(providerBean, "activation", node.getActivation().getName());
+            */
 
         // Federated Connections
         if (node.getFederatedConnectionsA() != null) {
@@ -765,8 +768,7 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
-    public void arrive(JOSSOActivation node) throws Exception {
-
+    public void arrive(Activation node) throws Exception {
         Bean oldActivationBean = getBean(beans, node.getName());
         // Is it the exact same bean !?
         if (oldActivationBean != null && getBeanDescription(oldActivationBean).equals(node.toString()))
@@ -777,21 +779,38 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
 
         setPropertyValue(activationBean, "id", node.getId() + "");
         setPropertyValue(activationBean, "name", node.getName());
-        setPropertyValue(activationBean, "displayName", node.getDisplayName());
+        //setPropertyValue(activationBean, "displayName", node.getDisplayName());
         setPropertyValue(activationBean, "description", node.getDescription());
 
-        if (node.getResource() != null)
-            setPropertyRef(activationBean, "resource", node.getResource().getName());
+    }
 
-        if (node.getSp() != null)
-        setPropertyRef(activationBean, "sp", node.getSp().getName());
+    @Override
+    public void arrive(JOSSO1Resource node) throws Exception {
+
+
+        Bean idSourceBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(idSourceBean, node.toString());
+
+        setPropertyValue(idSourceBean, "id", node.getId() + "");
+        setPropertyValue(idSourceBean, "name", node.getName());
+        setPropertyValue(idSourceBean, "description", node.getDescription());
+
+        setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));
+
+        // TODO : [JOSSO-370] What's the resource here ?!
+        if (node.getServiceConnection().getResource() != null)
+            setPropertyRef(idSourceBean, "resource", node.getServiceConnection().getResource().getName());
+
+        if (node.getServiceConnection().getSp() != null)
+        setPropertyRef(idSourceBean, "sp", node.getServiceConnection().getSp().getName());
 
         if (node.getIgnoredWebResources() != null) {
-            setPropertyAsValues(activationBean, "ignoredWebResources", node.getIgnoredWebResources());
+            setPropertyAsValues(idSourceBean, "ignoredWebResources", node.getIgnoredWebResources());
         }
 
         if (node.getPartnerAppLocation() != null)
-            setLocationPropertyValue(activationBean, "partnerAppLocation", node.getPartnerAppLocation());
+            setLocationPropertyValue(idSourceBean, "partnerAppLocation", node.getPartnerAppLocation());
 
 
     }
@@ -962,19 +981,6 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(idSourceBean, "description", node.getDescription());
 
         setPropertyRef(idSourceBean, "xmlUrl", node.getXmlUrl());
-
-        setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
-        setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));
-    }
-
-    @Override
-    public void arrive(JOSSO1Resource node) throws Exception {
-        Bean idSourceBean = newBean(beans, node.getName(), node.getClass());
-        setBeanDescription(idSourceBean, node.toString());
-
-        setPropertyValue(idSourceBean, "id", node.getId() + "");
-        setPropertyValue(idSourceBean, "name", node.getName());
-        setPropertyValue(idSourceBean, "description", node.getDescription());
 
         setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
         setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));

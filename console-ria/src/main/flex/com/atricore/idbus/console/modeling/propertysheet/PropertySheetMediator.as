@@ -171,6 +171,7 @@ import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
+import com.atricore.idbus.console.services.dto.UserDashboardBranding;
 import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
@@ -690,7 +691,7 @@ public class PropertySheetMediator extends IocMediator {
                     if (_currentIdentityApplianceElement is IdentityAppliance) {
                         _userDashboardBrandings = projectProxy.userDashboardBrandings;
 
-                        var ida1 = _currentIdentityApplianceElement as IdentityAppliance;
+                        var ida1:IdentityAppliance = _currentIdentityApplianceElement as IdentityAppliance;
                         var idaDef1:IdentityApplianceDefinition = ida1.idApplianceDefinition;
 
                         if (idaDef1.userDashboardBranding != null) {
@@ -937,6 +938,7 @@ public class PropertySheetMediator extends IocMediator {
             identityAppliance.idApplianceDefinition.location.port = parseInt(_iaCoreSection.applianceLocationPort.text);
             identityAppliance.idApplianceDefinition.location.context = _iaCoreSection.applianceLocationContext.text;
             identityAppliance.idApplianceDefinition.location.uri = _iaCoreSection.applianceLocationPath.text;
+
             identityAppliance.idApplianceDefinition.userDashboardBranding = _iaCoreSection.userDashboardBrandingCombo.selectedItem;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);

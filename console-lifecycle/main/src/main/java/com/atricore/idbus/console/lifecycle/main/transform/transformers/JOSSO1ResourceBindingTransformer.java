@@ -17,26 +17,28 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class JOSSOActivationTransformer extends AbstractTransformer {
+public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(JOSSOActivationTransformer.class);
+    private static final Log logger = LogFactory.getLog(JOSSO1ResourceBindingTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof JOSSOActivation &&
+
+        // TODO [JOSSO-370] Parent node may be the activation connection
+        return event.getData() instanceof JOSSO1Resource &&
                 event.getContext().getParentNode() instanceof ExecutionEnvironment;
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
         // Define partenr apps in Binding provider
-        JOSSOActivation activation = (JOSSOActivation) event.getData();
+        JOSSO1Resource josso1Resource = (JOSSO1Resource) event.getData();
         ExecutionEnvironment execEnv = (ExecutionEnvironment) event.getContext().getParentNode();
 
         Beans bpBeans = (Beans) event.getContext().get("bpBeans");
         Collection<Bean> bpMediators = getBeansOfType(bpBeans, JossoMediator.class.getName());
         if (bpMediators.size() != 1) {
-            throw new TransformException("Too many/few Joss Mediators found for " + activation.getName());
+            throw new TransformException("Too many/few Joss Mediators found for " + josso1Resource.getName());
         }
 
         Bean bindingMediator = bpMediators.iterator().next();
@@ -53,18 +55,18 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
         }
 
         Value partnerappKeyValue = new Value();
-        partnerappKeyValue.getContent().add(activation.getPartnerAppId());
+        partnerappKeyValue.getContent().add(josso1Resource.getPartnerAppId());
         Key partnerappKeyBean = new Key();
         partnerappKeyBean.getBeenAndRevesAndIdreves().add(partnerappKeyValue);
 
         //setConstructorArg(partnerappKeyBean, 0, "java.lang.String", provider.getName());
 
         Bean partnerappBean = newAnonymousBean(PartnerAppMapping.class);
-        partnerappBean.setName(bpBean.getName() + "-" + activation.getName() + "-partnerapp-mapping");
+        partnerappBean.setName(bpBean.getName() + "-" + josso1Resource.getName() + "-partnerapp-mapping");
 
-        setPropertyValue(partnerappBean, "partnerAppId", activation.getPartnerAppId());
+        setPropertyValue(partnerappBean, "partnerAppId", josso1Resource.getPartnerAppId());
 
-        ServiceProvider sp = activation.getSp();
+        ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
         IdentityProviderChannel preferredIdpChannel = null;
         for (FederatedConnection fc : sp.getFederatedConnectionsA()) {
             IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelA();
@@ -88,8 +90,8 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
         String spAlias = resolveLocationUrl(sp, preferredIdpChannel) + "/SAML2/MD";
         setPropertyValue(partnerappBean, "spAlias", spAlias);
 
-        setPropertyValue(partnerappBean, "partnerAppSLO", resolveSLOLocationUrl(activation));
-        setPropertyValue(partnerappBean, "partnerAppACS", resolveACSLocationUrl(activation));
+        setPropertyValue(partnerappBean, "partnerAppSLO", resolveSLOLocationUrl(josso1Resource));
+        setPropertyValue(partnerappBean, "partnerAppACS", resolveACSLocationUrl(josso1Resource));
 
         Entry partnerappMapping = new Entry();
         partnerappMapping.setKey(partnerappKeyBean);
@@ -104,11 +106,11 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
             Bean cfgBean = getPropertyBean(agentBean, "configuration");
             Bean agentAppBean = newAnonymousBean("org.josso.agent.SSOPartnerAppConfig");
 
-            setPropertyValue(agentAppBean, "id", activation.getPartnerAppId());
-            setPropertyValue(agentAppBean, "vhost", activation.getPartnerAppLocation().getHost());
+            setPropertyValue(agentAppBean, "id", josso1Resource.getPartnerAppId());
+            setPropertyValue(agentAppBean, "vhost", josso1Resource.getPartnerAppLocation().getHost());
             setPropertyValue(agentAppBean, "context",
-                    (!activation.getPartnerAppLocation().getContext().startsWith("/") ? "/" : "") +
-                    activation.getPartnerAppLocation().getContext());
+                    (!josso1Resource.getPartnerAppLocation().getContext().startsWith("/") ? "/" : "") +
+                    josso1Resource.getPartnerAppLocation().getContext());
 
             // TODO : Support ignored web resources, rememberme, disable autologin, etc. ....
 
@@ -123,17 +125,17 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
         return null;
     }
 
-    protected String resolveACSLocationUrl(JOSSOActivation activation) {
+    protected String resolveACSLocationUrl(JOSSO1Resource josso1Resource) {
 
         // TODO : Support different execution environments like ISAPI, PHP, etc ....
-        ExecutionEnvironment execEnv = activation.getExecutionEnv();
+        ExecutionEnvironment execEnv = josso1Resource.getActivation().getExecutionEnv();
 
-        String appLocation = resolveLocationUrl(activation.getPartnerAppLocation());
+        String appLocation = resolveLocationUrl(josso1Resource.getPartnerAppLocation());
         if (!appLocation.endsWith("/"))
             appLocation = appLocation + "/";
 
 
-        String baseLocation = resolveLocationBaseUrl(activation.getPartnerAppLocation());
+        String baseLocation = resolveLocationBaseUrl(josso1Resource.getPartnerAppLocation());
         if (!baseLocation.endsWith("/"))
             baseLocation += "/";
 
@@ -181,8 +183,8 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
 
     }
 
-    protected String resolveSLOLocationUrl(JOSSOActivation activation) {
-        return resolveLocationUrl(activation.getPartnerAppLocation());
+    protected String resolveSLOLocationUrl(JOSSO1Resource josso1Resource) {
+        return resolveLocationUrl(josso1Resource.getPartnerAppLocation());
     }
 
 }

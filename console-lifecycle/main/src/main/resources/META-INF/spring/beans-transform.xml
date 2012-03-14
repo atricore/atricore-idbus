@@ -25,13 +25,21 @@
     <!-- Define Transformers -->
 
     <bean name="projectSetupTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSetupTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSetupTransformer">
+
+        <property name="mvnProxyHost" value="${maven.proxy.host}"/>
+        <property name="mvnProxyPort" value="${maven.proxy.port}"/>
+        <property name="mvnProxyActive" value="${maven.proxy.active}"/>
+    </bean>
+
 
     <bean name="idauBaseComponentsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
     <bean name="idauUiTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauUITransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauUITransformer">
+        <property name="brandingService" ref="brandingService"/>
+    </bean>
 
     <bean name="idpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer">
@@ -131,10 +139,10 @@
     </bean>
 
     <bean name="spJOSSOActivationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPJOSSOActivationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSO1ResourceTransformer"/>
 
     <bean name="JOSSOActivationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSOActivationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSO1ResourceBindingTransformer"/>
 
     <bean name="JOSSOExecEnvTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSOExecEnvransformer">

@@ -199,7 +199,8 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         setPropertyValue(spMediator, "preferredIdpSSOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
 
-        ExecutionEnvironment execEnv = provider.getActivation().getExecutionEnv();
+        // TODO : [JOSSO-370] This might be null somewhere on the chain
+        ExecutionEnvironment execEnv = provider.getServiceConnection().getResource().getActivation().getExecutionEnv();
 
         IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
         IdentityApplianceDefinition applianceDef = provider.getIdentityAppliance();
