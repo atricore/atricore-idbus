@@ -26,8 +26,6 @@ import org.apache.wicket.Response;
 import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
-import org.apache.wicket.protocol.http.WebApplication;
-import org.atricore.idbus.capabilities.sso.ui.BasePage;
 import org.atricore.idbus.capabilities.sso.ui.page.*;
 
 /**

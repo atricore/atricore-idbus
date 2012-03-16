@@ -13,6 +13,8 @@ import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
 import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEventListener;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 import org.ops4j.pax.wicket.api.PaxWicketBean;
 
@@ -25,7 +27,7 @@ import java.util.List;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public abstract class BaseWebApplication extends WebApplication {
+public abstract class BaseWebApplication extends WebApplication implements WebBrandingEventListener {
 
     private static final Log logger = LogFactory.getLog(BaseWebApplication.class);
 
@@ -65,13 +67,24 @@ public abstract class BaseWebApplication extends WebApplication {
         return ready;
     }
     
-    
-
     @Override
     protected void init() {
         super.init();
         preInit();
         mountPages();
+    }
+
+    @Override
+    protected void internalDestroy() {
+        super.internalDestroy();
+        if (brandingService != null) {
+            try {
+                brandingService.unregister(this);
+            } catch (Exception e) {
+                if (logger.isTraceEnabled())
+                    logger.trace(e.getMessage(), e);
+            }
+        }
     }
 
     protected void mountPages() {
@@ -102,26 +115,6 @@ public abstract class BaseWebApplication extends WebApplication {
         getPageSettings().getComponentResolvers().addAll(newComponentsList);
 
         getMarkupSettings().setMarkupParserFactory(new IdBusMarkupParserFactory(getAppConfig()));
-        
-        // TODO : Instead of taking resources list from branding, also support scanning specific packages of specific bundles !!!! 
-        if (branding != null) {
-
-            // TODO : Implement this!
-            branding.getResourceBundles();
-
-            // Mount branding shared resources at base mount point
-            for (BrandingResource resource : branding.getResources()) {
-                // All shared resource MUST be scoped to AppResourceLocator
-                if (resource.isShared()) {
-                    ResourceReference ref = new ResourceReference(AppResourceLocator.class, resource.getPath());
-                    this.appResources.add(new AppResource(resource, ref));
-                    mountSharedResource("/" + resource.getPath(), ref.getSharedResourceKey());
-                    if (logger.isTraceEnabled())
-                        logger.trace("Mounting shared resource ["+resource.getId()+"] at /" + resource.getPath());
-                }
-            }
-        }
-
     }
 
     public WebBranding getBranding() {
@@ -145,8 +138,70 @@ public abstract class BaseWebApplication extends WebApplication {
         this.brandingService = brandingService;
         String brandingId = getAppConfig().getBrandingId();
         branding = brandingService.lookup(brandingId);
+        if (branding != null) {
+            brandingService.register(this);
+        }
         postInit();
+        refreshBranding();
         this.ready = true;
+    }
+    
+    public void refreshBranding() {
+
+        // TODO : Instead of taking resources list from branding, also support scanning specific packages of specific bundles !!!!
+        if (branding != null) {
+
+            // TODO : Implement this!
+            branding.getResourceBundles();
+
+            // Can we unmount and remote all shared resources ?!
+
+            // TODO : Reset locale
+
+            // Mount branding shared resources at base mount point
+            for (BrandingResource resource : branding.getResources()) {
+                // All shared resource MUST be scoped to AppResourceLocator
+                if (resource.isShared()) {
+                    ResourceReference ref = new ResourceReference(AppResourceLocator.class, resource.getPath());
+                    this.appResources.add(new AppResource(resource, ref));
+                    mountSharedResource("/" + resource.getPath(), ref.getSharedResourceKey());
+                    if (logger.isTraceEnabled())
+                        logger.trace("Mounting shared resource ["+resource.getId()+"] at /" + resource.getPath());
+                }
+            }
+        }
+
+    }
+    
+    public void removeBranding() {
+        // TODO : What happens when the branding is removed ?!
+        logger.warn("Configured branding was removed ! ["+branding.getId()+"]");
+    }
+
+
+    public void handleEvent(WebBrandingEvent event) {
+
+        // Not our branding
+        if (!branding.getId().equals(event.getBrandingId()))
+            return;
+
+        switch (event.getType()) {
+
+            case WebBrandingEvent.PUBLISH:
+                logger.debug("Processing branding event type PUBLISH : " + event.getType());
+                refreshBranding();
+                break;
+
+            case WebBrandingEvent.REMOVE:
+                logger.debug("Processing branding event type REMOVE : " + event.getType());
+                removeBranding();
+                break;
+
+            default:
+                logger.debug("Unknown branding event type " + event.getType());
+                break;
+        }
+
     }
 
     public class AppResource implements Serializable {

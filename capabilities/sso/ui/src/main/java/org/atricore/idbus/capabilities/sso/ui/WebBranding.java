@@ -17,15 +17,9 @@ public class WebBranding implements IClusterable, BundleContextAware {
 
     private String id;
 
-    private String description;
-
     private String skin;
 
     private String bundleId;
-
-    private String customSsoAppClazz;
-
-    private String customOpenIdAppClazz;
 
     private String bundleContextId;
     
@@ -75,22 +69,6 @@ public class WebBranding implements IClusterable, BundleContextAware {
 
     public void setSkin(String skin) {
         this.skin = skin;
-    }
-
-    public String getCustomSsoAppClazz() {
-        return customSsoAppClazz;
-    }
-
-    public void setCustomSsoAppClazz(String customSsoAppClazz) {
-        this.customSsoAppClazz = customSsoAppClazz;
-    }
-
-    public String getCustomOpenIdAppClazz() {
-        return customOpenIdAppClazz;
-    }
-
-    public void setCustomOpenIdAppClazz(String customOpenIdAppClazz) {
-        this.customOpenIdAppClazz = customOpenIdAppClazz;
     }
 
     public String getBundleId() {
