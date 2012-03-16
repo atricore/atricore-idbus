@@ -282,7 +282,7 @@
                             org.atricore.idbus.kernel.common.support.osgi,
                             org.atricore.idbus.kernel.common.support.services,
                             org.atricore.idbus.kernel.main.authn.util,
-                            com.atricore.idbus.console.settings.spi,
+                            com.atricore.idbus.console.settings.main.spi,
                             com.atricore.idbus.console.lifecycle.main.domain,
                             com.atricore.idbus.console.lifecycle.main.domain.metadata,
                             com.atricore.idbus.console.lifecycle.main.exception,

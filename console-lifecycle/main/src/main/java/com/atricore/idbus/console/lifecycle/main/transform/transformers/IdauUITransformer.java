@@ -1,24 +1,21 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.brandservice.main.BrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.BrandingServiceException;
+import com.atricore.idbus.console.brandservice.main.CustomBrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.spi.BrandManager;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding;
 import com.atricore.idbus.console.lifecycle.main.transform.*;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Service;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket.Application;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket.ContextParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.ui.WebBranding;
-import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
-import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
@@ -29,7 +26,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
 
 public class IdauUITransformer extends AbstractTransformer {
 
-    private WebBrandingService brandingService;
+    private BrandManager brandManager;
 
     private static Log logger = LogFactory.getLog(IdauBaseComponentsTransformer.class);
 
@@ -63,10 +60,14 @@ public class IdauUITransformer extends AbstractTransformer {
             uiBasePath = resolveLocationPath(uiLocation);
         }
 
-
-        WebBranding branding = null;
+        BrandingDefinition branding = null;
         if (ida.getUserDashboardBranding() != null) {
-            branding = brandingService.lookup(ida.getUserDashboardBranding().getId());
+
+            try {
+                branding = brandManager.lookup(ida.getUserDashboardBranding().getId());
+            } catch (BrandingServiceException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         // ----------------------------------------
@@ -100,15 +101,19 @@ public class IdauUITransformer extends AbstractTransformer {
             idauBeansUi.getImportsAndAliasAndBeen().add(ssoUiApp);
 
             // App Configuration
-            Bean appCfgBean = newBean(idauBeansUi, ssoUiApp.getId() + "-cfg", WebAppConfig.class);
+            Bean appCfgBean = newBean(idauBeansUi, ssoUiApp.getId() + "-cfg", "org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
             setPropertyValue(appCfgBean, "appName", ssoUiApp.getId());
             setPropertyValue(appCfgBean, "mountPoint", ssoUiApp.getMountPoint());
             if (ida.getUserDashboardBranding() != null) {
                 setPropertyValue(appCfgBean, "brandingId", ida.getUserDashboardBranding().getId());
                 if (branding != null) {
-                    if (branding.getCustomSsoAppClazz() != null) {
-                        ssoUiApp.setClazz(branding.getCustomSsoAppClazz());
+                    if (branding instanceof CustomBrandingDefinition) {
+                        CustomBrandingDefinition cb = (CustomBrandingDefinition) branding;
+                        if (cb.getCustomSsoAppClazz() != null) {
+                            ssoUiApp.setClazz(cb.getCustomSsoAppClazz());
+                        }
                     }
+
                 }
             }
 
@@ -116,11 +121,9 @@ public class IdauUITransformer extends AbstractTransformer {
             Service appCfgBeanOsgi = new Service();
             appCfgBeanOsgi.setId(appCfgBean.getName() + "-osgi");
             appCfgBeanOsgi.setRef(appCfgBean.getName());
-            appCfgBeanOsgi.setInterface(WebAppConfig.class.getName());
-
+            appCfgBeanOsgi.setInterface("org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
 
             idauBeansUi.getImportsAndAliasAndBeen().add(appCfgBeanOsgi);
-
 
         }
 
@@ -155,14 +158,18 @@ public class IdauUITransformer extends AbstractTransformer {
             idauBeansUi.getImportsAndAliasAndBeen().add(openIdUiApp);
 
             // App Configuration
-            Bean appCfgBean = newBean(idauBeansUi, openIdUiApp.getId() + "-cfg", WebAppConfig.class);
+            Bean appCfgBean = newBean(idauBeansUi, openIdUiApp.getId() + "-cfg", "org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
             setPropertyValue(appCfgBean, "appName", openIdUiApp.getId());
             setPropertyValue(appCfgBean, "mountPoint", openIdUiApp.getMountPoint());
             if (ida.getUserDashboardBranding() != null) {
                 setPropertyValue(appCfgBean, "brandingId", ida.getUserDashboardBranding().getId());
                 if (branding != null) {
-                    if (branding.getCustomOpenIdAppClazz() != null) {
-                        openIdUiApp.setClazz(branding.getCustomOpenIdAppClazz());
+
+                    if (branding instanceof CustomBrandingDefinition) {
+                        CustomBrandingDefinition cb = (CustomBrandingDefinition) branding;
+                        if (cb.getCustomSsoAppClazz() != null) {
+                            openIdUiApp.setClazz(cb.getCustomOpenIdAppClazz());
+                        }
                     }
                 }
 
@@ -172,7 +179,7 @@ public class IdauUITransformer extends AbstractTransformer {
             Service appCfgBeanOsgi = new Service();
             appCfgBeanOsgi.setId(appCfgBean.getName() + "-osgi");
             appCfgBeanOsgi.setRef(appCfgBean.getName());
-            appCfgBeanOsgi.setInterface(WebAppConfig.class.getName());
+            appCfgBeanOsgi.setInterface("org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
 
             idauBeansUi.getImportsAndAliasAndBeen().add(appCfgBeanOsgi);
 
@@ -189,11 +196,11 @@ public class IdauUITransformer extends AbstractTransformer {
 
     }
 
-    public WebBrandingService getBrandingService() {
-        return brandingService;
+    public BrandManager getBrandManager() {
+        return brandManager;
     }
 
-    public void setBrandingService(WebBrandingService brandingService) {
-        this.brandingService = brandingService;
+    public void setBrandManager(BrandManager brandManager) {
+        this.brandManager = brandManager;
     }
 }

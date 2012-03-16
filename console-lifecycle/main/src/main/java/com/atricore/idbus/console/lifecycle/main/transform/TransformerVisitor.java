@@ -42,8 +42,6 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
 
     private static final String ACTIVATION_CONN_ROLE_ATTR = "activationConnectionRole";
 
-    private SpringMetadataManager springMgr = new SpringMetadataManagerImpl();
-
     private java.util.List<Transformer> transformers = new ArrayList<Transformer>();
     
     private static ThreadLocal<IdApplianceTransformationContext> contextHolder = new ThreadLocal<IdApplianceTransformationContext>();

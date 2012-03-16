@@ -36,30 +36,7 @@
     <!-- Metadata Management components                                        -->
     <!-- ===================================================================== -->
 
-    <bean id="smm" class="com.atricore.idbus.console.lifecycle.support.springmetadata.impl.SpringMetadataManagerImpl">
-        <property name="pmf" ref="idbusLifecyclePmf"/>
-    </bean>
-
     <bean id="beanUtils" class="com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils"/>
-
-    <!--
-    <bean id="keystoreResolver" class="com.atricore.idbus.console.lifecycle.main.util.SamlR2KeystoreKeyResolver">
-        <property name="keystoreType" value="${keystore.keystoreType}"/>
-        <property name="keystoreFile" value="file:${server.bundleInputFolder}${server.idauFolder}${keystore.fileName}"/>
-        <property name="privateKeyAlias" value="${keystore.privateKeyAlias}"/>
-        <property name="privateKeyPass" value="${keystore.privateKeyPass}"/>
-        <property name="certificateAlias" value="${keystore.certificateAliasPrefix}"/>
-        <property name="keystorePass" value="${keystore.keystorePass}"/>
-    </bean>
-
-    <bean id="idauBundleDescriptor"
-          class="com.atricore.idbus.console.lifecycle.main.util.ApplianceUnitBundleDescriptor">
-        <property name="fileName" value="${server.bundleFileName}"/>
-        <property name="inputFolder" value="${server.bundleInputFolder}"/>
-        <property name="outputFolder" value="${server.bundleOutputFolder}"/>
-        <property name="idauFolder" value="${server.idauFolder}"/>
-    </bean>
-    -->
 
     <bean id="idApplianceManagementService"
           class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceImpl">
@@ -84,7 +61,7 @@
         <property name="accountLinkagePoliciesRegistry" ref="accountLinkagePoliciesRegistry"/>
         <property name="subjectNameIdentifierPolicyRegistry" ref="subjectNameIdentifierPolicyRegistry"/>
         <property name="impersonateUserPoliciesRegistry" ref="impersonateUserPoliciesRegistry"/>
-        <property name="webBrandingService" ref="brandingService"/>
+        <property name="brandManger" ref="brandManager"/>
 
         <!-- DAO's -->
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
@@ -148,8 +125,8 @@
     <!-- Lifecycle  Management Components imported  as OSGI Services           -->
     <!-- ===================================================================== -->
 
-    <osgi:reference id="brandingService" cardinality="1..1" timeout="60"
-                    interface="org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService"/>
+    <osgi:reference id="brandManager" cardinality="1..1" timeout="60"
+                    interface="com.atricore.idbus.console.brandservice.main.spi.BrandManager"/>
 
     <osgi:reference id="activationService" cardinality="1..1" timeout="60"
                     interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>

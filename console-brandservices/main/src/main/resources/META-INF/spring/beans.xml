@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:osgi="http://www.springframework.org/schema/osgi"
+    xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+    xmlns:ctx="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context.xsd
+                    http://www.springframework.org/schema/osgi-compendium
+                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+                    ">
+
+    <bean id="brandManager" class="com.atricore.idbus.console.brandservice.main.internal.BrandManagerImpl" init-method="init">
+        <property name="store">
+            <ref bean="brandingStore"/>
+        </property>
+        <property name="installers">
+            <list>
+                <ref bean="customBrandingInstaller"/>
+            </list>
+        </property>
+        <!-- Brandings provided with JOSSO -->
+        <property name="builtInBrandings">
+            <list>
+                <bean class="com.atricore.idbus.console.brandservice.main.BuiltInBrandingDefinition">
+                    <property name="name" value="josso2-default-branding"/>
+                    <property name="description" value="JOSSO 2.X Default"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    
+    <osgi:service id="brandManagerOsgi" ref="brandManager"
+                  interface="com.atricore.idbus.console.brandservice.main.spi.BrandManager"/>
+
+    <!-- TODO : Use DB Store when available -->
+    <bean id="brandingStore" class="com.atricore.idbus.console.brandservice.main.internal.store.MemoryBrandingStore"/>
+    
+    <!-- Installers -->
+    <bean id="customBrandingInstaller" class="com.atricore.idbus.console.brandservice.main.internal.installer.CustomBrandingInstaller"/>
+
+</beans>
