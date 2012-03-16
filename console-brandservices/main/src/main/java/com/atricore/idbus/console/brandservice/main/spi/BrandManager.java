@@ -11,6 +11,8 @@ import java.util.Collection;
  */
 public interface BrandManager {
 
+    public static final String SSO_UI_BUNDLE = "org.atricore.idbus.capabilities.sso.ui";
+
     void init();
 
     // CRUD Operations ...

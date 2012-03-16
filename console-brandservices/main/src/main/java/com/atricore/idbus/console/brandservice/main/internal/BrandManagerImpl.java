@@ -24,8 +24,6 @@ import java.util.List;
  */
 public class BrandManagerImpl implements BrandManager, BundleContextAware {
 
-    private static final String SSO_UI_BUNDLE = "org.atricore.idbus.capabilities.sso.ui";
-    
     private static final Log logger = LogFactory.getLog(BrandManagerImpl.class);
     
     private List<BrandingInstaller> installers = new ArrayList<BrandingInstaller>();
