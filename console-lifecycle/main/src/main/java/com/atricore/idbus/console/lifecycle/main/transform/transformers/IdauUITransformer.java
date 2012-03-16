@@ -64,7 +64,7 @@ public class IdauUITransformer extends AbstractTransformer {
         if (ida.getUserDashboardBranding() != null) {
 
             try {
-                branding = brandManager.lookup(ida.getUserDashboardBranding().getId());
+                branding = brandManager.lookupByName(ida.getUserDashboardBranding().getId());
             } catch (BrandingServiceException e) {
                 throw new RuntimeException(e);
             }
