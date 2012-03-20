@@ -8,6 +8,8 @@ import java.util.List;
  */
 public class ResourceBasedBrandingDefinition extends  BrandingDefinition {
 
+    private String skin;
+
     private List<BrandingResource> resources = new ArrayList<BrandingResource>();
 
     public List<BrandingResource> getResources() {
@@ -16,5 +18,13 @@ public class ResourceBasedBrandingDefinition extends  BrandingDefinition {
 
     public void setResources(List<BrandingResource> resources) {
         this.resources = resources;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 }

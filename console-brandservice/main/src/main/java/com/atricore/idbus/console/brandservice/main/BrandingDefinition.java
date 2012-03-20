@@ -15,11 +15,11 @@ public class BrandingDefinition implements Serializable {
 
     private String description;
     
-    private String skin;
-    
     private String[] locales;
     
     private String defaultLocale;
+    
+    private String webBrandingId;
 
     // Path to resources
 
@@ -32,20 +32,20 @@ public class BrandingDefinition implements Serializable {
         this.id = id;
     }
 
+    public String getWebBrandingId() {
+        return webBrandingId;
+    }
+
+    public void setWebBrandingId(String webBrandingId) {
+        this.webBrandingId = webBrandingId;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getSkin() {
-        return skin;
-    }
-
-    public void setSkin(String skin) {
-        this.skin = skin;
     }
 
     public String[] getLocales() {

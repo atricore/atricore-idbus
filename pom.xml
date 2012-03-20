@@ -1646,7 +1646,7 @@
                 <module>console-licensing</module>
                 <module>console-liveservices/liveupdate</module>
                 <module>console-settings</module>
-                <module>console-brandservices</module>
+                <module>console-brandservice</module>
                 <module>console-lifecycle</module>
                 <module>console-activation</module>
                 <module>console-2factor</module>

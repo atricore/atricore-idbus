@@ -1009,7 +1009,8 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection<BrandingDefinition> brandings = brandManger.list();
 
             for (BrandingDefinition branding : brandings) {
-                res.getBrandings().add(new UserDashboardBranding(branding.getName(), branding.getDescription()));
+                // Use the runtime ID here ...
+                res.getBrandings().add(new UserDashboardBranding(branding.getWebBrandingId(), branding.getDescription()));
             }
 
             return res;

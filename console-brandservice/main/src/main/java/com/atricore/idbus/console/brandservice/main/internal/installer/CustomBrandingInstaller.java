@@ -28,18 +28,14 @@ public class CustomBrandingInstaller extends OsgiBrandingInstaller {
             
             // TODO : Validate the bundle ! It should be a fragment HOST for SSO UI!
             
-            Dictionary d = bundle.getHeaders("Fragment-Host");
+            Dictionary d = bundle.getHeaders();
+            String hostBundle = (String) d.get("Fragment-Host");
+            if (hostBundle == null)
+                throw new BrandingServiceException("The bundle provided for external custom branding must contain a 'Fragment-Host' header");
             
-            if (d == null)
-                throw new BrandingServiceException("The bundle provided for external custom branding must be contain a 'Fragment-Host' header");
-            
-            Enumeration elements = d.elements();
-            while (elements.hasMoreElements()) {
-                String element = (String) elements.nextElement();
-                if (BrandManager.SSO_UI_BUNDLE.equals(element))
-                    throw new BrandingServiceException("The bundle provided for external custom branding must be contain a 'Fragment-Host' header for " + BrandManager.SSO_UI_BUNDLE);
+            if (!BrandManager.SSO_UI_BUNDLE.equals(hostBundle))
+                throw new BrandingServiceException("The bundle provided for external custom branding must contain a 'Fragment-Host' header for " + BrandManager.SSO_UI_BUNDLE);
 
-            }
             cd.setBundleSymbolicName(bundle.getSymbolicName());
 
             return cd;

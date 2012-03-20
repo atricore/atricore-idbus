@@ -27,6 +27,9 @@ public class CreateCustomBrandingCommand extends BrandingCommandSupport {
     @Option(name = "--openid-app-class", description = "The Wicket application class to use as OpenID UI application", required = false, multiValued = false)
     String customOpenIDAppClazz;
 
+    @Option(name = "-i", aliases = "--id", description = "The ID of the definition, used by the runtime", required = false, multiValued = false)
+    String webBrandingId;
+
     @Override
     protected Object doExecute(BrandManager svc) throws Exception {
         CustomBrandingDefinition def = new CustomBrandingDefinition();
@@ -35,6 +38,7 @@ public class CreateCustomBrandingCommand extends BrandingCommandSupport {
         def.setBundleUri(bundleUri);
         def.setCustomOpenIdAppClazz(customOpenIDAppClazz);
         def.setCustomSsoAppClazz(customSSOAppClazz);
+        def.setWebBrandingId(webBrandingId != null ? webBrandingId : name);
         
         def = (CustomBrandingDefinition) svc.create(def);
 
