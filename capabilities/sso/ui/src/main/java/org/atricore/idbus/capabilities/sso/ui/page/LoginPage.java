@@ -68,33 +68,28 @@ public abstract class LoginPage extends BasePage {
 
         if (artifactId != null) {
 
-            if (artifactId != null) {
-                logger.info("Artifact ID = " + artifactId);
+            logger.info("Artifact ID = " + artifactId);
 
-                // Lookup for ClaimsRequest!
-                try {
-                    claimsRequest = (ClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
-                } catch (Exception e) {
-                    logger.error("Cannot resolve artifact id ["+artifactId+"] : " + e.getMessage(), e);
-                }
-
-                if (claimsRequest != null) {
-
-                    ((SSOWebSession)getSession()).setClaimsRequest(claimsRequest);
-
-                    if (logger.isDebugEnabled())
-                        logger.info("Received claims request " + claimsRequest.getId() +
-                                " from " + claimsRequest.getIssuerChannel() +
-                                " at " + claimsRequest.getIssuerEndpoint());
-                    //variant = claimsRequest.getIssuerChannel().getSkin();
-                } else {
-                    logger.debug("No claims request received!");
-                }
-
-            } else {
-                claimsRequest = ((SSOWebSession)getSession()).getClaimsRequest();
+            // Lookup for ClaimsRequest!
+            try {
+                claimsRequest = (ClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
+            } catch (Exception e) {
+                logger.error("Cannot resolve artifact id ["+artifactId+"] : " + e.getMessage(), e);
             }
 
+            if (claimsRequest != null) {
+
+                ((SSOWebSession)getSession()).setClaimsRequest(claimsRequest);
+
+                if (logger.isDebugEnabled())
+                    logger.info("Received claims request " + claimsRequest.getId() +
+                            " from " + claimsRequest.getIssuerChannel() +
+                            " at " + claimsRequest.getIssuerEndpoint());
+
+            } else {
+                logger.debug("No claims request received, try stored value");
+                claimsRequest = ((SSOWebSession)getSession()).getClaimsRequest();
+            }
         } else {
             claimsRequest = ((SSOWebSession)getSession()).getClaimsRequest();
         }

@@ -35,6 +35,8 @@ public class SSOWebSession extends WebSession {
 
     private ClaimsRequest claimsRequest;
 
+    private String lastAppErrorId;
+
     public SSOWebSession(Request request) {
         super(request);
     }
@@ -55,6 +57,11 @@ public class SSOWebSession extends WebSession {
         return claimsRequest;
     }
 
+    public void setLastAppErrorId(String lastAppErrorId) {
+        this.lastAppErrorId = lastAppErrorId;
+    }
 
-
+    public String getLastAppErrorId() {
+        return lastAppErrorId;
+    }
 }

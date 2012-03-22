@@ -30,7 +30,9 @@ public class WebBrandingServiceImpl implements WebBrandingService {
     }
 
     public void init() {
-
+        // Leave this to make easy detecting service startup
+        logger.info("Web Branding service ACTIVE");
+        System.out.println("Web Branding service ACTIVE");
     }
 
     public WebBranding lookup(String id) {

@@ -31,6 +31,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.value.ValueMap;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
@@ -140,6 +141,21 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
             feedback.error(errmsg);
             feedback.setVisible(true);
 
+        } else if (((SSOWebSession)getSession()).getLastAppErrorId() != null){
+            
+            String lastAppErrorID = ((SSOWebSession)getSession()).getLastAppErrorId();
+
+            if (logger.isDebugEnabled())
+                logger.info("Found last app error ID : " +
+                    lastAppErrorID +
+                    " ("+lastAppErrorID+")");
+
+            feedbackBox.setVisible(true);
+
+            String errmsg = getString(lastAppErrorID, null, "Your session has expired, please try again");
+            feedback.error(errmsg);
+            feedback.setVisible(true);
+            
         } else {
             feedbackBox.setVisible(false);
             feedback.setVisible(false);

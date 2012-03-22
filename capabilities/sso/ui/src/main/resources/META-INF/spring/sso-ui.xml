@@ -10,6 +10,12 @@
     <osgi:reference timeout="60" cardinality="1..1"
                    interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry"
                    id="idsuRegistry"/>
+    <osgi:reference id="webContainer"
+                    interface="org.ops4j.pax.web.service.WebContainer"/>
+
+    <bean id="webContainerSetup" class="org.atricore.idbus.capabilities.sso.ui.internal.WebContainerSetup" init-method="init">
+        <property name="webContainer" ref="webContainer"/>
+    </bean>
 
     <!-- Get application configurations -->
     <bean id="webAppConfigRegistry" class="org.atricore.idbus.capabilities.sso.ui.internal.ApplicationRegistryImpl" >
@@ -57,5 +63,6 @@
     </osgi:list>
     -->
 
-    
+
+
 </beans>

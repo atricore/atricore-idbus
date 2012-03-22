@@ -2,11 +2,14 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.wicket.ResourceReference;
-import org.apache.wicket.SharedResources;
+import org.apache.wicket.*;
 import org.apache.wicket.markup.parser.filter.RelativePathPrefixHandler;
 import org.apache.wicket.markup.resolver.IComponentResolver;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.protocol.http.WebRequestCycle;
+import org.apache.wicket.request.ClientInfo;
+import org.apache.wicket.request.IRequestCycleProcessor;
 import org.atricore.idbus.capabilities.sso.ui.BasePage;
 import org.atricore.idbus.capabilities.sso.ui.BrandingResource;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
@@ -46,6 +49,12 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     public BaseWebApplication() {
         super();
     }
+
+    @Override
+    public RequestCycle newRequestCycle(Request request, Response response) {
+        return new CssWebRequestCycle(this, (WebRequest) request, response);
+    }
+
 
     public ApplicationRegistry getAppConfigRegistry() {
         return appConfigRegistry;
