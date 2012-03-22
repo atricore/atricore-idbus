@@ -27,10 +27,8 @@ public class CssWebRequestCycle extends WebRequestCycle {
         int mid = path.lastIndexOf('.');
         if (mid < 0) return;
         
-//        System.out.println("Processing ["+uri+"]");
         String type = path.substring(mid + 1, path.length());
         if (type.equalsIgnoreCase("css")) {
-//            System.out.println("Setting context type for "  + request.getPath());
             response.setContentType("text/css");
         }
 
