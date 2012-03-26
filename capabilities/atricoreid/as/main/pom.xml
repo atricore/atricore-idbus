@@ -26,12 +26,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.atricoreid</groupId>
         <artifactId>atricoreid</artifactId>
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.3-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.atricoreid</groupId>
     <artifactId>org.atricore.idbus.capabilities.atricoreid.as.main</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : AtricoreID Authorization Server</name>
 

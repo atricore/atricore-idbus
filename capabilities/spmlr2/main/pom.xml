@@ -28,12 +28,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
         <artifactId>spmlr2</artifactId>
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.3-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
     <artifactId>org.atricore.idbus.capabilities.spmlr2.main</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : SPML R2 Main Component</name>
 
