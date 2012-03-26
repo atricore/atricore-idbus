@@ -79,7 +79,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
         // -------------------------------------------------------------------
         BaseWebApplication app = (BaseWebApplication) getApplication();
         if (!app.isReady()) {
-            app.config(appConfigRegistry, brandingService);
+            app.config(bundleContext, appConfigRegistry, brandingService);
         }
         
         // Handle internationalization
