@@ -28,14 +28,14 @@
     <parent>
         <groupId>com.atricore.idbus.console</groupId>
         <artifactId>console</artifactId>
-        <version>1.1.3-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
     </parent>
 
 
     <!-- TODO : Move this to the kernel, or maybe as idbus-management application in applications module -->
     <groupId>com.atricore.idbus.console.lifecycle</groupId>
     <artifactId>console-lifecycle</artifactId>
-    <version>1.1.3-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Atricore Console :: Lifecycle POM</name>
 
