@@ -29,17 +29,17 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.sso</groupId>
         <artifactId>sso</artifactId>
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.2</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.sso</groupId>
     <artifactId>org.atricore.idbus.capabilities.sso.ui</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.2</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : SSO UI Component</name>
 
     <properties>
-        <idbus.cap.sso.version>1.2.2-SNAPSHOT</idbus.cap.sso.version>
+        <idbus.cap.sso.version>1.2.2</idbus.cap.sso.version>
         <ops4j.paxwicket.version>0.8.0-SNAPSHOT</ops4j.paxwicket.version>
     </properties>
 

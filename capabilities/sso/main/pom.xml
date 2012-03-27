@@ -29,12 +29,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.sso</groupId>
         <artifactId>sso</artifactId>
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.2</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.sso</groupId>
     <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.2</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : SSO Main Component</name>
 
