@@ -130,6 +130,9 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
         sb.append(getLocationString(applianceDef.getLocation()));
         sb.append("\n");
 
+        sb.append("\u001B[1m    Branding   : \u001B[0m");
+        sb.append(applianceDef.getUserDashboardBranding() != null ? applianceDef.getUserDashboardBranding().getId() : "<null>");
+        sb.append("\n");
 
         if (applianceDef.getProviders() != null) {
             sb.append("\u001B[1m    Providers  : \u001B[0m");

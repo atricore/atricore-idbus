@@ -46,6 +46,8 @@ public class IdentityApplianceDefinition implements Serializable {
 
     private Location location;
 
+    private UserDashboardBranding userDashboardBranding;
+
     // RFU
     private Set<Feature> activeFeatures;
 
@@ -61,6 +63,8 @@ public class IdentityApplianceDefinition implements Serializable {
     private Set<AuthenticationService> authenticationServices;
     
     private Keystore keystore;
+
+    private Location uiLocation;
 
     public long getId() {
         return id;
@@ -92,6 +96,14 @@ public class IdentityApplianceDefinition implements Serializable {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public Location getUiLocation() {
+        return uiLocation;
+    }
+
+    public void setUiLocation(Location uiLocation) {
+        this.uiLocation = uiLocation;
     }
 
     public int getRevision() {
@@ -199,6 +211,14 @@ public class IdentityApplianceDefinition implements Serializable {
 
     public void setAuthenticationServices(Set<AuthenticationService> authenticationServices) {
         this.authenticationServices = authenticationServices;
+    }
+
+    public UserDashboardBranding getUserDashboardBranding() {
+        return userDashboardBranding;
+    }
+
+    public void setUserDashboardBranding(UserDashboardBranding userDashboardBranding) {
+        this.userDashboardBranding = userDashboardBranding;
     }
 
     @Override

@@ -25,6 +25,7 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand;
+import com.atricore.idbus.console.modeling.main.view.Util;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPolicy;
 import com.atricore.idbus.console.services.dto.AuthenticationContract;
@@ -274,7 +275,9 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         // Authentication mechanisms
         if (view.authMechanism.selectedItem.data == "basic") {
             var basicAuth:BasicAuthentication = new BasicAuthentication();
-            basicAuth.name = identityProvider.name.replace(/\s+/g, "-").toLowerCase() + "-basic-authn";
+            basicAuth.name = Util.getAuthnMechanismName(basicAuth, identityProvider.name, null);
+            basicAuth.enabled = true;
+            basicAuth.priority = 1;
             basicAuth.hashAlgorithm = "MD5";
             basicAuth.hashEncoding = "HEX";
             basicAuth.ignoreUsernameCase = false;

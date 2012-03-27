@@ -34,6 +34,9 @@ import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResp
 import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesResponse;
 import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
 import com.atricore.idbus.console.activation.main.spi.response.PlatformSupportedResponse;
+import com.atricore.idbus.console.brandservice.main.BrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.BrandingServiceException;
+import com.atricore.idbus.console.brandservice.main.spi.BrandManager;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.JDBCDriverDescriptor;
@@ -56,7 +59,6 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
-import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
@@ -145,6 +147,8 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private ImpersonateUserPoliciesRegistry impersonateUserPoliciesRegistry;
 
+    private BrandManager brandManger;
+
     private SubjectNameIdentifierPolicyRegistry  subjectNameIdentifierPolicyRegistry;
 
     public void afterPropertiesSet() throws Exception {
@@ -167,7 +171,11 @@ public class IdentityApplianceManagementServiceImpl implements
     @Transactional
     public void boot() throws IdentityServerException {
         logger.info("Initializing Identity Appliance Management serivce ....");
-        syncAppliances();
+        try {
+            syncAppliances();
+        } catch (IdentityServerException e) {
+            logger.error(e.getMessage(), e);
+        }
 
         // Register buil-in Subject NameID Policies
 
@@ -612,6 +620,12 @@ public class IdentityApplianceManagementServiceImpl implements
             else
                 applianceDef.setName(appliance.getName());
 
+            // Namespace
+            if (appliance.getNamespace() == null)
+                appliance.setNamespace(applianceDef.getNamespace());
+            else
+                applianceDef.setNamespace(appliance.getNamespace());
+
             // Displayname
             if (appliance.getDisplayName() == null)
                 appliance.setDisplayName(applianceDef.getDisplayName());
@@ -675,9 +689,26 @@ public class IdentityApplianceManagementServiceImpl implements
             IdentityAppliance appliance = request.getAppliance();
 
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
-            if (applianceDef.getDisplayName() == null)
-                applianceDef.setDisplayName(applianceDef.getName());
 
+            // We need to keep in sync appliance and appliance definition:
+            if (applianceDef.getDisplayName() == null)
+                applianceDef.setDisplayName(appliance.getName());
+
+            if (applianceDef.getNamespace() == null)
+                applianceDef.setNamespace(appliance.getNamespace());
+
+            if (applianceDef.getDescription() == null)
+                applianceDef.setDescription(appliance.getDescription());
+
+            if (applianceDef.getName() == null)
+                applianceDef.setName(appliance.getName());
+
+            appliance.setName(applianceDef.getName());
+            appliance.setDescription(applianceDef.getDescription());
+            appliance.setNamespace(applianceDef.getNamespace());
+            appliance.setDisplayName(applianceDef.getDisplayName());
+
+            // Set some defaults
             for (Provider p : applianceDef.getProviders()) {
                 if (p.getDisplayName() == null)
                     p.setDisplayName(p.getName());
@@ -966,6 +997,26 @@ public class IdentityApplianceManagementServiceImpl implements
         }
 
         return res;
+    }
+
+    public ListUserDashboardBrandingsResponse listUserDashboardBrandings(ListUserDashboardBrandingsRequest req) throws IdentityServerException {
+        ListUserDashboardBrandingsResponse res = new ListUserDashboardBrandingsResponse();
+        try {
+
+            logger.debug("Listing all user dashboard brandings");
+
+            // Add policies to response
+            Collection<BrandingDefinition> brandings = brandManger.list();
+
+            for (BrandingDefinition branding : brandings) {
+                // Use the runtime ID here ...
+                res.getBrandings().add(new UserDashboardBranding(branding.getWebBrandingId(), branding.getDescription()));
+            }
+
+            return res;
+        } catch (BrandingServiceException e) {
+            throw new IdentityServerException(e);
+        }
     }
 
     /***************************************************************
@@ -1468,6 +1519,14 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setImpersonateUserPoliciesRegistry(ImpersonateUserPoliciesRegistry impersonateUserPoliciesRegistry) {
         this.impersonateUserPoliciesRegistry = impersonateUserPoliciesRegistry;
+    }
+
+    public BrandManager getBrandManger() {
+        return brandManger;
+    }
+
+    public void setBrandManger(BrandManager brandManger) {
+        this.brandManger = brandManger;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {

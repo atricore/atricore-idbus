@@ -61,6 +61,8 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     private KeystoreDTO keystore;
 
+    private UserDashboardBrandingDTO userDashboardBranding;
+
     public long getId() {
         return id;
     }
@@ -197,6 +199,14 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     public void setAuthenticationServices(Set<AuthenticationServiceDTO> authenticationServices) {
         this.authenticationServices = authenticationServices;
+    }
+
+    public UserDashboardBrandingDTO getUserDashboardBranding() {
+        return userDashboardBranding;
+    }
+
+    public void setUserDashboardBranding(UserDashboardBrandingDTO userDashboardBranding) {
+        this.userDashboardBranding = userDashboardBranding;
     }
 
     @Override

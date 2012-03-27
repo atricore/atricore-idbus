@@ -148,7 +148,7 @@ public class  VelocitySerializer extends VfsIdProjectResourceSerializer {
             // Template t = velocityEngine.getTemplate(fqtn);
             // t.merge(veCtx, writer);
             
-            velocityEngine.evaluate(veCtx, writer, "TransformBuilder", reader);
+            velocityEngine.evaluate(veCtx, writer, fqtn, reader);
 
             writer.flush();
             writer.close();

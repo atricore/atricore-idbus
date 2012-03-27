@@ -128,6 +128,7 @@
         <property name="exportIdentityApplianceCommand" ref="exportIdentityApplianceCommand"/>
         <property name="exportMetadataCommand" ref="exportMetadataCommand"/>
         <property name="accountLinkagePolicyListCommand" ref="accountLinkagePolicyListCommand"/>
+        <property name="userDashboardBrandingsListCommand" ref="userDashboardBrandingsListCommand"/>
         <property name="subjectNameIDPolicyListCommand" ref="subjectNameIDPolicyListCommand"/>
         <property name="identityMappingPoliciesListCommand" ref="identityMappingPoliciesListCommand"/>
         <property name="impersonateUserPoliciesListCommand" ref="impersonateUserPoliciesListCommand"/>
@@ -488,6 +489,12 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
+    <object id="userDashboardBrandingsListCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.UserDashboardBrandingsListCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
     <object id="subjectNameIDPolicyListCommand"
             class="com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -535,7 +542,9 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="identityApplianceWizardMediator"
-            class="com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator"/>
+            class="com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="propertySheetMediator" class="com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>

@@ -101,6 +101,13 @@
 
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.ui</artifactId>
+            <version>${idbus.cap.saml2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
             <version>${idbus.cap.saml2.version}</version>
             <scope>provided</scope>
@@ -112,6 +119,39 @@
             <version>${idbus.cap.saml2.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.openid</groupId>
+            <artifactId>org.atricore.idbus.capabilities.openid.main</artifactId>
+            <version>${idbus.cap.openid.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openid4java</groupId>
+                    <artifactId>openid4java-consumer</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.openxri</groupId>
+                    <artifactId>openxri-syntax</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.openxri</groupId>
+                    <artifactId>openxri-client</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>eu.cedarsoft</groupId>
+                    <artifactId>guice-annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.openid</groupId>
+            <artifactId>org.atricore.idbus.capabilities.openid.ui</artifactId>
+            <version>${idbus.cap.openid.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
@@ -231,10 +271,40 @@
             <version>${idbus.bundle.apache-derby-network-v10_5_3_0_1.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- ================================================================== -->
+        <!-- 3rd party components, used during compile time -->
+        <!-- ================================================================== -->
+
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket</artifactId>
+            <version>${apache-wicket.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <maxmem>256M</maxmem>
+                    <fork>${compiler.fork}</fork>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -293,9 +363,8 @@
                         -->
 
                         <Private-Package>!*</Private-Package>
-
                         <Export-Package>
-                            $module.getName()
+                            $module.getPackage()
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
@@ -342,14 +411,38 @@
                             org.apache.camel,
                             org.apache.camel.osgi,
                             org.apache.camel.impl,
-                            org.osgi.framework,
                             org.apache.derby.jdbc,
+                            org.apache.karaf.jaas.boot,
+                            <!-- osgi stuff -->
+                            org.osgi.framework,
+                            org.osgi.service.blueprint,
+                            org.osgi.service.startlevel,
                             org.apache.aries.blueprint,
                             org.apache.aries.blueprint.ext,
-                            org.osgi.service.blueprint,
                             org.apache.karaf.jaas.config,
-                            org.apache.karaf.jaas.boot,
+                            <!-- let bnd import direct dependencies -->
+                            org.apache.wicket,
+                            org.apache.wicket.settings,
+                            org.apache.wicket.session,
+                            org.apache.wicket.util.file,
+                            org.apache.wicket.request,
+                            org.apache.wicket.ajax,
+                            org.apache.wicket.markup.html,
+                            org.apache.wicket.markup.html.link,
+                            org.apache.wicket.protocol.http,
+                            <!-- then wicket stuff -->
+                            org.ops4j.pax.wicket.api,
+                            org.ops4j.pax.wicket.util,
+                            org.ops4j.pax.wicket.util.proxy,
+                            <!-- cglib -->
+                            net.sf.cglib.proxy;version="[2,3)",
+                            net.sf.cglib.core;version="[2,3)",
+                            net.sf.cglib.reflect;version="[2,3)",
+                            <!-- and servlet api -->
+                            javax.servlet,
+                            javax.servlet.http,
                             org.atricore.idbus.capabilities.spnego.jaas,
+                            *
                         </Import-Package>
                         <Require-Bundle>
                            org.atricore.idbus.kernel.common.support,
@@ -364,11 +457,14 @@
                            org.atricore.idbus.capabilities.sso.management,
                            org.atricore.idbus.capabilities.sso.main,
                            org.atricore.idbus.capabilities.sso.support,
+                           org.atricore.idbus.capabilities.sso.ui,
                            org.atricore.idbus.capabilities.spmlr2.main,
                            org.atricore.idbus.capabilities.josso.main,
                            org.atricore.idbus.capabilities.spnego,
                            org.atricore.idbus.capabilities.oauth2.common,
                            org.atricore.idbus.capabilities.oauth2.main,
+                           org.atricore.idbus.capabilities.openid.main,
+                           org.atricore.idbus.capabilities.openid.ui,
                            org.atricore.idbus.connectors.jdoidentityvault,
                            org.atricore.idbus.idojos.dbidentitystore,
                            org.atricore.idbus.idojos.memorysessionstore,
@@ -377,12 +473,14 @@
                            org.atricore.idbus.idojos.ldapidentitystore,
                            com.atricore.idbus.console.twofactor.wikid.authscheme; resolution:="optional",
                            org.atricore.idbus.bundles.javax-jdo2-v2_3-ec,
+                           <!-- some bundles that are key in runtime -->
                            org.datanucleus,
                            org.apache.cxf.bundle,
                            org.apache.activemq.activemq-core,
                            org.atricore.idbus.bundles.ehcache-v2_1_0,
                            org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1,
-                           org.apache.servicemix.specs.jaxb-api-2.1
+                           org.apache.servicemix.specs.jaxb-api-2.1,
+                           org.ops4j.pax.wicket.service
                         </Require-Bundle>
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
                     </instructions>

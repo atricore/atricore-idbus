@@ -19,8 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.main.controller
-{
+package com.atricore.idbus.console.modeling.main.controller {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
@@ -34,7 +33,7 @@ import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleComma
 
 public class IdentityVaultRemoveCommand extends IocSimpleCommand {
 
-    public static const SUCCESS : String = "IdentitySourceRemoveCommand.SUCCESS";
+    public static const SUCCESS:String = "IdentitySourceRemoveCommand.SUCCESS";
 
     private var _projectProxy:ProjectProxy;
 
@@ -54,7 +53,7 @@ public class IdentityVaultRemoveCommand extends IocSimpleCommand {
 
         var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
 
-        for (var i:int=identityAppliance.idApplianceDefinition.identitySources.length-1; i>=0; i--) {
+        for (var i:int = identityAppliance.idApplianceDefinition.identitySources.length - 1; i >= 0; i--) {
             if (identityAppliance.idApplianceDefinition.identitySources[i] == identityVault) {
                 identityAppliance.idApplianceDefinition.identitySources.removeItemAt(i);
                 if (identityAppliance.idApplianceDefinition.providers != null) {

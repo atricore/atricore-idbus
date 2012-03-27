@@ -18,6 +18,7 @@ import org.atricore.idbus.kernel.main.store.identity.SimpleIdentityStoreKeyAdapt
 import java.util.Collection;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 public class WiKIDAuthenticationTransformer extends AbstractTransformer {
 
@@ -29,7 +30,8 @@ public class WiKIDAuthenticationTransformer extends AbstractTransformer {
             return false;
 
         IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
-        AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        TwoFactorAuthentication tfa = (TwoFactorAuthentication) event.getData();
+        AuthenticationService authnService = tfa.getDelegatedAuthentication().getAuthnService();
 
         return authnService != null && authnService instanceof WikidAuthenticationService;
     }
@@ -53,13 +55,17 @@ public class WiKIDAuthenticationTransformer extends AbstractTransformer {
         if (logger.isTraceEnabled())
             logger.trace("Generating Two-Factor Authentication Scheme for IdP " + idpBean.getName());
 
-        AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        //AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+        AuthenticationService authnService = twoFactorAuthn.getDelegatedAuthentication().getAuthnService();
         
         if (authnService instanceof WikidAuthenticationService) {
             WikidAuthenticationService wikidAuthnService = (WikidAuthenticationService) authnService;
 
             Bean twoFactorAuthnBean = newBean(idpBeans, normalizeBeanName(twoFactorAuthn.getName()),
                 "com.atricore.idbus.console.twofactor.wikid.authscheme.WiKIDAuthenticationScheme");
+
+            // priority
+            setPropertyValue(twoFactorAuthnBean, "priority", twoFactorAuthn.getPriority() + "");
 
             // Auth scheme name cannot be changed!
             setPropertyValue(twoFactorAuthnBean, "name", "2factor-authentication");

@@ -25,10 +25,21 @@
     <!-- Define Transformers -->
 
     <bean name="projectSetupTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSetupTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSetupTransformer">
+
+        <property name="mvnProxyHost" value="${maven.proxy.host}"/>
+        <property name="mvnProxyPort" value="${maven.proxy.port}"/>
+        <property name="mvnProxyActive" value="${maven.proxy.active}"/>
+    </bean>
+
 
     <bean name="idauBaseComponentsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
+
+    <bean name="idauUiTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauUITransformer">
+        <property name="brandManager" ref="brandManager"/>
+    </bean>
 
     <bean name="idpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer">
@@ -374,6 +385,7 @@
                                         <!-- Project Transformers -->
                                         <ref bean="projectSetupTransformer"/>
                                         <ref bean="idauBaseComponentsTransformer"/>
+                                        <ref bean="idauUiTransformer"/>
 
                                         <!-- IDP Transformers -->
                                         <ref bean="idpLocalTransformer"/>

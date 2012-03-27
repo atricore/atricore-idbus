@@ -22,12 +22,16 @@
 package com.atricore.idbus.console.modeling.main.view.appliance {
 import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
+import com.atricore.idbus.console.modeling.main.controller.UserDashboardBrandingsListCommand;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 
 import flash.events.Event;
 
+import mx.binding.utils.BindingUtils;
+import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
@@ -40,11 +44,16 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
 {
     public static const RUN:String = "IdentityApplianceWizardViewMediator.RUN";
 
+    private var _projectProxy:ProjectProxy;
+
     private var _wizardDataModel:ObjectProxy = new ObjectProxy();
 
     private var _processingStarted:Boolean;
 
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
+
+    [Bindable]
+    public var _userDashboardBrandings:ArrayCollection;
 
     public function IdentityApplianceWizardViewMediator(name:String = null, viewComp:IdentityApplianceWizardView = null) {
         super(name, viewComp);
@@ -63,6 +72,9 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
     }
 
     private function init():void {
+        BindingUtils.bindProperty(view.steps[0].userDashboardBrandingCombo, "dataProvider", this, "_userDashboardBrandings");
+        sendNotification(ApplicationFacade.LIST_USER_DASHBOARD_BRANDINGS);
+
         view.dataModel = _wizardDataModel;
         view.steps[0].applianceNamespace.text = "com.mycompany.myrealm";
         view.addEventListener(WizardEvent.WIZARD_COMPLETE, onIdentityApplianceWizardComplete);
@@ -72,7 +84,8 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
 
     override public function listNotificationInterests():Array {
         return [IdentityApplianceCreateCommand.SUCCESS,
-            IdentityApplianceCreateCommand.FAILURE];
+            IdentityApplianceCreateCommand.FAILURE,
+            UserDashboardBrandingsListCommand.SUCCESS];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -91,16 +104,23 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                                  resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.wizard.creation.error"));
                 break;
+            case UserDashboardBrandingsListCommand.SUCCESS:
+                _userDashboardBrandings = projectProxy.userDashboardBrandings;
+                break;
         }
 
     }
 
     private function onIdentityApplianceWizardComplete(event:WizardEvent):void {
         _processingStarted = true;
+
+        var idaView:IdentityApplianceWizardView = view as IdentityApplianceWizardView;
+
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
         sendNotification(ProcessingMediator.START,
                          resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.wizard.saving"));
         var identityAppliance:IdentityAppliance = _wizardDataModel.applianceData;
+
         sendNotification(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityAppliance);
     }
 
@@ -117,6 +137,14 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
 
     protected function get view():IdentityApplianceWizardView {
         return viewComponent as IdentityApplianceWizardView;
+    }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
     }
 }
 }

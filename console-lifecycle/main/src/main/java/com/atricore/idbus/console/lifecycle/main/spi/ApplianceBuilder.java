@@ -16,4 +16,5 @@ public interface ApplianceBuilder {
     public byte[] exportProject(IdentityAppliance appliance);
 
     public byte[] exportMetadata(IdentityAppliance appliance, String providerName, String channelName);
+
 }

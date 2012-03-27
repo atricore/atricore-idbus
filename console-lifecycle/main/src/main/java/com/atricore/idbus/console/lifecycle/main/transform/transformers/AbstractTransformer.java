@@ -19,10 +19,8 @@
 
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Channel;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource;
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.Transformer;
@@ -31,12 +29,73 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
 public abstract class AbstractTransformer implements Transformer {
+
+    private static final String[] javaKeywordsConstants = {
+            "abstract",
+            "assert",
+            "boolean",
+            "byte",
+            "case",
+            "catch",
+            "char",
+            "class",
+            "const",
+            "continue",
+            "default",
+            "do",
+            "double",
+            "else",
+            "enum",
+            "extends",
+            "final",
+            "finally",
+            "float",
+            "for",
+            "goto",
+            "if",
+            "implements",
+            "import",
+            "instanceof",
+            "int",
+            "interface",
+            "long",
+            "native",
+            "new",
+            "package",
+            "private",
+            "protected",
+            "public",
+            "return",
+            "short",
+            "static",
+            "strictfp",
+            "super",
+            "switch",
+            "synchronized",
+            "this",
+            "throw",
+            "throws",
+            "transient",
+            "try",
+            "void",
+            "volatile",
+            "while",
+    };
+    
+    private static final Set javaKeywords = new HashSet();
+    static {
+        javaKeywords.addAll(Arrays.asList(javaKeywordsConstants));
+    }
 
     protected UUIDGenerator idGen = new UUIDGenerator();
 
@@ -67,17 +126,43 @@ public abstract class AbstractTransformer implements Transformer {
                 resource.setValue(baos.toByteArray());
 
             } finally {
-                if (is != null) try { is.close(); } catch (IOException e) {/**/}
+                if (is != null) try {
+                    is.close();
+                } catch (IOException e) {/**/}
             }
         }
 
     }
 
+    // -----------------------------------------------------------------------
+    // UI Location Utilities 
+    // -----------------------------------------------------------------------
+
+    protected String resolveUiLocationPath(IdentityAppliance appliance) {
+        IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
+        if (applianceDef.getUiLocation() == null) {
+            return "/IDBUS-UI/" + appliance.getName().toUpperCase();
+        }
+        return resolveLocationPath(applianceDef.getUiLocation());
+    }
+
+    protected String resolveUiErrorLocation(IdentityAppliance appliance) {
+        return resolveLocationBaseUrl(appliance.getIdApplianceDefinition().getLocation()) + "/IDBUS-UI/" + appliance.getName().toUpperCase() + "/SSO/ERROR";
+    }
+
+    protected String resolveUiWarningLocation(IdentityAppliance appliance) {
+        return resolveLocationBaseUrl(appliance.getIdApplianceDefinition().getLocation()) + "/IDBUS-UI/" + appliance.getName().toUpperCase() + "/SSO/WARN/POLICY-ENFORCEMENT";
+    }
+
+    // -----------------------------------------------------------------------
+    // Location Utilities
+    // -----------------------------------------------------------------------
+
     protected String resolveLocationUrl(Provider provider, Channel channel) {
 
         if (channel == null)
             return resolveLocationUrl(provider);
-        
+
         Location cl = channel.getLocation();
         Location pl = provider.getLocation();
         Location al = provider.getIdentityAppliance().getLocation();
@@ -160,9 +245,6 @@ public abstract class AbstractTransformer implements Transformer {
             return "/" + contextString;
         }
 
-
-
-
     }
 
     protected String resolveLocationUrl(Location location) {
@@ -172,7 +254,7 @@ public abstract class AbstractTransformer implements Transformer {
 
         String path = resolveLocationPath(location);
 
-        return  resolveLocationBaseUrl(location) + path;
+        return resolveLocationBaseUrl(location) + path;
     }
 
     protected String resolveLocationBaseUrl(Location location) {
@@ -190,21 +272,68 @@ public abstract class AbstractTransformer implements Transformer {
             protocolString = location.getProtocol() + "://";
             // For HTTP, remove default ports
             if (location.getProtocol().equalsIgnoreCase("http"))
-                portString = (location.getPort() == 80 ? "" :  ":" + location.getPort());
+                portString = (location.getPort() == 80 ? "" : ":" + location.getPort());
             if (location.getProtocol().equalsIgnoreCase("https"))
-                portString = (location.getPort() == 443 ? "" :  ":" + location.getPort());
+                portString = (location.getPort() == 443 ? "" : ":" + location.getPort());
         }
 
         String hostString = "";
         if (location.getHost() != null)
             hostString = location.getHost();
 
-        return protocolString  + hostString + portString;
+        return protocolString + hostString + portString;
     }
 
     protected String normalizeBeanName(String name) {
         String regex = "[ .]";
         return name.replaceAll(regex, "-").toLowerCase();
     }
+
+    protected String toPackageName(String namespace) {
+
+        namespace = namespace.replace(':', '.');
+        namespace = namespace.replace('/', '.');
+
+        // Now, some Java specific issues: packages cannot be named after primitives:
+        String pkg = null;
+        StringTokenizer st = new StringTokenizer(namespace, ".");
+        while (st.hasMoreTokens()) {
+            String pkgName = st.nextToken();
+
+            pkgName = toJavaPackageName(pkgName);
+            if (pkg == null)
+                pkg = pkgName;
+            else
+                pkg += "." + pkgName;
+        }
+
+        return pkg;
+    }
+
+    protected String toJavaPackageName(String singlePackageName) {
+
+        // If it starts with a number
+        
+        try {
+            Integer.parseInt(singlePackageName.substring(0, 1));
+            return "_" + singlePackageName;
+        } catch (NumberFormatException e) {
+            // We're ok
+        }
+
+        // If is a java keyword!
+        if (javaKeywords.contains(singlePackageName))
+            return "_" + singlePackageName;
+        
+        return singlePackageName;
+
+    }
+
+    protected String toFolderName(String namespace) {
+        namespace = namespace.replace(':', '/');
+        namespace = namespace.replace('.', '/');
+        return namespace;
+    }
+
 
 }

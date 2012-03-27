@@ -625,9 +625,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         com.atricore.idbus.console.lifecycle.main.spi.response.ListSubjectNameIDPoliciesResponse beRes;
         try {
             beRes = idApplianceManagementService.listSubjectNameIDPolicies(beReq);
-        }
-
-        catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ListSubjectNameIDPoliciesResponse.class);
@@ -640,12 +638,24 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         com.atricore.idbus.console.lifecycle.main.spi.response.ListImpersonateUserPoliciesResponse beRes;
         try {
             beRes = idApplianceManagementService.listImpersonateUserPolicies(beReq);
-        }
-
-        catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ListImpersonateUserPoliciesResponse.class);
+    }
+
+
+    public ListUserDashboardBrandingsResponse listUserDashboardBrandings(ListUserDashboardBrandingsRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListUserDashboardBrandingsRequest beReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.ListUserDashboardBrandingsRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListUserDashboardBrandingsResponse beRes;
+        try {
+            beRes = idApplianceManagementService.listUserDashboardBrandings(beReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ListUserDashboardBrandingsResponse.class);
     }
 
     /****************************
@@ -963,7 +973,9 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             idp.setAuthenticationMechanisms(new HashSet<AuthenticationMechanismDTO>());
         }
         BasicAuthenticationDTO authMechanism = new BasicAuthenticationDTO();
-        authMechanism.setName(idp.getName() + "-basic-authn");
+        authMechanism.setName(createUrlSafeString(idp.getName()) + "-basic-authn");
+        authMechanism.setEnabled(true);
+        authMechanism.setPriority(1);
         authMechanism.setHashAlgorithm("MD5");
         authMechanism.setHashEncoding("HEX");
         authMechanism.setIgnoreUsernameCase(false);

@@ -24,6 +24,8 @@ import org.atricore.idbus.capabilities.sso.main.emitter.plans.EmailNameIDBuilder
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.UnspecifiedNameIDBuiler;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
@@ -510,31 +512,31 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
 
         // IDP Initiated SSO
         if (ssoEnabled) {
-            Bean idpSsoInit = newAnonymousBean(IdentityMediationEndpointImpl.class);
-            idpSsoInit.setName(spChannelBean.getName() + "-idp-initiated-saml2");
-            setPropertyValue(idpSsoInit, "name", idpSsoInit.getName());
-            setPropertyValue(idpSsoInit, "type", SSOMetadataConstants.SingleSignOnService_QNAME.toString());
-            setPropertyValue(idpSsoInit, "binding", SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML11.getValue());
-            setPropertyValue(idpSsoInit, "location", "/SAML11/SSO/IDP_INITIATE");
-            List<Ref> plansList = new ArrayList<Ref>();
-            Ref plan = new Ref();
-            plan.setBean(samlr2IdpInitToSamlr2AuthnReqPlan.getName());
-            plansList.add(plan);
-            setPropertyRefs(idpSsoInit, "identityPlans", plansList);
-            endpoints.add(idpSsoInit);
-
             Bean idpSsoInit11 = newAnonymousBean(IdentityMediationEndpointImpl.class);
             idpSsoInit11.setName(spChannelBean.getName() + "-idp-initiated-saml11");
             setPropertyValue(idpSsoInit11, "name", idpSsoInit11.getName());
             setPropertyValue(idpSsoInit11, "type", SSOMetadataConstants.SingleSignOnService_QNAME.toString());
-            setPropertyValue(idpSsoInit11, "binding", SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.getValue());
-            setPropertyValue(idpSsoInit11, "location", "/SAML2/SSO/IDP_INITIATE");
-            plansList = new ArrayList<Ref>();
-            plan = new Ref();
+            setPropertyValue(idpSsoInit11, "binding", SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML11.getValue());
+            setPropertyValue(idpSsoInit11, "location", "/SAML11/SSO/IDP_INITIATE");
+            List<Ref> plansList = new ArrayList<Ref>();
+            Ref plan = new Ref();
             plan.setBean(samlr2IdpInitToSamlr2AuthnReqPlan.getName());
             plansList.add(plan);
             setPropertyRefs(idpSsoInit11, "identityPlans", plansList);
             endpoints.add(idpSsoInit11);
+
+            Bean idpSsoInit2 = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            idpSsoInit2.setName(spChannelBean.getName() + "-idp-initiated-saml2");
+            setPropertyValue(idpSsoInit2, "name", idpSsoInit2.getName());
+            setPropertyValue(idpSsoInit2, "type", SSOMetadataConstants.SingleSignOnService_QNAME.toString());
+            setPropertyValue(idpSsoInit2, "binding", SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.getValue());
+            setPropertyValue(idpSsoInit2, "location", "/SAML2/SSO/IDP_INITIATE");
+            plansList = new ArrayList<Ref>();
+            plan = new Ref();
+            plan.setBean(samlr2IdpInitToSamlr2AuthnReqPlan.getName());
+            plansList.add(plan);
+            setPropertyRefs(idpSsoInit2, "identityPlans", plansList);
+            endpoints.add(idpSsoInit2);
         }
 
         // SessionHeartBeatService (non-saml)
@@ -630,15 +632,17 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         Beans beans = (Beans) event.getContext().get("beans");
 
-        // TODO : For now, the same Claims provider and STS are used for ALL channels!
+        // The same Claim Providers and STS are used for the IDP in all channels!
 
         // claimsProvider
-        String claimsChannelName = idpBean.getName() + "-claims-channel";
+        String claimChannelName = idpBean.getName() + "-claim-channel";
+        Collection<Bean> claimChannels = getBeansOfType(idpBeans, ClaimChannelImpl.class.getName());
 
-        Bean claimsChannel = getBean(idpBeans, claimsChannelName);
-        if (claimsChannel == null)
-            throw new TransformException("No claims channel defined as " + claimsChannelName);
-        setPropertyRef(spChannelBean, "claimsProvider", claimsChannel.getName());
+        for (Bean claimChannel : claimChannels) {
+            if (claimChannel == null)
+                throw new TransformException("No claim channel defined as " + claimChannelName);
+            addPropertyBeansAsRefs(spChannelBean, "claimProviders", claimChannel);
+        }
 
         // STS
         Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");

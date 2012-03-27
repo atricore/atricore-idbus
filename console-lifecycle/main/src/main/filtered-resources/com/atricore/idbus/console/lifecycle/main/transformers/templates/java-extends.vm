@@ -1,0 +1,6 @@
+package $package;
+
+public class $clazz extends $parentClazz {
+
+    //  Simple java class that extends a parent
+}

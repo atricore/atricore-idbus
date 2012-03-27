@@ -7,11 +7,20 @@ import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
 public class ProjectSetupTransformer extends AbstractTransformer {
+    
+    private String mvnProxyHost;
+    
+    private String mvnProxyPort;
+
+    private boolean mvnProxyActive;
 
     @Override
     public boolean accept(TransformEvent event) {
@@ -75,6 +84,12 @@ public class ProjectSetupTransformer extends AbstractTransformer {
                 "settings", "mvn-settings", "project");
         projectSettings.setClassifier("velocity");
         projectSettings.setScope(IdProjectResource.Scope.PROJECT);
+        
+        Map<String, Object> mvnSettingsParams = new HashMap<String, Object>();
+        mvnSettingsParams.put("proxyHost", mvnProxyHost);
+        mvnSettingsParams.put("proxyPort", mvnProxyPort);
+        mvnSettingsParams.put("proxyActive", mvnProxyActive);
+        projectSettings.setParams(mvnSettingsParams);
 
         projectModule.addResource(projectPom);
         projectModule.addResource(projectSettings);
@@ -101,17 +116,28 @@ public class ProjectSetupTransformer extends AbstractTransformer {
         return event.getContext().getProject();
     }
 
-    protected String toPackageName(String namespace) {
-        namespace = namespace.replace(':', '.');
-        namespace = namespace.replace('/', '.');
-        return namespace;
+    public String getMvnProxyHost() {
+        return mvnProxyHost;
     }
 
-    protected String toFolderName(String namespace) {
-        namespace = namespace.replace(':', '/');
-        namespace = namespace.replace('.', '/');
-        return namespace;
+    public void setMvnProxyHost(String mvnProxyHost) {
+        this.mvnProxyHost = mvnProxyHost;
     }
 
+    public String getMvnProxyPort() {
+        return mvnProxyPort;
+    }
+
+    public void setMvnProxyPort(String mvnProxyPort) {
+        this.mvnProxyPort = mvnProxyPort;
+    }
+
+    public boolean isMvnProxyActive() {
+        return mvnProxyActive;
+    }
+
+    public void setMvnProxyActive(boolean mvnProxyActive) {
+        this.mvnProxyActive = mvnProxyActive;
+    }
 }
 
