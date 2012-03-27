@@ -176,12 +176,12 @@ public abstract class ActivatorSupport implements Activator {
         return System.getProperty("karaf.base");
     }
 
-    protected JOSSOArtifact createAgentArtifact(String baseUrl, String artifactId, String type) {
-        return createArtifact(baseUrl, JOSSOScope.AGENT, artifactId, getJossoVersion(), type);
+    protected JOSSOArtifact createAgentArtifact(String baseUrl, String artifactId, String classifier, String type) {
+        return createArtifact(baseUrl, JOSSOScope.AGENT, artifactId, classifier, getJossoVersion(), type);
     }
 
-    protected JOSSOArtifact createSampleArtifact(String baseUrl, String artifactId, String type) {
-        return createArtifact(baseUrl, JOSSOScope.SAMPLE, artifactId, getJossoVersion(), type);
+    protected JOSSOArtifact createSampleArtifact(String baseUrl, String artifactId, String classifier, String type) {
+        return createArtifact(baseUrl, JOSSOScope.SAMPLE, artifactId, classifier, getJossoVersion(), type);
     }
 
 
@@ -192,8 +192,8 @@ public abstract class ActivatorSupport implements Activator {
         return artifact;
     }
 
-    protected JOSSOArtifact createArtifact(String baseUrl, JOSSOScope scope, String artifactId, String version, String type) {
-        JOSSOArtifact artifact = new JOSSOArtifact(artifactId, version, type, scope, baseUrl);
+    protected JOSSOArtifact createArtifact(String baseUrl, JOSSOScope scope, String artifactId, String classifier, String version, String type) {
+        JOSSOArtifact artifact = new JOSSOArtifact(artifactId, version, classifier, type, scope, baseUrl);
         if (log.isDebugEnabled())
             log.debug("Created artifact representation : " + artifact.toString());
         return artifact;
