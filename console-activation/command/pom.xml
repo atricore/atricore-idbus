@@ -28,12 +28,12 @@
     <parent>
         <groupId>com.atricore.idbus.console.activation</groupId>
         <artifactId>console-activation</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.1.2</version>
     </parent>
 
     <artifactId>com.atricore.idbus.console.activation.command</artifactId>
     <packaging>bundle</packaging>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.2</version>
 
     <name>Atricore Console :: Activation Commands</name>
 
