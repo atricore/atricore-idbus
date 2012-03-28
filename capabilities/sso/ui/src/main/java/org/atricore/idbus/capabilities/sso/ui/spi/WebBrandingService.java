@@ -15,10 +15,14 @@ public interface WebBrandingService {
 
     WebBranding lookup(String id);
 
-    void publish(String id, WebBranding branding);
+    void publish(String id, WebBranding branding) throws WebBrandingServiceException;
 
-    void remove(String id);
+    void remove(String id) throws WebBrandingServiceException;
 
     Collection<WebBranding> list();
+
+    void register(WebBrandingEventListener listener);
+
+    void unregister(WebBrandingEventListener listener);
 
 }

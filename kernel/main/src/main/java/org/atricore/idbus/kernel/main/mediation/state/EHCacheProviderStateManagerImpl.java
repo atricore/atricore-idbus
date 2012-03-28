@@ -119,10 +119,14 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
             logger.info("Initializing EHCache Provider State Manager using cache " + cacheName);
-            if (cacheManager.cacheExists(cacheName))
-                throw new IllegalStateException("Cache already exists '"+cacheName+"'");
+            if (cacheManager.cacheExists(cacheName)) {
+                logger.info("Cache already exists '"+cacheName+"', reusing it");
+                // This is probably a bundle restart, ignore it.
+            } else {
+                logger.info("Cache does not exists '"+cacheName+"', adding it");
+                cacheManager.addCache(cacheName);
+            }
 
-            cacheManager.addCache(cacheName);
             cache = cacheManager.getCache(cacheName);
 
             if (cache == null) {

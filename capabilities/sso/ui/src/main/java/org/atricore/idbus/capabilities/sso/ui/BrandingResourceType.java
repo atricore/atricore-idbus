@@ -7,8 +7,12 @@ public enum BrandingResourceType {
 
     CSS,
     IMAGE,
+    AUDIO,
+    VIDEO,
     SCRIPT,
     LABEL,
     LINK,
     FONT,
+    OTHER;
+
 }

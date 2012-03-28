@@ -1,12 +1,17 @@
 package org.atricore.idbus.capabilities.sso.ui.internal;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.ui.BrandingResource;
 import org.atricore.idbus.capabilities.sso.ui.BrandingResourceType;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEventListener;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingServiceException;
 
-import java.util.Collection;
-import java.util.Map;
+import javax.servlet.jsp.tagext.TryCatchFinally;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -14,54 +19,64 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class WebBrandingServiceImpl implements WebBrandingService {
 
+    private static final Log logger = LogFactory.getLog(WebBrandingServiceImpl.class);
+
     private Map<String, WebBranding> brandings = new ConcurrentHashMap<String, WebBranding>();
+    
+    private Set<WebBrandingEventListener> listeners = new HashSet<WebBrandingEventListener>(); 
 
     public WebBrandingServiceImpl() {
 
     }
 
     public void init() {
-
-        // TODO : Make this configurable ...
-
-        // JOSSO 2 Default branding
-        WebBranding branding = new WebBranding();
-        branding.setId("josso2-default-branding");
-        branding.setDescription("JOSSO 2.x Default");
-        branding.setSkin("josso2");
-
-        // CSS
-        branding.getResources().add(new BrandingResource("ie6", "ie6.css", "", BrandingResourceType.CSS));
-        branding.getResources().add(new BrandingResource("ie7", "ie7.css", "",  BrandingResourceType.CSS));
-        branding.getResources().add(new BrandingResource("processing", "processing.css", "",  BrandingResourceType.CSS));
-        branding.getResources().add(new BrandingResource("reset", "reset.css", "",  BrandingResourceType.CSS));
-        branding.getResources().add(new BrandingResource("screen", "screen.css", "",  BrandingResourceType.CSS));
-
-        // Images
-        branding.getResources().add(new BrandingResource("jossoLogo", "images/josso-logo.png", "",  BrandingResourceType.IMAGE));
-        branding.getResources().add(new BrandingResource("atricoreLogo", "images/atricore-logo.gif", "",  BrandingResourceType.IMAGE));
-
-        // Labels
-        branding.getResources().add(new BrandingResource("footer", "", "Atricore, Inc.", BrandingResourceType.LABEL));
-
-        // Publish default branding
-        publish(branding.getId(), branding);
-
+        // Leave this to make easy detecting service startup
+        logger.info("Web Branding service ACTIVE");
+        System.out.println("Web Branding service ACTIVE");
     }
 
     public WebBranding lookup(String id) {
         return brandings.get(id);
     }
 
-    public void publish(String id, WebBranding branding) {
+    public void publish(String id, WebBranding branding) throws WebBrandingServiceException {
+
         brandings.put(id, branding);
+        WebBrandingEvent event = new WebBrandingEvent (WebBrandingEvent.PUBLISH, branding.getId());
+        for (WebBrandingEventListener listener : listeners) {
+            try {
+                listener.handleEvent(event);
+            } catch (Exception e) {
+                logger.error("Error notifying removal to listener " + listener + ", " + e.getMessage(), e);
+            }
+        }
+
     }
 
-    public void remove(String id) {
+    public void remove(String id) throws WebBrandingServiceException {
+        if (!brandings.containsKey(id))
+            throw new WebBrandingServiceException("Branding not found for id ["+id+"]");
+
+        WebBrandingEvent event = new WebBrandingEvent (WebBrandingEvent.REMOVE, id);
+        for (WebBrandingEventListener listener : listeners) {
+            try {
+                listener.handleEvent(event);
+            } catch (Exception e) {
+                logger.error("Error notifying removal to listener " + listener + ", " + e.getMessage(), e);
+            }
+        }
         brandings.remove(id);
     }
 
     public Collection<WebBranding> list() {
         return brandings.values();
+    }
+
+    public void register(WebBrandingEventListener listener) {
+        listeners.add(listener);
+    }
+
+    public void unregister(WebBrandingEventListener listener) {
+        listeners.remove(listener);
     }
 }

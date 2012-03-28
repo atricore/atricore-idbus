@@ -71,6 +71,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
 
     @SuppressWarnings("serial")
     public BasePage(PageParameters parameters) throws Exception {
+        
         // -------------------------------------------------------------------
         // The very first thing to do is set the application ready if it's not
         //
@@ -78,9 +79,9 @@ public class BasePage extends WebPage implements IHeaderContributor {
         // -------------------------------------------------------------------
         BaseWebApplication app = (BaseWebApplication) getApplication();
         if (!app.isReady()) {
-            app.config(appConfigRegistry, brandingService);
+            app.config(bundleContext, appConfigRegistry, brandingService);
         }
-
+        
         // Handle internationalization
         if (parameters != null) {
             String lang = parameters.getString("lang");
