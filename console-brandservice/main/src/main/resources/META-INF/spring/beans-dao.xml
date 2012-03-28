@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:osgi="http://www.springframework.org/schema/osgi"
+    xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+    xmlns:ctx="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context.xsd
+                    http://www.springframework.org/schema/osgi-compendium
+                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+                    ">
+
+    <bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
+        <property name="persistenceManagerFactory">
+            <ref local="idbusBrandSvcPmf"/>
+        </property>
+    </bean>
+
+    <!-- The main advantage of this proxy is that it allows DAOs to work with a plain JDO PersistenceManagerFactory reference,
+         while still participating in Spring's (or a J2EE server's) resource and transaction management.
+         DAOs will only rely on the JDO API in such a scenario, without any Spring dependencies. -->
+    <bean id="pmfProxy" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
+        <property name="targetPersistenceManagerFactory" ref="idbusBrandSvcPmf"/>
+        <!--property name="allowCreate" value="false"/-->
+    </bean>
+
+    <bean id="idbusBrandSvcPmf"
+        class="org.atricore.idbus.bundles.datanucleus.core.OsgiJDOPersistenceManagerFactoryBean">
+        <property name="jdoProperties" ref="brandsvcJdoProps"/>
+    </bean>
+
+    <!-- DAOs -->
+
+    <bean id="brandingDefinitionDAO" class="com.atricore.idbus.console.brandservice.main.internal.store.dao.BrandingDefinitionDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+</beans>

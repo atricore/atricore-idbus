@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<orm xmlns="http://java.sun.com/xml/ns/jdo/orm"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://java.sun.com/xml/ns/jdo/orm
+        http://java.sun.com/xml/ns/jdo/orm_2_0.xsd">
+
+    <package name="com.atricore.idbus.console.brandservice.main.domain">
+
+        <class name="BrandingDefinition" table="ATC_BRAND_DEF" >
+            <inheritance strategy="new-table"/>
+            <field name="name">
+                <column column="NAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="description">
+                <column column="DESCRIPTION" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="locales" serialized="true" column="LOCALES"/>
+            <field name="defaultLocale">
+                <column column="LOCALE_DEF" length="8" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="webBrandingId">
+                <column column="WEB_BRAND_ID" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+        </class>
+
+        <class name="CustomBrandingDefinition" table="ATC_BRAND_CUST">
+            <inheritance strategy="new-table"/>
+            <field name="customSsoAppClazz">
+                <column column="SSO_APP" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="customOpenIdAppClazz">
+                <column column="OPENID_APP" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="bundleSymbolicName">
+                <column column="BUNDLE" length="512" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="bundleUri">
+                <column column="BUNDLE_URI" length="512" jdbc-type="VARCHAR"/>
+            </field>
+
+
+        </class>
+
+        <class name="ResourceBasedBrandingDefinition" table="ATC_BRAND_RESOURCE">
+            <inheritance strategy="new-table"/>
+
+            <field name="skin">
+                <column column="SKING" length="32" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="resources" serialized="true" column="RESOURCES"/>
+        </class>
+
+        <class name="BuiltInBrandingDefinition" table="ATC_BRAND_BUILTIN">
+            <inheritance strategy="new-table"/>
+        </class>
+
+    </package>
+
+</orm>

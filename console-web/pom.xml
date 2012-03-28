@@ -204,6 +204,7 @@
                             WEB-INF/lib/console-services-${pom.version}.jar,
                         </Bundle-ClassPath>
                         <Require-Bundle>
+                            com.atricore.idbus.console.settings.main,
                             com.atricore.idbus.console.lifecycle.main,
                             com.atricore.idbus.console.activation.protocol,
                             com.atricore.idbus.console.activation.main,
@@ -281,6 +282,7 @@
                             org.atricore.idbus.kernel.common.support.osgi,
                             org.atricore.idbus.kernel.common.support.services,
                             org.atricore.idbus.kernel.main.authn.util,
+                            com.atricore.idbus.console.settings.main.spi,
                             com.atricore.idbus.console.lifecycle.main.domain,
                             com.atricore.idbus.console.lifecycle.main.domain.metadata,
                             com.atricore.idbus.console.lifecycle.main.exception,
@@ -365,6 +367,12 @@
         <!--<groupId>${project.groupId}</groupId>-->
         <!--<artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>-->
         <!--</dependency>-->
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.settings</groupId>
+            <artifactId>com.atricore.idbus.console.settings.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>com.atricore.idbus.console.lifecycle</groupId>

@@ -34,6 +34,9 @@ import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResp
 import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesResponse;
 import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
 import com.atricore.idbus.console.activation.main.spi.response.PlatformSupportedResponse;
+import com.atricore.idbus.console.brandservice.main.domain.BrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.BrandingServiceException;
+import com.atricore.idbus.console.brandservice.main.spi.BrandManager;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.JDBCDriverDescriptor;
@@ -56,8 +59,6 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
-import org.atricore.idbus.capabilities.sso.ui.WebBranding;
-import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
@@ -145,7 +146,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private ImpersonateUserPoliciesRegistry impersonateUserPoliciesRegistry;
 
-    private WebBrandingService webBrandingService;
+    private BrandManager brandManger;
 
     private SubjectNameIdentifierPolicyRegistry  subjectNameIdentifierPolicyRegistry;
 
@@ -999,17 +1000,22 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public ListUserDashboardBrandingsResponse listUserDashboardBrandings(ListUserDashboardBrandingsRequest req) throws IdentityServerException {
         ListUserDashboardBrandingsResponse res = new ListUserDashboardBrandingsResponse();
+        try {
 
-        logger.debug("Listing all user dashboard brandings");
+            logger.debug("Listing all user dashboard brandings");
 
-        // Add policies to response
-        Collection<WebBranding> brandings = webBrandingService.list();
+            // Add policies to response
+            Collection<BrandingDefinition> brandings = brandManger.list();
 
-        for (WebBranding branding : brandings) {
-            res.getBrandings().add(new UserDashboardBranding(branding.getId(), branding.getDescription()));
+            for (BrandingDefinition branding : brandings) {
+                // Use the runtime ID here ...
+                res.getBrandings().add(new UserDashboardBranding(branding.getWebBrandingId(), branding.getDescription()));
+            }
+
+            return res;
+        } catch (BrandingServiceException e) {
+            throw new IdentityServerException(e);
         }
-
-        return res;
     }
 
     /***************************************************************
@@ -1546,12 +1552,12 @@ public class IdentityApplianceManagementServiceImpl implements
         this.impersonateUserPoliciesRegistry = impersonateUserPoliciesRegistry;
     }
 
-    public WebBrandingService getWebBrandingService() {
-        return webBrandingService;
+    public BrandManager getBrandManger() {
+        return brandManger;
     }
 
-    public void setWebBrandingService(WebBrandingService webBrandingService) {
-        this.webBrandingService = webBrandingService;
+    public void setBrandManger(BrandManager brandManger) {
+        this.brandManger = brandManger;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {

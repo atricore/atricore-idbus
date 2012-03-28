@@ -110,10 +110,11 @@
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
         <jaxws.api.version>2.1</jaxws.api.version>
-        <josso1.version>1.8.6-SNAPSHOT</josso1.version>
+        <josso1.version>1.8.7-SNAPSHOT</josso1.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.14</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
+        <osgi.version>4.2.0</osgi.version>
         <ravis.version>1.0.0.RC2-20100628</ravis.version>
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <spring.security.version>2.0.4</spring.security.version>
@@ -175,6 +176,12 @@
             <dependency>
                 <groupId>org.atricore.idbus.capabilities.sso</groupId>
                 <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
+                <version>${idbus.cap.saml2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.capabilities.sso</groupId>
+                <artifactId>org.atricore.idbus.capabilities.sso.ui</artifactId>
                 <version>${idbus.cap.saml2.version}</version>
             </dependency>
 
@@ -283,6 +290,11 @@
                 <version>${pom.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.atricore.idbus.console.settings</groupId>
+                <artifactId>com.atricore.idbus.console.settings.main</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.lifecycle</groupId>
@@ -293,6 +305,12 @@
             <dependency>
                 <groupId>com.atricore.idbus.console.activation</groupId>
                 <artifactId>com.atricore.idbus.console.activation.main</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.brandservice</groupId>
+                <artifactId>com.atricore.idbus.console.brandservice.main</artifactId>
                 <version>${pom.version}</version>
             </dependency>
 
@@ -354,6 +372,17 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${felix.osgi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${osgi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>${osgi.version}</version>
             </dependency>
 
             <dependency>
@@ -1616,6 +1645,8 @@
                 <module>console-tooling</module>
                 <module>console-licensing</module>
                 <module>console-liveservices/liveupdate</module>
+                <module>console-settings</module>
+                <module>console-brandservice</module>
                 <module>console-lifecycle</module>
                 <module>console-activation</module>
                 <module>console-2factor</module>

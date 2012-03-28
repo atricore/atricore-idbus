@@ -26,6 +26,9 @@
     <!-- ==================================================================== -->
     <!-- Idbus Server Management OSGI Services                                -->
     <!-- ==================================================================== -->
+    
+    <osgi:reference id="serviceConfigurationManager" cardinality="1..1" timeout="60"
+                    interface="com.atricore.idbus.console.settings.main.spi.ServiceConfigurationManager"/>
 
     <osgi:reference id="idApplianceManagementService" cardinality="1..1" timeout="60"
                     interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
@@ -66,6 +69,10 @@
     <bean id="identityApplianceManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.IdentityApplianceManagementAjaxServiceImpl">
         <property name="idApplianceManagementService" ref="idApplianceManagementService"/>
         <property name="dozerMapper" ref="dozerMapper" />
+    </bean>
+    
+    <bean id="serviceConfigurationManagerAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ServiceConfigurationManagerAjaxServcieImpl">
+        <property name="cfgManager" ref="serviceConfigurationManager"/>
     </bean>
 
     <bean id="activationAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ActivationAjaxServiceImpl">

@@ -38,7 +38,7 @@
 
     <bean name="idauUiTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauUITransformer">
-        <property name="brandingService" ref="brandingService"/>
+        <property name="brandManager" ref="brandManager"/>
     </bean>
 
     <bean name="idpLocalTransformer"
