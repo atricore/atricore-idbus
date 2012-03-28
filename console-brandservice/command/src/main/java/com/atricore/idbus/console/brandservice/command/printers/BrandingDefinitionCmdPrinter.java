@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.brandservice.command.printers;
 
-import com.atricore.idbus.console.brandservice.main.BrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.domain.BrandingDefinition;
 
 import java.util.Collection;
 import java.util.Iterator;

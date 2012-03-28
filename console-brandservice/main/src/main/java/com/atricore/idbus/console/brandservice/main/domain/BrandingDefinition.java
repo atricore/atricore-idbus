@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.brandservice.main;
+package com.atricore.idbus.console.brandservice.main.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,6 +8,8 @@ import java.util.List;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class BrandingDefinition implements Serializable {
+
+    private static final long serialVersionUID = 8715366465832674732L;
 
     private long id;
     
@@ -22,7 +24,6 @@ public class BrandingDefinition implements Serializable {
     private String webBrandingId;
 
     // Path to resources
-
 
     public long getId() {
         return id;

@@ -1,8 +1,8 @@
 package com.atricore.idbus.console.brandservice.main.internal;
 
-import com.atricore.idbus.console.brandservice.main.BrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.domain.BrandingDefinition;
 import com.atricore.idbus.console.brandservice.main.BrandingServiceException;
-import com.atricore.idbus.console.brandservice.main.BuiltInBrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.domain.BuiltInBrandingDefinition;
 import com.atricore.idbus.console.brandservice.main.NoSuchBrandingException;
 import com.atricore.idbus.console.brandservice.main.spi.BrandManager;
 import com.atricore.idbus.console.brandservice.main.spi.BrandingInstaller;
@@ -13,7 +13,10 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.packageadmin.PackageAdmin;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.osgi.context.BundleContextAware;
+import org.springframework.transaction.annotation.Transactional;
+import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +25,8 @@ import java.util.List;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class BrandManagerImpl implements BrandManager, BundleContextAware {
+public class BrandManagerImpl implements BrandManager, BundleContextAware,
+        InitializingBean, IdentityServiceLifecycle {
 
     private static final Log logger = LogFactory.getLog(BrandManagerImpl.class);
     
@@ -34,12 +38,57 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware {
     
     // TODO : Move to installers ?!
     private BundleContext bundleContext;
-
-    public void init() {
-        // TODO : SYNC STORED BRANDINGS, JUST INSTALL THE BUNDLES, NO NEED TO REBUILD THEM
-        registerDefaultBrandings();
-    }
     
+    private boolean booted = false;
+
+    public void afterPropertiesSet() throws Exception {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Transactional
+    public void boot() throws Exception {
+        
+        if (booted)
+            return;
+
+        logger.info("Initializing Brand Manager serivce ....");
+
+        try {
+            registerDefaultBrandings();
+            syncBrandingDefinitions();
+            booted = true;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+    }
+
+    protected boolean syncBrandingDefinitions() {
+        try {
+            Collection<BrandingDefinition> brandings = store.list();
+            
+            if (brandings == null || brandings.size() < 1)
+                return true;
+
+            for (BrandingDefinition bd : brandings) {
+
+                if (bd instanceof BuiltInBrandingDefinition)
+                    continue;
+
+                logger.debug("Installing branding definition : " + bd.getName());
+                install(bd.getId());
+            }
+            
+            publish();
+            
+            return true;
+        } catch (BrandingServiceException e) {
+            logger.error("Cannot syncrhonize branding definitions");
+            return false;
+        }
+    }
+
+    @Transactional
     protected void registerDefaultBrandings() {
         for (BuiltInBrandingDefinition b : builtInBrandings) {
             
@@ -60,6 +109,7 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware {
          
     }
 
+    @Transactional
     public BrandingDefinition create(BrandingDefinition def) throws BrandingServiceException {
         try {
             return store.create(def);
@@ -68,6 +118,7 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware {
         }
     }
 
+    @Transactional
     public BrandingDefinition update(BrandingDefinition def) throws BrandingServiceException {
         BrandingDefinition oldDef = store.retrieve(def.getId());
         if (oldDef instanceof BuiltInBrandingDefinition)
@@ -75,6 +126,7 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware {
         return store.update(def);
     }
 
+    @Transactional
     public void delete(long id) throws BrandingServiceException {
         BrandingDefinition def = store.retrieve(id);
         if (def instanceof BuiltInBrandingDefinition)
@@ -83,6 +135,7 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware {
         store.delete(id);
     }
 
+    @Transactional
     public void install(long id) throws BrandingServiceException {
 
         BrandingDefinition def = store.retrieve(id);
@@ -123,15 +176,18 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware {
         }
 
     }
-    
+
+    @Transactional
     public BrandingDefinition lookupByName(String name) throws BrandingServiceException {
         return store.retrieveByName(name);
     }
 
+    @Transactional
     public BrandingDefinition lookup(long id) throws BrandingServiceException {
         return store.retrieve(id);
     }
 
+    @Transactional
     public Collection<BrandingDefinition> list() throws BrandingServiceException {
         return store.list();
     }

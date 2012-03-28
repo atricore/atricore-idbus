@@ -1,9 +1,13 @@
-package com.atricore.idbus.console.brandservice.main;
+package com.atricore.idbus.console.brandservice.main.domain;
+
+import com.atricore.idbus.console.brandservice.main.domain.BrandingDefinition;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class CustomBrandingDefinition extends BrandingDefinition {
+
+    private static final long serialVersionUID = 8715366465832098578L;
 
     private String customSsoAppClazz;
 

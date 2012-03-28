@@ -34,7 +34,7 @@ import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResp
 import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesResponse;
 import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
 import com.atricore.idbus.console.activation.main.spi.response.PlatformSupportedResponse;
-import com.atricore.idbus.console.brandservice.main.BrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.domain.BrandingDefinition;
 import com.atricore.idbus.console.brandservice.main.BrandingServiceException;
 import com.atricore.idbus.console.brandservice.main.spi.BrandManager;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;

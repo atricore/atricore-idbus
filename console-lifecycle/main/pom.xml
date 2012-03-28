@@ -306,9 +306,6 @@
 
         <plugins>
 
-
-
-            
             <plugin>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>maven-datanucleus-plugin</artifactId>
@@ -399,8 +396,8 @@
                             oasis.names.tc.saml._2_0.assertion,
                             oasis.names.tc.saml._2_0.protocol,
                             oasis.names.tc.saml._2_0.wsdl,
-                            org.atricore.idbus.bundles.apache.derby,
                             com.atricore.idbus.console.lifecycle.support.springmetadata.model.*,
+                            org.atricore.idbus.bundles.apache.derby,
                             org.apache.derby.jdbc,
                             org.hsqldb,
                             org.aopalliance.aop,

@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.brandservice.main;
+package com.atricore.idbus.console.brandservice.main.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,9 @@ import java.util.List;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class ResourceBasedBrandingDefinition extends  BrandingDefinition {
+public class ResourceBasedBrandingDefinition extends BrandingDefinition {
+
+    private static final long serialVersionUID = 1266866465832674732L;
 
     private String skin;
 

@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.brandservice.command;
 
-import com.atricore.idbus.console.brandservice.main.BrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.domain.BrandingDefinition;
 import com.atricore.idbus.console.brandservice.main.spi.BrandManager;
 import org.apache.felix.gogo.commands.Command;
 

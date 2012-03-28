@@ -1,8 +1,8 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.brandservice.main.BrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.domain.BrandingDefinition;
 import com.atricore.idbus.console.brandservice.main.BrandingServiceException;
-import com.atricore.idbus.console.brandservice.main.CustomBrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.domain.CustomBrandingDefinition;
 import com.atricore.idbus.console.brandservice.main.spi.BrandManager;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
@@ -60,6 +60,7 @@ public class IdauUITransformer extends AbstractTransformer {
             uiBasePath = resolveLocationPath(uiLocation);
         }
 
+        /* TODO : There are JDO issues to resolve !!!
         BrandingDefinition branding = null;
         if (ida.getUserDashboardBranding() != null) {
 
@@ -69,6 +70,7 @@ public class IdauUITransformer extends AbstractTransformer {
                 throw new RuntimeException(e);
             }
         }
+        */
 
         // ----------------------------------------
         // SSO Capability application
@@ -106,6 +108,7 @@ public class IdauUITransformer extends AbstractTransformer {
             setPropertyValue(appCfgBean, "mountPoint", ssoUiApp.getMountPoint());
             if (ida.getUserDashboardBranding() != null) {
                 setPropertyValue(appCfgBean, "brandingId", ida.getUserDashboardBranding().getId());
+                /* TODO : There are JDO issues to resolve !!!
                 if (branding != null) {
                     if (branding instanceof CustomBrandingDefinition) {
                         CustomBrandingDefinition cb = (CustomBrandingDefinition) branding;
@@ -114,7 +117,7 @@ public class IdauUITransformer extends AbstractTransformer {
                         }
                     }
 
-                }
+                } */
             }
 
             // Export App Configuration
@@ -163,6 +166,7 @@ public class IdauUITransformer extends AbstractTransformer {
             setPropertyValue(appCfgBean, "mountPoint", openIdUiApp.getMountPoint());
             if (ida.getUserDashboardBranding() != null) {
                 setPropertyValue(appCfgBean, "brandingId", ida.getUserDashboardBranding().getId());
+                /* TODO : There are JDO issues to resolve !!!
                 if (branding != null) {
 
                     if (branding instanceof CustomBrandingDefinition) {
@@ -172,6 +176,7 @@ public class IdauUITransformer extends AbstractTransformer {
                         }
                     }
                 }
+                */
 
             }
 
