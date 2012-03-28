@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# chkconfig: - 16 84
+# chkconfig: - 86 13
 # description: Start up Atricore services
 #
 # processname: josso
@@ -26,7 +26,7 @@
 # ----------------------------------------------------------------------------------
 
 # define where JAVA JDK is installed
-JAVA_HOME=${JAVA_HOME:-"/opt/jdk1.6.0"}
+JAVA_HOME=${JAVA_HOME:-"/opt/atricore/jdk1.6.0"}
 
 #define where JOSSO is - this is the directory containing directories log, bin, conf etc
 JOSSO_HOME=${JOSSO_HOME:-"/opt/atricore/josso-ee"}
@@ -34,6 +34,8 @@ JOSSO_HOME=${JOSSO_HOME:-"/opt/atricore/josso-ee"}
 #define the user under which JOSSO will run, or use 'RUNASIS' to run as the current user
 JOSSO_USER=${JOSSO_USER:-"atricore"}
 
+# ----------------------------------------------------------------------------------
+# MODIFY THE FOLLOWING VARIABLES IF NECESSARY
 # ----------------------------------------------------------------------------------
 
 JAVAPTH=$JAVA_HOME/bin
@@ -44,8 +46,8 @@ else
   SUBIT="su - $JOSSO_USER -c "
 fi
 
-JOSSO_CMD_START="cd $JOSSO_HOME/bin; ./start"
-JOSSO_CMD_STOP="cd $JOSSO_HOME/bin; ./stop"
+JOSSO_CMD_START="$JOSSO_HOME/bin/start"
+JOSSO_CMD_STOP="$JOSSO_HOME/bin/stop"
 
 if [ -z "`echo $PATH | grep $JAVAPTH`" ]; then
   export PATH=$PATH:$JAVAPTH
@@ -56,18 +58,20 @@ if [ ! -d "$JOSSO_HOME" ]; then
   exit 1
 fi
 
-echo JOSSO_CMD_START = $JOSSO_CMD_START
+export JAVA_HOME
 
 case "$1" in
 start)
+    echo JOSSO_CMD_START = $JOSSO_CMD_START
     cd $JOSSO_HOME/bin
     if [ -z "$SUBIT" ]; then
         eval $JOSSO_CMD_START
     else
-        $SUBIT "$JOSSO_CMD_START" 
+        $SUBIT "$JOSSO_CMD_START"
     fi
     ;;
 stop)
+    echo JOSSO_CMD_STOP = $JOSSO_CMD_STOP
     if [ -z "$SUBIT" ]; then
         $JOSSO_CMD_STOP
     else
