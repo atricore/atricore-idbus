@@ -1,13 +1,14 @@
 package com.atricore.idbus.console.services.spi;
 
+import com.atricore.idbus.console.services.dto.settings.ServiceConfigurationDTO;
+import com.atricore.idbus.console.services.dto.settings.ServiceTypeDTO;
+
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public interface ServiceConfigurationManagerAjaxService {
 
-    // TODO : Mirror back-end methods, create DTOs (use dozer ?)
+    ServiceTypeDTO configureService(ServiceConfigurationDTO cfg) throws ServiceConfigurationException;
 
-    // TODO : void configureService(ServiceConfiguration cfg) throws ServiceConfigurationException;
-
-    // TODO : ServiceConfiguration lookupConfiguration(ServiceType serviceName) throws ServiceConfigurationException;
+    ServiceConfigurationDTO lookupConfiguration(ServiceTypeDTO serviceName) throws ServiceConfigurationException;
 }

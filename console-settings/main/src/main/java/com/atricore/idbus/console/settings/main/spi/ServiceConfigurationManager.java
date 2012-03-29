@@ -1,7 +1,5 @@
 package com.atricore.idbus.console.settings.main.spi;
 
-import java.util.Collection;
-
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */

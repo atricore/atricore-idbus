@@ -1,25 +1,22 @@
-package com.atricore.idbus.console.settings.main.spi;
+package com.atricore.idbus.console.services.dto.settings;
 
-/**
- * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
- */
-public class PersistenceServiceConfiguration implements  ServiceConfiguration {
+public class PersistenceServiceConfigurationDTO implements ServiceConfigurationDTO {
 
-    private static final long serialVersionUID = 1316383500271946278L;
+    private static final long serialVersionUID = 3304208642004252650L;
 
-    private ServiceType serviceType;
-    
+    private ServiceTypeDTO serviceType;
+
     private Integer port;
-    
+
     private String username;
-    
+
     private String password;
 
-    public PersistenceServiceConfiguration() {
-        this.serviceType = ServiceType.PERSISTENCE;
+    public PersistenceServiceConfigurationDTO() {
+        this.serviceType = ServiceTypeDTO.PERSISTENCE;
     }
 
-    public ServiceType getServiceType() {
+    public ServiceTypeDTO getServiceType() {
         return serviceType;
     }
 

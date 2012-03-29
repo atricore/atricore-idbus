@@ -927,6 +927,35 @@
         <class-b>com.atricore.idbus.console.services.dto.WindowsAuthenticationDTO</class-b>
     </mapping>
 
+    <mapping>
+        <class-a>com.atricore.idbus.console.settings.main.spi.HttpServiceConfiguration</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.settings.HttpServiceConfigurationDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.settings.main.spi.SshServiceConfiguration</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.settings.SshServiceConfigurationDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.settings.main.spi.PersistenceServiceConfiguration</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.settings.PersistenceServiceConfigurationDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.settings.main.spi.ManagementServiceConfiguration</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.settings.ManagementServiceConfigurationDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.settings.main.spi.LogServiceConfiguration</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.settings.LogServiceConfigurationDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.settings.main.spi.ServiceType</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.settings.ServiceTypeDTO</class-b>
+    </mapping>
 
     <mapping>
         <class-a>com.atricore.josso2.licensing._1_0.license.LicenseType</class-a>

@@ -65,6 +65,16 @@ public class MenuMediator extends IocMediator {
                     settingsMenuEntry.icon = EmbeddedIcons.licenseIcon;
                 else if (settingsMenuEntry.iconName == "liveUpdate")
                     settingsMenuEntry.icon = EmbeddedIcons.liveUpdateIcon;
+                else if (settingsMenuEntry.iconName == "httpService")
+                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                else if (settingsMenuEntry.iconName == "sshService")
+                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                else if (settingsMenuEntry.iconName == "persistenceService")
+                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                else if (settingsMenuEntry.iconName == "managementService")
+                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                else if (settingsMenuEntry.iconName == "logService")
+                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
             }
 
             smr.add(settingsMenuDrawer);

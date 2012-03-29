@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*"
+         width="100%" height="100%"
+         skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
+        >
+
+    <fx:Metadata>
+        [ResourceBundle("console")]
+    </fx:Metadata>
+
+    <fx:Declarations>
+        <mx:NumberValidator id="portValidator" source="{port}" required="true" property="text"
+                            trigger="{btnSave}" triggerEvent="click" minValue="1" maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <mx:StringValidator id="usernameValidator" source="{username}" required="true" property="text"
+                            trigger="{btnSave}" triggerEvent="click"/>
+        <utils:PasswordValidator id="passwordValidator" source="{password}" property="text" required="true"
+                                 matchSource="{confirmPassword}" matchProperty="text" defaultLength="-1"
+                                 noMatchError="Passwords do not match"/>
+    </fx:Declarations>
+
+    <s:Group width="100%" height="100%">
+
+        <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.port')}:" required="true">
+                <s:TextInput id="port" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.username')}:" required="true">
+                <s:TextInput id="username" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.password')}:" required="true">
+                <s:TextInput id="password" width="200" displayAsPassword="true"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.confirmPassword')}:" required="true">
+                <s:TextInput id="confirmPassword" width="200" displayAsPassword="true"/>
+            </mx:FormItem>
+
+            <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.ssh.save')}" enabled="false"/>
+        </mx:Form>
+
+    </s:Group>
+
+</s:Panel>

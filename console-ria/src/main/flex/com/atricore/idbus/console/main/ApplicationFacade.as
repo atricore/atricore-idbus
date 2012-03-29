@@ -32,6 +32,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const LICENSE_MANAGEMENT_SERVICE:String = "licenseManagementService";
     public static const LIVE_UPDATE_SERVICE:String = "liveUpdateService";
     public static const SCHEMAS_MANAGEMENT_SERVICE:String = "schemasManagementService";
+    public static const SERVICE_CONFIGURATION_MANAGEMENT_SERVICE:String = "serviceConfigurationManagementService";
 
     public static const ADMIN_GROUP:String = "Administrators";
 
@@ -127,6 +128,13 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const LIST_IDENTITY_MAPPING_POLICIES:String = "listIdentityMappingPolicies";
     public static const LIST_NAMEID_POLICIES:String = "listNameIDPolicies";
     public static const LIST_IMPERSONATE_USER_POLICIES:String = "listImpersonateUserPolicies";
+
+    public static const GET_SERVICE_CONFIG:String = "getServiceConfig";
+    public static const UPDATE_SERVICE_CONFIG:String = "updateServiceConfig";
+    public static const GET_HTTP_SERVICE_CONFIG:String = "getHttpServiceConfig";
+    public static const UPDATE_HTTP_SERVICE_CONFIG:String = "updateHttpServiceConfig";
+    public static const GET_SSH_SERVICE_CONFIG:String = "getSshServiceConfig";
+    public static const UPDATE_SSH_SERVICE_CONFIG:String = "updateSshServiceConfig";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";

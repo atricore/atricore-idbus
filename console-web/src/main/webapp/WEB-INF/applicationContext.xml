@@ -73,6 +73,7 @@
     
     <bean id="serviceConfigurationManagerAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ServiceConfigurationManagerAjaxServcieImpl">
         <property name="cfgManager" ref="serviceConfigurationManager"/>
+        <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
     <bean id="activationAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ActivationAjaxServiceImpl">

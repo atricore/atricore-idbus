@@ -6,8 +6,7 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -52,8 +51,16 @@ public abstract class OsgiServiceConfigurationHandler<T extends ServiceConfigura
         if (cfg.getBundleLocation() != null) {
             cfg.setBundleLocation(null);
         }
-        cfg.update(props);
 
+        Dictionary properties = cfg.getProperties();
+
+        Enumeration e = props.keys();
+        while (e.hasMoreElements()) {
+            Object key = e.nextElement();
+            properties.put(key, props.get(key));
+        }
+
+        cfg.update(properties);
     }
 
     private String[] parsePid(String pid) {
@@ -67,6 +74,41 @@ public abstract class OsgiServiceConfigurationHandler<T extends ServiceConfigura
         }
     }
 
+    protected Integer getInt(Dictionary<String, String> props, String key) {
+        String v = props.get(key);
+        return v == null || "".equals(v) ? null : Integer.valueOf(v);
+    }
 
+    protected Boolean getBoolean(Dictionary<String, String> props, String key) {
+        String v = props.get(key);
+        return v == null || "".equals(v) ? null : Boolean.parseBoolean(v);
+    }
 
+    protected String getString(Dictionary<String, String> props, String key) {
+        String v = props.get(key);
+        return v == null || "".equals(v) ? null : v;
+    }
+
+    protected String[] getArrayFromCsv(String v) {
+        StringTokenizer st = new StringTokenizer(v);
+        List<String> ts = new ArrayList<String>();
+        while (st.hasMoreTokens()) {
+            String t = st.nextToken().trim();
+            ts.add(t);
+        }
+        return ts.toArray(new String[ts.size()]);
+    }
+
+    protected String toCsvString(String[] v) {
+        StringBuffer b = new StringBuffer();
+
+        for (int i = 0; i < v.length; i++) {
+            String s = v[i];
+            b.append(s);
+            if (i + 1 < v.length)
+                b.append(",");
+        }
+
+        return b.toString();
+    }
 }
