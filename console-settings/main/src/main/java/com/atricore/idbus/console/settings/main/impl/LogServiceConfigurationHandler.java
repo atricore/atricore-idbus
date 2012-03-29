@@ -1,13 +1,13 @@
 package com.atricore.idbus.console.settings.main.impl;
 
-import com.atricore.idbus.console.settings.main.spi.PersistenceServiceConfiguration;
+import com.atricore.idbus.console.settings.main.spi.LogServiceConfiguration;
 import com.atricore.idbus.console.settings.main.spi.ServiceConfigurationException;
 import com.atricore.idbus.console.settings.main.spi.ServiceType;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class LogServiceConfigurationHandler extends OsgiServiceConfigurationHandler<PersistenceServiceConfiguration> {
+public class LogServiceConfigurationHandler extends OsgiServiceConfigurationHandler<LogServiceConfiguration> {
 
     public LogServiceConfigurationHandler() {
         super("org.ops4j.pax.logging");
@@ -17,13 +17,15 @@ public class LogServiceConfigurationHandler extends OsgiServiceConfigurationHand
         return type.equals(ServiceType.LOG);
     }
 
-    public PersistenceServiceConfiguration loadConfiguration(ServiceType type) throws ServiceConfigurationException {
-        // Instead of loading configuartion properties, we need to check whether we're using the debug or production
+    public LogServiceConfiguration loadConfiguration(ServiceType type) throws ServiceConfigurationException {
+        // Instead of loading configuration properties, we need to check whether we're using the debug or production
         // setup
-        return null;
+        LogServiceConfiguration cfg = new LogServiceConfiguration();
+        cfg.setServiceMode(LogServiceConfiguration.MODE_DEV);
+        return cfg;
     }
 
-    public void storeConfiguration(PersistenceServiceConfiguration config) throws ServiceConfigurationException {
+    public void storeConfiguration(LogServiceConfiguration config) throws ServiceConfigurationException {
 
     }
 }

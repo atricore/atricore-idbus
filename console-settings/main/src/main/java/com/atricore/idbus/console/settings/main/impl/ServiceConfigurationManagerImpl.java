@@ -20,12 +20,16 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
     }
 
     public void configureService(ServiceConfiguration cfg) throws ServiceConfigurationException {
+        boolean handled = false;
         for (ServiceConfigurationHandler handler : handlers) {
-            if (handler.canHandle(cfg.getServiceType()))
+            if (handler.canHandle(cfg.getServiceType())) {
                 handler.storeConfiguration(cfg);
+                handled = true;
+            }
         }
-        throw new ServiceConfigurationException("Unknown service name : " + cfg.getServiceType().name());
-        
+        if (!handled) {
+            throw new ServiceConfigurationException("Unknown service name : " + cfg.getServiceType().name());
+        }
     }
 
     public ServiceConfiguration lookupConfiguration(ServiceType serviceType) throws ServiceConfigurationException {

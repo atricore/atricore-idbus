@@ -11,10 +11,14 @@ import java.util.Hashtable;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceConfigurationHandler<PersistenceServiceConfiguration> {
+public class PersistenceServiceConfigurationHandler extends OsgiServiceConfigurationHandler<PersistenceServiceConfiguration> {
 
-    public ConsolePersistenceServiceConfigurationHandler() {
-        super("com.atricore.idbus.console.db");
+    private static final Integer DEFAULT_PORT = 1527;
+    private static final String DEFAULT_USERNAME = "admin";
+    private static final String DEFAULT_PASSWORD = "admin";
+    
+    public PersistenceServiceConfigurationHandler() {
+        super("org.atricore.josso.services");
     }
 
     public boolean canHandle(ServiceType type) {
@@ -22,8 +26,12 @@ public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceCo
     }
 
     public PersistenceServiceConfiguration loadConfiguration(ServiceType type) throws ServiceConfigurationException {
-        // THis is a write only handler, DO NO  implement this
-        return null;
+        try {
+            Dictionary<String, String> d = super.getProperties();
+            return toConfiguration(d);
+        } catch (Exception e) {
+            throw new ServiceConfigurationException("Error loading Persistence configuration properties " + e.getMessage() , e);
+        }
     }
 
     public void storeConfiguration(PersistenceServiceConfiguration config) throws ServiceConfigurationException {
@@ -58,14 +66,32 @@ public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceCo
         Dictionary<String, String> d = new Hashtable<String, String>();
 
         if (config.getPort() != null)
-            d.put("jdbc.ConnectionURL", "jdbc:derby://localhost:" + config.getPort() + "/atricore-console;create=true");
+            d.put("dbserver.port", config.getPort() + "");
 
         if (config.getUsername() != null)
-            d.put("jdbc.ConnectionUserName", config.getUsername());
+            d.put("dbserver.username", config.getUsername());
 
         if (config.getPort() != null)
-            d.put("jdbc.ConnectionPassword", config.getPassword());
+            d.put("dbserver.password", config.getPassword());
 
         return d;
+    }
+
+    protected PersistenceServiceConfiguration toConfiguration(Dictionary<String, String> props) {
+        PersistenceServiceConfiguration cfg = new PersistenceServiceConfiguration();
+        cfg.setPort(getInt(props, "dbserver.port"));
+        cfg.setUsername(getString(props, "dbserver.username"));
+        cfg.setPassword(getString(props, "dbserver.password"));
+        
+        if (cfg.getPort() == null)
+            cfg.setPort(DEFAULT_PORT);
+        
+        if (cfg.getUsername() == null)
+            cfg.setUsername(DEFAULT_USERNAME);
+        
+        if (cfg.getPassword() == null)
+            cfg.setPassword(DEFAULT_PASSWORD);
+        
+        return cfg;
     }
 }

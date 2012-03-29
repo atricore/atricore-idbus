@@ -107,4 +107,11 @@
         </properties>
     </destination>
 
+    <destination id="serviceConfigurationManagementService">
+        <properties>
+            <factory>spring</factory>
+            <source>serviceConfigurationManagerAjaxServiceBean</source>
+        </properties>
+    </destination>
+
 </service>

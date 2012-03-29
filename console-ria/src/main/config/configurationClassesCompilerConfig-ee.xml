@@ -227,6 +227,16 @@
         <symbol>com.atricore.idbus.console.liveupdate.main.controller.SaveUpdateSchemeCommand</symbol>
         <symbol>com.atricore.idbus.console.liveupdate.main.view.LiveUpdatePopUpManager</symbol>
 
+        <!-- Local Services classes -->
+        <symbol>com.atricore.idbus.console.config.main.model.ServiceConfigProxy</symbol>
+        <symbol>com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand</symbol>
+        <symbol>com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand</symbol>
+        <symbol>com.atricore.idbus.console.config.http.HttpServiceMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.ssh.SshServiceMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.persistence.PersistenceServiceMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.management.ManagementServiceMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.log.LogServiceMediator</symbol>
+
         <!-- General classes -->
         <!--
         <symbol>mx.logging.targets.TraceTarget</symbol>

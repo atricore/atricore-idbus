@@ -1,12 +1,12 @@
 package com.atricore.idbus.console.settings.main.impl;
 
 import com.atricore.idbus.console.settings.main.spi.HttpServiceConfiguration;
-import com.atricore.idbus.console.settings.main.spi.ServiceConfiguration;
 import com.atricore.idbus.console.settings.main.spi.ServiceConfigurationException;
 import com.atricore.idbus.console.settings.main.spi.ServiceType;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -35,7 +35,11 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
         try {
             // Some service validations:
 
-            // HTTP Port
+            // Server Id
+            if (config.getServerId() == null)
+                throw new ServiceConfigurationException("Invalid HTTP Server Id value null");
+
+            // Port
             if (config.getPort() != null) {
                 int port = config.getPort();
                 if (port < 1 && port > 65535)
@@ -44,9 +48,38 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
                 throw new ServiceConfigurationException("Invalid HTTP Port value null");
             }
 
-            // TODO : HTTP Addresses
+            // TODO : validate HTTP Addresses
 
-            // TODO : HTTP SSL Port
+            // Session Timeout
+            if (config.getSessionTimeout() == null)
+                throw new ServiceConfigurationException("Invalid HTTP Session Timeout value null");
+
+            //  Max Header Buffer Size
+            if (config.getMaxHeaderBufferSize() == null)
+                throw new ServiceConfigurationException("Invalid HTTP Max Header Buffer Size value null");
+
+            if (config.isEnableSsl() != null && config.isEnableSsl()) {
+                // SSL Port
+                if (config.getSslPort() != null) {
+                    int port = config.getSslPort();
+                    if (port < 1 && port > 65535)
+                        throw new ServiceConfigurationException("Invalid HTTP SSL Port value " + port);
+                } else {
+                    throw new ServiceConfigurationException("Invalid HTTP SSL Port value null");
+                }
+
+                // SSL Keystore Path
+                if (config.getSslKeystorePath() == null)
+                    throw new ServiceConfigurationException("Invalid HTTP SSL Keystore Path value null");
+
+                // SSL Keystore Password
+                if (config.getSslKeystorePassword() == null)
+                    throw new ServiceConfigurationException("Invalid HTTP SSL Keystore Password value null");
+
+                // SSL Key Password
+                if (config.getSslKeyPassword() == null)
+                    throw new ServiceConfigurationException("Invalid HTTP SSL Key Password value null");
+            }
 
             Dictionary<String, String> d = toDictionary(config);
             updateProperties(d);
@@ -58,13 +91,13 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
     protected Dictionary<String, String> toDictionary(HttpServiceConfiguration config) {
         Dictionary<String, String> d = new Hashtable<String, String>();
         
-        if (config.getBindAddresses() != null) 
+        if (config.getBindAddresses() != null)
             d.put("org.ops4j.pax.web.listening.addresses", toCsvString(config.getBindAddresses()));
         
         if (config.isDisableSessionUrl() != null) 
             d.put("org.ops4j.pax.web.session.url", config.isDisableSessionUrl().toString());
         
-        if (config.isEnableSsl()) 
+        if (config.isEnableSsl() != null)
             d.put("org.osgi.service.http.secure.enabled", config.isEnableSsl().toString());
         
         if (config.getMaxHeaderBufferSize() != null) 
@@ -89,14 +122,13 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
             d.put("org.ops4j.pax.web.ssl.keystore", config.getSslKeystorePath());
         
         if (config.getSslPort() != null)
-            d.put("org.osgi.service.http.port.secure", config.getSslPort().toString());
+            d.put("org.osgi.service.http.port.secure", config.getSslPort() + "");
         
         return d;
     }
     
     protected HttpServiceConfiguration toConfiguration(Dictionary<String, String> props) {
-
-        HttpServiceConfiguration cfg = new HttpServiceConfiguration ();
+        HttpServiceConfiguration cfg = new HttpServiceConfiguration();
         
         if (props.get("org.ops4j.pax.web.listening.addresses") != null && !"".equals(props.get("org.ops4j.pax.web.listening.addresses")))
             cfg.setBindAddresses(getArrayFromCsv(props.get("org.ops4j.pax.web.listening.addresses")));
@@ -116,45 +148,5 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
         cfg.setSslPort(getInt(props, "org.osgi.service.http.port.secure"));
         
         return cfg;
-        
-    }
-    
-    protected int getInt(Dictionary<String, String> props, String key) {
-        String v = props.get(key);
-        return v == null || "".equals(v) ? null : Integer.parseInt(v);
-    }
-
-
-    protected boolean getBoolean(Dictionary<String, String> props, String key) {
-        String v = props.get(key);
-        return v == null || "".equals(v) ? null : Boolean.parseBoolean(v);
-    }
-    
-    protected String getString(Dictionary<String, String> props, String key) {
-        String v = props.get(key);
-        return v == null || "".equals(v) ? null : v;
-    }
-
-    protected String[] getArrayFromCsv(String v) {
-        StringTokenizer st = new StringTokenizer(v);
-        List<String> ts = new ArrayList<String>();
-        while (st.hasMoreTokens()) {
-            String t = st.nextToken().trim();
-            ts.add(t);
-        }
-        return ts.toArray(new String[ts.size()]);
-    }
-    
-    protected String toCsvString(String[] v) {
-        StringBuffer b = new StringBuffer();
-        
-        for (int i = 0; i < v.length; i++) {
-            String s = v[i];
-            b.append(s);
-            if (i + 1 < v.length)
-                b.append(",");
-        }
-        
-        return b.toString();
     }
 }

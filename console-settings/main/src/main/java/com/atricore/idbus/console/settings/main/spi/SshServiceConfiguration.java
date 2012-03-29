@@ -5,11 +5,13 @@ package com.atricore.idbus.console.settings.main.spi;
  */
 public class SshServiceConfiguration implements  ServiceConfiguration {
 
+    private static final long serialVersionUID = -3802594907694348402L;
+
     private ServiceType serviceType;
 
-    private int port;
+    private Integer port;
 
-    private String[] bindAddresses;
+    private String bindAddress;
 
     public SshServiceConfiguration() {
         this.serviceType = ServiceType.SSH;
@@ -19,19 +21,19 @@ public class SshServiceConfiguration implements  ServiceConfiguration {
         return serviceType;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public void setPort(Integer port) {
         this.port = port;
     }
 
-    public String[] getBindAddresses() {
-        return bindAddresses;
+    public String getBindAddress() {
+        return bindAddress;
     }
 
-    public void setBindAddresses(String[] bindAddresses) {
-        this.bindAddresses = bindAddresses;
+    public void setBindAddress(String bindAddress) {
+        this.bindAddress = bindAddress;
     }
 }

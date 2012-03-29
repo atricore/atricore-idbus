@@ -1,41 +1,38 @@
-package com.atricore.idbus.console.settings.main.spi;
+package com.atricore.idbus.console.services.dto.settings;
 
-/**
- * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
- */
-public class HttpServiceConfiguration implements  ServiceConfiguration {
+public class HttpServiceConfigurationDTO implements ServiceConfigurationDTO {
 
-    private static final long serialVersionUID = 763557007790413922L;
+    private static final long serialVersionUID = -5558537415866363008L;
 
-    private ServiceType serviceType;
-    
+    private ServiceTypeDTO serviceType;
+
     private String serverId;
-    
+
     private Integer port;
-    
+
     private String[] bindAddresses;
-    
+
     private Integer sessionTimeout;
-    
+
     private Integer maxHeaderBufferSize;
-    
+
     private Boolean disableSessionUrl;
-    
+
     private Boolean enableSsl;
-    
+
     private Integer sslPort;
-    
+
     private String sslKeystorePath;
-    
+
     private String sslKeystorePassword;
-    
+
     private String sslKeyPassword;
 
-    public HttpServiceConfiguration() {
-        this.serviceType = ServiceType.HTTP;
+    public HttpServiceConfigurationDTO() {
+        this.serviceType = ServiceTypeDTO.HTTP;
     }
 
-    public ServiceType getServiceType() {
+    public ServiceTypeDTO getServiceType() {
         return serviceType;
     }
 

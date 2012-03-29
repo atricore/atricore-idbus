@@ -1,13 +1,10 @@
-package com.atricore.idbus.console.settings.main.spi;
+package com.atricore.idbus.console.services.dto.settings;
 
-/**
- * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
- */
-public class ManagementServiceConfiguration implements  ServiceConfiguration {
+public class ManagementServiceConfigurationDTO implements ServiceConfigurationDTO {
 
-    private static final long serialVersionUID = 3389716022706163347L;
+    private static final long serialVersionUID = -2117166017313730779L;
 
-    private ServiceType serviceType;
+    private ServiceTypeDTO serviceType;
 
     private Integer rmiRegistryPort;
 
@@ -15,11 +12,11 @@ public class ManagementServiceConfiguration implements  ServiceConfiguration {
 
     private String serviceUrl;
 
-    public ManagementServiceConfiguration() {
-        this.serviceType = ServiceType.MANAGEMENT;
+    public ManagementServiceConfigurationDTO() {
+        this.serviceType = ServiceTypeDTO.MANAGEMENT;
     }
 
-    public ServiceType getServiceType() {
+    public ServiceTypeDTO getServiceType() {
         return serviceType;
     }
 
