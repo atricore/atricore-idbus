@@ -49,7 +49,11 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
 
     private boolean signRequests;
 
-    private long requestTimeToLive = 6000000L; // Default to ten minutes
+    // In milliseconds
+    private long requestTimeToLive = 1000L * 60L * 10L; // Default to ten minutes
+
+    // In milliseconds
+    private long timestampValidationTolerance = 1000L * 60L * 5L; // Default to five minutes
 
     private SamlR2Signer signer;
 
@@ -284,4 +288,11 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
         this.requestTimeToLive = requestTimeToLive;
     }
 
+    public long getTimestampValidationTolerance() {
+        return timestampValidationTolerance;
+    }
+
+    public void setTimestampValidationTolerance(long timestampValidationTolerance) {
+        this.timestampValidationTolerance = timestampValidationTolerance;
+    }
 }
