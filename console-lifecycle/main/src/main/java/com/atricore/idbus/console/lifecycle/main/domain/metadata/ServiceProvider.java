@@ -27,8 +27,6 @@ public class ServiceProvider extends FederatedProvider {
 
 	private static final long serialVersionUID = 1098843994152761313L;
 
-    private Activation activation;
-
     private ServiceConnection serviceConnection;
 
     private AccountLinkagePolicy accountLinkagePolicy;

@@ -243,7 +243,7 @@
         <symbol>com.atricore.idbus.console.config.main.model.ServiceConfigProxy</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand</symbol>
-        <symbol>com.atricore.idbus.console.config.main.HttpServiceMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.http.HttpServiceMediator</symbol>
         <symbol>com.atricore.idbus.console.config.ssh.SshServiceMediator</symbol>
         <symbol>com.atricore.idbus.console.config.persistence.PersistenceServiceMediator</symbol>
         <symbol>com.atricore.idbus.console.config.management.ManagementServiceMediator</symbol>

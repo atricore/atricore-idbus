@@ -26,8 +26,6 @@ public class ServiceProviderDTO extends FederatedProviderDTO {
 
 	private static final long serialVersionUID = 1096573594152761313L;
 
-    private ActivationDTO activation;
-
     private ServiceConnectionDTO serviceConnection;
 
     private AccountLinkagePolicyDTO accountLinkagePolicy;
@@ -56,14 +54,6 @@ public class ServiceProviderDTO extends FederatedProviderDTO {
     @Override
     public void setRole(ProviderRoleDTO role) {
 //        throw new UnsupportedOperationException("Cannot change provider role");
-    }
-
-    public ActivationDTO getActivation() {
-        return activation;
-    }
-
-    public void setActivation(ActivationDTO activation) {
-        this.activation = activation;
     }
 
     public ServiceConnectionDTO getServiceConnection() {
