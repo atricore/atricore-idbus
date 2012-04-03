@@ -9,5 +9,7 @@ public enum ServiceType {
     SSH,
     MANAGEMENT,
     PERSISTENCE,
-    LOG
+    AQM,
+    LOG,
+    SYSTEM
 }

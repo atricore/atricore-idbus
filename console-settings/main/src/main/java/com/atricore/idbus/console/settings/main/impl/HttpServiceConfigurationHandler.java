@@ -22,7 +22,7 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
         return type.equals(ServiceType.HTTP);
     }
 
-    public HttpServiceConfiguration loadConfiguration(ServiceType type) throws ServiceConfigurationException {
+    public HttpServiceConfiguration loadConfiguration(ServiceType type, HttpServiceConfiguration currentCfg) throws ServiceConfigurationException {
         try {
             Dictionary<String, String> d = super.getProperties();
             return toConfiguration(d);

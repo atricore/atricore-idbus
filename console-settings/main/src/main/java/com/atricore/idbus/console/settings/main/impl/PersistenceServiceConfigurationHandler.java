@@ -14,7 +14,7 @@ import java.util.Hashtable;
 public class PersistenceServiceConfigurationHandler extends OsgiServiceConfigurationHandler<PersistenceServiceConfiguration> {
 
     private static final Integer DEFAULT_PORT = 1527;
-    private static final String DEFAULT_USERNAME = "admin";
+    private static final String DEFAULT_USERNAME = "atricore";
     private static final String DEFAULT_PASSWORD = "admin";
     
     public PersistenceServiceConfigurationHandler() {
@@ -25,10 +25,10 @@ public class PersistenceServiceConfigurationHandler extends OsgiServiceConfigura
         return type.equals(ServiceType.PERSISTENCE);
     }
 
-    public PersistenceServiceConfiguration loadConfiguration(ServiceType type) throws ServiceConfigurationException {
+    public PersistenceServiceConfiguration loadConfiguration(ServiceType type, PersistenceServiceConfiguration curentCfg) throws ServiceConfigurationException {
         try {
             Dictionary<String, String> d = super.getProperties();
-            return toConfiguration(d);
+            return toConfiguration(d, curentCfg);
         } catch (Exception e) {
             throw new ServiceConfigurationException("Error loading Persistence configuration properties " + e.getMessage() , e);
         }
@@ -57,6 +57,8 @@ public class PersistenceServiceConfigurationHandler extends OsgiServiceConfigura
 
             Dictionary<String, String> d = toDictionary(config);
             updateProperties(d);
+
+
         } catch (IOException e) {
             throw new ServiceConfigurationException("Error storing Persistence configuration properties " + e.getMessage(), e);
         }
@@ -77,8 +79,8 @@ public class PersistenceServiceConfigurationHandler extends OsgiServiceConfigura
         return d;
     }
 
-    protected PersistenceServiceConfiguration toConfiguration(Dictionary<String, String> props) {
-        PersistenceServiceConfiguration cfg = new PersistenceServiceConfiguration();
+    protected PersistenceServiceConfiguration toConfiguration(Dictionary<String, String> props, PersistenceServiceConfiguration currentCfg) {
+        PersistenceServiceConfiguration cfg = currentCfg != null ? currentCfg : new PersistenceServiceConfiguration();
         cfg.setPort(getInt(props, "dbserver.port"));
         cfg.setUsername(getString(props, "dbserver.username"));
         cfg.setPassword(getString(props, "dbserver.password"));

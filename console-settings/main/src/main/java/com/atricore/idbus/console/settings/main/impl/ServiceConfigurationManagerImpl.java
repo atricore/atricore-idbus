@@ -34,8 +34,9 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
 
     public ServiceConfiguration lookupConfiguration(ServiceType serviceType) throws ServiceConfigurationException {
         for (ServiceConfigurationHandler handler : handlers) {
+            ServiceConfiguration cfg = null;
             if (handler.canHandle(serviceType)) {
-                ServiceConfiguration cfg = handler.loadConfiguration(serviceType);
+                cfg = handler.loadConfiguration(serviceType, cfg);
                 if (cfg != null)
                     return cfg;
             }

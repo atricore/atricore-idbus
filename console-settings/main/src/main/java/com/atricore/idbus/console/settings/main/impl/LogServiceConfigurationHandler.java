@@ -17,7 +17,7 @@ public class LogServiceConfigurationHandler extends OsgiServiceConfigurationHand
         return type.equals(ServiceType.LOG);
     }
 
-    public LogServiceConfiguration loadConfiguration(ServiceType type) throws ServiceConfigurationException {
+    public LogServiceConfiguration loadConfiguration(ServiceType type, LogServiceConfiguration currentCfg) throws ServiceConfigurationException {
         // Instead of loading configuration properties, we need to check whether we're using the debug or production
         // setup
         LogServiceConfiguration cfg = new LogServiceConfiguration();

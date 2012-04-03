@@ -21,7 +21,7 @@ public class ManagementServiceConfigurationHandler extends OsgiServiceConfigurat
         return type.equals(ServiceType.MANAGEMENT);
     }
 
-    public ManagementServiceConfiguration loadConfiguration(ServiceType type) throws ServiceConfigurationException {
+    public ManagementServiceConfiguration loadConfiguration(ServiceType type, ManagementServiceConfiguration currentCfg) throws ServiceConfigurationException {
         try {
             Dictionary<String, String> d = super.getProperties();
             return toConfiguration(d);

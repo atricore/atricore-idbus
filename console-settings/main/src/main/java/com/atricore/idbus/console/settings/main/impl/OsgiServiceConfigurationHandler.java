@@ -39,7 +39,7 @@ public abstract class OsgiServiceConfigurationHandler<T extends ServiceConfigura
         return osgiConfig.getProperties();
     }
     
-    protected void updateProperties(Dictionary<String, String> props) throws IOException {
+    protected void updateProperties(Dictionary<String, String> newProps) throws IOException {
         Configuration cfg = admin.getConfiguration(pid, null);
 
         if (cfg.getProperties() == null) {
@@ -54,10 +54,10 @@ public abstract class OsgiServiceConfigurationHandler<T extends ServiceConfigura
 
         Dictionary properties = cfg.getProperties();
 
-        Enumeration e = props.keys();
+        Enumeration e = newProps.keys();
         while (e.hasMoreElements()) {
             Object key = e.nextElement();
-            properties.put(key, props.get(key));
+            properties.put(key, newProps.get(key));
         }
 
         cfg.update(properties);

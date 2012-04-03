@@ -22,7 +22,7 @@ public class SshServiceConfigurationHandler extends OsgiServiceConfigurationHand
         return type.equals(ServiceType.SSH);
     }
 
-    public SshServiceConfiguration loadConfiguration(ServiceType type) throws ServiceConfigurationException {
+    public SshServiceConfiguration loadConfiguration(ServiceType type, SshServiceConfiguration currentCfg) throws ServiceConfigurationException {
         try {
             Dictionary<String, String> d = super.getProperties();
             return toConfiguration(d);

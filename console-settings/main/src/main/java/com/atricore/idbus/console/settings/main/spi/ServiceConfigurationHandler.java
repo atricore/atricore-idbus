@@ -7,7 +7,7 @@ public interface ServiceConfigurationHandler<T extends ServiceConfiguration> {
     
     boolean canHandle(ServiceType  type);
     
-    T loadConfiguration(ServiceType  type) throws ServiceConfigurationException;
+    T loadConfiguration(ServiceType  type, T config) throws ServiceConfigurationException;
 
     void storeConfiguration(T config) throws ServiceConfigurationException;
 }
