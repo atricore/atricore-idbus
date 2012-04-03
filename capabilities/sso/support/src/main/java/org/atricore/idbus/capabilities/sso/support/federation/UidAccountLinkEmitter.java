@@ -54,9 +54,9 @@ public class UidAccountLinkEmitter implements AccountLinkEmitter {
                 logger.debug( "Pricipal Format: " + subjectAttribute.getValue() );
             }
 
-            if ( subjectAttribute.getName().startsWith("/UserAttribute[@ldap:targetAttribute=\"uid\"]")) {
+            if ( subjectAttribute.getName().startsWith("/UserAttribute[@ldap:targetAttribute=\"uid\"]") ||
+                 subjectAttribute.getName().equalsIgnoreCase("username")) {
 
-                // Need to map email to local user name!
                 String uid = subjectAttribute.getValue();
 
                 if ( logger.isDebugEnabled())
