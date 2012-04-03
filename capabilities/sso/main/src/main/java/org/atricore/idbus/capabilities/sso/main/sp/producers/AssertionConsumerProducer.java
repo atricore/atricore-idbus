@@ -295,7 +295,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         CircleOfTrustMemberDescriptor idp = resolveIdp(exchange);
 
         SPSecurityContext spSecurityCtx = createSPSecurityContext(exchange,
-                ssoRequest.getReplyTo(),
+                ssoRequest != null ? ssoRequest.getReplyTo() : null,
                 idp,
                 acctLink,
                 federatedSubject,
@@ -833,8 +833,9 @@ public class AssertionConsumerProducer extends SSOProducer {
             long responseIssueInstant = response.getIssueInstant().toGregorianCalendar().getTimeInMillis();
             long requestIssueInstant = request.getIssueInstant().toGregorianCalendar().getTimeInMillis();
 
-            // TODO : Make configurable ?! Give a second of tolerance between request/response issue instants
-           	if(responseIssueInstant - requestIssueInstant <= -1000) {
+            long tolerance = mediator.getTimestampValidationTolerance();
+            // You can't have a request emitted before 'tolerance' millisenconds
+           	if(responseIssueInstant - requestIssueInstant <= tolerance * -1) {
     			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
@@ -1155,8 +1156,10 @@ public class AssertionConsumerProducer extends SSOProducer {
 
 		XMLGregorianCalendar notBeforeUTC = null;		
 		XMLGregorianCalendar notOnOrAfterUTC = null;
-		
-		if(conditions.getNotBefore() != null){			
+
+        long tolerance = ((AbstractSSOMediator)channel.getIdentityMediator()).getTimestampValidationTolerance();
+
+		if(conditions.getNotBefore() != null){
 			//normalize to UTC			
 			logger.debug("Conditions.NotBefore: " + conditions.getNotBefore());
 
@@ -1168,8 +1171,15 @@ public class AssertionConsumerProducer extends SSOProducer {
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_UTC_VALUE, notBeforeUTC.toString());
-			} else if(!notBeforeUTC.toGregorianCalendar().getTime().before(utcCalendar.getTime())){
-                throw new SSOResponseException(response,
+			//} else if(!notBeforeUTC.toGregorianCalendar().getTime().before(utcCalendar.getTime())){
+            } else {
+
+                long diff = notBeforeUTC.toGregorianCalendar().getTime().getTime() - utcCalendar.getTimeInMillis();
+                if (diff < 0)
+                    diff = diff * -1;
+                if (diff > tolerance)
+
+                    throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NOT_BEFORE_VIOLATED,
@@ -1177,6 +1187,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 			}
 		}
 
+        // Make sure that the NOT ON OR AFTER is not violated, give a five minutes tolerance (should be configurable)
 		if(conditions.getNotOnOrAfter() != null){
 			//normalize to UTC
 			logger.debug("Conditions.NotOnOrAfter: " + conditions.getNotOnOrAfter().toString());
@@ -1188,16 +1199,26 @@ public class AssertionConsumerProducer extends SSOProducer {
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_UTC_VALUE, notOnOrAfterUTC.toString());
 
-			} else if(!notOnOrAfterUTC.toGregorianCalendar().getTime().after(utcCalendar.getTime())){
-                throw new SSOResponseException(response,
+            } else {
+
+                // diff in millis
+                long diff = notOnOrAfterUTC.toGregorianCalendar().getTime().getTime() - utcCalendar.getTimeInMillis();
+                if (diff < 0)
+                    diff = diff * -1;
+
+                // Check that the diff is smaller that 5 minutes (in millis)
+                if (diff > tolerance)
+                    throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NOT_ONORAFTER_VIOLATED, notOnOrAfterUTC.toString());
 			}
 		}
-		
-		if(notBeforeUTC != null && notOnOrAfterUTC != null 
+
+
+		if(notBeforeUTC != null && notOnOrAfterUTC != null
 				&& notOnOrAfterUTC.compare(notBeforeUTC) <= 0){
+
             throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
