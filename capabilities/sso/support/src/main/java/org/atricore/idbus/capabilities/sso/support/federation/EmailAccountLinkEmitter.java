@@ -56,7 +56,11 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
                 logger.debug( "Pricipal Format: " + subjectAttribute.getValue() );
             }
 
-            if ( subjectAttribute.getName().startsWith("/UserAttribute[@ldap:targetAttribute=\"mail\"]")) {
+
+            if ( subjectAttribute.getName().startsWith("/UserAttribute[@ldap:targetAttribute=\"mail\"]") ||
+                 subjectAttribute.getName().equalsIgnorCase("emailaddress") ||
+                 subjectAttribute.getName().equalsIgnorCase("email") ||
+                 subjectAttribute.getName().equalsIgnorCase("mail")) {
 
                 // Need to map email to local user name!
                 String email = subjectAttribute.getValue();
