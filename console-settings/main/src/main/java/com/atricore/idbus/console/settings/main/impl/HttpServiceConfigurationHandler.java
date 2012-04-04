@@ -4,7 +4,11 @@ import com.atricore.idbus.console.settings.main.spi.HttpServiceConfiguration;
 import com.atricore.idbus.console.settings.main.spi.ServiceConfigurationException;
 import com.atricore.idbus.console.settings.main.spi.ServiceType;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -79,6 +83,32 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
                 // SSL Key Password
                 if (config.getSslKeyPassword() == null)
                     throw new ServiceConfigurationException("Invalid HTTP SSL Key Password value null");
+
+                // Validate Keystore
+                try {
+                    KeyStore ks = KeyStore.getInstance("JKS");
+
+                    char[] passPhrase = config.getSslKeystorePassword().toCharArray();
+
+                    File certificateFile = new File(config.getSslKeystorePath());
+                    ks.load(new FileInputStream(certificateFile), passPhrase);
+
+                    KeyPair kp = getPrivateKey(ks, "jetty", config.getSslKeyPassword().toCharArray());
+
+                    PrivateKey privKey = kp.getPrivate();
+
+                    if (privKey == null)
+                        throw new ServiceConfigurationException("No private key 'jetty' found in keystore");
+
+                } catch (CertificateException e) {
+                    throw new ServiceConfigurationException("Error Validating SSL Keystore : " + e.getMessage(), e);
+                } catch (NoSuchAlgorithmException e) {
+                    throw new ServiceConfigurationException("Error Validating SSL Keystore : " + e.getMessage(), e);
+                } catch (KeyStoreException e) {
+                    throw new ServiceConfigurationException("Error Validating SSL Keystore : " + e.getMessage(), e);
+                } catch (UnrecoverableKeyException e) {
+                    throw new ServiceConfigurationException("Error Validating SSL Keystore : " + e.getMessage(), e);
+                }
             }
 
             Dictionary<String, String> d = toDictionary(config);
@@ -87,6 +117,22 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
             throw new ServiceConfigurationException("Error storing HTTP configuration properties " + e.getMessage(), e);
         }
     }
+
+    public KeyPair getPrivateKey(KeyStore keystore, String alias, char[] password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+         // Get private key
+         Key key = keystore.getKey(alias, password);
+         if (key instanceof PrivateKey) {
+             // Get certificate of public key
+             java.security.cert.Certificate cert = keystore.getCertificate(alias);
+
+             // Get public key
+             PublicKey publicKey = cert.getPublicKey();
+
+             // Return a key pair
+             return new KeyPair(publicKey, (PrivateKey)key);
+         }
+         return null;
+     }
     
     protected Dictionary<String, String> toDictionary(HttpServiceConfiguration config) {
         Dictionary<String, String> d = new Hashtable<String, String>();
