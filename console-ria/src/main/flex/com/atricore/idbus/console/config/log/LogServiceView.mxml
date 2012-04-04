@@ -50,7 +50,7 @@
                 </s:DropDownList>
             </mx:FormItem>
 
-            <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.ssh.save')}" enabled="false"/>
+            <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.save')}" enabled="false"/>
         </mx:Form>
 
     </s:Group>

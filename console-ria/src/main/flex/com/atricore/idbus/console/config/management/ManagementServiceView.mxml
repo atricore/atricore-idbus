@@ -56,7 +56,7 @@
                 <s:TextInput id="serviceUrl" width="500" editable="false"/>
             </mx:FormItem>
 
-            <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.ssh.save')}" enabled="false"/>
+            <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.management.save')}" enabled="false"/>
         </mx:Form>
 
     </s:Group>

@@ -78,7 +78,7 @@
     <object id="liveServicesMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">
         <property name="label" value="Live Services"/>
         <property name="shortDescription" value="Live Services Drawer"/>
-        <property name="viewPriority" value="10"/>
+        <property name="viewPriority" value="20"/>
         <property name="children">
             <array>
                 <value><ref>liveUpdateMenuEntry</ref></value>
