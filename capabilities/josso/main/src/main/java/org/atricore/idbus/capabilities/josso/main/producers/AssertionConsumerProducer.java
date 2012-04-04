@@ -56,17 +56,25 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         JossoMediator mediator = ((JossoMediator) channel.getIdentityMediator());
         MediationState state = in.getMessage().getState();
-
+        SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
 
         // Current authentication context
         JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+        if (authnCtx == null) {
+            authnCtx = new JossoAuthnContext();
+            // TODO :
+            /*
+            authnCtx.setAppId();
+            authnCtx.setSsoBackTo(backTo);
+            authnCtx.setIdpAlias(idpAlias);
+            */
+        }
 
-        // TODO : Validate inReplyTo, destination, etc
         SPInitiatedAuthnRequestType req = authnCtx.getAuthnRequest();
         // This request has been used, remove it from context
         authnCtx.setAuthnRequest(null);
 
-        SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
+
         if (req == null) {
             // Process unsolicited response
             validateUnsolicitedAuthnResposne(exchange, response);

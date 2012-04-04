@@ -1146,18 +1146,22 @@ public class AssertionConsumerProducer extends SSOProducer {
         if (conditions == null)
             return;
 
+        long tolerance = ((AbstractSSOMediator)channel.getIdentityMediator()).getTimestampValidationTolerance();
 		Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		if(conditions.getConditionOrAudienceRestrictionOrOneTimeUse() == null 
+
+		if(conditions.getConditionOrAudienceRestrictionOrOneTimeUse() == null
 				&& conditions.getNotBefore() == null && conditions.getNotOnOrAfter() == null){
 			return;
 		}
 
 		logger.debug("Current time (UTC): " + utcCalendar.toString());
 
-		XMLGregorianCalendar notBeforeUTC = null;		
+		XMLGregorianCalendar notBeforeUTC = null;
 		XMLGregorianCalendar notOnOrAfterUTC = null;
 
-        long tolerance = ((AbstractSSOMediator)channel.getIdentityMediator()).getTimestampValidationTolerance();
+
+
+
 
 		if(conditions.getNotBefore() != null){
 			//normalize to UTC			
@@ -1171,13 +1175,12 @@ public class AssertionConsumerProducer extends SSOProducer {
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_UTC_VALUE, notBeforeUTC.toString());
-			//} else if(!notBeforeUTC.toGregorianCalendar().getTime().before(utcCalendar.getTime())){
-            } else {
+			} else {
 
-                long diff = notBeforeUTC.toGregorianCalendar().getTime().getTime() - utcCalendar.getTimeInMillis();
-                if (diff < 0)
-                    diff = diff * -1;
-                if (diff > tolerance)
+                Calendar notBefore = notBeforeUTC.toGregorianCalendar();
+                notBefore.add(Calendar.MILLISECOND, (int) tolerance * -1);
+
+                if (utcCalendar.before(notBefore))
 
                     throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
@@ -1202,12 +1205,10 @@ public class AssertionConsumerProducer extends SSOProducer {
             } else {
 
                 // diff in millis
-                long diff = notOnOrAfterUTC.toGregorianCalendar().getTime().getTime() - utcCalendar.getTimeInMillis();
-                if (diff < 0)
-                    diff = diff * -1;
+                Calendar notOnOrAfter = notOnOrAfterUTC.toGregorianCalendar();
+                notOnOrAfter.add(Calendar.MILLISECOND, (int) tolerance);
 
-                // Check that the diff is smaller that 5 minutes (in millis)
-                if (diff > tolerance)
+                if (utcCalendar.after(notOnOrAfter))
                     throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
@@ -1217,7 +1218,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
 
 		if(notBeforeUTC != null && notOnOrAfterUTC != null
-				&& notOnOrAfterUTC.compare(notBeforeUTC) <= 0){
+				&& notOnOrAfterUTC.compare(notBeforeUTC) <= 0) {
 
             throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
