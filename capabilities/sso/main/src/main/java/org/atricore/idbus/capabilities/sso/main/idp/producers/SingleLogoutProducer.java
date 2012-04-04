@@ -506,6 +506,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         response.setID(request.getID());
         response.setInReplayTo(request.getID());
+        response.setIssuer(getProvider().getName());
 
         return response;
     }

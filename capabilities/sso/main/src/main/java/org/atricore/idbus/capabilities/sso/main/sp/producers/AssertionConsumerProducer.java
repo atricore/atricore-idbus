@@ -377,7 +377,9 @@ public class AssertionConsumerProducer extends SSOProducer {
         if (idPlanExchange.getOut() == null)
             throw new SSOException("Plan Exchange OUT must not be null!");
 
-        return (SPAuthnResponseType) idPlanExchange.getOut().getContent();
+        SPAuthnResponseType ssoResponse = (SPAuthnResponseType) idPlanExchange.getOut().getContent();
+        ssoResponse.setIssuer(getProvider().getName());
+        return ssoResponse;
 
     }
 

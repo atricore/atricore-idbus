@@ -246,6 +246,7 @@ public class SingleLogoutProducer extends SSOProducer {
         // TODO : Use plans ?
         SSOResponseType ssoResponse = new SSOResponseType();
         ssoResponse.setID(uuidGenerator.generateId());
+        ssoResponse.setIssuer(getProvider().getName());
         String destinationLocation = ((SamlR2SPMediator) channel.getIdentityMediator()).getSpBindingSLO();
 
         EndpointDescriptor destination =

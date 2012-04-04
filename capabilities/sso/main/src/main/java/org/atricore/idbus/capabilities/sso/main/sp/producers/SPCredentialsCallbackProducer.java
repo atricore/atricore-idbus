@@ -50,6 +50,7 @@ public class SPCredentialsCallbackProducer extends SSOProducer {
         SPCredentialsCallbackResponseType ssoCredResp = new SPCredentialsCallbackResponseType();
         ssoCredResp.setID(uuidGenerator.generateId());
         ssoCredResp.setInReplayTo(ssoCcReq.getID());
+        ssoCredResp.setIssuer(getProvider().getName());
 
         if (logger.isTraceEnabled())
             logger.trace("Adding received " + ssoRequest.getCredentials().size() + " credentials.");
