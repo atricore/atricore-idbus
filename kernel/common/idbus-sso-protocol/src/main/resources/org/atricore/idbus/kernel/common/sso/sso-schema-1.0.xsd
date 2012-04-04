@@ -175,6 +175,7 @@
     <complexType name="SSOResponseType" >
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="InReplayTo" type="ID" use="required"/>
+        <attribute name="issuer" type="string" use="optional"/>
         <!--
         <attribute name="Version" type="string" use="required"/>
         <attribute name="IssueInstant" type="dateTime" use="required"/>

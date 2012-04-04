@@ -62,9 +62,8 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
         if (authnCtx == null) {
             authnCtx = new JossoAuthnContext();
-            // TODO :
+            authnCtx.setAppId(response.getIssuer());
             /*
-            authnCtx.setAppId();
             authnCtx.setSsoBackTo(backTo);
             authnCtx.setIdpAlias(idpAlias);
             */
@@ -89,8 +88,13 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
 
         PartnerAppMapping mapping = resolveAppMapping((BindingChannel) channel, appId);
         String backTo = mapping.getPartnerAppACS();
+
         if (logger.isDebugEnabled())
             logger.debug("Using backTo URL:" + backTo + " received backTo URL ignored: " + receivedBackTo);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Using appId :" + appId);
+
 
         // Create destination with back/to and HTTP-Redirect binding
         EndpointDescriptor destination = new EndpointDescriptorImpl("JOSSO11BackToUrl",
@@ -125,7 +129,7 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         state.setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx", authnCtx);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-        out.setMessage(new MediationMessageImpl(req.getID(),
+        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 aa, "AuthenticationAssertion", null, destination, state));
 
         exchange.setOut(out);
