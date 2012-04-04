@@ -38,7 +38,7 @@ import java.util.Set;
  */
 public class UidAccountLinkEmitter implements AccountLinkEmitter {
 
-    private static final Log logger = LogFactory.getLog( EmailAccountLinkEmitter.class );
+    private static final Log logger = LogFactory.getLog( UidAccountLinkEmitter.class );
 
     public AccountLink emit ( Subject subject ) {
 
@@ -51,11 +51,11 @@ public class UidAccountLinkEmitter implements AccountLinkEmitter {
 
             if ( logger.isDebugEnabled()) {
                 logger.debug( "Pricipal Name: " + subjectAttribute.getName() );
-                logger.debug( "Pricipal Format: " + subjectAttribute.getValue() );
+                logger.debug( "Pricipal Value: " + subjectAttribute.getValue() );
             }
 
             if ( subjectAttribute.getName().startsWith("/UserAttribute[@ldap:targetAttribute=\"uid\"]") ||
-                 subjectAttribute.getName().equalsIgnoreCase("username")) {
+                 subjectAttribute.getName().trim().equalsIgnoreCase("UserName")) {
 
                 String uid = subjectAttribute.getValue();
 
