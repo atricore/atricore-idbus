@@ -51,6 +51,8 @@ public class ServiceConfigurationManagerAjaxServcieImpl implements ServiceConfig
             st = ServiceType.PERSISTENCE;
         } else if (serviceName.equals(ServiceTypeDTO.MANAGEMENT)) {
             st = ServiceType.MANAGEMENT;
+        } else if (serviceName.equals(ServiceTypeDTO.AQM)) {
+            st = ServiceType.AQM;
         } else if (serviceName.equals(ServiceTypeDTO.LOG)) {
             st = ServiceType.LOG;
         }

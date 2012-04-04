@@ -13,8 +13,13 @@ import java.util.Hashtable;
  */
 public class ArtifactQueueManagerConfigurationHandler extends OsgiServiceConfigurationHandler<ArtifactQueueManagerConfiguration> {
 
+    private static final String DEFAULT_BROKER_NAME = "aq1";
+    private static final String DEFAULT_BROKER_HOST = "localhost";
+    private static final String DEFAULT_BROKER_BIND_ADDRESS = "0.0.0.0";
+    private static final Integer DEFAULT_BROKER_PORT = 61217;
+
     public ArtifactQueueManagerConfigurationHandler() {
-        super("org.atricore.idbus.kernel.main.cfg");
+        super("org.atricore.idbus.kernel.main");
     }
 
     public boolean canHandle(ServiceType type) {
@@ -38,7 +43,7 @@ public class ArtifactQueueManagerConfigurationHandler extends OsgiServiceConfigu
             Dictionary<String, String> d = toDictionary(config);
             updateProperties(d);
         } catch (IOException e) {
-            throw new ServiceConfigurationException("Error storing HTTP configuration properties " + e.getMessage(), e);
+            throw new ServiceConfigurationException("Error storing Artifact Queue Manager configuration properties " + e.getMessage(), e);
         }
     }
 
@@ -47,7 +52,7 @@ public class ArtifactQueueManagerConfigurationHandler extends OsgiServiceConfigu
             Dictionary<String, String> d = super.getProperties();
             return toConfiguration(d);
         } catch (Exception e) {
-            throw new ServiceConfigurationException("Error loading HTTP configuration properties " + e.getMessage() , e);
+            throw new ServiceConfigurationException("Error loading Artifact Queue Manager configuration properties " + e.getMessage() , e);
         }
     }
 
@@ -65,7 +70,7 @@ public class ArtifactQueueManagerConfigurationHandler extends OsgiServiceConfigu
             d.put("aqm.bind", config.getBrokerBindAddress());
         
         if (config.getBrokerPort() != null)
-            d.put("org.osgi.service.http.port", config.getBrokerPort() + "");
+            d.put("aqm.port", config.getBrokerPort() + "");
 
         return d;
     }
@@ -78,7 +83,19 @@ public class ArtifactQueueManagerConfigurationHandler extends OsgiServiceConfigu
         cfg.setBrokerHost(getString(props, "aqm.host"));
         cfg.setBrokerName(getString(props, "aqm.brokerName"));
         cfg.setBrokerPort(getInt(props, "aqm.port"));
-        
+
+        if (cfg.getBrokerName() == null)
+            cfg.setBrokerName(DEFAULT_BROKER_NAME);
+
+        if (cfg.getBrokerHost() == null)
+            cfg.setBrokerHost(DEFAULT_BROKER_HOST);
+
+        if (cfg.getBrokerBindAddress() == null)
+            cfg.setBrokerBindAddress(DEFAULT_BROKER_BIND_ADDRESS);
+
+        if (cfg.getBrokerPort() == null)
+            cfg.setBrokerPort(DEFAULT_BROKER_PORT);
+
         return cfg;
     }    
     

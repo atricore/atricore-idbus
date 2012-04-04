@@ -6,5 +6,7 @@ public enum ServiceTypeDTO {
     SSH,
     MANAGEMENT,
     PERSISTENCE,
-    LOG
+    AQM,
+    LOG,
+    SYSTEM
 }

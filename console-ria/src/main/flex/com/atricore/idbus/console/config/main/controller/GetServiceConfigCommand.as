@@ -24,6 +24,7 @@ package com.atricore.idbus.console.config.main.controller
 import com.atricore.idbus.console.config.main.model.ServiceConfigProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
+import com.atricore.idbus.console.services.dto.settings.ArtifactQueueManagerConfiguration;
 import com.atricore.idbus.console.services.dto.settings.HttpServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.LogServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ManagementServiceConfiguration;
@@ -82,6 +83,9 @@ public class GetServiceConfigCommand extends IocSimpleCommand implements IRespon
             } else if (config is ManagementServiceConfiguration) {
                 serviceType = ServiceType.MANAGEMENT;
                 _configProxy.managementService = config as ManagementServiceConfiguration;
+            } else if (config is ArtifactQueueManagerConfiguration) {
+                serviceType = ServiceType.AQM;
+                _configProxy.artifactQueueManagerService = config as ArtifactQueueManagerConfiguration;
             } else if (config is LogServiceConfiguration) {
                 serviceType = ServiceType.LOG;
                 _configProxy.logService = config as LogServiceConfiguration;

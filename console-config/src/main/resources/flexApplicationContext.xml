@@ -986,13 +986,14 @@
     <object id="localServicesMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">
         <property name="label" value="Local Services"/>
         <property name="shortDescription" value="Local Services Drawer"/>
-        <property name="viewPriority" value="20"/>
+        <property name="viewPriority" value="10"/>
         <property name="children">
             <array>
                 <value><ref>httpServiceMenuEntry</ref></value>
                 <value><ref>sshServiceMenuEntry</ref></value>
                 <value><ref>persistenceServiceMenuEntry</ref></value>
                 <value><ref>managementServiceMenuEntry</ref></value>
+                <value><ref>aqmServiceMenuEntry</ref></value>
                 <value><ref>logServiceMenuEntry</ref></value>
             </array>
         </property>
@@ -1061,6 +1062,22 @@
     </object>
 
     <object id="managementServiceView" class="com.atricore.idbus.console.config.management.ManagementServiceView"/>
+
+    <object id="aqmServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Artifact Queue Manager Service"/>
+        <property name="shortDescription" value="Artifact Queue Manager Service Entry"/>
+        <property name="iconName" value="aqmService"/>
+        <property name="mediatorName" value="aqmServiceMediator"/>
+        <property name="viewName" value="aqmServiceView"/>
+    </object>
+
+    <object id="aqmServiceMediator" class="com.atricore.idbus.console.config.aqm.ArtifactQueueManagerServiceMediator">
+        <property name="configProxy" ref="serviceConfigProxy"/>
+        <property name="getServiceConfigCommand" ref="getServiceConfigCommand"/>
+        <property name="updateServiceConfigCommand" ref="updateServiceConfigCommand"/>
+    </object>
+
+    <object id="aqmServiceView" class="com.atricore.idbus.console.config.aqm.ArtifactQueueManagerServiceView"/>
 
     <object id="logServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
         <property name="label" value="Log Service"/>

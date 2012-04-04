@@ -1,4 +1,5 @@
 package com.atricore.idbus.console.config.main.model {
+import com.atricore.idbus.console.services.dto.settings.ArtifactQueueManagerConfiguration;
 import com.atricore.idbus.console.services.dto.settings.HttpServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.LogServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ManagementServiceConfiguration;
@@ -17,6 +18,8 @@ public class ServiceConfigProxy extends IocProxy implements IDisposable {
     private var _persistenceService:PersistenceServiceConfiguration;
 
     private var _managementService:ManagementServiceConfiguration;
+
+    private var _artifactQueueManagerService:ArtifactQueueManagerConfiguration;
 
     private var _logService:LogServiceConfiguration;
 
@@ -54,6 +57,14 @@ public class ServiceConfigProxy extends IocProxy implements IDisposable {
 
     public function set managementService(value:ManagementServiceConfiguration):void {
         _managementService = value;
+    }
+
+    public function get artifactQueueManagerService():ArtifactQueueManagerConfiguration {
+        return _artifactQueueManagerService;
+    }
+
+    public function set artifactQueueManagerService(value:ArtifactQueueManagerConfiguration):void {
+        _artifactQueueManagerService = value;
     }
 
     public function get logService():LogServiceConfiguration {

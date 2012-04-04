@@ -33,36 +33,37 @@
     </fx:Metadata>
 
     <fx:Declarations>
-        <mx:NumberValidator id="portValidator" source="{port}" required="true" property="text"
+        <mx:StringValidator id="brokerNameValidator" source="{brokerName}" required="true" property="text"
+                            trigger="{btnSave}" triggerEvent="click"/>
+        <mx:StringValidator id="brokerHostValidator" source="{brokerHost}" required="true" property="text"
+                            trigger="{btnSave}" triggerEvent="click"/>
+        <mx:StringValidator id="brokerBindAddressValidator" source="{brokerBindAddress}" required="true" property="text"
+                            trigger="{btnSave}" triggerEvent="click"/>
+        <mx:NumberValidator id="brokerPortValidator" source="{brokerPort}" required="true" property="text"
                             trigger="{btnSave}" triggerEvent="click" minValue="1" maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
-        <!--<mx:StringValidator id="usernameValidator" source="{username}" required="true" property="text"
-                            trigger="{btnSave}" triggerEvent="click"/>-->
-        <utils:PasswordValidator id="passwordValidator" source="{password}" property="text" required="true"
-                                 matchSource="{confirmPassword}" matchProperty="text" defaultLength="-1"
-                                 noMatchError="Passwords do not match"/>
     </fx:Declarations>
 
     <s:Group width="100%" height="100%">
 
         <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.port')}:" required="true">
-                <s:TextInput id="port" width="200"/>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.aqm.broker.name')}:" required="true">
+                <s:TextInput id="brokerName" width="200"/>
             </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.username')}:" required="true">
-                <s:TextInput id="username" width="200" editable="false"/>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.aqm.broker.host')}:" required="true">
+                <s:TextInput id="brokerHost" width="200"/>
             </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.password')}:" required="true">
-                <s:TextInput id="password" width="200" displayAsPassword="true"/>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.aqm.broker.bindAddress')}:" required="true">
+                <s:TextInput id="brokerBindAddress" width="200"/>
             </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.confirmPassword')}:" required="true">
-                <s:TextInput id="confirmPassword" width="200" displayAsPassword="true"/>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.aqm.broker.port')}:" required="true">
+                <s:TextInput id="brokerPort" width="200"/>
             </mx:FormItem>
 
-            <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.save')}" enabled="false"/>
+            <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.aqm.save')}" enabled="false"/>
         </mx:Form>
 
     </s:Group>

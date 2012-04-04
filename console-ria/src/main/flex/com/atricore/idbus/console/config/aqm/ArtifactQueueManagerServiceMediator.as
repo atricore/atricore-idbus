@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: ssh://www.fsf.org.
  */
 
-package com.atricore.idbus.console.config.persistence
+package com.atricore.idbus.console.config.aqm
 {
 import com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand;
 import com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand;
@@ -27,7 +27,7 @@ import com.atricore.idbus.console.config.main.model.ServiceConfigProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.services.dto.settings.PersistenceServiceConfiguration;
+import com.atricore.idbus.console.services.dto.settings.ArtifactQueueManagerConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ServiceType;
 
 import flash.events.Event;
@@ -40,7 +40,7 @@ import mx.resources.ResourceManager;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 
-public class PersistenceServiceMediator extends IocFormMediator implements IDisposable {
+public class ArtifactQueueManagerServiceMediator extends IocFormMediator implements IDisposable {
 
     private var _configProxy:ServiceConfigProxy;
 
@@ -52,17 +52,17 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
 
     private var _created:Boolean;    
 
-    private var _persistenceServiceConfig:PersistenceServiceConfiguration;
+    private var _artifactQueueManagerConfig:ArtifactQueueManagerConfiguration;
 
-    public function PersistenceServiceMediator(name:String = null, viewComp:PersistenceServiceView = null) {
+    public function ArtifactQueueManagerServiceMediator(name:String = null, viewComp:ArtifactQueueManagerServiceView = null) {
         super(name, viewComp);
     }
 
     override public function setViewComponent(viewComponent:Object):void {
         if (_created) {
-            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.PERSISTENCE);
+            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.AQM);
         }
-        (viewComponent as PersistenceServiceView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+        (viewComponent as ArtifactQueueManagerServiceView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         super.setViewComponent(viewComponent);
     }
 
@@ -76,7 +76,7 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
             view.titleDisplay.width = 0;
             view.titleDisplay.height = 0;
             view.btnSave.addEventListener(MouseEvent.CLICK, handleSave);
-            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.PERSISTENCE);
+            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.AQM);
         }
     }
 
@@ -91,21 +91,21 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
         switch (notification.getName()) {
             case UpdateServiceConfigCommand.SUCCESS:
                 var serviceType1:ServiceType = notification.getBody() as ServiceType;
-                if (serviceType1.name == ServiceType.PERSISTENCE.name) {
+                if (serviceType1.name == ServiceType.AQM.name) {
                     sendNotification(ProcessingMediator.STOP);
                 }
                 break;
             case UpdateServiceConfigCommand.FAILURE:
                 var serviceType2:ServiceType = notification.getBody() as ServiceType;
-                if (serviceType2.name == ServiceType.PERSISTENCE.name) {
+                if (serviceType2.name == ServiceType.AQM.name) {
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            resourceManager.getString(AtricoreConsole.BUNDLE, "config.persistence.save.error"));
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "config.aqm.save.error"));
                 }
                 break;
             case GetServiceConfigCommand.SUCCESS:
                 var serviceType3:ServiceType = notification.getBody() as ServiceType;
-                if (serviceType3.name == ServiceType.PERSISTENCE.name) {
+                if (serviceType3.name == ServiceType.AQM.name) {
                     displayServiceConfig();
                 }
                 break;
@@ -116,16 +116,17 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
     }
 
     override public function bindModel():void {
-        _persistenceServiceConfig.port = parseInt(view.port.text);
-        //_persistenceServiceConfig.username = view.username.text;
-        _persistenceServiceConfig.password = view.password.text;
+        _artifactQueueManagerConfig.brokerName = view.brokerName.text;
+        _artifactQueueManagerConfig.brokerHost = view.brokerHost.text;
+        _artifactQueueManagerConfig.brokerBindAddress = view.brokerBindAddress.text;
+        _artifactQueueManagerConfig.brokerPort = parseInt(view.brokerPort.text);
     }
 
     private function handleSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.persistence.save.progress"));
-            sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _persistenceServiceConfig);
+            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.aqm.save.progress"));
+            sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _artifactQueueManagerConfig);
         }
         else {
             event.stopImmediatePropagation();
@@ -133,24 +134,25 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
     }
 
     public function displayServiceConfig():void {
-        _persistenceServiceConfig = _configProxy.persistenceService;
+        _artifactQueueManagerConfig = _configProxy.artifactQueueManagerService;
 
-        view.port.text = String(_persistenceServiceConfig.port);
-        view.username.text = _persistenceServiceConfig.username;
-        view.password.text = _persistenceServiceConfig.password;
-        view.confirmPassword.text = _persistenceServiceConfig.password;
+        view.brokerName.text = _artifactQueueManagerConfig.brokerName;
+        view.brokerHost.text = _artifactQueueManagerConfig.brokerHost;
+        view.brokerBindAddress.text = _artifactQueueManagerConfig.brokerBindAddress;
+        view.brokerPort.text = String(_artifactQueueManagerConfig.brokerPort);
         view.btnSave.enabled = true;
     }
 
-    protected function get view():PersistenceServiceView {
-        return viewComponent as PersistenceServiceView;
+    protected function get view():ArtifactQueueManagerServiceView {
+        return viewComponent as ArtifactQueueManagerServiceView;
     }
 
     override public function registerValidators():void {
         _validators = [];
-        _validators.push(view.portValidator);
-        //_validators.push(view.usernameValidator);
-        _validators.push(view.passwordValidator);
+        _validators.push(view.brokerNameValidator);
+        _validators.push(view.brokerHostValidator);
+        _validators.push(view.brokerBindAddressValidator);
+        _validators.push(view.brokerPortValidator);
     }
 
     public function set configProxy(value:ServiceConfigProxy):void {
