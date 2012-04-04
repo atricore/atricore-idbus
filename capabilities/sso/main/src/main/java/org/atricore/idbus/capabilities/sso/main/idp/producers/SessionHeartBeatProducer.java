@@ -66,6 +66,7 @@ public class SessionHeartBeatProducer extends SSOProducer {
         response.setID(uuidGenerator.generateId());
         response.setInReplayTo(request.getID());
         response.setSsoSessionId(request.getSsoSessionId());
+        response.setIssuer(getProvider().getName());
 
         if (secCtx == null || secCtx.getSessionIndex() == null) {
 

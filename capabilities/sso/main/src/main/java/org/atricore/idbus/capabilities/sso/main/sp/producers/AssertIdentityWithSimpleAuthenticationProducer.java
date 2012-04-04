@@ -245,6 +245,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
             // TODO : Use plan samlr2resposne to spauthnresponse
             SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
             ssoResponse.setID(authnResponse.getID());
+            ssoResponse.setIssuer(getProvider().getName());
             if (ssoRequest != null) {
                 ssoResponse.setInReplayTo(ssoRequest.getID());
                 if (ssoRequest.getReplyTo() != null) {

@@ -326,6 +326,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
 
             SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
             ssoResponse.setID(uuidGenerator.generateId());
+            ssoResponse.setIssuer(getProvider().getName());
             SPInitiatedAuthnRequestType ssoRequest =
                     (SPInitiatedAuthnRequestType) in.getMessage().getState().
                             getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
