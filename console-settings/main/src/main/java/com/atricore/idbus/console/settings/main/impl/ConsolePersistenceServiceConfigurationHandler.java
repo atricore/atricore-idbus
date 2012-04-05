@@ -31,7 +31,7 @@ public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceCo
         }
     }
 
-    public void storeConfiguration(PersistenceServiceConfiguration config) throws ServiceConfigurationException {
+    public boolean storeConfiguration(PersistenceServiceConfiguration config) throws ServiceConfigurationException {
         try {
 
             // TODO : Support new properties: connectionUrl, etc, only when useExternal DB is set to true
@@ -57,6 +57,7 @@ public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceCo
 
             Dictionary<String, String> d = toDictionary(config);
             updateProperties(d);
+            return true;
         } catch (IOException e) {
             throw new ServiceConfigurationException("Error storing Persistence configuration properties " + e.getMessage(), e);
         }

@@ -34,7 +34,7 @@ public class PersistenceServiceConfigurationHandler extends OsgiServiceConfigura
         }
     }
 
-    public void storeConfiguration(PersistenceServiceConfiguration config) throws ServiceConfigurationException {
+    public boolean storeConfiguration(PersistenceServiceConfiguration config) throws ServiceConfigurationException {
         try {
             // Some service validations:
 
@@ -57,7 +57,7 @@ public class PersistenceServiceConfigurationHandler extends OsgiServiceConfigura
 
             Dictionary<String, String> d = toDictionary(config);
             updateProperties(d);
-
+            return true;
 
         } catch (IOException e) {
             throw new ServiceConfigurationException("Error storing Persistence configuration properties " + e.getMessage(), e);

@@ -26,7 +26,7 @@ public class ArtifactQueueManagerConfigurationHandler extends OsgiServiceConfigu
         return type.equals(ServiceType.AQM);
     }
 
-    public void storeConfiguration(ArtifactQueueManagerConfiguration config) throws ServiceConfigurationException {
+    public boolean storeConfiguration(ArtifactQueueManagerConfiguration config) throws ServiceConfigurationException {
         try {
             // Validate configuration:
             if (config.getBrokerName() == null) {
@@ -42,6 +42,7 @@ public class ArtifactQueueManagerConfigurationHandler extends OsgiServiceConfigu
 
             Dictionary<String, String> d = toDictionary(config);
             updateProperties(d);
+            return true;
         } catch (IOException e) {
             throw new ServiceConfigurationException("Error storing Artifact Queue Manager configuration properties " + e.getMessage(), e);
         }

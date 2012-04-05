@@ -25,7 +25,8 @@ public class LogServiceConfigurationHandler extends OsgiServiceConfigurationHand
         return cfg;
     }
 
-    public void storeConfiguration(LogServiceConfiguration config) throws ServiceConfigurationException {
-
+    public boolean storeConfiguration(LogServiceConfiguration config) throws ServiceConfigurationException {
+        // TODO : Modify logging setup!
+        return false;
     }
 }

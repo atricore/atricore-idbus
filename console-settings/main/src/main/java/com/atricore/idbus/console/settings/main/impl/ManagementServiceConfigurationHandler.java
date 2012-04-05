@@ -30,7 +30,7 @@ public class ManagementServiceConfigurationHandler extends OsgiServiceConfigurat
         }
     }
 
-    public void storeConfiguration(ManagementServiceConfiguration config) throws ServiceConfigurationException {
+    public boolean storeConfiguration(ManagementServiceConfiguration config) throws ServiceConfigurationException {
         try {
             // Some service validations:
 
@@ -54,6 +54,7 @@ public class ManagementServiceConfigurationHandler extends OsgiServiceConfigurat
 
             Dictionary<String, String> d = toDictionary(config);
             updateProperties(d);
+            return false;
         } catch (IOException e) {
             throw new ServiceConfigurationException("Error storing Management configuration properties " + e.getMessage(), e);
         }

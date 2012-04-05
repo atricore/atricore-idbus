@@ -31,7 +31,7 @@ public class SshServiceConfigurationHandler extends OsgiServiceConfigurationHand
         }
     }
 
-    public void storeConfiguration(SshServiceConfiguration config) throws ServiceConfigurationException {
+    public boolean storeConfiguration(SshServiceConfiguration config) throws ServiceConfigurationException {
         try {
             // Some service validations:
 
@@ -52,6 +52,7 @@ public class SshServiceConfigurationHandler extends OsgiServiceConfigurationHand
 
             Dictionary<String, String> d = toDictionary(config);
             updateProperties(d);
+            return false;
         } catch (IOException e) {
             throw new ServiceConfigurationException("Error storing SSH configuration properties " + e.getMessage(), e);
         }

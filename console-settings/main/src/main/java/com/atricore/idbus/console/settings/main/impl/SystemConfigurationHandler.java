@@ -21,12 +21,13 @@ public class SystemConfigurationHandler extends OsgiServiceConfigurationHandler<
         return type.equals(ServiceType.SYSTEM);
     }
 
-    public void storeConfiguration(SystemConfiguration config) throws ServiceConfigurationException {
+    public boolean storeConfiguration(SystemConfiguration config) throws ServiceConfigurationException {
         try {
             // Validate configuration:
 
             Dictionary<String, String> d = toDictionary(config);
             updateProperties(d);
+            return true;
         } catch (IOException e) {
             throw new ServiceConfigurationException("Error storing HTTP configuration properties " + e.getMessage(), e);
         }

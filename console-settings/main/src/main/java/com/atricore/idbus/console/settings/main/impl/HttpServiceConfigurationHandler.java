@@ -35,7 +35,7 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
         }
     }
 
-    public void storeConfiguration(HttpServiceConfiguration config) throws ServiceConfigurationException {
+    public boolean storeConfiguration(HttpServiceConfiguration config) throws ServiceConfigurationException {
         try {
             // Some service validations:
 
@@ -113,6 +113,7 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
 
             Dictionary<String, String> d = toDictionary(config);
             updateProperties(d);
+            return false;
         } catch (IOException e) {
             throw new ServiceConfigurationException("Error storing HTTP configuration properties " + e.getMessage(), e);
         }
