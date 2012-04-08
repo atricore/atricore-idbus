@@ -41,11 +41,21 @@
         <utils:PasswordValidator id="passwordValidator" source="{password}" property="text" required="true"
                                  matchSource="{confirmPassword}" matchProperty="text" defaultLength="-1"
                                  noMatchError="Passwords do not match"/>
+        <mx:NumberValidator id="connDriverValidator" source="{connectionDriver}" property="selectedIndex" minValue="0"
+                            trigger="{btnSave}" triggerEvent="click"
+                            lowerThanMinError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.external.connection.driver.errorMsg')}"/>
+        <mx:StringValidator id="connUrlValidator" source="{connectionUrl}" required="true" property="text"
+                            trigger="{btnSave}" triggerEvent="click"/>
+        <mx:StringValidator id="connUsernameValidator" source="{connectionUsername}" required="true" property="text"
+                            trigger="{btnSave}" triggerEvent="click"/>
+        <utils:PasswordValidator id="connPasswordValidator" source="{connectionPassword}" property="text" required="true"
+                                 matchSource="{connectionConfirmPassword}" matchProperty="text" defaultLength="-1"
+                                 noMatchError="Connection passwords do not match"/>
     </fx:Declarations>
 
     <s:Group width="100%" height="100%">
 
-        <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
+        <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8" labelWidth="115">
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.port')}:" required="true">
                 <s:TextInput id="port" width="200"/>
             </mx:FormItem>
@@ -61,6 +71,35 @@
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.confirmPassword')}:" required="true">
                 <s:TextInput id="confirmPassword" width="200" displayAsPassword="true"/>
             </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.external.enabled')}:" required="true">
+                <s:CheckBox id="useExternalDB"/>
+            </mx:FormItem>
+
+            <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.external.title')}"
+                                   height="170" width="350" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.external.connection.driver')}:" required="true" paddingTop="10">
+                    <s:DropDownList id="connectionDriver" width="200" labelField="name" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.external.connection.driver.prompt')}"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.external.connection.url')}:" required="true">
+                    <s:TextInput id="connectionUrl" width="200"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.external.connection.username')}:" required="true">
+                    <s:TextInput id="connectionUsername" width="200"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.external.connection.password')}:" required="true">
+                    <s:TextInput id="connectionPassword" width="200" displayAsPassword="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.external.connection.confirmPassword')}:" required="true">
+                    <mx:TextInput id="connectionConfirmPassword" width="200" displayAsPassword="true"/>
+                </mx:FormItem>
+
+            </utils:TitledBorderBox>
 
             <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.save')}" enabled="false"/>
         </mx:Form>

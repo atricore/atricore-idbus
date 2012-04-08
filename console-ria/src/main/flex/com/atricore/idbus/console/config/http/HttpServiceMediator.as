@@ -33,6 +33,7 @@ import com.atricore.idbus.console.services.dto.settings.ServiceType;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.controls.Alert;
 import mx.events.FlexEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
@@ -53,6 +54,8 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
     private var _created:Boolean;    
 
     private var _httpServiceConfig:HttpServiceConfiguration;
+    private var _port:Number;
+    private var _bindAddresses:String;
 
     public function HttpServiceMediator(name:String = null, viewComp:HttpServiceView = null) {
         super(name, viewComp);
@@ -91,10 +94,10 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case UpdateServiceConfigCommand.SUCCESS:
-                var serviceType1:ServiceType = notification.getBody() as ServiceType;
+                /*var serviceType1:ServiceType = notification.getBody() as ServiceType;
                 if (serviceType1.name == ServiceType.HTTP.name) {
                     sendNotification(ProcessingMediator.STOP);
-                }
+                }*/
                 break;
             case UpdateServiceConfigCommand.FAILURE:
                 var serviceType2:ServiceType = notification.getBody() as ServiceType;
@@ -139,8 +142,11 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
     private function handleSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.http.save.progress"));
+            //sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.http.save.progress"));
             sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _httpServiceConfig);
+            if (_port != _httpServiceConfig.port || _bindAddresses !=_httpServiceConfig.bindAddresses.join(",")) {
+                Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.reconnectMessage'));
+            }
         }
         else {
             event.stopImmediatePropagation();
@@ -165,14 +171,7 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
         view.port.text = String(_httpServiceConfig.port);
         var bindAddresses:String = null;
         if (_httpServiceConfig.bindAddresses != null) {
-            for each (var bindAddress:String in _httpServiceConfig.bindAddresses) {
-                if (bindAddresses == null) {
-                    bindAddresses = "";
-                } else {
-                    bindAddresses += ",";
-                }
-                bindAddresses += bindAddress;
-            }
+            bindAddresses = _httpServiceConfig.bindAddresses.join(",");
         }
         view.bindAddress.text = bindAddresses;
         view.sessionTimeout.text = String(_httpServiceConfig.sessionTimeout);
@@ -187,6 +186,9 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
         view.sslKeystorePath.text = _httpServiceConfig.sslKeystorePath;
         view.sslKeystorePassword.text = _httpServiceConfig.sslKeystorePassword;
         view.sslKeyPassword.text = _httpServiceConfig.sslKeyPassword;
+
+        _port = _httpServiceConfig.port;
+        _bindAddresses = view.bindAddress.text;
 
         handleEnableSslChanged(null);
         view.btnSave.enabled = true;

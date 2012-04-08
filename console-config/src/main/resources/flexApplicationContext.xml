@@ -1041,6 +1041,7 @@
 
     <object id="persistenceServiceMediator" class="com.atricore.idbus.console.config.persistence.PersistenceServiceMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
+        <property name="projectProxy" ref="projectProxy"/>
         <property name="getServiceConfigCommand" ref="getServiceConfigCommand"/>
         <property name="updateServiceConfigCommand" ref="updateServiceConfigCommand"/>
     </object>
