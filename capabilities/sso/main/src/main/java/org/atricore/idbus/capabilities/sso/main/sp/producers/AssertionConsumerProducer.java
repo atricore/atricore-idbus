@@ -1348,18 +1348,24 @@ public class AssertionConsumerProducer extends SSOProducer {
         // Get Subject ID (username ?)
         SubjectNameID nameId = null;
         Set<SubjectNameID> nameIds = federatedSubject.getPrincipals(SubjectNameID.class);
-        if (nameIds != null) {
+
+        if (nameIds != null && nameIds.size() > 0) {
+            nameId = nameIds.iterator().next();
+            if (logger.isTraceEnabled())
+                logger.trace("Using Subject ID " + nameId.getName() + "[" + nameId.getFormat() + "] ");
+
+            /* Old logic, serched for UNSPECIFIED Subject Name ID:
             for (SubjectNameID i : nameIds) {
 
                 if (logger.isTraceEnabled())
                     logger.trace("Checking Subject ID " + i.getName() + "["+i.getFormat()+"] ");
 
-                // TODO : Support other name ID formats
+                // TODO : Support other name ID formats !!!
                 if (i.getFormat() == null || i.getFormat().equals(NameIDFormat.UNSPECIFIED.getValue())) {
                     nameId = i;
                     break;
                 }
-            }
+            } */
         }
 
         if (nameId == null) {
