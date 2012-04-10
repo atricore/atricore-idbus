@@ -69,7 +69,7 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
                 logger.debug( "Pricipal Format: " + subjectAttribute.getValue() );
             }
 
-
+            // TODO : Make configurable rules to take email from attributes !!!
             if ( subjectAttribute.getName().startsWith("/UserAttribute[@ldap:targetAttribute=\"mail\"]") ||
                  subjectAttribute.getName().equalsIgnoreCase("emailaddress") ||
                  subjectAttribute.getName().equalsIgnoreCase("email") ||
