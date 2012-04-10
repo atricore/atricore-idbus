@@ -39,6 +39,8 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
 
     private static final Log logger = LogFactory.getLog( EmailAccountLinkEmitter.class );
 
+    boolean stripEmailDomain = false;
+
     public AccountLink emit ( Subject subject ) {
 
         // If subjectName ID  is email formatted, use it
@@ -49,8 +51,14 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
 
             for (SubjectNameID nameId : nameIds) {
                 if (nameId.getFormat() == null || nameId.getFormat().equals(NameIDFormat.EMAIL.getValue())) {
-                    String email = nameId.getName();
-                    return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+                    String id = nameId.getName();
+
+                    if (stripEmailDomain)
+                        new DynamicAccountLinkImpl(subject, id.substring(0, id.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+                    else
+                        new DynamicAccountLinkImpl(subject, id, NameIDFormat.EMAIL.getValue());
+
+
                 }
             }
         }
@@ -81,8 +89,10 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
                 if (logger.isDebugEnabled())
                     logger.debug("Found email ["+email+"]");
 
-                // TODO : For now, email user and JOSSO local user MUST match!
-                return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+                if (stripEmailDomain)
+                    return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+                else
+                    return new DynamicAccountLinkImpl(subject, email, NameIDFormat.EMAIL.getValue());
             }
 
         }
@@ -100,6 +110,14 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
 
         return null;
 
+    }
+
+    public boolean isStripEmailDomain() {
+        return stripEmailDomain;
+    }
+
+    public void setStripEmailDomain(boolean stripEmailDomain) {
+        this.stripEmailDomain = stripEmailDomain;
     }
 }
 
