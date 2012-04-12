@@ -39,7 +39,7 @@ public class WindowsIntegratedAuthenticationTransformer extends AbstractTransfor
             return false;
 
         IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
-        //AuthenticationService authnService = idp.getDelegatedAuthentication().getAuthnService();
+
         WindowsAuthentication wia = (WindowsAuthentication) event.getData();
         AuthenticationService authnService = wia.getDelegatedAuthentication().getAuthnService();
 
