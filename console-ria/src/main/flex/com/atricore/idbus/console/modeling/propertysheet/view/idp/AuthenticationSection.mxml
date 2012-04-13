@@ -115,7 +115,7 @@
 
             <mx:Tree id="authenticationMechanisms"
                      showRoot="false"
-                     labelField="name"
+                     labelField="displayName"
                      iconFunction="authenticationMechanismsIconFunction"
                      alternatingItemColors="[0xEFF3FA, 0xFFFFFF]"
                      dragEnabled="true"

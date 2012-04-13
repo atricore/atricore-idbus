@@ -82,7 +82,7 @@ public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceCo
                 d.put("jdbc.ConnectionPassword", config.getConnectionPassword());
 
             if (config.getConnectionUrl() != null)
-                d.put("jdbc.ConnectionUrl", config.getConnectionUrl());
+                d.put("jdbc.ConnectionURL", config.getConnectionUrl());
 
         } else {
 
@@ -106,6 +106,9 @@ public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceCo
     protected PersistenceServiceConfiguration toConfiguration(Dictionary props, PersistenceServiceConfiguration currentCfg) {
         PersistenceServiceConfiguration cfg = currentCfg != null ? currentCfg : new PersistenceServiceConfiguration();
 
+        // TODO: how do we know that it's a external db?
+        // jdbc.ConnectionURL will also be present in case of internal DB (after saving configuration through front-end)
+        // maybe we should also save 'useExternalDB' as a property, e.g. jdbc.external = true ?
         if (props.get("jdbc.ConnectionURL") != null)  {
             cfg.setConnectionUrl(getString(props, "jdbc.ConnectionURL"));
             cfg.setUseExternalDB(true);

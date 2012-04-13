@@ -25,15 +25,22 @@ import com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand
 import com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand;
 import com.atricore.idbus.console.config.main.model.ServiceConfigProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.services.dto.settings.PersistenceServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ServiceType;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.binding.utils.BindingUtils;
+import mx.collections.ArrayCollection;
+import mx.controls.Alert;
+import mx.events.CloseEvent;
 import mx.events.FlexEvent;
+import mx.managers.PopUpManager;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
@@ -44,6 +51,8 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
 
     private var _configProxy:ServiceConfigProxy;
 
+    private var _projectProxy:ProjectProxy;
+
     protected var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     //commands
@@ -53,6 +62,9 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
     private var _created:Boolean;    
 
     private var _persistenceServiceConfig:PersistenceServiceConfiguration;
+
+    [Bindable]
+    public var _jdbcDrivers:ArrayCollection;
 
     public function PersistenceServiceMediator(name:String = null, viewComp:PersistenceServiceView = null) {
         super(name, viewComp);
@@ -75,6 +87,10 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
         if (_created) {
             view.titleDisplay.width = 0;
             view.titleDisplay.height = 0;
+            BindingUtils.bindProperty(view.connectionDriver, "dataProvider", this, "_jdbcDrivers");
+            view.connectionDriver.addEventListener(Event.CHANGE, handleDriverChange);
+            view.useExternalDB.addEventListener(Event.CHANGE, handleUseExternalDbChanged);
+            sendNotification(ApplicationFacade.LIST_JDBC_DRIVERS);
             view.btnSave.addEventListener(MouseEvent.CLICK, handleSave);
             sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.PERSISTENCE);
         }
@@ -84,7 +100,9 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
         return [ UpdateServiceConfigCommand.SUCCESS,
             UpdateServiceConfigCommand.FAILURE,
             GetServiceConfigCommand.SUCCESS,
-            GetServiceConfigCommand.FAILURE];
+            GetServiceConfigCommand.FAILURE,
+            JDBCDriversListCommand.SUCCESS,
+            JDBCDriversListCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -112,6 +130,9 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
             case GetServiceConfigCommand.FAILURE:
                 //TODO show error - this should not happen
                 break;
+            case JDBCDriversListCommand.SUCCESS:
+                _jdbcDrivers = projectProxy.jdbcDrivers;
+                break;
         }
     }
 
@@ -119,13 +140,30 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
         _persistenceServiceConfig.port = parseInt(view.port.text);
         //_persistenceServiceConfig.username = view.username.text;
         _persistenceServiceConfig.password = view.password.text;
+        _persistenceServiceConfig.useExternalDB = view.useExternalDB.selected;
+        if (_persistenceServiceConfig.useExternalDB) {
+            _persistenceServiceConfig.connectionDriver = view.connectionDriver.selectedItem.className;
+            _persistenceServiceConfig.connectionUrl = view.connectionUrl.text;
+            _persistenceServiceConfig.connectionUsername = view.connectionUsername.text;
+            _persistenceServiceConfig.connectionPassword = view.connectionPassword.text;
+        }
     }
 
     private function handleSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.persistence.save.progress"));
-            sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _persistenceServiceConfig);
+            var saveAlert:Alert = Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.save.warning.message'),
+                resourceManager.getString(AtricoreConsole.BUNDLE, 'config.persistence.save.warning.title'),
+                3, null,
+                function(event:CloseEvent):void {
+                    if (event.detail == Alert.YES) {
+                        sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.persistence.save.progress"));
+                        sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _persistenceServiceConfig);
+                    } else {
+                        PopUpManager.removePopUp(saveAlert);
+                    }
+                }
+            );
         }
         else {
             event.stopImmediatePropagation();
@@ -133,13 +171,42 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
     }
 
     public function displayServiceConfig():void {
-        _persistenceServiceConfig = _configProxy.persistenceService;
+        _persistenceServiceConfig = configProxy.persistenceService;
 
         view.port.text = String(_persistenceServiceConfig.port);
         view.username.text = _persistenceServiceConfig.username;
         view.password.text = _persistenceServiceConfig.password;
         view.confirmPassword.text = _persistenceServiceConfig.password;
+        view.useExternalDB.selected = _persistenceServiceConfig.useExternalDB;
+        if (_persistenceServiceConfig.useExternalDB) {
+            for (var i:int = 0; i < view.connectionDriver.dataProvider.length; i++) {
+                if (_persistenceServiceConfig.connectionDriver == view.connectionDriver.dataProvider[i].className) {
+                    view.connectionDriver.selectedIndex = i;
+                    break;
+                }
+            }
+            view.connectionUrl.text = _persistenceServiceConfig.connectionUrl;
+            view.connectionUsername.text = _persistenceServiceConfig.connectionUsername;
+            view.connectionPassword.text = _persistenceServiceConfig.connectionPassword;
+            view.connectionConfirmPassword.text = _persistenceServiceConfig.connectionPassword;
+        }
+        handleUseExternalDbChanged(null);
         view.btnSave.enabled = true;
+    }
+
+    private function handleDriverChange(event:Event):void {
+        view.connectionUrl.text = view.connectionDriver.selectedItem.defaultUrl;
+    }
+
+    private function handleUseExternalDbChanged(event:Event):void {
+        var enabled:Boolean = view.useExternalDB.selected;
+        view.connectionDriver.enabled = enabled;
+        view.connectionUrl.enabled = enabled;
+        view.connectionUsername.enabled = enabled;
+        view.connectionPassword.enabled = enabled;
+        //FormUtility.clearValidationErrors(_validators);
+        registerValidators();
+        validate(true);
     }
 
     protected function get view():PersistenceServiceView {
@@ -151,10 +218,28 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
         _validators.push(view.portValidator);
         //_validators.push(view.usernameValidator);
         _validators.push(view.passwordValidator);
+        if (view.useExternalDB.selected) {
+            _validators.push(view.connDriverValidator);
+            _validators.push(view.connUrlValidator);
+            _validators.push(view.connUsernameValidator);
+            _validators.push(view.connPasswordValidator);
+        }
+    }
+
+    public function get configProxy():ServiceConfigProxy {
+        return _configProxy;
     }
 
     public function set configProxy(value:ServiceConfigProxy):void {
         _configProxy = value;
+    }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
     }
 
     public function get getServiceConfigCommand():GetServiceConfigCommand {

@@ -55,14 +55,16 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
     }
 
     public ServiceConfiguration lookupConfiguration(ServiceType serviceType) throws ServiceConfigurationException {
+        ServiceConfiguration cfg = null;
         for (ServiceConfigurationHandler handler : handlers) {
-            ServiceConfiguration cfg = null;
             if (handler.canHandle(serviceType)) {
                 cfg = handler.loadConfiguration(serviceType, cfg);
-                if (cfg != null)
-                    return cfg;
             }
         }
+
+        if (cfg != null)
+            return cfg;
+
         throw new ServiceConfigurationException("Unknown service name : " + serviceType.name());
     }
 

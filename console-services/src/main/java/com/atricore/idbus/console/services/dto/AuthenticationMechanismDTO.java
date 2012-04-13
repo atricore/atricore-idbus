@@ -31,6 +31,8 @@ public class AuthenticationMechanismDTO implements Serializable {
 
 	private String name;
 
+    private String displayName;
+
     private int priority;
 
     private DelegatedAuthenticationDTO delegatedAuthentication;
@@ -50,6 +52,14 @@ public class AuthenticationMechanismDTO implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
     public int getPriority() {
         return priority;
