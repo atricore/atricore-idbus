@@ -24,7 +24,7 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
         this.handlers = handlers;
     }
 
-    public void configureService(ServiceConfiguration cfg) throws ServiceConfigurationException {
+    public boolean configureService(ServiceConfiguration cfg) throws ServiceConfigurationException {
         boolean handled = false;
         boolean reboot = false;
         for (ServiceConfigurationHandler handler : handlers) {
@@ -41,17 +41,20 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
         }
 
         if (reboot) {
-
+            /* This is quite risky, just tell the user to reset JOSSO instead */
+            /*
             try {
                 // Reboot JOSSO (Karaf)
                 System.setProperty("karaf.restart", "true");
-                // Force a clean restart by deleteting the working directory !?
-                System.setProperty("karaf.restart.clean", Boolean.TRUE.toString());
+                // Force a clean restart by deleteting the 'karaf.data' directory !?
+                System.setProperty("karaf.restart.clean", Boolean.FALSE.toString());
                 bundleContext.getBundle(0).stop();
             } catch (BundleException e) {
                 throw new ServiceConfigurationException("JOSSO Restart failed, please restart it manually!");
-            }
+            }*/
         }
+
+        return reboot;
     }
 
     public ServiceConfiguration lookupConfiguration(ServiceType serviceType) throws ServiceConfigurationException {

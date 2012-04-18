@@ -33,8 +33,10 @@ public class ServiceConfigurationManagerAjaxServcieImpl implements ServiceConfig
     public ServiceTypeDTO configureService(ServiceConfigurationDTO cfg) throws ServiceConfigurationException {
         ServiceConfiguration serviceCfg = dozerMapper.map(cfg, ServiceConfiguration.class);
 
+        boolean restart = false;
         try {
-            cfgManager.configureService(serviceCfg);
+            // TODO : Return service restart instead of type, if both are required use request/response objects
+            restart = cfgManager.configureService(serviceCfg);
             return cfg.getServiceType();
         } catch (com.atricore.idbus.console.settings.main.spi.ServiceConfigurationException e) {
             throw new ServiceConfigurationException(cfg.getServiceType(), e);

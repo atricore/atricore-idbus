@@ -4,6 +4,7 @@ import com.atricore.idbus.console.brandservice.main.domain.BrandingDefinition;
 import com.atricore.idbus.console.brandservice.main.BrandingServiceException;
 import com.atricore.idbus.console.brandservice.main.domain.BuiltInBrandingDefinition;
 import com.atricore.idbus.console.brandservice.main.NoSuchBrandingException;
+import com.atricore.idbus.console.brandservice.main.domain.CustomBrandingDefinition;
 import com.atricore.idbus.console.brandservice.main.spi.BrandManager;
 import com.atricore.idbus.console.brandservice.main.spi.BrandingInstaller;
 import com.atricore.idbus.console.brandservice.main.spi.BrandingStore;
@@ -18,6 +19,10 @@ import org.springframework.osgi.context.BundleContextAware;
 import org.springframework.transaction.annotation.Transactional;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -112,6 +117,72 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
     @Transactional
     public BrandingDefinition create(BrandingDefinition def) throws BrandingServiceException {
         try {
+
+            // If branding def. is custom, try to install the bundle
+            if (def instanceof CustomBrandingDefinition) {
+                CustomBrandingDefinition customDef = (CustomBrandingDefinition) def;
+                String bu = customDef.getBundleUri();
+
+                if (customDef.getResource() != null && customDef.getResource().length > 0) {
+                    // Install the bundle locally, based on the provided bundle uri
+                    if (!bu.startsWith("mvn:")) {
+                        throw new BrandingServiceException("Unknown URI protocol type for " + bu);
+                    }
+
+                    String group = bu.substring(4, bu.indexOf("/"));
+
+                    // Some groups that may produce
+                    if (group.startsWith("org.atricore.") ||
+                            group.startsWith("org.josso.") ||
+                            group.startsWith("org.apache.") ||
+                            group.startsWith("org.codehaus.") ||
+                            group.startsWith("org.osgi.") ||
+                            group.startsWith("org.springframework.") ||
+                            group.startsWith("org.mortbay.") ||
+                            group.startsWith("java.") ||
+                            group.startsWith("javax.") ||
+                            group.startsWith("com.sun.") ||
+                            group.startsWith("java.") ||
+                            group.startsWith("commons-")) {
+                        throw new BrandingServiceException("Illegal brandding bundle group name " + group);
+                    }
+
+                    group = group.replace('.', '/');
+                    String name = bu.substring(bu.indexOf("/") + 1, bu.lastIndexOf("/"));
+                    String version = bu.substring(bu.lastIndexOf("/") + 1);
+
+                    String karafHome = System.getProperty("karaf.home");
+
+                    // Create the bundle in the extensions folder :
+                    String resourceFolder = karafHome + "/extensions/" + group + "/" + name;
+                    String resourceFile = resourceFolder + "/" + name + "-" + version + ".jar";
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Writing bundle resource to " + resourceFile);
+
+                    File f = new File(resourceFile);
+                    File d = new File(resourceFolder);
+                    FileOutputStream fos = null;
+                    try {
+
+                        if (!d.exists())
+                            d.mkdirs();
+
+                        if (!f.exists())
+                            f.createNewFile();
+
+                        // Replace file, if it exists.
+                        fos = new FileOutputStream(f, false);
+                        fos.write(customDef.getResource());
+                    } catch (IOException e) {
+                        throw new BrandingServiceException("Cannot create branding bundle : " + e.getMessage(), e);
+                    }
+
+                    // We have the bundle in place ...
+
+                }
+            }
+
             return store.create(def);
         } catch (BrandingServiceException e) {
             throw new BrandingServiceException ("Cannot create branding definition " + e.getMessage(), e);

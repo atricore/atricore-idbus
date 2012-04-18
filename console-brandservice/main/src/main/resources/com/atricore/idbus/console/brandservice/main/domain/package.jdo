@@ -30,6 +30,7 @@
         </class>
 
         <class name="CustomBrandingDefinition" detachable="true" >
+            <field name="resource" persistence-modifier="none" />
         </class>
 
         <class name="ResourceBasedBrandingDefinition" detachable="true">
