@@ -11,6 +11,8 @@ public class LogServiceConfiguration implements  ServiceConfiguration {
 
     public static final int MODE_PROD = 10;
 
+    public static final int MODE_CUSTOM = 20;
+
     private ServiceType serviceType;
 
     private Integer serviceMode;

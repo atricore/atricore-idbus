@@ -32,6 +32,9 @@ public class UpdateCustomBrandingCommand extends BrandingCommandSupport {
     @Option(name = "-i", aliases = "--id", description = "The ID of the definition, used by the runtime", required = false, multiValued = false)
     String webBrandingId;
 
+    @Option(name = "-r", aliases = "--resource-url", description = "The URL pointing to the bundle containing branding resources", required = false, multiValued = false)
+    String resourceUrl;
+
     @Override
     protected Object doExecute(BrandManager svc) throws Exception {
         
@@ -54,7 +57,12 @@ public class UpdateCustomBrandingCommand extends BrandingCommandSupport {
 
         if (webBrandingId != null)
             def.setWebBrandingId(webBrandingId);
-        
+
+        if (resourceUrl != null) {
+            // Load resource!
+            def.setResource(loadFromUrl(resourceUrl));
+        }
+
         def = (CustomBrandingDefinition) svc.update(def);
 
         if (getPrinter() != null)

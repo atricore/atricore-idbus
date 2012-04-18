@@ -6,6 +6,12 @@ import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.osgi.framework.ServiceReference;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -53,5 +59,27 @@ public abstract class BrandingCommandSupport extends OsgiCommandSupport {
 
     public void setPrinter(CmdPrinter cmdPrinter) {
         this.cmdPrinter = cmdPrinter;
+    }
+
+    protected byte[] loadFromUrl(String url) throws MalformedURLException {
+        URL resource = new URL(url);
+        InputStream is = null;
+        ByteArrayOutputStream bais = new ByteArrayOutputStream();
+        try {
+            is = resource.openStream();
+            byte[] byteChunk = new byte[4096];
+            int n;
+            while ((n = is.read(byteChunk)) > 0) {
+                bais.write(byteChunk, 0, n);
+            }
+            return bais.toByteArray();
+
+        } catch  (IOException e) {
+            getPrinter().printError(e);
+            return null;
+        } finally {
+            if (is != null) try { is.close();} catch (IOException e) {/* ignore it*/}
+        }
+
     }
 }

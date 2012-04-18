@@ -50,24 +50,7 @@ public class CreateCustomBrandingCommand extends BrandingCommandSupport {
 
         if (resourceUrl != null) {
             // Load resource!
-            URL resource = new URL(resourceUrl);
-            InputStream is = null;
-            ByteArrayOutputStream bais = new ByteArrayOutputStream();
-            try {
-                is = resource.openStream();
-                byte[] byteChunk = new byte[4096];
-                int n;
-                while ((n = is.read(byteChunk)) > 0) {
-                    bais.write(byteChunk, 0, n);
-                }
-                def.setResource(bais.toByteArray());
-
-            } catch  (IOException e) {
-                getPrinter().printError(e);
-                return null;
-            } finally {
-                if (is != null) try { is.close();} catch (IOException e) {/* ignore it*/}
-            }
+            def.setResource(loadFromUrl(resourceUrl));
         }
 
         def = (CustomBrandingDefinition) svc.create(def);
