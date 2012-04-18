@@ -177,6 +177,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         branding = brandingService.lookup(brandingId);
         if (branding != null) {
             brandingService.register(this);
+        } else {
+            logger.error("No branding configured for " + this.getName());
         }
         postInit();
         refreshBranding();

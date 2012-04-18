@@ -47,7 +47,7 @@ public class WebBrandingServiceImpl implements WebBrandingService {
             try {
                 listener.handleEvent(event);
             } catch (Exception e) {
-                logger.error("Error notifying removal to listener " + listener + ", " + e.getMessage(), e);
+                logger.error("Error notifying publish to listener " + listener + ", " + e.getMessage(), e);
             }
         }
 

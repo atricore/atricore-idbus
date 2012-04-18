@@ -139,6 +139,7 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
 
         authnCtx.setSloBackTo(backTo);
         authnCtx.setSloRequest(request);
+        authnCtx.setAppId(appId);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(request.getID(),
