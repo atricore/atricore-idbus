@@ -111,3 +111,6 @@ log4j.category.DataNucleus=INFO
 #
 #log4j.category.DataNucleus.Enhancer=INFO
 #log4j.category.DataNucleus.SchemaTool=INFO
+
+# DO NOT CHANGE THIS, IT'S FOR MANAGEMENT PURPOSES ONLY
+org.atricore.idbus.log.mode=DEBUG
