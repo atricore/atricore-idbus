@@ -275,7 +275,7 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
             String karafHome = System.getProperty("karaf.home");
 
             // Create the bundle in the extensions folder :
-            String resourceFolder = karafHome + "/extensions/" + group + "/" + name;
+            String resourceFolder = karafHome + "/extensions/" + group + "/" + name + "/" + version;
             String resourceFile = resourceFolder + "/" + name + "-" + version + ".jar";
 
             if (logger.isDebugEnabled())
