@@ -131,11 +131,12 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
 
     @Transactional
     public BrandingDefinition update(BrandingDefinition def) throws BrandingServiceException {
-        BrandingDefinition oldDef = store.retrieve(def.getId());
-        if (oldDef instanceof BuiltInBrandingDefinition)
+        BrandingDefinition currentDef = store.retrieve(def.getId());
+        if (currentDef instanceof BuiltInBrandingDefinition)
             throw new BrandingServiceException("Cannot update buil-in branding definition");
 
         if (def instanceof CustomBrandingDefinition) {
+            // Install the new bundle
             installCustomDefBundle((CustomBrandingDefinition) def);
         }
         return store.update(def);
