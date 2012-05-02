@@ -1,10 +1,10 @@
 package com.atricore.idbus.console.settings.main.impl;
 
+import com.atricore.idbus.console.settings.main.spi.LogConfigProperty;
 import com.atricore.idbus.console.settings.main.spi.LogServiceConfiguration;
 import com.atricore.idbus.console.settings.main.spi.ServiceConfigurationException;
 import com.atricore.idbus.console.settings.main.spi.ServiceType;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -41,6 +41,25 @@ public class LogServiceConfigurationHandler extends OsgiServiceConfigurationHand
 
             LogServiceConfiguration cfg = new LogServiceConfiguration();
             cfg.setServiceMode(mode);
+            
+            if (mode == LogServiceConfiguration.MODE_CUSTOM) {
+                List<LogConfigProperty> configProperties = new ArrayList<LogConfigProperty>();
+                Enumeration keys = d.keys();
+                while (keys.hasMoreElements()) {
+                    Object key = keys.nextElement();
+                    if (key instanceof String) {
+                        String keyStr = (String) key;
+                        if (keyStr.startsWith("log4j.category.")) {
+                            LogConfigProperty configProperty = new LogConfigProperty();
+                            configProperty.setCategory(keyStr.substring(15));
+                            configProperty.setLevel((String) d.get(key));
+                            configProperties.add(configProperty);
+                        }
+                    }
+                }
+                cfg.setConfigProperties(configProperties);
+            }
+
             return cfg;
 
         } catch (IOException e) {

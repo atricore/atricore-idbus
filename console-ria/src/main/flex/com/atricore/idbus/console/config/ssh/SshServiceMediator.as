@@ -29,10 +29,12 @@ import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.services.dto.settings.ServiceType;
 import com.atricore.idbus.console.services.dto.settings.SshServiceConfiguration;
+import com.atricore.idbus.console.services.spi.response.ConfigureServiceResponse;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.controls.Alert;
 import mx.events.FlexEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
@@ -90,9 +92,13 @@ public class SshServiceMediator extends IocFormMediator implements IDisposable {
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case UpdateServiceConfigCommand.SUCCESS:
-                var serviceType1:ServiceType = notification.getBody() as ServiceType;
+                var resp:ConfigureServiceResponse = notification.getBody() as ConfigureServiceResponse;
+                var serviceType1:ServiceType = resp.serviceType;
                 if (serviceType1.name == ServiceType.SSH.name) {
                     sendNotification(ProcessingMediator.STOP);
+                    if (resp.restart) {
+                        Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.service.restartMessage'));
+                    }
                 }
                 break;
             case UpdateServiceConfigCommand.FAILURE:

@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.config.http
 {
+import com.atricore.idbus.console.config.http.event.BindAddressGridEvent;
 import com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand;
 import com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand;
 import com.atricore.idbus.console.config.main.model.ServiceConfigProxy;
@@ -29,11 +30,16 @@ import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.services.dto.settings.HttpServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ServiceType;
+import com.atricore.idbus.console.services.spi.response.ConfigureServiceResponse;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.binding.utils.BindingUtils;
+import mx.collections.ArrayCollection;
 import mx.controls.Alert;
+import mx.controls.TextInput;
+import mx.events.DataGridEvent;
 import mx.events.FlexEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
@@ -43,6 +49,8 @@ import org.puremvc.as3.interfaces.INotification;
 
 public class HttpServiceMediator extends IocFormMediator implements IDisposable {
 
+    public static const ADD_BIND_ADDRESS:String = "Click to Add Bind Address";
+
     private var _configProxy:ServiceConfigProxy;
 
     protected var resourceManager:IResourceManager = ResourceManager.getInstance();
@@ -51,11 +59,14 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
     private var _getServiceConfigCommand:GetServiceConfigCommand;
     private var _updateServiceConfigCommand:UpdateServiceConfigCommand;
 
-    private var _created:Boolean;    
+    private var _created:Boolean;
 
     private var _httpServiceConfig:HttpServiceConfiguration;
-    private var _port:Number;
-    private var _bindAddresses:String;
+    private var _oldPort:Number;
+    private var _oldBindAddresses:ArrayCollection;
+
+    [Bindable]
+    public var _bindAddresses:ArrayCollection;
 
     public function HttpServiceMediator(name:String = null, viewComp:HttpServiceView = null) {
         super(name, viewComp);
@@ -80,6 +91,11 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
             view.titleDisplay.height = 0;
             view.btnSave.addEventListener(MouseEvent.CLICK, handleSave);
             view.enableSSL.addEventListener(Event.CHANGE, handleEnableSslChanged);
+            view.bindAddresses.addEventListener(DataGridEvent.ITEM_EDIT_END, editEnd);
+            view.bindAddresses.addEventListener(BindAddressGridEvent.CLICK, handleBindAddressGridEvent);
+            _bindAddresses = new ArrayCollection();
+            _bindAddresses.addItem({bindAddress:ADD_BIND_ADDRESS});
+            BindingUtils.bindProperty(view.bindAddresses, "dataProvider", this, "_bindAddresses");
             sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.HTTP);
         }
     }
@@ -94,10 +110,10 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case UpdateServiceConfigCommand.SUCCESS:
-                /*var serviceType1:ServiceType = notification.getBody() as ServiceType;
-                if (serviceType1.name == ServiceType.HTTP.name) {
-                    sendNotification(ProcessingMediator.STOP);
-                }*/
+                var resp:ConfigureServiceResponse = notification.getBody() as ConfigureServiceResponse;
+                if (resp.restart) {
+                    Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.service.restartMessage'));
+                }
                 break;
             case UpdateServiceConfigCommand.FAILURE:
                 var serviceType2:ServiceType = notification.getBody() as ServiceType;
@@ -123,8 +139,8 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
         _httpServiceConfig.serverId = view.serverId.text;
         _httpServiceConfig.port = parseInt(view.port.text);
         var bindAddresses:Array = new Array();
-        if (view.bindAddress.text != null && view.bindAddress.text != "") {
-            bindAddresses = view.bindAddress.text.split(",");
+        for (var i:int = 0; i < _bindAddresses.length - 1; i++) {
+            bindAddresses.push(_bindAddresses[i].bindAddress);
         }
         _httpServiceConfig.bindAddresses = bindAddresses;
         _httpServiceConfig.sessionTimeout = parseInt(view.sessionTimeout.text);
@@ -144,11 +160,10 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
             bindModel();
             //sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.http.save.progress"));
             sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _httpServiceConfig);
-            if (_port != _httpServiceConfig.port || _bindAddresses !=_httpServiceConfig.bindAddresses.join(",")) {
+            if (_oldPort != _httpServiceConfig.port || bindAddressesChanged()) {
                 Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.reconnectMessage'));
             }
-        }
-        else {
+        } else {
             event.stopImmediatePropagation();
         }
     }
@@ -161,7 +176,7 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
         view.sslKeyPassword.enabled = enabled;
         //FormUtility.clearValidationErrors(_validators);
         registerValidators();
-        validate(true);
+        //validate(true);
     }
 
     public function displayServiceConfig():void {
@@ -169,11 +184,16 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
 
         view.serverId.text = _httpServiceConfig.serverId;
         view.port.text = String(_httpServiceConfig.port);
-        var bindAddresses:String = null;
+        _oldPort = _httpServiceConfig.port;
+        _bindAddresses = new ArrayCollection();
+        _oldBindAddresses = new ArrayCollection();
         if (_httpServiceConfig.bindAddresses != null) {
-            bindAddresses = _httpServiceConfig.bindAddresses.join(",");
+            for each (var bindAddress:String in _httpServiceConfig.bindAddresses) {
+                _bindAddresses.addItem({bindAddress:bindAddress});
+                _oldBindAddresses.addItem(bindAddress);
+            }
         }
-        view.bindAddress.text = bindAddresses;
+        _bindAddresses.addItem({bindAddress:ADD_BIND_ADDRESS});
         view.sessionTimeout.text = String(_httpServiceConfig.sessionTimeout);
         view.maxHeaderBufferSize.text = String(_httpServiceConfig.maxHeaderBufferSize);
         view.disableSessionURL.selected = _httpServiceConfig.disableSessionUrl;
@@ -187,11 +207,65 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
         view.sslKeystorePassword.text = _httpServiceConfig.sslKeystorePassword;
         view.sslKeyPassword.text = _httpServiceConfig.sslKeyPassword;
 
-        _port = _httpServiceConfig.port;
-        _bindAddresses = view.bindAddress.text;
-
         handleEnableSslChanged(null);
         view.btnSave.enabled = true;
+    }
+
+    private function editEnd(e:DataGridEvent):void {
+        // Adding a new bind address
+        if (e.rowIndex == _bindAddresses.length - 1) {
+            var txtIn:TextInput = TextInput(e.currentTarget.itemEditorInstance);
+            var newBindAddress:String = txtIn.text;
+
+            // Add new bind address
+            if (newBindAddress != ADD_BIND_ADDRESS) {
+                var bindAddressExists:Boolean = false;
+                for each (var bindAddress:Object in _bindAddresses) {
+                    if (bindAddress.bindAddress == newBindAddress) {
+                        bindAddressExists = true;
+                        break;
+                    }
+                }
+                if (!bindAddressExists) {
+                    _bindAddresses.addItemAt({bindAddress:newBindAddress}, e.rowIndex);
+                }
+            }
+
+            // Destroy item editor
+            view.bindAddresses.destroyItemEditor();
+
+            // Stop default behavior
+            e.preventDefault();
+        }
+    }
+
+    private function handleBindAddressGridEvent(event:BindAddressGridEvent):void {
+        switch (event.action) {
+            case BindAddressGridEvent.ACTION_REMOVE:
+                for (var i:int = 0; i < _bindAddresses.length; i++) {
+                    if (_bindAddresses[i].bindAddress == event.data.bindAddress) {
+                        _bindAddresses.removeItemAt(i);
+                        break;
+                    }
+                }
+                break;
+        }
+    }
+
+    private function bindAddressesChanged():Boolean {
+        var changed:Boolean = false;
+        if (_oldBindAddresses.length != _httpServiceConfig.bindAddresses.length) {
+            changed = true;
+        }
+        if (!changed) {
+            for each (var bindAddress:String in _httpServiceConfig.bindAddresses) {
+                if (!_oldBindAddresses.contains(bindAddress)) {
+                    changed = true;
+                    break;
+                }
+            }
+        }
+        return changed;
     }
 
     protected function get view():HttpServiceView {

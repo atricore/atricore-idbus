@@ -1,5 +1,8 @@
 package com.atricore.idbus.console.services.dto.settings;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LogServiceConfigurationDTO implements ServiceConfigurationDTO {
 
     private static final long serialVersionUID = -6745347326343814857L;
@@ -8,9 +11,13 @@ public class LogServiceConfigurationDTO implements ServiceConfigurationDTO {
 
     public static final int MODE_PROD = 10;
 
+    public static final int MODE_CUSTOM = 20;
+
     private ServiceTypeDTO serviceType;
 
     private Integer serviceMode;
+
+    private List<LogConfigPropertyDTO> configProperties;
 
     public LogServiceConfigurationDTO() {
         this.serviceType = ServiceTypeDTO.LOG;
@@ -26,5 +33,16 @@ public class LogServiceConfigurationDTO implements ServiceConfigurationDTO {
 
     public void setServiceMode(Integer serviceMode) {
         this.serviceMode = serviceMode;
+    }
+
+    public List<LogConfigPropertyDTO> getConfigProperties() {
+        if (configProperties == null) {
+            configProperties = new ArrayList<LogConfigPropertyDTO>();
+        }
+        return configProperties;
+    }
+
+    public void setConfigProperties(List<LogConfigPropertyDTO> configProperties) {
+        this.configProperties = configProperties;
     }
 }

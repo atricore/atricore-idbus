@@ -114,7 +114,7 @@ public abstract class OsgiServiceConfigurationHandler<T extends ServiceConfigura
     }
 
     protected String[] getArrayFromCsv(String v) {
-        StringTokenizer st = new StringTokenizer(v);
+        StringTokenizer st = new StringTokenizer(v, ",");
         List<String> ts = new ArrayList<String>();
         while (st.hasMoreTokens()) {
             String t = st.nextToken().trim();

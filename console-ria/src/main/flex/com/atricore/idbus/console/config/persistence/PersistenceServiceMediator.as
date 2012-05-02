@@ -31,6 +31,7 @@ import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.services.dto.settings.PersistenceServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ServiceType;
+import com.atricore.idbus.console.services.spi.response.ConfigureServiceResponse;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -108,9 +109,13 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case UpdateServiceConfigCommand.SUCCESS:
-                var serviceType1:ServiceType = notification.getBody() as ServiceType;
+                var resp:ConfigureServiceResponse = notification.getBody() as ConfigureServiceResponse;
+                var serviceType1:ServiceType = resp.serviceType;
                 if (serviceType1.name == ServiceType.PERSISTENCE.name) {
                     sendNotification(ProcessingMediator.STOP);
+                    if (resp.restart) {
+                        Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.service.restartMessage'));
+                    }
                 }
                 break;
             case UpdateServiceConfigCommand.FAILURE:
@@ -206,7 +211,7 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
         view.connectionPassword.enabled = enabled;
         //FormUtility.clearValidationErrors(_validators);
         registerValidators();
-        validate(true);
+        //validate(true);
     }
 
     protected function get view():PersistenceServiceView {

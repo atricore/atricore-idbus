@@ -63,8 +63,34 @@
                 <s:TextInput id="port" width="200"/>
             </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.bindAddress')}:">
-                <s:TextInput id="bindAddress" width="200"/>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.bindAddresses')}:">
+                <!--<s:TextInput id="bindAddress" width="200"/>-->
+                <mx:DataGrid id="bindAddresses" width="100%" height="100%" rowCount="4"
+                             sortableColumns="false" editable="true">
+                    <mx:columns>
+                        <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.bindAddress')}" width="150" dataField="bindAddress"/>
+                        <mx:DataGridColumn headerText="" width="50" editable="false">
+                            <mx:itemRenderer>
+                                <fx:Component>
+                                    <s:MXAdvancedDataGridItemRenderer>
+                                        <utils:IconButton iconUp="{EmbeddedIcons.removeNodeIcon}"
+                                                               iconWidth="16" iconHeight="16"
+                                                               paddingTop="3" paddingLeft="20"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.bindAddress.toolTips.remove')}"
+                                                               click="dispatchEvent(new BindAddressGridEvent(true, true, data, BindAddressGridEvent.ACTION_REMOVE));"
+                                                               visible="{data.bindAddress != HttpServiceMediator.ADD_BIND_ADDRESS}">
+                                            <fx:Script><![CDATA[
+                                                import com.atricore.idbus.console.config.http.event.BindAddressGridEvent;
+                                                import com.atricore.idbus.console.main.EmbeddedIcons;
+                                                ]]></fx:Script>
+                                        </utils:IconButton>
+                                    </s:MXAdvancedDataGridItemRenderer>
+                                </fx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                    </mx:columns>
+                </mx:DataGrid>
             </mx:FormItem>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.sessionTimeout')}:" required="true">

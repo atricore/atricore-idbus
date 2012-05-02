@@ -29,10 +29,13 @@ import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.services.dto.settings.LogServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ServiceType;
+import com.atricore.idbus.console.services.spi.response.ConfigureServiceResponse;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
+import mx.controls.Alert;
 import mx.events.FlexEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
@@ -90,9 +93,13 @@ public class LogServiceMediator extends IocFormMediator implements IDisposable {
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case UpdateServiceConfigCommand.SUCCESS:
-                var serviceType1:ServiceType = notification.getBody() as ServiceType;
+                var resp:ConfigureServiceResponse = notification.getBody() as ConfigureServiceResponse;
+                var serviceType1:ServiceType = resp.serviceType;
                 if (serviceType1.name == ServiceType.LOG.name) {
                     sendNotification(ProcessingMediator.STOP);
+                    if (resp.restart) {
+                        Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.service.restartMessage'));
+                    }
                 }
                 break;
             case UpdateServiceConfigCommand.FAILURE:
@@ -133,13 +140,37 @@ public class LogServiceMediator extends IocFormMediator implements IDisposable {
     public function displayServiceConfig():void {
         _logServiceConfig = _configProxy.logService;
 
+        var serviceMods:ArrayCollection = new ArrayCollection();
+        serviceMods.addItem({data:0,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.serviceMode.development')});
+        serviceMods.addItem({data:10,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.serviceMode.production')});
+        if (_logServiceConfig.serviceMode == 20) {
+            serviceMods.addItem({data:20,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.serviceMode.custom')});
+        }
+        view.serviceMode.dataProvider = serviceMods;
+        view.serviceMode.validateNow();
+
         if (_logServiceConfig.serviceMode == 0) {
             view.serviceMode.selectedIndex = 0;
+            view.customLogData.visible = false;
+            view.customLogData.includeInLayout = false;
+            view.serviceMode.enabled = true;
+            view.btnSave.enabled = true;
         } else if (_logServiceConfig.serviceMode == 10) {
             view.serviceMode.selectedIndex = 1;
+            view.customLogData.visible = false;
+            view.customLogData.includeInLayout = false;
+            view.serviceMode.enabled = true;
+            view.btnSave.enabled = true;
+        } else if (_logServiceConfig.serviceMode == 20) {
+            view.serviceMode.selectedIndex = 2;
+            view.customLogData.includeInLayout = true;
+            view.customLogData.visible = true;
+            view.serviceMode.enabled = false;
+            view.btnSave.enabled = false;
         }
-
-        view.btnSave.enabled = true;
+        
+        view.customLogData.dataProvider = _logServiceConfig.configProperties;
+        view.customLogData.validateNow();
     }
 
     protected function get view():LogServiceView {
