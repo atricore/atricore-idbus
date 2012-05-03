@@ -180,7 +180,7 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
         if (props.get("org.ops4j.pax.web.listening.addresses") != null && !"".equals(props.get("org.ops4j.pax.web.listening.addresses")))
             cfg.setBindAddresses(getArrayFromCsv(props.get("org.ops4j.pax.web.listening.addresses")));
         else
-            cfg.setBindAddresses(new String[0]);
+            cfg.setBindAddresses(new String[] {"0.0.0.0"});
         
         cfg.setDisableSessionUrl(getBoolean(props, "org.ops4j.pax.web.session.url"));
         cfg.setEnableSsl(getBoolean(props, "org.osgi.service.http.secure.enabled"));

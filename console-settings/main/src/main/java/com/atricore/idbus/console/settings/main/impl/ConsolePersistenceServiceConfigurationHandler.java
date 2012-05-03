@@ -72,6 +72,8 @@ public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceCo
 
             // When using external DB, values are what users enter
 
+            d.put("jdbc.atricore.useExternalDB", "true");
+
             if (config.getConnectionDriver() != null)
                 d.put("jdbc.ConnectionDriverName", config.getConnectionDriver());
 
@@ -85,6 +87,8 @@ public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceCo
                 d.put("jdbc.ConnectionURL", config.getConnectionUrl());
 
         } else {
+
+            d.put("jdbc.atricore.useExternalDB", "false");
 
             // When using internal DB, values are automatically calculated
 
@@ -109,7 +113,7 @@ public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceCo
         // TODO: how do we know that it's a external db?
         // jdbc.ConnectionURL will also be present in case of internal DB (after saving configuration through front-end)
         // maybe we should also save 'useExternalDB' as a property, e.g. jdbc.external = true ?
-        if (props.get("jdbc.ConnectionURL") != null)  {
+        if (props.get("jdbc.atricore.useExternalDB") != null && Boolean.parseBoolean((String) props.get("jdbc.atricore.useExternalDB")))  {
             cfg.setConnectionUrl(getString(props, "jdbc.ConnectionURL"));
             cfg.setUseExternalDB(true);
         } else {
