@@ -142,6 +142,8 @@ public abstract class AbstractCamelProducer<E extends org.apache.camel.Exchange>
             }
 
         } catch (IdentityMediationFault err) {
+
+            logger.error(err.getMessage(), err);
             
             String errorMsg = "[" + channel.getName() + "@" + channel.getLocation() + "] " +
                     getClass().getSimpleName() + ":'" + err.getMessage() + "'";
@@ -153,6 +155,8 @@ public abstract class AbstractCamelProducer<E extends org.apache.camel.Exchange>
             fault.setBody(new MediationMessageImpl(fault.getMessageId(), errorMsg, err));
 
         } catch (Exception err) {
+
+            logger.error(err.getMessage(), err);
 
             IdentityMediationFault f = new IdentityMediationFault("urn:org:atricore:idbus:error:fatal",
                     null, null, err.getMessage(), err);

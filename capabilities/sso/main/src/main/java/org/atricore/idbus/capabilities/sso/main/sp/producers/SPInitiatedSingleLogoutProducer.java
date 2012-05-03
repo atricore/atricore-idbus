@@ -95,6 +95,7 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
 
                 SSOResponseType ssoResponse = new SSOResponseType();
                 ssoResponse.setID(uuidGenerator.generateId());
+                ssoResponse.setIssuer(getProvider().getName());
                 String destinationLocation = ((SamlR2SPMediator) channel.getIdentityMediator()).getSpBindingSLO();
 
                 EndpointDescriptor destination =
@@ -184,6 +185,7 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
                 SSOResponseType ssoResponse = new SSOResponseType();
                 ssoResponse.setID(uuidGenerator.generateId());
                 ssoResponse.setInReplayTo(sloRequest.getID());
+                ssoResponse.setIssuer(getProvider().getName());
 
                 CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
                 out.setMessage(new MediationMessageImpl(sloRequest.getID(),

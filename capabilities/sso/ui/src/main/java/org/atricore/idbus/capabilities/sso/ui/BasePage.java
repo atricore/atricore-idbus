@@ -109,6 +109,8 @@ public class BasePage extends WebPage implements IHeaderContributor {
             if (branding.getSkin() != null)
                 setVariation(branding.getSkin());
 
+        } else {
+            logger.error("No Branding found for application : " + app.getName());
         }
 
     }

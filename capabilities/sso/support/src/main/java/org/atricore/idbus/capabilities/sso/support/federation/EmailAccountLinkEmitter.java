@@ -42,10 +42,26 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
 
     public AccountLink emit ( Subject subject ) {
 
+        // If subjectName ID  is email formatted, use it
+        Set<SubjectNameID> nameIds = subject.getPrincipals(SubjectNameID.class);
+        if (nameIds != null) {
+            if ( logger.isDebugEnabled() )
+                logger.debug( "SubjectNameID Pricipals found: " + nameIds.size() );
+
+            for (SubjectNameID nameId : nameIds) {
+                if (nameId.getFormat() == null || nameId.getFormat().equals(NameIDFormat.EMAIL.getValue())) {
+                    String email = nameId.getName();
+                    return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+                }
+            }
+        }
+
+
+        // Look for subject attributes that may be an email (TODO : make configurable)
         Set<SubjectAttribute> subjectAttrs = subject.getPrincipals( SubjectAttribute.class );
 
         if ( logger.isDebugEnabled() )
-            logger.debug( "Pricipals found: " + subjectAttrs.size() );
+            logger.debug( "SubjectAttribute Pricipals found: " + subjectAttrs.size() );
 
         for (SubjectAttribute subjectAttribute : subjectAttrs ) {
 
@@ -54,7 +70,11 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
                 logger.debug( "Pricipal Format: " + subjectAttribute.getValue() );
             }
 
-            if ( subjectAttribute.getName().startsWith("/UserAttribute[@ldap:targetAttribute=\"mail\"]")) {
+            // TODO : Make configurable rules to take email from attributes !!!
+            if ( subjectAttribute.getName().startsWith("/UserAttribute[@ldap:targetAttribute=\"mail\"]") ||
+                 subjectAttribute.getName().equalsIgnoreCase("emailaddress") ||
+                 subjectAttribute.getName().equalsIgnoreCase("email") ||
+                 subjectAttribute.getName().equalsIgnoreCase("mail")) {
 
                 // Need to map email to local user name!
                 String email = subjectAttribute.getValue();

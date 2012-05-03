@@ -373,7 +373,9 @@ public class AssertionConsumerProducer extends SSOProducer {
         if (idPlanExchange.getOut() == null)
             throw new SSOException("Plan Exchange OUT must not be null!");
 
-        return (SPAuthnResponseType) idPlanExchange.getOut().getContent();
+        SPAuthnResponseType ssoResponse = (SPAuthnResponseType) idPlanExchange.getOut().getContent();
+        ssoResponse.setIssuer(getProvider().getName());
+        return ssoResponse;
 
     }
 
@@ -829,10 +831,8 @@ public class AssertionConsumerProducer extends SSOProducer {
             long responseIssueInstant = response.getIssueInstant().toGregorianCalendar().getTimeInMillis();
             long requestIssueInstant = request.getIssueInstant().toGregorianCalendar().getTimeInMillis();
 
-            if (logger.isDebugEnabled())
-                logger.debug("TTL 1: " + responseIssueInstant + " - " +  requestIssueInstant + " = " + (responseIssueInstant - requestIssueInstant));
-
-           	if (responseIssueInstant - requestIssueInstant <= (-1000L * 60L * 5L)) {
+            // TODO : Make configurable ?! Give a second of tolerance between request/response issue instants
+           	if(responseIssueInstant - requestIssueInstant <= -1000) {
     			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
@@ -1143,18 +1143,24 @@ public class AssertionConsumerProducer extends SSOProducer {
         if (conditions == null)
             return;
 
+        long tolerance = ((AbstractSSOMediator)channel.getIdentityMediator()).getTimestampValidationTolerance();
 		Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		if(conditions.getConditionOrAudienceRestrictionOrOneTimeUse() == null 
+
+		if(conditions.getConditionOrAudienceRestrictionOrOneTimeUse() == null
 				&& conditions.getNotBefore() == null && conditions.getNotOnOrAfter() == null){
 			return;
 		}
 
 		logger.debug("Current time (UTC): " + utcCalendar.toString());
 
-		XMLGregorianCalendar notBeforeUTC = null;		
+		XMLGregorianCalendar notBeforeUTC = null;
 		XMLGregorianCalendar notOnOrAfterUTC = null;
-		
-		if(conditions.getNotBefore() != null){			
+
+
+
+
+
+		if(conditions.getNotBefore() != null){
 			//normalize to UTC			
 			logger.debug("Conditions.NotBefore: " + conditions.getNotBefore());
 
@@ -1166,8 +1172,14 @@ public class AssertionConsumerProducer extends SSOProducer {
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_UTC_VALUE, notBeforeUTC.toString());
-			} else if(!notBeforeUTC.toGregorianCalendar().getTime().before(utcCalendar.getTime())){
-                throw new SSOResponseException(response,
+			} else {
+
+                Calendar notBefore = notBeforeUTC.toGregorianCalendar();
+                notBefore.add(Calendar.MILLISECOND, (int) tolerance * -1);
+
+                if (utcCalendar.before(notBefore))
+
+                    throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NOT_BEFORE_VIOLATED,
@@ -1175,6 +1187,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 			}
 		}
 
+        // Make sure that the NOT ON OR AFTER is not violated, give a five minutes tolerance (should be configurable)
 		if(conditions.getNotOnOrAfter() != null){
 			//normalize to UTC
 			logger.debug("Conditions.NotOnOrAfter: " + conditions.getNotOnOrAfter().toString());
@@ -1186,16 +1199,24 @@ public class AssertionConsumerProducer extends SSOProducer {
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_UTC_VALUE, notOnOrAfterUTC.toString());
 
-			} else if(!notOnOrAfterUTC.toGregorianCalendar().getTime().after(utcCalendar.getTime())){
-                throw new SSOResponseException(response,
+            } else {
+
+                // diff in millis
+                Calendar notOnOrAfter = notOnOrAfterUTC.toGregorianCalendar();
+                notOnOrAfter.add(Calendar.MILLISECOND, (int) tolerance);
+
+                if (utcCalendar.after(notOnOrAfter))
+                    throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NOT_ONORAFTER_VIOLATED, notOnOrAfterUTC.toString());
 			}
 		}
-		
-		if(notBeforeUTC != null && notOnOrAfterUTC != null 
-				&& notOnOrAfterUTC.compare(notBeforeUTC) <= 0){
+
+
+		if(notBeforeUTC != null && notOnOrAfterUTC != null
+				&& notOnOrAfterUTC.compare(notBeforeUTC) <= 0) {
+
             throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
@@ -1322,18 +1343,24 @@ public class AssertionConsumerProducer extends SSOProducer {
         // Get Subject ID (username ?)
         SubjectNameID nameId = null;
         Set<SubjectNameID> nameIds = federatedSubject.getPrincipals(SubjectNameID.class);
-        if (nameIds != null) {
+
+        if (nameIds != null && nameIds.size() > 0) {
+            nameId = nameIds.iterator().next();
+            if (logger.isTraceEnabled())
+                logger.trace("Using Subject ID " + nameId.getName() + "[" + nameId.getFormat() + "] ");
+
+            /* Old logic, serched for UNSPECIFIED Subject Name ID:
             for (SubjectNameID i : nameIds) {
 
                 if (logger.isTraceEnabled())
                     logger.trace("Checking Subject ID " + i.getName() + "["+i.getFormat()+"] ");
 
-                // TODO : Support other name ID formats
+                // TODO : Support other name ID formats !!!
                 if (i.getFormat() == null || i.getFormat().equals(NameIDFormat.UNSPECIFIED.getValue())) {
                     nameId = i;
                     break;
                 }
-            }
+            } */
         }
 
         if (nameId == null) {
