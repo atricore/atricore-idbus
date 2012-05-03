@@ -4,6 +4,7 @@ import com.atricore.idbus.console.services.dto.settings.ServiceConfigurationDTO;
 import com.atricore.idbus.console.services.dto.settings.ServiceTypeDTO;
 import com.atricore.idbus.console.services.spi.ServiceConfigurationException;
 import com.atricore.idbus.console.services.spi.ServiceConfigurationManagerAjaxService;
+import com.atricore.idbus.console.services.spi.response.ConfigureServiceResponse;
 import com.atricore.idbus.console.settings.main.spi.ServiceConfiguration;
 import com.atricore.idbus.console.settings.main.spi.ServiceConfigurationManager;
 import com.atricore.idbus.console.settings.main.spi.ServiceType;
@@ -30,12 +31,12 @@ public class ServiceConfigurationManagerAjaxServcieImpl implements ServiceConfig
         this.dozerMapper = dozerMapper;
     }
 
-    public ServiceTypeDTO configureService(ServiceConfigurationDTO cfg) throws ServiceConfigurationException {
+    public ConfigureServiceResponse configureService(ServiceConfigurationDTO cfg) throws ServiceConfigurationException {
         ServiceConfiguration serviceCfg = dozerMapper.map(cfg, ServiceConfiguration.class);
 
         try {
-            cfgManager.configureService(serviceCfg);
-            return cfg.getServiceType();
+            boolean restart = cfgManager.configureService(serviceCfg);
+            return new ConfigureServiceResponse(cfg.getServiceType(), restart);
         } catch (com.atricore.idbus.console.settings.main.spi.ServiceConfigurationException e) {
             throw new ServiceConfigurationException(cfg.getServiceType(), e);
         }
@@ -51,6 +52,8 @@ public class ServiceConfigurationManagerAjaxServcieImpl implements ServiceConfig
             st = ServiceType.PERSISTENCE;
         } else if (serviceName.equals(ServiceTypeDTO.MANAGEMENT)) {
             st = ServiceType.MANAGEMENT;
+        } else if (serviceName.equals(ServiceTypeDTO.AQM)) {
+            st = ServiceType.AQM;
         } else if (serviceName.equals(ServiceTypeDTO.LOG)) {
             st = ServiceType.LOG;
         }

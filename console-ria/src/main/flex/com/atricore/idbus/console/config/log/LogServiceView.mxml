@@ -40,17 +40,17 @@
 
         <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.serviceMode')}:">
-                <s:DropDownList id="serviceMode" width="150" selectedIndex="0">
-                    <s:dataProvider>
-                        <mx:ArrayCollection>
-                            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.serviceMode.development')}" data="0"/>
-                            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.serviceMode.production')}" data="10"/>
-                        </mx:ArrayCollection>
-                    </s:dataProvider>
-                </s:DropDownList>
+                <s:DropDownList id="serviceMode" width="150" selectedIndex="0"/>
             </mx:FormItem>
 
-            <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.ssh.save')}" enabled="false"/>
+            <mx:DataGrid id="customLogData" width="460" height="200" editable="false" visible="false" includeInLayout="false">
+                <mx:columns>
+                    <mx:DataGridColumn headerText="Category" width="400" dataField="category"/>
+                    <mx:DataGridColumn headerText="Level" width="60" dataField="level"/>
+                </mx:columns>
+            </mx:DataGrid>
+
+            <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.save')}" enabled="false"/>
         </mx:Form>
 
     </s:Group>

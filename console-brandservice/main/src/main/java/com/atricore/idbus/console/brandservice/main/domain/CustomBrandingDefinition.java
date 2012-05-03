@@ -17,6 +17,8 @@ public class CustomBrandingDefinition extends BrandingDefinition {
 
     private String bundleUri;
 
+    private byte[] resource;
+
     public String getBundleUri() {
         return bundleUri;
     }
@@ -47,5 +49,13 @@ public class CustomBrandingDefinition extends BrandingDefinition {
 
     public void setBundleSymbolicName(String bundleSymbolicName) {
         this.bundleSymbolicName = bundleSymbolicName;
+    }
+
+    public byte[] getResource() {
+        return resource;
+    }
+
+    public void setResource(byte[] resource) {
+        this.resource = resource;
     }
 }

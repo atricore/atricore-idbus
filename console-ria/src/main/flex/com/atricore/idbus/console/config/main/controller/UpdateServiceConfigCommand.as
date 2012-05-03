@@ -26,6 +26,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 import com.atricore.idbus.console.services.dto.settings.ServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ServiceType;
+import com.atricore.idbus.console.services.spi.response.ConfigureServiceResponse;
 
 import mx.messaging.messages.ErrorMessage;
 import mx.rpc.IResponder;
@@ -62,7 +63,7 @@ public class UpdateServiceConfigCommand extends IocSimpleCommand implements IRes
     }
 
     public function result(data:Object):void {
-        sendNotification(SUCCESS, data.result as ServiceType);
+        sendNotification(SUCCESS, data.result as ConfigureServiceResponse);
     }
 
     public function fault(info:Object):void {

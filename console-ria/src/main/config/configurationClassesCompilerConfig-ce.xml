@@ -247,6 +247,7 @@
         <symbol>com.atricore.idbus.console.config.ssh.SshServiceMediator</symbol>
         <symbol>com.atricore.idbus.console.config.persistence.PersistenceServiceMediator</symbol>
         <symbol>com.atricore.idbus.console.config.management.ManagementServiceMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.aqm.ArtifactQueueManagerServiceMediator</symbol>
         <symbol>com.atricore.idbus.console.config.log.LogServiceMediator</symbol>
 
         <!-- General classes -->

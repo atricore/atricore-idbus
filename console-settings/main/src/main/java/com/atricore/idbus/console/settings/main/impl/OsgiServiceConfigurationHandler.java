@@ -38,8 +38,8 @@ public abstract class OsgiServiceConfigurationHandler<T extends ServiceConfigura
         Configuration osgiConfig = admin.getConfiguration(pid, null);
         return osgiConfig.getProperties();
     }
-    
-    protected void updateProperties(Dictionary<String, String> props) throws IOException {
+
+    protected void replaceProperties(Dictionary<String, String> newProps) throws IOException {
         Configuration cfg = admin.getConfiguration(pid, null);
 
         if (cfg.getProperties() == null) {
@@ -52,12 +52,36 @@ public abstract class OsgiServiceConfigurationHandler<T extends ServiceConfigura
             cfg.setBundleLocation(null);
         }
 
+        cfg.update(newProps);
+
+    }
+
+    /**
+     * This does notwhen properties are removed !!!!!!
+     *
+     * @param newProps
+     * @throws IOException
+     */
+    protected void updateProperties(Dictionary<String, String> newProps) throws IOException {
+        Configuration cfg = admin.getConfiguration(pid, null);
+
+        if (cfg.getProperties() == null) {
+            String[] pids = parsePid(pid);
+            if (pids[1] != null) {
+                cfg = admin.createFactoryConfiguration(pids[0], null);
+            }
+        }
+        if (cfg.getBundleLocation() != null) {
+            cfg.setBundleLocation(null);
+        }
+
+
         Dictionary properties = cfg.getProperties();
 
-        Enumeration e = props.keys();
+        Enumeration e = newProps.keys();
         while (e.hasMoreElements()) {
             Object key = e.nextElement();
-            properties.put(key, props.get(key));
+            properties.put(key, newProps.get(key));
         }
 
         cfg.update(properties);
@@ -90,7 +114,7 @@ public abstract class OsgiServiceConfigurationHandler<T extends ServiceConfigura
     }
 
     protected String[] getArrayFromCsv(String v) {
-        StringTokenizer st = new StringTokenizer(v);
+        StringTokenizer st = new StringTokenizer(v, ",");
         List<String> ts = new ArrayList<String>();
         while (st.hasMoreTokens()) {
             String t = st.nextToken().trim();

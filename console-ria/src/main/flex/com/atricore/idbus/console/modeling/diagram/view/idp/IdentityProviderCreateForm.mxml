@@ -262,7 +262,7 @@
                     </mx:FormItem>
 
                     <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystorePassword')}:" required="true">
-                        <s:TextInput id="keystorePassword" width="145" enabled="false"/>
+                        <s:TextInput id="keystorePassword" width="145" enabled="false" displayAsPassword="true"/>
                     </mx:FormItem>                    
 
                     <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateAlias')}:" required="true">
@@ -274,7 +274,7 @@
                     </mx:FormItem>
 
                     <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyPassword')}:" required="true">
-                        <s:TextInput id="keyPassword" width="145" enabled="false"/>
+                        <s:TextInput id="keyPassword" width="145" enabled="false" displayAsPassword="true"/>
                     </mx:FormItem>
                 </utils:TitledBorderBox>
 

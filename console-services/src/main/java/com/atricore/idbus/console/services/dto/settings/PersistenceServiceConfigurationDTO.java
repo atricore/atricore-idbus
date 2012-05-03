@@ -12,6 +12,16 @@ public class PersistenceServiceConfigurationDTO implements ServiceConfigurationD
 
     private String password;
 
+    private boolean useExternalDB;
+
+    private String connectionUrl;
+
+    private String connectionUsername;
+
+    private String connectionPassword;
+
+    private String connectionDriver;
+
     public PersistenceServiceConfigurationDTO() {
         this.serviceType = ServiceTypeDTO.PERSISTENCE;
     }
@@ -42,5 +52,45 @@ public class PersistenceServiceConfigurationDTO implements ServiceConfigurationD
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isUseExternalDB() {
+        return useExternalDB;
+    }
+
+    public void setUseExternalDB(boolean useExternalDB) {
+        this.useExternalDB = useExternalDB;
+    }
+
+    public String getConnectionUrl() {
+        return connectionUrl;
+    }
+
+    public void setConnectionUrl(String connectionUrl) {
+        this.connectionUrl = connectionUrl;
+    }
+
+    public String getConnectionUsername() {
+        return connectionUsername;
+    }
+
+    public void setConnectionUsername(String connectionUsername) {
+        this.connectionUsername = connectionUsername;
+    }
+
+    public String getConnectionPassword() {
+        return connectionPassword;
+    }
+
+    public void setConnectionPassword(String connectionPassword) {
+        this.connectionPassword = connectionPassword;
+    }
+
+    public String getConnectionDriver() {
+        return connectionDriver;
+    }
+
+    public void setConnectionDriver(String connectionDriver) {
+        this.connectionDriver = connectionDriver;
     }
 }
