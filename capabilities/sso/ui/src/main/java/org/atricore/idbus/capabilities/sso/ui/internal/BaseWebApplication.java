@@ -177,6 +177,11 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         branding = brandingService.lookup(brandingId);
         if (branding != null) {
             brandingService.register(this);
+
+            if (branding.getDefaultLocale() != null) {
+                logger.debug("Setting default locale to " + branding.getDefaultLocale());
+                Locale.setDefault(new Locale(branding.getDefaultLocale()));
+            }
         } else {
             logger.error("No branding configured for " + this.getName());
         }

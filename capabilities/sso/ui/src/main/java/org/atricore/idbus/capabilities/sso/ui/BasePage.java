@@ -80,6 +80,11 @@ public class BasePage extends WebPage implements IHeaderContributor {
         BaseWebApplication app = (BaseWebApplication) getApplication();
         if (!app.isReady()) {
             app.config(bundleContext, appConfigRegistry, brandingService);
+
+            // Set default locale if configured.
+            String defaultLocale = app.getBranding().getDefaultLocale();
+            if (defaultLocale != null)
+                getSession().setLocale(new Locale(defaultLocale));
         }
         
         // Handle internationalization
@@ -87,10 +92,6 @@ public class BasePage extends WebPage implements IHeaderContributor {
             String lang = parameters.getString("lang");
             if (lang != null) {
                 getSession().setLocale(new Locale(lang));
-            } else {
-                String defaultLocale = app.getBranding().getDefaultLocale();
-                if (defaultLocale != null)
-                    getSession().setLocale(new Locale(defaultLocale));
             }
         }
     }
