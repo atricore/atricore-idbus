@@ -1147,8 +1147,7 @@ public class SingleSignOnProducer extends SSOProducer {
     }
 
     /**
-     * TODO : Use a strategy here
-     * This has the logic to select endpoings for claims collecting.
+     * This has the logic to select endpoits for claims collecting.
      */
     protected ClaimChannel selectNextClaimsEndpoint(AuthenticationState status) {
 
@@ -1160,12 +1159,13 @@ public class SingleSignOnProducer extends SSOProducer {
             reqAuthnCtx = status.getAuthnRequest().getRequestedAuthnContext();
         }
 
-        // Keep using current enpdoint until we reach the MAX TRY COUNT for it
+        // -------------------------------------------------------------------
+        // Keep using current endpoint until we reach the MAX TRY COUNT for it
+        // -------------------------------------------------------------------
         if (status.getCurrentClaimsEndpoint() != null) {
 
             // Current authn ctcx.
             AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(status.getCurrentClaimsEndpoint().getType());
-
 
             // TODO : Make configurable, per authctx
             if (authnCtxClass.isPassive() || status.getCurrentClaimsEndpointTryCount() >= 5) {
@@ -1181,6 +1181,9 @@ public class SingleSignOnProducer extends SSOProducer {
 
         }
 
+        // -------------------------------------------------------------------
+        // Use current endpoint
+        // -------------------------------------------------------------------
         if (status.getCurrentClaimsEndpoint() != null) {
             // We have a valid endpoint
 
@@ -1198,6 +1201,11 @@ public class SingleSignOnProducer extends SSOProducer {
             throw new RuntimeException("No ClaimChannel found for " + status.getCurrentClaimsEndpoint().getName());
         }
 
+
+        // -------------------------------------------------------------------
+        // Select a new endpoint, either the one previously used is no longer
+        // valid, or it's the first time we select a claims endpoint
+        // -------------------------------------------------------------------
         if (logger.isTraceEnabled())
             logger.trace("Starting to select next claims endpoint ...");
 
@@ -1206,8 +1214,11 @@ public class SingleSignOnProducer extends SSOProducer {
         ClaimChannel availableChannel = null;
         IdentityMediationEndpoint availableEndpoint = null;
 
-
+        // Go through all claim channels, and claim endpoints.
         for (ClaimChannel c : claimChannels) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Processing claims channel/provider " + c.getName() + " [ " + c.getPriority() + "]");
 
             for (IdentityMediationEndpoint endpoint : c.getEndpoints()) {
 
@@ -1216,7 +1227,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // As a work around, ignore endpoints not using artifact or local binding
                 if (!endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue()) &&
-                        !endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
+                    !endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
+
                     if (logger.isTraceEnabled())
                         logger.trace("Skip claims endpoint. Unsupported binding " + endpoint);
                     continue;
