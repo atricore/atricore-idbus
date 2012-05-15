@@ -239,6 +239,9 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
 
         if (_ignorePasswordCase && _hashAlgorithm == null)
             return inputPassword.equalsIgnoreCase(expectedPassword);
+        else if (_hashAlgorithm != null && _hashEncoding.equals("HEX"))
+            // HEX values are case insensitive when using HASH
+            return inputPassword.equalsIgnoreCase(expectedPassword);
         else
             return inputPassword.equals(expectedPassword);
     }

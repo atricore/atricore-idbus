@@ -88,7 +88,18 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
 
                         if (localProvider.getChannel() != null && localProvider.getChannel().getClaimProviders() != null) {
                             // Sort claim providers, the collection MUST be a list ....
+                            if (logger.isTraceEnabled())
+                                logger.trace("Sorting Claims providers ");
+
                             Collections.sort((List<ClaimChannel>) localProvider.getChannel().getClaimProviders(), new ClaimChannelPriorityComparator());
+
+                            if (logger.isTraceEnabled()) {
+                                int order = 0;
+                                for (ClaimChannel c : localProvider.getChannel().getClaimProviders()) {
+                                    logger.trace("claim channel priority [" + order + "] for " + c.getName());
+                                    order ++;
+                                }
+                            }
                         }
 
                     } else {
