@@ -50,8 +50,8 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
 
         for (AuthenticationMechanism a : idp.getAuthenticationMechanisms()) {
             // Basic and Bind are pretty much the same from a 'claiming' point of view
-            if (a instanceof BasicAuthentication ||
-                a instanceof BindAuthentication)
+            if ((a instanceof BasicAuthentication && ((BasicAuthentication)a).isEnabled() ) ||
+                 a instanceof BindAuthentication)
                 return true;
         }
 
