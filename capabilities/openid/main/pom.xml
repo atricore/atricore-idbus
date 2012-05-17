@@ -371,6 +371,7 @@
                             icu4j; scope=compile; type=!pom; inline=false,
                             jug; scope=compile; type=!pom; inline=false
                         </Embed-Dependency>
+                        <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>

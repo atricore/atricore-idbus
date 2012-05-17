@@ -409,6 +409,8 @@
                             org.apache.activemq
                         </Import-Package>
                         <Embed-Transitive>true</Embed-Transitive>
+                        <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
+                        <IdBus-UI>true</IdBus-UI>
                     </instructions>
                 </configuration>
             </plugin>
