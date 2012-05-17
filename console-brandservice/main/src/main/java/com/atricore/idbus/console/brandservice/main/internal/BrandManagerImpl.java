@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -175,17 +177,105 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
             throw new BrandingServiceException("PackageAdmin service is unavailable.");
         }
         try {
+
             PackageAdmin pa = (PackageAdmin) getBundleContext().getService(ref);
             if (pa == null) {
                 throw new BrandingServiceException("PackageAdmin service is unavailable.");
             }
-            
-            List<Bundle> bundles = BrandingUtil.getBundleByName(bundleContext, SSO_UI_BUNDLE);
-            if (bundles == null || bundles.size() < 1) {
-                throw new BrandingServiceException("Bundle not found for " + SSO_UI_BUNDLE);
+
+            // 0. Stop running appliances,
+            List<Bundle> a = BrandingUtil.getBundleByHeader(getBundleContext(), "IdBus-Appliance", "true");
+            List<Bundle> applianceBundles = new ArrayList<Bundle>();
+
+            for (Bundle applianceBundle : a) {
+                if (applianceBundle.getState() == Bundle.ACTIVE) {
+                    applianceBundles.add(applianceBundle);
+                }
             }
 
-            pa.refreshPackages(bundles.toArray(new Bundle[bundles.size()]));
+            if (logger.isTraceEnabled())
+                logger.trace("Stoppig Appliance bundles");
+
+            for (Bundle applianceBundle : applianceBundles) {
+                try {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Stopping Appliance bundle " + applianceBundle.getSymbolicName());
+                    applianceBundle.stop();
+                } catch (BundleException e) {
+                    logger.error("Cannot stop Appliance bundle " + applianceBundle.getSymbolicName());
+                }
+            }
+
+            // 1. Resolve the ORDERED list of UI bundles
+            List<Bundle> uiBundles = BrandingUtil.getBundleByHeader(getBundleContext(), "IdBus-UI", "true");
+
+            // 2. Stop all UI bundles
+            if (logger.isTraceEnabled())
+                logger.trace("Stoppig UI bundles");
+
+            for (int i = uiBundles.size() - 1 ; i >=0 ; i--) {
+                try {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Stopping UI bundle " + uiBundles.get(i).getSymbolicName());
+                    uiBundles.get(i).stop();
+                } catch (BundleException e) {
+                    logger.error("Cannot stop UI bundle " + uiBundles.get(i).getSymbolicName());
+                }
+            }
+
+            // 3. Refresh all UI bundles
+            if (logger.isTraceEnabled())
+                logger.trace("Refreshing UI bundles");
+
+            for (Bundle uiBundle : uiBundles) {
+
+                // This is async, so wait for it to work ... TODO : IMPROVE !!!!
+                if (logger.isTraceEnabled())
+                    logger.trace("Refreshing UI bundle " + uiBundle.getSymbolicName());
+
+                pa.refreshPackages(new Bundle[] {uiBundle});
+
+            }
+
+            // Wait for refresh ...
+            synchronized (this) {
+                try { wait(5000); } catch (InterruptedException e) {/**/}
+            }
+
+            if (logger.isTraceEnabled())
+                logger.trace("Starting UI bundles");
+
+            // 4. Start all UI bundles
+            for (Bundle uiBundle : uiBundles) {
+                try {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Resolving UI bundle " + uiBundle.getSymbolicName());
+                    pa.resolveBundles(new Bundle[] {uiBundle});
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Starting UI bundle " + uiBundle.getSymbolicName());
+
+                    uiBundle.start();
+                } catch (BundleException e) {
+                    logger.error("Cannot start UI bundle " + uiBundle.getSymbolicName());
+                }
+            }
+
+            if (logger.isTraceEnabled())
+                logger.trace("Starting Appliance bundles");
+
+            // 5. Start appliances that were running before
+            for (int i = applianceBundles.size() - 1 ; i >=0 ; i--) {
+                try {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Starting Appliance bundle " + uiBundles.get(i).getSymbolicName());
+
+                    applianceBundles.get(i).start();
+                } catch (BundleException e) {
+                    logger.error("Cannot start Appliance bundle " + uiBundles.get(i).getSymbolicName());
+                }
+            }
+
 
         } finally {
             getBundleContext().ungetService(ref);
