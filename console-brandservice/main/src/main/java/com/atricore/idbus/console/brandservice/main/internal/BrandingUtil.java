@@ -5,6 +5,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +24,28 @@ public class BrandingUtil {
      */
     public static List<Bundle> getBundleByName(BundleContext bundleContext, String name) {
         return getBundleByNameAndVersion(bundleContext, name, null);
+    }
+
+    public static List<Bundle> getBundleByHeader(BundleContext bundleContext, String hName, String hValue) {
+        Bundle[] bundles = bundleContext.getBundles();
+        ArrayList<Bundle> result = new ArrayList<Bundle>();
+        for (int i = 0; i < bundles.length; i++) {
+            String v = (String) bundles[i].getHeaders().get(hName);
+            if (v != null && v.equals(hValue)) {
+                result.add(bundles[i]);
+            }
+        }
+
+        // Sort bundles by ID
+        Comparator<Bundle> c = new Comparator<Bundle>() {
+            public int compare(Bundle o1, Bundle o2) {
+                return (int) (o1.getBundleId() - o2.getBundleId());
+            }
+        };
+
+        Collections.sort(result, c);
+
+        return result;
     }
 
     /**

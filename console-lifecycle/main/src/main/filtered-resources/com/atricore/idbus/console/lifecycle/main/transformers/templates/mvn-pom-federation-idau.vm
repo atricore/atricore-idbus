@@ -483,6 +483,7 @@
                            org.ops4j.pax.wicket.service
                         </Require-Bundle>
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
+                        <IdBus-Appliance>true</IdBus-Appliance>
                     </instructions>
                 </configuration>
             </plugin>
