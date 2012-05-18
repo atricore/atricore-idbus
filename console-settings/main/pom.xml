@@ -28,12 +28,12 @@
     <parent>
         <groupId>com.atricore.idbus.console.settings</groupId>
         <artifactId>console-settings</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>com.atricore.idbus.console.settings.main</artifactId>
     <packaging>bundle</packaging>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
 
     <name>Atricore Console :: Settings Main</name>
 
