@@ -747,6 +747,15 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                          sendNotification(ApplicationFacade.CREATE_COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT, coldfusioncontenv);
                          break;
 
+                    case DiagramElementTypes.MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var mseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                        );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT, mseenv);
+                        break;
+
                     case DiagramElementTypes.WIKID_ELEMENT_TYPE:
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {

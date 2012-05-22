@@ -221,6 +221,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWebcontainerExecutionEnvironmentElement";
     public static const CREATE_SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT:String = "createSharepoint2010ExecutionEnvironmentElement";
     public static const CREATE_COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT:String = "createColdfusionExecutionEnvironmentElement";
+    public static const CREATE_MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT:String = "createMicroStrategyExecutionEnvironmentElement";
     public static const REMOVE_ACTIVATION_ELEMENT:String = "removeActivationElement";
     public static const REMOVE_FEDERATED_CONNECTION_ELEMENT:String = "removeFederatedConnectionElement";
     public static const REMOVE_SERVICE_CONNECTION_ELEMENT:String = "removeServiceConnectionElement";

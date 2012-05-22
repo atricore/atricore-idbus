@@ -56,6 +56,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironme
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jboss.JBossExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jbossportal.JBossPortalExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.liferayportal.LiferayPortalExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.microstrategy.MicroStrategyExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.php.PHPExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.phpbb.PhpBBExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.sharepoint2010.Sharepoint2010ExecEnvCoreSection;
@@ -149,6 +150,7 @@ import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Location;
+import com.atricore.idbus.console.services.dto.MicroStrategyExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
 import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
@@ -171,7 +173,6 @@ import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
-import com.atricore.idbus.console.services.dto.UserDashboardBranding;
 import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
@@ -280,6 +281,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _webserverExecEnvCoreSection:WebserverExecEnvCoreSection;
     private var _sharepoint2010ExecEnvCoreSection:Sharepoint2010ExecEnvCoreSection;
     private var _coldfusionExecEnvCoreSection:ColdfusionExecEnvCoreSection;
+    private var _microStrategyExecEnvCoreSection:MicroStrategyExecEnvCoreSection;
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     //private var _authenticationPropertyTab:Group;
     private var _authenticationSection:AuthenticationSection;
@@ -546,6 +548,8 @@ public class PropertySheetMediator extends IocMediator {
                         enableSharepoint2010ExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is ColdfusionExecutionEnvironment) {
                         enableColdfusionExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is MicroStrategyExecutionEnvironment) {
+                        enableMicroStrategyExecEnvPropertyTabs();
                     }
 
                 }
@@ -7413,6 +7417,57 @@ public class PropertySheetMediator extends IocMediator {
         _dirty = false;
     }
 
+    private function enableMicroStrategyExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _microStrategyExecEnvCoreSection = new MicroStrategyExecEnvCoreSection();
+        corePropertyTab.addElement(_microStrategyExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _microStrategyExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleMicroStrategyExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleMicroStrategyExecEnvCorePropertyTabRollOut);
+    }
+
+    private function handleMicroStrategyExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var microStrategyExecEnv:MicroStrategyExecutionEnvironment = projectProxy.currentIdentityApplianceElement as MicroStrategyExecutionEnvironment;
+
+        if (microStrategyExecEnv != null) {
+            // bind view
+            _microStrategyExecEnvCoreSection.executionEnvironmentName.text = microStrategyExecEnv.name;
+            _microStrategyExecEnvCoreSection.executionEnvironmentDescription.text = microStrategyExecEnv.description;
+
+            _microStrategyExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _microStrategyExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_microStrategyExecEnvCoreSection.nameValidator);
+        }
+    }
+
+    private function handleMicroStrategyExecEnvCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+            microStrategySave();
+        }
+    }
+
+    private function microStrategySave(): void {
+        var microStrategyExecEnv:MicroStrategyExecutionEnvironment = projectProxy.currentIdentityApplianceElement as MicroStrategyExecutionEnvironment;
+        microStrategyExecEnv.name = _microStrategyExecEnvCoreSection.executionEnvironmentName.text;
+        microStrategyExecEnv.description = _microStrategyExecEnvCoreSection.executionEnvironmentDescription.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
 
     private function handleExecEnvActivationPropertyTabCreationComplete(event:Event):void {
         var execEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;

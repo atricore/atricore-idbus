@@ -53,6 +53,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _webserverExecutionEnvironmentCreateMediator:IIocMediator;
     private var _sharepoint2010ExecutionEnvironmentCreateMediator:IIocMediator;
     private var _coldfusionExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _microStrategyExecutionEnvironmentCreateMediator:IIocMediator;
     private var _simpleSSOWizardViewMediator:IIocMediator;
     private var _activationCreateMediator:IIocMediator;
     private var _federatedConnectionCreateMediator:IIocMediator;
@@ -168,6 +169,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(webserverExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(sharepoint2010ExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(coldfusionExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(microStrategyExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(activationCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(federatedConnectionCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(exportIdentityApplianceMediator.getConfigName());
@@ -540,6 +542,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set coldfusionExecutionEnvironmentCreateMediator(value:IIocMediator):void {
         _coldfusionExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get microStrategyExecutionEnvironmentCreateMediator():IIocMediator {
+        return _microStrategyExecutionEnvironmentCreateMediator;
+    }
+
+    public function set microStrategyExecutionEnvironmentCreateMediator(value:IIocMediator):void {
+        _microStrategyExecutionEnvironmentCreateMediator = value;
     }
 
     public function get simpleSSOWizardViewMediator():IIocMediator {

@@ -375,6 +375,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT,
+            ApplicationFacade.CREATE_MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.REMOVE_ACTIVATION_ELEMENT,
             ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT,
             ApplicationFacade.REMOVE_SERVICE_CONNECTION_ELEMENT,
@@ -632,6 +633,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.CREATE_COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateColdfusionExecutionEnvironmentWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT:
+                popupManager.showCreateMicroStrategyExecutionEnvironmentWindow(notification);
                 break;
             /*case ApplicationFacade.CREATE_ACTIVATION:
                 popupManager.showCreateActivationWindow(notification);
