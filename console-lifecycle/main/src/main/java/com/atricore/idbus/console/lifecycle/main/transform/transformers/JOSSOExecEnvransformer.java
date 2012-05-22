@@ -48,7 +48,9 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof ExecutionEnvironment;
+        // Only act when we're accessed from the root node.
+        return event.getData() instanceof ExecutionEnvironment &&
+               event.getContext().getParentNode() instanceof IdentityApplianceDefinition;
     }
 
     @Override
@@ -458,7 +460,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
             */
         }
 
-        // Mediation Unit
+        // Mediation Unit for binding channel
         Collection<Bean> mus = getBeansOfType(baseBeans, OsgiIdentityMediationUnit.class.getName());
         if (mus.size() == 1) {
             Bean mu = mus.iterator().next();

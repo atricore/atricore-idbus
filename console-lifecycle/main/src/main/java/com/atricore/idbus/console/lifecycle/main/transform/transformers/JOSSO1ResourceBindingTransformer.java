@@ -23,17 +23,14 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-
-        // TODO [JOSSO-370] Parent node may be the activation connection
-        return event.getData() instanceof JOSSO1Resource &&
-                event.getContext().getParentNode() instanceof ExecutionEnvironment;
+        return event.getData() instanceof  JOSSO1Resource  &&
+               event.getContext().getParentNode() instanceof ServiceConnection;
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
         // Define partenr apps in Binding provider
         JOSSO1Resource josso1Resource = (JOSSO1Resource) event.getData();
-        ExecutionEnvironment execEnv = (ExecutionEnvironment) event.getContext().getParentNode();
 
         Beans bpBeans = (Beans) event.getContext().get("bpBeans");
         Collection<Bean> bpMediators = getBeansOfType(bpBeans, JossoMediator.class.getName());

@@ -101,7 +101,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(IdentityApplianceDefinition node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -154,7 +154,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -207,7 +207,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(ExternalServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -260,7 +260,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(ExternalIdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -313,7 +313,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(Saml2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -366,7 +366,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(Saml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -419,7 +419,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(OpenIDIdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -472,7 +472,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(OpenIDServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -525,7 +525,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(OAuth2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -578,7 +578,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(OAuth2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -631,7 +631,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(SalesforceServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -684,7 +684,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(GoogleAppsServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -737,7 +737,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(SugarCRMServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -790,7 +790,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(BindingProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -843,7 +843,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -896,7 +896,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(IdentityProviderChannel node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         if (child instanceof FederatedConnection)
@@ -951,7 +951,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(ServiceProviderChannel node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         if (child instanceof FederatedConnection)
@@ -1007,7 +1007,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(IdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -1060,7 +1060,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(IdentityLookup node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         if (child instanceof Provider || child instanceof IdentitySource)
@@ -1116,7 +1116,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(DelegatedAuthentication node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         if (child instanceof Provider || child instanceof IdentitySource)
@@ -1172,7 +1172,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(Activation node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         // Do not treat sp/exec env as 'children' of this node.
@@ -1247,7 +1247,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(FederatedConnection node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
 
@@ -1319,9 +1319,11 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(ExecutionEnvironment node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        if (child instanceof Activation)
+            return false;
         return true;
     }
 
@@ -1372,7 +1374,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(AuthenticationService node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -1425,7 +1427,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(EmbeddedIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -1478,7 +1480,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(LdapIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -1531,7 +1533,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(XmlIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -1584,7 +1586,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(DbIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -1637,9 +1639,13 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(JOSSO1Resource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        // Do not treat the connection as a child
+        if (child == node.getServiceConnection())
+            return false;
+
         return true;
     }
 
@@ -1690,9 +1696,12 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(JOSSO2Resource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        if (child == node.getServiceConnection())
+            return false;
+
         return true;
     }
 
@@ -1743,7 +1752,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(Location node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -1796,11 +1805,11 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(ServiceConnection node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
-        // Do not treat sp/resource as 'children' of this node.
-        if (child == node.getSp() || child == node.getResource())
+        // Do not treat sp 'children' of this node.
+        if (child == node.getSp())
             return false;
 
         // We should walk all other children
@@ -1854,11 +1863,11 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(JOSSOActivation node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
-        // Do not treat sp/exec env as 'children' of this node.
-        if (child == node.getResource() || child == node.getExecutionEnv())
+        // Do not treat resource env as 'children' of this node.
+        if (child == node.getResource())
             return false;
 
         // We should walk all other children
@@ -1912,7 +1921,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(ProviderConfig node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -1965,7 +1974,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(Keystore node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
@@ -2018,7 +2027,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node                  the parent node of the children currently walked
      * @param resultOfPreviousChild the result of walking the node's previous child
      * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
+     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(AuthenticationMechanism node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;

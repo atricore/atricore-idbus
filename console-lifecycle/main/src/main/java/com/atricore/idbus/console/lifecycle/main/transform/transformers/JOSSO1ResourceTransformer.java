@@ -2,6 +2,7 @@ package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO1Resource;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceConnection;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
@@ -15,7 +16,9 @@ import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedLogoutReqToS
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SPSessionHeartBeatReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
+import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
 
 import java.util.ArrayList;
@@ -33,9 +36,8 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        // TODO [JOSSO-370] Parent node may be the serviceresource connection
         return event.getData() instanceof JOSSO1Resource &&
-                event.getContext().getParentNode() instanceof ServiceProvider;
+               event.getContext().getParentNode() instanceof ServiceConnection;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
         ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating Beans for JOSSO Activation " + josso1Resource.getName()  + " of SP " + sp.getName());
+            logger.trace("Generating Beans for JOSSO 1 Resources " + josso1Resource.getName()  + " of SP " + sp.getName());
 
         Bean spBean = null;
         Collection<Bean> b = getBeansOfType(spBeans, ServiceProviderImpl.class.getName());
@@ -55,11 +57,15 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
         }
         spBean = b.iterator().next();
 
-        Bean bc = newBean(spBeans, normalizeBeanName(josso1Resource.getName()),
+        String bcName = normalizeBeanName(sp.getName() + "-" + josso1Resource.getName() + "-josso1-rsrc");
+
+        Bean bc = newBean(spBeans, bcName,
                 "org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl");
 
         setPropertyValue(bc, "name", bc.getName());
-        //setPropertyValue(bc, "description", josso1Resource.getDisplayName());
+        setPropertyValue(bc, "description", "JOSSO 1 Resource binding channel for " + sp.getName() + " :  " +
+                josso1Resource.getName() + "[appId:"+josso1Resource.getPartnerAppId()+"]");
+
         setPropertyRef(bc, "unitContainer", sp.getIdentityAppliance().getName() + "-container");
 
         setPropertyRef(bc, "provider", spBean.getName());
@@ -77,7 +83,6 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
         Bean sessionHeartBeatToSamlPlan = newBean(spBeans, spBean.getName() + "-spsessionheartbeatreq-to-samlr2autnreq-plan", SPSessionHeartBeatReqToSamlR2AuthnReqPlan.class);
         setPropertyRef(sessionHeartBeatToSamlPlan, "bpmsManager", "bpms-manager");
 
-        // TODO: set endpoints
         List<Bean> endpoints = new ArrayList<Bean>();
 
         Bean ssoHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);

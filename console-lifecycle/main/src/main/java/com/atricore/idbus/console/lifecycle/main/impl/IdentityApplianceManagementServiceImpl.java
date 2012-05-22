@@ -1789,6 +1789,10 @@ public class IdentityApplianceManagementServiceImpl implements
                     appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
                     appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase();
 
+            // Be carefull with this:
+            if (appliance.getIdApplianceDeployment().getDeployedRevision() < appliance.getIdApplianceDefinition().getRevision())
+                logger.warn("Activating undeployed appliance revision for " + appliance.getId());
+
             if (execEnv.getPlatformId().startsWith("iis"))
                 agentCfgName += ".ini";
             else
