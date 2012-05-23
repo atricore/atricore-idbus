@@ -7,6 +7,8 @@ import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
+import com.atricore.idbus.console.services.dto.JOSSO2Resource;
+import com.atricore.idbus.console.services.dto.MicroStrategyExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
 import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
@@ -64,14 +66,26 @@ public class DiagramUtil {
     public static function nodesCanBeLinkedWithActivation(node1:IVisualNode, node2:IVisualNode):Boolean {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
-            if (node1.data is JOSSO1Resource && node2.data is ExecutionEnvironment){
+            if (node1.data is JOSSO1Resource && node2.data is ExecutionEnvironment &&
+                    !(node2.data is MicroStrategyExecutionEnvironment)){
                 var josso1Resource1:JOSSO1Resource = node1.data as JOSSO1Resource;
                 if(josso1Resource1.activation == null){
                     canBeLinked = true;
                 }
-            } else if (node1.data is ExecutionEnvironment && node2.data is JOSSO1Resource) {
+            } else if (node1.data is ExecutionEnvironment && !(node1.data is MicroStrategyExecutionEnvironment) &&
+                    node2.data is JOSSO1Resource) {
                 var josso1Resource2:JOSSO1Resource = node2.data as JOSSO1Resource;
                 if(josso1Resource2.activation == null){
+                    canBeLinked = true;
+                }
+            } else if (node1.data is JOSSO2Resource && node2.data is MicroStrategyExecutionEnvironment) {
+                var josso2Resource1:JOSSO2Resource = node1.data as JOSSO2Resource;
+                if(josso2Resource1.activation == null){
+                    canBeLinked = true;
+                }
+            } else if (node1.data is MicroStrategyExecutionEnvironment && node2.data is JOSSO2Resource) {
+                var josso2Resource2:JOSSO2Resource = node2.data as JOSSO2Resource;
+                if(josso2Resource2.activation == null){
                     canBeLinked = true;
                 }
             }
@@ -192,6 +206,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.directoryServiceMiniIcon;
             case DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:
                 return EmbeddedIcons.windowsIntegratedAuthnMiniIcon;
+            case DiagramElementTypes.MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.microStrategyEnvironmentMiniIcon;
         }
         return null;
     }

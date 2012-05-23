@@ -49,6 +49,8 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbo
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.microstrategy.MicroStrategyExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.microstrategy.MicroStrategyExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateForm;
@@ -181,6 +183,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _windowsIntegratedAuthnCreateMediator:WindowsIntegratedAuthnCreateMediator;
     private var _sharepoint2010ExecutionEnvironmentCreateMediator:Sharepoint2010ExecutionEnvironmentCreateMediator;
     private var _coldfusionExecutionEnvironmentCreateMediator:ColdfusionExecutionEnvironmentCreateMediator;
+    private var _microStrategyExecutionEnvironmentCreateMediator:MicroStrategyExecutionEnvironmentCreateMediator;
 
     // views
     private var _simpleSSOWizardView:SimpleSSOWizardView;
@@ -233,6 +236,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _windowsIntegratedAuthnCreateForm:WindowsIntegratedAuthnCreateForm;
     private var _sharepoint2010ExecutionEnvironmentCreateForm:Sharepoint2010ExecutionEnvironmentCreateForm;
     private var _coldfusionExecutionEnvironmentCreateForm:ColdfusionExecutionEnvironmentCreateForm;
+    private var _microStrategyExecutionEnvironmentCreateForm:MicroStrategyExecutionEnvironmentCreateForm;
 
     public function ModelerPopUpManager() {
         super();
@@ -643,6 +647,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set coldfusionExecutionEnvironmentCreateMediator(value:ColdfusionExecutionEnvironmentCreateMediator):void {
         _coldfusionExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get microStrategyExecutionEnvironmentCreateMediator():MicroStrategyExecutionEnvironmentCreateMediator {
+        return _microStrategyExecutionEnvironmentCreateMediator;
+    }
+
+    public function set microStrategyExecutionEnvironmentCreateMediator(value:MicroStrategyExecutionEnvironmentCreateMediator):void {
+        _microStrategyExecutionEnvironmentCreateMediator = value;
     }
 
     public function showSimpleSSOWizardWindow(notification:INotification):void {
@@ -1365,7 +1377,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createColdfusionExecutionEnvironmentCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.coldfusion");
         _popup.width = 500;
-        _popup.height = 350;
+        _popup.height = 260;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_coldfusionExecutionEnvironmentCreateForm);
@@ -1381,6 +1393,26 @@ public class ModelerPopUpManager extends BasePopUpManager {
         coldfusionExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
     }
 
+    public function showCreateMicroStrategyExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createMicroStrategyExecutionEnvironmentCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.microstrategy");
+        _popup.width = 410;
+        _popup.height = 140;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_microStrategyExecutionEnvironmentCreateForm);
+    }
+
+    private function createMicroStrategyExecutionEnvironmentCreateForm():void {
+        _microStrategyExecutionEnvironmentCreateForm = new MicroStrategyExecutionEnvironmentCreateForm();
+        _microStrategyExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleMicroStrategyExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleMicroStrategyExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        microStrategyExecutionEnvironmentCreateMediator.setViewComponent(_microStrategyExecutionEnvironmentCreateForm);
+        microStrategyExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
 
     public function showCreateFederatedConnectionWindow(notification:INotification):void {
         _lastWindowNotification = notification;

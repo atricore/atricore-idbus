@@ -150,6 +150,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
         );
 
         environmentsPaletteDrawer.add(
+                new PaletteEntry("MicroStrategy", EmbeddedIcons.microStrategyEnvironmentMiniIcon, "MicroStrategy Environment Entry", DiagramElementTypes.MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+        );
+
+        environmentsPaletteDrawer.add(
                 new PaletteEntry("PHP", EmbeddedIcons.phpEnvironmentMiniIcon, "PHP Environment Entry", DiagramElementTypes.PHP_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
         );
 

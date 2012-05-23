@@ -479,6 +479,10 @@ public class EmbeddedIcons {
     public static var liferayEnvironmentMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/microstrategy_execution_environment.png")]
+    public static var microStrategyEnvironmentMiniIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/22x22/apache_web_server_execution_environment.png")]
     public static var phpEnvironmentMiniIcon:Class;
 
@@ -536,6 +540,10 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/48x48/liferay_execution_environment.png")]
     public static var liferayEnvironmentIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/microstrategy_execution_environment.png")]
+    public static var microStrategyEnvironmentIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/notation/48x48/apache_web_server_execution_environment.png")]

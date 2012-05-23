@@ -92,6 +92,7 @@
         <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator" />
         <property name="sharepoint2010ExecutionEnvironmentCreateMediator" ref="sharepoint2010ExecutionEnvironmentCreateMediator"/>
         <property name="coldfusionExecutionEnvironmentCreateMediator" ref="coldfusionExecutionEnvironmentCreateMediator"/>
+        <property name="microStrategyExecutionEnvironmentCreateMediator" ref="microStrategyExecutionEnvironmentCreateMediator"/>
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>
         <property name="externalServiceProviderCreateMediator" ref="externalServiceProviderCreateMediator"/>
         <property name="browserMediator" ref="browserMediator"/>
@@ -756,6 +757,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.coldfusion.ColdfusionExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="microStrategyExecutionEnvironmentCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.microstrategy.MicroStrategyExecutionEnvironmentCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
 
 
     <!--<object id="idpChannelCreateMediator"-->
@@ -1037,6 +1042,7 @@
         <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator"/>
         <property name="sharepoint2010ExecutionEnvironmentCreateMediator" ref="sharepoint2010ExecutionEnvironmentCreateMediator"/>
         <property name="coldfusionExecutionEnvironmentCreateMediator" ref="coldfusionExecutionEnvironmentCreateMediator"/>
+        <property name="microStrategyExecutionEnvironmentCreateMediator" ref="microStrategyExecutionEnvironmentCreateMediator"/>
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>

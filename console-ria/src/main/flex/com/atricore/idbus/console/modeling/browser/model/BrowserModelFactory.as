@@ -27,6 +27,7 @@ import com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.BindingProvider;
+import com.atricore.idbus.console.services.dto.ColdfusionExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
@@ -48,6 +49,7 @@ import com.atricore.idbus.console.services.dto.JOSSO1Resource;
 import com.atricore.idbus.console.services.dto.JOSSO2Resource;
 import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
+import com.atricore.idbus.console.services.dto.MicroStrategyExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
 import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
@@ -238,6 +240,10 @@ public class BrowserModelFactory {
                 execEnvironmentNode.icon = EmbeddedIcons.phpbbEnvironmentMiniIcon;
             } else if (executionEnvironment is WebserverExecutionEnvironment) {
                 execEnvironmentNode.icon = EmbeddedIcons.webEnvironmentMiniIcon;
+            } else if (executionEnvironment is ColdfusionExecutionEnvironment) {
+                execEnvironmentNode.icon = EmbeddedIcons.coldfusionEnvironmentMiniIcon;
+            } else if (executionEnvironment is MicroStrategyExecutionEnvironment) {
+                execEnvironmentNode.icon = EmbeddedIcons.microStrategyEnvironmentMiniIcon;
             } else {
                 execEnvironmentNode.icon = EmbeddedIcons.executionEnvironmentMiniIcon;
             }

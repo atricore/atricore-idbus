@@ -469,17 +469,19 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         validateName("Execution Environment name" , node.getName(), node);
         validateDisplayName("Execution Environment display name" , node.getDisplayName());
 
-        if (node.getPlatformId() == null)
-            addError("Execution Environment platform ID cannot be null");
+        if (!(node instanceof MicroStrategyExecutionEnvironment)) {
+            if (node.getPlatformId() == null)
+                addError("Execution Environment platform ID cannot be null");
 
-        if (node.getType() == null)
-            addError("Execution Environment type cannot be null");
+            if (node.getType() == null)
+                addError("Execution Environment type cannot be null");
 
-        if (node.getType() == ExecEnvType.LOCAL && node.getInstallUri() == null)
-            addError("Execution Environment install URI cannot be null");
+            if (node.getType() == ExecEnvType.LOCAL && node.getInstallUri() == null)
+                addError("Execution Environment install URI cannot be null");
 
-        if (node.getType() == ExecEnvType.REMOTE && node.getLocation() == null)
-            addError("Execution Environment location cannot be null");
+            if (node.getType() == ExecEnvType.REMOTE && node.getLocation() == null)
+                addError("Execution Environment location cannot be null");
+        }
 
         if (node instanceof JBossExecutionEnvironment) {
             JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) node;
