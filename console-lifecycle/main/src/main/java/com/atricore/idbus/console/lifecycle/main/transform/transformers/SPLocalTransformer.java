@@ -407,26 +407,8 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
         IdProjectModule module = event.getContext().getCurrentModule();
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans spBeans = (Beans) event.getContext().get("spBeans");
-        Beans bpBeans = (Beans) event.getContext().get("bpBeans");
-        
+
         Bean spBean = getBeansOfType(spBeans, ServiceProviderImpl.class.getName()).iterator().next();
-
-        // Wire IdP Channels DONE IN FED.CONN. TRANSF.
-        /*
-        List<Bean> bc = new ArrayList<Bean>();
-        Collection<Bean> channels = getBeansOfType(spBeans, IdPChannelImpl.class.getName());
-        for (Bean b : channels) {
-            String channelProvider = getPropertyRef(b, "provider");
-            if (channelProvider != null && !channelProvider.equals(spBean.getName())) {
-                bc.add(b);
-            } else {
-                setPropertyRef(spBean, "channel", b.getName());
-            }
-        }
-
-        if (bc.size() > 0)
-            setPropertyAsRefs(spBean, "channels", bc);
-            */
 
         Bean idMgr = getBean(spBeans, spBean.getName() + "-identity-manager");
         if (idMgr != null) {

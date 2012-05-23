@@ -343,13 +343,11 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                 setPropertyBean(agentBean, "configuration", parnterAppConfigBean);
             }
 
-            // TODO : Generate agent config files for non-java agentes : IIS, PHP, Apache, etc
-
             IdProjectModule module = event.getContext().getCurrentModule();
 
             if (execEnv.getPlatformId().equals("apache") ||
-                    execEnv.getPlatformId().startsWith("php") ||
-                    execEnv.getPlatformId().startsWith("iis")) {
+                execEnv.getPlatformId().startsWith("php") ||
+                execEnv.getPlatformId().startsWith("iis")) {
 
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("execEnv", execEnv);
@@ -438,7 +436,6 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         Beans bpBeans = (Beans) event.getContext().get("bpBeans");
 
         Beans agentBeans = (Beans) event.getContext().get("agentBeans");
-        Bean agentBean = (Bean) event.getContext().get("agentBean");        
 
         Bean bpBean = getBeansOfType(bpBeans, BindingProviderImpl.class.getName()).iterator().next();
 

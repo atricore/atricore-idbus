@@ -23,6 +23,8 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.Connection;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionVisitor;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
+import com.atricore.idbus.console.lifecycle.main.transform.annotations.IgnoreChildren;
+import com.atricore.idbus.console.lifecycle.main.transform.annotations.ReEntrant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -75,8 +77,11 @@ private static final Log logger = LogFactory.getLog(ReflexiveIdentityApplianceDe
 
             // Connections can be navigated several times ... this could be better, but works for now :)
             // See also TransformerVisitor, it also contains specific logic to handle connections
-            if (!(idApplianceElement instanceof Connection))
+            if (idApplianceElement instanceof Connection || idApplianceElement.getClass().isAnnotationPresent(ReEntrant.class)) {
+                // This element can be processed any number of times
+            } else {
                 stack.add(idApplianceElement);
+            }
 
             // Look for an "arrive" method in the visitor for the current node
             //Method arrive = visitor.getClass().getMethod("arrive", idApplianceElement.getClass());
@@ -151,6 +156,12 @@ private static final Log logger = LogFactory.getLog(ReflexiveIdentityApplianceDe
                 logger.trace("Looking for children " + idApplianceElement);
 
             for (Method method : ms) {
+
+                // Method should not be marked as IgnoreChildren
+
+                if (method.getAnnotation(IgnoreChildren.class) != null) {
+                    continue;
+                }
 
                 // Method should return a type
                 Class type = method.getReturnType();

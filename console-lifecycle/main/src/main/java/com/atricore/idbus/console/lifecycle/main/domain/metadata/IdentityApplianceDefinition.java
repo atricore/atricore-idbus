@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+import com.atricore.idbus.console.lifecycle.main.transform.annotations.IgnoreChildren;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -54,6 +56,7 @@ public class IdentityApplianceDefinition implements Serializable {
     // RFU
     private Set<ProviderRole> supportedRoles;
 
+    // Only add 'terminal' nodes
     private Set<Provider> providers;
 
     private Set<IdentitySource> identitySources;
@@ -176,6 +179,7 @@ public class IdentityApplianceDefinition implements Serializable {
         this.identitySources = identitySources;
     }
 
+    @IgnoreChildren // These elements will be navigated through execution environments
     public Set<ServiceResource> getServiceResources() {
         if (serviceResources == null) {
             serviceResources = new HashSet<ServiceResource>();

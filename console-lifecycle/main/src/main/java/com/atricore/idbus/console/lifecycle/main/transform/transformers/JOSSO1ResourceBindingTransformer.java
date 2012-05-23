@@ -24,7 +24,7 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
     @Override
     public boolean accept(TransformEvent event) {
         return event.getData() instanceof  JOSSO1Resource  &&
-               event.getContext().getParentNode() instanceof ServiceConnection;
+               event.getContext().getParentNode() instanceof Activation;
     }
 
     @Override

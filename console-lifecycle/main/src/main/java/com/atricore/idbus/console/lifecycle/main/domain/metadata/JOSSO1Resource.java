@@ -1,8 +1,12 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+import com.atricore.idbus.console.lifecycle.main.transform.annotations.ReEntrant;
+
 import java.util.HashSet;
 import java.util.Set;
 
+// This work very much like connections, make elemets re-entrant
+@ReEntrant
 public class JOSSO1Resource extends ServiceResource {
 
     private static final long serialVersionUID = -206643640681397571L;

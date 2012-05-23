@@ -1322,8 +1322,6 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(ExecutionEnvironment node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
-        if (child instanceof Activation)
-            return false;
         return true;
     }
 
@@ -1866,8 +1864,8 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
     public boolean walkNextChild(JOSSOActivation node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
-        // Do not treat resource env as 'children' of this node.
-        if (child == node.getResource())
+        // Do not treat activation as 'children' of this node.
+        if (child == node.getExecutionEnv())
             return false;
 
         // We should walk all other children

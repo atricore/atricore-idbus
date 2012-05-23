@@ -1,7 +1,11 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+import com.atricore.idbus.console.lifecycle.main.transform.annotations.IgnoreChildren;
+import com.atricore.idbus.console.lifecycle.main.transform.annotations.ReEntrant;
+
 import java.io.Serializable;
 
+@ReEntrant
 public abstract class ServiceResource implements Serializable {
 
     private static final long serialVersionUID = 2524797144868455174L;
@@ -43,6 +47,7 @@ public abstract class ServiceResource implements Serializable {
         this.description = description;
     }
 
+    @IgnoreChildren
     public ServiceConnection getServiceConnection() {
         return serviceConnection;
     }
@@ -51,6 +56,7 @@ public abstract class ServiceResource implements Serializable {
         this.serviceConnection = serviceConnection;
     }
 
+    @IgnoreChildren
     public Activation getActivation() {
         return activation;
     }
