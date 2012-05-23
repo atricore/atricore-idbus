@@ -102,6 +102,9 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
                 "urn:org:atricore:idbus:capabilities:josso:bindings:HTTP-Artifact",
                 backTo, null);
 
+        // Store the application ID in local state
+        state.getLocalState().setValue("appId", appId);
+
         JossoAuthenticationAssertion aa = null;
         if (response.getSessionIndex() == null) {
             // No session was found for automatic login, go back without artifact!
