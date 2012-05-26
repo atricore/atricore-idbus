@@ -465,7 +465,7 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
             securityTokenEmissionCtx.setSpAcs(ed);
 
-            securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest);
+            securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest, secCtx);
 
             if (logger.isDebugEnabled())
                 logger.debug("Created SAMLR2 Assertion " + securityTokenEmissionCtx.getAssertion().getID() +
@@ -941,7 +941,6 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                         (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
-
                 // Create a new SSO Session
                 IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion);
 
@@ -1355,12 +1354,60 @@ public class SingleSignOnProducer extends SSOProducer {
     }
 
     protected SamlR2SecurityTokenEmissionContext emitAssertionFromPreviousSession(CamelMediationExchange exchange,
-                                                                                  SamlR2SecurityTokenEmissionContext ctx,
-                                                                                  AuthnRequestType authnRequest) throws Exception {
+                                                                                  SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
+                                                                                  AuthnRequestType authnRequest,
+                                                                                  IdPSecurityContext secCtx) throws Exception {
 
         // TODO : We need to use the STS ..., and get ALL the required tokens again.
 
         // TODO : Set in assertion AuthnCtxClass.PREVIOUS_SESSION_AUTHN_CTX
+
+        MessageQueueManager aqm = getArtifactQueueManager();
+
+        ClaimSet claims = new ClaimSetImpl();
+        UsernameTokenType usernameToken = new UsernameTokenType();
+
+        for (Iterator<Principal> iterator = secCtx.getSubject().getPrincipals().iterator() ; iterator.hasNext(); ) {
+
+            Principal next = iterator.next();
+
+            if (next instanceof SimplePrincipal) {
+
+                // TODO : Perform some kind of identity mapping if necessary, email -> username, etc.
+                SimplePrincipal principal = (SimplePrincipal) next;
+
+                AttributedString usernameString = new AttributedString();
+                usernameString.setValue(principal.getName());
+                usernameToken.setUsername(usernameString);
+                usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), principal.getName());
+                usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+                usernameToken.getOtherAttributes().put(new QName(Constants.PREVIOUS_SESSION_NS), "TRUE");
+
+                // TODO : We should honor the provided authn. context if any
+                Claim claim = new ClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                claims.addClaim(claim);
+            }
+
+        }
+
+
+
+        securityTokenEmissionCtx = emitAssertionFromClaims(exchange,
+                securityTokenEmissionCtx,
+                claims,
+                securityTokenEmissionCtx.getMember());
+
+        AssertionType assertion = securityTokenEmissionCtx.getAssertion();
+
+        //Subject authnSubject = securityTokenEmissionCtx.getSubject();
+
+        logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
+                (authnRequest != null ? authnRequest.getID() : "<NULL>"));
+
+        return securityTokenEmissionCtx;
+
+        /*
+
         AssertionType assertion = null;
 
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SecurityTokenToAuthnAssertionPlan.class);
@@ -1374,7 +1421,7 @@ public class SingleSignOnProducer extends SSOProducer {
         ex.setTransientProperty(VAR_SAMLR2_SIGNER, ((SSOIDPMediator) channel.getIdentityMediator()).getSigner());
         ex.setTransientProperty(VAR_SAMLR2_ENCRYPTER, ((SSOIDPMediator) channel.getIdentityMediator()).getEncrypter());
 
-        // Build Subject for SSOUser
+        // Build Subject for SSOUser     HashSet
         Set<Principal> principals = new HashSet<Principal>();
 
         SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
@@ -1419,6 +1466,7 @@ public class SingleSignOnProducer extends SSOProducer {
         ctx.setAssertion(assertion);
 
         return ctx;
+        */
 
     }
 
@@ -1447,6 +1495,7 @@ public class SingleSignOnProducer extends SSOProducer {
         // -------------------------------------------------------
 
         // TODO : Improve communication mechanism between STS and IDP!
+
         // Queue this contenxt and send the artifact as RST context information
         Artifact emitterCtxArtifact = aqm.pushMessage(securityTokenEmissionCtx);
 

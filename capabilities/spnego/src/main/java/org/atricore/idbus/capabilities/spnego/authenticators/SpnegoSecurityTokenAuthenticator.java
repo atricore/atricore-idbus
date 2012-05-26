@@ -22,7 +22,6 @@ public class SpnegoSecurityTokenAuthenticator extends AbstractSecurityTokenAuthe
     public SpnegoSecurityTokenAuthenticator() {
         super();
         setScheme(SCHEME_NAME);
-
     }
 
     @Override

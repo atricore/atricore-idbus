@@ -31,6 +31,10 @@ import java.util.*;
  */
 public class SecurityTokenProcessingContext {
 
+    public SecurityTokenProcessingContext() {
+
+    }
+
     private Map<String, Object> properties = new HashMap<String, Object>();
 
     private Set<SecurityToken> emittedTokens = new HashSet<SecurityToken>();

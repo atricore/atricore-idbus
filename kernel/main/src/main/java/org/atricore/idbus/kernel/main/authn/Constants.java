@@ -48,4 +48,6 @@ public interface Constants  {
 
     public static final String PROXY_NS = "urn:org:atricore:idbus:kernel:main:authn:proxy";
 
+    public static final String PREVIOUS_SESSION_NS = "urn:org:atricore:idbus:kernel:main:authn:previous-session";
+
 }

@@ -14,12 +14,20 @@ import javax.xml.namespace.QName;
 
 /**
  * Relies an inbound security token without incurring in authentication, emitting a corresponding subject.
- * Passthrough authentication is used for skipping the authentication step when it has been already carried out by
+ * Pass-through authentication is used for skipping the authentication step when it has been already carried out by
  * a third-party, such as a proxy.
  *
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
 public class PassthroughSecurityTokenAuthenticator extends AbstractSecurityTokenAuthenticator {
+
+    private QName proxyNs = new QName(Constants.PROXY_NS);
+
+    private QName previousSessionNs = new QName(Constants.PREVIOUS_SESSION_NS);
+
+    public PassthroughSecurityTokenAuthenticator() {
+        super();
+    }
 
     @Override
     public Subject authenticate(Object requestToken) throws SecurityTokenEmissionException {
@@ -36,9 +44,17 @@ public class PassthroughSecurityTokenAuthenticator extends AbstractSecurityToken
     public boolean canAuthenticate(Object requestToken) {
 
         if (requestToken instanceof UsernameTokenType) {
+
             UsernameTokenType usrToken = (UsernameTokenType) requestToken;
-            // Only authenticate when PROXY attribute is set.
-            if (usrToken.getOtherAttributes().get(new QName(Constants.PROXY_NS)) != null) {
+
+            // TODO : Make sure that this attributes cannot be set by anybody but a local IDP
+            // Authenticate when PROXY attribute is set.
+            if (usrToken.getOtherAttributes().get(proxyNs) != null) {
+                return true;
+            }
+
+            // Authenticate when PROXY attribute is set.
+            if (usrToken.getOtherAttributes().get(previousSessionNs) != null) {
                 return true;
             }
         }
