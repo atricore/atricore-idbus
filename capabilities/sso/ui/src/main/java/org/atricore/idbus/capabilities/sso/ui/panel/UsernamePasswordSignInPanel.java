@@ -84,10 +84,12 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
                     "username")));
             username.setType(String.class);
             username.setOutputMarkupId(true);
+            username.setRequired(false);
 
             add(password = new PasswordTextField("password", new PropertyModel<String>(properties,
                     "password")));
             password.setType(String.class);
+            password.setRequired(false);
 
         }
 
