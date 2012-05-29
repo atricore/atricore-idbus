@@ -176,7 +176,6 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         event.getContext().put("idpProxyBean", idpProxyBean);
 
         // Take location from otherProvider :
-        // TODO : Add support in the console front-end (this will be saved into the appliance !)
         {
             Location otherLocation = otherProvider.getLocation();
 
@@ -192,7 +191,6 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
             logger.warn("Location for " + idpProxyBean.getName() + ", forcing ["+location+"]");
         }
 
-        // TODO : Add support in the console front-end (this will be saved into the appliance !)
         ServiceProviderChannel fChannel = (ServiceProviderChannel) (roleA ? fc.getChannelA() : fc.getChannelB());
         {
             Location otherLocation = otherProvider.getLocation();
@@ -209,12 +207,12 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
             logger.warn("Focation for channel " + fChannel.getName() + ", forcing ["+location+"]");
         }
 
-        // TODO : Add support in the console front-end (this will be saved as part of the appliance)
+        // TODO : Takes this from the external IDP !
         fChannel.getActiveProfiles().clear();
         fChannel.getActiveProfiles().add(Profile.SSO);
         fChannel.getActiveProfiles().add(Profile.SSO_SLO);
 
-        // TODO : Add support in the console front-end (this will be saved as part of the appliance)
+        // TODO : Takes this from the external IDP !
         fChannel.getActiveBindings().clear();
         fChannel.getActiveBindings().add(Binding.SAMLR2_HTTP_POST);
         //fChannel.getActiveBindings().add(Binding.SAMLR2_HTTP_REDIRECT);
@@ -279,7 +277,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         // warningUrl
         setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
-        // TODO : Support local keystore for proxy (FC Setup ?!)
+        // Get the proper keystore
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
         Keystore signKs = null;
@@ -299,10 +297,28 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
             }
 
         } else {
-            logger.warn("Using Sample keystore for signing : " + idpProxyBean.getName());
-            signKs = sampleKeystore;
-            logger.warn("Using Sample keystore for encryption : " + idpProxyBean.getName());
-            encryptKs = sampleKeystore;
+            // Take Keystores from local SP
+
+            SamlR2ProviderConfig spCfg = (SamlR2ProviderConfig) (roleA ? fc.getRoleB().getConfig() : fc.getRoleA().getConfig());
+
+            if (spCfg != null) {
+                signKs = spCfg.getSigner();
+                if (signKs == null && spCfg.isUseSampleStore()) {
+                    logger.warn("Using Sample keystore for signing : " + spCfg.getName());
+                    signKs = sampleKeystore;
+                }
+                encryptKs = spCfg.getEncrypter();
+                if (encryptKs == null && spCfg.isUseSampleStore()) {
+                    logger.warn("Using Sample keystore for encryption : " + spCfg.getName());
+                    encryptKs = sampleKeystore;
+                }
+            } else {
+                // Use sample
+                logger.warn("Using Sample keystore for signing : " + idpProxyBean.getName());
+                signKs = sampleKeystore;
+                logger.warn("Using Sample keystore for encryption : " + idpProxyBean.getName());
+                encryptKs = sampleKeystore;
+            }
         }
 
         // ----------------------------------------
@@ -337,7 +353,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
             setPropertyBean(signer, "keyResolver", keyResolver);
             setPropertyBean(idpMediator, "signer", signer);
 
-            // TODO : Get this from external provider Metadata, or from FC channel setup
+            // TODO : Maybe we need to get this from external IDP Metadata, or from FC channel setup !?
             //setPropertyValue(idpMediator, "signRequests", provider.isSignRequests());
             //setPropertyValue(idpMediator, "validateRequestsSignature", provider.isWantSignedRequests());
             setPropertyValue(idpMediator, "signRequests", true);
