@@ -3,6 +3,7 @@ package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -32,9 +33,11 @@ public class IdpFederatedConnectionTransformer extends AbstractSPChannelTransfor
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
 
             if (roleA) {
+                // Accept all Federated connection nodes that have an IdP as role A
                 return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof IdentityProvider
                         && !fc.getRoleA().isRemote();
             } else {
+                // Accept all Federated connection nodes that have an IdP as role B
                 return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof IdentityProvider
                         && !fc.getRoleB().isRemote();
             }
@@ -90,7 +93,8 @@ public class IdpFederatedConnectionTransformer extends AbstractSPChannelTransfor
 
         }
 
-        generateIdPComponents(idp, spChannel, federatedConnection, target, targetChannel, event.getContext());
+        Beans idpBeans = (Beans) event.getContext().get("idpBeans");
+        generateIdPComponents(idpBeans, idp, spChannel, federatedConnection, target, targetChannel, event.getContext());
 
     }
 }

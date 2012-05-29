@@ -8,5 +8,4 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  * To change this template use File | Settings | File Templates.
  */
 public class ExternalIdentityProvider extends FederatedProvider {
-
 }

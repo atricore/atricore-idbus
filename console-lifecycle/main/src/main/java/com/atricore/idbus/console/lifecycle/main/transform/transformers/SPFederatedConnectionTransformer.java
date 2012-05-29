@@ -8,6 +8,8 @@ import org.apache.commons.logging.LogFactory;
 
 
 /**
+ * This handles SP components generation for a specific federated connection (override == true)
+ *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
@@ -33,9 +35,11 @@ public class SPFederatedConnectionTransformer extends AbstractIdPChannelTransfor
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
 
             if (roleA) {
+                // Accept all Federated connection nodes that have an SP as role A
                 return idpChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof ServiceProvider
                         && !fc.getRoleA().isRemote();
             } else {
+                // Accept all Federated connection nodes that have an SP as role B
                 return idpChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof ServiceProvider
                         && !fc.getRoleB().isRemote();
             }
@@ -55,6 +59,8 @@ public class SPFederatedConnectionTransformer extends AbstractIdPChannelTransfor
 
         FederatedProvider target;
         FederatedChannel targetChannel;
+
+        // Determine our role in the relationship: A or B, and make some validations
 
         if (roleA) {
 
@@ -91,7 +97,11 @@ public class SPFederatedConnectionTransformer extends AbstractIdPChannelTransfor
 
         }
 
+        // Generate connection specific SP components
         generateSPComponents(sp, idpChannel, federatedConnection, target, targetChannel, event.getContext());
+
+        // TODO : Generate SP Proxy components
+
     }
 }
 

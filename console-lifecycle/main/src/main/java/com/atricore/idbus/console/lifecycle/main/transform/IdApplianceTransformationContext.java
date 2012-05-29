@@ -121,4 +121,8 @@ public class IdApplianceTransformationContext {
     public int nodesSize() {
         return nodes.size();
     }
+
+    public Object remove(String name) {
+        return attrs.remove(name);
+    }
 }

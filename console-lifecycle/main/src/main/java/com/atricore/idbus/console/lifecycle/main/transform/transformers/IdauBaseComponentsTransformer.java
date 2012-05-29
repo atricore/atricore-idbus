@@ -35,8 +35,8 @@ import org.atricore.idbus.kernel.planning.IdentityPlanRegistryImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.OsgiCamelIdentityMediationUnitContainerImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
+import java.util.Set;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
@@ -300,6 +300,23 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
                             i.setResource(rBeans.getId());
                             rIdauBeans.getValue().getImportsAndAliasAndBeen().add(i);
                         }
+                    } else if (o instanceof Set) {
+                        Set s = (Set) o;
+
+                        for (Object so : s) {
+                            if (so instanceof IdProjectResource) {
+                                IdProjectResource rBeans = (IdProjectResource) so;
+                                if (rBeans.getValue() instanceof Beans) {
+                                    if (logger.isDebugEnabled())
+                                        logger.debug("Importing beans " + rBeans);
+                                    Import i = new Import();
+                                    i.setResource(rBeans.getId());
+                                    rIdauBeans.getValue().getImportsAndAliasAndBeen().add(i);
+                                }
+                            }
+                        }
+
+
                     }
                 }
 

@@ -76,7 +76,6 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
     @Override
     public void before(TransformEvent event) throws TransformException {
 
-
         IdentityProvider provider = (IdentityProvider) event.getData();
 
         Date now = new Date();

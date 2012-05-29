@@ -37,7 +37,7 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer"/>
 
     <bean name="idpExternalTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPExternalTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPExternalTransformer"/>
 
     <bean name="idpDefaultSPChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPDefaultSPChannelTransformer"/>
@@ -68,7 +68,7 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPLocalTransformer"/>
 
     <bean name="spExternalTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPExternalTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2SPExternalTransformer"/>
 
     <bean name="salesforceTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SalesforceTransformer"/>
@@ -105,10 +105,10 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
 
     <bean name="samlr2IdPTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPLocalTransformer"/>
 
     <bean name="samlr2SPTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2SPTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2SPLocalTransformer"/>
 
     <bean name="idauSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauSerializerTransformer"/>

@@ -3,6 +3,7 @@ package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -28,6 +29,7 @@ public class IdPDefaultSPChannelTransformer extends AbstractSPChannelTransformer
     @Override
     public void before(TransformEvent event) throws TransformException {
         IdentityProvider idp = (IdentityProvider) event.getData();
-        generateIdPComponents(idp, null, null, null, null, event.getContext());
+        Beans idpBeans = (Beans) event.getContext().get("idpBeans");
+        generateIdPComponents(idpBeans, idp, null, null, null, null, event.getContext());
     }
 }

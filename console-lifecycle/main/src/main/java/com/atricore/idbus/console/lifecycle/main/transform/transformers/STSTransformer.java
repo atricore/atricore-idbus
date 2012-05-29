@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
@@ -20,6 +20,8 @@ import java.util.List;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
 /**
+ * SAML 2.0 STS Transformer
+ *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
@@ -29,16 +31,58 @@ public class STSTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof IdentityProvider &&
-                !((IdentityProvider)event.getData()).isRemote();
+        // TODO : Check that Federated connection is set to override ?!
+        if (event.getData() instanceof IdentityProvider && !((IdentityProvider)event.getData()).isRemote())
+            return true;
+
+        if (event.getData() instanceof ServiceProviderChannel) {
+
+            ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
+            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
+
+            if (fc.getRoleA() instanceof Saml2IdentityProvider && fc.getRoleA().isRemote())
+                return true;
+                // TODO : Change this once the front-end supports it
+                /*
+                return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof Saml2IdentityProvider
+                        && fc.getRoleA().isRemote();
+                        */
+            if (fc.getRoleB() instanceof Saml2IdentityProvider && fc.getRoleB().isRemote()) {
+                return true;
+                // TODO : Change this once the front-end supports it
+                /*
+                return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof Saml2IdentityProvider
+                        && fc.getRoleB().isRemote();
+                        */
+            }
+
+        }
+
+        return false;
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
 
-        Beans idpBeans = (Beans) event.getContext().get("idpBeans");
+        boolean isProxy = false;
 
-        IdentityProvider provider = (IdentityProvider) event.getData();
+        FederatedProvider provider = null;
+        if (event.getData() instanceof FederatedProvider) {
+            provider = (FederatedProvider) event.getData();
+            isProxy = false;
+        } else if (event.getData() instanceof ServiceProviderChannel) {
+            ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
+            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
+            isProxy = true;
+            if (fc.getRoleA() instanceof Saml2IdentityProvider && fc.getRoleA().isRemote())
+                provider = fc.getRoleA();
+            else if (fc.getRoleB() instanceof Saml2IdentityProvider && fc.getRoleB().isRemote()) {
+                provider = fc.getRoleB();
+            }
+        }
+
+        assert provider != null : "No valid provider found for STS ";
+        Beans idpBeans = isProxy ? (Beans) event.getContext().get("idpProxyBeans") : (Beans) event.getContext().get("idpBeans");
 
         if (logger.isTraceEnabled())
             logger.trace("Generating STS Beans for IdP " + provider.getName());
@@ -66,7 +110,6 @@ public class STSTransformer extends AbstractTransformer {
 
         // identityPlanRegistry
         setPropertyRef(stsEmitter, "identityPlanRegistry", "identity-plans-registry");
-
 
         Collection<Bean> mediators = getBeansOfType(idpBeans, SSOIDPMediator.class.getName());
 
@@ -98,10 +141,13 @@ public class STSTransformer extends AbstractTransformer {
         Bean legacyAuthenticator = newBean(idpBeans, idpBean.getName() + "-legacy-authenticator", AuthenticatorImpl.class.getName());
         List<Ref> authnSchemes = new ArrayList<Ref>();
 
-        if (provider.getAuthenticationMechanisms().size() < 1)
-            throw new TransformException("No Authentication Mechanism defined for " + provider.getName());
+        if (provider instanceof IdentityProvider) {
+            IdentityProvider localIdp = (IdentityProvider) provider;
+            if (localIdp.getAuthenticationMechanisms().size() < 1)
+                throw new TransformException("No Authentication Mechanism defined for " + provider.getName());
 
-        setPropertyRefs(legacyAuthenticator, "authenticationSchemes", authnSchemes);
+            setPropertyRefs(legacyAuthenticator, "authenticationSchemes", authnSchemes);
+        }
         
         // ----------------------------------------
         // Atricore Authenticators

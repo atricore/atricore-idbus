@@ -40,11 +40,16 @@ import java.util.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
+/**
+ * Abstract transformer to process an SP channel configuration (as part of an IdP definition)
+ */
 public class AbstractSPChannelTransformer extends AbstractTransformer {
 
     private static final Log logger = LogFactory.getLog(AbstractSPChannelTransformer.class);
 
     protected String contextSpChannelBean = "spSsoChannelBean";
+
+    protected boolean useProxy = false;
 
     /**
      * Generate IDP Components for a federated connection:
@@ -57,17 +62,17 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
      * @param ctx
      * @throws com.atricore.idbus.console.lifecycle.main.exception.TransformException
      */
-    protected void generateIdPComponents(IdentityProvider idp,
+    protected void generateIdPComponents(Beans idpBeans,
+                                     FederatedProvider idp,
                                      ServiceProviderChannel spChannel,
                                      FederatedConnection fc,
                                      FederatedProvider target,
                                      FederatedChannel targetChannel,
                                      IdApplianceTransformationContext ctx) throws TransformException {
 
-        // If no channel is provided, we asume this is the default
-        boolean isDefaultChannel = spChannel == null;
+        // If no channel is provided, we assume this is the default
+        boolean isDefaultChannel = spChannel == null || useProxy;
 
-        Beans idpBeans = (Beans) ctx.get("idpBeans");
         Beans beansOsgi = (Beans) ctx.get("beansOsgi");
 
         if (logger.isTraceEnabled())
@@ -104,8 +109,6 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         //---------------------------------------------
         // SP Channel name : <idp-name>-sso-<sp-channel-name>-sp-channel, sso service is the default, and the one this transformer generates
         String spChannelName = idpBean.getName() +  "-sso-" + (!isDefaultChannel ? normalizeBeanName(target.getName()) : "default") + "-sp-channel";
-
-
         String idauPath = (String) ctx.get("idauPath");
 
         // Check if we already created default service
@@ -153,7 +156,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         if (spChannel != null) {
             resourceName = normalizeBeanName(spChannel.getName());
         }
-        setPropertyValue(idpMd, "resource", "classpath:" + idauPath + idpBean.getName() + "/" + resourceName + "-samlr2-metadata.xml");
+        setPropertyValue(idpMd, "resource", "classpath:" + idauPath + normalizeBeanName(idp.getName()) + "/" + resourceName + "-samlr2-metadata.xml");
 
         Bean mdIntrospector = newAnonymousBean(SamlR2MetadataDefinitionIntrospector.class);
         setPropertyBean(idpMd, "metadataIntrospector", mdIntrospector);
@@ -166,9 +169,9 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         ctx.put(contextSpChannelBean, spChannelBean);
 
         setPropertyValue(spChannelBean, "name", spChannelName);
-        setPropertyValue(spChannelBean, "description", (spChannel != null ? spChannel.getDisplayName() : idp.getName()));
+        setPropertyValue(spChannelBean, "description", (spChannel != null ? spChannel.getDisplayName() : idpBean.getName()));
         setPropertyValue(spChannelBean, "location", resolveLocationUrl(idp, spChannel));
-        setPropertyRef(spChannelBean, "provider", normalizeBeanName(idp.getName()));
+        setPropertyRef(spChannelBean, "provider", normalizeBeanName(idpBean.getName()));
         if (spChannel != null)
             setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
@@ -248,7 +251,13 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         Bean emailNameIdBuilder = newAnonymousBean(EmailNameIDBuilder.class);
         addPropertyBean(stmtToAssertionPlan, "nameIDBuilders", emailNameIdBuilder);
 
-        SubjectNameIdentifierPolicy subjectNameIDPolicy = spChannel != null ? spChannel.getSubjectNameIDPolicy() : idp.getSubjectNameIDPolicy();
+        SubjectNameIdentifierPolicy subjectNameIDPolicy = null;
+        if (idp instanceof Saml2IdentityProvider) {
+            subjectNameIDPolicy = spChannel != null ? spChannel.getSubjectNameIDPolicy() : null;
+        } else if (idp instanceof IdentityProvider) {
+            subjectNameIDPolicy = spChannel != null ? spChannel.getSubjectNameIDPolicy() : ((IdentityProvider)idp).getSubjectNameIDPolicy();
+        }
+
         if (subjectNameIDPolicy != null) {
 
             // Set attribute if policy is defined
@@ -295,7 +304,14 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             setPropertyBean(stmtToAssertionPlan, "defaultNameIDBuilder", unspecifiedNameIdBuilder);
         }
 
-        boolean ignoreRequestedNameIDPolicy = spChannel != null ? spChannel.isIgnoreRequestedNameIDPolicy() : idp.isIgnoreRequestedNameIDPolicy();
+        boolean ignoreRequestedNameIDPolicy = true;
+
+        if (idp instanceof IdentityProvider) {
+            ignoreRequestedNameIDPolicy = spChannel != null ? spChannel.isIgnoreRequestedNameIDPolicy() : ((IdentityProvider)idp).isIgnoreRequestedNameIDPolicy();
+        } else if (idp instanceof Saml2IdentityProvider) {
+            ignoreRequestedNameIDPolicy = spChannel != null ? spChannel.isIgnoreRequestedNameIDPolicy() : true;
+        }
+
         setPropertyValue(stmtToAssertionPlan, "ignoreRequestedNameIDPolicy", ignoreRequestedNameIDPolicy);
 
         Bean samlArtResToSamlArtRespPlan = newBean(idpBeans, spChannelName + "-samlr2artresolve-to-samlr2artresponse-plan", SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan.class);
@@ -628,8 +644,9 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
 
         // SP Channel bean
         Bean spChannelBean = (Bean) event.getContext().get(contextSpChannelBean);
-        Bean idpBean = (Bean) event.getContext().get("idpBean");
-        Beans idpBeans = (Beans) event.getContext().get("idpBeans");
+        Bean idpBean = useProxy ? (Bean) event.getContext().get("idpProxyBean") : (Bean) event.getContext().get("idpBean");
+        Beans idpBeans = useProxy ? (Beans) event.getContext().get("idpProxyBeans") : (Beans) event.getContext().get("idpBeans");
+
         Beans beans = (Beans) event.getContext().get("beans");
 
         // The same Claim Providers and STS are used for the IDP in all channels!
@@ -682,5 +699,13 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
 
     public void setContextSpChannelBean(String contextSpChannelBean) {
         this.contextSpChannelBean = contextSpChannelBean;
+    }
+
+    public boolean isUseProxy() {
+        return useProxy;
+    }
+
+    public void setUseProxy(boolean useProxy) {
+        this.useProxy = useProxy;
     }
 }

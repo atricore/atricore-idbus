@@ -38,6 +38,10 @@ import java.util.Set;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
 
+
+/**
+ * Abstract transformer to process an IdP channel configuration (as part of an SP definition)
+ */
 public class AbstractIdPChannelTransformer extends AbstractTransformer {
 
     private static final Log logger = LogFactory.getLog(AbstractIdPChannelTransformer.class);

@@ -31,11 +31,9 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public class SamlR2IdPTransformer extends AbstractTransformer implements InitializingBean {
+public class SamlR2IdPLocalTransformer extends AbstractTransformer implements InitializingBean {
 
-    private static final Log logger = LogFactory.getLog(SamlR2IdPTransformer.class);
-
-    private String baseSrcPath = "/org/atricore/idbus/examples/simplefederation/idau/";
+    private static final Log logger = LogFactory.getLog(SamlR2IdPLocalTransformer.class);
 
     private UUIDGenerator idGenerator = new UUIDGenerator();
 

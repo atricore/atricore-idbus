@@ -133,6 +133,8 @@ public class IdentityLookupTransformer extends AbstractTransformer {
 
                 providerBeans.getImportsAndAliasAndBeen().add(identityStoreOsgi);
 
+            } else if (identitySource instanceof XmlIdentitySource) {
+                throw new UnsupportedOperationException("XML Identity Source support not implemented !!!");
             }
         } else {
             throw new TransformException("No IdentitySource defined for " + idLookup.getName());

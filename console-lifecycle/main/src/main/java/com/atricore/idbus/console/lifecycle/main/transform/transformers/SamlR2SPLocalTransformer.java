@@ -31,9 +31,9 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public class SamlR2SPTransformer extends AbstractTransformer implements InitializingBean  {
+public class SamlR2SPLocalTransformer extends AbstractTransformer implements InitializingBean  {
 
-    private static final Log logger = LogFactory.getLog(SamlR2SPTransformer.class);
+    private static final Log logger = LogFactory.getLog(SamlR2SPLocalTransformer.class);
 
     private String baseSrcPath = "/org/atricore/idbus/examples/simplefederation/idau/";
 

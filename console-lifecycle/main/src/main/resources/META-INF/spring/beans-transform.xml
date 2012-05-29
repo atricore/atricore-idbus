@@ -52,8 +52,29 @@
     </bean>
 
 
-    <bean name="idpExternalTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPExternalTransformer"/>
+    <bean name="samlr2IdPExternalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPExternalTransformer"/>
+
+    <bean name="samlr2IdPRoleAProxyTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPProxyTransformer">
+        <property name="roleA" value="true"/>
+        <property name="sampleKeystore" ref="sampleKeystore"/>
+    </bean>
+
+    <bean name="samlr2IdPRoleBProxyTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPProxyTransformer">
+        <property name="roleA" value="false"/>
+        <property name="sampleKeystore" ref="sampleKeystore"/>
+    </bean>
+
+    <bean name="samlr2IdpRoleAProxyFederatedConnectionTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPProxyFederatedConnectionTransformer">
+        <property name="roleA" value="true"/>
+    </bean>
+    <bean name="samlr2IdpRoleBProxyFederatedConnectionTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPProxyFederatedConnectionTransformer">
+        <property name="roleA" value="false"/>
+    </bean>
 
     <bean name="idpDefaultSPChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPDefaultSPChannelTransformer"/>
@@ -69,7 +90,7 @@
     </bean>
 
     <bean name="oauth2IdpDefaultSPChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.OAuth2IdpSPChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.OAuth2IdPDefaultSPChannelTransformer"/>
 
     <bean name="oauth2IdpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.OAuth2IdpFederatedConnectionTransformer">
@@ -113,8 +134,8 @@
         <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
 
-    <bean name="spExternalTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPExternalTransformer"/>
+    <bean name="samlr2SpExternalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2SPExternalTransformer"/>
 
     <bean name="salesforceTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SalesforceTransformer"/>
@@ -137,6 +158,17 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
         <property name="roleA" value="false"/>
     </bean>
+
+    <bean name="spProxyFederatedConnectionATransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPProxyFederatedConnectionTransformer">
+        <property name="roleA" value="true"/>
+    </bean>
+
+    <bean name="spProxyFederatedConnectionBTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPProxyFederatedConnectionTransformer">
+        <property name="roleA" value="false"/>
+    </bean>
+
 
     <bean name="spJOSSOActivationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSO1ResourceTransformer"/>
@@ -302,12 +334,12 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
 
     <bean name="samlr2IdPTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPLocalTransformer">
         <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
 
     <bean name="samlr2SPTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2SPTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2SPLocalTransformer">
         <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
 
@@ -390,12 +422,16 @@
                                         <!-- IDP Transformers -->
                                         <ref bean="idpLocalTransformer"/>
                                         <ref bean="oauth2IdpLocalTransformer"/>
-                                        <ref bean="idpExternalTransformer"/>
+                                        <ref bean="samlr2IdPExternalTransformer"/>
                                         <ref bean="samlr2IdPTransformer"/>
-
                                         <ref bean="idpDefaultSPChannelTransformer"/>
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
+
+                                        <ref bean="samlr2IdPRoleAProxyTransformer"/>
+                                        <ref bean="samlr2IdPRoleBProxyTransformer"/>
+                                        <ref bean="samlr2IdpRoleAProxyFederatedConnectionTransformer"/>
+                                        <ref bean="samlr2IdpRoleBProxyFederatedConnectionTransformer"/>
 
                                         <ref bean="oauth2IdpDefaultSPChannelTransformer"/>
                                         <ref bean="oauth2IdpFederatedConnectionATransformer"/>
@@ -418,10 +454,12 @@
                                         <ref bean="salesforceTransformer"/>
                                         <ref bean="googleAppsTransformer"/>
                                         <ref bean="sugarCRMTransformer"/>
-                                        <ref bean="spExternalTransformer"/>
+                                        <ref bean="samlr2SpExternalTransformer"/>
                                         <ref bean="spDefaultIdPChannelTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
+                                        <ref bean="spProxyFederatedConnectionATransformer"/>
+                                        <ref bean="spProxyFederatedConnectionBTransformer"/>
                                         <ref bean="spJOSSOActivationTransformer"/>
                                         <ref bean="JOSSOActivationTransformer"/>
                                         <ref bean="samlr2SPTransformer"/>
