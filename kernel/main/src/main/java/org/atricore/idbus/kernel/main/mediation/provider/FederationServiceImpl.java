@@ -62,4 +62,7 @@ public class FederationServiceImpl implements FederationService {
         return overrideChannels;
     }
 
+    public void setOverrideChannels(Set<FederationChannel> overrideChannels) {
+        this.overrideChannels = overrideChannels;
+    }
 }
