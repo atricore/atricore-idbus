@@ -34,8 +34,6 @@ public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceCo
     public boolean storeConfiguration(PersistenceServiceConfiguration config) throws ServiceConfigurationException {
         try {
 
-            // TODO : Support new properties: connectionUrl, etc, only when useExternal DB is set to true
-
             // Some service validations:
 
             // DB Port
@@ -110,9 +108,6 @@ public class ConsolePersistenceServiceConfigurationHandler extends OsgiServiceCo
     protected PersistenceServiceConfiguration toConfiguration(Dictionary props, PersistenceServiceConfiguration currentCfg) {
         PersistenceServiceConfiguration cfg = currentCfg != null ? currentCfg : new PersistenceServiceConfiguration();
 
-        // TODO: how do we know that it's a external db?
-        // jdbc.ConnectionURL will also be present in case of internal DB (after saving configuration through front-end)
-        // maybe we should also save 'useExternalDB' as a property, e.g. jdbc.external = true ?
         if (props.get("jdbc.atricore.useExternalDB") != null && Boolean.parseBoolean((String) props.get("jdbc.atricore.useExternalDB")))  {
             cfg.setConnectionUrl(getString(props, "jdbc.ConnectionURL"));
             cfg.setUseExternalDB(true);
