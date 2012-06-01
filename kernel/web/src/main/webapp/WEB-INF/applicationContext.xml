@@ -30,7 +30,7 @@
         >
 
     <bean name="internal-processing-policy" class="org.atricore.idbus.kernel.main.mediation.camel.component.http.DefaultInternalProcessingPolicy">
-
+        <property name="kernelConfig" ref="kernelConfig"/>
     </bean>
 
     <!--
