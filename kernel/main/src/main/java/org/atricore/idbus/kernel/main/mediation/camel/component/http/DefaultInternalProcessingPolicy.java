@@ -3,6 +3,7 @@ package org.atricore.idbus.kernel.main.mediation.camel.component.http;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.StringTokenizer;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy  {
+public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy, InitializingBean {
 
     private static final Log logger = LogFactory.getLog(DefaultInternalProcessingPolicy .class);
 
@@ -22,7 +23,8 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
 
     private List<String> includedUrls = new ArrayList<String>();
 
-    public DefaultInternalProcessingPolicy() {
+    public void afterPropertiesSet() throws Exception {
+
         String excludedUrlsCsv = kernelConfig.getProperty("binding.http.followRedirects.excludeUrls");
         if (excludedUrlsCsv != null) {
             StringTokenizer st = new StringTokenizer(excludedUrlsCsv, ",");
