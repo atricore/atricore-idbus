@@ -831,16 +831,18 @@ public class AssertionConsumerProducer extends SSOProducer {
             long responseIssueInstant = response.getIssueInstant().toGregorianCalendar().getTimeInMillis();
             long requestIssueInstant = request.getIssueInstant().toGregorianCalendar().getTimeInMillis();
 
-            // TODO : Make configurable ?! Give a second of tolerance between request/response issue instants
-           	if(responseIssueInstant - requestIssueInstant <= -1000) {
+            long tolerance = mediator.getTimestampValidationTolerance();
+            // You can't have a request emitted before 'tolerance' millisenconds
+           	if(responseIssueInstant - requestIssueInstant <= tolerance * -1) {
     			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_ISSUE_INSTANT,
                         response.getIssueInstant().toGregorianCalendar().toString() +
-                                    " earlier than request issue instant (TTL:" + (responseIssueInstant - requestIssueInstant) + ")");
+                                    " earlier than request issue instant.");
 
     		} else {
+
 
                 long ttl = mediator.getRequestTimeToLive();
 
@@ -848,7 +850,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                 long req = request.getIssueInstant().toGregorianCalendar().getTime().getTime();
 
                 if (logger.isDebugEnabled())
-                    logger.debug("TTL 2: " + res + " - " +  req + " = " + (res - req));
+                    logger.debug("TTL : " + res + " - " +  req + " = " + (res - req));
 
                 // If 0, response does not expires!
     			if(ttl > 0 && response.getIssueInstant().toGregorianCalendar().getTime().getTime()
