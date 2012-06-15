@@ -23,6 +23,9 @@
                 <bean class="com.atricore.idbus.console.settings.main.impl.HttpServiceConfigurationHandler">
                     <property name="admin" ref="osgiCfgAdmin"/>
                 </bean>
+                <bean class="com.atricore.idbus.console.settings.main.impl.KernelHttpConfigurationHandler">
+                    <property name="admin" ref="osgiCfgAdmin"/>
+                </bean>
                 <bean class="com.atricore.idbus.console.settings.main.impl.SshServiceConfigurationHandler">
                     <property name="admin" ref="osgiCfgAdmin"/>
                 </bean>

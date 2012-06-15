@@ -31,6 +31,12 @@ public class HttpServiceConfiguration implements  ServiceConfiguration {
     
     private String sslKeyPassword;
 
+    private boolean followRedirects;
+
+    private String includeFollowUrls;
+
+    private String excludeFollowUrls;
+
     public HttpServiceConfiguration() {
         this.serviceType = ServiceType.HTTP;
     }
@@ -125,5 +131,29 @@ public class HttpServiceConfiguration implements  ServiceConfiguration {
 
     public void setSslKeyPassword(String sslKeyPassword) {
         this.sslKeyPassword = sslKeyPassword;
+    }
+
+    public boolean isFollowRedirects() {
+        return followRedirects;
+    }
+
+    public void setFollowRedirects(boolean followRedirects) {
+        this.followRedirects = followRedirects;
+    }
+
+    public String getIncludeFollowUrls() {
+        return includeFollowUrls;
+    }
+
+    public void setIncludeFollowUrls(String includeFollowUrls) {
+        this.includeFollowUrls = includeFollowUrls;
+    }
+
+    public String getExcludeFollowUrls() {
+        return excludeFollowUrls;
+    }
+
+    public void setExcludeFollowUrls(String excludeFollowUrls) {
+        this.excludeFollowUrls = excludeFollowUrls;
     }
 }
