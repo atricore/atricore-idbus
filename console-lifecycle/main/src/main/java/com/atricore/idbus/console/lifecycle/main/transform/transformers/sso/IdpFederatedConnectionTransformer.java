@@ -1,19 +1,20 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.sso;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractSPChannelTransformer;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Generates default IdP components for IdPs having OAuth 2.0 enabled
- *
- * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
+ * @version $Id$
  */
-public class OAuth2IdpFederatedConnectionTransformer extends AbstractOAuth2SPChannelTransformer {
+public class IdpFederatedConnectionTransformer extends AbstractSPChannelTransformer {
 
-    private static final Log logger = LogFactory.getLog(OAuth2IdpFederatedConnectionTransformer.class);
+    private static final Log logger = LogFactory.getLog(IdpFederatedConnectionTransformer.class);
 
     private boolean roleA;
 
@@ -27,18 +28,17 @@ public class OAuth2IdpFederatedConnectionTransformer extends AbstractOAuth2SPCha
 
     @Override
     public boolean accept(TransformEvent event) {
-
-        // TODO : Make sure that OAuth 2.0 is enabled
-
         if (event.getData() instanceof ServiceProviderChannel) {
 
             ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
 
             if (roleA) {
+                // Accept all Federated connection nodes that have an IdP as role A
                 return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof IdentityProvider
                         && !fc.getRoleA().isRemote();
             } else {
+                // Accept all Federated connection nodes that have an IdP as role B
                 return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof IdentityProvider
                         && !fc.getRoleB().isRemote();
             }
@@ -62,7 +62,7 @@ public class OAuth2IdpFederatedConnectionTransformer extends AbstractOAuth2SPCha
         if (roleA) {
 
             assert spChannel == federatedConnection.getChannelA() :
-                    "SP OAUTH2 Channel " + spChannel.getName() + " should be 'A' channel in federated connection " +
+                    "SP Channel " + spChannel.getName() + " should be 'A' channel in federated connection " +
                             federatedConnection.getName();
 
             idp = (IdentityProvider) federatedConnection.getRoleA();
@@ -78,7 +78,7 @@ public class OAuth2IdpFederatedConnectionTransformer extends AbstractOAuth2SPCha
         } else {
 
             assert spChannel == federatedConnection.getChannelB() :
-                    "SP OAUTH2 Channel " + spChannel.getName() + " should be 'B' channel in federated connection " +
+                    "SP Channel " + spChannel.getName() + " should be 'B' channel in federated connection " +
                             federatedConnection.getName();
 
 
@@ -94,7 +94,8 @@ public class OAuth2IdpFederatedConnectionTransformer extends AbstractOAuth2SPCha
 
         }
 
-        generateIdPComponents(idp, spChannel, federatedConnection, target, targetChannel, event.getContext());
+        Beans idpBeans = (Beans) event.getContext().get("idpBeans");
+        generateIdPComponents(idpBeans, idp, spChannel, federatedConnection, target, targetChannel, event.getContext());
 
     }
 }

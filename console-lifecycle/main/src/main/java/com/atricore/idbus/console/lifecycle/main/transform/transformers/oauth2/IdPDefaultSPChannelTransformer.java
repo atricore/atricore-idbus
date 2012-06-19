@@ -1,21 +1,24 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractOAuth2SPChannelTransformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * Transformer for OAuth 2.0 IdP local services
+ *
  * Creates OAuth 2.0 Default SP channel for local IdPs with OAuth 2.0 enabled
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class OAuth2IdPDefaultSPChannelTransformer extends AbstractOAuth2SPChannelTransformer {
+public class IdPDefaultSPChannelTransformer extends AbstractOAuth2SPChannelTransformer {
 
-    private static final Log logger = LogFactory.getLog(OAuth2IdPDefaultSPChannelTransformer.class);
+    private static final Log logger = LogFactory.getLog(IdPDefaultSPChannelTransformer.class);
 
-    public OAuth2IdPDefaultSPChannelTransformer() {
+    public IdPDefaultSPChannelTransformer() {
         super();
         setContextSpChannelBean("defaultOauth2SPChannelBean");
     }

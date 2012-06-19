@@ -1,9 +1,10 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;
@@ -29,11 +30,13 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
+ * Transformer for OAuth 2.0 IdP local services
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class OAuth2IdpLocalTransformer extends AbstractTransformer implements InitializingBean {
+public class IdpTransformer extends AbstractTransformer implements InitializingBean {
 
-    private static final Log logger = LogFactory.getLog(OAuth2IdpLocalTransformer.class);
+    private static final Log logger = LogFactory.getLog(IdpTransformer.class);
 
     public void afterPropertiesSet() throws Exception {
 

@@ -1,10 +1,11 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.sso;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,9 +32,9 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public class SamlR2SPLocalTransformer extends AbstractTransformer implements InitializingBean  {
+public class SPMetadataTransformer extends AbstractTransformer implements InitializingBean  {
 
-    private static final Log logger = LogFactory.getLog(SamlR2SPLocalTransformer.class);
+    private static final Log logger = LogFactory.getLog(SPMetadataTransformer.class);
 
     private String baseSrcPath = "/org/atricore/idbus/examples/simplefederation/idau/";
 

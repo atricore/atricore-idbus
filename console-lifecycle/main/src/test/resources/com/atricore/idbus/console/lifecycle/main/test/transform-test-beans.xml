@@ -34,21 +34,21 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
     <bean name="idpLocalTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdPTransformer"/>
 
     <bean name="idpExternalTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPExternalTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.samlr2.SamlR2IdPTransformer"/>
 
     <bean name="idpDefaultSPChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPDefaultSPChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdPDefaultSPChannelTransformer"/>
     
     <bean name="idpFederatedConnectionATransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdpFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
     </bean>
 
     <bean name="idpFederatedConnectionBTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdpFederatedConnectionTransformer">
         <property name="roleA" value="false"/>
     </bean>
 
@@ -56,7 +56,7 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationClaimsChannelTransformer"/>
 
     <bean name="stsTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.STSTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.STSTransformer"/>
 
     <bean name="basicAuthenticationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationTransformer"/>
@@ -65,10 +65,10 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WiKIDAuthenticationTransformer"/>
     
     <bean name="spLocalTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPLocalTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPTransformer"/>
 
     <bean name="spExternalTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2SPExternalTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.samlr2.SamlR2SPTransformer"/>
 
     <bean name="salesforceTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SalesforceTransformer"/>
@@ -80,15 +80,15 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SugarCRMTransformer"/>
 
     <bean name="spDefaultIdPChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPDefaultIdPChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPDefaultIdPChannelTransformer"/>
     
     <bean name="spFederatedConnectionATransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
     </bean>
 
     <bean name="spFederatedConnectionBTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPFederatedConnectionTransformer">
         <property name="roleA" value="false"/>
     </bean>
 
@@ -105,10 +105,10 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
 
     <bean name="samlr2IdPTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPLocalTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdPMetadataTransformer"/>
 
     <bean name="samlr2SPTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2SPLocalTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPMetadataTransformer"/>
 
     <bean name="idauSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauSerializerTransformer"/>

@@ -1,18 +1,20 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
-import org.apache.camel.component.bean.BeanHolder;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractOAuth2SPChannelTransformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * Transformer for OAuth 2.0 IdP local services
+ *
+ * Generates default IdP components for IdPs having OAuth 2.0 enabled
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractSPChannelTransformer {
+public class IdpFederatedConnectionTransformer extends AbstractOAuth2SPChannelTransformer {
 
     private static final Log logger = LogFactory.getLog(IdpFederatedConnectionTransformer.class);
 
@@ -26,29 +28,22 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractSPChan
         this.roleA = roleA;
     }
 
-    public SamlR2IdPProxyFederatedConnectionTransformer() {
-        super.setUseProxy(true);
-    }
-
     @Override
     public boolean accept(TransformEvent event) {
+
+        // TODO : Make sure that OAuth 2.0 is enabled
+
         if (event.getData() instanceof ServiceProviderChannel) {
 
             ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
 
             if (roleA) {
-                // Accept all Federated connection nodes that have an IdP as role A
-                return fc.getRoleA() instanceof Saml2IdentityProvider && fc.getRoleA().isRemote();
-                /* TODO : Enable after console support is added in the front-end
-                return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof Saml2IdentityProvider
-                        && fc.getRoleA().isRemote(); */
+                return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof IdentityProvider
+                        && !fc.getRoleA().isRemote();
             } else {
-                // Accept all Federated connection nodes that have an IdP as role B
-                return fc.getRoleB() instanceof Saml2IdentityProvider && fc.getRoleB().isRemote();
-                /* TODO : Enable after console support is added in the front-end
-                return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof Saml2IdentityProvider
-                        && fc.getRoleB().isRemote(); */
+                return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof IdentityProvider
+                        && !fc.getRoleB().isRemote();
             }
 
         }
@@ -62,7 +57,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractSPChan
         FederatedConnection federatedConnection = (FederatedConnection) event.getContext().getParentNode();
         ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
 
-        Saml2IdentityProvider idp;
+        IdentityProvider idp;
 
         FederatedProvider target;
         FederatedChannel targetChannel;
@@ -70,10 +65,10 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractSPChan
         if (roleA) {
 
             assert spChannel == federatedConnection.getChannelA() :
-                    "SP Channel " + spChannel.getName() + " should be 'A' channel in federated connection " +
+                    "SP OAUTH2 Channel " + spChannel.getName() + " should be 'A' channel in federated connection " +
                             federatedConnection.getName();
 
-            idp = (Saml2IdentityProvider) federatedConnection.getRoleA();
+            idp = (IdentityProvider) federatedConnection.getRoleA();
             spChannel = (ServiceProviderChannel) federatedConnection.getChannelA();
 
             target = federatedConnection.getRoleB();
@@ -86,11 +81,11 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractSPChan
         } else {
 
             assert spChannel == federatedConnection.getChannelB() :
-                    "SP Channel " + spChannel.getName() + " should be 'B' channel in federated connection " +
+                    "SP OAUTH2 Channel " + spChannel.getName() + " should be 'B' channel in federated connection " +
                             federatedConnection.getName();
 
 
-            idp = (Saml2IdentityProvider) federatedConnection.getRoleB();
+            idp = (IdentityProvider) federatedConnection.getRoleB();
             spChannel = (ServiceProviderChannel) federatedConnection.getChannelB();
 
             target = federatedConnection.getRoleA();
@@ -102,13 +97,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractSPChan
 
         }
 
-        Beans idpProxyBeans = (Beans) event.getContext().get("idpProxyBeans");
-        Bean idpProxyBean = (Bean) event.getContext().get("idpProxyBean");
-
-        generateIdPComponents(idpProxyBeans, idp, spChannel, federatedConnection, target, targetChannel, event.getContext());
+        generateIdPComponents(idp, spChannel, federatedConnection, target, targetChannel, event.getContext());
 
     }
-
-
-
 }

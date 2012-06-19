@@ -1,11 +1,12 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.STSTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.common.AESTokenEncrypter;
@@ -24,7 +25,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  */
 public class OAuth2STSTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(STSTransformer.class);
+    private static final Log logger = LogFactory.getLog(com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.STSTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
