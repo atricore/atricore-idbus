@@ -252,9 +252,9 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
         MetadataDefinition providerMd;
         try {
-            providerMd = MetadataUtil.loadMetadataDefinition(provider.getMetadata().getValue());
-            EntityDescriptorType ed = (EntityDescriptorType) providerMd.getDefinition();
-            setPropertyValue(spMediator, "preferredIdpAlias", ed.getID());
+            providerMd = MetadataUtil.loadMetadataDefinition(otherProvider.getMetadata().getValue());
+            String alias = MetadataUtil.findEntityId(providerMd);
+            setPropertyValue(spMediator, "preferredIdpAlias", alias);
         } catch (Exception e) {
             throw new TransformException(e);
         }

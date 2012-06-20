@@ -48,9 +48,7 @@
 
     <bean name="oauth2IdpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.IdpTransformer">
-
     </bean>
-
 
     <bean name="samlr2IdPExternalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.samlr2.SamlR2IdPTransformer"/>
@@ -447,8 +445,6 @@
                                         <ref bean="spDefaultIdPChannelTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
-                                        <ref bean="spProxyFederatedConnectionATransformer"/>
-                                        <ref bean="spProxyFederatedConnectionBTransformer"/>
                                         <ref bean="spJOSSOActivationTransformer"/>
                                         <ref bean="JOSSOActivationTransformer"/>
                                         <ref bean="samlr2SPTransformer"/>

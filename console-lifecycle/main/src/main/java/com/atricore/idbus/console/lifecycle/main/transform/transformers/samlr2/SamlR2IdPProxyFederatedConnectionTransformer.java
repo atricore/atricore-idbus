@@ -101,11 +101,10 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         FederatedConnection federatedConnection = (FederatedConnection) event.getContext().getParentNode();
         ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
+        IdentityProviderChannel idpChannel = (IdentityProviderChannel) (roleA ? federatedConnection.getChannelB() : federatedConnection.getChannelA());
 
         Saml2IdentityProvider idp;
-
-        FederatedProvider target;
-        FederatedChannel targetChannel;
+        ServiceProvider sp;
 
         if (roleA) {
 
@@ -114,10 +113,8 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
                             federatedConnection.getName();
 
             idp = (Saml2IdentityProvider) federatedConnection.getRoleA();
+            sp = (ServiceProvider) federatedConnection.getRoleB();
             spChannel = (ServiceProviderChannel) federatedConnection.getChannelA();
-
-            target = federatedConnection.getRoleB();
-            targetChannel = federatedConnection.getChannelB();
 
             if (!idp.getName().equals(federatedConnection.getRoleA().getName()))
                 throw new IllegalStateException("Context provider " + idp +
@@ -131,10 +128,8 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
 
             idp = (Saml2IdentityProvider) federatedConnection.getRoleB();
+            sp = (ServiceProvider) federatedConnection.getRoleA();
             spChannel = (ServiceProviderChannel) federatedConnection.getChannelB();
-
-            target = federatedConnection.getRoleA();
-            targetChannel = federatedConnection.getChannelA();
 
             if (!idp.getName().equals(federatedConnection.getRoleB().getName()))
                 throw new IllegalStateException("Context provider " + idp +
@@ -145,24 +140,27 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         Beans idpProxyBeans = (Beans) event.getContext().get("idpProxyBeans");
         Bean idpProxyBean = (Bean) event.getContext().get("idpProxyBean");
 
-        generateIdPComponents(idpProxyBeans, idp, spChannel, federatedConnection, target, targetChannel, event.getContext());
-        // TODO : generateSPComponents(idpProxyBeans, spChannel,  idpChannel, federatedConnection, target1, targetChannel1, event.getContext());
+        // TODO : Get generated SP proxy and IDP Channel proxy
+        generateIdPComponents(idpProxyBeans, idp, spChannel, sp, idpChannel, federatedConnection, event.getContext());
+
+        // TODO : Get generated IDP proxy and SP Channel proxy
+        generateSPComponents(idpProxyBeans, sp,  idpChannel, idp, spChannel, federatedConnection, event.getContext());
 
     }
 
-    protected void generateSPComponents(ServiceProvider sp,
+    protected void generateSPComponents(Beans spBeans,
+                                        ServiceProvider sp,
                                         IdentityProviderChannel idpChannel,
-                                        FederatedConnection fc,
                                         FederatedProvider target,
                                         FederatedChannel targetChannel,
+                                        FederatedConnection fc,
                                         IdApplianceTransformationContext ctx) throws TransformException {
 
-        Beans spBeans = (Beans) ctx.get("spBeans");
         Beans beans = (Beans) ctx.get("beans");
         Beans beansOsgi = (Beans) ctx.get("beansOsgi");
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating Beans for IdP Channel " + (idpChannel != null ? idpChannel.getName() : "default") + " of SP " + sp.getName());
+            logger.trace("Generating Beans for IdP Proxy Channel " + (idpChannel != null ? idpChannel.getName() : "default") + " of SP " + sp.getName());
 
         //---------------------------------------------
         // Get IDP Bean
@@ -597,9 +595,9 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
     protected void generateIdPComponents(Beans idpBeans,
                                          FederatedProvider idp,
                                          ServiceProviderChannel spChannel,
-                                         FederatedConnection fc,
                                          FederatedProvider target,
                                          FederatedChannel targetChannel,
+                                         FederatedConnection fc,
                                          IdApplianceTransformationContext ctx) throws TransformException {
 
         // If no channel is provided, we assume this is the default
