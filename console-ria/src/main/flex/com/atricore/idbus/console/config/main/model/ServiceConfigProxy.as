@@ -6,6 +6,8 @@ import com.atricore.idbus.console.services.dto.settings.ManagementServiceConfigu
 import com.atricore.idbus.console.services.dto.settings.PersistenceServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.SshServiceConfiguration;
 
+import mx.collections.ArrayCollection;
+
 import org.osmf.traits.IDisposable;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
@@ -22,6 +24,8 @@ public class ServiceConfigProxy extends IocProxy implements IDisposable {
     private var _artifactQueueManagerService:ArtifactQueueManagerConfiguration;
 
     private var _logService:LogServiceConfiguration;
+
+    private var _brandingDefinitions:ArrayCollection;
 
     public function ServiceConfigProxy() {
         super(NAME);
@@ -73,6 +77,14 @@ public class ServiceConfigProxy extends IocProxy implements IDisposable {
 
     public function set logService(value:LogServiceConfiguration):void {
         _logService = value;
+    }
+
+    public function get brandingDefinitions():ArrayCollection {
+        return _brandingDefinitions;
+    }
+
+    public function set brandingDefinitions(value:ArrayCollection):void {
+        _brandingDefinitions = value;
     }
 
     public function dispose():void {

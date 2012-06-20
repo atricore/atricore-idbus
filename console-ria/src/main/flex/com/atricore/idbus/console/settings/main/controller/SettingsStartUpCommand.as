@@ -16,6 +16,10 @@ public class SettingsStartUpCommand extends AppSectionStartUpCommand {
 
     private var _getServiceConfigCommand:IIocCommand;
     private var _updateServiceConfigCommand:IIocCommand;
+    private var _listBrandingsCommand:IIocCommand;
+    private var _createBrandingCommand:IIocCommand;
+    private var _updateBrandingCommand:IIocCommand;
+    private var _removeBrandingCommand:IIocCommand;
 
     public function SettingsStartUpCommand() {
     }
@@ -32,6 +36,10 @@ public class SettingsStartUpCommand extends AppSectionStartUpCommand {
         super.setupCommands(ctx);
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_SERVICE_CONFIG, getServiceConfigCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.UPDATE_SERVICE_CONFIG, updateServiceConfigCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_BRANDINGS, listBrandingsCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_BRANDING, createBrandingCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_BRANDING, updateBrandingCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.REMOVE_BRANDING, removeBrandingCommand.getConfigName());
     }
 
     override protected function setupMediators(ctx:BaseStartupContext):void {
@@ -61,6 +69,38 @@ public class SettingsStartUpCommand extends AppSectionStartUpCommand {
 
     public function set updateServiceConfigCommand(value:IIocCommand):void {
         _updateServiceConfigCommand = value;
+    }
+
+    public function get listBrandingsCommand():IIocCommand {
+        return _listBrandingsCommand;
+    }
+
+    public function set listBrandingsCommand(value:IIocCommand):void {
+        _listBrandingsCommand = value;
+    }
+
+    public function get createBrandingCommand():IIocCommand {
+        return _createBrandingCommand;
+    }
+
+    public function set createBrandingCommand(value:IIocCommand):void {
+        _createBrandingCommand = value;
+    }
+
+    public function get updateBrandingCommand():IIocCommand {
+        return _updateBrandingCommand;
+    }
+
+    public function set updateBrandingCommand(value:IIocCommand):void {
+        _updateBrandingCommand = value;
+    }
+
+    public function get removeBrandingCommand():IIocCommand {
+        return _removeBrandingCommand;
+    }
+
+    public function set removeBrandingCommand(value:IIocCommand):void {
+        _removeBrandingCommand = value;
     }
 }
 }

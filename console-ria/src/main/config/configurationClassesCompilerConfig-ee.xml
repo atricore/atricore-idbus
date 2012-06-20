@@ -237,6 +237,13 @@
         <symbol>com.atricore.idbus.console.config.management.ManagementServiceMediator</symbol>
         <symbol>com.atricore.idbus.console.config.aqm.ArtifactQueueManagerServiceMediator</symbol>
         <symbol>com.atricore.idbus.console.config.log.LogServiceMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.branding.BrandingServiceMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.main.controller.ListBrandingsCommand</symbol>
+        <symbol>com.atricore.idbus.console.config.main.controller.CreateBrandingCommand</symbol>
+        <symbol>com.atricore.idbus.console.config.main.controller.UpdateBrandingCommand</symbol>
+        <symbol>com.atricore.idbus.console.config.main.controller.RemoveBrandingCommand</symbol>
+        <symbol>com.atricore.idbus.console.config.branding.view.BrandingPopUpManager</symbol>
+        <symbol>com.atricore.idbus.console.config.branding.view.create.CreateBrandingWizardViewMediator</symbol>
 
         <!-- General classes -->
         <!--

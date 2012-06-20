@@ -331,11 +331,11 @@ public class BrowserMediator extends IocMediator implements IDisposable {
 
     private function expandTree(startNode:BrowserNode):void {
         view.expandItem(startNode, true);
-        for each (var currentNode:BrowserNode in startNode.children) {
+        /*for each (var currentNode:BrowserNode in startNode.children) {
             if (currentNode.data is Provider) {
                 view.expandItem(currentNode, true);
             }
-        }
+        }*/
         var treeNode:BrowserNode = findDataTreeNodeByData(_applianceRootNode, projectProxy.currentIdentityApplianceElement);
         if (treeNode != null) {
             _selectedItem = treeNode;
@@ -353,7 +353,11 @@ public class BrowserMediator extends IocMediator implements IDisposable {
     }
 
     private function findDataTreeNodeByData(node:BrowserNode, data:Object):BrowserNode {
-        var targetTreeNode:BrowserNode;
+        var targetTreeNode:BrowserNode = null;
+
+        if (data == null) {
+            return targetTreeNode;
+        }
 
         if (_selectedItem != null && _selectedItem.data == data) {
             return _selectedItem;

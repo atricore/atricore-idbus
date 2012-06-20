@@ -114,4 +114,11 @@
         </properties>
     </destination>
 
+    <destination id="brandManagementService">
+        <properties>
+            <factory>spring</factory>
+            <source>brandManagerAjaxServiceBean</source>
+        </properties>
+    </destination>
+
 </service>

@@ -209,6 +209,7 @@
                             com.atricore.idbus.console.activation.protocol,
                             com.atricore.idbus.console.activation.main,
                             com.atricore.idbus.console.licensing.main,
+                            com.atricore.idbus.console.brandservice.main,
                             org.apache.servicemix.bundles.javax.mail
                         </Require-Bundle>
                         <Import-Package>
@@ -326,6 +327,7 @@
                             com.atricore.idbus.console.liveservices.liveupdate; resolution:=optional,
                             com.atricore.idbus.console.liveservices.liveupdate.main; resolution:=optional,
                             com.atricore.idbus.console.liveservices.liveupdate.main.notifications; resolution:=optional,
+                            com.atricore.idbus.console.brandservice.main.spi,
                             com.atricore.liveservices.liveupdate._1_0.md; resolution:=optional,
                             com.atricore.liveservices.liveupdate._1_0.profile; resolution:=optional,
                             com.atricore.josso2.licensing._1_0.license,
@@ -441,7 +443,13 @@
             <groupId>com.atricore.idbus.console.licensing</groupId>
             <artifactId>com.atricore.idbus.console.licensing.josso2-license-v1_0</artifactId>
             <scope>provided</scope>
-        </dependency>            
+        </dependency>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.brandservice</groupId>
+            <artifactId>com.atricore.idbus.console.brandservice.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>

@@ -35,7 +35,6 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.controls.Alert;
-
 import mx.events.FlexEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
@@ -49,11 +48,7 @@ public class ArtifactQueueManagerServiceMediator extends IocFormMediator impleme
 
     protected var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    //commands
-    private var _getServiceConfigCommand:GetServiceConfigCommand;
-    private var _updateServiceConfigCommand:UpdateServiceConfigCommand;
-
-    private var _created:Boolean;    
+    private var _created:Boolean;
 
     private var _artifactQueueManagerConfig:ArtifactQueueManagerConfiguration;
 
@@ -164,22 +159,6 @@ public class ArtifactQueueManagerServiceMediator extends IocFormMediator impleme
 
     public function set configProxy(value:ServiceConfigProxy):void {
         _configProxy = value;
-    }
-
-    public function get getServiceConfigCommand():GetServiceConfigCommand {
-        return _getServiceConfigCommand;
-    }
-
-    public function set getServiceConfigCommand(value:GetServiceConfigCommand):void {
-        _getServiceConfigCommand = value;
-    }
-
-    public function get updateServiceConfigCommand():UpdateServiceConfigCommand {
-        return _updateServiceConfigCommand;
-    }
-
-    public function set updateServiceConfigCommand(value:UpdateServiceConfigCommand):void {
-        _updateServiceConfigCommand = value;
     }
 
     public function dispose():void {

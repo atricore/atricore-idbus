@@ -258,6 +258,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         registry.registerRemoteObjectService(ApplicationFacade.LICENSE_MANAGEMENT_SERVICE, ApplicationFacade.LICENSE_MANAGEMENT_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.LIVE_UPDATE_SERVICE, ApplicationFacade.LIVE_UPDATE_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.SERVICE_CONFIGURATION_MANAGEMENT_SERVICE, ApplicationFacade.SERVICE_CONFIGURATION_MANAGEMENT_SERVICE);
+        registry.registerRemoteObjectService(ApplicationFacade.BRAND_MANAGEMENT_SERVICE, ApplicationFacade.BRAND_MANAGEMENT_SERVICE);
 
         return registry;
     }

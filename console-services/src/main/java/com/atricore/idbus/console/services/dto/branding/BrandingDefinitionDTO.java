@@ -1,15 +1,10 @@
-package com.atricore.idbus.console.brandservice.main.domain;
+package com.atricore.idbus.console.services.dto.branding;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
- */
-public class BrandingDefinition implements Serializable {
+public class BrandingDefinitionDTO implements Serializable {
 
-    private static final long serialVersionUID = 8715366465832674732L;
+    private static final long serialVersionUID = -9080930098790122856L;
 
     private long id;
     
@@ -17,11 +12,13 @@ public class BrandingDefinition implements Serializable {
 
     private String description;
     
-    //private List<String> locales;
+    //private String[] locales;
     
     private String defaultLocale;
     
     private String webBrandingId;
+
+    protected BrandingTypeDTO type;
 
     // Path to resources
 
@@ -49,11 +46,11 @@ public class BrandingDefinition implements Serializable {
         this.name = name;
     }
 
-    /*public List<String> getLocales() {
+    /*public String[] getLocales() {
         return locales;
     }
 
-    public void setLocales(List<String> locales) {
+    public void setLocales(String[] locales) {
         this.locales = locales;
     }*/
 
@@ -71,5 +68,13 @@ public class BrandingDefinition implements Serializable {
 
     public String getDescription() {
         return description;
+    }
+
+    public BrandingTypeDTO getType() {
+        return type;
+    }
+
+    public void setType(BrandingTypeDTO type) {
+        this.type = type;
     }
 }

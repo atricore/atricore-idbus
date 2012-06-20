@@ -55,10 +55,6 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
 
     protected var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    //commands
-    private var _getServiceConfigCommand:GetServiceConfigCommand;
-    private var _updateServiceConfigCommand:UpdateServiceConfigCommand;
-
     private var _created:Boolean;
 
     private var _httpServiceConfig:HttpServiceConfiguration;
@@ -174,9 +170,10 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
         view.sslKeystorePath.enabled = enabled;
         view.sslKeystorePassword.enabled = enabled;
         view.sslKeyPassword.enabled = enabled;
-        //FormUtility.clearValidationErrors(_validators);
+
+        resetValidation();
         registerValidators();
-        //validate(true);
+        validate(true);
     }
 
     public function displayServiceConfig():void {
@@ -236,6 +233,8 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
 
             // Stop default behavior
             e.preventDefault();
+
+            validateBindAddresses();
         }
     }
 
@@ -245,6 +244,7 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
                 for (var i:int = 0; i < _bindAddresses.length; i++) {
                     if (_bindAddresses[i].bindAddress == event.data.bindAddress) {
                         _bindAddresses.removeItemAt(i);
+                        validateBindAddresses();
                         break;
                     }
                 }
@@ -286,24 +286,23 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
         }
     }
 
+    override public function validate(revalidate:Boolean):Boolean {
+        return validateBindAddresses() && super.validate(revalidate);
+    }
+
+    private function validateBindAddresses():Boolean {
+        var valid:Boolean = false;
+        if (_bindAddresses.length > 1) {
+            valid = true;
+            view.bindAddresses.errorString = "";
+        } else {
+            view.bindAddresses.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "config.http.bindAddressesValidationError");
+        }
+        return valid;
+    }
+
     public function set configProxy(value:ServiceConfigProxy):void {
         _configProxy = value;
-    }
-
-    public function get getServiceConfigCommand():GetServiceConfigCommand {
-        return _getServiceConfigCommand;
-    }
-
-    public function set getServiceConfigCommand(value:GetServiceConfigCommand):void {
-        _getServiceConfigCommand = value;
-    }
-
-    public function get updateServiceConfigCommand():UpdateServiceConfigCommand {
-        return _updateServiceConfigCommand;
-    }
-
-    public function set updateServiceConfigCommand(value:UpdateServiceConfigCommand):void {
-        _updateServiceConfigCommand = value;
     }
 
     public function dispose():void {
