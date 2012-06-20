@@ -108,7 +108,7 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
             case UpdateServiceConfigCommand.SUCCESS:
                 var resp:ConfigureServiceResponse = notification.getBody() as ConfigureServiceResponse;
                 if (resp.restart) {
-                    Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.service.restartMessage'));
+                    //Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.service.restartMessage'));
                 }
                 break;
             case UpdateServiceConfigCommand.FAILURE:
