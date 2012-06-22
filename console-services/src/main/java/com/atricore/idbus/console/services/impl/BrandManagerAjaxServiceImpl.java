@@ -29,6 +29,22 @@ public class BrandManagerAjaxServiceImpl implements BrandManagerAjaxService {
         this.dozerMapper = dozerMapper;
     }
 
+    public BrandingDefinitionDTO lookup(long id) throws BrandingServiceException {
+        try {
+            BrandingDefinition brandingDefinition = brandManager.lookup(id);
+            BrandingDefinitionDTO brandingDefinitionDTO = null;
+            if (brandingDefinition instanceof BuiltInBrandingDefinition) {
+                brandingDefinitionDTO = new BuiltInBrandingDefinitionDTO();
+            } else if (brandingDefinition instanceof CustomBrandingDefinition) {
+                brandingDefinitionDTO = new CustomBrandingDefinitionDTO();
+            }
+            dozerMapper.map(brandingDefinition, brandingDefinitionDTO);
+            return brandingDefinitionDTO;
+        } catch (com.atricore.idbus.console.brandservice.main.BrandingServiceException e) {
+            throw new BrandingServiceException(e);
+        }
+    }
+
     public Collection<BrandingDefinitionDTO> list() throws BrandingServiceException {
         Collection<BrandingDefinition> brandingDefinitions;
         try {

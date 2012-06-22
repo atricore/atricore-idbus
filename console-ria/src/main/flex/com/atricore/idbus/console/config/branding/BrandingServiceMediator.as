@@ -23,6 +23,7 @@ package com.atricore.idbus.console.config.branding
 {
 import com.atricore.idbus.console.config.branding.event.BrandingGridEvent;
 import com.atricore.idbus.console.config.branding.view.BrandingPopUpManager;
+import com.atricore.idbus.console.config.branding.view.edit.EditCustomBrandingViewMediator;
 import com.atricore.idbus.console.config.main.controller.CreateBrandingCommand;
 import com.atricore.idbus.console.config.main.controller.ListBrandingsCommand;
 import com.atricore.idbus.console.config.main.controller.RemoveBrandingCommand;
@@ -38,6 +39,7 @@ import flash.events.MouseEvent;
 import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.controls.Alert;
+import mx.core.IVisualElement;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.managers.PopUpManager;
@@ -46,6 +48,9 @@ import mx.resources.ResourceManager;
 
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
+
+import spark.components.Group;
 
 public class BrandingServiceMediator extends IocFormMediator implements IDisposable {
 
@@ -55,16 +60,13 @@ public class BrandingServiceMediator extends IocFormMediator implements IDisposa
 
     protected var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    //commands
-    //private var _getServiceConfigCommand:GetServiceConfigCommand;
-    //private var _updateServiceConfigCommand:UpdateServiceConfigCommand;
-
     private var _created:Boolean;
 
     [Bindable]
     public var _brandings:ArrayCollection;
 
-    //private var _brandingServiceConfig:BrandingServiceConfiguration;
+    private var _editCustomBrandingViewMediatorName:String;
+    private var _editCustomBrandingViewName:String;
 
     public function BrandingServiceMediator(name:String = null, viewComp:BrandingServiceView = null) {
         super(name, viewComp);
@@ -104,7 +106,8 @@ public class BrandingServiceMediator extends IocFormMediator implements IDisposa
             UpdateBrandingCommand.FAILURE,
             RemoveBrandingCommand.SUCCESS,
             RemoveBrandingCommand.FAILURE,
-            ApplicationFacade.DISPLAY_CREATE_BRANDING_WIZARD];
+            ApplicationFacade.DISPLAY_CREATE_BRANDING_WIZARD,
+            ApplicationFacade.DISPLAY_EDIT_BRANDING];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -120,6 +123,15 @@ public class BrandingServiceMediator extends IocFormMediator implements IDisposa
                 break;
             case ApplicationFacade.DISPLAY_CREATE_BRANDING_WIZARD:
                 popupManager.showCreateBrandingWizardWindow(notification);
+                break;
+            case ApplicationFacade.DISPLAY_EDIT_BRANDING:
+                var editCustomBrandingViewMediator:IIocMediator = iocFacade.container.getObject(editCustomBrandingViewMediatorName) as IIocMediator;
+                var editCustomBrandingView:IVisualElement = iocFacade.container.getObject(editCustomBrandingViewName) as IVisualElement;
+                var parentGroup:Group = view.parent as Group;
+                parentGroup.removeAllElements();
+                parentGroup.addElement(editCustomBrandingView);
+                (editCustomBrandingViewMediator as EditCustomBrandingViewMediator).lookupId = notification.getBody() as Number;
+                editCustomBrandingViewMediator.setViewComponent(editCustomBrandingView);
                 break;
             case CreateBrandingCommand.SUCCESS:
                 sendNotification(ApplicationFacade.LIST_BRANDINGS);
@@ -148,63 +160,15 @@ public class BrandingServiceMediator extends IocFormMediator implements IDisposa
         }
     }
 
-    override public function bindModel():void {
-        //_brandingServiceConfig.serviceMode = view.serviceMode.selectedItem.data;
-    }
-
     private function handleCreate(event:MouseEvent):void {
         sendNotification(ApplicationFacade.DISPLAY_CREATE_BRANDING_WIZARD);
-        /*if (validate(true)) {
-            bindModel();
-            //sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.save.progress"));
-            //sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _brandingServiceConfig);
-        }
-        else {
-            event.stopImmediatePropagation();
-        }*/
     }
-
-    /*public function displayServiceConfig():void {
-        _brandingServiceConfig = _configProxy.brandingService;
-
-        var serviceMods:ArrayCollection = new ArrayCollection();
-        serviceMods.addItem({data:0,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.serviceMode.development')});
-        serviceMods.addItem({data:10,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.serviceMode.production')});
-        if (_brandingServiceConfig.serviceMode == 20) {
-            serviceMods.addItem({data:20,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.serviceMode.custom')});
-        }
-        view.serviceMode.dataProvider = serviceMods;
-        view.serviceMode.validateNow();
-
-        if (_brandingServiceConfig.serviceMode == 0) {
-            view.serviceMode.selectedIndex = 0;
-            view.customBrandingData.visible = false;
-            view.customBrandingData.includeInLayout = false;
-            view.serviceMode.enabled = true;
-            view.btnSave.enabled = true;
-        } else if (_brandingServiceConfig.serviceMode == 10) {
-            view.serviceMode.selectedIndex = 1;
-            view.customBrandingData.visible = false;
-            view.customBrandingData.includeInLayout = false;
-            view.serviceMode.enabled = true;
-            view.btnSave.enabled = true;
-        } else if (_brandingServiceConfig.serviceMode == 20) {
-            view.serviceMode.selectedIndex = 2;
-            view.customBrandingData.includeInLayout = true;
-            view.customBrandingData.visible = true;
-            view.serviceMode.enabled = false;
-            view.btnSave.enabled = false;
-        }
-        
-        view.customBrandingData.dataProvider = _brandingServiceConfig.configProperties;
-        view.customBrandingData.validateNow();
-    }*/
 
     private function handleBrandingGridEvent(event:BrandingGridEvent):void {
         var id:Number = event.data.id;
         switch (event.action) {
             case BrandingGridEvent.ACTION_EDIT:
-                //sendNotification(ApplicationFacade.EDIT_BRANDING, event.data);
+                sendNotification(ApplicationFacade.DISPLAY_EDIT_BRANDING, id);
                 break;
             case BrandingGridEvent.ACTION_REMOVE:
                 var delAlert:Alert = Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.remove.confirmation.message', [event.data.name]),
@@ -243,21 +207,21 @@ public class BrandingServiceMediator extends IocFormMediator implements IDisposa
         _popupManager = value;
     }
 
-    /*public function get getServiceConfigCommand():GetServiceConfigCommand {
-        return _getServiceConfigCommand;
+    public function get editCustomBrandingViewMediatorName():String {
+        return _editCustomBrandingViewMediatorName;
     }
 
-    public function set getServiceConfigCommand(value:GetServiceConfigCommand):void {
-        _getServiceConfigCommand = value;
+    public function set editCustomBrandingViewMediatorName(value:String):void {
+        _editCustomBrandingViewMediatorName = value;
     }
 
-    public function get updateServiceConfigCommand():UpdateServiceConfigCommand {
-        return _updateServiceConfigCommand;
+    public function get editCustomBrandingViewName():String {
+        return _editCustomBrandingViewName;
     }
 
-    public function set updateServiceConfigCommand(value:UpdateServiceConfigCommand):void {
-        _updateServiceConfigCommand = value;
-    }*/
+    public function set editCustomBrandingViewName(value:String):void {
+        _editCustomBrandingViewName = value;
+    }
 
     public function dispose():void {
         // Clean up

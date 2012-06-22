@@ -16,7 +16,7 @@ public class BundleURIValidator extends Validator {
         if (results.length > 0)
             return results;
 
-        var pattern:RegExp = new RegExp("^[a-z\\d]+\\/[a-z\\d]+\\/[a-z\\d]+$");
+        var pattern:RegExp = new RegExp("^mvn:[a-z\\d\\.]+\\/[a-z\\d\\.]+\\/[a-z\\d\\.\\-]+$");
 
         var patternResult:Object = pattern.exec(String(value));
         // run the pattern, but don't error if there is no value and this is not required

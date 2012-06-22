@@ -121,11 +121,13 @@ public class ApplicationFacade extends BaseAppFacade {
 
     public static const GET_SERVICE_CONFIG:String = "getServiceConfig";
     public static const UPDATE_SERVICE_CONFIG:String = "updateServiceConfig";
+    public static const LOOKUP_BRANDING:String = "lookupBranding";
     public static const LIST_BRANDINGS:String = "listBrandings";
     public static const CREATE_BRANDING:String = "createBranding";
     public static const EDIT_BRANDING:String = "editBranding";
     public static const REMOVE_BRANDING:String = "removeBranding";
     public static const DISPLAY_CREATE_BRANDING_WIZARD:String = "displayCreateBrandingWizard";
+    public static const DISPLAY_EDIT_BRANDING:String = "displayEditBranding";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";

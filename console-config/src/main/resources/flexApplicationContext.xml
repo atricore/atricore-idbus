@@ -194,10 +194,12 @@
 
         <!-- Mediators -->
         <property name="menuMediator" ref="settingsMenuMediator"/>
+        <property name="editCustomBrandingViewMediator" ref="editCustomBrandingViewMediator"/>
 
         <!-- Commands -->
         <property name="getServiceConfigCommand" ref="getServiceConfigCommand"/>
         <property name="updateServiceConfigCommand" ref="updateServiceConfigCommand"/>
+        <property name="lookupBrandingCommand" ref="lookupBrandingCommand"/>
         <property name="listBrandingsCommand" ref="listBrandingsCommand"/>
         <property name="createBrandingCommand" ref="createBrandingCommand"/>
         <property name="updateBrandingCommand" ref="updateBrandingCommand"/>
@@ -530,6 +532,12 @@
 
     <object id="updateServiceConfigCommand"
             class="com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="configProxy" ref="serviceConfigProxy"/>
+    </object>
+
+    <object id="lookupBrandingCommand"
+            class="com.atricore.idbus.console.config.main.controller.LookupBrandingCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
@@ -1133,8 +1141,18 @@
     <object id="brandingServiceMediator" class="com.atricore.idbus.console.config.branding.BrandingServiceMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
         <property name="popupManager" ref="brandingPopUpManager"/>
+        <property name="editCustomBrandingViewMediatorName" value="editCustomBrandingViewMediator"/>
+        <property name="editCustomBrandingViewName" value="editCustomBrandingView"/>
     </object>
 
     <object id="brandingServiceView" class="com.atricore.idbus.console.config.branding.BrandingServiceView"/>
+
+    <object id="editCustomBrandingViewMediator" class="com.atricore.idbus.console.config.branding.view.edit.EditCustomBrandingViewMediator">
+        <property name="configProxy" ref="serviceConfigProxy"/>
+        <property name="brandingServiceMediatorName" value="brandingServiceMediator"/>
+        <property name="brandingServiceViewName" value="brandingServiceView"/>
+    </object>
+
+    <object id="editCustomBrandingView" class="com.atricore.idbus.console.config.branding.view.edit.EditCustomBrandingView"/>
 
 </objects>

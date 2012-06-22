@@ -1,4 +1,5 @@
 package com.atricore.idbus.console.config.main.model {
+import com.atricore.idbus.console.services.dto.branding.BrandingDefinition;
 import com.atricore.idbus.console.services.dto.settings.ArtifactQueueManagerConfiguration;
 import com.atricore.idbus.console.services.dto.settings.HttpServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.LogServiceConfiguration;
@@ -24,6 +25,8 @@ public class ServiceConfigProxy extends IocProxy implements IDisposable {
     private var _artifactQueueManagerService:ArtifactQueueManagerConfiguration;
 
     private var _logService:LogServiceConfiguration;
+
+    private var _brandingDefinition:BrandingDefinition;
 
     private var _brandingDefinitions:ArrayCollection;
 
@@ -77,6 +80,14 @@ public class ServiceConfigProxy extends IocProxy implements IDisposable {
 
     public function set logService(value:LogServiceConfiguration):void {
         _logService = value;
+    }
+
+    public function get brandingDefinition():BrandingDefinition {
+        return _brandingDefinition;
+    }
+
+    public function set brandingDefinition(value:BrandingDefinition):void {
+        _brandingDefinition = value;
     }
 
     public function get brandingDefinitions():ArrayCollection {

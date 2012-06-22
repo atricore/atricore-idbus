@@ -6,6 +6,8 @@ import java.util.Collection;
 
 public interface BrandManagerAjaxService {
 
+    BrandingDefinitionDTO lookup(long id) throws BrandingServiceException;
+
     Collection<BrandingDefinitionDTO> list() throws BrandingServiceException;
 
     BrandingDefinitionDTO create(BrandingDefinitionDTO brandingDefinitionDTO) throws BrandingServiceException;

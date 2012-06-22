@@ -13,9 +13,11 @@ import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 public class SettingsStartUpCommand extends AppSectionStartUpCommand {
 
     private var _menuMediator:IIocMediator;
+    private var _editCustomBrandingViewMediator:IIocMediator;
 
     private var _getServiceConfigCommand:IIocCommand;
     private var _updateServiceConfigCommand:IIocCommand;
+    private var _lookupBrandingCommand:IIocCommand;
     private var _listBrandingsCommand:IIocCommand;
     private var _createBrandingCommand:IIocCommand;
     private var _updateBrandingCommand:IIocCommand;
@@ -36,6 +38,7 @@ public class SettingsStartUpCommand extends AppSectionStartUpCommand {
         super.setupCommands(ctx);
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_SERVICE_CONFIG, getServiceConfigCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.UPDATE_SERVICE_CONFIG, updateServiceConfigCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LOOKUP_BRANDING, lookupBrandingCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_BRANDINGS, listBrandingsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_BRANDING, createBrandingCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_BRANDING, updateBrandingCommand.getConfigName());
@@ -45,6 +48,7 @@ public class SettingsStartUpCommand extends AppSectionStartUpCommand {
     override protected function setupMediators(ctx:BaseStartupContext):void {
         super.setupMediators(ctx);
         iocFacade.registerMediatorByConfigName(menuMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(editCustomBrandingViewMediator.getConfigName());
     }
 
     public function get menuMediator():IIocMediator {
@@ -53,6 +57,14 @@ public class SettingsStartUpCommand extends AppSectionStartUpCommand {
 
     public function set menuMediator(value:IIocMediator):void {
         _menuMediator = value;
+    }
+
+    public function get editCustomBrandingViewMediator():IIocMediator {
+        return _editCustomBrandingViewMediator;
+    }
+
+    public function set editCustomBrandingViewMediator(value:IIocMediator):void {
+        _editCustomBrandingViewMediator = value;
     }
 
     public function get getServiceConfigCommand():IIocCommand {
@@ -69,6 +81,14 @@ public class SettingsStartUpCommand extends AppSectionStartUpCommand {
 
     public function set updateServiceConfigCommand(value:IIocCommand):void {
         _updateServiceConfigCommand = value;
+    }
+
+    public function get lookupBrandingCommand():IIocCommand {
+        return _lookupBrandingCommand;
+    }
+
+    public function set lookupBrandingCommand(value:IIocCommand):void {
+        _lookupBrandingCommand = value;
     }
 
     public function get listBrandingsCommand():IIocCommand {
