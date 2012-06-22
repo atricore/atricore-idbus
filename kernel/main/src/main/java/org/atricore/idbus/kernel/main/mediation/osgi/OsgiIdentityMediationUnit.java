@@ -41,6 +41,8 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
     @Override
     public void afterPropertiesSet() throws Exception {
 
+        IdentityMediationUnitContainer container = null;
+
         try {
 
             // We need this code to run here, triggered by spring, so that
@@ -151,7 +153,7 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
             }
 
             // initialize mediation mediation unit container (e.g. create  context)
-            IdentityMediationUnitContainer container = this.getContainer();
+            container = this.getContainer();
             container.init(this);
 
             // Prepare mediators onto engines and start each one (e.g. create routes and components)
@@ -173,8 +175,14 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
             // Display message in stdout, so that it's shown in command prompt
             System.out.println("IDBus Identity Mediation Unit '" + getName() + "' started in " + (System.currentTimeMillis() - now) + "ms");
         } catch (Exception e) {
-            System.err.println("IDBus Identity Mediation Unit '" + getName() + "' initialization: " + e.getMessage());
+            System.err.println("IDBus Identity Mediation Unit '" + getName() + "' initialization error: " + e.getMessage());
+            logger.error("IDBus Identity Mediation Unit '" + getName() + "' initialization error: " + e.getMessage(), e);
+
+            if (container != null)
+                try { container.stop(); } catch (Exception ce) { /* Ignore this */}
+
             throw new IdentityMediationException("IDBus Identity Mediation Unit '" + getName() + "' initialization error:"  + e.getMessage(), e);
+
         }
     }
 

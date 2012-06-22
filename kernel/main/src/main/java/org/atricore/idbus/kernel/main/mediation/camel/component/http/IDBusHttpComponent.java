@@ -31,7 +31,9 @@ import org.apache.camel.util.URISupport;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 
+import javax.naming.NamingException;
 import java.net.URI;
 import java.util.Map;
 
@@ -92,11 +94,19 @@ public class IDBusHttpComponent extends HttpComponent {
         JndiRegistry jReg = (JndiRegistry) this.getCamelContext().getRegistry();
 
         logger.debug("Binding HTTP Consumer " + consumer.getPath() + " to " + consumerKey);
-        jReg.bind(consumerKey, consumer);
 
-        if (consumerAltKey != null && !consumerAltKey.equals(consumerKey)) {
-            logger.debug("Binding HTTP Consumer " + consumer.getPath() + " to alt " + consumerAltKey);
-            jReg.bind(consumerAltKey, consumer);
+        try {
+
+            // Try to bind the consumer
+            jReg.bind(consumerKey, consumer);
+            if (consumerAltKey != null && !consumerAltKey.equals(consumerKey)) {
+                logger.debug("Binding HTTP Consumer " + consumer.getPath() + " to alt " + consumerAltKey);
+                jReg.bind(consumerAltKey, consumer);
+            }
+
+        } catch (Exception e) {
+            logger.error("Cannot bint HTTP Consumer " + consumer.getPath() + " to " + consumerKey, e);
+            throw new IdentityMediationException(e);
         }
 
     }
