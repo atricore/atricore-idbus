@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers.samlr2;
 
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceTransformationContext;
@@ -31,6 +32,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustM
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
+import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.FederationServiceImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
@@ -52,9 +54,9 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
     private static final Log logger = LogFactory.getLog(IdpFederatedConnectionTransformer.class);
 
-    protected String contextSpChannelBean = "spSsoProxyChannelBean";
+    protected String contextSPChannelBean = "spSsoProxyChannelBean";
 
-    protected String contextIdpChannelBean = "idpSsoProxyChannelBean";
+    protected String contextIdPChannelBean = "idpSsoProxyChannelBean";
 
     private boolean roleA;
 
@@ -138,17 +140,60 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         }
 
         Beans idpProxyBeans = (Beans) event.getContext().get("idpProxyBeans");
-        Bean idpProxyBean = (Bean) event.getContext().get("idpProxyBean");
 
         // TODO : Get generated SP proxy and IDP Channel proxy
-        generateIdPComponents(idpProxyBeans, idp, spChannel, sp, idpChannel, federatedConnection, event.getContext());
+        generateIdPComponents(event, idpProxyBeans, idp, spChannel, sp, idpChannel, federatedConnection, event.getContext());
 
         // TODO : Get generated IDP proxy and SP Channel proxy
-        generateSPComponents(idpProxyBeans, sp,  idpChannel, idp, spChannel, federatedConnection, event.getContext());
+        generateSPComponents(event, idpProxyBeans, sp,  idpChannel, idp, spChannel, federatedConnection, event.getContext());
 
     }
 
-    protected void generateSPComponents(Beans spBeans,
+    @Override
+    public Object after(TransformEvent event) throws TransformException {
+        Beans beans = (Beans) event.getContext().get("beans");
+
+        Bean idpChannelBean = (Bean) event.getContext().get(contextIdPChannelBean);
+        Bean spChannelBean = (Bean) event.getContext().get(contextSPChannelBean);
+        Beans idpProxyBeans = (Beans) event.getContext().get("idpProxyBeans");
+
+        // Mediation Unit
+        Collection<Bean> mus = getBeansOfType(beans, OsgiIdentityMediationUnit.class.getName());
+        if (mus.size() == 1) {
+            Bean mu = mus.iterator().next();
+
+            List<Bean> channels = getPropertyBeans(beans, mu, "channels");
+            boolean foundIdp = false;
+            boolean foundSp = false;
+
+            if (channels != null)
+                for (Bean bean : channels) {
+                    if (getPropertyValue(bean, "name").equals(getPropertyValue(idpChannelBean, "name"))) {
+                        foundIdp = true;
+                    }
+                    if (getPropertyValue(bean, "name").equals(getPropertyValue(spChannelBean, "name"))) {
+                        foundSp = true;
+                    }
+
+                }
+
+            if (!foundIdp)
+                addPropertyBeansAsRefs(mu, "channels", idpChannelBean);
+
+            if (!foundSp)
+                addPropertyBeansAsRefs(mu, "channels", spChannelBean);
+
+            return null;
+
+        } else {
+            throw new TransformException("One and only one Identity Mediation Unit is expected, found " + mus.size());
+        }
+
+
+    }
+
+    protected void generateSPComponents(TransformEvent event,
+                                        Beans spBeans,
                                         ServiceProvider sp,
                                         IdentityProviderChannel idpChannel,
                                         FederatedProvider target,
@@ -156,74 +201,88 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
                                         FederatedConnection fc,
                                         IdApplianceTransformationContext ctx) throws TransformException {
 
+
         Beans beans = (Beans) ctx.get("beans");
         Beans beansOsgi = (Beans) ctx.get("beansOsgi");
+        IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
 
         if (logger.isTraceEnabled())
             logger.trace("Generating Beans for IdP Proxy Channel " + (idpChannel != null ? idpChannel.getName() : "default") + " of SP " + sp.getName());
 
         //---------------------------------------------
+        // Get SP Bean
+        //---------------------------------------------
+        Bean spProxyBean = null;
+        Collection<Bean> spbs = getBeansOfType(spBeans, ServiceProviderImpl.class.getName());
+        if (spbs.size() != 1) {
+            throw new TransformException("Invalid SP definition count : " + spbs.size());
+        }
+        spProxyBean = spbs.iterator().next();
+
+        //---------------------------------------------
         // Get IDP Bean
         //---------------------------------------------
-        Bean spBean = null;
-        Collection<Bean> b = getBeansOfType(spBeans, ServiceProviderImpl.class.getName());
-        if (b.size() != 1) {
-            throw new TransformException("Invalid SP definition count : " + b.size());
+        Bean idpProxyBean = null;
+        Collection<Bean> idpbs = getBeansOfType(spBeans, IdentityProviderImpl.class.getName());
+        if (spbs.size() != 1) {
+            throw new TransformException("Invalid IdP definition count : " + spbs.size());
         }
-        spBean = b.iterator().next();
+        idpProxyBean = spbs.iterator().next();
+
 
         //---------------------------------------------
         // Get IDP default (SSO) federation service bean
         //---------------------------------------------
         Bean spSsoSvcBean = null;
-        String spSsoSvcBeanName = getPropertyRef(spBean, "defaultFederationService");
+        String spSsoSvcBeanName = getPropertyRef(spProxyBean, "defaultFederationService");
         String spSsoServiceType = "urn:oasis:names:tc:SAML:2.0";
         if (spSsoSvcBeanName == null) {
-            spSsoSvcBeanName = spBean.getName() + "-sso-default-svc";
+            spSsoSvcBeanName = spProxyBean.getName() + "-sso-default-svc";
             spSsoSvcBean = newBean(spBeans, spSsoSvcBeanName, FederationServiceImpl.class);
-            setPropertyRef(spBean, "defaultFederationService", spSsoSvcBeanName);
+            setPropertyRef(spProxyBean, "defaultFederationService", spSsoSvcBeanName);
             setPropertyValue(spSsoSvcBean, "serviceType", spSsoServiceType);
             setPropertyValue(spSsoSvcBean, "name", spSsoSvcBeanName);
             // TODO : Profiles ?!
         }
         spSsoSvcBean = getBean(spBeans, spSsoSvcBeanName);
 
-        String idpChannelName = spBean.getName() +  "-" + (idpChannel != null ? normalizeBeanName(target.getName()) : "default") + "-idp-channel";
-
+        String idpChannelName = spProxyBean.getName() +  "-sso-default-channel";
         String idauPath = (String) ctx.get("idauPath");
+
 
         // Check if we already created default channel
         if (idpChannel == null && getPropertyRef(spSsoSvcBean, "channel") != null) {
-            ctx.put(contextIdpChannelBean, getBean(spBeans, idpChannelName));
+            ctx.put(contextIdPChannelBean, getBean(spBeans, idpChannelName));
             return;
-        }
-
-        // Check if we already created override channel
-        if (idpChannel != null) {
-            List<Bean> idpChannelBeans = getPropertyBeans(spBeans, spSsoSvcBean, "overrideChannels");
-            if (idpChannelBeans != null) {
-                for (Bean idpChannelBean : idpChannelBeans) {
-                    if (getPropertyValue(idpChannelBean, "name").equals(idpChannelName)) {
-                        // Do not re-process a channel definition
-                        if (logger.isTraceEnabled())
-                            logger.trace("Ignoring channel " + idpChannel.getName() + ". It was alredy processed");
-                        ctx.put(contextIdpChannelBean, idpChannelBean);
-                        return;
-                    }
-                }
-            }
         }
 
         if (logger.isDebugEnabled())
             logger.debug("Creating IdP Channel definition for " + idpChannelName);
 
+        // Build a location for this channel, we use SP location as base
+        Location idpChannelLocation = null;
+        {
+            Location spLocation = sp.getLocation();
+
+            idpChannelLocation = new Location();
+            idpChannelLocation.setProtocol(spLocation.getProtocol());
+            idpChannelLocation.setHost(spLocation.getHost());
+            idpChannelLocation.setPort(spLocation.getPort());
+            idpChannelLocation.setContext(spLocation.getContext());
+
+            // Don't use channel name since it's the default channel
+            idpChannelLocation.setUri(appliance.getName().toUpperCase() + "/" + spProxyBean.getName().toUpperCase());
+
+        }
+
         // COT Member Descriptor
-        String mdName = spBean.getName() + "-md";
+        String mdName = spProxyBean.getName() + "-md";
         if (idpChannel != null) {
             mdName = idpChannelName + "-md";
         }
         Bean spMd = newBean(spBeans, mdName, ResourceCircleOfTrustMemberDescriptorImpl.class);
-        String alias = resolveLocationUrl(sp, idpChannel) + "/SAML2/MD";
+
+        String alias = idpChannelLocation.toString() + "/SAML2/MD";
         try {
             setPropertyValue(spMd, "id", HashGenerator.sha1(alias));
         } catch (UnsupportedEncodingException e) {
@@ -232,11 +291,8 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
             throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': no such algorithm");
         }
         setPropertyValue(spMd, "alias", alias);
-        String resourceName = spBean.getName();
-        if (idpChannel != null) {
-            resourceName = normalizeBeanName(idpChannel.getName());
-        }
-        setPropertyValue(spMd, "resource", "classpath:" + idauPath + spBean.getName() + "/" + resourceName + "-samlr2-metadata.xml");
+        String resourceName = idpChannel.getName();
+        setPropertyValue(spMd, "resource", "classpath:" + idauPath + target.getName() + "/" + resourceName + "-samlr2-metadata.xml");
 
         Bean mdIntrospector = newAnonymousBean(SamlR2MetadataDefinitionIntrospector.class);
         setPropertyBean(spMd, "metadataIntrospector", mdIntrospector);
@@ -245,32 +301,34 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         // IDP Channel
         // -------------------------------------------------------
         Bean idpChannelBean = newBean(spBeans, idpChannelName, IdPChannelImpl.class.getName());
-        ctx.put(contextIdpChannelBean, idpChannelBean);
+        ctx.put(contextIdPChannelBean, idpChannelBean);
 
         // name
         setPropertyValue(idpChannelBean, "name", idpChannelName);
         setPropertyValue(idpChannelBean, "description", (idpChannel != null ? idpChannel.getDisplayName() : sp.getName()));
-        setPropertyValue(idpChannelBean, "location", resolveLocationUrl(sp, idpChannel));
+
+        setPropertyValue(idpChannelBean, "location", idpChannelLocation.toString());
         setPropertyRef(idpChannelBean, "provider", normalizeBeanName(sp.getName()));
         if (idpChannel != null)
             setPropertyRef(idpChannelBean, "targetProvider", normalizeBeanName(target.getName()));
-        setPropertyRef(idpChannelBean, "sessionManager", spBean.getName() + "-session-manager");
+        setPropertyRef(idpChannelBean, "sessionManager", spProxyBean.getName() + "-session-manager");
         setPropertyRef(idpChannelBean, "member", spMd.getName());
+        setPropertyRef(idpChannelBean, "proxy", idpProxyBean.getName() + "-sso-default-channel");
 
         // identityMediator
-        Bean identityMediatorBean = getBean(spBeans, spBean.getName() + "-samlr2-mediator");
+        Bean identityMediatorBean = getBean(spBeans, spProxyBean.getName() + "-samlr2-mediator");
         if (identityMediatorBean == null)
-            throw new TransformException("No identity mediator defined for " + spBean.getName() + "-samlr2-identity-mediator");
+            throw new TransformException("No identity mediator defined for " + spProxyBean.getName() + "-samlr2-identity-mediator");
 
         setPropertyRef(idpChannelBean, "identityMediator", identityMediatorBean.getName());
 
         // accountLinkLifecycle
-        setPropertyRef(idpChannelBean, "accountLinkLifecycle", spBean.getName() + "-account-link-lifecycle");
+        setPropertyRef(idpChannelBean, "accountLinkLifecycle", spProxyBean.getName() + "-account-link-lifecycle");
 
         // accountLinkEmitter
         Bean accountLinkEmitter = null;
         AccountLinkagePolicy ac = sp.getAccountLinkagePolicy();
-        String accountLinkEmitterName = spBean.getName() + "-account-link-emitter";
+        String accountLinkEmitterName = spProxyBean.getName() + "-account-link-emitter";
         if (idpChannel != null) {
             ac = idpChannel.getAccountLinkagePolicy();
             accountLinkEmitterName = idpChannelBean.getName() + "-account-link-emitter";
@@ -302,7 +360,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         // identityMapper
         Bean identityMapper = null;
         IdentityMappingPolicy im = sp.getIdentityMappingPolicy();
-        String identityMapperName = spBean.getName() + "-identity-mapper";
+        String identityMapperName = spProxyBean.getName() + "-identity-mapper";
         if (idpChannel != null) {
             im = idpChannel.getIdentityMappingPolicy();
             identityMapperName = idpChannelBean.getName() + "-identity-mapper";
@@ -463,8 +521,9 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
             setPropertyValue(sloLocal, "type", SSOMetadataConstants.SingleLogoutService_QNAME.toString());
             setPropertyValue(sloLocal, "binding", SSOBinding.SAMLR2_LOCAL.getValue());
             // NOTE: location doesn't exist in simple-federation example
+
             setPropertyValue(sloLocal, "location", "local://" + (idpChannel != null ?
-                    idpChannel.getLocation().getUri().toUpperCase() : sp.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
+                    idpChannel.getLocation().getUri().toUpperCase() : idpChannelLocation.getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
 
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
@@ -575,8 +634,9 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
             setPropertyValue(credCallbackLocal, "name", credCallbackLocal.getName());
             setPropertyValue(credCallbackLocal, "type", SSOMetadataConstants.SPCredentialsCallbackService_QNAME.toString());
             setPropertyValue(credCallbackLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
+
             setPropertyValue(credCallbackLocal, "location",
-                    "local://" + (idpChannel != null ? idpChannel.getLocation().getUri().toUpperCase() : sp.getLocation().getUri().toUpperCase()) + "/CCBACK/LOCAL");
+                    "local://" + (idpChannel != null ? idpChannelLocation.getUri().toUpperCase() : sp.getLocation().getUri().toUpperCase()) + "/CCBACK/LOCAL");
 
             endpoints.add(credCallbackLocal);
 
@@ -584,15 +644,13 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         setPropertyAsBeans(idpChannelBean, "endpoints", endpoints);
 
-        if (idpChannel != null)
-            addPropertyBeansAsRefsToSet(spSsoSvcBean, "overrideChannels", idpChannelBean);
-        else
-            setPropertyRef(spSsoSvcBean, "channel", idpChannelBean.getName());
+        setPropertyRef(spSsoSvcBean, "channel", idpChannelBean.getName());
     }
 
 
 
-    protected void generateIdPComponents(Beans idpBeans,
+    protected void generateIdPComponents(TransformEvent event,
+                                         Beans idpBeans,
                                          FederatedProvider idp,
                                          ServiceProviderChannel spChannel,
                                          FederatedProvider target,
@@ -601,33 +659,45 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
                                          IdApplianceTransformationContext ctx) throws TransformException {
 
         // If no channel is provided, we assume this is the default
-        boolean isDefaultChannel = spChannel == null;
+        assert spChannel != null : "An SP Channel is required when using IdP Proxy";
 
         Beans beansOsgi = (Beans) ctx.get("beansOsgi");
+        IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating Beans for SSO SP Channel " + (!isDefaultChannel ? spChannel.getName() : "default") + " of IdP " + idp.getName());
+            logger.trace("Generating Beans for SSO SP Channel of IdP Proxy " + idp.getName());
 
         //---------------------------------------------
-        // Get IDP Bean
+        // Get IdP Proxy Bean
         //---------------------------------------------
-        Bean idpBean = null;
-        Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
-        if (b.size() != 1) {
-            throw new TransformException("Invalid IdP definition count : " + b.size());
+        Bean idpProxyBean = null;
+        Collection<Bean> idpbs = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
+        if (idpbs.size() != 1) {
+            throw new TransformException("Invalid IdP definition count : " + idpbs.size());
         }
-        idpBean = b.iterator().next();
+        idpProxyBean = idpbs.iterator().next();
+
+        //---------------------------------------------
+        // Get SP Proxy Bean
+        //---------------------------------------------
+        Bean spProxyBean = null;
+        Collection<Bean> spbs = getBeansOfType(idpBeans, ServiceProviderImpl.class.getName());
+        if (spbs.size() != 1) {
+            throw new TransformException("Invalid SP definition count : " + spbs.size());
+        }
+        spProxyBean = spbs.iterator().next();
+
 
         //---------------------------------------------
         // Get IDP default (SSO) federation service bean
         //---------------------------------------------
         Bean idpSsoSvcBean = null;
-        String idpSsoSvcBeanName = getPropertyRef(idpBean, "defaultFederationService");
+        String idpSsoSvcBeanName = getPropertyRef(idpProxyBean, "defaultFederationService");
         String idpSsoServiceType = "urn:oasis:names:tc:SAML:2.0";
         if (idpSsoSvcBeanName == null) {
-            idpSsoSvcBeanName = idpBean.getName() + "-sso-default-svc";
+            idpSsoSvcBeanName = idpProxyBean.getName() + "-sso-default-svc";
             idpSsoSvcBean  = newBean(idpBeans, idpSsoSvcBeanName, FederationServiceImpl.class);
-            setPropertyRef(idpBean, "defaultFederationService", idpSsoSvcBeanName);
+            setPropertyRef(idpProxyBean, "defaultFederationService", idpSsoSvcBeanName);
             setPropertyValue(idpSsoSvcBean, "serviceType", idpSsoServiceType);
             setPropertyValue(idpSsoSvcBean, "name", idpSsoSvcBeanName);
             // TODO : Profiles ?!
@@ -638,42 +708,42 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         // See if we already defined the channel
         //---------------------------------------------
         // SP Channel name : <idp-name>-sso-<sp-channel-name>-sp-channel, sso service is the default, and the one this transformer generates
-        String spChannelName = idpBean.getName() +  "-sso-" + (!isDefaultChannel ? normalizeBeanName(target.getName()) : "default") + "-sp-channel";
+        String spChannelName = idpProxyBean.getName() +  "-sso-default-channel";
         String idauPath = (String) ctx.get("idauPath");
 
         // Check if we already created default service
-        if (isDefaultChannel && getPropertyRef(idpSsoSvcBean, "channel") != null) {
-            ctx.put(contextSpChannelBean, getBean(idpBeans, spChannelName));
+        if (getPropertyRef(idpSsoSvcBean, "channel") != null) {
+            ctx.put(contextSPChannelBean, getBean(idpBeans, spChannelName));
             return;
-        }
-
-        // Check if we already created override channel
-        if (spChannel != null) {
-            Set<Bean> spChannelBeans = getPropertyBeansFromSet(idpBeans, idpSsoSvcBean, "overrideChannels");
-            if (spChannelBeans != null) {
-                for (Bean spChannelBean : spChannelBeans) {
-                    if (getPropertyValue(spChannelBean, "name").equals(spChannelName)) {
-                        // Do not re-process a channel definition
-                        if (logger.isTraceEnabled())
-                            logger.trace("Ignoring channel " + spChannel.getName() + ". It was alredy processed");
-
-                        ctx.put(contextSpChannelBean, spChannelBean);
-                        return;
-                    }
-                }
-            }
         }
 
         if (logger.isDebugEnabled())
             logger.debug("Creating SP Channel definition for " + spChannelName);
 
+        // Build a location for this channel, we use SP location as base
+        Location spChannelLocation = null;
+        {
+            Location spLocation = idp.getLocation();
+
+            spChannelLocation = new Location();
+            spChannelLocation.setProtocol(spLocation.getProtocol());
+            spChannelLocation.setHost(spLocation.getHost());
+            spChannelLocation.setPort(spLocation.getPort());
+            spChannelLocation.setContext(spLocation.getContext());
+
+            // Don't use channel name since it's the default channel
+            spChannelLocation.setUri(appliance.getName().toUpperCase() + "/" + idpProxyBean.getName().toUpperCase());
+
+        }
+
+
         // COT Member Descriptor
-        String mdName = idpBean.getName() + "-md";
+        String mdName = idpProxyBean.getName() + "-md";
         if (spChannel != null) {
             mdName = spChannelName + "-md";
         }
         Bean idpMd = newBean(idpBeans, mdName, ResourceCircleOfTrustMemberDescriptorImpl.class);
-        String alias = resolveLocationUrl(idp, spChannel) + "/SAML2/MD";
+        String alias = spChannelLocation.toString() + "/SAML2/MD";
         try {
             setPropertyValue(idpMd, "id", HashGenerator.sha1(alias));
         } catch (UnsupportedEncodingException e) {
@@ -682,10 +752,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
             throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': no such algorithm");
         }
         setPropertyValue(idpMd, "alias", alias);
-        String resourceName = idpBean.getName();
-        if (spChannel != null) {
-            resourceName = normalizeBeanName(spChannel.getName());
-        }
+        String resourceName = spChannel.getName();
         setPropertyValue(idpMd, "resource", "classpath:" + idauPath + normalizeBeanName(idp.getName()) + "/" + resourceName + "-samlr2-metadata.xml");
 
         Bean mdIntrospector = newAnonymousBean(SamlR2MetadataDefinitionIntrospector.class);
@@ -696,22 +763,23 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         // SP Channel
         // -------------------------------------------------------
         Bean spChannelBean = newBean(idpBeans, spChannelName, SPChannelImpl.class.getName());
-        ctx.put(contextSpChannelBean, spChannelBean);
+        ctx.put(contextSPChannelBean, spChannelBean);
 
         setPropertyValue(spChannelBean, "name", spChannelName);
-        setPropertyValue(spChannelBean, "description", (spChannel != null ? spChannel.getDisplayName() : idpBean.getName()));
-        setPropertyValue(spChannelBean, "location", resolveLocationUrl(idp, spChannel));
-        setPropertyRef(spChannelBean, "provider", normalizeBeanName(idpBean.getName()));
+        setPropertyValue(spChannelBean, "description", "SP Channel proxy " + spChannel.getName());
+        setPropertyValue(spChannelBean, "location", spChannelLocation.toString());
+        setPropertyRef(spChannelBean, "provider", normalizeBeanName(idpProxyBean.getName()));
         if (spChannel != null)
             setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
-        setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
-        setPropertyRef(spChannelBean, "identityManager", idpBean.getName() + "-identity-manager");
+        setPropertyRef(spChannelBean, "sessionManager", idpProxyBean.getName() + "-session-manager");
+        setPropertyRef(spChannelBean, "identityManager", idpProxyBean.getName() + "-identity-manager");
         setPropertyRef(spChannelBean, "member", idpMd.getName());
+        setPropertyRef(spChannelBean, "proxy", spProxyBean.getName() + "-sso-default-channel");
 
         // identityMediator
-        Bean identityMediatorBean = getBean(idpBeans, idpBean.getName() + "-samlr2-mediator");
+        Bean identityMediatorBean = getBean(idpBeans, idpProxyBean.getName() + "-samlr2-mediator");
         if (identityMediatorBean == null)
-            throw new TransformException("No identity mediator defined for " + idpBean.getName() + "-samlr2-identity-mediator");
+            throw new TransformException("No identity mediator defined for " + idpProxyBean.getName() + "-samlr2-identity-mediator");
         setPropertyRef(spChannelBean, "identityMediator", identityMediatorBean.getName());
 
         // -------------------------------------------------------
@@ -768,7 +836,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         Bean stmtToAssertionPlan = newBean(idpBeans, spChannelName + "-samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
         setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
-        setPropertyRef(stmtToAssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
+        setPropertyRef(stmtToAssertionPlan, "identityManager", idpProxyBean.getName() + "-identity-manager");
 
         // Add name id builders based on channel properties
 
@@ -805,7 +873,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
                     case CUSTOM:
                         // Define CUSTOM builder
 
-                        String customNameIDBuilderName = idpBean.getName() + "-custom-subject-name-id-builder";
+                        String customNameIDBuilderName = idpProxyBean.getName() + "-custom-subject-name-id-builder";
 
                         CustomNameIdentifierPolicy cp = (CustomNameIdentifierPolicy) subjectNameIDPolicy;
 
@@ -1103,7 +1171,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         setPropertyValue(shbLocal, "type", SSOMetadataConstants.IDPSessionHeartBeatService_QNAME.toString());
         setPropertyValue(shbLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
         setPropertyValue(shbLocal, "location", "local://" + (spChannel != null ?
-                spChannel.getLocation().getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SSO/SSHB/LOCAL");
+                spChannelLocation.getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SSO/SSHB/LOCAL");
         endpoints.add(shbLocal);
 
         // SSO SSO HTTP ARTIFACT
@@ -1149,7 +1217,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
             setPropertyValue(ssoSloLocal, "type", SSOMetadataConstants.IDPInitiatedSingleLogoutService_QNAME.toString());
             setPropertyValue(ssoSloLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
             setPropertyValue(ssoSloLocal, "location", "local://" + (spChannel != null ?
-                    spChannel.getLocation().getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
+                    spChannelLocation.getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
             plansList = new ArrayList<Ref>();
             plan = new Ref();
             plan.setBean(sloToSamlSpSloPlan.getName());
@@ -1159,16 +1227,9 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         }
 
         setPropertyAsBeans(spChannelBean, "endpoints", endpoints);
+        setPropertyRef(idpSsoSvcBean, "channel", spChannelBean.getName());
 
-        //Bean authnToSamlResponsePlan = newBean(idpBeans, "samlr2authnreq-to-samlr2response-plan", SamlR2AuthnReqToSamlR2RespPlan.class);
-        //setPropertyRef(authnToSamlResponsePlan, "bpmsManager", "bpms-manager");
-
-        if (!isDefaultChannel)
-            addPropertyBeansAsRefsToSet(idpSsoSvcBean, "overrideChannels", spChannelBean);
-        else
-            setPropertyRef(idpSsoSvcBean, "channel", spChannelBean.getName());
     }
-
 
 
 }

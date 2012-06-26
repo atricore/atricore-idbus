@@ -258,13 +258,15 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
                 soapEnabled = true;
             }
         }
+
+        String idpChannelLocation = resolveLocationUrl(provider, idpChannel);
         
         // ArtifactResolutionService must alwasy be enabled
         // if (artifactEnabled)
         {
             IndexedEndpointType artifactResolutionService0 = new IndexedEndpointType();
             artifactResolutionService0.setBinding(SSOBinding.SAMLR2_SOAP.getValue());
-            artifactResolutionService0.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ARTIFACT/SOAP");
+            artifactResolutionService0.setLocation(idpChannelLocation + "/SAML2/ARTIFACT/SOAP");
             artifactResolutionService0.setIndex(0);
             artifactResolutionService0.setIsDefault(true);
             spSSODescriptor.getArtifactResolutionService().add(artifactResolutionService0);
@@ -284,30 +286,30 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
             if (postEnabled) {
                 EndpointType singleLogoutServicePost = new EndpointType();
                 singleLogoutServicePost.setBinding(SSOBinding.SAMLR2_POST.getValue());
-                singleLogoutServicePost.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/POST");
-                singleLogoutServicePost.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO_RESPONSE/POST");
+                singleLogoutServicePost.setLocation(idpChannelLocation + "/SAML2/SLO/POST");
+                singleLogoutServicePost.setResponseLocation(idpChannelLocation + "/SAML2/SLO_RESPONSE/POST");
                 spSSODescriptor.getSingleLogoutService().add(singleLogoutServicePost);
             }
 
             if (artifactEnabled) {
                 EndpointType singleLogoutServiceArtifact = new EndpointType();
                 singleLogoutServiceArtifact.setBinding(SSOBinding.SAMLR2_ARTIFACT.getValue());
-                singleLogoutServiceArtifact.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/ARTIFACT");
+                singleLogoutServiceArtifact.setLocation(idpChannelLocation + "/SAML2/SLO/ARTIFACT");
                 spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceArtifact);
             }
 
             if (redirectEnabled) {
                 EndpointType singleLogoutServiceRedirect = new EndpointType();
                 singleLogoutServiceRedirect.setBinding(SSOBinding.SAMLR2_REDIRECT.getValue());
-                singleLogoutServiceRedirect.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/REDIR");
-                singleLogoutServiceRedirect.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO_RESPONSE/REDIR");
+                singleLogoutServiceRedirect.setLocation(idpChannelLocation + "/SAML2/SLO/REDIR");
+                singleLogoutServiceRedirect.setResponseLocation(idpChannelLocation + "/SAML2/SLO_RESPONSE/REDIR");
                 spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceRedirect);
             }
 
             if (soapEnabled) {
                 EndpointType singleLogoutServiceSOAP = new EndpointType();
                 singleLogoutServiceSOAP.setBinding(SSOBinding.SAMLR2_SOAP.getValue());
-                singleLogoutServiceSOAP.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/SOAP");
+                singleLogoutServiceSOAP.setLocation(idpChannelLocation + "/SAML2/SLO/SOAP");
                 spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceSOAP);
             }
 
@@ -321,19 +323,19 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
         // ManageNameIDService
         EndpointType manageNameIDServiceSOAP = new EndpointType();
         manageNameIDServiceSOAP.setBinding(SSOBinding.SAMLR2_SOAP.getValue());
-        manageNameIDServiceSOAP.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI/SOAP");
+        manageNameIDServiceSOAP.setLocation(idpChannelLocation + "/SAML2/MNI/SOAP");
         spSSODescriptor.getManageNameIDService().add(manageNameIDServiceSOAP);
 
         EndpointType manageNameIDServicePost = new EndpointType();
         manageNameIDServicePost.setBinding(SSOBinding.SAMLR2_POST.getValue());
-        manageNameIDServicePost.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI/POST");
-        manageNameIDServicePost.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI_RESPONSE/POST");
+        manageNameIDServicePost.setLocation(idpChannelLocation + "/SAML2/MNI/POST");
+        manageNameIDServicePost.setResponseLocation(idpChannelLocation + "/SAML2/MNI_RESPONSE/POST");
         spSSODescriptor.getManageNameIDService().add(manageNameIDServicePost);
 
         EndpointType manageNameIDServiceRedirect = new EndpointType();
         manageNameIDServiceRedirect.setBinding(SSOBinding.SAMLR2_REDIRECT.getValue());
-        manageNameIDServiceRedirect.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI/REDIR");
-        manageNameIDServiceRedirect.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI_RESPONSE/REDIR");
+        manageNameIDServiceRedirect.setLocation(idpChannelLocation + "/SAML2/MNI/REDIR");
+        manageNameIDServiceRedirect.setResponseLocation(idpChannelLocation + "/SAML2/MNI_RESPONSE/REDIR");
         spSSODescriptor.getManageNameIDService().add(manageNameIDServiceRedirect);
         
         // TODO : Make configurable
@@ -346,7 +348,7 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
             if (artifactEnabled) {
                 IndexedEndpointType assertionConsumerService0 = new IndexedEndpointType();
                 assertionConsumerService0.setBinding(SSOBinding.SAMLR2_ARTIFACT.getValue());
-                assertionConsumerService0.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS/ARTIFACT");
+                assertionConsumerService0.setLocation(idpChannelLocation + "/SAML2/ACS/ARTIFACT");
                 assertionConsumerService0.setIndex(index++);
                 assertionConsumerService0.setIsDefault(true);
                 spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService0);
@@ -355,7 +357,7 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
             if (postEnabled) {
                 IndexedEndpointType assertionConsumerService1 = new IndexedEndpointType();
                 assertionConsumerService1.setBinding(SSOBinding.SAMLR2_POST.getValue());
-                assertionConsumerService1.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS/POST");
+                assertionConsumerService1.setLocation(idpChannelLocation + "/SAML2/ACS/POST");
                 assertionConsumerService1.setIndex(index++);
                 //assertionConsumerService1.setIsDefault(false);
                 spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService1);
@@ -364,8 +366,8 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
             if (redirectEnabled) {
                 IndexedEndpointType assertionConsumerService2 = new IndexedEndpointType();
                 assertionConsumerService2.setBinding(SSOBinding.SAMLR2_REDIRECT.getValue());
-                assertionConsumerService2.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS/REDIR");
-                assertionConsumerService2.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS_RESPONSE/REDIR");
+                assertionConsumerService2.setLocation(idpChannelLocation + "/SAML2/ACS/REDIR");
+                assertionConsumerService2.setResponseLocation(idpChannelLocation + "/SAML2/ACS_RESPONSE/REDIR");
                 assertionConsumerService2.setIndex(index++);
                 //assertionConsumerService1.setIsDefault(false);
                 spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService2);

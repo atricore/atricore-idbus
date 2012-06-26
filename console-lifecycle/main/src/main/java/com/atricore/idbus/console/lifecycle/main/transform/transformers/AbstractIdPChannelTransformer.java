@@ -88,7 +88,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
         }
         spSsoSvcBean = getBean(spBeans, spSsoSvcBeanName);
 
-        String idpChannelName = spBean.getName() +  "-" + (idpChannel != null ? normalizeBeanName(target.getName()) : "default") + "-idp-channel";
+        String idpChannelName = spBean.getName() +  "-sso-" + (idpChannel != null ? normalizeBeanName(target.getName()) : "default") + "-idp-channel";
 
         String idauPath = (String) ctx.get("idauPath");
         
@@ -503,7 +503,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
         if (mus.size() == 1) {
             Bean mu = mus.iterator().next();
 
-            List<Bean> channels = getPropertyBeans(spBeans, mu, "channels");
+            List<Bean> channels = getPropertyBeans(beans, mu, "channels");
             boolean found = false;
 
             if (channels != null)
