@@ -137,9 +137,9 @@ public class SingleLogoutProducer extends SSOProducer {
             logger.debug("Building SLO Response for SSO Session "  + (secCtx != null ? secCtx.getSessionIndex() : "<NONE>"));
 
         SSOResponseType response = buildSsoResponse(sloRequest);
-
-
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+        // This is probably a back-channel message (local, soap, etc), we don't need a destination
         out.setMessage(new MediationMessageImpl(response.getID(),
                 response, "SSOResponse", in.getMessage().getRelayState(), null, in.getMessage().getState()));
 

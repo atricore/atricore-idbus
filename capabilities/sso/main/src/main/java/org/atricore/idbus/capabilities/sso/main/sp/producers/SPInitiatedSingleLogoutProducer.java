@@ -85,7 +85,6 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
             AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
             in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
 
-
             SPSecurityContext secCtx =
                     (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
