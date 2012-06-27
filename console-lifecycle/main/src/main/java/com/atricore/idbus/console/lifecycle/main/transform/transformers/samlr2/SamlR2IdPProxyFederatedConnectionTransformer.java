@@ -105,8 +105,8 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
         IdentityProviderChannel idpChannel = (IdentityProviderChannel) (roleA ? federatedConnection.getChannelB() : federatedConnection.getChannelA());
 
-        Saml2IdentityProvider idp;
-        ServiceProvider sp;
+        Saml2IdentityProvider remoteIdentityProvider;
+        ServiceProvider localServiceProvider;
 
         if (roleA) {
 
@@ -114,12 +114,12 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
                     "SP Channel " + spChannel.getName() + " should be 'A' channel in federated connection " +
                             federatedConnection.getName();
 
-            idp = (Saml2IdentityProvider) federatedConnection.getRoleA();
-            sp = (ServiceProvider) federatedConnection.getRoleB();
+            remoteIdentityProvider = (Saml2IdentityProvider) federatedConnection.getRoleA();
+            localServiceProvider = (ServiceProvider) federatedConnection.getRoleB();
             spChannel = (ServiceProviderChannel) federatedConnection.getChannelA();
 
-            if (!idp.getName().equals(federatedConnection.getRoleA().getName()))
-                throw new IllegalStateException("Context provider " + idp +
+            if (!remoteIdentityProvider.getName().equals(federatedConnection.getRoleA().getName()))
+                throw new IllegalStateException("Context provider " + remoteIdentityProvider +
                         " is not roleA provider in Federated Connection " + federatedConnection.getName());
 
         } else {
@@ -129,12 +129,12 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
                             federatedConnection.getName();
 
 
-            idp = (Saml2IdentityProvider) federatedConnection.getRoleB();
-            sp = (ServiceProvider) federatedConnection.getRoleA();
+            remoteIdentityProvider = (Saml2IdentityProvider) federatedConnection.getRoleB();
+            localServiceProvider = (ServiceProvider) federatedConnection.getRoleA();
             spChannel = (ServiceProviderChannel) federatedConnection.getChannelB();
 
-            if (!idp.getName().equals(federatedConnection.getRoleB().getName()))
-                throw new IllegalStateException("Context provider " + idp +
+            if (!remoteIdentityProvider.getName().equals(federatedConnection.getRoleB().getName()))
+                throw new IllegalStateException("Context provider " + remoteIdentityProvider +
                         " is not roleB provider in Federated Connection " + federatedConnection.getName());
 
         }
@@ -142,10 +142,10 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         Beans idpProxyBeans = (Beans) event.getContext().get("idpProxyBeans");
 
         // TODO : Get generated SP proxy and IDP Channel proxy
-        generateIdPComponents(event, idpProxyBeans, idp, spChannel, sp, idpChannel, federatedConnection, event.getContext());
+        generateIdPComponents(event, idpProxyBeans, remoteIdentityProvider, spChannel, localServiceProvider, idpChannel, federatedConnection, event.getContext());
 
         // TODO : Get generated IDP proxy and SP Channel proxy
-        generateSPComponents(event, idpProxyBeans, sp,  idpChannel, idp, spChannel, federatedConnection, event.getContext());
+        generateSPComponents(event, idpProxyBeans, localServiceProvider,  idpChannel, remoteIdentityProvider, spChannel, federatedConnection, event.getContext());
 
     }
 
@@ -651,9 +651,9 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
     protected void generateIdPComponents(TransformEvent event,
                                          Beans idpBeans,
-                                         FederatedProvider idp,
+                                         FederatedProvider remoteIdentityProvider,
                                          ServiceProviderChannel spChannel,
-                                         FederatedProvider target,
+                                         FederatedProvider localServiceProvider,
                                          FederatedChannel targetChannel,
                                          FederatedConnection fc,
                                          IdApplianceTransformationContext ctx) throws TransformException {
@@ -665,7 +665,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating Beans for SSO SP Channel of IdP Proxy " + idp.getName());
+            logger.trace("Generating Beans for SSO SP Channel of IdP Proxy " + remoteIdentityProvider.getName());
 
         //---------------------------------------------
         // Get IdP Proxy Bean
@@ -723,7 +723,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         // Build a location for this channel, we use SP location as base
         Location spChannelLocation = null;
         {
-            Location spLocation = idp.getLocation();
+            Location spLocation = localServiceProvider.getLocation();
 
             spChannelLocation = new Location();
             spChannelLocation.setProtocol(spLocation.getProtocol());
@@ -753,7 +753,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         }
         setPropertyValue(idpMd, "alias", alias);
         String resourceName = spChannel.getName();
-        setPropertyValue(idpMd, "resource", "classpath:" + idauPath + normalizeBeanName(idp.getName()) + "/" + resourceName + "-samlr2-metadata.xml");
+        setPropertyValue(idpMd, "resource", "classpath:" + idauPath + normalizeBeanName(remoteIdentityProvider.getName()) + "/" + resourceName + "-samlr2-metadata.xml");
 
         Bean mdIntrospector = newAnonymousBean(SamlR2MetadataDefinitionIntrospector.class);
         setPropertyBean(idpMd, "metadataIntrospector", mdIntrospector);
@@ -770,7 +770,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         setPropertyValue(spChannelBean, "location", spChannelLocation.toString());
         setPropertyRef(spChannelBean, "provider", normalizeBeanName(idpProxyBean.getName()));
         if (spChannel != null)
-            setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
+            setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(localServiceProvider.getName()));
         setPropertyRef(spChannelBean, "sessionManager", idpProxyBean.getName() + "-session-manager");
         setPropertyRef(spChannelBean, "identityManager", idpProxyBean.getName() + "-identity-manager");
         setPropertyRef(spChannelBean, "member", idpMd.getName());
@@ -788,7 +788,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         List<Bean> endpoints = new ArrayList<Bean>();
 
         // profiles
-        Set<Profile> activeProfiles = idp.getActiveProfiles();
+        Set<Profile> activeProfiles = remoteIdentityProvider.getActiveProfiles();
         if (spChannel != null) {
             activeProfiles = spChannel.getActiveProfiles();
         }
@@ -803,7 +803,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         }
 
         // bindings
-        Set<Binding> activeBindings = idp.getActiveBindings();
+        Set<Binding> activeBindings = remoteIdentityProvider.getActiveBindings();
         if (spChannel != null) {
             activeBindings = spChannel.getActiveBindings();
         }
@@ -850,10 +850,10 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         addPropertyBean(stmtToAssertionPlan, "nameIDBuilders", emailNameIdBuilder);
 
         SubjectNameIdentifierPolicy subjectNameIDPolicy = null;
-        if (idp instanceof Saml2IdentityProvider) {
+        if (remoteIdentityProvider instanceof Saml2IdentityProvider) {
             subjectNameIDPolicy = spChannel != null ? spChannel.getSubjectNameIDPolicy() : null;
-        } else if (idp instanceof IdentityProvider) {
-            subjectNameIDPolicy = spChannel != null ? spChannel.getSubjectNameIDPolicy() : ((IdentityProvider)idp).getSubjectNameIDPolicy();
+        } else if (remoteIdentityProvider instanceof IdentityProvider) {
+            subjectNameIDPolicy = spChannel != null ? spChannel.getSubjectNameIDPolicy() : ((IdentityProvider)remoteIdentityProvider).getSubjectNameIDPolicy();
         }
 
         if (subjectNameIDPolicy != null) {
@@ -904,9 +904,9 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         boolean ignoreRequestedNameIDPolicy = true;
 
-        if (idp instanceof IdentityProvider) {
-            ignoreRequestedNameIDPolicy = spChannel != null ? spChannel.isIgnoreRequestedNameIDPolicy() : ((IdentityProvider)idp).isIgnoreRequestedNameIDPolicy();
-        } else if (idp instanceof Saml2IdentityProvider) {
+        if (remoteIdentityProvider instanceof IdentityProvider) {
+            ignoreRequestedNameIDPolicy = spChannel != null ? spChannel.isIgnoreRequestedNameIDPolicy() : ((IdentityProvider)remoteIdentityProvider).isIgnoreRequestedNameIDPolicy();
+        } else if (remoteIdentityProvider instanceof Saml2IdentityProvider) {
             ignoreRequestedNameIDPolicy = spChannel != null ? spChannel.isIgnoreRequestedNameIDPolicy() : true;
         }
 
@@ -1170,8 +1170,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         setPropertyValue(shbLocal, "name", shbLocal.getName());
         setPropertyValue(shbLocal, "type", SSOMetadataConstants.IDPSessionHeartBeatService_QNAME.toString());
         setPropertyValue(shbLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
-        setPropertyValue(shbLocal, "location", "local://" + (spChannel != null ?
-                spChannelLocation.getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SSO/SSHB/LOCAL");
+        setPropertyValue(shbLocal, "location", "local://" + spChannelLocation.getUri().toUpperCase() + "/SSO/SSHB/LOCAL");
         endpoints.add(shbLocal);
 
         // SSO SSO HTTP ARTIFACT
@@ -1216,8 +1215,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
             setPropertyValue(ssoSloLocal, "name", ssoSloLocal.getName());
             setPropertyValue(ssoSloLocal, "type", SSOMetadataConstants.IDPInitiatedSingleLogoutService_QNAME.toString());
             setPropertyValue(ssoSloLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
-            setPropertyValue(ssoSloLocal, "location", "local://" + (spChannel != null ?
-                    spChannelLocation.getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
+            setPropertyValue(ssoSloLocal, "location", "local://" + spChannelLocation.getUri().toUpperCase()  + "/SAML2/SLO/LOCAL");
             plansList = new ArrayList<Ref>();
             plan = new Ref();
             plan.setBean(sloToSamlSpSloPlan.getName());

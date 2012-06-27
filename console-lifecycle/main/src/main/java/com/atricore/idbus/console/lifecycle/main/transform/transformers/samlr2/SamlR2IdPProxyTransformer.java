@@ -220,6 +220,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         String spProxyName = normalizeBeanName(identityProvider.getName() + "-" + provider.getName() + "-sp-proxy");
         String spName = normalizeBeanName(provider.getName());
         Bean spProxyBean = newBean(idpProxyBeans, spProxyName, ServiceProviderImpl.class.getName());
+        event.getContext().put("spProxyBean", spProxyBean);
         setPropertyValue(spProxyBean, "name", spProxyName);
         setPropertyValue(spProxyBean, "description", "SP Proxy, facing external SAML 2.0 IdP " + identityProvider.getName());
 
@@ -459,8 +460,8 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
      * Creates an internal IdP that will face the local SP
      */
     protected void createProxyIdPSide(TransformEvent event,
-                                      Saml2IdentityProvider identityProvider,
-                                      ServiceProvider serviceProvider,
+                                      Saml2IdentityProvider remoteIdentityProvider,
+                                      ServiceProvider localServiceProvider,
                                       Beans baseBeans, Beans idpProxyBeans,
                                       Keystore signKs,
                                       Keystore encryptKs,
@@ -476,7 +477,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
         // Get remote MD descriptor for validation, parse : identityProvider.getMetadata().getValue()
 
-        String idpName =  normalizeBeanName(identityProvider.getName() + "-" + serviceProvider.getName() + "-idp-proxy");
+        String idpName =  normalizeBeanName(remoteIdentityProvider.getName() + "-" + localServiceProvider.getName() + "-idp-proxy");
 
         // TODO : Takes this from console cfg !
         ServiceProviderChannel spChannel = (ServiceProviderChannel) (roleA ? fc.getChannelA() : fc.getChannelB());
@@ -497,7 +498,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         Bean idpProxyBean = newBean(idpProxyBeans, idpName, IdentityProviderImpl.class);
         // Name
         setPropertyValue(idpProxyBean, "name", idpProxyBean.getName());
-        setPropertyValue(idpProxyBean, "description", "IdP Proxy, facing inmternal SAML 2.0 SP " + serviceProvider.getName());
+        setPropertyValue(idpProxyBean, "description", "IdP Proxy, facing inmternal SAML 2.0 SP " + localServiceProvider.getName());
         event.getContext().put("idpProxyBean", idpProxyBean);
 
         if (logger.isDebugEnabled())
@@ -507,7 +508,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         setPropertyValue(idpProxyBean, "role", SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
 
         // unitContainer
-        setPropertyRef(idpProxyBean, "unitContainer", identityProvider.getIdentityAppliance().getName() + "-container");
+        setPropertyRef(idpProxyBean, "unitContainer", remoteIdentityProvider.getIdentityAppliance().getName() + "-container");
 
         // COT Manager
         Collection<Bean> cotMgrs = getBeansOfType(baseBeans, CircleOfTrustManagerImpl.class.getName());
@@ -519,7 +520,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         }
 
         // State Manager
-        setPropertyRef(idpProxyBean, "stateManager", identityProvider.getIdentityAppliance().getName() + "-state-manager");
+        setPropertyRef(idpProxyBean, "stateManager", remoteIdentityProvider.getIdentityAppliance().getName() + "-state-manager");
 
         // ----------------------------------------
         // Identity Provider Mediator
@@ -564,7 +565,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
             // Use identityProvider name in path, to keep all resources together
             IdProjectResource<byte[]> signerResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                    idauPath + identityProvider.getName() + "/", signerResourceFileName,
+                    idauPath + remoteIdentityProvider.getName() + "/", signerResourceFileName,
                     "binary", signKs.getStore().getValue());
             signerResource.setClassifier("byte");
 
@@ -577,7 +578,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
             Bean keyResolver = newAnonymousBean(SSOKeystoreKeyResolver.class);
             setPropertyValue(keyResolver, "keystoreType", signKs.getType());
-            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + identityProvider.getName() + "/" + signerResourceFileName);
+            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + remoteIdentityProvider.getName() + "/" + signerResourceFileName);
             setPropertyValue(keyResolver, "keystorePass", signKs.getPassword());
             setPropertyValue(keyResolver, "privateKeyAlias", signKs.getPrivateKeyName());
             setPropertyValue(keyResolver, "privateKeyPass", signKs.getPrivateKeyPassword());
@@ -597,7 +598,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
             // signer
             setPropertyRef(idpMediator, "signer", signer.getName());
         } else {
-            throw new TransformException("No Signer defined for " + identityProvider.getName());
+            throw new TransformException("No Signer defined for " + remoteIdentityProvider.getName());
         }
 
         // ----------------------------------------
@@ -609,7 +610,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
                     ("PKCS#12".equalsIgnoreCase(encryptKs.getType()) ? "pkcs12" : "jks");
 
             IdProjectResource<byte[]> encrypterResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                    idauPath + identityProvider.getName() + "/", encrypterResourceFileName,
+                    idauPath + remoteIdentityProvider.getName() + "/", encrypterResourceFileName,
                     "binary", encryptKs.getStore().getValue());
             encrypterResource.setClassifier("byte");
 
@@ -620,7 +621,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
             Bean keyResolver = newAnonymousBean(SSOKeystoreKeyResolver.class);
             setPropertyValue(keyResolver, "keystoreType", encryptKs.getType());
-            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + identityProvider.getName() + "/" + encrypterResourceFileName);
+            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + remoteIdentityProvider.getName() + "/" + encrypterResourceFileName);
             setPropertyValue(keyResolver, "keystorePass", encryptKs.getPassword());
             setPropertyValue(keyResolver, "privateKeyAlias", encryptKs.getPrivateKeyName());
             setPropertyValue(keyResolver, "privateKeyPass", encryptKs.getPrivateKeyPassword());
@@ -634,7 +635,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
             // encrypter
             setPropertyRef(idpMediator, "encrypter", encrypter.getName());
         } else {
-            throw new TransformException("No Encrypter defined for " + identityProvider.getName());
+            throw new TransformException("No Encrypter defined for " + remoteIdentityProvider.getName());
         }
 
         // ----------------------------------------
@@ -653,7 +654,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         Bean mBeanKey = newBean(idpProxyBeans, mBean.getName() + "-key", String.class);
         setConstructorArg(mBeanKey, 0, "java.lang.String", appliance.getNamespace() + "." +
                 event.getContext().getCurrentModule().getId() +
-                ":type=IdentityProvider,name=" + identityProvider.getIdentityAppliance().getName() + "." + idpProxyBean.getName());
+                ":type=IdentityProvider,name=" + remoteIdentityProvider.getIdentityAppliance().getName() + "." + idpProxyBean.getName());
 
         Entry mBeanEntry = new Entry();
         mBeanEntry.setKeyRef(mBeanKey.getName());
@@ -689,8 +690,8 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         //Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.memorysessionstore.MemorySessionStore");
         Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStore");
         sessionStore.setInitMethod("init");
-        setPropertyRef(sessionStore, "cacheManager", identityProvider.getIdentityAppliance().getName() + "-cache-manager");
-        setPropertyValue(sessionStore, "cacheName", identityProvider.getIdentityAppliance().getName() +
+        setPropertyRef(sessionStore, "cacheManager", remoteIdentityProvider.getIdentityAppliance().getName() + "-cache-manager");
+        setPropertyValue(sessionStore, "cacheName", remoteIdentityProvider.getIdentityAppliance().getName() +
                 "-" + idpName + "-sessionsCache");
 
         // Wiring
@@ -708,8 +709,8 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
         // generate IDP metadata for default SP channel
         IdProjectResource<EntityDescriptorType> idpMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
-                idauPath + identityProvider.getName() + "/", spChannel.getName(), "saml2",
-                generateSPChannelMetadata(appliance, idpProxyBean, identityProvider, signKs, encryptKs));
+                idauPath + remoteIdentityProvider.getName() + "/", spChannel.getName(), "saml2",
+                generateSPChannelMetadata(appliance, idpProxyBean, localServiceProvider, remoteIdentityProvider, signKs, encryptKs));
         idpMetadata.setClassifier("jaxb");
 
         module.addResource(idpMetadata);
@@ -730,20 +731,24 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         Beans idpProxyBeans = (Beans) event.getContext().get("idpProxyBeans");
 
+
         Bean idpBean = getBeansOfType(idpBeans, FederatedRemoteProviderImpl.class.getName()).iterator().next();
-        Bean idpProxyBean = getBeansOfType(idpProxyBeans, IdentityProviderImpl.class.getName()).iterator().next();
+        Bean idpProxyBean = (Bean) event.getContext().get("idpProxyBean");
+        Bean spProxyBean = (Bean) event.getContext().get("spProxyBean");
 
         // Wire identityProvider to COT
         Collection<Bean> cots = getBeansOfType(baseBeans, CircleOfTrustImpl.class.getName());
         if (cots.size() == 1) {
             Bean cot = cots.iterator().next();
             addPropertyBeansAsRefsToSet(cot, "providers", idpProxyBean);
+            addPropertyBeansAsRefsToSet(cot, "providers", spProxyBean);
             String dependsOn = cot.getDependsOn();
             if (dependsOn == null || dependsOn.equals("")) {
-                cot.setDependsOn(idpProxyBean.getName());
+                cot.setDependsOn(idpProxyBean.getName() + "," + spProxyBean.getName());
             } else {
-                cot.setDependsOn(dependsOn + "," + idpProxyBean.getName());
+                cot.setDependsOn(dependsOn + "," + idpProxyBean.getName() + "," + spProxyBean.getName());
             }
+
         }
 
         // Wire session event listener
@@ -800,14 +805,14 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
 
         EntityDescriptorType entityDescriptor = new EntityDescriptorType();
-        // TODO : Take ID from provider entityId attribute (To be created)
+        // TODO : Take ID from remoteIdentityProvider entityId attribute (To be created)
         entityDescriptor.setID(idGenerator.generateId());
 
         entityDescriptor.setEntityID(idpChannelLocation.toString() + "/SAML2/MD");
 
         // SPSSODescriptor
         SPSSODescriptorType spSSODescriptor = new SPSSODescriptorType();
-        // TODO : Take ID from provider entityId attribute (To be screated)
+        // TODO : Take ID from remoteIdentityProvider entityId attribute (To be screated)
         spSSODescriptor.setID(idGenerator.generateId());
         spSSODescriptor.getProtocolSupportEnumeration().add(SAMLR2Constants.SAML_PROTOCOL_NS);
 
@@ -1050,14 +1055,16 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
     private EntityDescriptorType generateSPChannelMetadata(IdentityAppliance appliance,
                                                            Bean idpProxyBean,
-                                                           Saml2IdentityProvider provider,
+                                                           ServiceProvider serviceProvider,
+                                                           Saml2IdentityProvider remoteIdentityProvider,
                                                            Keystore signKs,
                                                            Keystore encryptKs) throws TransformException {
 
         // Build a location for this channel, we use SP location as base
         Location spChannelLocation = null;
         {
-            Location spLocation = provider.getLocation();
+            // Take location from local service remoteIdentityProvider
+            Location spLocation = serviceProvider.getLocation();
 
             spChannelLocation = new Location();
             spChannelLocation.setProtocol(spLocation.getProtocol());
@@ -1108,7 +1115,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
                 throw new TransformException(e);
             }
         } else {
-            throw new TransformException("No Signer defined for " + provider.getName());
+            throw new TransformException("No Signer defined for " + remoteIdentityProvider.getName());
         }
 
         JAXBElement jaxbAuthoritySigningX509Certificate = new JAXBElement(
@@ -1149,7 +1156,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
                 throw new TransformException(e);
             }
         } else {
-            throw new TransformException("No Encrypter defined for " + provider.getName());
+            throw new TransformException("No Encrypter defined for " + remoteIdentityProvider.getName());
         }
 
         JAXBElement jaxbAuthorityEncryptionX509Certificate = new JAXBElement(
@@ -1263,7 +1270,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         // profiles
 
         /* TODO : Take this from externa IDP Metadata ?!
-        Set<Profile> activeProfiles = provider.getActiveProfiles();
+        Set<Profile> activeProfiles = remoteIdentityProvider.getActiveProfiles();
         if (spChannel != null) {
             activeProfiles = spChannel.getActiveProfiles();
         }
@@ -1281,7 +1288,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
         /*
         // bindings
-        Set<Binding> activeBindings = provider.getActiveBindings();
+        Set<Binding> activeBindings = remoteIdentityProvider.getActiveBindings();
         if (spChannel != null) {
             activeBindings = spChannel.getActiveBindings();
         }

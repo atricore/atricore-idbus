@@ -90,7 +90,7 @@ public class KernelHttpConfigurationHandler extends OsgiServiceConfigurationHand
         cfg.setIncludeFollowUrls(includeUrls);
         cfg.setExcludeFollowUrls(excludeUrls);
 
-        cfg.setFollowRedirects(fr != null && Boolean.parseBoolean(fr));
+        cfg.setFollowRedirects(fr == null || Boolean.parseBoolean(fr));
 
         return cfg;
     }
