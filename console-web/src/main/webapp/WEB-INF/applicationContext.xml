@@ -39,6 +39,9 @@
     <osgi:reference id="licenseManagementService" cardinality="1..1" timeout="60"
                     interface="com.atricore.idbus.console.licensing.main.LicenseManager"/>
 
+    <osgi:reference id="brandManager" cardinality="1..1" timeout="60"
+                    interface="com.atricore.idbus.console.brandservice.main.spi.BrandManager"/>
+
     <osgi:list id="spmlServiceBeans" interface="org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client"
                cardinality="0..N" >
         <osgi:listener ref="spml-service-listener" bind-method="register" unbind-method="unregister"/>
@@ -90,6 +93,11 @@
     <bean id="schemaManagementAjaxServiceBean"
           class="com.atricore.idbus.console.services.impl.SchemaManagementAjaxServiceImpl">
         <property name="pspTargetId" value="pst-default" />
+    </bean>
+
+    <bean id="brandManagerAjaxServiceBean" class="com.atricore.idbus.console.services.impl.BrandManagerAjaxServiceImpl">
+        <property name="brandManager" ref="brandManager"/>
+        <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
     <bean id="applicationServerInitialization" init-method="init"

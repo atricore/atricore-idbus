@@ -216,10 +216,16 @@
 
         <!-- Mediators -->
         <property name="menuMediator" ref="settingsMenuMediator"/>
+        <property name="editCustomBrandingViewMediator" ref="editCustomBrandingViewMediator"/>
 
         <!-- Commands -->
         <property name="getServiceConfigCommand" ref="getServiceConfigCommand"/>
         <property name="updateServiceConfigCommand" ref="updateServiceConfigCommand"/>
+        <property name="lookupBrandingCommand" ref="lookupBrandingCommand"/>
+        <property name="listBrandingsCommand" ref="listBrandingsCommand"/>
+        <property name="createBrandingCommand" ref="createBrandingCommand"/>
+        <property name="updateBrandingCommand" ref="updateBrandingCommand"/>
+        <property name="removeBrandingCommand" ref="removeBrandingCommand"/>
     </object>
 
     <object id="helpStartupCommand"
@@ -600,6 +606,36 @@
 
     <object id="updateServiceConfigCommand"
             class="com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="configProxy" ref="serviceConfigProxy"/>
+    </object>
+
+    <object id="lookupBrandingCommand"
+            class="com.atricore.idbus.console.config.main.controller.LookupBrandingCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="configProxy" ref="serviceConfigProxy"/>
+    </object>
+
+    <object id="listBrandingsCommand"
+            class="com.atricore.idbus.console.config.main.controller.ListBrandingsCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="configProxy" ref="serviceConfigProxy"/>
+    </object>
+
+    <object id="createBrandingCommand"
+            class="com.atricore.idbus.console.config.main.controller.CreateBrandingCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="configProxy" ref="serviceConfigProxy"/>
+    </object>
+
+    <object id="updateBrandingCommand"
+            class="com.atricore.idbus.console.config.main.controller.UpdateBrandingCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="configProxy" ref="serviceConfigProxy"/>
+    </object>
+
+    <object id="removeBrandingCommand"
+            class="com.atricore.idbus.console.config.main.controller.RemoveBrandingCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
@@ -1077,6 +1113,15 @@
         <property name="displayLicenseTextMediator" ref="displayLicenseTextMediator" />
     </object>
 
+    <object id="brandingPopUpManager"
+            class="com.atricore.idbus.console.config.branding.view.BrandingPopUpManager">
+        <property name="createBrandingWizardMediator" ref="createBrandingWizardMediator"/>
+    </object>
+
+    <object id="createBrandingWizardMediator"
+            class="com.atricore.idbus.console.config.branding.view.create.CreateBrandingWizardViewMediator">
+    </object>
+
     <!-- App Section View Factories -->
     <object id="modelerViewFactory" class="com.atricore.idbus.console.modeling.main.ModelerViewFactory"/>
     <object id="lifecycleViewFactory" class="com.atricore.idbus.console.lifecycle.main.LifecycleViewFactory"/>
@@ -1119,6 +1164,7 @@
                 <value><ref>managementServiceMenuEntry</ref></value>
                 <value><ref>aqmServiceMenuEntry</ref></value>
                 <value><ref>logServiceMenuEntry</ref></value>
+                <value><ref>brandingServiceMenuEntry</ref></value>
             </array>
         </property>
     </object>
@@ -1133,8 +1179,6 @@
 
     <object id="httpServiceMediator" class="com.atricore.idbus.console.config.http.HttpServiceMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
-        <property name="getServiceConfigCommand" ref="getServiceConfigCommand"/>
-        <property name="updateServiceConfigCommand" ref="updateServiceConfigCommand"/>
     </object>
 
     <object id="httpServiceView" class="com.atricore.idbus.console.config.http.HttpServiceView"/>
@@ -1149,8 +1193,6 @@
 
     <object id="sshServiceMediator" class="com.atricore.idbus.console.config.ssh.SshServiceMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
-        <property name="getServiceConfigCommand" ref="getServiceConfigCommand"/>
-        <property name="updateServiceConfigCommand" ref="updateServiceConfigCommand"/>
     </object>
 
     <object id="sshServiceView" class="com.atricore.idbus.console.config.ssh.SshServiceView"/>
@@ -1166,8 +1208,6 @@
     <object id="persistenceServiceMediator" class="com.atricore.idbus.console.config.persistence.PersistenceServiceMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
         <property name="projectProxy" ref="projectProxy"/>
-        <property name="getServiceConfigCommand" ref="getServiceConfigCommand"/>
-        <property name="updateServiceConfigCommand" ref="updateServiceConfigCommand"/>
     </object>
 
     <object id="persistenceServiceView" class="com.atricore.idbus.console.config.persistence.PersistenceServiceView"/>
@@ -1182,8 +1222,6 @@
 
     <object id="managementServiceMediator" class="com.atricore.idbus.console.config.management.ManagementServiceMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
-        <property name="getServiceConfigCommand" ref="getServiceConfigCommand"/>
-        <property name="updateServiceConfigCommand" ref="updateServiceConfigCommand"/>
     </object>
 
     <object id="managementServiceView" class="com.atricore.idbus.console.config.management.ManagementServiceView"/>
@@ -1198,8 +1236,6 @@
 
     <object id="aqmServiceMediator" class="com.atricore.idbus.console.config.aqm.ArtifactQueueManagerServiceMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
-        <property name="getServiceConfigCommand" ref="getServiceConfigCommand"/>
-        <property name="updateServiceConfigCommand" ref="updateServiceConfigCommand"/>
     </object>
 
     <object id="aqmServiceView" class="com.atricore.idbus.console.config.aqm.ArtifactQueueManagerServiceView"/>
@@ -1214,10 +1250,33 @@
 
     <object id="logServiceMediator" class="com.atricore.idbus.console.config.log.LogServiceMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
-        <property name="getServiceConfigCommand" ref="getServiceConfigCommand"/>
-        <property name="updateServiceConfigCommand" ref="updateServiceConfigCommand"/>
     </object>
 
     <object id="logServiceView" class="com.atricore.idbus.console.config.log.LogServiceView"/>
+
+    <object id="brandingServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Branding Service"/>
+        <property name="shortDescription" value="Branding Service Entry"/>
+        <property name="iconName" value="brandingService"/>
+        <property name="mediatorName" value="brandingServiceMediator"/>
+        <property name="viewName" value="brandingServiceView"/>
+    </object>
+
+    <object id="brandingServiceMediator" class="com.atricore.idbus.console.config.branding.BrandingServiceMediator">
+        <property name="configProxy" ref="serviceConfigProxy"/>
+        <property name="popupManager" ref="brandingPopUpManager"/>
+        <property name="editCustomBrandingViewMediatorName" value="editCustomBrandingViewMediator"/>
+        <property name="editCustomBrandingViewName" value="editCustomBrandingView"/>
+    </object>
+
+    <object id="brandingServiceView" class="com.atricore.idbus.console.config.branding.BrandingServiceView"/>
+
+    <object id="editCustomBrandingViewMediator" class="com.atricore.idbus.console.config.branding.view.edit.EditCustomBrandingViewMediator">
+        <property name="configProxy" ref="serviceConfigProxy"/>
+        <property name="brandingServiceMediatorName" value="brandingServiceMediator"/>
+        <property name="brandingServiceViewName" value="brandingServiceView"/>
+    </object>
+
+    <object id="editCustomBrandingView" class="com.atricore.idbus.console.config.branding.view.edit.EditCustomBrandingView"/>
 
 </objects>

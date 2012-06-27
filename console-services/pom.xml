@@ -150,8 +150,12 @@
             <groupId>com.atricore.idbus.console.licensing</groupId>
             <artifactId>com.atricore.idbus.console.licensing.josso2-license-v1_0</artifactId>
             <scope>provided</scope>
-        </dependency>         
-     
+        </dependency>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.brandservice</groupId>
+            <artifactId>com.atricore.idbus.console.brandservice.main</artifactId>
+        </dependency>
         
         <dependency>
             <groupId>org.springframework</groupId>

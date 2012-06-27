@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*"
+         width="100%" height="100%"
+         skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
+        >
+
+    <fx:Metadata>
+        [ResourceBundle("console")]
+    </fx:Metadata>
+
+    <fx:Declarations>
+
+    </fx:Declarations>
+
+    <s:Group width="100%" height="100%">
+
+        <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
+
+            <mx:FormItem>
+
+                <mx:DataGrid id="brandings" width="700" rowCount="7">
+                    <mx:columns>
+                        <mx:DataGridColumn width="22">
+                            <mx:itemRenderer>
+                                <fx:Component>
+                                    <s:MXAdvancedDataGridItemRenderer>
+                                        <utils:IconButton iconUp="{EmbeddedIcons.editAttributeIcon}"
+                                                          iconWidth="16" iconHeight="16"
+                                                          paddingTop="3" paddingLeft="3"
+                                                          skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                          toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.edit')}"
+                                                          click="dispatchEvent(new BrandingGridEvent(true, true, data, BrandingGridEvent.ACTION_EDIT));"
+                                                          enabled="{data.type.name != BrandingType.BUILT_IN.name}">
+                                            <fx:Script><![CDATA[
+                                                import com.atricore.idbus.console.config.branding.event.BrandingGridEvent;
+                                                import com.atricore.idbus.console.main.EmbeddedIcons;
+                                                import com.atricore.idbus.console.services.dto.branding.BrandingType;
+                                                ]]></fx:Script>
+                                        </utils:IconButton>
+                                    </s:MXAdvancedDataGridItemRenderer>
+                                </fx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn width="22">
+                            <mx:itemRenderer>
+                                <fx:Component>
+                                    <s:MXAdvancedDataGridItemRenderer>
+                                        <utils:IconButton iconUp="{EmbeddedIcons.removeNodeIcon}"
+                                                          iconWidth="16" iconHeight="16"
+                                                          paddingTop="3" paddingLeft="5"
+                                                          skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                          toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.remove')}"
+                                                          click="dispatchEvent(new BrandingGridEvent(true, true, data, BrandingGridEvent.ACTION_REMOVE));"
+                                                          enabled="{data.type.name != BrandingType.BUILT_IN.name}">
+                                            <fx:Script><![CDATA[
+                                                import com.atricore.idbus.console.config.branding.event.BrandingGridEvent;
+                                                import com.atricore.idbus.console.main.EmbeddedIcons;
+                                                import com.atricore.idbus.console.services.dto.branding.BrandingType;
+                                                ]]></fx:Script>
+                                        </utils:IconButton>
+                                    </s:MXAdvancedDataGridItemRenderer>
+                                </fx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.name')}" width="120" dataField="name"/>
+                        <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.description')}" width="200" dataField="description"/>
+                        <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.type')}" width="70" dataField="type">
+                            <mx:itemRenderer>
+                                <fx:Component>
+                                    <s:MXAdvancedDataGridItemRenderer>
+                                        <s:Label paddingLeft="5" paddingTop="3" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.type.' + data.type.name)}"/>
+                                    </s:MXAdvancedDataGridItemRenderer>
+                                </fx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.webId')}" width="120" dataField="webBrandingId"/>
+                    </mx:columns>
+                </mx:DataGrid>
+
+            </mx:FormItem>
+
+            <mx:FormItem>
+                <s:Button id="btnCreate" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create')}"/>
+            </mx:FormItem>
+
+        </mx:Form>
+
+    </s:Group>
+
+</s:Panel>

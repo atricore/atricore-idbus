@@ -970,6 +970,21 @@
     </mapping>
 
     <mapping>
+        <class-a>com.atricore.idbus.console.brandservice.main.domain.BrandingDefinition</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.branding.BrandingDefinitionDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.brandservice.main.domain.BuiltInBrandingDefinition</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.branding.BuiltInBrandingDefinitionDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.brandservice.main.domain.CustomBrandingDefinition</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.branding.CustomBrandingDefinitionDTO</class-b>
+    </mapping>
+
+    <mapping>
         <class-a>com.atricore.josso2.licensing._1_0.license.LicenseType</class-a>
         <class-b>com.atricore.idbus.console.services.dto.LicenseTypeDTO</class-b>
         <field>

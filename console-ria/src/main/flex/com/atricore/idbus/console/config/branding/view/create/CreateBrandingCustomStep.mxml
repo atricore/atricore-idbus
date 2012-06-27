@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<WizardStep
+        xmlns="com.atricore.idbus.console.components.wizard.*"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        stepName="Custom data"
+        xmlns:utils="com.atricore.idbus.console.components.*"
+        creationComplete="initForm()">
+
+        <fx:Script>
+        <![CDATA[
+            import com.atricore.idbus.console.services.dto.branding.BrandingType;
+            import com.atricore.idbus.console.services.dto.branding.CustomBrandingDefinition;
+
+            [Bindable]
+            private var validators:Array;
+
+            [Bindable]
+            private var _uploadedFile:ByteArray;
+
+            [Bindable]
+            private var _uploadedFileName:String;
+
+            public function set uploadedFile(uploadedFile:ByteArray):void {
+                _uploadedFile = uploadedFile;
+                handleFormChange(null);
+            }
+
+            public function get uploadedFile():ByteArray {
+                return _uploadedFile;
+            }
+
+            public function get uploadedFileName():String {
+                return _uploadedFileName;
+            }
+
+            public function set uploadedFileName(value:String):void {
+                _uploadedFileName = value;
+            }
+
+            /**
+             * This will hold the results
+             */
+            private var readableDecisionArray:Array;
+
+            override public function get stepDecision():* {
+                var branding:CustomBrandingDefinition = new CustomBrandingDefinition();
+                branding.type = BrandingType.CUSTOM;
+                branding.bundleUri = bundleURI.text;
+                branding.resource = uploadedFile;
+                branding.bundleSymbolicName = uploadedFileName;
+                branding.webBrandingId = webID.text;
+
+                readableDecisionArray = new Array();
+                readableDecisionArray.push("Bundle URI: " + bundleURI.text);
+                readableDecisionArray.push("Web ID: " + webID.text);
+
+                return branding;
+            }
+
+            override public function get readableStepDecision():String {
+                return readableDecisionArray.join("\n").toString();
+            }
+
+            private function initForm():void {
+                if (validators == null) {
+                    validators = new Array();
+                    validators.push(bundleURIValidator);
+                }
+                focusManager.setFocus(bundleURI);
+            }
+
+            private function handleFormChange(event:Event):void {
+                // Check the step validity
+                brandingForm.validateForm(event);
+                if (bundleFile.dataProvider == null || bundleFile.dataProvider.length == 0) {
+                    lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.form.bundle.file.browseFile.error");
+                    lblUploadMsg.setStyle("color", "Red");
+                    lblUploadMsg.visible = true;
+                    isValid = false;
+                } else {
+                    isValid = brandingForm.isValid;
+                }
+            }
+            ]]>
+    </fx:Script>
+
+    <fx:Declarations>
+        <utils:BundleURIValidator id="bundleURIValidator" source="{bundleURI}" required="true" property="text"/>
+    </fx:Declarations>
+
+    <s:VGroup width="100%" height="100%">
+        <utils:ValidatingForm id="brandingForm" width="100%" height="100%" validators="{validators}" labelWidth="80">
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.bundle.uri')}:" required="true">
+                <s:TextInput id="bundleURI" width="200" change="handleFormChange(event);"/>
+                <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.bundle.uri.format')}"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.bundle.file')}:">
+                <s:DropDownList id="bundleFile" width="170" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.bundle.file.browseFile')}"
+                                requireSelection="true" change="handleFormChange(event);"/>
+            </mx:FormItem>
+            <s:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.bundle.file.uploadSuccess')}" visible="false" paddingLeft="95"/>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.webID')}:">
+                <s:TextInput id="webID" width="150" change="handleFormChange(event);"/>
+            </mx:FormItem>
+
+        </utils:ValidatingForm>
+    </s:VGroup>
+</WizardStep>

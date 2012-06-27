@@ -34,7 +34,7 @@
                                    height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5">
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:"
-                             labelWidth="210"
+                             labelWidth="230"
                              direction="horizontal">
                     <s:CheckBox id="samlProfileSSOCheck"
                                  label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>

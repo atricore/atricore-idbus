@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<WizardStep
+        xmlns="com.atricore.idbus.console.components.wizard.*"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        stepName="Base data"
+        xmlns:utils="com.atricore.idbus.console.components.*"
+        creationComplete="initForm()">
+
+        <fx:Script>
+        <![CDATA[
+            import com.atricore.idbus.console.services.dto.branding.BrandingDefinition;
+            import com.atricore.idbus.console.services.dto.branding.BrandingType;
+            import com.atricore.idbus.console.services.dto.branding.CustomBrandingDefinition;
+
+            [Bindable]
+            private var validators:Array;
+
+            /**
+             * This will hold the results
+             */
+            private var readableDecisionArray:Array;
+
+            override public function get stepDecision():* {
+                var branding:BrandingDefinition;
+                if (brandingType.selectedItem.data == "custom") {
+                    branding = new CustomBrandingDefinition();
+                }
+                branding.name = brandingName.text;
+                branding.description = brandingDescription.text;
+                branding.type = BrandingType.CUSTOM;
+
+                readableDecisionArray = new Array();
+                readableDecisionArray.push("Name: " + brandingName.text);
+                readableDecisionArray.push("Description: " + brandingDescription.text);
+                readableDecisionArray.push("Type: " + brandingType.labelDisplay.text);
+
+                return branding;
+            }
+
+            override public function get readableStepDecision():String {
+                return readableDecisionArray.join("\n").toString();
+            }
+
+            private function initForm():void {
+                if (validators == null) {
+                    validators = new Array();
+                    validators.push(nameValidator);
+                }
+                focusManager.setFocus(brandingName);
+            }
+
+            private function handleFormChange(event:Event):void {
+                // Check the step validity
+                brandingForm.validateForm(event);
+                isValid = brandingForm.isValid;
+
+                if (brandingType.selectedItem.data == "custom") {
+                    jumpToStep = "custom";
+                }
+            }
+            ]]>
+    </fx:Script>
+
+    <fx:Declarations>
+        <utils:NameValidator id="nameValidator" source="{brandingName}" required="true" property="text"/>
+    </fx:Declarations>
+
+    <s:VGroup width="100%" height="100%">
+        <utils:ValidatingForm id="brandingForm" width="100%" height="100%" validators="{validators}" labelWidth="80">
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.name')}:" required="true">
+                <s:TextInput id="brandingName" width="150" change="handleFormChange(event);"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.description')}:">
+                <s:TextArea id="brandingDescription" width="150" height="80" change="handleFormChange(event);"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.type')}:"
+                         direction="horizontal" required="true">
+                <s:DropDownList id="brandingType" width="100" selectedIndex="0">
+                    <mx:ArrayCollection>
+                        <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.type.custom')}" data="custom"/>
+                    </mx:ArrayCollection>
+                </s:DropDownList>
+            </mx:FormItem>
+
+        </utils:ValidatingForm>
+    </s:VGroup>
+</WizardStep>

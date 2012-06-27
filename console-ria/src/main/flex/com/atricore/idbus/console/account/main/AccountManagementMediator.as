@@ -31,6 +31,8 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 
 import flash.events.Event;
 
+import mx.core.LayoutDirection;
+
 import mx.events.FlexEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
@@ -133,16 +135,19 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
             //view.vsAccountMng.removeAllElements();
             view.vsAccountMng.removeAllChildren();
 
+            groupsTab.layoutDirection = LayoutDirection.LTR;
             groupsTab.id = "groupsTab";
             groupsTab.width = Number("100%");
             groupsTab.height = Number("100%");
             groupsTab.addElement(gView);
 
+            usersTab.layoutDirection = LayoutDirection.LTR;
             usersTab.id = "usersTab";
             usersTab.width = Number("100%");
             usersTab.height = Number("100%");
             usersTab.addElement(uView);
 
+            schemasTab.layoutDirection = LayoutDirection.LTR;
             schemasTab.id = "schemasTab";
             schemasTab.width = Number("100%");
             schemasTab.height = Number("100%");

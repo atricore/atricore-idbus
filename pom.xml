@@ -97,7 +97,9 @@
         <flex.framework.version>3.2.0.3958</flex.framework.version>
         <flex.framework.version>3.3.0.4852</flex.framework.version>
         -->
-        <flex.framework.version>4.0.0.14159</flex.framework.version>
+        <!--<flex.framework.version>4.0.0.14159</flex.framework.version>-->
+        <flex.framework.version>4.1.0.16248</flex.framework.version>
+        <flex.framework.license.version>4.0.0.14159</flex.framework.license.version>
         <flash.version>10.0.0</flash.version>
         <flexlib.version>2.4.0</flexlib.version>
         <flexiframe.version>1.4.6</flexiframe.version>
@@ -1151,7 +1153,8 @@
                         <dependency>
                             <groupId>com.adobe.flex</groupId>
                             <artifactId>license</artifactId>
-                            <version>${flex.framework.version}</version>
+                            <!--<version>${flex.framework.version}</version>-->
+                            <version>${flex.framework.license.version}</version>
                         </dependency>
                     </dependencies>
                 </plugin>

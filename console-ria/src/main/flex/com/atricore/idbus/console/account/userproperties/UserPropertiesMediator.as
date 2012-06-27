@@ -40,6 +40,7 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.containers.FormItem;
 import mx.controls.List;
+import mx.core.LayoutDirection;
 import mx.events.FlexEvent;
 import mx.formatters.DateFormatter;
 import mx.resources.IResourceManager;
@@ -119,6 +120,7 @@ public class UserPropertiesMediator extends IocMediator {
 
     protected function showUserGeneralPropertiresTab():void {
         var userGeneralTab:Group = new Group();
+        userGeneralTab.layoutDirection = LayoutDirection.LTR;
         userGeneralTab.id = "userPropertiesSheetsGeneralSection";
         userGeneralTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.general');
         userGeneralTab.width = Number("100%");
@@ -150,6 +152,7 @@ public class UserPropertiesMediator extends IocMediator {
 
     protected function showUserPreferencesPropertiresTab():void {
         var userPreferencesTab:Group = new Group();
+        userPreferencesTab.layoutDirection = LayoutDirection.LTR;
         userPreferencesTab.id = "userPropertiesSheetsPreferencesSection";
         userPreferencesTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.preferences');
         userPreferencesTab.width = Number("100%");
@@ -174,6 +177,7 @@ public class UserPropertiesMediator extends IocMediator {
 
     protected function showUserGroupsPropertiresTab():void {
         var userGroupsTab:Group = new Group();
+        userGroupsTab.layoutDirection = LayoutDirection.LTR;
         userGroupsTab.id = "userPropertiesSheetsGroupsSection";
         userGroupsTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.groups');
         userGroupsTab.width = Number("100%");
@@ -198,6 +202,7 @@ public class UserPropertiesMediator extends IocMediator {
 
     protected function showUserSecurityPropertiresTab():void {
         var userSecurityTab:Group = new Group();
+        userSecurityTab.layoutDirection = LayoutDirection.LTR;
         userSecurityTab.id = "userPropertiesSheetsSecuritySection";
         userSecurityTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.security');
         userSecurityTab.width = Number("100%");
@@ -241,6 +246,7 @@ public class UserPropertiesMediator extends IocMediator {
 
     protected function showUserPasswordPropertiresTab():void {
         var userPasswordTab:Group = new Group();
+        userPasswordTab.layoutDirection = LayoutDirection.LTR;
         userPasswordTab.id = "userPropertiesSheetsPaswordSection";
         userPasswordTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.password');
         userPasswordTab.width = Number("100%");
@@ -282,6 +288,7 @@ public class UserPropertiesMediator extends IocMediator {
 
     private function showUserExtraAttributesTab():void {
         var extraAttrTab:Group = new Group();
+        extraAttrTab.layoutDirection = LayoutDirection.LTR;
         extraAttrTab.id = "extraAttributesSectionUser";
         extraAttrTab.name = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.extraattributes');
         extraAttrTab.width = Number("100%");

@@ -77,6 +77,8 @@ public class MenuMediator extends IocMediator {
                     settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
                 else if (settingsMenuEntry.iconName == "logService")
                     settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                else if (settingsMenuEntry.iconName == "brandingService")
+                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
             }
 
             smr.add(settingsMenuDrawer);

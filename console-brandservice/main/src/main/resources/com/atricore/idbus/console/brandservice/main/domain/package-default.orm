@@ -35,7 +35,7 @@
             <field name="description">
                 <column column="DESCRIPTION" length="255" jdbc-type="VARCHAR"/>
             </field>
-            <field name="locales" serialized="true" column="LOCALES"/>
+            <!-- <field name="locales" serialized="true" column="LOCALES"/>-->
             <field name="defaultLocale">
                 <column column="LOCALE_DEF" length="8" jdbc-type="VARCHAR"/>
             </field>

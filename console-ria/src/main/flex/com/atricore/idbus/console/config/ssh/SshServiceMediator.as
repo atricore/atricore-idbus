@@ -48,10 +48,6 @@ public class SshServiceMediator extends IocFormMediator implements IDisposable {
 
     protected var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    //commands
-    private var _getServiceConfigCommand:GetServiceConfigCommand;
-    private var _updateServiceConfigCommand:UpdateServiceConfigCommand;
-
     private var _created:Boolean;    
 
     private var _sshServiceConfig:SshServiceConfiguration;
@@ -157,22 +153,6 @@ public class SshServiceMediator extends IocFormMediator implements IDisposable {
 
     public function set configProxy(value:ServiceConfigProxy):void {
         _configProxy = value;
-    }
-
-    public function get getServiceConfigCommand():GetServiceConfigCommand {
-        return _getServiceConfigCommand;
-    }
-
-    public function set getServiceConfigCommand(value:GetServiceConfigCommand):void {
-        _getServiceConfigCommand = value;
-    }
-
-    public function get updateServiceConfigCommand():UpdateServiceConfigCommand {
-        return _updateServiceConfigCommand;
-    }
-
-    public function set updateServiceConfigCommand(value:UpdateServiceConfigCommand):void {
-        _updateServiceConfigCommand = value;
     }
 
     public function dispose():void {
