@@ -25,43 +25,21 @@
               xmlns:s="library://ns.adobe.com/flex/spark"
               paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" fontWeight="bold"
 >
-   <mx:Repeater id="rptPaletteRoot">
+    <mx:Repeater id="rptPaletteRoot">
         <mx:Repeater id="rptPaletteDrawers" dataProvider="{rptPaletteRoot.currentItem.children}">
-            <mx:VBox width="100%" height="100%" label="{rptPaletteDrawers.currentItem.label}" fontWeight="normal">                
-                <s:List width="100%" height="100%"
-                        dataProvider="{rptPaletteDrawers.currentItem.children}">
-                    <s:itemRenderer>
-                        <fx:Component>
-                            <s:ItemRenderer>
-                                <s:states>
-                                    <s:State name="normal" />
-                                    <s:State name="hovered" />
-                                    <s:State name="selected" />
-                                </s:states>
-                                <mx:Image source="{data.icon}" width="22" height="22" left="4" top="2"
-                                        click="dispatchEvent(new PaletteEvent(true, true, data, PaletteEvent.ACTION_PALETTE_ITEM_CLICKED));"
-                                        mouseOver="Mouse.cursor = MouseCursor.BUTTON;" mouseOut="Mouse.cursor = MouseCursor.AUTO;"/>
-                                <mx:Text paddingLeft="30" paddingTop="2" click="dispatchEvent(new PaletteEvent(true, true, data, PaletteEvent.ACTION_PALETTE_ITEM_CLICKED));"
-                                         text="{data.label}" width="100%" height="25" fontSize="14"
-                                         mouseOver="Mouse.cursor = MouseCursor.BUTTON;" mouseOut="Mouse.cursor = MouseCursor.AUTO;">
-                                    <fx:Script><![CDATA[
-                                        import com.atricore.idbus.console.modeling.palette.event.PaletteEvent;
-                                        ]]></fx:Script>
-                                </mx:Text>
-                            </s:ItemRenderer>
-                        </fx:Component>
-                    </s:itemRenderer>
-
-                        <!--<mx:Component>-->
-                            <!--<mx:Text click="dispatchEvent(new PaletteEvent(true, true, data, PaletteEvent.ACTION_PALETTE_ITEM_CLICKED));" text="{data.label}" width="100%" >-->
-                                <!--<fx:Script><![CDATA[-->
-                                    <!--import com.atricore.idbus.console.modeling.palette.event.PaletteEvent;-->
-                                    <!--]]></fx:Script>-->
-                            <!--</mx:Text>-->
-                        <!--</mx:Component>-->
-                    <!--</s:ItemRenderer>-->
-                </s:List>
-            </mx:VBox>
+            <mx:HBox width="100%" height="100%" label="{rptPaletteDrawers.currentItem.label}" fontWeight="normal"
+                     minWidth="100" minHeight="0">
+                <s:ButtonBar height="100%"
+                             width="100%"
+                             requireSelection="true"
+                             skinClass="com.atricore.idbus.console.modeling.palette.PaletteDrawerButtonBarSkin"
+                             dataProvider="{rptPaletteDrawers.currentItem.children}"
+                             change="dispatchEvent(new PaletteEvent(true, true, event.target.selectedItem, PaletteEvent.ACTION_PALETTE_ITEM_CLICKED));">
+                </s:ButtonBar>
+            </mx:HBox>
         </mx:Repeater>
     </mx:Repeater>
+    <fx:Script><![CDATA[
+        import com.atricore.idbus.console.modeling.palette.event.PaletteEvent;
+        ]]></fx:Script>
 </mx:Accordion>

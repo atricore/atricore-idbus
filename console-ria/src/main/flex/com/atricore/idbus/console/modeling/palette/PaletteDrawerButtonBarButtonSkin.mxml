@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin name="PaletteDrawerButtonBarButtonSkin"
+             xmlns:fx="http://ns.adobe.com/mxml/2009"
+             xmlns:s="library://ns.adobe.com/flex/spark"
+             minWidth="45" minHeight="45"
+             alpha.disabledStates="0.5">
+    <!-- states -->
+    <s:states>
+        <s:State name="up" />
+        <s:State name="over" stateGroups="overStates" />
+        <s:State name="down" stateGroups="downStates" />
+        <s:State name="disabled" stateGroups="disabledStates" />
+        <s:State name="upAndSelected" stateGroups="selectedStates, selectedUpStates" />
+        <s:State name="overAndSelected" stateGroups="overStates, selectedStates" />
+        <s:State name="downAndSelected" stateGroups="downStates, selectedStates" />
+        <s:State name="disabledAndSelected" stateGroups="selectedUpStates, disabledStates, selectedStates" />
+    </s:states>
+
+    <!-- host component -->
+    <fx:Metadata>
+        <![CDATA[
+        [HostComponent("spark.components.ButtonBarButton")]
+        ]]>
+    </fx:Metadata>
+
+    <fx:Script>
+        <![CDATA[
+        import spark.components.ButtonBar;
+        import mx.events.FlexEvent;
+        import spark.components.ButtonBarButton;
+
+        protected function gr_creationComplete(evt:FlexEvent):void {
+            var dataObj:Object = hostComponent.data;
+            img.source = dataObj.icon;
+            hostComponent.toolTip = dataObj.label;
+        }
+
+        /* Define the skin elements that should not be colorized.
+         For toggle button, the graphics are colorized but the label is not. */
+        static private const exclusions:Array = [];
+
+        override public function get colorizeExclusions():Array {return exclusions;}
+        ]]>
+    </fx:Script>
+    <!-- layer 1: fill -->
+    <s:Rect left="1" right="1" top="1" bottom="1">
+        <s:fill>
+            <s:LinearGradient rotation="90">
+                <s:GradientEntry color="0xFFFFFF"
+                                 color.selectedUpStates="0xFFFFFF"
+                                 color.overStates="0xeaeded"
+                                 color.downStates="0xAAAAAA"
+                                 alpha="0.85"
+                                 alpha.overAndSelected="1" />
+                <s:GradientEntry color="0xFFFFFF"
+                                 color.selectedUpStates="0xFFFFFF"
+                                 color.over="0x9FA0A1"
+                                 color.overAndSelected="0x8E8F90"
+                                 color.downStates="0x929496"
+                                 alpha="0.85"
+                                 alpha.overAndSelected="1" />
+            </s:LinearGradient>
+        </s:fill>
+    </s:Rect>
+
+    <!-- layer 2: icon -->
+    <s:Graphic id="gr"
+               creationComplete="gr_creationComplete(event);"
+               horizontalCenter="0" verticalCenter="0">
+        <s:BitmapImage id="img" />
+    </s:Graphic>
+
+</s:SparkSkin>

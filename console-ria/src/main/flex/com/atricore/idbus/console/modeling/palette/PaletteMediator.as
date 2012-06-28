@@ -29,6 +29,10 @@ import com.atricore.idbus.console.modeling.palette.event.PaletteEvent;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
+import spark.components.ButtonBar;
+
+import spark.components.ButtonBarButton;
+
 import spark.components.supportClasses.ItemRenderer;
 
 public class PaletteMediator extends IocMediator {
@@ -79,11 +83,13 @@ public class PaletteMediator extends IocMediator {
     }
 
     public function handlePaletteClick(event : PaletteEvent) : void {
-        selectedItem = event.target;
+        //selectedItem = event.target;
         switch(event.action) {
             case PaletteEvent.ACTION_PALETTE_ITEM_CLICKED :
-                var uiComponentSel:ItemRenderer = selectedItem as ItemRenderer;
+                /*
+                var uiComponentSel:ButtonBar = selectedItem as ButtonBar;
                 uiComponentSel.selected = true;
+                */
                 if (projectProxy.currentIdentityAppliance != null) {
                     var selectedPaletteEntry:PaletteEntry = event.data as PaletteEntry;
                     //sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
