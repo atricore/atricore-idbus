@@ -56,27 +56,27 @@
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.entityID')}:"
-                     labelWidth="230" direction="horizontal">
+                     direction="horizontal">
             <s:TextInput id="entityID" selectable="true" editable="false" width="600"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.initiated.sso.url')}:"
-                     labelWidth="230" direction="horizontal">
+                     direction="horizontal">
             <s:TextInput id="spInitiatedSsoRedirectUrl" selectable="true" editable="false" width="600"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.initiated.sso.url')}:"
-                     labelWidth="230" direction="horizontal">
+                     direction="horizontal">
             <s:TextInput id="spInitiatedSsoArtifactUrl" selectable="true" editable="false" width="600"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.initiated.slo.url')}:"
-                     labelWidth="230" direction="horizontal">
+                     direction="horizontal">
             <s:TextInput id="spInitiatedSloRedirectUrl" selectable="true" editable="false" width="600"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.initiated.slo.url')}:"
-                     labelWidth="230" direction="horizontal">
+                     direction="horizontal">
             <s:TextInput id="spInitiatedSloArtifactUrl" selectable="true" editable="false" width="600"/>
         </mx:FormItem>
 

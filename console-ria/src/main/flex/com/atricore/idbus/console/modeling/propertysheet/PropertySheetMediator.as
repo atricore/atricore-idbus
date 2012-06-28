@@ -992,6 +992,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // SAML 2.0 Tab
         var saml2PropertyTab:Group = new Group();
+        saml2PropertyTab.layoutDirection = LayoutDirection.LTR;
         saml2PropertyTab.id = "propertySheetSaml2Section";
         saml2PropertyTab.name = "SAML 2.0";
         saml2PropertyTab.width = Number("100%");
@@ -1006,6 +1007,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // OAuth 2.0 Tab
         var oauth2PropertyTab:Group = new Group();
+        oauth2PropertyTab.layoutDirection = LayoutDirection.LTR;
         oauth2PropertyTab.id = "propertySheetOAuth2Section";
         oauth2PropertyTab.name = "OAuth 2.0";
         oauth2PropertyTab.width = Number("100%");
@@ -1020,6 +1022,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // OpenID 2.0 Tab
         var openIDPropertyTab:Group = new Group();
+        openIDPropertyTab.layoutDirection = LayoutDirection.LTR;
         openIDPropertyTab.id = "propertySheetOpenIDSection";
         openIDPropertyTab.name = "OpenID 2.0";
         openIDPropertyTab.width = Number("100%");
@@ -1102,6 +1105,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // SAML 2.0 Tab
         var saml2PropertyTab:Group = new Group();
+        saml2PropertyTab.layoutDirection = LayoutDirection.LTR;
         saml2PropertyTab.id = "propertySheetSaml2Section";
         saml2PropertyTab.name = "SAML 2.0";
         saml2PropertyTab.width = Number("100%");
@@ -2897,6 +2901,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // Certificate Tab
         var certificatePropertyTab:Group = new Group();
+        certificatePropertyTab.layoutDirection = LayoutDirection.LTR;
         certificatePropertyTab.id = "propertySheetMetadataSection";
         certificatePropertyTab.name = "Certificate";
         certificatePropertyTab.width = Number("100%");
@@ -2994,6 +2999,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // Core Tab
         var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
         corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
@@ -3010,6 +3016,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // Contract Tab
         var contractPropertyTab:Group = new Group();
+        contractPropertyTab.layoutDirection = LayoutDirection.LTR;
         contractPropertyTab.id = "propertySheetMetadataSection";
         contractPropertyTab.name = "Contract";
         contractPropertyTab.width = Number("100%");
@@ -3023,6 +3030,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // Certificate Tab
         var certificatePropertyTab:Group = new Group();
+        certificatePropertyTab.layoutDirection = LayoutDirection.LTR;
         certificatePropertyTab.id = "propertySheetMetadataSection";
         certificatePropertyTab.name = "Certificate";
         certificatePropertyTab.width = Number("100%");
@@ -3119,6 +3127,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // Core Tab
         var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
         corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
@@ -3199,6 +3208,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // Core Tab
         var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
         corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
@@ -3279,6 +3289,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // Core Tab
         var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
         corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
@@ -3359,6 +3370,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // Core Tab
         var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
         corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
@@ -3439,6 +3451,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // Core Tab
         var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
         corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
@@ -3455,6 +3468,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // Contract Tab
         var contractPropertyTab:Group = new Group();
+        contractPropertyTab.layoutDirection = LayoutDirection.LTR;
         contractPropertyTab.id = "propertySheetMetadataSection";
         contractPropertyTab.name = "Contract";
         contractPropertyTab.width = Number("100%");
@@ -4612,6 +4626,7 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.removeAllChildren();
 
         var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
         corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
@@ -4671,6 +4686,7 @@ public class PropertySheetMediator extends IocMediator {
 
         // Core Tab
         var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
         corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
@@ -5330,6 +5346,7 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.removeAllChildren();
 
         var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
         corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
@@ -7483,6 +7500,7 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.removeAllChildren();
 
         var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
         corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
