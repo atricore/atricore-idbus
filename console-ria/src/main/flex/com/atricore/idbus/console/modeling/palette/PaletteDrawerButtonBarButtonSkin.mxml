@@ -47,16 +47,9 @@
         <s:fill>
             <s:LinearGradient rotation="90">
                 <s:GradientEntry color="0xFFFFFF"
-                                 color.selectedUpStates="0xFFFFFF"
-                                 color.overStates="0xeaeded"
+                                 color.selectedUpStates="0xBBBDBD"
+                                 color.overStates="0xBBBDBD"
                                  color.downStates="0xAAAAAA"
-                                 alpha="0.85"
-                                 alpha.overAndSelected="1" />
-                <s:GradientEntry color="0xFFFFFF"
-                                 color.selectedUpStates="0xFFFFFF"
-                                 color.over="0x9FA0A1"
-                                 color.overAndSelected="0x8E8F90"
-                                 color.downStates="0x929496"
                                  alpha="0.85"
                                  alpha.overAndSelected="1" />
             </s:LinearGradient>

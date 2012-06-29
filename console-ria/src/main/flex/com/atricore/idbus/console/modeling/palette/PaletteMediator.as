@@ -36,7 +36,6 @@ import spark.components.ButtonBarButton;
 import spark.components.supportClasses.ItemRenderer;
 
 public class PaletteMediator extends IocMediator {
-    private var selectedIndex:int;
     private var selectedItem:Object;
     public static const DESELECT_PALETTE_ELEMENT:String = "deselectPaletteElement";
 
@@ -83,13 +82,14 @@ public class PaletteMediator extends IocMediator {
     }
 
     public function handlePaletteClick(event : PaletteEvent) : void {
-        //selectedItem = event.target;
+        if(selectedItem != null && selectedItem != event.uiComponent) {
+            (selectedItem as ButtonBar).selectedIndex = -1;
+        }
+
+        selectedItem = event.uiComponent;
+
         switch(event.action) {
             case PaletteEvent.ACTION_PALETTE_ITEM_CLICKED :
-                /*
-                var uiComponentSel:ButtonBar = selectedItem as ButtonBar;
-                uiComponentSel.selected = true;
-                */
                 if (projectProxy.currentIdentityAppliance != null) {
                     var selectedPaletteEntry:PaletteEntry = event.data as PaletteEntry;
                     //sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
@@ -110,8 +110,8 @@ public class PaletteMediator extends IocMediator {
         switch (notification.getName()) {
             case DESELECT_PALETTE_ELEMENT:
                 if(selectedItem != null){
-                    var uiComponentSel:ItemRenderer = selectedItem as ItemRenderer;
-                    uiComponentSel.selected = false;
+                    var uiComponentSel:ButtonBar = selectedItem as ButtonBar;
+                    uiComponentSel.selectedIndex = -1;
                     selectedItem = null;
                 }
                 break;

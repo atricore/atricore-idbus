@@ -104,8 +104,8 @@
                 </s:HGroup>
                 <s:HGroup width="99%" height="65%">
                     <browser:BrowserView id="browser" height="99%" width="20%"/>
-                    <diagram:DiagramView id="diagram" width="60%" height="99%"/>
-                    <palette:PaletteView id="palette" width="20%" height="99%"/>
+                    <diagram:DiagramView id="diagram" width="79%" height="99%"/>
+                    <palette:PaletteView id="palette" width="1%" height="99%"/>
                 </s:HGroup>
                 <s:HGroup height="30%" width="100%">
                     <propertysheet:PropertySheetView id="propertysheet" height="100%" width="99%"/>

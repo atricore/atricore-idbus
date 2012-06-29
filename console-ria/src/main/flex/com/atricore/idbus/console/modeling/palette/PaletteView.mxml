@@ -31,10 +31,10 @@
                      minWidth="100" minHeight="0">
                 <s:ButtonBar height="100%"
                              width="100%"
-                             requireSelection="true"
+                             requireSelection="false"
                              skinClass="com.atricore.idbus.console.modeling.palette.PaletteDrawerButtonBarSkin"
                              dataProvider="{rptPaletteDrawers.currentItem.children}"
-                             change="dispatchEvent(new PaletteEvent(true, true, event.target.selectedItem, PaletteEvent.ACTION_PALETTE_ITEM_CLICKED));">
+                             change="dispatchEvent(new PaletteEvent(true, true, event.target, event.target.selectedItem, PaletteEvent.ACTION_PALETTE_ITEM_CLICKED));">
                 </s:ButtonBar>
             </mx:HBox>
         </mx:Repeater>
