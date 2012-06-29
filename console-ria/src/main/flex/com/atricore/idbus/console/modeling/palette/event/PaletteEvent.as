@@ -21,37 +21,46 @@
 
 package com.atricore.idbus.console.modeling.palette.event
 {
-import flash.events.Event;
+    import flash.events.Event;
 
-public class PaletteEvent extends Event
-{
-   public static const CLICK:String = "PaletteEvent.CLICK";
+    public class PaletteEvent extends Event
+    {
+        public static const CLICK:String = "PaletteEvent.CLICK";
 
-   public static const ACTION_PALETTE_ITEM_CLICKED:int = 0;
+        public static const ACTION_PALETTE_ITEM_CLICKED:int = 0;
 
-   private var _data:Object;
-   private var _action:int;
+        private var _uiComponent:Object;
+        private var _data:Object;
+        private var _action:int;
 
-   public function PaletteEvent(bubbles:Boolean = false, cancelable:Boolean = false, data:Object = null, action:int = ACTION_PALETTE_ITEM_CLICKED)
-   {
-      super(PaletteEvent.CLICK, bubbles, cancelable);
-      this._data = data;
-      this._action = action;
-   }
-
-   public function get data():Object
-   {
-      return this._data;
-   }
-
-   public function get action():int {
-       return this._action;
-   }
+        public function PaletteEvent(bubbles:Boolean = false, cancelable:Boolean = false, uiComponent:Object = null,
+                                     data:Object = null, action:int = ACTION_PALETTE_ITEM_CLICKED)
+        {
+            super(PaletteEvent.CLICK, bubbles, cancelable);
+            this._uiComponent = uiComponent;
+            this._data = data;
+            this._action = action;
+        }
 
 
-   override public function clone():Event
-   {
-      return new PaletteEvent(bubbles, cancelable, data, action);
-   }
-}
+        public function get uiComponent():Object {
+            return this._uiComponent;
+        }
+
+        public function get data():Object
+        {
+            return this._data;
+        }
+
+        public function get action():int {
+            return this._action;
+        }
+
+
+        override public function clone():Event
+        {
+            return new PaletteEvent(bubbles, cancelable, data, action);
+        }
+
+    }
 }
