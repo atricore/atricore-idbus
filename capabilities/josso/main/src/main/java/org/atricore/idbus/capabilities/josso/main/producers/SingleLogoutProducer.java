@@ -76,22 +76,22 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
 
     }
 
-
+    // TODO : SSOResponse shoulnd't be named sloResponse ?!?!?!?
     protected void doProcessSloResponse(CamelMediationExchange exchange, SSOResponseType sloResponse ) {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         // TODO : Validate destination, inReplyTo, etc
-        SSOResponseType SSOResponseType = (SSOResponseType) in.getMessage().getContent();
+        String appId = sloResponse.getIssuer();
 
         // Retrieve and clear local variables:
 
         JossoAuthnContext authnContext = (JossoAuthnContext) in.getMessage().getState().
-                        getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+                        getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
 
 
         SPInitiatedLogoutRequestType sloReq = authnContext.getSloRequest();
         String receivedBackTo = authnContext.getSloBackTo();
-        String appId = authnContext.getAppId();
+
 
         // Process response
         PartnerAppMapping mapping = resolveAppMapping((BindingChannel) channel, appId);
@@ -116,7 +116,7 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
 
         exchange.setOut(out);
 
-        in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+        in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
     }
 
     protected void doProcessJossoSloRequest(CamelMediationExchange exchange) throws IdentityMediationException, JossoException {
@@ -135,7 +135,7 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
         SPInitiatedLogoutRequestType request = buildSLORequest(exchange);
 
         // Store state
-        JossoAuthnContext authnCtx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+        JossoAuthnContext authnCtx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
 
         authnCtx.setSloBackTo(backTo);
         authnCtx.setSloRequest(request);
@@ -151,7 +151,7 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
 
         exchange.setOut(out);
 
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx", authnCtx);
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId, authnCtx);
 
     }
 

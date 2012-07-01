@@ -52,14 +52,15 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
 
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
 
+        JossoMediator mediator = ((JossoMediator) channel.getIdentityMediator());
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-        JossoMediator mediator = ((JossoMediator) channel.getIdentityMediator());
         MediationState state = in.getMessage().getState();
         SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
+        String appId = response.getIssuer();
 
         // Current authentication context
-        JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+        JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
         if (authnCtx == null) {
             authnCtx = new JossoAuthnContext();
             authnCtx.setAppId(response.getIssuer());
@@ -73,7 +74,6 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         // This request has been used, remove it from context
         authnCtx.setAuthnRequest(null);
 
-
         if (req == null) {
             // Process unsolicited response
             validateUnsolicitedAuthnResponse(exchange, response);
@@ -82,7 +82,6 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         }
 
         // Always use configured ACS endpoint, ignore received back_to to avoid security issues.
-        String appId = authnCtx.getAppId();
         String receivedBackTo = authnCtx.getSsoBackTo();
 
         PartnerAppMapping mapping = resolveAppMapping((BindingChannel) channel, appId);
@@ -128,7 +127,7 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         // Store Authentication Assertion :
         authnCtx.setAuthnAssertion(aa);
 
-        state.setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx", authnCtx);
+        state.setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId, authnCtx);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),

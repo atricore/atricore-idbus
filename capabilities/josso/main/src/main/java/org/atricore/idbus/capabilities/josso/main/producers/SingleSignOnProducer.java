@@ -83,7 +83,7 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         String username = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_USERNAME_VAR);
         String password = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_PASSWORD_VAR);
 
-        JossoAuthnContext authnCtx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+        JossoAuthnContext authnCtx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
 
         // Decode IDP Alias, if any
         if (idpAliasB64 != null) {
@@ -119,8 +119,8 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         authnCtx.setIdpAlias(idpAlias);
         authnCtx.setAuthnRequest(request);
 
-        // Store state
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx", authnCtx);
+        // Store state and request
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId, authnCtx);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(request.getID(),

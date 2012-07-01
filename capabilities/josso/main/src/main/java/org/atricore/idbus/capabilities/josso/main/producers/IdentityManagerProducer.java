@@ -107,7 +107,9 @@ public class IdentityManagerProducer extends AbstractJossoProducer {
         if (logger.isDebugEnabled())
             logger.debug("Find user in requester/session " + request.getRequester()+ "/" + ssoSessionId);
 
-        JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+        String appId = request.getRequester();
+
+        JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
         JossoAuthenticationAssertion aa = authnCtx != null ? authnCtx.getAuthnAssertion() : null;
         if (aa == null) {
             logger.error("No Authentication Assertion found for requester/session " + request.getRequester()+ "/" + ssoSessionId);
@@ -131,12 +133,14 @@ public class IdentityManagerProducer extends AbstractJossoProducer {
 
     protected FindRolesBySSOSessionIdResponseType findRolesBySSOSessionIdRequest(MediationState state, FindRolesBySSOSessionIdRequestType request) {
         String ssoSessionId = request.getSsoSessionId();
+        String appId = request.getRequester();
+
         if (logger.isDebugEnabled())
             logger.debug("Find user in session " + ssoSessionId);
 
         try {
             JossoAuthenticationAssertion aa =
-                    ((JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx")).getAuthnAssertion();
+                    ((JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId)).getAuthnAssertion();
             
             Subject subject = aa.getSubject();
             Collection<SSORole> roles = toSSORoles(subject);

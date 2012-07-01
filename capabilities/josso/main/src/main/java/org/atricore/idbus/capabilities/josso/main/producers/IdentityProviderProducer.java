@@ -152,10 +152,11 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
         }
 
         // Store Authentication Assertion :
-        JossoAuthnContext ctx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");;
+        String appId = request.getRequester();
+        JossoAuthnContext ctx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);;
         ctx.setAuthnAssertion(aa);
 
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx", ctx);
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId, ctx);
 
         // Build JOSSO Response and send it back
         AssertIdentityWithSimpleAuthenticationResponseType response = new AssertIdentityWithSimpleAuthenticationResponseType ();
@@ -169,13 +170,14 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
     protected ResolveAuthenticationAssertionResponseType resolveAuthenticationAssertion(ResolveAuthenticationAssertionRequestType request, MediationState state) throws Exception {
 
         String assertionId = request.getAssertionId();
+        String appId = request.getRequester();
 
         if (logger.isDebugEnabled())
             logger.debug("Processing ResolveAuthenticationAssertionRequest for assertion " + assertionId);
 
         AbstractCamelMediator mediator = (AbstractCamelMediator) channel.getIdentityMediator();
 
-        JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+        JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
         JossoAuthenticationAssertion assertion = authnCtx != null ? authnCtx.getAuthnAssertion() : null;
 
         if (assertion == null) {
