@@ -48,6 +48,10 @@ public class IdentityMediationUnitRegistryImpl implements IdentityMediationUnitR
         return identityMediationUnits.values();
     }
 
+    public boolean isValid() {
+        return true;
+    }
+
     public void register(String idmuName, IdentityMediationUnit idmu) {
 
         if (logger.isTraceEnabled()) {

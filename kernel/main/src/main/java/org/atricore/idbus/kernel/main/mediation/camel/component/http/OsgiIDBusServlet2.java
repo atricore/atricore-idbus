@@ -32,6 +32,7 @@ import org.mortbay.util.ajax.ContinuationSupport;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.springframework.osgi.service.importer.ServiceProxyDestroyedException;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 
@@ -439,6 +440,15 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             throw new ServletException("No identity mediation registry found!");
         }
 
+        // Work around for 'destroyed' Spring OSGi service references :
+        try {
+            if (!registry.isValid())
+                registry = lookupIdentityMediationUnitRegistry();
+        } catch (ServiceProxyDestroyedException e) {
+            registry = lookupIdentityMediationUnitRegistry();
+        }
+
+
         HttpConsumer consumer = resolveConsumer(req);
         if (consumer == null) {
             log("No HTTP Consumer found for " + req.getRequestURL().toString() + " Sending 404 (Not Found) HTTP Status.");
@@ -663,6 +673,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             throw new ServletException("Spring application context not found in servlet context");
         }
 
+        /* TODO : Used only for debugging
         BundleContext bc = wac.getBundleContext();
 
         for (Bundle b : bc.getBundles()) {
@@ -698,7 +709,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                     logger.trace("(" + b.getBundleId() + ") " + b.getSymbolicName() + "services:<null>");
             }
         }
-
+        */
 
         Map<String, IdentityMediationUnitRegistry> imuRegistryMap = wac.getBeansOfType(IdentityMediationUnitRegistry.class);
         if (imuRegistryMap == null) {
