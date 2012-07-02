@@ -448,6 +448,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             registry = lookupIdentityMediationUnitRegistry();
         }
 
+
         HttpConsumer consumer = resolveConsumer(req);
         if (consumer == null) {
             log("No HTTP Consumer found for " + req.getRequestURL().toString() + " Sending 404 (Not Found) HTTP Status.");
@@ -672,7 +673,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             throw new ServletException("Spring application context not found in servlet context");
         }
 
-        /* This is just for debugging ?!
+        /* TODO : Used only for debugging
         BundleContext bc = wac.getBundleContext();
         for (Bundle b : bc.getBundles()) {
             if (b.getRegisteredServices() != null) {
@@ -706,8 +707,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                 if (logger.isTraceEnabled())
                     logger.trace("(" + b.getBundleId() + ") " + b.getSymbolicName() + "services:<null>");
             }
-        } */
-
+        }
+        */
 
         Map<String, IdentityMediationUnitRegistry> imuRegistryMap = wac.getBeansOfType(IdentityMediationUnitRegistry.class);
         if (imuRegistryMap == null) {
