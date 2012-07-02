@@ -2231,15 +2231,19 @@ public class SingleSignOnProducer extends SSOProducer {
 
         try {
 
-            logger.debug("Looking for " + SSOService.SPInitiatedSingleSignOnServiceProxy.toString());
+            if (logger.isDebugEnabled())
+                logger.debug("Looking for " + SSOService.SPInitiatedSingleSignOnServiceProxy.toString() + " at " + bc.getName());
 
             for (IdentityMediationEndpoint endpoint : bc.getEndpoints()) {
 
-                logger.debug("Processing endpoint : " + endpoint.getType() + "[" + endpoint.getBinding() + "]");
+                if (logger.isTraceEnabled())
+                    logger.trace("Processing endpoint : " + endpoint.getType() + "[" + endpoint.getBinding() + "] from " + bc.getName());
 
                 if (endpoint.getType().equals(SSOService.SPInitiatedSingleSignOnServiceProxy.toString())) {
 
                     if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("Found SP Initiated SSO Service endpoint : " + endpoint.getName());
                         // This is the endpoint we're looking for
                         return bc.getIdentityMediator().resolveEndpoint(bc, endpoint);
                     }
@@ -2249,7 +2253,7 @@ public class SingleSignOnProducer extends SSOProducer {
             throw new SSOException(e);
         }
 
-        throw new SSOException("No SP Initiated SSO Proxy endpoint found for SP Initiated SSO using SSO Artifact binding");
+        throw new SSOException("No SP Initiated SSO Proxy endpoint found for SP Initiated SSO using SSO Artifact binding for channel " + bc.getName());
     }
 
     /**

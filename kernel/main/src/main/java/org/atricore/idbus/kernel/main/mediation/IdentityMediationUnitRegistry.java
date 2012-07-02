@@ -37,4 +37,6 @@ public interface IdentityMediationUnitRegistry {
     void unregister(String idmuName);
 
     IdentityMediationUnit lookupUnit(String unitName);
+
+    boolean isValid();
 }
