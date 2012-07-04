@@ -234,6 +234,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             }
         }
 
+        view.idpChannelMessageTtl.text = sp.messageTtl.toString();
+        view.idpChannelMessageTtlTolerance.text = sp.messageTtlTolerance.toString();
+
         // set location
         _spLocation = sp.location;
         _spName = sp.name;
@@ -312,6 +315,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             }
         }
 
+        view.spChannelMessageTtl.text = idp.messageTtl.toString();
+        view.spChannelMessageTtlTolerance.text = idp.messageTtlTolerance.toString();
+
         // set location
         _idpLocation = idp.location;
         _idpName = idp.name;
@@ -382,6 +388,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
         view.accountLinkagePolicyCombo.selectedIndex = 0;
         view.identityMappingPolicyCombo.selectedIndex = 0;
+        
+        view.idpChannelMessageTtl.text = "300";
+        view.idpChannelMessageTtlTolerance.text = "300";
 
         // reset location
         view.idpChannelLocationProtocol.selectedIndex = 0;
@@ -410,6 +419,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.spChannelAuthMechanism.selectedIndex = 0;
             view.spChannelAuthAssertionEmissionPolicyCombo.selectedIndex = 0;
 
+            view.spChannelMessageTtl.text = "300";
+            view.spChannelMessageTtlTolerance.text = "300";
+            
             // reset location
             view.spChannelLocationProtocol.selectedIndex = 0;
             view.spChannelLocationDomain.text = "";
@@ -485,6 +497,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
             idpChannel.signAuthenticationRequests = view.signAuthnRequestsCheck.selected;
             idpChannel.wantAssertionSigned = view.wantAssertionSignedCheck.selected;
+            
+            idpChannel.messageTtl = parseInt(view.idpChannelMessageTtl.text);
+            idpChannel.messageTtlTolerance = parseInt(view.idpChannelMessageTtlTolerance.text);
 
             // set location
             var loc:Location = new Location();
@@ -552,7 +567,10 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
             spChannel.ignoreRequestedNameIDPolicy = view.ignoreRequestedNameIDPolicy.selected;
             spChannel.subjectNameIDPolicy = view.subjectNameIdPolicyCombo.selectedItem;
-            
+
+            spChannel.messageTtl = parseInt(view.spChannelMessageTtl.text);
+            spChannel.messageTtlTolerance = parseInt(view.spChannelMessageTtlTolerance.text);
+
             // set location
             var newLoc:Location = new Location();
             newLoc.protocol = view.spChannelLocationProtocol.labelDisplay.text;
@@ -676,12 +694,16 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             _validators.push(view.idpChannelDomainValidator);
             _validators.push(view.idpChannelContextValidator);
             _validators.push(view.idpChannelPathValidator);
+            _validators.push(view.idpChannelMessageTtlValidator);
+            _validators.push(view.idpChannelMessageTtlToleranceValidator);
         }
         if (!view.useInheritedIDPSettings.selected) {
             _validators.push(view.spChannelPortValidator);
             _validators.push(view.spChannelDomainValidator);
             _validators.push(view.spChannelContextValidator);
             _validators.push(view.spChannelPathValidator);
+            _validators.push(view.spChannelMessageTtlValidator);
+            _validators.push(view.spChannelMessageTtlToleranceValidator);
         }
     }
 
@@ -826,6 +848,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.subjectNameIdPolicyCombo.enabled = false;
             view.ignoreRequestedNameIDPolicy.enabled = false;
 
+            view.idpChannelMessageTtl.enabled = false;
+            view.idpChannelMessageTtlTolerance.enabled = false;
+
             view.idpChannelLocationProtocol.enabled = false;
             view.idpChannelLocationDomain.enabled = false;
             view.idpChannelLocationPort.enabled = false;
@@ -847,6 +872,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.identityMappingPolicyCombo.enabled = true;
             view.subjectNameIdPolicyCombo.enabled = true;
             view.ignoreRequestedNameIDPolicy.enabled = true;
+
+            view.idpChannelMessageTtl.enabled = true;
+            view.idpChannelMessageTtlTolerance.enabled = true;
 
             view.idpChannelLocationProtocol.enabled = true;
             view.idpChannelLocationDomain.enabled = true;
@@ -877,6 +905,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.spChannelAuthMechanism.enabled = false;
             view.spChannelAuthAssertionEmissionPolicyCombo.enabled = false;
 
+            view.spChannelMessageTtl.enabled = false;
+            view.spChannelMessageTtlTolerance.enabled = false;
+
             view.spChannelLocationProtocol.enabled = false;
             view.spChannelLocationDomain.enabled = false;
             view.spChannelLocationPort.enabled = false;
@@ -898,6 +929,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.ignoreRequestedNameIDPolicy.enabled = true;
             view.spChannelAuthMechanism.enabled = false; //dont enable auth mechanism
             view.spChannelAuthAssertionEmissionPolicyCombo.enabled = true;
+
+            view.spChannelMessageTtl.enabled = true;
+            view.spChannelMessageTtlTolerance.enabled = true;
 
             view.spChannelLocationProtocol.enabled = true;
             view.spChannelLocationDomain.enabled = true;

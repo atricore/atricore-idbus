@@ -41,6 +41,10 @@ public class IdentityProviderChannelDTO extends FederatedChannelDTO {
 
     private boolean wantAssertionSigned;
 
+    private int messageTtl;
+
+    private int messageTtlTolerance;
+
     public AccountLinkagePolicyDTO getAccountLinkagePolicy() {
         return accountLinkagePolicy;
     }
@@ -95,5 +99,21 @@ public class IdentityProviderChannelDTO extends FederatedChannelDTO {
 
     public void setWantAssertionSigned(boolean wantAssertionSigned) {
         this.wantAssertionSigned = wantAssertionSigned;
+    }
+
+    public int getMessageTtl() {
+        return messageTtl;
+    }
+
+    public void setMessageTtl(int messageTtl) {
+        this.messageTtl = messageTtl;
+    }
+
+    public int getMessageTtlTolerance() {
+        return messageTtlTolerance;
+    }
+
+    public void setMessageTtlTolerance(int messageTtlTolerance) {
+        this.messageTtlTolerance = messageTtlTolerance;
     }
 }

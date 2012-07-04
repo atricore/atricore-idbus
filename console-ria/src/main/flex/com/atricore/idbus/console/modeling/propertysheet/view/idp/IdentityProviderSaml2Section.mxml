@@ -26,6 +26,13 @@
          xmlns:utils="com.atricore.idbus.console.components.*"
          width="100%" height="100%">
 
+    <fx:Declarations>
+        <mx:NumberValidator id="messageTtlValidator" source="{messageTtl}" required="true" property="text" minValue="0"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ttlValidationError')}"/>
+        <mx:NumberValidator id="messageTtlToleranceValidator" source="{messageTtlTolerance}" required="true" property="text" minValue="0"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ttlValidationError')}"/>
+    </fx:Declarations>
+
     <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:"
@@ -62,6 +69,14 @@
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.signRequests')}:"
                 labelWidth="230" direction="horizontal">
             <s:CheckBox id="signRequestsCheck"/>
+        </mx:FormItem>
+
+        <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.messageTtl')}:">
+            <s:TextInput id="messageTtl"/>
+        </mx:FormItem>
+
+        <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.messageTtlTolerance')}:">
+            <s:TextInput id="messageTtlTolerance"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.entityID')}:"

@@ -72,6 +72,10 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
     //private DelegatedAuthenticationDTO delegatedAuthentication;
     private Set<DelegatedAuthenticationDTO> delegatedAuthentications;
 
+    private int messageTtl;
+
+    private int messageTtlTolerance;
+
     @Override
     public ProviderRoleDTO getRole() {
         return ProviderRoleDTO.SSOIdentityProvider;
@@ -203,5 +207,21 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     public void setOpenIdEnabled(boolean openIdEnabled) {
         this.openIdEnabled = openIdEnabled;
+    }
+
+    public int getMessageTtl() {
+        return messageTtl;
+    }
+
+    public void setMessageTtl(int messageTtl) {
+        this.messageTtl = messageTtl;
+    }
+
+    public int getMessageTtlTolerance() {
+        return messageTtlTolerance;
+    }
+
+    public void setMessageTtlTolerance(int messageTtlTolerance) {
+        this.messageTtlTolerance = messageTtlTolerance;
     }
 }

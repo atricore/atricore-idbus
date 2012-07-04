@@ -151,6 +151,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.authMechanism.selectedIndex = 0;
         view.subjectNameIdPolicyCombo.selectedIndex = 0;
         view.ignoreRequestedNameIDPolicy.selected = true;
+        view.messageTtl.text = "300";
+        view.messageTtlTolerance.text = "300";
 
         view.oauth2ClientsConfig.text = "";
         view.oauth2BindingRestfulCheck.selected = false;
@@ -225,6 +227,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         identityProvider.wantAuthnRequestsSigned = view.wantAuthnRequestsSignedCheck.selected;
         identityProvider.signRequests = view.signRequestsCheck.selected;
         identityProvider.wantSignedRequests = view.wantSignedRequestsCheck.selected;
+        identityProvider.messageTtl = parseInt(view.messageTtl.text);
+        identityProvider.messageTtlTolerance = parseInt(view.messageTtlTolerance.text);
 
         identityProvider.ignoreRequestedNameIDPolicy = view.ignoreRequestedNameIDPolicy.selected;
         identityProvider.subjectNameIDPolicy = view.subjectNameIdPolicyCombo.selectedItem;
@@ -464,6 +468,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         _validators.push(view.contextValidator);
         _validators.push(view.pathValidator);
         _validators.push(view.ssoSessionTimeoutValidator);
+        _validators.push(view.messageTtlValidator);
+        _validators.push(view.messageTtlToleranceValidator);
         if (view.uploadKeystore.selected) {
             _validators.push(view.certificateAliasValidator);
             _validators.push(view.keyAliasValidator);
