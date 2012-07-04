@@ -1158,10 +1158,6 @@ public class AssertionConsumerProducer extends SSOProducer {
 		XMLGregorianCalendar notBeforeUTC = null;
 		XMLGregorianCalendar notOnOrAfterUTC = null;
 
-
-
-
-
 		if(conditions.getNotBefore() != null){
 			//normalize to UTC			
 			logger.debug("Conditions.NotBefore: " + conditions.getNotBefore());

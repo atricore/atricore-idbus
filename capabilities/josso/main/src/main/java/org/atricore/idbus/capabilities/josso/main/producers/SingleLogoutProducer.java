@@ -83,21 +83,11 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
         // TODO : Validate destination, inReplyTo, etc
         String appId = sloResponse.getIssuer();
 
-        // Retrieve and clear local variables:
-
-        JossoAuthnContext authnContext = (JossoAuthnContext) in.getMessage().getState().
-                        getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
-
-
-        SPInitiatedLogoutRequestType sloReq = authnContext.getSloRequest();
-        String receivedBackTo = authnContext.getSloBackTo();
-
-
         // Process response
         PartnerAppMapping mapping = resolveAppMapping((BindingChannel) channel, appId);
         String backTo = mapping.getPartnerAppSLO();
         if (logger.isDebugEnabled())
-            logger.debug("Using backTo URL:" + backTo + " received backTo URL ignored: " + receivedBackTo);
+            logger.debug("Using backTo URL:" + backTo + " received backTo URL ignored");
 
         EndpointDescriptor ed = new EndpointDescriptorImpl(
                 "SSOLogoutRequest",
@@ -136,6 +126,34 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
 
         // Store state
         JossoAuthnContext authnCtx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
+
+        if (authnCtx == null) {
+            // Logout already done or session expired, send the user back to the application:
+            PartnerAppMapping mapping = resolveAppMapping((BindingChannel) channel, appId);
+            backTo = mapping.getPartnerAppSLO();
+            if (logger.isDebugEnabled())
+                logger.debug("Using backTo URL:" + backTo + " received backTo URL ignored");
+
+            EndpointDescriptor ed = new EndpointDescriptorImpl(
+                    "SSOLogoutRequest",
+                    "SSOLogoutRequest",
+                    JossoBinding.JOSSO_REDIRECT.getValue(),
+                    backTo,
+                    null);
+
+            CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+            out.setMessage(new MediationMessageImpl(null,
+                    null,
+                    "AuthenticationAssertion",
+                    null,
+                    ed,
+                    in.getMessage().getState()));
+
+            exchange.setOut(out);
+
+            in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
+            return;
+        }
 
         authnCtx.setSloBackTo(backTo);
         authnCtx.setSloRequest(request);
