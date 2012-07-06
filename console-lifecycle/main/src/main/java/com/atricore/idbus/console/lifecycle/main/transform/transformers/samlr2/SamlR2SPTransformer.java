@@ -122,7 +122,7 @@ public class SamlR2SPTransformer extends AbstractTransformer {
     @Override
     public Object after(TransformEvent event) throws TransformException {
 
-        ExternalServiceProvider provider = (ExternalServiceProvider) event.getData();
+        Saml2ServiceProvider provider = (Saml2ServiceProvider) event.getData();
         IdProjectModule module = event.getContext().getCurrentModule();
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans spBeans = (Beans) event.getContext().get("spBeans");

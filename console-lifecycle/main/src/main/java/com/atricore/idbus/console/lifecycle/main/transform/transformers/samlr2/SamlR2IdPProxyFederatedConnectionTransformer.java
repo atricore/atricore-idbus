@@ -28,7 +28,9 @@ import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2AuthnResponseToSP
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.federation.*;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
@@ -57,6 +59,8 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
     protected String contextSPChannelBean = "spSsoProxyChannelBean";
 
     protected String contextIdPChannelBean = "idpSsoProxyChannelBean";
+
+    protected String contextBindingChannelBean = "bindingSsoProxyChannelBean";
 
     private boolean roleA;
 
@@ -141,10 +145,10 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         Beans idpProxyBeans = (Beans) event.getContext().get("idpProxyBeans");
 
-        // TODO : Get generated SP proxy and IDP Channel proxy
+        // Generated SP proxy and IDP Channel proxy
         generateIdPComponents(event, idpProxyBeans, remoteIdentityProvider, spChannel, localServiceProvider, idpChannel, federatedConnection, event.getContext());
 
-        // TODO : Get generated IDP proxy and SP Channel proxy
+        // Generated IDP proxy and SP Channel proxy
         generateSPComponents(event, idpProxyBeans, localServiceProvider,  idpChannel, remoteIdentityProvider, spChannel, federatedConnection, event.getContext());
 
     }
@@ -155,6 +159,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         Bean idpChannelBean = (Bean) event.getContext().get(contextIdPChannelBean);
         Bean spChannelBean = (Bean) event.getContext().get(contextSPChannelBean);
+        Bean bindingChannelBean = (Bean) event.getContext().get(contextBindingChannelBean);
         Beans idpProxyBeans = (Beans) event.getContext().get("idpProxyBeans");
 
         // Mediation Unit
@@ -165,6 +170,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
             List<Bean> channels = getPropertyBeans(beans, mu, "channels");
             boolean foundIdp = false;
             boolean foundSp = false;
+            boolean foundBc = false;
 
             if (channels != null)
                 for (Bean bean : channels) {
@@ -174,6 +180,10 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
                     if (getPropertyValue(bean, "name").equals(getPropertyValue(spChannelBean, "name"))) {
                         foundSp = true;
                     }
+                    if (getPropertyValue(bean, "name").equals(getPropertyValue(bindingChannelBean, "name"))) {
+                        foundBc = true;
+                    }
+
 
                 }
 
@@ -182,6 +192,9 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
             if (!foundSp)
                 addPropertyBeansAsRefs(mu, "channels", spChannelBean);
+
+            if (!foundBc)
+                addPropertyBeansAsRefs(mu, "channels", bindingChannelBean);
 
             return null;
 
@@ -314,6 +327,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         setPropertyRef(idpChannelBean, "sessionManager", spProxyBean.getName() + "-session-manager");
         setPropertyRef(idpChannelBean, "member", spMd.getName());
         setPropertyRef(idpChannelBean, "proxy", idpProxyBean.getName() + "-sso-default-channel");
+        setPropertyValue(idpChannelBean, "proxyModeEnabled", true);
 
         // identityMediator
         Bean identityMediatorBean = getBean(spBeans, spProxyBean.getName() + "-samlr2-mediator");
@@ -643,8 +657,9 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         }
 
         setPropertyAsBeans(idpChannelBean, "endpoints", endpoints);
-
         setPropertyRef(spSsoSvcBean, "channel", idpChannelBean.getName());
+
+
     }
 
 
@@ -736,7 +751,6 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         }
 
-
         // COT Member Descriptor
         String mdName = idpProxyBean.getName() + "-md";
         if (spChannel != null) {
@@ -774,7 +788,8 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         setPropertyRef(spChannelBean, "sessionManager", idpProxyBean.getName() + "-session-manager");
         setPropertyRef(spChannelBean, "identityManager", idpProxyBean.getName() + "-identity-manager");
         setPropertyRef(spChannelBean, "member", idpMd.getName());
-        setPropertyRef(spChannelBean, "proxy", spProxyBean.getName() + "-sso-default-channel");
+        // Set bellow, when creating binding channel : setPropertyRef(spChannelBean, "proxy", <binding-channel>);
+        setPropertyValue(spChannelBean, "proxyModeEnabled", true);
 
         // identityMediator
         Bean identityMediatorBean = getBean(idpBeans, idpProxyBean.getName() + "-samlr2-mediator");
@@ -1226,6 +1241,90 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         setPropertyAsBeans(spChannelBean, "endpoints", endpoints);
         setPropertyRef(idpSsoSvcBean, "channel", spChannelBean.getName());
+
+        // -----------------------------------------------------------------------------------------
+        // SP Channel binding
+        // -----------------------------------------------------------------------------------------
+        String bindingChannelName = idpProxyBean.getName() +  "-binding-channel";
+
+        setPropertyRef(spChannelBean, "proxy", bindingChannelName);
+        setPropertyRef(spProxyBean, "bindingChannel", bindingChannelName);
+
+        Bean bindingChannelBean = newBean(idpBeans, bindingChannelName, BindingChannelImpl.class.getName());
+        event.getContext().put(contextBindingChannelBean, bindingChannelBean);
+
+        setPropertyValue(bindingChannelBean, "name", bindingChannelName);
+        setPropertyValue(bindingChannelBean, "description", "IdP Proxy biding channel");
+        setPropertyRef(bindingChannelBean, "provider", normalizeBeanName(spProxyBean.getName()));
+
+
+        // Location
+        // Build a location for this channel, we use SP location as base
+        Location bindingChannelLocation = null;
+        {
+            Location bLocation = localServiceProvider.getLocation();
+
+            bindingChannelLocation = new Location();
+            bindingChannelLocation.setProtocol(bLocation.getProtocol());
+            bindingChannelLocation.setHost(bLocation.getHost());
+            bindingChannelLocation.setPort(bLocation.getPort());
+            bindingChannelLocation.setContext(bLocation.getContext());
+
+            // Don't use channel name since it's the default channel
+            bindingChannelLocation.setUri(appliance.getName().toUpperCase() + "/" + bindingChannelName.toUpperCase());
+
+        }
+
+        setPropertyValue(bindingChannelBean, "location", bindingChannelLocation.toString());
+        setPropertyRef(bindingChannelBean, "identityMediator", spProxyBean.getName() + "-samlr2-mediator");
+        setPropertyRef(bindingChannelBean, "unitContainer", appliance.getName() + "-container");
+
+        Bean spInitAuthnReqToSamlAuthnReqPlan = newBean(idpBeans, spProxyBean.getName() + "-spinitauthnreq-to-samlauthnreq-plan", SPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
+        setPropertyRef(spInitAuthnReqToSamlAuthnReqPlan, "bpmsManager", "bpms-manager");
+
+
+        // Binding endpoints
+        List<Bean> bEndpoints = new ArrayList<Bean>();
+
+        {
+            // SPInitiatedSingleSignOnServiceProxy
+            Bean spInitSsoProxy = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            spInitSsoProxy.setName(spChannelBean.getName() + "-sso-spinitpxy-artifact");
+            setPropertyValue(spInitSsoProxy, "name", spInitSsoProxy.getName());
+            setPropertyValue(spInitSsoProxy, "type", SSOMetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME.toString());
+            setPropertyValue(spInitSsoProxy, "binding", SSOBinding.SSO_ARTIFACT.getValue());
+            setPropertyValue(spInitSsoProxy, "location", "/SSO/SPINITPXY/ARTIFACT");
+            List<Ref>plansList = new ArrayList<Ref>();
+            Ref plan = new Ref();
+            plan.setBean(spInitAuthnReqToSamlAuthnReqPlan.getName());
+            plansList.add(plan);
+            setPropertyRefs(spInitSsoProxy, "identityPlans", plansList);
+            bEndpoints.add(spInitSsoProxy);
+        }
+
+        {
+            // Session Heart-Beat SOAP
+            Bean spSessionHBeatSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            spSessionHBeatSoap.setName(spChannelBean.getName() + "-sso-sshb-soap");
+            setPropertyValue(spSessionHBeatSoap, "name", spSessionHBeatSoap.getName());
+            setPropertyValue(spSessionHBeatSoap, "type", SSOMetadataConstants.SPSessionHeartBeatService_QNAME.toString());
+            setPropertyValue(spSessionHBeatSoap, "binding", SSOBinding.SSO_SOAP.getValue());
+            setPropertyValue(spSessionHBeatSoap, "location", "/SSO/SSHB/SOAP");
+            bEndpoints.add(spSessionHBeatSoap);
+        }
+
+        {
+            // Session Heart-Beat LOCAL
+            Bean spSessionHBeatLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            spSessionHBeatLocal.setName(spChannelBean.getName() + "-sso-sshb-local");
+            setPropertyValue(spSessionHBeatLocal, "name", spSessionHBeatLocal.getName());
+            setPropertyValue(spSessionHBeatLocal, "type", SSOMetadataConstants.SPSessionHeartBeatService_QNAME.toString());
+            setPropertyValue(spSessionHBeatLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
+            setPropertyValue(spSessionHBeatLocal, "location", "/SSO/SSHB/LOCAL");
+            bEndpoints.add(spSessionHBeatLocal);
+        }
+
+        setPropertyAsBeans(bindingChannelBean, "endpoints", bEndpoints);
 
     }
 

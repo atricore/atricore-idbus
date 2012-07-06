@@ -31,6 +31,7 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
     public void before(TransformEvent event) throws TransformException {
         // Define partenr apps in Binding provider
         JOSSO1Resource josso1Resource = (JOSSO1Resource) event.getData();
+        ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
 
         Beans bpBeans = (Beans) event.getContext().get("bpBeans");
         Collection<Bean> bpMediators = getBeansOfType(bpBeans, JossoMediator.class.getName());
@@ -52,7 +53,7 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
         }
 
         Value partnerappKeyValue = new Value();
-        partnerappKeyValue.getContent().add(josso1Resource.getPartnerAppId());
+        partnerappKeyValue.getContent().add(sp.getName());
         Key partnerappKeyBean = new Key();
         partnerappKeyBean.getBeenAndRevesAndIdreves().add(partnerappKeyValue);
 
@@ -61,9 +62,8 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
         Bean partnerappBean = newAnonymousBean(PartnerAppMapping.class);
         partnerappBean.setName(bpBean.getName() + "-" + josso1Resource.getName() + "-partnerapp-mapping");
 
-        setPropertyValue(partnerappBean, "partnerAppId", josso1Resource.getPartnerAppId());
+        setPropertyValue(partnerappBean, "partnerAppId", sp.getName());
 
-        ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
         IdentityProviderChannel preferredIdpChannel = null;
         for (FederatedConnection fc : sp.getFederatedConnectionsA()) {
             IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelA();
@@ -103,7 +103,7 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
             Bean cfgBean = getPropertyBean(agentBean, "configuration");
             Bean agentAppBean = newAnonymousBean("org.josso.agent.SSOPartnerAppConfig");
 
-            setPropertyValue(agentAppBean, "id", josso1Resource.getPartnerAppId());
+            setPropertyValue(agentAppBean, "id", sp.getName());
             setPropertyValue(agentAppBean, "vhost", josso1Resource.getPartnerAppLocation().getHost());
             setPropertyValue(agentAppBean, "context",
                     (!josso1Resource.getPartnerAppLocation().getContext().startsWith("/") ? "/" : "") +

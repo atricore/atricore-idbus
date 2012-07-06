@@ -151,13 +151,14 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
                         if (sp.getServiceConnection().getResource() instanceof JOSSO1Resource) {
                             
                             JOSSO1Resource r = (JOSSO1Resource) sp.getServiceConnection().getResource();
-                            
+
                             ExecutionEnvironment execEnv = r.getActivation().getExecutionEnv();
                             sb.append("\n");
                             sb.append("            ");
                             sb.append(getNameString(execEnv.getName(), 10));
-    
-                            sb.append(getNameString(r.getPartnerAppId()));
+
+                            // SP and App ID MUST match
+                            sb.append(getNameString(sp.getName()));
                             sb.append(" JOSSO 1.x");
                             sb.append(execEnv.getPlatformId());
                             sb.append(" ");

@@ -25,8 +25,6 @@
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
@@ -41,8 +39,6 @@
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
-                com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
@@ -66,8 +62,6 @@
               <a-hint>
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
@@ -83,8 +77,6 @@
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
@@ -256,16 +248,6 @@
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO</class-b>
-    </mapping>
-
-    <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO</class-b>
-    </mapping>
-
-    <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO</class-b>
     </mapping>
@@ -406,8 +388,6 @@
               <a-hint>
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
@@ -422,8 +402,6 @@
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
@@ -455,8 +433,6 @@
               <a-hint>
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
@@ -471,8 +447,6 @@
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
@@ -746,8 +720,6 @@
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
@@ -762,8 +734,6 @@
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
-                com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
@@ -782,8 +752,6 @@
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalIdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
@@ -798,8 +766,6 @@
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.ExternalIdentityProviderDTO,
-                com.atricore.idbus.console.services.dto.ExternalServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,

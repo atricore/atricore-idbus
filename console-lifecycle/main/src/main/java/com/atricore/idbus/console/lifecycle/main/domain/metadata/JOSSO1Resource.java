@@ -11,6 +11,7 @@ public class JOSSO1Resource extends ServiceResource {
 
     private static final long serialVersionUID = -206643640681397571L;
 
+    @Deprecated // SP Name MUST be used instead
     private String partnerAppId;
 
     private Location partnerAppLocation;
@@ -20,10 +21,12 @@ public class JOSSO1Resource extends ServiceResource {
     // TODO : Add other properties used to create JOSSO Agent config (PHP, ISAPI, Java, etc)
     // TODO : Add ACS location, SLO location (SEE JOSSO1ResourceBindingTransformer)
 
+    @Deprecated // SP Name MUST be used instead
     public String getPartnerAppId() {
         return partnerAppId;
     }
 
+    @Deprecated // SP Name MUST be used instead
     public void setPartnerAppId(String partnerAppId) {
         this.partnerAppId = partnerAppId;
     }

@@ -263,21 +263,6 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
-    public void arrive(ExternalIdentityProvider node) throws Exception {
-        validateName("IDP name", node.getName(), node);
-        validateDisplayName("IDP display name", node.getDisplayName());
-        validateMetadata("Metadata", node.getMetadata(), node);
-    }
-
-    @Override
-    public void arrive(ExternalServiceProvider node) throws Exception {
-        validateName("SP name", node.getName(), node);
-        validateDisplayName("SP display name", node.getDisplayName());
-        validateMetadata("Metadata", node.getMetadata(), node);
-        validateIDPChannels(node);
-    }
-
-    @Override
     public void arrive(Saml2IdentityProvider node) throws Exception {
         validateName("Saml2 IDP name", node.getName(), node);
         validateDisplayName("Saml2 IDP display name", node.getDisplayName());
@@ -644,8 +629,10 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     public void arrive(JOSSO1Resource node) throws Exception {
         validateName("JOSSO1 Resource name" , node.getName(), node);
 
+        /*
         if (node.getPartnerAppId() == null)
             addError("JOSSO1 Resource partner app. ID cannot be null");
+        */
 
         validateLocation("JOSSO1 Resource partner app.", node.getPartnerAppLocation(), node, false);
 
@@ -679,7 +666,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.isOverrideProviderSetup())
             validateLocation("Identity Provider channel ", node.getLocation(), node, true);
 
-        // validate policies only for ServiceProvider (not for ExternalServiceProvider)
+        // validate policies only for ServiceProvider (not for Saml2ServiceProvider)
         if ((node.getConnectionA() != null && node.getConnectionA().getRoleA() instanceof ServiceProvider) ||
                 (node.getConnectionB() != null && node.getConnectionB().getRoleB() instanceof ServiceProvider)) {
             if (node.getAccountLinkagePolicy() == null)
@@ -881,9 +868,9 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 MetadataUtil.findEntityId(md);
                 // find SSODescriptor
                 String descriptorName = null;
-                if (obj instanceof ExternalIdentityProvider || obj instanceof Saml2IdentityProvider) {
+                if (obj instanceof Saml2IdentityProvider) {
                     descriptorName = "IDPSSODescriptor";
-                } else if (obj instanceof ExternalServiceProvider || obj instanceof Saml2ServiceProvider) {
+                } else if (obj instanceof Saml2ServiceProvider) {
                     descriptorName = "SPSSODescriptor";
                 }
                 MetadataUtil.findSSODescriptor(md, descriptorName);

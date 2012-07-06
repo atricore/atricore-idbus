@@ -64,12 +64,12 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
 
         setPropertyValue(bc, "name", bc.getName());
         setPropertyValue(bc, "description", "JOSSO 1 Resource binding channel for " + sp.getName() + " :  " +
-                josso1Resource.getName() + "[appId:"+josso1Resource.getPartnerAppId()+"]");
+                josso1Resource.getName() + "[appId:"+sp.getName()+"]");
 
         setPropertyRef(bc, "unitContainer", sp.getIdentityAppliance().getName() + "-container");
 
         setPropertyRef(bc, "provider", spBean.getName());
-        setPropertyValue(bc, "location", resolveLocationUrl(sp) + "/" + josso1Resource.getPartnerAppId().toUpperCase());
+        setPropertyValue(bc, "location", resolveLocationUrl(sp) + "/" + sp.getName().toUpperCase());
 
         setPropertyRef(bc, "identityMediator", spBean.getName() + "-samlr2-mediator");
 

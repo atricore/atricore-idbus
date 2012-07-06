@@ -84,12 +84,15 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         ServiceProvider provider = (ServiceProvider) event.getData();
 
         FederatedProvider preferredIdp = null;
+        FederatedConnection preferredIdpConnection = null;
         ServiceProviderChannel preferredSpChannel = null;
+
         for (FederatedConnection fc : provider.getFederatedConnectionsA()) {
             IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelA();
             if (idpc.isPreferred()) {
                 preferredIdp = (FederatedProvider) fc.getRoleB();
                 preferredSpChannel = (ServiceProviderChannel) fc.getChannelB();
+                preferredIdpConnection = fc;
                 break;
             }
         }
@@ -100,6 +103,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
                 if (idpc.isPreferred()) {
                     preferredIdp = (FederatedProvider) fc.getRoleA();
                     preferredSpChannel = (ServiceProviderChannel) fc.getChannelA();
+                    preferredIdpConnection = fc;
                     break;
                 }
             }
@@ -180,7 +184,8 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         if (preferredIdp != null) {
             if (preferredIdp instanceof IdentityProvider) {
                 setPropertyValue(spMediator, "preferredIdpAlias", resolveLocationUrl(preferredIdp, preferredSpChannel) + "/SAML2/MD");
-            } else if (preferredIdp instanceof ExternalIdentityProvider) {
+            } else if (preferredIdp instanceof Saml2IdentityProvider) {
+
                 try {
                     MetadataDefinition md = MetadataUtil.loadMetadataDefinition(preferredIdp.getMetadata().getValue());
                     setPropertyValue(spMediator, "preferredIdpAlias", MetadataUtil.findEntityId(md));
