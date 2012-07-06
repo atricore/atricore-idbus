@@ -32,6 +32,10 @@
         <utils:URLPartValidator id="domainValidator" source="{idpChannelLocationDomain}" required="true" property="text" />
         <utils:URLPartValidator id="contextValidator" source="{idpChannelLocationContext}" required="true" property="text"/>
         <utils:URLMultipartValidator id="pathValidator" source="{idpChannelLocationPath}" required="true" property="text"/>
+        <mx:NumberValidator id="idpChannelMessageTtlValidator" source="{idpChannelMessageTtl}" required="true" property="text" minValue="0"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.ttlValidationError')}"/>
+        <mx:NumberValidator id="idpChannelMessageTtlToleranceValidator" source="{idpChannelMessageTtlTolerance}" required="true" property="text" minValue="0"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.ttlValidationError')}"/>
     </fx:Declarations>
 
     <utils:TitledBorderBox title="Contract" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
@@ -63,6 +67,14 @@
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantAssertionSigned')}:" labelWidth="235">
                     <s:CheckBox id="wantAssertionSignedCheck"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.messageTtl')}:" labelWidth="235">
+                    <s:TextInput id="idpChannelMessageTtl"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.messageTtlTolerance')}:" labelWidth="235">
+                    <s:TextInput id="idpChannelMessageTtlTolerance"/>
                 </mx:FormItem>
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.location')}:"

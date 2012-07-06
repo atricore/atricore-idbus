@@ -46,6 +46,10 @@ public class ServiceProviderDTO extends FederatedProviderDTO {
 
     private boolean wantSignedRequests;
 
+    private int messageTtl;
+
+    private int messageTtlTolerance;
+
     @Override
     public ProviderRoleDTO getRole() {
         return ProviderRoleDTO.SSOServiceProvider;
@@ -126,5 +130,21 @@ public class ServiceProviderDTO extends FederatedProviderDTO {
 
     public void setWantSignedRequests(boolean wantSignedRequests) {
         this.wantSignedRequests = wantSignedRequests;
+    }
+
+    public int getMessageTtl() {
+        return messageTtl;
+    }
+
+    public void setMessageTtl(int messageTtl) {
+        this.messageTtl = messageTtl;
+    }
+
+    public int getMessageTtlTolerance() {
+        return messageTtlTolerance;
+    }
+
+    public void setMessageTtlTolerance(int messageTtlTolerance) {
+        this.messageTtlTolerance = messageTtlTolerance;
     }
 }

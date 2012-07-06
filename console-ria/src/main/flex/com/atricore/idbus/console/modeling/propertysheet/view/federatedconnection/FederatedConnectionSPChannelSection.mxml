@@ -41,6 +41,10 @@
         <utils:URLPartValidator id="domainValidator" source="{spChannelLocationDomain}" required="true" property="text" />
         <utils:URLPartValidator id="contextValidator" source="{spChannelLocationContext}" required="true" property="text"/>
         <utils:URLMultipartValidator id="pathValidator" source="{spChannelLocationPath}" required="true" property="text"/>
+        <mx:NumberValidator id="spChannelMessageTtlValidator" source="{spChannelMessageTtl}" required="true" property="text" minValue="0"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.ttlValidationError')}"/>
+        <mx:NumberValidator id="spChannelMessageTtlToleranceValidator" source="{spChannelMessageTtlTolerance}" required="true" property="text" minValue="0"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.ttlValidationError')}"/>
     </fx:Declarations>
 
     <utils:TitledBorderBox title="Contract" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
@@ -66,6 +70,14 @@
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.wantAuthnRequestsSigned')}:" labelWidth="235">
                 <s:CheckBox id="wantAuthnRequestsSignedCheck"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.messageTtl')}:" labelWidth="235">
+                <s:TextInput id="spChannelMessageTtl"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.messageTtlTolerance')}:" labelWidth="235">
+                <s:TextInput id="spChannelMessageTtlTolerance"/>
             </mx:FormItem>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.location')}:"

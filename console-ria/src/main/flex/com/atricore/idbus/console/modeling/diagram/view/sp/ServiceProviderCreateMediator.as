@@ -148,6 +148,8 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.samlProfileSLOCheck.selected = true;
         view.accountLinkagePolicyCombo.selectedIndex = 0;
         view.identityMappingPolicyCombo.selectedIndex = 0;
+        view.messageTtl.text = "300";
+        view.messageTtlTolerance.text = "300";
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
@@ -219,6 +221,8 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         serviceProvider.wantAssertionSigned = view.wantAssertionSignedCheck.selected;
         serviceProvider.signRequests = view.signRequestsCheck.selected;
         serviceProvider.wantSignedRequests = view.wantSignedRequestsCheck.selected;
+        serviceProvider.messageTtl = parseInt(view.messageTtl.text);
+        serviceProvider.messageTtlTolerance = parseInt(view.messageTtlTolerance.text);
 
         serviceProvider.activeBindings = new ArrayCollection();
         if(view.samlBindingHttpPostCheck.selected){
@@ -407,6 +411,8 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         _validators.push(view.domainValidator);
         _validators.push(view.contextValidator);
         _validators.push(view.pathValidator);
+        _validators.push(view.messageTtlValidator);
+        _validators.push(view.messageTtlToleranceValidator);
         if (view.uploadKeystore.selected) {
             _validators.push(view.certificateAliasValidator);
             _validators.push(view.keyAliasValidator);

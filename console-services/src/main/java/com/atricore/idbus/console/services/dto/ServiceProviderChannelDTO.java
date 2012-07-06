@@ -45,6 +45,10 @@ public class ServiceProviderChannelDTO extends FederatedChannelDTO {
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicyDTO subjectNameIDPolicy;
 
+    private int messageTtl;
+
+    private int messageTtlTolerance;
+
     public AttributeProfileDTO getAttributeProfile() {
         return attributeProfile;
     }
@@ -99,5 +103,21 @@ public class ServiceProviderChannelDTO extends FederatedChannelDTO {
 
     public void setSubjectNameIDPolicy(SubjectNameIdentifierPolicyDTO subjectNameIDPolicy) {
         this.subjectNameIDPolicy = subjectNameIDPolicy;
+    }
+
+    public int getMessageTtl() {
+        return messageTtl;
+    }
+
+    public void setMessageTtl(int messageTtl) {
+        this.messageTtl = messageTtl;
+    }
+
+    public int getMessageTtlTolerance() {
+        return messageTtlTolerance;
+    }
+
+    public void setMessageTtlTolerance(int messageTtlTolerance) {
+        this.messageTtlTolerance = messageTtlTolerance;
     }
 }

@@ -43,7 +43,11 @@ public class ServiceProviderChannel extends FederatedChannel {
     private AuthenticationAssertionEmissionPolicy emissionPolicy;
 
     private boolean wantAuthnRequestsSigned;
-    
+
+    private int messageTtl;
+
+    private int messageTtlTolerance;
+
     public AttributeProfile getAttributeProfile() {
         return attributeProfile;
     }
@@ -98,5 +102,21 @@ public class ServiceProviderChannel extends FederatedChannel {
 
     public void setSubjectNameIDPolicy(SubjectNameIdentifierPolicy subjectNameIDPolicy) {
         this.subjectNameIDPolicy = subjectNameIDPolicy;
+    }
+
+    public int getMessageTtl() {
+        return messageTtl;
+    }
+
+    public void setMessageTtl(int messageTtl) {
+        this.messageTtl = messageTtl;
+    }
+
+    public int getMessageTtlTolerance() {
+        return messageTtlTolerance;
+    }
+
+    public void setMessageTtlTolerance(int messageTtlTolerance) {
+        this.messageTtlTolerance = messageTtlTolerance;
     }
 }

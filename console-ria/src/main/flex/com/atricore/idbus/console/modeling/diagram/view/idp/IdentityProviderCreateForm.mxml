@@ -63,6 +63,13 @@
         <mx:StringValidator id="keystorePasswordValidator" source="{keystorePassword}" required="true" property="text"/>
         <mx:StringValidator id="keyPasswordValidator" source="{keyPassword}" required="true" property="text"/>
 
+        <mx:NumberValidator id="messageTtlValidator" source="{messageTtl}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click" minValue="0"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ttlValidationError')}"/>
+        <mx:NumberValidator id="messageTtlToleranceValidator" source="{messageTtlTolerance}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click" minValue="0"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ttlValidationError')}"/>
+
         <s:RadioButtonGroup id="certificateManagementType"/>
     </fx:Declarations>
 
@@ -175,6 +182,14 @@
 
                 <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.signRequests')}:">
                     <s:CheckBox id="signRequestsCheck" selected="false"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.messageTtl')}:">
+                    <s:TextInput id="messageTtl" text="300"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.messageTtlTolerance')}:">
+                    <s:TextInput id="messageTtlTolerance" text="300"/>
                 </mx:FormItem>
 
             </s:VGroup>
