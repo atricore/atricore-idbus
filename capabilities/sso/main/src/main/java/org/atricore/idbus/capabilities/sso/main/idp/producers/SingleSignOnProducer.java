@@ -844,28 +844,27 @@ public class SingleSignOnProducer extends SSOProducer {
         AuthnRequestType authnRequest = authnState.getAuthnRequest();
 
         // This is IDP-Initiated !!!
+        CircleOfTrustMemberDescriptor sp = null;
         if (authnRequest == null) {
-
+            // Now authn-request, this is IDP initiated, the authnState is probably new.
+            sp = resolveProviderDescriptor(((SPChannel) channel).getTargetProvider());
+            // TODO : Eitehr build an authn request, or deal with the fact that we don't have one.
+            authnRequest = buildIdPInitiatedAuthnRequest(exchange, )
+            authnState.setResponseMode("unsolicited");
+        } else {
+            NameIDType issuer = authnRequest.getIssuer();
+            sp = resolveProviderDescriptor(issuer);
         }
-
-        NameIDType issuer = authnRequest.getIssuer();
-        CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(issuer);
 
         String responseMode = authnState.getResponseMode();
         String responseFormat = authnState.getResponseFormat();
 
         if (responseMode != null && responseMode.equalsIgnoreCase("unsolicited")) {
-            logger.debug("Response Mode for Proxy Response " + authnRequest.getID() + " is unsolicited");
-            logger.debug("Response Format for Proxy Response " + authnRequest.getID() + " is " + responseFormat);
+            logger.debug("Response Mode for Proxy Response is unsolicited [" + (authnRequest != null ? authnRequest.getID() : "<NO-AUTHN-REQUEST>") + "]");
+            logger.debug("Response Format for Proxy Response is " + responseFormat + "[" + (authnRequest != null ? authnRequest.getID() : "<NO-AUTHN-REQUEST>") + "]");
         } else {
-            logger.debug("Response Mode for Proxy Response " + authnRequest.getID() + " is NOT unsolicited");
+            logger.debug("Response Mode for Proxy Response is NOT unsolicited [" + (authnRequest != null ? authnRequest.getID() : "<NO-AUTHN-REQUEST>") + "]");
         }
-
-
-        // ----------------------------------------------------
-        // Emit other tokens, depending on configured services:
-        // ----------------------------------------------------
-        IdentityProvider idp = (IdentityProvider) ((SPChannel) channel).getProvider();
 
         // ----------------------------------------------------
         // Emit new SAML Assertion, only if authn succeeded
@@ -875,6 +874,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             // Resolve SP endpoint
             EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
+
 
             List<SSOPolicyEnforcementStatement> stmts = null;
             AssertionType assertion = null;
@@ -1659,6 +1659,30 @@ public class SingleSignOnProducer extends SSOProducer {
 
     }
 
+    protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(FederatedProvider sp) {
+
+        FederatedLocalProvider spl = (FederatedLocalProvider) sp;
+
+        for (FederationChannel fChannel : spl.getChannels()) {
+            if (fChannel.getTargetProvider() != null) {
+
+                if ( fChannel.getTargetProvider().getName().equals(((SPChannel) channel).getProvider().getName())) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Selected SP Channel " + fChannel.getName() + " from provider " + sp);
+
+                    return fChannel.getMember();
+                }
+            }
+        }
+
+        if (logger.isTraceEnabled())
+            logger.trace("Selected SP Channel " + spl.getChannel().getName() + " from provider " + sp);
+
+        // Use default channel
+        return spl.getChannel().getMember();
+
+
+    }
 
     protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(NameIDType issuer) {
 
@@ -1668,11 +1692,6 @@ public class SingleSignOnProducer extends SSOProducer {
         }
 
         return getCotManager().lookupMemberByAlias(issuer.getValue());
-    }
-
-    protected MetadataEntry resolveSpMetadata() {
-        // TODO , Resolve SP Metadata entry!!!
-        return null;
     }
 
     protected EndpointDescriptor resolveSpAcsEndpoint(CamelMediationExchange exchange,
