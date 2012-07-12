@@ -206,7 +206,8 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
                                      ServiceProvider provider,
                                      IdentityProviderChannel idpChannel,
                                      Saml2IdentityProvider identityProvider,
-                                     Beans baseBeans, Beans idpProxyBeans,
+                                     Beans baseBeans,
+                                     Beans idpProxyBeans,
                                      Keystore signKs,
                                      Keystore encryptKs,
                                      String idauPath) throws TransformException {
@@ -259,22 +260,25 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         }
 
 
-        setPropertyValue(spMediator, "preferredIdpSSOBinding", SSOBinding.SAMLR2_POST.getValue());
-        setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_POST.getValue());
-        //setPropertyValue(spMediator, "preferredIdpSSOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
-        //setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
-
-        // TODO : [JOSSO-370] This might be null somewhere on the chain
-        ExecutionEnvironment execEnv = provider.getServiceConnection().getResource().getActivation().getExecutionEnv();
+        //setPropertyValue(spMediator, "preferredIdpSSOBinding", SSOBinding.SAMLR2_POST.getValue());
+        //setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_POST.getValue());
+        setPropertyValue(spMediator, "preferredIdpSSOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
+        setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
 
         IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
         IdentityApplianceDefinition applianceDef = provider.getIdentityAppliance();
 
-        String bpLocationPath = resolveLocationPath(applianceDef.getLocation()) + "/" + execEnv.getName().toUpperCase();
+
+
+        // Take IDP Proxy location and create ACS endpoints ...
+
+        Bean idpProxyBean = (Bean) event.getContext().get("idpProxyBean");
+        String bpLocationPath = "/IDBUS/" + appliance.getName().toUpperCase() + "/" + idpProxyBean.getName().toUpperCase();
         String bpLocation = resolveLocationBaseUrl(applianceDef.getLocation()) + bpLocationPath;
 
-        setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
-        setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLO/ARTIFACT");
+        // This is actually an IDP-Proxy endpoint IDBUS/DIAGEO/PROXY1-IDP
+        setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACSPROXY/ARTIFACT");
+        setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLOPROXY/ARTIFACT");
 
         setPropertyValue(spMediator, "logMessages", true);
 
@@ -496,6 +500,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         // ---------------------------------------------------------------------------------------------------
 
         Bean idpProxyBean = newBean(idpProxyBeans, idpName, IdentityProviderImpl.class);
+
         // Name
         setPropertyValue(idpProxyBean, "name", idpProxyBean.getName());
         setPropertyValue(idpProxyBean, "description", "IdP Proxy, facing inmternal SAML 2.0 SP " + localServiceProvider.getName());
@@ -827,6 +832,19 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         X509DataType signingX509Data = new X509DataType();
         String signingCertificate = "";
 
+        if (signKs != null) {
+            try {
+                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(signKs.getType()) ? "PKCS12" : "JKS");
+                byte[] keystore = signKs.getStore().getValue();
+                ks.load(new ByteArrayInputStream(keystore), signKs.getPassword().toCharArray());
+                Certificate signerCertificate = ks.getCertificate(signKs.getCertificateAlias());
+                StringWriter writer = new StringWriter();
+                CipherUtil.writeBase64Encoded(writer, signerCertificate.getEncoded());
+                signingCertificate = writer.toString();
+            } catch (Exception e) {
+                throw new TransformException(e);
+            }
+        }
 
         JAXBElement jaxbSigningX509Certificate = new JAXBElement(
                 new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),

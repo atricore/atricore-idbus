@@ -259,7 +259,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         }
         spSsoSvcBean = getBean(spBeans, spSsoSvcBeanName);
 
-        String idpChannelName = spProxyBean.getName() +  "-sso-default-channel";
+        String idpChannelName = spProxyBean.getName() +  "-sso-proxy-channel";
         String idauPath = (String) ctx.get("idauPath");
 
 
@@ -326,7 +326,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
             setPropertyRef(idpChannelBean, "targetProvider", normalizeBeanName(target.getName()));
         setPropertyRef(idpChannelBean, "sessionManager", spProxyBean.getName() + "-session-manager");
         setPropertyRef(idpChannelBean, "member", spMd.getName());
-        setPropertyRef(idpChannelBean, "proxy", idpProxyBean.getName() + "-sso-default-channel");
+        setPropertyRef(idpChannelBean, "proxy", idpProxyBean.getName() + "-sso-proxy-channel");
         setPropertyValue(idpChannelBean, "proxyModeEnabled", true);
 
         // identityMediator
@@ -723,7 +723,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         // See if we already defined the channel
         //---------------------------------------------
         // SP Channel name : <idp-name>-sso-<sp-channel-name>-sp-channel, sso service is the default, and the one this transformer generates
-        String spChannelName = idpProxyBean.getName() +  "-sso-default-channel";
+        String spChannelName = idpProxyBean.getName() +  "-sso-proxy-channel";
         String idauPath = (String) ctx.get("idauPath");
 
         // Check if we already created default service
@@ -783,13 +783,14 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         setPropertyValue(spChannelBean, "description", "SP Channel proxy " + spChannel.getName());
         setPropertyValue(spChannelBean, "location", spChannelLocation.toString());
         setPropertyRef(spChannelBean, "provider", normalizeBeanName(idpProxyBean.getName()));
-        if (spChannel != null)
-            setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(localServiceProvider.getName()));
+        // The name of the local SP
+        setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(localServiceProvider.getName()));
         setPropertyRef(spChannelBean, "sessionManager", idpProxyBean.getName() + "-session-manager");
         setPropertyRef(spChannelBean, "identityManager", idpProxyBean.getName() + "-identity-manager");
         setPropertyRef(spChannelBean, "member", idpMd.getName());
         // Set bellow, when creating binding channel : setPropertyRef(spChannelBean, "proxy", <binding-channel>);
         setPropertyValue(spChannelBean, "proxyModeEnabled", true);
+
 
         // identityMediator
         Bean identityMediatorBean = getBean(idpBeans, idpProxyBean.getName() + "-samlr2-mediator");
@@ -1167,6 +1168,53 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
             setPropertyRefs(idpSsoInit2, "identityPlans", plansList);
             endpoints.add(idpSsoInit2);
         }
+
+        // PROXY Endpoints:
+        {
+            // ACSPROXY
+            Bean acsPrxyArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            acsPrxyArtifact.setName(spChannelBean.getName() + "-sso-acspxy-artifact");
+            setPropertyValue(acsPrxyArtifact, "name", acsPrxyArtifact.getName());
+            setPropertyValue(acsPrxyArtifact, "type", SSOMetadataConstants.ProxyAssertionConsumerService_QName.toString());
+            setPropertyValue(acsPrxyArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
+            setPropertyValue(acsPrxyArtifact, "location", "/SSO/ACSPROXY/ARTIFACT");
+
+            /*
+            List<Ref> plansList = new ArrayList<Ref>();
+            Ref plan = new Ref();
+            plan.setBean(sloToSamlPlan.getName());
+            plansList.add(plan);
+            Ref plan2 = new Ref();
+            plan2.setBean(sloToSamlSpSloPlan.getName());
+            plansList.add(plan2);
+            setPropertyRefs(acsPrxyArtifact, "identityPlans", plansList);
+            */
+            endpoints.add(acsPrxyArtifact);
+
+
+        }
+
+        {
+            // TODO : SLOPROXY
+            //Bean acsPrxyArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            //acsPrxyArtifact.setName(spChannelBean.getName() + "-sso-slopxy-artifact");
+            //setPropertyValue(acsPrxyArtifact, "name", acsPrxyArtifact.getName());
+            //setPropertyValue(acsPrxyArtifact, "type", SSOMetadataConstants.ProxyAssertionConsumerService_QName.toString());
+            //setPropertyValue(acsPrxyArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
+            /*
+            List<Ref> plansList = new ArrayList<Ref>();
+            Ref plan = new Ref();
+            plan.setBean(sloToSamlPlan.getName());
+            plansList.add(plan);
+            Ref plan2 = new Ref();
+            plan2.setBean(sloToSamlSpSloPlan.getName());
+            plansList.add(plan2);
+            setPropertyRefs(acsPrxyArtifact, "identityPlans", plansList);
+            */
+            //endpoints.add(acsPrxyArtifact);
+
+        }
+
 
         // SessionHeartBeatService (non-saml)
 
