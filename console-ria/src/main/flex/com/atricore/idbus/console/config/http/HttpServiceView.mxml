@@ -51,6 +51,7 @@
         <mx:StringValidator id="sslKeyPasswordValidator" source="{sslKeyPassword}" required="true" property="text"/>
     </fx:Declarations>
 
+    <s:Scroller width="100%" height="100%">
     <s:Group width="100%" height="100%">
 
         <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
@@ -107,7 +108,7 @@
                 <s:CheckBox id="enableSSL"/>
             </mx:FormItem>
 
-            <utils:TitledBorderBox title="SSL" height="130" width="350" paddingLeft="5" paddingRight="5" paddingTop="15"
+            <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl')}" height="130" width="350" paddingLeft="5" paddingRight="5" paddingTop="15"
                                    paddingBottom="5">
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl.port')}:" labelWidth="125" required="true">
@@ -128,10 +129,76 @@
 
             </utils:TitledBorderBox>
 
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.followRedirects')}:" required="true">
+                <s:CheckBox id="followRedirects"/>
+            </mx:FormItem>
+
+            <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.followRedirects.includeExcludeURLs')}" width="350" height="290" paddingLeft="5" paddingRight="5" paddingTop="15"
+                                   paddingBottom="5">
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.followRedirects.includeURLs')}:" labelWidth="100" paddingTop="10">
+                    <mx:DataGrid id="includeFollowUrls" width="100%" height="100%" rowCount="4" sortableColumns="false" editable="true">
+                        <mx:columns>
+                            <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url')}" width="150" dataField="url"/>
+                            <mx:DataGridColumn headerText="" width="50" editable="false">
+                                <mx:itemRenderer>
+                                    <fx:Component>
+                                        <s:MXAdvancedDataGridItemRenderer>
+                                            <utils:IconButton iconUp="{EmbeddedIcons.removeNodeIcon}"
+                                                              iconWidth="16" iconHeight="16"
+                                                              paddingTop="3" paddingLeft="20"
+                                                              skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                              toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url.toolTips.remove')}"
+                                                              click="dispatchEvent(new IncludeExcludeURLGridEvent(true, true, data, IncludeExcludeURLGridEvent.ACTION_REMOVE_INCLUDE_URL));"
+                                                              visible="{data.url != HttpServiceMediator.ADD_URL}">
+                                                <fx:Script><![CDATA[
+                                                    import com.atricore.idbus.console.config.http.event.IncludeExcludeURLGridEvent;
+                                                    import com.atricore.idbus.console.main.EmbeddedIcons;
+                                                    ]]></fx:Script>
+                                            </utils:IconButton>
+                                        </s:MXAdvancedDataGridItemRenderer>
+                                    </fx:Component>
+                                </mx:itemRenderer>
+                            </mx:DataGridColumn>
+                        </mx:columns>
+                    </mx:DataGrid>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.followRedirects.excludeURLs')}:" labelWidth="100">
+                    <mx:DataGrid id="excludeFollowUrls" width="100%" height="100%" rowCount="4" sortableColumns="false" editable="true">
+                        <mx:columns>
+                            <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url')}" width="150" dataField="url"/>
+                            <mx:DataGridColumn headerText="" width="50" editable="false">
+                                <mx:itemRenderer>
+                                    <fx:Component>
+                                        <s:MXAdvancedDataGridItemRenderer>
+                                            <utils:IconButton iconUp="{EmbeddedIcons.removeNodeIcon}"
+                                                              iconWidth="16" iconHeight="16"
+                                                              paddingTop="3" paddingLeft="20"
+                                                              skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                              toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url.toolTips.remove')}"
+                                                              click="dispatchEvent(new IncludeExcludeURLGridEvent(true, true, data, IncludeExcludeURLGridEvent.ACTION_REMOVE_EXCLUDE_URL));"
+                                                              visible="{data.url != HttpServiceMediator.ADD_URL}">
+                                                <fx:Script><![CDATA[
+                                                    import com.atricore.idbus.console.config.http.event.IncludeExcludeURLGridEvent;
+                                                    import com.atricore.idbus.console.main.EmbeddedIcons;
+                                                    ]]></fx:Script>
+                                            </utils:IconButton>
+                                        </s:MXAdvancedDataGridItemRenderer>
+                                    </fx:Component>
+                                </mx:itemRenderer>
+                            </mx:DataGridColumn>
+                        </mx:columns>
+                    </mx:DataGrid>
+                </mx:FormItem>
+
+            </utils:TitledBorderBox>
+
             <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.save')}" enabled="false"/>
 
         </mx:Form>
 
     </s:Group>
+    </s:Scroller>
 
 </s:Panel>
