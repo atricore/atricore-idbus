@@ -1420,6 +1420,8 @@ public class PropertySheetMediator extends IocMediator {
             _ipSaml2Section.wantAuthnRequestsSignedCheck.selected = identityProvider.wantAuthnRequestsSigned;
             _ipSaml2Section.signRequestsCheck.selected = identityProvider.signRequests;
             _ipSaml2Section.wantSignedRequestsCheck.selected = identityProvider.wantSignedRequests;
+            _ipSaml2Section.messageTtl.text = identityProvider.messageTtl.toString();
+            _ipSaml2Section.messageTtlTolerance.text = identityProvider.messageTtlTolerance.toString();
 
             for (var j:int = 0; j < identityProvider.activeBindings.length; j ++) {
                 var tmpBinding:Binding = identityProvider.activeBindings.getItemAt(j) as Binding;
@@ -1464,6 +1466,12 @@ public class PropertySheetMediator extends IocMediator {
             _ipSaml2Section.wantAuthnRequestsSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipSaml2Section.signRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipSaml2Section.wantSignedRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipSaml2Section.messageTtl.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipSaml2Section.messageTtlTolerance.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_ipSaml2Section.messageTtlValidator);
+            _validators.push(_ipSaml2Section.messageTtlToleranceValidator);
         }
     }
 
@@ -1507,6 +1515,8 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.wantAuthnRequestsSigned = _ipSaml2Section.wantAuthnRequestsSignedCheck.selected;
             identityProvider.signRequests = _ipSaml2Section.signRequestsCheck.selected;
             identityProvider.wantSignedRequests = _ipSaml2Section.wantSignedRequestsCheck.selected;
+            identityProvider.messageTtl = parseInt(_ipSaml2Section.messageTtl.text);
+            identityProvider.messageTtlTolerance = parseInt(_ipSaml2Section.messageTtlTolerance.text);
 
             // update default sp channels
             if (identityProvider.federatedConnectionsA != null) {
@@ -2412,6 +2422,8 @@ public class PropertySheetMediator extends IocMediator {
             _spSaml2Section.wantAssertionSignedCheck.selected = serviceProvider.wantAssertionSigned;
             _spSaml2Section.signRequestsCheck.selected = serviceProvider.signRequests;
             _spSaml2Section.wantSignedRequestsCheck.selected = serviceProvider.wantSignedRequests;
+            _spSaml2Section.messageTtl.text = serviceProvider.messageTtl.toString();
+            _spSaml2Section.messageTtlTolerance.text = serviceProvider.messageTtlTolerance.toString();
 
             for (var j:int = 0; j < serviceProvider.activeBindings.length; j ++) {
                 var tmpBinding:Binding = serviceProvider.activeBindings.getItemAt(j) as Binding;
@@ -2464,6 +2476,12 @@ public class PropertySheetMediator extends IocMediator {
             _spSaml2Section.wantAssertionSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _spSaml2Section.signRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _spSaml2Section.wantSignedRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spSaml2Section.messageTtl.addEventListener(Event.CHANGE, handleSectionChange);
+            _spSaml2Section.messageTtlTolerance.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_spSaml2Section.messageTtlValidator);
+            _validators.push(_spSaml2Section.messageTtlToleranceValidator);
         }
     }
 
@@ -2505,6 +2523,8 @@ public class PropertySheetMediator extends IocMediator {
             serviceProvider.wantAssertionSigned = _spSaml2Section.wantAssertionSignedCheck.selected;
             serviceProvider.signRequests = _spSaml2Section.signRequestsCheck.selected;
             serviceProvider.wantSignedRequests = _spSaml2Section.wantSignedRequestsCheck.selected;
+            serviceProvider.messageTtl = parseInt(_spSaml2Section.messageTtl.text);
+            serviceProvider.messageTtlTolerance = parseInt(_spSaml2Section.messageTtlTolerance.text);
 
             // update default idp channels
             if (serviceProvider.federatedConnectionsA != null) {
@@ -5032,6 +5052,9 @@ public class PropertySheetMediator extends IocMediator {
 
             _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.selected = spChannel.wantAuthnRequestsSigned;
 
+            _federatedConnectionSPChannelSection.spChannelMessageTtl.text = spChannel.messageTtl.toString();
+            _federatedConnectionSPChannelSection.spChannelMessageTtlTolerance.text = spChannel.messageTtlTolerance.toString();
+
             if (spChannel.overrideProviderSetup) {
                 _federatedConnectionSPChannelSection.useInheritedIDPSettings.selected = false;
             }
@@ -5059,6 +5082,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.spChannelAuthAssertionEmissionPolicyCombo.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.ignoreRequestedNameIDPolicy.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionSPChannelSection.spChannelMessageTtl.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionSPChannelSection.spChannelMessageTtlTolerance.addEventListener(Event.CHANGE, handleSectionChange);
 
             //clear all existing validators and add sp channel section validators
             if (spChannel.overrideProviderSetup) {
@@ -5067,6 +5092,8 @@ public class PropertySheetMediator extends IocMediator {
                 _validators.push(_federatedConnectionSPChannelSection.domainValidator);
                 _validators.push(_federatedConnectionSPChannelSection.contextValidator);
                 _validators.push(_federatedConnectionSPChannelSection.pathValidator);
+                _validators.push(_federatedConnectionSPChannelSection.spChannelMessageTtlValidator);
+                _validators.push(_federatedConnectionSPChannelSection.spChannelMessageTtlToleranceValidator);
             }
         }
     }
@@ -5123,12 +5150,13 @@ public class PropertySheetMediator extends IocMediator {
             spChannel.location.context = _federatedConnectionSPChannelSection.spChannelLocationContext.text;
             spChannel.location.uri = _federatedConnectionSPChannelSection.spChannelLocationPath.text;
 
+            spChannel.messageTtl = parseInt(_federatedConnectionSPChannelSection.spChannelMessageTtl.text);
+            spChannel.messageTtlTolerance = parseInt(_federatedConnectionSPChannelSection.spChannelMessageTtlTolerance.text);
 
             if (!spChannel.overrideProviderSetup) {
                 spChannel.subjectNameIDPolicy = idp.subjectNameIDPolicy;
                 spChannel.ignoreRequestedNameIDPolicy = idp.ignoreRequestedNameIDPolicy;
-                spChannel.wantAuthnRequestsSigned = idp.wantAuthnRequestsSigned
-
+                spChannel.wantAuthnRequestsSigned = idp.wantAuthnRequestsSigned;
             } else {
                 spChannel.subjectNameIDPolicy = _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.selectedItem;
                 spChannel.ignoreRequestedNameIDPolicy = _federatedConnectionSPChannelSection.ignoreRequestedNameIDPolicy.selected;
@@ -5218,7 +5246,10 @@ public class PropertySheetMediator extends IocMediator {
 
             _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.selected = idpChannel.signAuthenticationRequests;
             _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.selected = idpChannel.wantAssertionSigned;
-            
+
+            _federatedConnectionIDPChannelSection.idpChannelMessageTtl.text = idpChannel.messageTtl.toString();
+            _federatedConnectionIDPChannelSection.idpChannelMessageTtlTolerance.text = idpChannel.messageTtlTolerance.toString();
+
             if (idpChannel.overrideProviderSetup) {
                 _federatedConnectionIDPChannelSection.useInheritedSPSettings.selected = false;
             }
@@ -5242,6 +5273,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.idpChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionIDPChannelSection.idpChannelMessageTtl.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionIDPChannelSection.idpChannelMessageTtlTolerance.addEventListener(Event.CHANGE, handleSectionChange);
             
             //clear all existing validators and add idp channel section validators
             if (idpChannel.overrideProviderSetup) {
@@ -5250,6 +5283,8 @@ public class PropertySheetMediator extends IocMediator {
                 _validators.push(_federatedConnectionIDPChannelSection.domainValidator);
                 _validators.push(_federatedConnectionIDPChannelSection.contextValidator);
                 _validators.push(_federatedConnectionIDPChannelSection.pathValidator);
+                _validators.push(_federatedConnectionIDPChannelSection.idpChannelMessageTtlValidator);
+                _validators.push(_federatedConnectionIDPChannelSection.idpChannelMessageTtlToleranceValidator);
             }
         }
     }
@@ -5326,6 +5361,9 @@ public class PropertySheetMediator extends IocMediator {
 
             idpChannel.signAuthenticationRequests = _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.selected;
             idpChannel.wantAssertionSigned = _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.selected;
+
+            idpChannel.messageTtl = parseInt(_federatedConnectionIDPChannelSection.idpChannelMessageTtl.text);
+            idpChannel.messageTtlTolerance = parseInt(_federatedConnectionIDPChannelSection.idpChannelMessageTtlTolerance.text);
 
             if (!idpChannel.overrideProviderSetup) {
                 idpChannel.accountLinkagePolicy = sp.accountLinkagePolicy;
@@ -8403,6 +8441,8 @@ public class PropertySheetMediator extends IocMediator {
             _validators.push(_federatedConnectionSPChannelSection.domainValidator);
             _validators.push(_federatedConnectionSPChannelSection.contextValidator);
             _validators.push(_federatedConnectionSPChannelSection.pathValidator);
+            _validators.push(_federatedConnectionSPChannelSection.spChannelMessageTtlValidator);
+            _validators.push(_federatedConnectionSPChannelSection.spChannelMessageTtlToleranceValidator);
 
             // Rebuild Location
             var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
@@ -8436,6 +8476,8 @@ public class PropertySheetMediator extends IocMediator {
             _validators.push(_federatedConnectionIDPChannelSection.domainValidator);
             _validators.push(_federatedConnectionIDPChannelSection.contextValidator);
             _validators.push(_federatedConnectionIDPChannelSection.pathValidator);
+            _validators.push(_federatedConnectionIDPChannelSection.idpChannelMessageTtlValidator);
+            _validators.push(_federatedConnectionIDPChannelSection.idpChannelMessageTtlToleranceValidator);
 
             // Rebuild Location
             var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
@@ -8470,6 +8512,9 @@ public class PropertySheetMediator extends IocMediator {
 
         _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.selected = sp.signAuthenticationRequests;
         _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.selected = sp.wantAssertionSigned;
+
+        _federatedConnectionIDPChannelSection.idpChannelMessageTtl.text = sp.messageTtl.toString();
+        _federatedConnectionIDPChannelSection.idpChannelMessageTtlTolerance.text = sp.messageTtlTolerance.toString();
 
         _federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected = false;
         _federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected = false;
@@ -8564,6 +8609,9 @@ public class PropertySheetMediator extends IocMediator {
         }
 
         _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.selected = idp.wantAuthnRequestsSigned;
+
+        _federatedConnectionSPChannelSection.spChannelMessageTtl.text = idp.messageTtl.toString();
+        _federatedConnectionSPChannelSection.spChannelMessageTtlTolerance.text = idp.messageTtlTolerance.toString();
         
         _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected = false;
         _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected = false;
@@ -8646,6 +8694,9 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.enabled = false;
             _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.enabled = false;
 
+            _federatedConnectionIDPChannelSection.idpChannelMessageTtl.enabled = false;
+            _federatedConnectionIDPChannelSection.idpChannelMessageTtlTolerance.enabled = false;
+
 //            view.authMechanism.enabled = false;
 //            view.configureAuthMechanism.enabled = false;
             _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.enabled = false;
@@ -8668,6 +8719,9 @@ public class PropertySheetMediator extends IocMediator {
 
             _federatedConnectionIDPChannelSection.signAuthnRequestsCheck.enabled = true;
             _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.enabled = true;
+
+            _federatedConnectionIDPChannelSection.idpChannelMessageTtl.enabled = true;
+            _federatedConnectionIDPChannelSection.idpChannelMessageTtlTolerance.enabled = true;
 
 //            view.authMechanism.enabled = true;
 //            view.configureAuthMechanism.enabled = true;
@@ -8702,6 +8756,9 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.spChannelAuthMechanism.enabled = false;
             _federatedConnectionSPChannelSection.spChannelAuthAssertionEmissionPolicyCombo.enabled = false;
 
+            _federatedConnectionSPChannelSection.spChannelMessageTtl.enabled = false;
+            _federatedConnectionSPChannelSection.spChannelMessageTtlTolerance.enabled = false;
+
             _federatedConnectionSPChannelSection.spChannelLocationProtocol.enabled = false;
             _federatedConnectionSPChannelSection.spChannelLocationDomain.enabled = false;
             _federatedConnectionSPChannelSection.spChannelLocationPort.enabled = false;
@@ -8720,10 +8777,12 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.enabled = true;
             _federatedConnectionSPChannelSection.ignoreRequestedNameIDPolicy.enabled = true;
 
-            
             _federatedConnectionSPChannelSection.spChannelAuthContractCombo.enabled = true;
             _federatedConnectionSPChannelSection.spChannelAuthMechanism.enabled = false; //dont enable auth mechanism
             _federatedConnectionSPChannelSection.spChannelAuthAssertionEmissionPolicyCombo.enabled = true;
+
+            _federatedConnectionSPChannelSection.spChannelMessageTtl.enabled = true;
+            _federatedConnectionSPChannelSection.spChannelMessageTtlTolerance.enabled = true;
 
             _federatedConnectionSPChannelSection.spChannelLocationProtocol.enabled = true;
             _federatedConnectionSPChannelSection.spChannelLocationDomain.enabled = true;

@@ -41,6 +41,10 @@ public class IdentityProviderChannel extends FederatedChannel {
 
     private boolean wantAssertionSigned;
     
+    private int messageTtl;
+    
+    private int messageTtlTolerance;
+
     public AccountLinkagePolicy getAccountLinkagePolicy() {
         return accountLinkagePolicy;
     }
@@ -99,5 +103,21 @@ public class IdentityProviderChannel extends FederatedChannel {
 
     public void setWantAssertionSigned(boolean wantAssertionSigned) {
         this.wantAssertionSigned = wantAssertionSigned;
+    }
+
+    public int getMessageTtl() {
+        return messageTtl;
+    }
+
+    public void setMessageTtl(int messageTtl) {
+        this.messageTtl = messageTtl;
+    }
+
+    public int getMessageTtlTolerance() {
+        return messageTtlTolerance;
+    }
+
+    public void setMessageTtlTolerance(int messageTtlTolerance) {
+        this.messageTtlTolerance = messageTtlTolerance;
     }
 }
