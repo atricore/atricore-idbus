@@ -161,9 +161,9 @@
                 com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.JEEExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.WebserverExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.Sharepoint2010ExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.ColdfusionExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.MicroStrategyExecutionEnvironmentDTO
+                com.atricore.idbus.console.services.dto.SharepointResourceDTO,
+                com.atricore.idbus.console.services.dto.ColdfusionResourceDTO,
+                com.atricore.idbus.console.services.dto.MicroStrategyResourceDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -668,17 +668,17 @@
 
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Sharepoint2010ExecutionEnvironment</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.Sharepoint2010ExecutionEnvironmentDTO</class-b>
+        <class-b>com.atricore.idbus.console.services.dto.SharepointResourceDTO</class-b>
     </mapping>
 
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ColdfusionExecutionEnvironment</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.ColdfusionExecutionEnvironmentDTO</class-b>
+        <class-b>com.atricore.idbus.console.services.dto.ColdfusionResourceDTO</class-b>
     </mapping>
 
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.MicroStrategyExecutionEnvironment</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.MicroStrategyExecutionEnvironmentDTO</class-b>
+        <class-b>com.atricore.idbus.console.services.dto.MicroStrategyResourceDTO</class-b>
     </mapping>
 
     <mapping>

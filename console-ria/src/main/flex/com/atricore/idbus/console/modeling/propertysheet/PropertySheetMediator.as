@@ -118,7 +118,7 @@ import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.BindAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.Channel;
-import com.atricore.idbus.console.services.dto.ColdfusionExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.ColdfusionResource;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
@@ -150,7 +150,7 @@ import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Location;
-import com.atricore.idbus.console.services.dto.MicroStrategyExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.MicroStrategyResource;
 import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
 import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
@@ -168,7 +168,7 @@ import com.atricore.idbus.console.services.dto.ServiceConnection;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.ServiceResource;
-import com.atricore.idbus.console.services.dto.Sharepoint2010ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.SharepointResource;
 import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
@@ -507,6 +507,12 @@ public class PropertySheetMediator extends IocMediator {
                         enableJOSSO1ResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is JOSSO2Resource) {
                         enableJOSSO2ResourcePropertyTabs();
+                    } else if (_currentIdentityApplianceElement is SharepointResource) {
+                        enableSharepoint2010ExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is ColdfusionResource) {
+                        enableColdfusionExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is MicroStrategyResource) {
+                        enableMicroStrategyExecEnvPropertyTabs();
                     }
                 } else if (_currentIdentityApplianceElement is FederatedConnection) {
                     enableFederatedConnectionPropertyTabs();
@@ -545,14 +551,7 @@ public class PropertySheetMediator extends IocMediator {
                         enablePhpBBExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is WebserverExecutionEnvironment) {
                         enableWebserverExecEnvPropertyTabs();
-                    } else if (_currentIdentityApplianceElement is Sharepoint2010ExecutionEnvironment) {
-                        enableSharepoint2010ExecEnvPropertyTabs();
-                    } else if (_currentIdentityApplianceElement is ColdfusionExecutionEnvironment) {
-                        enableColdfusionExecEnvPropertyTabs();
-                    } else if (_currentIdentityApplianceElement is MicroStrategyExecutionEnvironment) {
-                        enableMicroStrategyExecEnvPropertyTabs();
                     }
-
                 }
                 break;
             case FolderExistsCommand.FOLDER_EXISTS:
@@ -7257,37 +7256,40 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handleSharepoint2010ExecEnvCorePropertyTabCreationComplete(event:Event):void {
-        var sharepoint2010ExecEnv:Sharepoint2010ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as Sharepoint2010ExecutionEnvironment;
+        var sharepointResource:SharepointResource = projectProxy.currentIdentityApplianceElement as SharepointResource;
 
-        if (sharepoint2010ExecEnv != null) {
+        if (sharepointResource != null) {
             // bind view
-            _sharepoint2010ExecEnvCoreSection.executionEnvironmentName.text = sharepoint2010ExecEnv.name;
-            _sharepoint2010ExecEnvCoreSection.executionEnvironmentDescription.text = sharepoint2010ExecEnv.description;
-            //_sharepoint2010ExecEnvCoreSection.executionEnvironmentType.text = sharepoint2010ExecEnv.containerType;
+            _sharepoint2010ExecEnvCoreSection.executionEnvironmentName.text = sharepointResource.name;
+            _sharepoint2010ExecEnvCoreSection.executionEnvironmentDescription.text = sharepointResource.description;
+            //_sharepoint2010ExecEnvCoreSection.executionEnvironmentType.text = sharepointResource.containerType;
 
+            /*
             for(var i:int=0; i < _sharepoint2010ExecEnvCoreSection.platform.dataProvider.length; i++){
-                if(_sharepoint2010ExecEnvCoreSection.platform.dataProvider[i].data == sharepoint2010ExecEnv.platformId){
+                if(_sharepoint2010ExecEnvCoreSection.platform.dataProvider[i].data == sharepointResource.platformId){
                     _sharepoint2010ExecEnvCoreSection.platform.selectedIndex = i;
                     break;
                 }
             }
 
             for (var j:int=0; j < _sharepoint2010ExecEnvCoreSection.selectedHost.dataProvider.length; j++) {
-                if (_sharepoint2010ExecEnvCoreSection.selectedHost.dataProvider[j].data == sharepoint2010ExecEnv.type.toString()) {
+                if (_sharepoint2010ExecEnvCoreSection.selectedHost.dataProvider[j].data == sharepointResource.type.toString()) {
                     _sharepoint2010ExecEnvCoreSection.selectedHost.selectedIndex = j;
                     break;
                 }
             }
+            */
 
             if (_sharepoint2010ExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
                 _sharepoint2010ExecEnvCoreSection.locationItem.includeInLayout = true;
                 _sharepoint2010ExecEnvCoreSection.locationItem.visible = true;
             }
 
-            _sharepoint2010ExecEnvCoreSection.homeDirectory.text = sharepoint2010ExecEnv.installUri;
-            if (sharepoint2010ExecEnv.type.name == ExecEnvType.REMOTE.name)
-                _sharepoint2010ExecEnvCoreSection.location.text = sharepoint2010ExecEnv.location;
-
+            /*
+            _sharepoint2010ExecEnvCoreSection.homeDirectory.text = sharepointResource.installUri;
+            if (sharepointResource.type.name == ExecEnvType.REMOTE.name)
+                _sharepoint2010ExecEnvCoreSection.location.text = sharepointResource.location;
+            */
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
 
@@ -7340,20 +7342,22 @@ public class PropertySheetMediator extends IocMediator {
 
     private function sharepoint2010Save(): void {
          // bind model
-        var sharepoint2010ExecEnv:Sharepoint2010ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as Sharepoint2010ExecutionEnvironment;
-        sharepoint2010ExecEnv.name = _sharepoint2010ExecEnvCoreSection.executionEnvironmentName.text;
-        sharepoint2010ExecEnv.description = _sharepoint2010ExecEnvCoreSection.executionEnvironmentDescription.text;
-        //sharepoint2010ExecEnv.containerType = _sharepoint2010ExecEnvCoreSection.executionEnvironmentType.text;
+        var sharepointResource:SharepointResource = projectProxy.currentIdentityApplianceElement as SharepointResource;
+        sharepointResource.name = _sharepoint2010ExecEnvCoreSection.executionEnvironmentName.text;
+        sharepointResource.description = _sharepoint2010ExecEnvCoreSection.executionEnvironmentDescription.text;
+        //sharepointResource.containerType = _sharepoint2010ExecEnvCoreSection.executionEnvironmentType.text;
         //TODO CHECK PLATFORM ID
-        sharepoint2010ExecEnv.platformId = "sp2010";
+        /**
+        sharepointResource.platformId = "sp2010";
 
-        sharepoint2010ExecEnv.type = ExecEnvType.valueOf(_sharepoint2010ExecEnvCoreSection.selectedHost.selectedItem.data);
-        sharepoint2010ExecEnv.installUri = _sharepoint2010ExecEnvCoreSection.homeDirectory.text;
-        if (sharepoint2010ExecEnv.type.name == ExecEnvType.REMOTE.name) {
-            sharepoint2010ExecEnv.location = _sharepoint2010ExecEnvCoreSection.location.text;
+        sharepointResource.type = ExecEnvType.valueOf(_sharepoint2010ExecEnvCoreSection.selectedHost.selectedItem.data);
+        sharepointResource.installUri = _sharepoint2010ExecEnvCoreSection.homeDirectory.text;
+        if (sharepointResource.type.name == ExecEnvType.REMOTE.name) {
+            sharepointResource.location = _sharepoint2010ExecEnvCoreSection.location.text;
         } else {
-            sharepoint2010ExecEnv.location = null;
+            sharepointResource.location = null;
         }
+        */
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -7398,32 +7402,35 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handleColdfusionExecEnvCorePropertyTabCreationComplete(event:Event):void {
-        var coldfusionExecEnv:ColdfusionExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ColdfusionExecutionEnvironment;
+        var coldfusionExecEnv:ColdfusionResource = projectProxy.currentIdentityApplianceElement as ColdfusionResource;
 
         if (coldfusionExecEnv != null) {
             // bind view
             _coldfusionExecEnvCoreSection.executionEnvironmentName.text = coldfusionExecEnv.name;
             _coldfusionExecEnvCoreSection.executionEnvironmentDescription.text = coldfusionExecEnv.description;
 
+            /*
             for (var i:int=0; i < _coldfusionExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_coldfusionExecEnvCoreSection.selectedHost.dataProvider[i].data == coldfusionExecEnv.type.toString()) {
                     _coldfusionExecEnvCoreSection.selectedHost.selectedIndex = i;
                     break;
                 }
             }
+            */
 
             if (_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
                 _coldfusionExecEnvCoreSection.locationItem.includeInLayout = true;
                 _coldfusionExecEnvCoreSection.locationItem.visible = true;
             }
 
+            /*
             _coldfusionExecEnvCoreSection.homeDirectory.text = coldfusionExecEnv.installUri;
             if (coldfusionExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _coldfusionExecEnvCoreSection.location.text = coldfusionExecEnv.location;
             
             _execEnvLocationValidator = new URLValidator();
             _execEnvLocationValidator.required = true;
-
+            */
 
             _coldfusionExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _coldfusionExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -7477,19 +7484,20 @@ public class PropertySheetMediator extends IocMediator {
 
     private function coldfusionSave(): void {
          // bind model
-        var coldfusionExecEnv:ColdfusionExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ColdfusionExecutionEnvironment;
-        coldfusionExecEnv.name = _coldfusionExecEnvCoreSection.executionEnvironmentName.text;
-        coldfusionExecEnv.description = _coldfusionExecEnvCoreSection.executionEnvironmentDescription.text;
-        coldfusionExecEnv.platformId = "coldfusion";
+        var coldfusionResource:ColdfusionResource = projectProxy.currentIdentityApplianceElement as ColdfusionResource;
+        coldfusionResource.name = _coldfusionExecEnvCoreSection.executionEnvironmentName.text;
+        coldfusionResource.description = _coldfusionExecEnvCoreSection.executionEnvironmentDescription.text;
+        /* TODO: no placeholder yet for EE coordinates
+        coldfusionResource.platformId = "coldfusion";
 
-        coldfusionExecEnv.type = ExecEnvType.valueOf(_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data);
-        coldfusionExecEnv.installUri = _coldfusionExecEnvCoreSection.homeDirectory.text;
-        if (coldfusionExecEnv.type.name == ExecEnvType.REMOTE.name) {
-            coldfusionExecEnv.location = _coldfusionExecEnvCoreSection.location.text;
+        coldfusionResource.type = ExecEnvType.valueOf(_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data);
+        coldfusionResource.installUri = _coldfusionExecEnvCoreSection.homeDirectory.text;
+        if (coldfusionResource.type.name == ExecEnvType.REMOTE.name) {
+            coldfusionResource.location = _coldfusionExecEnvCoreSection.location.text;
         } else {
-            coldfusionExecEnv.location = null;
+            coldfusionResource.location = null;
         }
-
+        */
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
         _applianceSaved = false;
@@ -7517,12 +7525,12 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handleMicroStrategyExecEnvCorePropertyTabCreationComplete(event:Event):void {
-        var microStrategyExecEnv:MicroStrategyExecutionEnvironment = projectProxy.currentIdentityApplianceElement as MicroStrategyExecutionEnvironment;
+        var microStrategyResource:MicroStrategyResource = projectProxy.currentIdentityApplianceElement as MicroStrategyResource;
 
-        if (microStrategyExecEnv != null) {
+        if (microStrategyResource != null) {
             // bind view
-            _microStrategyExecEnvCoreSection.executionEnvironmentName.text = microStrategyExecEnv.name;
-            _microStrategyExecEnvCoreSection.executionEnvironmentDescription.text = microStrategyExecEnv.description;
+            _microStrategyExecEnvCoreSection.executionEnvironmentName.text = microStrategyResource.name;
+            _microStrategyExecEnvCoreSection.executionEnvironmentDescription.text = microStrategyResource.description;
 
             _microStrategyExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _microStrategyExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -7539,9 +7547,9 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function microStrategySave(): void {
-        var microStrategyExecEnv:MicroStrategyExecutionEnvironment = projectProxy.currentIdentityApplianceElement as MicroStrategyExecutionEnvironment;
-        microStrategyExecEnv.name = _microStrategyExecEnvCoreSection.executionEnvironmentName.text;
-        microStrategyExecEnv.description = _microStrategyExecEnvCoreSection.executionEnvironmentDescription.text;
+        var microStrategyResource:MicroStrategyResource = projectProxy.currentIdentityApplianceElement as MicroStrategyResource;
+        microStrategyResource.name = _microStrategyExecEnvCoreSection.executionEnvironmentName.text;
+        microStrategyResource.description = _microStrategyExecEnvCoreSection.executionEnvironmentDescription.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

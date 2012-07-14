@@ -8,7 +8,7 @@ import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
 import com.atricore.idbus.console.services.dto.JOSSO2Resource;
-import com.atricore.idbus.console.services.dto.MicroStrategyExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.MicroStrategyResource;
 import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
 import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
@@ -67,23 +67,23 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
             if (node1.data is JOSSO1Resource && node2.data is ExecutionEnvironment &&
-                    !(node2.data is MicroStrategyExecutionEnvironment)){
+                    !(node2.data is MicroStrategyResource)){
                 var josso1Resource1:JOSSO1Resource = node1.data as JOSSO1Resource;
                 if(josso1Resource1.activation == null){
                     canBeLinked = true;
                 }
-            } else if (node1.data is ExecutionEnvironment && !(node1.data is MicroStrategyExecutionEnvironment) &&
+            } else if (node1.data is ExecutionEnvironment && !(node1.data is MicroStrategyResource) &&
                     node2.data is JOSSO1Resource) {
                 var josso1Resource2:JOSSO1Resource = node2.data as JOSSO1Resource;
                 if(josso1Resource2.activation == null){
                     canBeLinked = true;
                 }
-            } else if (node1.data is JOSSO2Resource && node2.data is MicroStrategyExecutionEnvironment) {
+            } else if (node1.data is JOSSO2Resource && node2.data is MicroStrategyResource) {
                 var josso2Resource1:JOSSO2Resource = node1.data as JOSSO2Resource;
                 if(josso2Resource1.activation == null){
                     canBeLinked = true;
                 }
-            } else if (node1.data is MicroStrategyExecutionEnvironment && node2.data is JOSSO2Resource) {
+            } else if (node1.data is MicroStrategyResource && node2.data is JOSSO2Resource) {
                 var josso2Resource2:JOSSO2Resource = node2.data as JOSSO2Resource;
                 if(josso2Resource2.activation == null){
                     canBeLinked = true;
@@ -134,30 +134,32 @@ public class DiagramUtil {
         switch (elementType) {
             case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.idpMiniIcon;
-            case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
-                return EmbeddedIcons.spMiniIcon;
-            case DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE:
-                return EmbeddedIcons.externalIdpMiniIcon;
-            case DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:
-                return EmbeddedIcons.externalSpMiniIcon;
             case DiagramElementTypes.SAML_2_IDENTITY_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.saml2IdpMiniIcon;
             case DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.saml2SpMiniIcon;
-            case DiagramElementTypes.OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:
-                return EmbeddedIcons.openidIdpMiniIcon;
-            case DiagramElementTypes.OPENID_SERVICE_PROVIDER_ELEMENT_TYPE:
-                return EmbeddedIcons.openidSpMiniIcon;
-            case DiagramElementTypes.OAUTH_2_IDENTITY_PROVIDER_ELEMENT_TYPE:
-                return EmbeddedIcons.oauth2IdpMiniIcon;
+            case DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.externalSaml2IdpMiniIcon;
+            case DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.externalSaml2SpMiniIcon;
+            case DiagramElementTypes.EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.externalOpenidIdpMiniIcon;
             case DiagramElementTypes.OAUTH_2_SERVICE_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.oauth2SpMiniIcon;
+            case DiagramElementTypes.EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.externalWsFedSpMiniIcon;
             case DiagramElementTypes.SALESFORCE_ELEMENT_TYPE:
-                return EmbeddedIcons.salesforceMiniIcon;
+                return EmbeddedIcons.salesforceSpMiniIcon;
             case DiagramElementTypes.GOOGLE_APPS_ELEMENT_TYPE:
-                return EmbeddedIcons.googleAppsMiniIcon;
+                return EmbeddedIcons.googleSpMiniIcon;
             case DiagramElementTypes.SUGAR_CRM_ELEMENT_TYPE:
-                return EmbeddedIcons.sugarCRMMiniIcon;
+                return EmbeddedIcons.sugarCRMSpMiniIcon;
+            case DiagramElementTypes.WIKID_ELEMENT_TYPE:
+                return EmbeddedIcons.wikidAuthenticationServiceMiniIcon;
+            case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
+                return EmbeddedIcons.directoryAuthenticationServiceMiniIcon;
+            case DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:
+                return EmbeddedIcons.windowsAuthenticationServiceMiniIcon;
             case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                 return EmbeddedIcons.vaultMiniIcon;
             case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
@@ -170,6 +172,14 @@ public class DiagramUtil {
                 return EmbeddedIcons.josso1ResourceMiniIcon;
             case DiagramElementTypes.JOSSO2_RESOURCE_ELEMENT_TYPE:
                 return EmbeddedIcons.josso2ResourceMiniIcon;
+            case DiagramElementTypes.MICROSTRATEGY_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.microStrategyResourceMiniIcon;
+            case DiagramElementTypes.SAS_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.sasResourceMiniIcon;
+            case DiagramElementTypes.SHAREPOINT_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.sharepointResourceMiniIcon;
+            case DiagramElementTypes.COLDFUSION_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.coldfusionResourceMiniIcon;
             case DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.jbossEnvironmentMiniIcon;
             case DiagramElementTypes.WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
@@ -196,18 +206,6 @@ public class DiagramUtil {
                 return EmbeddedIcons.phpbbEnvironmentMiniIcon;
             case DiagramElementTypes.WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.webEnvironmentMiniIcon;
-            case DiagramElementTypes.SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                return EmbeddedIcons.sharepoint2010EnvironmentMiniIcon;
-            case DiagramElementTypes.COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                return EmbeddedIcons.coldfusionEnvironmentMiniIcon;
-            case DiagramElementTypes.WIKID_ELEMENT_TYPE:
-                return EmbeddedIcons.wikidMiniIcon;
-            case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
-                return EmbeddedIcons.directoryServiceMiniIcon;
-            case DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:
-                return EmbeddedIcons.windowsIntegratedAuthnMiniIcon;
-            case DiagramElementTypes.MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                return EmbeddedIcons.microStrategyEnvironmentMiniIcon;
         }
         return null;
     }

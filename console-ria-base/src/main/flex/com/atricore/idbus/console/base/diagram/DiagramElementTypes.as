@@ -55,7 +55,7 @@ public class DiagramElementTypes {
     public static const DELEGATED_AUTHENTICATION_ELEMENT_TYPE:int = 31;
     public static const DIRECTORY_SERVICE_ELEMENT_TYPE:int = 32;
     public static const WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:int =33;
-    public static const SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int =34;
+    public static const SHAREPOINT_RESOURCE_ELEMENT_TYPE:int =34;
     public static const SAML_2_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 35;
     public static const SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE:int = 36;
     public static const OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 37;
@@ -65,8 +65,11 @@ public class DiagramElementTypes {
     public static const SERVICE_CONNECTION_ELEMENT_TYPE:int = 41;
     public static const JOSSO1_RESOURCE_ELEMENT_TYPE:int = 42;
     public static const JOSSO2_RESOURCE_ELEMENT_TYPE:int = 43;
-    public static const COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int = 44;
-    public static const MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int = 45;
+    public static const COLDFUSION_RESOURCE_ELEMENT_TYPE:int = 44;
+    public static const MICROSTRATEGY_RESOURCE_ELEMENT_TYPE:int = 45;
+    public static const EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE : int = 46;
+    public static const EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT_TYPE : int = 47;
+    public static const SAS_RESOURCE_ELEMENT_TYPE : int = 48;
 
 }
 }

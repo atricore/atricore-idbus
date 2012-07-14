@@ -729,7 +729,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         sendNotification(ApplicationFacade.CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT, cwebcontenv);
                         break;
 
-                    case DiagramElementTypes.SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                    case DiagramElementTypes.SHAREPOINT_RESOURCE_ELEMENT_TYPE:
                         var cshpoint2010contenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                 );
                         _projectProxy.currentIdentityAppliance = _identityAppliance;
@@ -738,7 +738,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         sendNotification(ApplicationFacade.CREATE_SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT, cshpoint2010contenv);
                         break;
 
-                    case DiagramElementTypes.COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                    case DiagramElementTypes.COLDFUSION_RESOURCE_ELEMENT_TYPE:
                          var coldfusioncontenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                  );
                          _projectProxy.currentIdentityAppliance = _identityAppliance;
@@ -747,7 +747,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                          sendNotification(ApplicationFacade.CREATE_COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT, coldfusioncontenv);
                          break;
 
-                    case DiagramElementTypes.MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                    case DiagramElementTypes.MICROSTRATEGY_RESOURCE_ELEMENT_TYPE:
                         var mseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                         );
                         _projectProxy.currentIdentityAppliance = _identityAppliance;
@@ -1059,7 +1059,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     var providerNode:IVisualNode = findNodeElementBySemanticElement(identityLookup1.provider);
                     var identitySourceNode:IVisualNode = findNodeElementBySemanticElement(identityLookup1.identitySource);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, identitySourceNode, providerNode,
-                            identityLookup1,EmbeddedIcons.connectionIdentityLookupMiniIcon,
+                            identityLookup1,EmbeddedIcons.identityLookupMiniIcon,
                             resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"));                    
                     _identityApplianceDiagram.exitConnectionMode();
                 } else if (element is FederatedConnection) {
@@ -1067,7 +1067,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     var provider1Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection1.roleA);
                     var provider2Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection1.roleB);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, provider2Node, provider1Node,
-                            federatedConnection1, EmbeddedIcons.connectionFederatedMiniIcon,
+                            federatedConnection1, EmbeddedIcons.federatedConnectionMiniIcon,
                             resourceManager.getString(AtricoreConsole.BUNDLE, "federated.connection"));
                     _identityApplianceDiagram.exitConnectionMode();
                 } else if (element is ServiceConnection) {
@@ -1075,7 +1075,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     var provider3Node:IVisualNode = findNodeElementBySemanticElement(serviceConnection1.sp);
                     var resourceNode:IVisualNode = findNodeElementBySemanticElement(serviceConnection1.resource);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, resourceNode, provider3Node,
-                            serviceConnection1,EmbeddedIcons.connectionServiceMiniIcon,
+                            serviceConnection1,EmbeddedIcons.serviceConnectionMiniIcon,
                             resourceManager.getString(AtricoreConsole.BUNDLE, "service.connection"));
                     _identityApplianceDiagram.exitConnectionMode();
                 } else if (element is JOSSOActivation) {
@@ -1083,7 +1083,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     var rNode:IVisualNode = findNodeElementBySemanticElement(activation1.resource);
                     var execEnvNode:IVisualNode = findNodeElementBySemanticElement(activation1.executionEnv);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, execEnvNode, rNode,
-                            activation1, EmbeddedIcons.connectionActivationIcon,
+                            activation1, EmbeddedIcons.activationMiniIcon,
                             resourceManager.getString(AtricoreConsole.BUNDLE, "activation.connection"));
                     _identityApplianceDiagram.exitConnectionMode();
                 } else if (element is DelegatedAuthentication) {
@@ -1091,7 +1091,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     var idpNode:IVisualNode = findNodeElementBySemanticElement(delegatedAuthentication1.idp);
                     var authnServiceNode:IVisualNode = findNodeElementBySemanticElement(delegatedAuthentication1.authnService);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, authnServiceNode, idpNode,
-                            delegatedAuthentication1,EmbeddedIcons.connectionDelegatedAuthnMiniIcon,
+                            delegatedAuthentication1,EmbeddedIcons.identityVerificationMiniIcon,
                             resourceManager.getString(AtricoreConsole.BUNDLE, "delegated.authentication.connection"));
                     _identityApplianceDiagram.exitConnectionMode();
                 } else {
@@ -1193,7 +1193,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         for each (var tmpExecEnvGraphNode:IVisualNode in environmentNodes) {
                             if (tmpExecEnvGraphNode.data as ExecutionEnvironment == identityApplianceDefinition.serviceResources[r].activation.executionEnv) {
                                 GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpExecEnvGraphNode, serviceResourceGraphNode,
-                                        identityApplianceDefinition.serviceResources[r].activation, EmbeddedIcons.connectionActivationIcon,
+                                        identityApplianceDefinition.serviceResources[r].activation, EmbeddedIcons.activationIcon,
                                         resourceManager.getString(AtricoreConsole.BUNDLE, "activation.connection"));
                                 break;
                             }
@@ -1225,7 +1225,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             for each (var tmpVaultGraphNode:IVisualNode in vaultNodes){
                                 if(tmpVaultGraphNode.data as IdentitySource == idSource){
                                     GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode,
-                                            locProv.identityLookup ,EmbeddedIcons.connectionIdentityLookupIcon,
+                                            locProv.identityLookup ,EmbeddedIcons.identityLookupIcon,
                                             resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"));
                                     
                                     vaultExists = true;
@@ -1233,7 +1233,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             }
                             if(!vaultExists){
                                 var newVaultNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode,
-                                        locProv.identityLookup, EmbeddedIcons.connectionIdentityLookupIcon,
+                                        locProv.identityLookup, EmbeddedIcons.identityLookupIcon,
                                         resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"), 
                                         true, Constants.IDENTITY_VAULT_DEEP);
                                 //if vault doesn't exist in the vaults array, add it so other providers can find it
@@ -1250,14 +1250,14 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                                 for each (var tmpServiceResourceGraphNode:IVisualNode in serviceResourceNodes) {
                                     if (tmpServiceResourceGraphNode.data as ServiceResource == sp.serviceConnection.resource) {
                                         GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpServiceResourceGraphNode, providerGraphNode,
-                                                sp.serviceConnection, EmbeddedIcons.connectionServiceIcon,
+                                                sp.serviceConnection, EmbeddedIcons.serviceConnectionIcon,
                                                 resourceManager.getString(AtricoreConsole.BUNDLE, "service.connection"));
                                         resourceExists = true;
                                     }
                                 }
                                 if (!resourceExists) {
                                     var newServiceResourceNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.serviceConnection.resource, providerGraphNode,
-                                            sp.serviceConnection, EmbeddedIcons.connectionServiceIcon,
+                                            sp.serviceConnection, EmbeddedIcons.serviceConnectionIcon,
                                             resourceManager.getString(AtricoreConsole.BUNDLE, "service.connection"),
                                             true, Constants.SERVICE_RESOURCE_DEEP);
                                     //if service resource doesn't exist in the resources array, add it so other providers can find it
@@ -1293,7 +1293,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                                     for each (var tmpAuthnServiceGraphNode:IVisualNode in authnServiceNodes) {  //check for authn. service
                                         if (tmpAuthnServiceGraphNode.data as AuthenticationService == delegatedAuthentication.authnService) {
                                             GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpAuthnServiceGraphNode, providerGraphNode,
-                                                    delegatedAuthentication, EmbeddedIcons.connectionDelegatedAuthnIcon,
+                                                    delegatedAuthentication, EmbeddedIcons.identityVerificationIcon,
                                                     resourceManager.getString(AtricoreConsole.BUNDLE, "delegated.authentication.connection"));
                                             authnServiceExists = true;
                                         }
@@ -1301,7 +1301,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                                     if (!authnServiceExists) {
                                         var newAuthnServiceNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram,
                                                 UIDUtil.createUID(), delegatedAuthentication.authnService, providerGraphNode,
-                                                delegatedAuthentication, EmbeddedIcons.connectionDelegatedAuthnIcon,
+                                                delegatedAuthentication, EmbeddedIcons.identityVerificationIcon,
                                                 resourceManager.getString(AtricoreConsole.BUNDLE, "delegated.authentication.connection"),
                                                 true, Constants.AUTHENTICATION_SERVICE_DEEP);
                                         //if authn. service doesn't exist in the authn. service array, add it so other providers can find it
@@ -1322,7 +1322,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             var graphNodeRoleB1:IVisualNode = providerNodes[fedConnA.roleB];
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA1.node, graphNodeRoleB1.node)){ //avoid double linking
                                 GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA1, graphNodeRoleB1,
-                                        fedConnA, EmbeddedIcons.connectionFederatedIcon,
+                                        fedConnA, EmbeddedIcons.federatedConnectionIcon,
                                         resourceManager.getString(AtricoreConsole.BUNDLE, "federated.connection"));
                             }
                         }
@@ -1331,7 +1331,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             var graphNodeRoleB2:IVisualNode = providerNodes[fedProvider];
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA2.node, graphNodeRoleB2.node)){ //avoid double linking
                                 GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA2, graphNodeRoleB2,
-                                        fedConnB, EmbeddedIcons.connectionFederatedIcon,
+                                        fedConnB, EmbeddedIcons.federatedConnectionIcon,
                                         resourceManager.getString(AtricoreConsole.BUNDLE, "federated.connection"));
                             }
                         }
