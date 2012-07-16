@@ -565,10 +565,6 @@ public class EmbeddedIcons {
 
     //TODO USE APPROPRIATE ICONS
     [Bindable]
-    [Embed(source="/assets/icons/modeler/identity_appliance.png")]
-    static public var busMiniIcon:Class;
-
-    [Bindable]
     [Embed(source="/assets/icons/main/modeler_22.png")]
     public static var modelerMiniIcon:Class;
 
