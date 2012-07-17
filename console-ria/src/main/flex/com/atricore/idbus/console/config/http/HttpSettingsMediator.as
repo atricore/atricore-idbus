@@ -72,7 +72,8 @@ public class HttpSettingsMediator extends IocFormMediator implements IDisposable
     [Bindable]
     public var _excludeURLs:ArrayCollection;
 
-    public function HttpServiceMediator(name:String = null, viewComp:HttpServiceView = null) {
+
+    public function HttpSettingsMediator(name:String = null, viewComp:HttpSettingsView = null) {
         super(name, viewComp);
     }
 
@@ -429,8 +430,8 @@ public class HttpSettingsMediator extends IocFormMediator implements IDisposable
         }
     }
 
-    protected function get view():HttpServiceView {
-        return viewComponent as HttpServiceView;
+    protected function get view():HttpSettingsView {
+        return viewComponent as HttpSettingsView;
     }
 
     override public function registerValidators():void {

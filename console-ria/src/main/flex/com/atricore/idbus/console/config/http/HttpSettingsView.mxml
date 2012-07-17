@@ -150,7 +150,7 @@
                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url.toolTips.remove')}"
                                                               click="dispatchEvent(new IncludeExcludeURLGridEvent(true, true, data, IncludeExcludeURLGridEvent.ACTION_REMOVE_INCLUDE_URL));"
-                                                              visible="{data.url != HttpServiceMediator.ADD_URL}">
+                                                              visible="{data.url != HttpSettingsMediator.ADD_URL}">
                                                 <fx:Script><![CDATA[
                                                     import com.atricore.idbus.console.config.http.event.IncludeExcludeURLGridEvent;
                                                     import com.atricore.idbus.console.main.EmbeddedIcons;
@@ -178,7 +178,7 @@
                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url.toolTips.remove')}"
                                                               click="dispatchEvent(new IncludeExcludeURLGridEvent(true, true, data, IncludeExcludeURLGridEvent.ACTION_REMOVE_EXCLUDE_URL));"
-                                                              visible="{data.url != HttpServiceMediator.ADD_URL}">
+                                                              visible="{data.url != HttpSettingsMediator.ADD_URL}">
                                                 <fx:Script><![CDATA[
                                                     import com.atricore.idbus.console.config.http.event.IncludeExcludeURLGridEvent;
                                                     import com.atricore.idbus.console.main.EmbeddedIcons;
