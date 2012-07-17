@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.config.http
 {
 import com.atricore.idbus.console.config.http.event.BindAddressGridEvent;
+import com.atricore.idbus.console.config.http.event.IncludeExcludeURLGridEvent;
 import com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand;
 import com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand;
 import com.atricore.idbus.console.config.main.model.ServiceConfigProxy;
@@ -50,6 +51,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class HttpSettingsMediator extends IocFormMediator implements IDisposable {
 
     public static const ADD_BIND_ADDRESS:String = "Click to Add Bind Address";
+    public static const ADD_URL:String = "Click to Add URL";
 
     private var _configProxy:ServiceConfigProxy;
 
@@ -64,7 +66,13 @@ public class HttpSettingsMediator extends IocFormMediator implements IDisposable
     [Bindable]
     public var _bindAddresses:ArrayCollection;
 
-    public function HttpSettingsMediator(name:String = null, viewComp:HttpSettingsView = null) {
+    [Bindable]
+    public var _includeURLs:ArrayCollection;
+
+    [Bindable]
+    public var _excludeURLs:ArrayCollection;
+
+    public function HttpServiceMediator(name:String = null, viewComp:HttpServiceView = null) {
         super(name, viewComp);
     }
 
@@ -87,11 +95,22 @@ public class HttpSettingsMediator extends IocFormMediator implements IDisposable
             view.titleDisplay.height = 0;
             view.btnSave.addEventListener(MouseEvent.CLICK, handleSave);
             view.enableSSL.addEventListener(Event.CHANGE, handleEnableSslChanged);
-            view.bindAddresses.addEventListener(DataGridEvent.ITEM_EDIT_END, editEnd);
+            view.followRedirects.addEventListener(Event.CHANGE, handleFollowRedirectsChanged);
+            view.bindAddresses.addEventListener(DataGridEvent.ITEM_EDIT_END, bindAddressEditEnd);
             view.bindAddresses.addEventListener(BindAddressGridEvent.CLICK, handleBindAddressGridEvent);
             _bindAddresses = new ArrayCollection();
             _bindAddresses.addItem({bindAddress:ADD_BIND_ADDRESS});
             BindingUtils.bindProperty(view.bindAddresses, "dataProvider", this, "_bindAddresses");
+            view.includeFollowUrls.addEventListener(DataGridEvent.ITEM_EDIT_END, includeUrlEditEnd);
+            view.includeFollowUrls.addEventListener(IncludeExcludeURLGridEvent.CLICK, handleIncludeExcludeUrlGridEvent);
+            _includeURLs = new ArrayCollection();
+            _includeURLs.addItem({url:ADD_URL});
+            BindingUtils.bindProperty(view.includeFollowUrls, "dataProvider", this, "_includeURLs");
+            view.excludeFollowUrls.addEventListener(DataGridEvent.ITEM_EDIT_END, excludeUrlEditEnd);
+            view.excludeFollowUrls.addEventListener(IncludeExcludeURLGridEvent.CLICK, handleIncludeExcludeUrlGridEvent);
+            _excludeURLs = new ArrayCollection();
+            _excludeURLs.addItem({url:ADD_URL});
+            BindingUtils.bindProperty(view.excludeFollowUrls, "dataProvider", this, "_excludeURLs");
             sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.HTTP);
         }
     }
@@ -148,6 +167,34 @@ public class HttpSettingsMediator extends IocFormMediator implements IDisposable
             _httpServiceConfig.sslKeystorePath = view.sslKeystorePath.text;
             _httpServiceConfig.sslKeystorePassword = view.sslKeystorePassword.text;
             _httpServiceConfig.sslKeyPassword = view.sslKeyPassword.text;
+        } else {
+            _httpServiceConfig.sslPort = 0;
+            _httpServiceConfig.sslKeystorePath = "";
+            _httpServiceConfig.sslKeystorePassword = "";
+            _httpServiceConfig.sslKeyPassword = "";
+        }
+        _httpServiceConfig.followRedirects = view.followRedirects.selected;
+        if (_httpServiceConfig.followRedirects) {
+            var includeURLs:String = "";
+            for (var j:int = 0; j < _includeURLs.length - 1; j++) {
+                if (j > 0) {
+                    includeURLs += ",";
+                }
+                includeURLs += _includeURLs[j].url;
+            }
+            _httpServiceConfig.includeFollowUrls = includeURLs;
+
+            var excludeURLs:String = "";
+            for (var k:int = 0; k < _excludeURLs.length - 1; k++) {
+                if (k > 0) {
+                    excludeURLs += ",";
+                }
+                excludeURLs += _excludeURLs[k].url;
+            }
+            _httpServiceConfig.excludeFollowUrls = excludeURLs;
+        } else {
+            _httpServiceConfig.includeFollowUrls = "";
+            _httpServiceConfig.excludeFollowUrls = "";
         }
     }
 
@@ -170,6 +217,16 @@ public class HttpSettingsMediator extends IocFormMediator implements IDisposable
         view.sslKeystorePath.enabled = enabled;
         view.sslKeystorePassword.enabled = enabled;
         view.sslKeyPassword.enabled = enabled;
+
+        resetValidation();
+        registerValidators();
+        validate(true);
+    }
+
+    private function handleFollowRedirectsChanged(event:Event):void {
+        var enabled:Boolean = view.followRedirects.selected;
+        view.includeFollowUrls.enabled = enabled;
+        view.excludeFollowUrls.enabled = enabled;
 
         resetValidation();
         registerValidators();
@@ -204,11 +261,28 @@ public class HttpSettingsMediator extends IocFormMediator implements IDisposable
         view.sslKeystorePassword.text = _httpServiceConfig.sslKeystorePassword;
         view.sslKeyPassword.text = _httpServiceConfig.sslKeyPassword;
 
+        view.followRedirects.selected = _httpServiceConfig.followRedirects;
+        _includeURLs = new ArrayCollection();
+        if (_httpServiceConfig.includeFollowUrls != null && _httpServiceConfig.includeFollowUrls != "") {
+            for each (var includeURL:String in _httpServiceConfig.includeFollowUrls.split(",")) {
+                _includeURLs.addItem({url:includeURL});
+            }
+        }
+        _includeURLs.addItem({url:ADD_URL});
+        _excludeURLs = new ArrayCollection();
+        if (_httpServiceConfig.excludeFollowUrls != null && _httpServiceConfig.excludeFollowUrls != "") {
+            for each (var excludeURL:String in _httpServiceConfig.excludeFollowUrls.split(",")) {
+                _excludeURLs.addItem({url:excludeURL});
+            }
+        }
+        _excludeURLs.addItem({url:ADD_URL});
+
         handleEnableSslChanged(null);
+        handleFollowRedirectsChanged(null);
         view.btnSave.enabled = true;
     }
 
-    private function editEnd(e:DataGridEvent):void {
+    private function bindAddressEditEnd(e:DataGridEvent):void {
         // Adding a new bind address
         if (e.rowIndex == _bindAddresses.length - 1) {
             var txtIn:TextInput = TextInput(e.currentTarget.itemEditorInstance);
@@ -268,8 +342,95 @@ public class HttpSettingsMediator extends IocFormMediator implements IDisposable
         return changed;
     }
 
-    protected function get view():HttpSettingsView {
-        return viewComponent as HttpSettingsView;
+    private function includeUrlEditEnd(e:DataGridEvent):void {
+        // Adding a new include URL
+        if (e.rowIndex == _includeURLs.length - 1) {
+            var txtIn:TextInput = TextInput(e.currentTarget.itemEditorInstance);
+            var newURL:String = txtIn.text;
+
+            // Add new URL
+            if (newURL != ADD_URL) {
+                var urlExists:Boolean = false;
+                for each (var url:Object in _includeURLs) {
+                    if (url.url == newURL) {
+                        urlExists = true;
+                        break;
+                    }
+                }
+                if (!urlExists) {
+                    _includeURLs.addItemAt({url:newURL}, e.rowIndex);
+                }
+            }
+
+            // Destroy item editor
+            view.includeFollowUrls.destroyItemEditor();
+
+            // Stop default behavior
+            e.preventDefault();
+
+            validateIncludeURLs();
+        }
+    }
+
+    private function excludeUrlEditEnd(e:DataGridEvent):void {
+        // Adding a new exclude URL
+        if (e.rowIndex == _excludeURLs.length - 1) {
+            var txtIn:TextInput = TextInput(e.currentTarget.itemEditorInstance);
+            var newURL:String = txtIn.text;
+
+            // Add new URL
+            if (newURL != ADD_URL) {
+                var urlExists:Boolean = false;
+                for each (var url:Object in _excludeURLs) {
+                    if (url.url == newURL) {
+                        urlExists = true;
+                        break;
+                    }
+                }
+                if (!urlExists) {
+                    _excludeURLs.addItemAt({url:newURL}, e.rowIndex);
+                }
+            }
+
+            // Destroy item editor
+            view.excludeFollowUrls.destroyItemEditor();
+
+            // Stop default behavior
+            e.preventDefault();
+
+            validateExcludeURLs();
+        }
+    }
+
+    private function handleIncludeExcludeUrlGridEvent(event:IncludeExcludeURLGridEvent):void {
+        switch (event.action) {
+            case IncludeExcludeURLGridEvent.ACTION_REMOVE_INCLUDE_URL:
+                if (view.followRedirects.selected) {
+                    for (var i:int = 0; i < _includeURLs.length; i++) {
+                        if (_includeURLs[i].url == event.data.url) {
+                            _includeURLs.removeItemAt(i);
+                            validateIncludeURLs();
+                            break;
+                        }
+                    }
+                }
+                break;
+            case IncludeExcludeURLGridEvent.ACTION_REMOVE_EXCLUDE_URL:
+                if (view.followRedirects.selected) {
+                    for (var j:int = 0; j < _excludeURLs.length; j++) {
+                        if (_excludeURLs[j].url == event.data.url) {
+                            _excludeURLs.removeItemAt(j);
+                            validateExcludeURLs();
+                            break;
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    protected function get view():HttpServiceView {
+        return viewComponent as HttpServiceView;
     }
 
     override public function registerValidators():void {
@@ -298,6 +459,18 @@ public class HttpSettingsMediator extends IocFormMediator implements IDisposable
         } else {
             view.bindAddresses.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "config.http.bindAddressesValidationError");
         }
+        return valid;
+    }
+
+    private function validateIncludeURLs():Boolean {
+        var valid:Boolean = true;
+        // TODO
+        return valid;
+    }
+
+    private function validateExcludeURLs():Boolean {
+        var valid:Boolean = true;
+        // TODO
         return valid;
     }
 

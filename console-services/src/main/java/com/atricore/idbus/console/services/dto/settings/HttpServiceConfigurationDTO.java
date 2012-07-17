@@ -28,6 +28,12 @@ public class HttpServiceConfigurationDTO implements ServiceConfigurationDTO {
 
     private String sslKeyPassword;
 
+    private boolean followRedirects;
+
+    private String includeFollowUrls;
+
+    private String excludeFollowUrls;
+
     public HttpServiceConfigurationDTO() {
         this.serviceType = ServiceTypeDTO.HTTP;
     }
@@ -122,5 +128,29 @@ public class HttpServiceConfigurationDTO implements ServiceConfigurationDTO {
 
     public void setSslKeyPassword(String sslKeyPassword) {
         this.sslKeyPassword = sslKeyPassword;
+    }
+
+    public boolean isFollowRedirects() {
+        return followRedirects;
+    }
+
+    public void setFollowRedirects(boolean followRedirects) {
+        this.followRedirects = followRedirects;
+    }
+
+    public String getIncludeFollowUrls() {
+        return includeFollowUrls;
+    }
+
+    public void setIncludeFollowUrls(String includeFollowUrls) {
+        this.includeFollowUrls = includeFollowUrls;
+    }
+
+    public String getExcludeFollowUrls() {
+        return excludeFollowUrls;
+    }
+
+    public void setExcludeFollowUrls(String excludeFollowUrls) {
+        this.excludeFollowUrls = excludeFollowUrls;
     }
 }
