@@ -90,9 +90,9 @@
         <property name="phpExecutionEnvironmentCreateMediator" ref="phpExecutionEnvironmentCreateMediator" />
         <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator" />
         <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator" />
-        <property name="sharepoint2010ExecutionEnvironmentCreateMediator" ref="sharepoint2010ExecutionEnvironmentCreateMediator"/>
-        <property name="coldfusionExecutionEnvironmentCreateMediator" ref="coldfusionExecutionEnvironmentCreateMediator"/>
-        <property name="microStrategyExecutionEnvironmentCreateMediator" ref="microStrategyExecutionEnvironmentCreateMediator"/>
+        <property name="sharepointResourceCreateMediator" ref="sharepointResourceCreateMediator"/>
+        <property name="coldfusionResourceCreateMediator" ref="coldfusionResourceCreateMediator"/>
+        <property name="microStrategyResourceCreateMediator" ref="microStrategyResourceCreateMediator"/>
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>
         <property name="externalServiceProviderCreateMediator" ref="externalServiceProviderCreateMediator"/>
         <property name="browserMediator" ref="browserMediator"/>
@@ -726,11 +726,11 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="josso1ResourceCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.resources.JOSSO1ResourceCreateMediator">
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.josso1.JOSSO1ResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="josso2ResourceCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.resources.JOSSO2ResourceCreateMediator">
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.josso2.JOSSO2ResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="jbossExecutionEnvironmentCreateMediator"
@@ -785,16 +785,16 @@
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="sharepoint2010ExecutionEnvironmentCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.sharepoint2010.Sharepoint2010ExecutionEnvironmentCreateMediator">
+    <object id="sharepointResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.sharepoint.SharepointResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="coldfusionExecutionEnvironmentCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.coldfusion.ColdfusionExecutionEnvironmentCreateMediator">
+    <object id="coldfusionResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.coldfusion.ColdfusionResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="microStrategyExecutionEnvironmentCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.microstrategy.MicroStrategyExecutionEnvironmentCreateMediator">
+    <object id="microStrategyResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.microstrategy.MicroStrategyResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
@@ -1076,9 +1076,9 @@
         <property name="phpExecutionEnvironmentCreateMediator" ref="phpExecutionEnvironmentCreateMediator"/>
         <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator"/>
         <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator"/>
-        <property name="sharepoint2010ExecutionEnvironmentCreateMediator" ref="sharepoint2010ExecutionEnvironmentCreateMediator"/>
-        <property name="coldfusionExecutionEnvironmentCreateMediator" ref="coldfusionExecutionEnvironmentCreateMediator"/>
-        <property name="microStrategyExecutionEnvironmentCreateMediator" ref="microStrategyExecutionEnvironmentCreateMediator"/>
+        <property name="sharepointResourceCreateMediator" ref="sharepointResourceCreateMediator"/>
+        <property name="coldfusionResourceCreateMediator" ref="coldfusionResourceCreateMediator"/>
+        <property name="microStrategyResourceCreateMediator" ref="microStrategyResourceCreateMediator"/>
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
@@ -1151,130 +1151,130 @@
 
     <object id="licenseView" class="com.atricore.idbus.console.licensing.LicenseView"/>
 
-    <!-- Local Services Menu -->
-    <object id="localServicesMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">
-        <property name="label" value="Local Services"/>
-        <property name="shortDescription" value="Local Services Drawer"/>
+    <!-- Platform Services Menu -->
+    <object id="platformServicesMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">
+        <property name="label" value="Platform Services"/>
+        <property name="shortDescription" value="Platform Services Drawer"/>
         <property name="viewPriority" value="10"/>
         <property name="children">
             <array>
-                <value><ref>httpServiceMenuEntry</ref></value>
-                <value><ref>sshServiceMenuEntry</ref></value>
-                <value><ref>persistenceServiceMenuEntry</ref></value>
-                <value><ref>managementServiceMenuEntry</ref></value>
-                <value><ref>aqmServiceMenuEntry</ref></value>
-                <value><ref>logServiceMenuEntry</ref></value>
-                <value><ref>brandingServiceMenuEntry</ref></value>
+                <value><ref>httpSettingsMenuEntry</ref></value>
+                <value><ref>sshSettingsMenuEntry</ref></value>
+                <value><ref>persistenceSettingsMenuEntry</ref></value>
+                <value><ref>managementSettingsMenuEntry</ref></value>
+                <value><ref>queueSettingsMenuEntry</ref></value>
+                <value><ref>loggingSettingsMenuEntry</ref></value>
+                <value><ref>brandingSettingsMenuEntry</ref></value>
             </array>
         </property>
     </object>
 
-    <object id="httpServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="HTTP Service"/>
-        <property name="shortDescription" value="HTTP Service Entry"/>
-        <property name="iconName" value="httpService"/>
-        <property name="mediatorName" value="httpServiceMediator"/>
-        <property name="viewName" value="httpServiceView"/>
+    <object id="httpSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="HTTP Settings"/>
+        <property name="shortDescription" value="HTTP Settings Entry"/>
+        <property name="iconName" value="httpSettings"/>
+        <property name="mediatorName" value="httpSettingsMediator"/>
+        <property name="viewName" value="httpSettingsView"/>
     </object>
 
-    <object id="httpServiceMediator" class="com.atricore.idbus.console.config.http.HttpServiceMediator">
+    <object id="httpSettingsMediator" class="com.atricore.idbus.console.config.http.HttpSettingsMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
 
-    <object id="httpServiceView" class="com.atricore.idbus.console.config.http.HttpServiceView"/>
+    <object id="httpSettingsView" class="com.atricore.idbus.console.config.http.HttpSettingsView"/>
 
-    <object id="sshServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="SSH Service"/>
-        <property name="shortDescription" value="SSH Service Entry"/>
-        <property name="iconName" value="sshService"/>
-        <property name="mediatorName" value="sshServiceMediator"/>
-        <property name="viewName" value="sshServiceView"/>
+    <object id="sshSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="SSH Settings"/>
+        <property name="shortDescription" value="SSH Settings Entry"/>
+        <property name="iconName" value="sshSettings"/>
+        <property name="mediatorName" value="sshSettingsMediator"/>
+        <property name="viewName" value="sshSettingsView"/>
     </object>
 
-    <object id="sshServiceMediator" class="com.atricore.idbus.console.config.ssh.SshServiceMediator">
+    <object id="sshSettingsMediator" class="com.atricore.idbus.console.config.ssh.SshSettingsMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
 
-    <object id="sshServiceView" class="com.atricore.idbus.console.config.ssh.SshServiceView"/>
+    <object id="sshSettingsView" class="com.atricore.idbus.console.config.ssh.SshSettingsView"/>
 
-    <object id="persistenceServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="Persistence Service"/>
-        <property name="shortDescription" value="Persistence Service Entry"/>
-        <property name="iconName" value="persistenceService"/>
-        <property name="mediatorName" value="persistenceServiceMediator"/>
-        <property name="viewName" value="persistenceServiceView"/>
+    <object id="persistenceSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Persistence Settings"/>
+        <property name="shortDescription" value="Persistence Settings Entry"/>
+        <property name="iconName" value="persistenceSettings"/>
+        <property name="mediatorName" value="persistenceSettingsMediator"/>
+        <property name="viewName" value="persistenceSettingsView"/>
     </object>
 
-    <object id="persistenceServiceMediator" class="com.atricore.idbus.console.config.persistence.PersistenceServiceMediator">
+    <object id="persistenceSettingsMediator" class="com.atricore.idbus.console.config.persistence.PersistenceSettingsMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
-    <object id="persistenceServiceView" class="com.atricore.idbus.console.config.persistence.PersistenceServiceView"/>
+    <object id="persistenceSettingsView" class="com.atricore.idbus.console.config.persistence.PersistenceSettingsView"/>
 
-    <object id="managementServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="Management Service"/>
-        <property name="shortDescription" value="Management Service Entry"/>
-        <property name="iconName" value="managementService"/>
-        <property name="mediatorName" value="managementServiceMediator"/>
-        <property name="viewName" value="managementServiceView"/>
+    <object id="managementSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Management Settings"/>
+        <property name="shortDescription" value="Management Settings Entry"/>
+        <property name="iconName" value="managementSettings"/>
+        <property name="mediatorName" value="managementSettingsMediator"/>
+        <property name="viewName" value="managementSettingsView"/>
     </object>
 
-    <object id="managementServiceMediator" class="com.atricore.idbus.console.config.management.ManagementServiceMediator">
+    <object id="managementSettingsMediator" class="com.atricore.idbus.console.config.management.ManagementSettingsMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
 
-    <object id="managementServiceView" class="com.atricore.idbus.console.config.management.ManagementServiceView"/>
+    <object id="managementSettingsView" class="com.atricore.idbus.console.config.management.ManagementSettingsView"/>
 
-    <object id="aqmServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="Artifact Queue Manager Service"/>
-        <property name="shortDescription" value="Artifact Queue Manager Service Entry"/>
-        <property name="iconName" value="aqmService"/>
-        <property name="mediatorName" value="aqmServiceMediator"/>
-        <property name="viewName" value="aqmServiceView"/>
+    <object id="queueSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Queue Settings"/>
+        <property name="shortDescription" value="Queue Settings Entry"/>
+        <property name="iconName" value="queueSettings"/>
+        <property name="mediatorName" value="queueSettingsMediator"/>
+        <property name="viewName" value="queueSettingsView"/>
     </object>
 
-    <object id="aqmServiceMediator" class="com.atricore.idbus.console.config.aqm.ArtifactQueueManagerServiceMediator">
+    <object id="queueSettingsMediator" class="com.atricore.idbus.console.config.queue.QueueSettingsMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
 
-    <object id="aqmServiceView" class="com.atricore.idbus.console.config.aqm.ArtifactQueueManagerServiceView"/>
+    <object id="queueSettingsView" class="com.atricore.idbus.console.config.queue.QueueSettingsView"/>
 
-    <object id="logServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="Log Service"/>
-        <property name="shortDescription" value="Log Service Entry"/>
-        <property name="iconName" value="logService"/>
-        <property name="mediatorName" value="logServiceMediator"/>
-        <property name="viewName" value="logServiceView"/>
+    <object id="loggingSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Logging Settings"/>
+        <property name="shortDescription" value="Logging Settings Entry"/>
+        <property name="iconName" value="loggingSettings"/>
+        <property name="mediatorName" value="loggingSettingsMediator"/>
+        <property name="viewName" value="loggingSettingsView"/>
     </object>
 
-    <object id="logServiceMediator" class="com.atricore.idbus.console.config.log.LogServiceMediator">
+    <object id="loggingSettingsMediator" class="com.atricore.idbus.console.config.log.LoggingSettingsMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
 
-    <object id="logServiceView" class="com.atricore.idbus.console.config.log.LogServiceView"/>
+    <object id="loggingSettingsView" class="com.atricore.idbus.console.config.log.LoggingSettingsView"/>
 
-    <object id="brandingServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="Branding Service"/>
-        <property name="shortDescription" value="Branding Service Entry"/>
-        <property name="iconName" value="brandingService"/>
-        <property name="mediatorName" value="brandingServiceMediator"/>
-        <property name="viewName" value="brandingServiceView"/>
+    <object id="brandingSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Branding Settings"/>
+        <property name="shortDescription" value="Branding Settings Entry"/>
+        <property name="iconName" value="brandingSettings"/>
+        <property name="mediatorName" value="brandingSettingsMediator"/>
+        <property name="viewName" value="brandingSettingsView"/>
     </object>
 
-    <object id="brandingServiceMediator" class="com.atricore.idbus.console.config.branding.BrandingServiceMediator">
+    <object id="brandingSettingsMediator" class="com.atricore.idbus.console.config.branding.BrandingSettingsMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
         <property name="popupManager" ref="brandingPopUpManager"/>
         <property name="editCustomBrandingViewMediatorName" value="editCustomBrandingViewMediator"/>
         <property name="editCustomBrandingViewName" value="editCustomBrandingView"/>
     </object>
 
-    <object id="brandingServiceView" class="com.atricore.idbus.console.config.branding.BrandingServiceView"/>
+    <object id="brandingSettingsView" class="com.atricore.idbus.console.config.branding.BrandingSettingsView"/>
 
     <object id="editCustomBrandingViewMediator" class="com.atricore.idbus.console.config.branding.view.edit.EditCustomBrandingViewMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
-        <property name="brandingServiceMediatorName" value="brandingServiceMediator"/>
-        <property name="brandingServiceViewName" value="brandingServiceView"/>
+        <property name="brandingSettingsMediatorName" value="brandingSettingsMediator"/>
+        <property name="brandingSettingsViewName" value="brandingSettingsView"/>
     </object>
 
     <object id="editCustomBrandingView" class="com.atricore.idbus.console.config.branding.view.edit.EditCustomBrandingView"/>

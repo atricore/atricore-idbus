@@ -39,8 +39,7 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alf
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.coldfusion.ColdfusionExecutionEnvironmentCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.coldfusion.ColdfusionExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.resources.coldfusion.ColdfusionResourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
@@ -49,14 +48,15 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbo
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.microstrategy.MicroStrategyExecutionEnvironmentCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.microstrategy.MicroStrategyExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.resources.coldfusion.ColdfusionResourceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.resources.microstrategy.MicroStrategyResourceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.resources.microstrategy.MicroStrategyResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.sharepoint2010.Sharepoint2010ExecutionEnvironmentCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.sharepoint2010.Sharepoint2010ExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.resources.sharepoint.SharepointResourceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.resources.sharepoint.SharepointResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateForm;
@@ -89,10 +89,10 @@ import com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDIdentityPro
 import com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDIdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDServiceProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDServiceProviderCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.resources.JOSSO1ResourceCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.resources.JOSSO1ResourceCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.resources.JOSSO2ResourceCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.resources.JOSSO2ResourceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.resources.josso1.JOSSO1ResourceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.resources.josso1.JOSSO1ResourceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.resources.josso2.JOSSO2ResourceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.resources.josso2.JOSSO2ResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.salesforce.SalesforceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.salesforce.SalesforceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.saml2.Saml2IdentityProviderCreateForm;
@@ -181,9 +181,9 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _wikidCreateMediator:WikidCreateMediator;
     private var _directoryServiceCreateMediator:DirectoryServiceCreateMediator;
     private var _windowsIntegratedAuthnCreateMediator:WindowsIntegratedAuthnCreateMediator;
-    private var _sharepoint2010ExecutionEnvironmentCreateMediator:Sharepoint2010ExecutionEnvironmentCreateMediator;
-    private var _coldfusionExecutionEnvironmentCreateMediator:ColdfusionExecutionEnvironmentCreateMediator;
-    private var _microStrategyExecutionEnvironmentCreateMediator:MicroStrategyExecutionEnvironmentCreateMediator;
+    private var _sharepointResourceCreateMediator:SharepointResourceCreateMediator;
+    private var _coldfusionResourceCreateMediator:ColdfusionResourceCreateMediator;
+    private var _microStrategyResourceCreateMediator:MicroStrategyResourceCreateMediator;
 
     // views
     private var _simpleSSOWizardView:SimpleSSOWizardView;
@@ -234,9 +234,9 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _wikidCreateForm:WikidCreateForm;
     private var _directoryServiceCreateForm:DirectoryServiceCreateForm;
     private var _windowsIntegratedAuthnCreateForm:WindowsIntegratedAuthnCreateForm;
-    private var _sharepoint2010ExecutionEnvironmentCreateForm:Sharepoint2010ExecutionEnvironmentCreateForm;
-    private var _coldfusionExecutionEnvironmentCreateForm:ColdfusionExecutionEnvironmentCreateForm;
-    private var _microStrategyExecutionEnvironmentCreateForm:MicroStrategyExecutionEnvironmentCreateForm;
+    private var _sharepoint2010ExecutionEnvironmentCreateForm:SharepointResourceCreateForm;
+    private var _coldfusionExecutionEnvironmentCreateForm:ColdfusionResourceCreateForm;
+    private var _microStrategyResourceCreateForm:MicroStrategyResourceCreateForm;
 
     public function ModelerPopUpManager() {
         super();
@@ -633,28 +633,28 @@ public class ModelerPopUpManager extends BasePopUpManager {
     }
 
 
-    public function get sharepoint2010ExecutionEnvironmentCreateMediator():Sharepoint2010ExecutionEnvironmentCreateMediator {
-        return _sharepoint2010ExecutionEnvironmentCreateMediator;
+    public function get sharepointResourceCreateMediator():SharepointResourceCreateMediator {
+        return _sharepointResourceCreateMediator;
     }
 
-    public function set sharepoint2010ExecutionEnvironmentCreateMediator(value:Sharepoint2010ExecutionEnvironmentCreateMediator):void {
-        _sharepoint2010ExecutionEnvironmentCreateMediator = value;
+    public function set sharepointResourceCreateMediator(value:SharepointResourceCreateMediator):void {
+        _sharepointResourceCreateMediator = value;
     }
 
-    public function get coldfusionExecutionEnvironmentCreateMediator():ColdfusionExecutionEnvironmentCreateMediator {
-        return _coldfusionExecutionEnvironmentCreateMediator;
+    public function get coldfusionResourceCreateMediator():ColdfusionResourceCreateMediator {
+        return _coldfusionResourceCreateMediator;
     }
 
-    public function set coldfusionExecutionEnvironmentCreateMediator(value:ColdfusionExecutionEnvironmentCreateMediator):void {
-        _coldfusionExecutionEnvironmentCreateMediator = value;
+    public function set coldfusionResourceCreateMediator(value:ColdfusionResourceCreateMediator):void {
+        _coldfusionResourceCreateMediator = value;
     }
 
-    public function get microStrategyExecutionEnvironmentCreateMediator():MicroStrategyExecutionEnvironmentCreateMediator {
-        return _microStrategyExecutionEnvironmentCreateMediator;
+    public function get microStrategyResourceCreateMediator():MicroStrategyResourceCreateMediator {
+        return _microStrategyResourceCreateMediator;
     }
 
-    public function set microStrategyExecutionEnvironmentCreateMediator(value:MicroStrategyExecutionEnvironmentCreateMediator):void {
-        _microStrategyExecutionEnvironmentCreateMediator = value;
+    public function set microStrategyResourceCreateMediator(value:MicroStrategyResourceCreateMediator):void {
+        _microStrategyResourceCreateMediator = value;
     }
 
     public function showSimpleSSOWizardWindow(notification:INotification):void {
@@ -1363,13 +1363,13 @@ public class ModelerPopUpManager extends BasePopUpManager {
     }
 
     private function createSharepoint2010ExecutionEnvironmentCreateForm():void {
-        _sharepoint2010ExecutionEnvironmentCreateForm = new Sharepoint2010ExecutionEnvironmentCreateForm();
+        _sharepoint2010ExecutionEnvironmentCreateForm = new SharepointResourceCreateForm();
         _sharepoint2010ExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleSharepoint2010ExecutionEnvironmentCreateFormCreated);
     }
 
     private function handleSharepoint2010ExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
-        sharepoint2010ExecutionEnvironmentCreateMediator.setViewComponent(_sharepoint2010ExecutionEnvironmentCreateForm);
-        sharepoint2010ExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+        sharepointResourceCreateMediator.setViewComponent(_sharepoint2010ExecutionEnvironmentCreateForm);
+        sharepointResourceCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateColdfusionExecutionEnvironmentWindow(notification:INotification):void {
@@ -1384,13 +1384,13 @@ public class ModelerPopUpManager extends BasePopUpManager {
     }
 
     private function createColdfusionExecutionEnvironmentCreateForm():void {
-        _coldfusionExecutionEnvironmentCreateForm = new ColdfusionExecutionEnvironmentCreateForm();
+        _coldfusionExecutionEnvironmentCreateForm = new ColdfusionResourceCreateForm();
         _coldfusionExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleColdfusionExecutionEnvironmentCreateFormCreated);
     }
 
     private function handleColdfusionExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
-        coldfusionExecutionEnvironmentCreateMediator.setViewComponent(_coldfusionExecutionEnvironmentCreateForm);
-        coldfusionExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+        coldfusionResourceCreateMediator.setViewComponent(_coldfusionExecutionEnvironmentCreateForm);
+        coldfusionResourceCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateMicroStrategyExecutionEnvironmentWindow(notification:INotification):void {
@@ -1401,17 +1401,17 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _popup.height = 140;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
-        showPopup(_microStrategyExecutionEnvironmentCreateForm);
+        showPopup(_microStrategyResourceCreateForm);
     }
 
     private function createMicroStrategyExecutionEnvironmentCreateForm():void {
-        _microStrategyExecutionEnvironmentCreateForm = new MicroStrategyExecutionEnvironmentCreateForm();
-        _microStrategyExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleMicroStrategyExecutionEnvironmentCreateFormCreated);
+        _microStrategyResourceCreateForm = new MicroStrategyResourceCreateForm();
+        _microStrategyResourceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleMicroStrategyExecutionEnvironmentCreateFormCreated);
     }
 
     private function handleMicroStrategyExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
-        microStrategyExecutionEnvironmentCreateMediator.setViewComponent(_microStrategyExecutionEnvironmentCreateForm);
-        microStrategyExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+        microStrategyResourceCreateMediator.setViewComponent(_microStrategyResourceCreateForm);
+        microStrategyResourceCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateFederatedConnectionWindow(notification:INotification):void {

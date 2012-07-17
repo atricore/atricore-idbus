@@ -141,7 +141,7 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.sharepoint2010.Sharepoint2010ExecutionEnvironmentCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.sharepoint.Sharepoint2010ExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.externalidp.ExternalIdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator</symbol>
@@ -243,13 +243,13 @@
         <symbol>com.atricore.idbus.console.config.main.model.ServiceConfigProxy</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand</symbol>
-        <symbol>com.atricore.idbus.console.config.http.HttpServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.ssh.SshServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.persistence.PersistenceServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.management.ManagementServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.aqm.ArtifactQueueManagerServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.log.LogServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.branding.BrandingServiceMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.http.HttpSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.ssh.SshSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.persistence.PersistenceSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.management.ManagementSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.queue.QueueSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.log.LoggingSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.branding.BrandingSettingsMediator</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.LookupBrandingCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.ListBrandingsCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.CreateBrandingCommand</symbol>

@@ -51,9 +51,9 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _phpBBExecutionEnvironmentCreateMediator:IIocMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:IIocMediator;
     private var _webserverExecutionEnvironmentCreateMediator:IIocMediator;
-    private var _sharepoint2010ExecutionEnvironmentCreateMediator:IIocMediator;
-    private var _coldfusionExecutionEnvironmentCreateMediator:IIocMediator;
-    private var _microStrategyExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _sharepointResourceCreateMediator:IIocMediator;
+    private var _coldfusionResourceCreateMediator:IIocMediator;
+    private var _microStrategyResourceCreateMediator:IIocMediator;
     private var _simpleSSOWizardViewMediator:IIocMediator;
     private var _activationCreateMediator:IIocMediator;
     private var _federatedConnectionCreateMediator:IIocMediator;
@@ -167,9 +167,9 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(phpBBExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(windowsIISExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(webserverExecutionEnvironmentCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(sharepoint2010ExecutionEnvironmentCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(coldfusionExecutionEnvironmentCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(microStrategyExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(sharepointResourceCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(coldfusionResourceCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(microStrategyResourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(activationCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(federatedConnectionCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(exportIdentityApplianceMediator.getConfigName());
@@ -528,28 +528,28 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     }
 
 
-    public function get sharepoint2010ExecutionEnvironmentCreateMediator():IIocMediator {
-        return _sharepoint2010ExecutionEnvironmentCreateMediator;
+    public function get sharepointResourceCreateMediator():IIocMediator {
+        return _sharepointResourceCreateMediator;
     }
 
-    public function set sharepoint2010ExecutionEnvironmentCreateMediator(value:IIocMediator):void {
-        _sharepoint2010ExecutionEnvironmentCreateMediator = value;
+    public function set sharepointResourceCreateMediator(value:IIocMediator):void {
+        _sharepointResourceCreateMediator = value;
     }
 
-    public function get coldfusionExecutionEnvironmentCreateMediator():IIocMediator {
-        return _coldfusionExecutionEnvironmentCreateMediator;
+    public function get coldfusionResourceCreateMediator():IIocMediator {
+        return _coldfusionResourceCreateMediator;
     }
 
-    public function set coldfusionExecutionEnvironmentCreateMediator(value:IIocMediator):void {
-        _coldfusionExecutionEnvironmentCreateMediator = value;
+    public function set coldfusionResourceCreateMediator(value:IIocMediator):void {
+        _coldfusionResourceCreateMediator = value;
     }
 
-    public function get microStrategyExecutionEnvironmentCreateMediator():IIocMediator {
-        return _microStrategyExecutionEnvironmentCreateMediator;
+    public function get microStrategyResourceCreateMediator():IIocMediator {
+        return _microStrategyResourceCreateMediator;
     }
 
-    public function set microStrategyExecutionEnvironmentCreateMediator(value:IIocMediator):void {
-        _microStrategyExecutionEnvironmentCreateMediator = value;
+    public function set microStrategyResourceCreateMediator(value:IIocMediator):void {
+        _microStrategyResourceCreateMediator = value;
     }
 
     public function get simpleSSOWizardViewMediator():IIocMediator {

@@ -89,7 +89,7 @@
 
     <mx:TabNavigator id="channelNavigator" borderStyle="solid" width="100%" height="360" creationPolicy="all" tabHeight="26">
         <!-- IDP CHANNEL TAB -->
-        <s:NavigatorContent id="idpChannelTab" icon="{EmbeddedIcons.idpChannelMiniIcon}" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.idpchannel')}">
+        <s:NavigatorContent id="idpChannelTab" icon="{EmbeddedIcons.idpChannelIcon}" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.idpchannel')}">
             <s:VGroup width="100%" height="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.useinheritedspsettings')}:" labelWidth="235">
                      <s:CheckBox id="useInheritedSPSettings" selected="true"/>
@@ -179,7 +179,7 @@
         </s:NavigatorContent>
         
         <!-- SP CHANNEL TAB -->
-        <s:NavigatorContent icon="{EmbeddedIcons.spChannelMiniIcon}" id="spChannelTab" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.spchannel')}">
+        <s:NavigatorContent icon="{EmbeddedIcons.spChannelIcon}" id="spChannelTab" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.spchannel')}">
             <s:VGroup width="100%" height="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.useinheritedidpsettings')}:" labelWidth="235">
                      <s:CheckBox id="useInheritedIDPSettings" selected="true"/>

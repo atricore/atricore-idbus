@@ -200,387 +200,370 @@ public class EmbeddedIcons {
     static public var schemasIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/identity_appliance.png")]
-    static public var busIcon:Class;
+    [Embed(source="/assets/icons/notation/40x40/identity_appliance.png")]
+    public static var identityApplianceMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/identity_provider.png")]
-    public static var idpIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
-    public static var spIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/external_identity_provider.png")]
-    public static var externalIdpIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/external_service_provider.png")]
-    public static var externalSpIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/external_identity_provider.png")]
-    public static var saml2IdpIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/external_service_provider.png")]
-    public static var saml2SpIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/external_identity_provider.png")]
-    public static var openidIdpIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/external_service_provider.png")]
-    public static var openidSpIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/external_identity_provider.png")]
-    public static var oauth2IdpIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/external_service_provider.png")]
-    public static var oauth2SpIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/salesforce.png")]
-    public static var salesforceIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/google_apps.png")]
-    public static var googleAppsIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/sugarcrm.png")]
-    public static var sugarCRMIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/wikid.png")]
-    public static var wikidIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/directory_service.png")]
-    public static var directoryServiceIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/win_integrated_authn.png")]
-    public static var windowsIntegratedAuthnIcon:Class;
-
-
-    //TODO add BP icon
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
-    public static var bpIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/identity_provider_channel.png")]
+    [Embed(source="/assets/icons/modeler/identity_provider_channel.png")]
     public static var idpChannelIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/service_provider_channel.png")]
+    [Embed(source="/assets/icons/modeler/service_provider_channel.png")]
     public static var spChannelIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/identity_vault.png")]
-    public static var vaultIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/ldap_identity_source.png")]
-    public static var ldapIdentitySourceIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/database_identity_source.png")]
-    public static var dbIdentitySourceIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/xml_identity_source.png")]
-    public static var xmlIdentitySourceIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/activation.png")]
-    public static var josso1ResourceIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/activation.png")]
-    public static var josso2ResourceIcon:Class;
-
-    //TODO USE APPROPRIATE ICONS
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/identity_appliance.png")]
-    static public var busMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/identity_provider.png")]
+    [Embed(source="/assets/icons/notation/40x40/identity_provider.png")]
     public static var idpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
-    public static var spMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
-    public static var externalIdpMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
-    public static var externalSpMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
+    [Embed(source="/assets/icons/notation/40x40/saml_identity_provider.png")]
     public static var saml2IdpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
+    [Embed(source="/assets/icons/notation/40x40/saml_service_provider.png")]
     public static var saml2SpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
-    public static var openidIdpMiniIcon:Class;
+    [Embed(source="/assets/icons/notation/40x40/external_saml_identity_provider.png")]
+    public static var externalSaml2IdpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
-    public static var openidSpMiniIcon:Class;
+    [Embed(source="/assets/icons/notation/40x40/external_saml_service_provider.png")]
+    public static var externalSaml2SpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/external_identity_provider.png")]
-    public static var oauth2IdpMiniIcon:Class;
+    [Embed(source="/assets/icons/notation/40x40/external_openid_identity_provider.png")]
+    public static var externalOpenidIdpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/external_service_provider.png")]
+    [Embed(source="/assets/icons/notation/40x40/oauth_service_provider.png")]
     public static var oauth2SpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/salesforce.png")]
-    public static var salesforceMiniIcon:Class;
+    [Embed(source="/assets/icons/notation/40x40/external_wsfed_service_provider.png")]
+    public static var externalWsFedSpMiniIcon:Class;
+
+    // Cloud entities
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/salesforce_service_provider.png")]
+    public static var salesforceSpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/google_apps.png")]
-    public static var googleAppsMiniIcon:Class;
+    [Embed(source="/assets/icons/notation/40x40/google_service_provider.png")]
+    public static var googleSpMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/sugarcrm.png")]
-    public static var sugarCRMMiniIcon:Class;
+    [Embed(source="/assets/icons/notation/40x40/sugarcrm_service_provider.png")]
+    public static var sugarCRMSpMiniIcon:Class;
+
+    // Authentication
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/wikid_authentication_service.png")]
+    public static var wikidAuthenticationServiceMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/wikid.png")]
-    public static var wikidMiniIcon:Class;
+    [Embed(source="/assets/icons/notation/40x40/directory_authentication_service.png")]
+    public static var directoryAuthenticationServiceMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/directory_service.png")]
-    public static var directoryServiceMiniIcon:Class;
+    [Embed(source="/assets/icons/notation/40x40/windows_authentication_service.png")]
+    public static var windowsAuthenticationServiceMiniIcon:Class;
 
+    // Identity sources
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/win_integrated_authn.png")]
-    public static var windowsIntegratedAuthnMiniIcon:Class;
-
-
-    //TODO add BP icon
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
-    public static var bpMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/identity_provider_channel.png")]
-    public static var idpChannelMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/service_provider_channel.png")]
-    public static var spChannelMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/identity_vault.png")]
+    [Embed(source="/assets/icons/notation/40x40/identity_vault.png")]
     public static var vaultMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/ldap_identity_source.png")]
+    [Embed(source="/assets/icons/notation/40x40/ldap_identity_source.png")]
     public static var ldapIdentitySourceMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/database_identity_source.png")]
+    [Embed(source="/assets/icons/notation/40x40/database_identity_source.png")]
     public static var dbIdentitySourceMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/xml_identity_source.png")]
+    [Embed(source="/assets/icons/notation/40x40/xml_identity_source.png")]
     public static var xmlIdentitySourceMiniIcon:Class;
-
-    //CONNECTIONS
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/connection.png")]
-    public static var connectionFederatedMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
-    public static var connectionServiceMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/activation.png")]
-    public static var connectionActivationMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/identity_lookup.png")]
-    public static var connectionIdentityLookupMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/identity_verification.png")]
-    public static var connectionDelegatedAuthnMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/connection.png")]
-    public static var connectionFederatedIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
-    public static var connectionServiceIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/activation.png")]
-    public static var connectionActivationIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/identity_lookup.png")]
-    public static var connectionIdentityLookupIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/identity_verification.png")]
-    public static var connectionDelegatedAuthnIcon:Class;
 
     // Resources
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/activation.png")]
+    [Embed(source="/assets/icons/notation/40x40/josso1_resource.png")]
     public static var josso1ResourceMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/activation.png")]
+    [Embed(source="/assets/icons/notation/40x40/josso2_resource.png")]
     public static var josso2ResourceMiniIcon:Class;
 
-    //Execution environments
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/execution_environment.png")]
-    public static var executionEnvironmentMiniIcon:Class;
+    [Embed(source="/assets/icons/notation/40x40/microstrategy_resource.png")]
+    public static var microStrategyResourceMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/alfresco_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/sas_resource.png")]
+    public static var sasResourceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/sharepoint_resource.png")]
+    public static var sharepointResourceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/coldfusion_resource.png")]
+    public static var coldfusionResourceMiniIcon:Class;
+
+    // Connections
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/federated_connection.png")]
+    public static var federatedConnectionMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/service_connection.png")]
+    public static var serviceConnectionMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/activation.png")]
+    public static var activationMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/identity_lookup.png")]
+    public static var identityLookupMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/identity_verification.png")]
+    public static var identityVerificationMiniIcon:Class;
+
+    // Execution environments
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/alfresco_execution_environment.png")]
     public static var alfrescoEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/apache_web_server_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/apache_web_server_execution_environment.png")]
     public static var apacheEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/java_ee_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/java_ee_execution_environment.png")]
     public static var javaEnvironmentMiniIcon:Class;
+
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/jboss_as_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/jboss_as_execution_environment.png")]
     public static var jbossEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/liferay_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/liferay_execution_environment.png")]
     public static var liferayEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/microstrategy_execution_environment.png")]
-    public static var microStrategyEnvironmentMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/apache_web_server_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/apache_web_server_execution_environment.png")]
     public static var phpEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/phpbb_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/phpbb_execution_environment.png")]
     public static var phpbbEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/tomcat_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/tomcat_execution_environment.png")]
     public static var tomcatEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/web_server_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/web_server_execution_environment.png")]
     public static var webEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/sharepoint2010_execution_environment.png")]
-    public static var sharepoint2010EnvironmentMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/coldfusion_execution_environment.png")]
-    public static var coldfusionEnvironmentMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/weblogic_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/weblogic_execution_environment.png")]
     public static var weblogicEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/websphere_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/websphere_execution_environment.png")]
     public static var websphereEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/22x22/windows_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/40x40/windows_execution_environment.png")]
     public static var windowsEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/execution_environment.png")]
-    public static var executionEnvironmentIcon:Class;
+    [Embed(source="/assets/icons/notation/40x40/execution_environment.png")]
+    public static var executionEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/alfresco_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/identity_appliance.png")]
+    public static var identityApplianceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/identity_provider.png")]
+    public static var idpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/saml_identity_provider.png")]
+    public static var saml2IdpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/saml_service_provider.png")]
+    public static var saml2SpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/external_saml_identity_provider.png")]
+    public static var externalSaml2IdpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/external_saml_service_provider.png")]
+    public static var externalSaml2SpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/external_openid_identity_provider.png")]
+    public static var externalOpenidIdpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/oauth_service_provider.png")]
+    public static var oauth2SpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/external_wsfed_service_provider.png")]
+    public static var externalWsFedSpIcon:Class;
+
+    // Cloud entities
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/salesforce_service_provider.png")]
+    public static var salesforceSpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/google_service_provider.png")]
+    public static var googleSpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/sugarcrm_service_provider.png")]
+    public static var sugarCRMSpIcon:Class;
+
+    // Authentication
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/wikid_authentication_service.png")]
+    public static var wikidAuthenticationServiceIcon:Class;
+
+    [Bindable]
+    //[Embed(source="/assets/icons/notation/60x60/directory_authentication_service.png")]
+    public static var directoryAuthenticationServiceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/windows_authentication_service.png")]
+    public static var windowsAuthenticationServiceIcon:Class;
+
+    // Identity sources
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/identity_vault.png")]
+    public static var vaultIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/ldap_identity_source.png")]
+    public static var ldapIdentitySourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/database_identity_source.png")]
+    public static var dbIdentitySourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/xml_identity_source.png")]
+    public static var xmlIdentitySourceIcon:Class;
+
+    // Resources
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/josso1_resource.png")]
+    public static var josso1ResourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/josso2_resource.png")]
+    public static var josso2ResourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/microstrategy_resource.png")]
+    public static var microStrategyResourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/sas_resource.png")]
+    public static var sasResourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/sharepoint_resource.png")]
+    public static var sharepointResourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/coldfusion_resource.png")]
+    public static var coldfusionResourceIcon:Class;
+
+    // Connections
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/federated_connection.png")]
+    public static var federatedConnectionIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/service_connection.png")]
+    public static var serviceConnectionIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/activation.png")]
+    public static var activationIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/identity_lookup.png")]
+    public static var identityLookupIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/identity_verification.png")]
+    public static var identityVerificationIcon:Class;
+
+    // Execution environments
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/alfresco_execution_environment.png")]
     public static var alfrescoEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/apache_web_server_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/apache_web_server_execution_environment.png")]
     public static var apacheEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/java_ee_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/java_ee_execution_environment.png")]
     public static var javaEnvironmentIcon:Class;
+
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/jboss_as_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/jboss_as_execution_environment.png")]
     public static var jbossEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/liferay_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/liferay_execution_environment.png")]
     public static var liferayEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/microstrategy_execution_environment.png")]
-    public static var microStrategyEnvironmentIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/apache_web_server_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/apache_web_server_execution_environment.png")]
     public static var phpEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/phpbb_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/phpbb_execution_environment.png")]
     public static var phpbbEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/tomcat_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/tomcat_execution_environment.png")]
     public static var tomcatEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/web_server_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/web_server_execution_environment.png")]
     public static var webEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/weblogic_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/weblogic_execution_environment.png")]
     public static var weblogicEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/websphere_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/websphere_execution_environment.png")]
     public static var websphereEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/windows_execution_environment.png")]
+    [Embed(source="/assets/icons/notation/60x60/windows_execution_environment.png")]
     public static var windowsEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/sharepoint2010_execution_environment.png")]
-    public static var sharepoint2010EnvironmentIcon:Class;
+    [Embed(source="/assets/icons/notation/60x60/execution_environment.png")]
+    public static var executionEnvironmentIcon:Class;
 
-    [Bindable]
-    [Embed(source="/assets/icons/notation/48x48/coldfusion_execution_environment.png")]
-    public static var coldfusionEnvironmentIcon:Class;
-
+    //TODO USE APPROPRIATE ICONS
     [Bindable]
     [Embed(source="/assets/icons/main/modeler_22.png")]
     public static var modelerMiniIcon:Class;
@@ -688,5 +671,34 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/settings/system_update.png")]
     public static var systemUpdateIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/http_settings.png")]
+    public static var httpSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/ssh_settings.png")]
+    public static var sshSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/persistence_settings.png")]
+    public static var persistenceSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/management_settings.png")]
+    public static var managementSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/queue_settings.png")]
+    public static var queueSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/logging_settings.png")]
+    public static var logggingSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/branding_settings.png")]
+    public static var brandingSettingsIcon:Class;
+
 }
 }

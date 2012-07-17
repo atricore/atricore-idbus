@@ -43,13 +43,13 @@
         private function authenticationMechanismsIconFunction(item:AuthenticationMechanism):Class {
             var iconClass:Class;
             if (item is BasicAuthentication) {
-                iconClass = EmbeddedIcons.connectionDelegatedAuthnMiniIcon;
+                iconClass = EmbeddedIcons.identityVerificationMiniIcon;
             } else if (item is BindAuthentication) {
-                iconClass = EmbeddedIcons.directoryServiceMiniIcon;
+                iconClass = EmbeddedIcons.directoryAuthenticationServiceMiniIcon;
             } else if (item is TwoFactorAuthentication) {
-                iconClass = EmbeddedIcons.wikidMiniIcon;
+                iconClass = EmbeddedIcons.wikidAuthenticationServiceMiniIcon;
             } else if (item is WindowsAuthentication) {
-                iconClass = EmbeddedIcons.windowsIntegratedAuthnMiniIcon;
+                iconClass = EmbeddedIcons.windowsAuthenticationServiceMiniIcon;
             }
             return iconClass;
         }
