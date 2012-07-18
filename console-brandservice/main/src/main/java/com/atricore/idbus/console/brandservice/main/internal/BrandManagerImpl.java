@@ -21,12 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -122,10 +120,16 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
 
             // If branding def. is custom, try to install the bundle
             if (def instanceof CustomBrandingDefinition) {
-                installCustomDefBundle((CustomBrandingDefinition) def);
+                saveCustomDefBundle((CustomBrandingDefinition) def);
+                for (BrandingInstaller installer : installers) {
+                    if (installer.canHandle(def)) {
+                        def = installer.install(def);
+                    }
+                }
             }
-
-            return store.create(def);
+            // Store the definition after it's installed
+            def = store.create(def);
+            return def;
         } catch (BrandingServiceException e) {
             throw new BrandingServiceException ("Cannot create branding definition " + e.getMessage(), e);
         }
@@ -138,10 +142,22 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
             throw new BrandingServiceException("Cannot update buil-in branding definition");
 
         if (def instanceof CustomBrandingDefinition) {
-            // Install the new bundle
-            installCustomDefBundle((CustomBrandingDefinition) def);
+            // Install the new bundle, only if we have a resource
+            if (((CustomBrandingDefinition) def).getResource() != null ) {
+                saveCustomDefBundle((CustomBrandingDefinition) def);
+                for (BrandingInstaller installer : installers) {
+                    if (installer.canHandle(def)) {
+                        // Uninstall the old version and install the new one
+                        def = installer.uninstall(def);
+                        def = installer.install(def);
+                    }
+                }
+            }
         }
-        return store.update(def);
+
+        // Store the definition after it's installed
+        def = store.update(def);
+        return def;
     }
 
     @Transactional
@@ -150,6 +166,14 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
         if (def instanceof BuiltInBrandingDefinition)
             throw new BrandingServiceException("Cannot delete buil-in branding definition");
 
+        if (def instanceof CustomBrandingDefinition)
+            deleteCustomDefBundle((CustomBrandingDefinition) def);
+
+        for (BrandingInstaller installer : installers) {
+            if (installer.canHandle(def)) {
+                installer.uninstall(def);
+            }
+        }
         store.delete(id);
     }
 
@@ -330,70 +354,113 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
         this.builtInBrandings = builtInBrandings;
     }
 
-    protected void installCustomDefBundle(CustomBrandingDefinition customDef) throws BrandingServiceException {
+    protected void deleteCustomDefBundle(CustomBrandingDefinition customDef) throws BrandingServiceException {
 
         String bu = customDef.getBundleUri();
-
-        if (customDef.getResource() != null && customDef.getResource().length > 0) {
-            // Install the bundle locally, based on the provided bundle uri
-            if (!bu.startsWith("mvn:")) {
-                throw new BrandingServiceException("Unknown URI protocol type for " + bu);
-            }
-
-            String group = bu.substring(4, bu.indexOf("/"));
-
-            // Some groups that may produce
-            if (group.startsWith("org.atricore.") ||
-                    group.startsWith("org.josso.") ||
-                    group.startsWith("org.apache.") ||
-                    group.startsWith("org.codehaus.") ||
-                    group.startsWith("org.osgi.") ||
-                    group.startsWith("org.springframework.") ||
-                    group.startsWith("org.mortbay.") ||
-                    group.startsWith("java.") ||
-                    group.startsWith("javax.") ||
-                    group.startsWith("com.sun.") ||
-                    group.startsWith("java.") ||
-                    group.startsWith("commons-")) {
-                throw new BrandingServiceException("Illegal brandding bundle group name " + group);
-            }
-
-            group = group.replace('.', '/');
-            String name = bu.substring(bu.indexOf("/") + 1, bu.lastIndexOf("/"));
-            String version = bu.substring(bu.lastIndexOf("/") + 1);
-
-            String karafHome = System.getProperty("karaf.home");
-
-            // Create the bundle in the extensions folder :
-            String resourceFolder = karafHome + "/extensions/" + group + "/" + name + "/" + version;
-            String resourceFile = resourceFolder + "/" + name + "-" + version + ".jar";
-
-            if (logger.isDebugEnabled())
-                logger.debug("Writing bundle resource to " + resourceFile);
-
-            File f = new File(resourceFile);
-            File d = new File(resourceFolder);
-            FileOutputStream fos = null;
-            try {
-
-                if (!d.exists())
-                    d.mkdirs();
-
-                if (!f.exists())
-                    f.createNewFile();
-
-                // Replace file, if it exists.
-                fos = new FileOutputStream(f, false);
-                fos.write(customDef.getResource());
-            } catch (IOException e) {
-                throw new BrandingServiceException("Cannot create branding bundle : " + e.getMessage(), e);
-            } finally {
-                if (fos != null) try { fos.close(); } catch (IOException e) { /**/ }
-            }
-
-            // We have the bundle in place ...
-
+        if (customDef.getResource() == null || customDef.getResource().length == 0) {
+            logger.warn("Custom branding resources should not be null " + customDef.getName());
         }
+
+        // Install the bundle locally, based on the provided bundle uri
+        if (!bu.startsWith("mvn:")) {
+            throw new BrandingServiceException("Unknown URI protocol type for " + bu);
+        }
+
+        String group = bu.substring(4, bu.indexOf("/"));
+
+        group = group.replace('.', '/');
+        String name = bu.substring(bu.indexOf("/") + 1, bu.lastIndexOf("/"));
+        String version = bu.substring(bu.lastIndexOf("/") + 1);
+
+        String karafHome = System.getProperty("karaf.home");
+
+        // Create the bundle in the extensions folder :
+        String resourceFolder = karafHome + "/extensions/" + group + "/" + name + "/" + version;
+        String resourceFile = resourceFolder + "/" + name + "-" + version + ".jar";
+
+        if (logger.isDebugEnabled())
+            logger.debug("Writing bundle resource to " + resourceFile);
+
+        File f = new File(resourceFile);
+
+        if (!f.exists()) {
+            logger.warn("Resource file not found : " + f.getAbsolutePath());
+            return;
+        }
+
+        if (logger.isTraceEnabled())
+            logger.trace("Deleting branding file " + f.getAbsolutePath());
+
+        f.delete();
+
+
+    }
+
+    protected void saveCustomDefBundle(CustomBrandingDefinition customDef) throws BrandingServiceException {
+
+        String bu = customDef.getBundleUri();
+        if (customDef.getResource() == null || customDef.getResource().length == 0) {
+            logger.warn("Custom branding resources should not be null " + customDef.getName());
+        }
+
+        // Install the bundle locally, based on the provided bundle uri
+        if (!bu.startsWith("mvn:")) {
+            throw new BrandingServiceException("Unknown URI protocol type for " + bu);
+        }
+
+        String group = bu.substring(4, bu.indexOf("/"));
+
+        // Some groups that may produce issues:
+        if (group.startsWith("org.atricore.") ||
+                group.startsWith("org.josso.") ||
+                group.startsWith("org.apache.") ||
+                group.startsWith("org.codehaus.") ||
+                group.startsWith("org.osgi.") ||
+                group.startsWith("org.springframework.") ||
+                group.startsWith("org.mortbay.") ||
+                group.startsWith("java.") ||
+                group.startsWith("javax.") ||
+                group.startsWith("com.sun.") ||
+                group.startsWith("java.") ||
+                group.startsWith("commons-")) {
+            throw new BrandingServiceException("Illegal brandding bundle group name " + group);
+        }
+
+        group = group.replace('.', '/');
+        String name = bu.substring(bu.indexOf("/") + 1, bu.lastIndexOf("/"));
+        String version = bu.substring(bu.lastIndexOf("/") + 1);
+
+        String karafHome = System.getProperty("karaf.home");
+
+        // Create the bundle in the extensions folder :
+        String resourceFolder = karafHome + "/extensions/" + group + "/" + name + "/" + version;
+        String resourceFile = resourceFolder + "/" + name + "-" + version + ".jar";
+
+        if (logger.isDebugEnabled())
+            logger.debug("Writing bundle resource to " + resourceFile);
+
+        File f = new File(resourceFile);
+        File d = new File(resourceFolder);
+        FileOutputStream fos = null;
+        try {
+
+            if (!d.exists())
+                d.mkdirs();
+
+            if (!f.exists())
+                f.createNewFile();
+
+            // Replace file, if it exists.
+            fos = new FileOutputStream(f, false);
+            fos.write(customDef.getResource());
+        } catch (IOException e) {
+            throw new BrandingServiceException("Cannot create branding bundle : " + e.getMessage(), e);
+        } finally {
+            if (fos != null) try { fos.close(); } catch (IOException e) { /**/ }
+        }
+
+        // We have the bundle in place ...
+
     }
 
 }

@@ -13,5 +13,7 @@ public interface BrandingInstaller extends BundleContextAware {
 
     BrandingDefinition install(BrandingDefinition def) throws BrandingServiceException;
 
+    BrandingDefinition uninstall(BrandingDefinition def) throws BrandingServiceException;
+
 
 }
