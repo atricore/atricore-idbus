@@ -183,7 +183,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                 Locale.setDefault(new Locale(branding.getDefaultLocale()));
             }
         } else {
-            logger.error("No branding configured for " + this.getName());
+            logger.error("No branding configured for " + getAppConfig().getAppName() + " using ID : " + brandingId);
         }
         postInit();
         refreshBranding();
