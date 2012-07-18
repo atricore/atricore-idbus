@@ -50,10 +50,10 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
     private boolean signRequests;
 
     // In milliseconds
-    private long requestTimeToLive = 1000L * 60L * 60L; // Default to one hour
+    private long requestTimeToLive = 1000L * 60L * 60L * 24L; // Default to 24 hours  (TODO: once this is configured from console, set it back to 1h)
 
-    // In milliseconds
-    private long timestampValidationTolerance = 1000L * 60L * 5L; // Default to five minutes
+    // In milliseconds, represent the clock offset tolerance when validating time-stamps
+    private long timestampValidationTolerance = 1000L * 60L * 5L; // Default to five minutes,
 
     private SamlR2Signer signer;
 
