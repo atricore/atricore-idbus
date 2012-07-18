@@ -172,6 +172,9 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
         String assertionId = request.getAssertionId();
         String appId = request.getRequester();
 
+        if (appId == null)
+            logger.error("No requester received in assertion resolution for " + request.getAssertionId());
+
         if (logger.isDebugEnabled())
             logger.debug("Processing ResolveAuthenticationAssertionRequest for assertion " + assertionId);
 
