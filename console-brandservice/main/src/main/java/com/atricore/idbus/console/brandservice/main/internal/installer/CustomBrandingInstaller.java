@@ -5,6 +5,7 @@ import com.atricore.idbus.console.brandservice.main.BrandingServiceException;
 import com.atricore.idbus.console.brandservice.main.domain.CustomBrandingDefinition;
 import com.atricore.idbus.console.brandservice.main.spi.BrandManager;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundlePermission;
 
 import java.util.Dictionary;
 
@@ -45,5 +46,23 @@ public class CustomBrandingInstaller extends OsgiBrandingInstaller {
         
     }
 
+    public BrandingDefinition uninstall(BrandingDefinition def) throws BrandingServiceException {
+        try {
+            CustomBrandingDefinition cd = (CustomBrandingDefinition) def;
 
+            String bundleName = cd.getBundleSymbolicName();
+            // Look up for bundle and stop/remove it
+            Bundle[] b = getBundleContext().getBundles();
+            for (Bundle bundle : b) {
+                if (bundle.getSymbolicName().equals(bundleName)) {
+                    bundle.uninstall();
+                }
+            }
+
+            return def;
+
+        } catch (Exception e) {
+            throw new BrandingServiceException(e);
+        }
+    }
 }

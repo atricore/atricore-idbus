@@ -15,4 +15,5 @@ public interface BrandManagerAjaxService {
     BrandingDefinitionDTO update(BrandingDefinitionDTO brandingDefinitionDTO) throws BrandingServiceException;
 
     boolean remove(long id) throws BrandingServiceException;
+
 }
