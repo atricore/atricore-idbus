@@ -849,7 +849,7 @@ public class SingleSignOnProducer extends SSOProducer {
             // Now authn-request, this is IDP initiated, the authnState is probably new.
             sp = resolveProviderDescriptor(((SPChannel) channel).getTargetProvider());
             // TODO : Eitehr build an authn request, or deal with the fact that we don't have one.
-            authnRequest = buildIdPInitiatedAuthnRequest(exchange, )
+            //authnRequest = buildIdPInitiatedAuthnRequest(exchange, )
             authnState.setResponseMode("unsolicited");
         } else {
             NameIDType issuer = authnRequest.getIssuer();
