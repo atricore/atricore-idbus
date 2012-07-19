@@ -843,14 +843,21 @@ public class SingleSignOnProducer extends SSOProducer {
         AuthenticationState authnState = getAuthnState(exchange);
         AuthnRequestType authnRequest = authnState.getAuthnRequest();
 
-        // This is IDP-Initiated !!!
+        // This is IDP-Initiated , but we're acting as proxy
         CircleOfTrustMemberDescriptor sp = null;
         if (authnRequest == null) {
             // Now authn-request, this is IDP initiated, the authnState is probably new.
-            sp = resolveProviderDescriptor(((SPChannel) channel).getTargetProvider());
-            // TODO : Eitehr build an authn request, or deal with the fact that we don't have one.
-            //authnRequest = buildIdPInitiatedAuthnRequest(exchange, )
+            SPChannel spChannel = (SPChannel) channel;
+            sp = resolveProviderDescriptor(spChannel.getTargetProvider());
+
+            // TODO : Either build an authn request, or deal with the fact that we don't have one.
+
+            CircleOfTrustMemberDescriptor idpProxy = spChannel.getMember();
+            EndpointDescriptor destination = new EndpointDescriptorImpl(endpoint);
+            authnRequest = buildIdPInitiatedAuthnRequest(exchange, idpProxy, destination, spChannel);
+
             authnState.setResponseMode("unsolicited");
+            authnState.setAuthnRequest(authnRequest);
         } else {
             NameIDType issuer = authnRequest.getIssuer();
             sp = resolveProviderDescriptor(issuer);
