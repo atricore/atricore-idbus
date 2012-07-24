@@ -16,4 +16,5 @@ public interface BrandManagerAjaxService {
 
     boolean remove(long id) throws BrandingServiceException;
 
+    boolean publish() throws BrandingServiceException;
 }
