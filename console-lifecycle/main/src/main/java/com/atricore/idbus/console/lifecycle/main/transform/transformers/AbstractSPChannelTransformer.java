@@ -387,20 +387,26 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             }
 
             // SAML2 SLO LOCAL
-            Bean sloLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
-            sloLocal.setName(spChannelBean.getName() + "-saml2-slo-local");
-            setPropertyValue(sloLocal, "name", sloLocal.getName());
-            setPropertyValue(sloLocal, "type", SSOMetadataConstants.SingleLogoutService_QNAME.toString());
-            setPropertyValue(sloLocal, "binding", SSOBinding.SAMLR2_LOCAL.getValue());
-            List<Ref> plansList = new ArrayList<Ref>();
-            Ref plan = new Ref();
-            plan.setBean(sloToSamlPlan.getName());
-            plansList.add(plan);
-            Ref plan2 = new Ref();
-            plan2.setBean(sloToSamlSpSloPlan.getName());
-            plansList.add(plan2);
-            setPropertyRefs(sloLocal, "identityPlans", plansList);
-            endpoints.add(sloLocal);
+            {
+                Bean sloLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                sloLocal.setName(spChannelBean.getName() + "-saml2-slo-local");
+                setPropertyValue(sloLocal, "name", sloLocal.getName());
+                setPropertyValue(sloLocal, "type", SSOMetadataConstants.SingleLogoutService_QNAME.toString());
+                setPropertyValue(sloLocal, "binding", SSOBinding.SAMLR2_LOCAL.getValue());
+                setPropertyValue(sloLocal, "location", "local://" + (spChannel != null ?
+                        spChannel.getLocation().getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
+
+                List<Ref> plansList = new ArrayList<Ref>();
+                Ref plan = new Ref();
+                plan.setBean(sloToSamlPlan.getName());
+                plansList.add(plan);
+                Ref plan2 = new Ref();
+                plan2.setBean(sloToSamlSpSloPlan.getName());
+                plansList.add(plan2);
+                setPropertyRefs(sloLocal, "identityPlans", plansList);
+                endpoints.add(sloLocal);
+            }
+
         }
 
         // SingleSignOnService
@@ -586,7 +592,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             Bean ssoSloSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
             ssoSloSoap.setName(spChannelBean.getName() + "-sso-slo-soap");
             setPropertyValue(ssoSloSoap, "name", ssoSloSoap.getName());
-            setPropertyValue(ssoSloSoap, "type", SSOMetadataConstants.IDPInitiatedSingleLogoutService_QNAME.toString());
+            setPropertyValue(ssoSloSoap, "type", SSOMetadataConstants.SingleLogoutService_QNAME.toString());
             setPropertyValue(ssoSloSoap, "binding", SSOBinding.SSO_SOAP.getValue());
             setPropertyValue(ssoSloSoap, "location", "/SSO/SLO/SOAP");
             List<Ref> plansList = new ArrayList<Ref>();
@@ -600,16 +606,34 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             Bean ssoSloLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
             ssoSloLocal.setName(spChannelBean.getName() + "-sso-slo-local");
             setPropertyValue(ssoSloLocal, "name", ssoSloLocal.getName());
-            setPropertyValue(ssoSloLocal, "type", SSOMetadataConstants.IDPInitiatedSingleLogoutService_QNAME.toString());
+            setPropertyValue(ssoSloLocal, "type", SSOMetadataConstants.SingleLogoutService_QNAME.toString());
             setPropertyValue(ssoSloLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
             setPropertyValue(ssoSloLocal, "location", "local://" + (spChannel != null ?
-                    spChannel.getLocation().getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
+                    spChannel.getLocation().getUri().toUpperCase() : idp.getLocation().getUri().toUpperCase()) + "/SSO/SLO/LOCAL");
             plansList = new ArrayList<Ref>();
             plan = new Ref();
             plan.setBean(sloToSamlSpSloPlan.getName());
             plansList.add(plan);
             setPropertyRefs(ssoSloLocal, "identityPlans", plansList);
             endpoints.add(ssoSloLocal);
+
+            // SSO IDP-Init SLO
+            Bean idpInitSloHttpRedir = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            idpInitSloHttpRedir.setName(spChannelBean.getName() + "-sso-idpinitslo-http-redirect");
+            setPropertyValue(idpInitSloHttpRedir, "name", idpInitSloHttpRedir.getName());
+            setPropertyValue(idpInitSloHttpRedir, "type", SSOMetadataConstants.IDPInitiatedSingleLogoutService_QNAME.toString());
+            setPropertyValue(idpInitSloHttpRedir, "binding", SSOBinding.SSO_REDIRECT.getValue());
+            setPropertyValue(idpInitSloHttpRedir, "location", "/SSO/SLO/IDP_INITIATE");
+            plansList = new ArrayList<Ref>();
+            plan = new Ref();
+            plan.setBean(sloToSamlPlan.getName());
+            plansList.add(plan);
+            Ref plan2 = new Ref();
+            plan2.setBean(sloToSamlSpSloPlan.getName());
+            plansList.add(plan2);
+            setPropertyRefs(idpInitSloHttpRedir, "identityPlans", plansList);
+            endpoints.add(idpInitSloHttpRedir);
+
         }
         
         setPropertyAsBeans(spChannelBean, "endpoints", endpoints);

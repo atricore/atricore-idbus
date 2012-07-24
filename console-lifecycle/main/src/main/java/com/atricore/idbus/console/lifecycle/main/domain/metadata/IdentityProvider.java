@@ -37,6 +37,8 @@ public class IdentityProvider extends FederatedProvider {
 
     private int ssoSessionTimeout = 30; //
 
+    private String dashboardUrl;
+
     // Do we need something abstract, not bound to oauth2 ?
     private String oauth2ClientsConfig;
 
@@ -180,5 +182,13 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setOauth2Key(String oauth2Key) {
         this.oauth2Key = oauth2Key;
+    }
+
+    public String getDashboardUrl() {
+        return dashboardUrl;
+    }
+
+    public void setDashboardUrl(String dashboardUrl) {
+        this.dashboardUrl = dashboardUrl;
     }
 }

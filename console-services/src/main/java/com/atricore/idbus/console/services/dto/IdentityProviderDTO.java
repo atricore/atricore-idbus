@@ -42,6 +42,8 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     private String oauth2Key;
 
+    private String dashboardUrl;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicyDTO subjectNameIDPolicy;
 
@@ -185,4 +187,11 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
         this.oauth2Key = oauth2Key;
     }
 
+    public String getDashboardUrl() {
+        return dashboardUrl;
+    }
+
+    public void setDashboardUrl(String dashboardUrl) {
+        this.dashboardUrl = dashboardUrl;
+    }
 }

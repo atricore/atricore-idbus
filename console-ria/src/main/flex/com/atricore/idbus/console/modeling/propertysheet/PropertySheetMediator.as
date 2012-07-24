@@ -1020,6 +1020,8 @@ public class PropertySheetMediator extends IocMediator {
             _ipCoreSection.identityProvDescription.text = identityProvider.description;
             _ipCoreSection.ssoSessionTimeout.text =
                     identityProvider.ssoSessionTimeout > 0 ? identityProvider.ssoSessionTimeout.toString() : "30";
+            _ipCoreSection.dashboardUrl.text = identityProvider.dashboardUrl;
+
 
             BindingUtils.bindProperty(_ipCoreSection.subjectNameIdPolicyCombo, "dataProvider", this, "_subjectNameIdPolicies");
             sendNotification(ApplicationFacade.LIST_NAMEID_POLICIES);
@@ -1061,6 +1063,7 @@ public class PropertySheetMediator extends IocMediator {
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.ssoSessionTimeout.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.dashboardUrl.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1091,6 +1094,7 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.name = _ipCoreSection.identityProviderName.text;
             identityProvider.description = _ipCoreSection.identityProvDescription.text;
             identityProvider.ssoSessionTimeout = parseInt(_ipCoreSection.ssoSessionTimeout.text);
+            identityProvider.dashboardUrl = _ipCoreSection.dashboardUrl.text;
 
             identityProvider.location.protocol = _ipCoreSection.idpLocationProtocol.labelDisplay.text;
             identityProvider.location.host = _ipCoreSection.idpLocationDomain.text;
