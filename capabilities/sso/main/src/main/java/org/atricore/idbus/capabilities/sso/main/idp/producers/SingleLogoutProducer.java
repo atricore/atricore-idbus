@@ -92,16 +92,16 @@ public class SingleLogoutProducer extends SSOProducer {
 
         try {
             if (content instanceof LogoutRequestType) {
+                // Process and exit
                 doProcessLogoutRequest(exchange, (LogoutRequestType) content);
+                return;
+
             } else if (content instanceof IDPInitiatedLogoutRequestType) {
+                // Process and exit
                 doProcessIdPInitiatedLogoutRequest(exchange, (IDPInitiatedLogoutRequestType) content);
-            } else {
-                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
-                        null,
-                        StatusDetails.UNKNOWN_REQUEST.getValue(),
-                        content.getClass().getName(),
-                        null);
+                return;
             }
+
         } catch (SSORequestException e) {
 
             throw new IdentityMediationFault(
@@ -120,6 +120,13 @@ public class SingleLogoutProducer extends SSOProducer {
                     e);
         }
 
+        // We couldn't handle the message ...
+        throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                null,
+                StatusDetails.UNKNOWN_REQUEST.getValue(),
+                content.getClass().getName(),
+                null);
+
     }
 
     protected void doProcessIdPInitiatedLogoutRequest(CamelMediationExchange exchange, IDPInitiatedLogoutRequestType sloRequest) throws Exception {
@@ -137,7 +144,6 @@ public class SingleLogoutProducer extends SSOProducer {
             logger.debug("Building SLO Response for SSO Session "  + (secCtx != null ? secCtx.getSessionIndex() : "<NONE>"));
 
         SSOResponseType response = buildSsoResponse(sloRequest);
-
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(response.getID(),
@@ -407,6 +413,13 @@ public class SingleLogoutProducer extends SSOProducer {
                     // Try to send back channel requests, otherwise try http bindings (post, artifact, redirect NOT IMPLEMENTED YET!)
                     EndpointDescriptor ed = resolveSpSloEndpoint(pSecCtx.getProviderId(),
                             new SSOBinding[] { SSOBinding.SAMLR2_LOCAL, SSOBinding.SAMLR2_SOAP }, true);
+
+                    if (ed == null) {
+                        // Ignore this SP
+                        if (logger.isTraceEnabled())
+                            logger.trace("Ignoring SP : No SLO endpoint found : " + pSecCtx.getProviderId());
+                        continue;
+                    }
 
                     CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(pSecCtx.getProviderId());
 

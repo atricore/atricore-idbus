@@ -295,4 +295,12 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
     public void setTimestampValidationTolerance(long timestampValidationTolerance) {
         this.timestampValidationTolerance = timestampValidationTolerance;
     }
+
+    public long getTimestampValidationTolerance() {
+        return timestampValidationTolerance;
+    }
+
+    public void setTimestampValidationTolerance(long timestampValidationTolerance) {
+        this.timestampValidationTolerance = timestampValidationTolerance;
+    }
 }

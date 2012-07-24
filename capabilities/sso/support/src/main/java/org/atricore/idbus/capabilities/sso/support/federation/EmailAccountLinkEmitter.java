@@ -39,6 +39,8 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
 
     private static final Log logger = LogFactory.getLog( EmailAccountLinkEmitter.class );
 
+    boolean stripEmailDomain = false;
+
     public AccountLink emit ( Subject subject ) {
 
         // If subjectName ID  is email formatted, use it
@@ -75,14 +77,21 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
                  subjectAttribute.getName().equalsIgnoreCase("email") ||
                  subjectAttribute.getName().equalsIgnoreCase("mail")) {
 
+            if ( subjectAttribute.getName().startsWith("/UserAttribute[@ldap:targetAttribute=\"mail\"]") ||
+                 subjectAttribute.getName().equalsIgnoreCase("emailaddress") ||
+                 subjectAttribute.getName().equalsIgnoreCase("email") ||
+                 subjectAttribute.getName().equalsIgnoreCase("mail")) {
+
                 // Need to map email to local user name!
                 String email = subjectAttribute.getValue();
 
                 if (logger.isDebugEnabled())
                     logger.debug("Found email ["+email+"]");
 
-                // TODO : For now, email user and JOSSO local user MUST match!
-                return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+                if (stripEmailDomain)
+                    return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+                else
+                    return new DynamicAccountLinkImpl(subject, email, NameIDFormat.EMAIL.getValue());
             }
 
         }
@@ -100,6 +109,14 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
 
         return null;
 
+    }
+
+    public boolean isStripEmailDomain() {
+        return stripEmailDomain;
+    }
+
+    public void setStripEmailDomain(boolean stripEmailDomain) {
+        this.stripEmailDomain = stripEmailDomain;
     }
 }
 

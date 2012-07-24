@@ -54,7 +54,7 @@ public enum SSOBinding {
     SSO_ARTIFACT("urn:org:atricore:idbus:sso:bindings:HTTP-Artifact", true),
 
     /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
-    SS0_REDIRECT("urn:org:atricore:idbus:sso:bindings:HTTP-Redirect", true),
+    SSO_REDIRECT("urn:org:atricore:idbus:sso:bindings:HTTP-Redirect", true),
 
     /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
     SSO_POST("urn:org:atricore:idbus:sso:bindings:HTTP-POST", true),

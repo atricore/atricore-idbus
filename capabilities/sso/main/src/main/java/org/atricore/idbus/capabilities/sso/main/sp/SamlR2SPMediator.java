@@ -324,7 +324,7 @@ public class SamlR2SPMediator extends AbstractSSOMediator {
                     switch (binding) {
                         // All HTTP Endpoint routes are created the same way
                         case SSO_ARTIFACT:
-                        case SS0_REDIRECT:
+                        case SSO_REDIRECT:
 
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
