@@ -171,7 +171,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         ssoRedirect.setName(bpBean.getName() + "-binding-josso-sso-redir");
         setPropertyValue(ssoRedirect, "name", ssoRedirect.getName());
         setPropertyValue(ssoRedirect, "type", JossoService.SingleSignOnService.toString());
-        setPropertyValue(ssoRedirect, "binding", SSOBinding.SS0_REDIRECT.getValue());
+        setPropertyValue(ssoRedirect, "binding", SSOBinding.SSO_REDIRECT.getValue());
         setPropertyValue(ssoRedirect, "location", "/JOSSO/SSO/REDIR");
         endpoints.add(ssoRedirect);
 
@@ -179,7 +179,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         sloRedirect.setName(bpBean.getName() + "-binding-josso-slo-redir");
         setPropertyValue(sloRedirect, "name", sloRedirect.getName());
         setPropertyValue(sloRedirect, "type", JossoService.SingleLogoutService.toString());
-        setPropertyValue(sloRedirect, "binding", SSOBinding.SS0_REDIRECT.getValue());
+        setPropertyValue(sloRedirect, "binding", SSOBinding.SSO_REDIRECT.getValue());
         setPropertyValue(sloRedirect, "location", "/JOSSO/SLO/REDIR");
         endpoints.add(sloRedirect);
 

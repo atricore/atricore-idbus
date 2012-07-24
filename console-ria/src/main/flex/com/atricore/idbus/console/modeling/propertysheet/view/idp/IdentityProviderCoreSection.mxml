@@ -88,6 +88,12 @@
                 <s:TextInput id="idpLocationPath" width="130"/>
             </mx:FormItem>
 
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.dashboardUrl')}:"
+                         required="true">
+                <s:TextInput id="dashboardUrl"/>
+            </mx:FormItem>
+
+
         </mx:Form>
     </utils:TitledBorderBox>
     <utils:TitledBorderBox title="User Information Lookup and Authentication" height="100%" width="50%" paddingLeft="5"

@@ -145,6 +145,12 @@
                     <s:CheckBox id="ignoreRequestedNameIDPolicy" selected="true"/>
                 </mx:FormItem>
 
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.dashboardUrl')}:"
+                             required="true">
+                    <s:TextInput id="dashboardUrl" />
+                </mx:FormItem>
+
+
             </s:VGroup>
         </s:NavigatorContent>
 

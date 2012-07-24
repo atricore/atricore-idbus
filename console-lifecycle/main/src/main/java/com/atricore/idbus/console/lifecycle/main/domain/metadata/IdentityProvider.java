@@ -27,6 +27,8 @@ public class IdentityProvider extends FederatedProvider {
 
 	private static final long serialVersionUID = 141137856095909986L;
 
+    private String dashboardUrl;
+
     private boolean wantAuthnRequestsSigned;
 
     private boolean signRequests;
@@ -179,5 +181,13 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setOauth2Key(String oauth2Key) {
         this.oauth2Key = oauth2Key;
+    }
+
+    public String getDashboardUrl() {
+        return dashboardUrl;
+    }
+
+    public void setDashboardUrl(String dashboardUrl) {
+        this.dashboardUrl = dashboardUrl;
     }
 }

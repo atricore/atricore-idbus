@@ -212,6 +212,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         identityProvider.name = view.identityProviderName.text;
         identityProvider.description = view.identityProvDescription.text;
         identityProvider.ssoSessionTimeout = parseInt(view.ssoSessionTimeout.text);
+        identityProvider.dashboardUrl = view.dashboardUrl.text;
 
         var loc:Location = new Location();
         loc.protocol = view.idpLocationProtocol.labelDisplay.text;
