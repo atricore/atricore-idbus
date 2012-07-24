@@ -48,7 +48,7 @@ public class SsoHttpRedirectBinding extends AbstractMediationHttpBinding {
     private static final Log logger = LogFactory.getLog(SsoHttpRedirectBinding.class);
 
     public SsoHttpRedirectBinding(Channel channel) {
-        super(SSOBinding.SS0_REDIRECT.getValue(), channel);
+        super(SSOBinding.SSO_REDIRECT.getValue(), channel);
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {

@@ -27,6 +27,7 @@ import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.endpoints.ArtifactResolutionEndpoint;
+import org.atricore.idbus.capabilities.sso.main.idp.endpoints.IdPInitiatedSingleLogoutEndpoint;
 import org.atricore.idbus.capabilities.sso.main.idp.endpoints.SessionHeartBeatEndpoint;
 import org.atricore.idbus.capabilities.sso.main.idp.endpoints.SingleLogoutEndpoint;
 import org.atricore.idbus.capabilities.sso.main.idp.endpoints.SingleSignOnEndpoint;
@@ -72,7 +73,7 @@ public class SSOIDPComponent extends DefaultComponent {
                 endpoint = new ArtifactResolutionEndpoint( uri, this, parameters);
                 break;
             case IDPInitiatedSingleLogoutService:
-                endpoint = new SingleLogoutEndpoint( uri, this, parameters );
+                endpoint = new IdPInitiatedSingleLogoutEndpoint( uri, this, parameters );
                 break;
             case IDPSessionHeartBeatService:
                 endpoint = new SessionHeartBeatEndpoint(uri, this, parameters);
@@ -80,6 +81,7 @@ public class SSOIDPComponent extends DefaultComponent {
             case ProxyAssertionConsumerService:
                 endpoint = new SingleSignOnEndpoint(uri, this, parameters);
                 break;
+
             default:
                 throw new IllegalArgumentException( "Invalid SAMLR2 endpoint specified for endpoint " + remaining );
         }

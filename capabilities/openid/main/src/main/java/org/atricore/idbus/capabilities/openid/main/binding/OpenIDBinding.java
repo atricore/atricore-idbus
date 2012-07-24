@@ -32,7 +32,7 @@ public enum OpenIDBinding {
     OPENID_HTTP_POST("urn:OPENID:2.0:bindings:HTTP-POST", true),
 
     // Binding URIs for non-native openid endpoints
-    SSO_REDIRECT(SSOBinding.SS0_REDIRECT.getValue(), SSOBinding.SS0_REDIRECT.isFrontChannel()),
+    SSO_REDIRECT(SSOBinding.SSO_REDIRECT.getValue(), SSOBinding.SSO_REDIRECT.isFrontChannel()),
     SSO_ARTIFACT(SSOBinding.SSO_ARTIFACT.getValue(), SSOBinding.SSO_ARTIFACT.isFrontChannel())
     ;
 

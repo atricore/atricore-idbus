@@ -55,6 +55,8 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     private String warningUrl;
 
+    private String dashboardUrl;
+
     protected CamelContext context;
 
     protected JndiRegistry registry;
@@ -277,6 +279,14 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     public void setWarningUrl(String warningUrl) {
         this.warningUrl = warningUrl;
+    }
+
+    public String getDashboardUrl() {
+        return dashboardUrl;
+    }
+
+    public void setDashboardUrl(String dashboardUrl) {
+        this.dashboardUrl = dashboardUrl;
     }
 
     protected RouteBuilder createIdPRoutes(SPChannel SPChannel) throws Exception  {

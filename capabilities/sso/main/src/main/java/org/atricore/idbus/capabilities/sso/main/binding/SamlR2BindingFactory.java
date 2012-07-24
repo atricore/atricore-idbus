@@ -91,7 +91,7 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
             case SAMLR11_ARTIFACT:
                 mb = new SamlR11HttpArtifactBinding(channel);
                 break;
-            case SS0_REDIRECT:
+            case SSO_REDIRECT:
                 mb = new SsoHttpRedirectBinding(channel);
                 break;
             case SSO_ARTIFACT:

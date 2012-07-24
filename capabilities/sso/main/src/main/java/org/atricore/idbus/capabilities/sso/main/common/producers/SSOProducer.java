@@ -195,7 +195,7 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
             EndpointDescriptor ed = resolveEndpoint(samlr2sp.getSingleLogoutService(),
                     preferredBindings, SSOService.SingleLogoutService, true);
             if (ed == null)
-                throw new SSOException("No SLO Endpoint found for SP " + spAlias);
+                logger.warn("No SLO Endpoint found for SP " + spAlias);
 
             return ed;
 
