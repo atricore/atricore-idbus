@@ -2,7 +2,7 @@ package com.atricore.idbus.console.modeling.main.controller {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.services.dto.ServiceConnection;
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceResource;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -28,7 +28,7 @@ public class ServiceConnectionRemoveCommand extends IocSimpleCommand {
     override public function execute(notification:INotification):void {
         var serviceConnection:ServiceConnection = notification.getBody() as ServiceConnection;
 
-        var sp:ServiceProvider = serviceConnection.sp;
+        var sp:InternalSaml2ServiceProvider = serviceConnection.sp;
         var resource:ServiceResource = serviceConnection.resource;
 
         sp.serviceConnection = null;

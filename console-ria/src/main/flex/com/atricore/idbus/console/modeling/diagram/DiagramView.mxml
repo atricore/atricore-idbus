@@ -27,7 +27,6 @@
          xmlns:components="com.atricore.idbus.console.components.*"
          xmlns:comp="com.atricore.idbus.console.components.*"
          xmlns:ravis="org.un.cava.birdeye.ravis.graphLayout.visual.*"
-         xmlns:graph-ctrl="com.atricore.idbus.console.modeling.diagram.ui.control.*"
          xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
          xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
          horizontalCenter="0" verticalCenter="0"

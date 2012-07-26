@@ -5,7 +5,7 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
 
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceResource;
 
 import org.puremvc.as3.interfaces.INotification;

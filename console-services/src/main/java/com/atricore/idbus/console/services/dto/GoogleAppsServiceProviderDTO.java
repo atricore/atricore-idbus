@@ -21,7 +21,7 @@
 
 package com.atricore.idbus.console.services.dto;
 
-public class GoogleAppsServiceProviderDTO extends ExternalServiceProviderDTO {
+public class GoogleAppsServiceProviderDTO extends ExternalSaml2ServiceProviderDTO {
 
     private String domain;
 

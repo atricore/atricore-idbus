@@ -131,6 +131,22 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/40x40/coldfusion_resource.png")]
     public static var coldfusionResourceMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/alfresco_resource.png")]
+    public static var alfrescoResourceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/jboss_portal_resource.png")]
+    public static var jbossPortalEnvironmentMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/liferay_resource.png")]
+    public static var liferayResourceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/phpbb_resource.png")]
+    public static var phpbbResourceMiniIcon:Class;
+
     // Connections
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/federated_connection.png")]
@@ -153,9 +169,6 @@ public class EmbeddedIcons {
     public static var identityVerificationMiniIcon:Class;
 
     // Execution environments
-    [Bindable]
-    [Embed(source="/assets/icons/notation/40x40/alfresco_execution_environment.png")]
-    public static var alfrescoEnvironmentMiniIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/apache_web_server_execution_environment.png")]
@@ -170,16 +183,8 @@ public class EmbeddedIcons {
     public static var jbossEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/40x40/liferay_execution_environment.png")]
-    public static var liferayEnvironmentMiniIcon:Class;
-
-    [Bindable]
     [Embed(source="/assets/icons/notation/40x40/apache_web_server_execution_environment.png")]
     public static var phpEnvironmentMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/40x40/phpbb_execution_environment.png")]
-    public static var phpbbEnvironmentMiniIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/tomcat_execution_environment.png")]

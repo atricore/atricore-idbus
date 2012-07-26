@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.domain.dao;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider;
 
-public interface ServiceProviderDAO extends GenericDAO<ServiceProvider, Long> {
+public interface ServiceProviderDAO extends GenericDAO<InternalSaml2ServiceProvider, Long> {
 }

@@ -228,7 +228,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
-    public void arrive(ServiceProvider node) throws Exception {
+    public void arrive(InternalSaml2ServiceProvider node) throws Exception {
         validateName("SP name", node.getName(), node);
         validateDisplayName("SP display name", node.getDisplayName());
         validateLocation("SP", node.getLocation(), node, true);
@@ -263,14 +263,14 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
-    public void arrive(Saml2IdentityProvider node) throws Exception {
+    public void arrive(ExternalSaml2IdentityProvider node) throws Exception {
         validateName("Saml2 IDP name", node.getName(), node);
         validateDisplayName("Saml2 IDP display name", node.getDisplayName());
         validateMetadata("Saml2 IDP metadata", node.getMetadata(), node);
     }
 
     @Override
-    public void arrive(Saml2ServiceProvider node) throws Exception {
+    public void arrive(ExternalSaml2ServiceProvider node) throws Exception {
         validateName("Saml2 SP name", node.getName(), node);
         validateDisplayName("Saml2 SP display name", node.getDisplayName());
         validateMetadata("Saml2 SP metadata", node.getMetadata(), node);
@@ -666,9 +666,9 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.isOverrideProviderSetup())
             validateLocation("Identity Provider channel ", node.getLocation(), node, true);
 
-        // validate policies only for ServiceProvider (not for Saml2ServiceProvider)
-        if ((node.getConnectionA() != null && node.getConnectionA().getRoleA() instanceof ServiceProvider) ||
-                (node.getConnectionB() != null && node.getConnectionB().getRoleB() instanceof ServiceProvider)) {
+        // validate policies only for InternalSaml2ServiceProvider (not for ExternalSaml2ServiceProvider)
+        if ((node.getConnectionA() != null && node.getConnectionA().getRoleA() instanceof InternalSaml2ServiceProvider) ||
+                (node.getConnectionB() != null && node.getConnectionB().getRoleB() instanceof InternalSaml2ServiceProvider)) {
             if (node.getAccountLinkagePolicy() == null)
                 addError("No account linkage policy for " + node.getName());
 
@@ -868,9 +868,9 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 MetadataUtil.findEntityId(md);
                 // find SSODescriptor
                 String descriptorName = null;
-                if (obj instanceof Saml2IdentityProvider) {
+                if (obj instanceof ExternalSaml2IdentityProvider) {
                     descriptorName = "IDPSSODescriptor";
-                } else if (obj instanceof Saml2ServiceProvider) {
+                } else if (obj instanceof ExternalSaml2ServiceProvider) {
                     descriptorName = "SPSSODescriptor";
                 }
                 MetadataUtil.findSSODescriptor(md, descriptorName);

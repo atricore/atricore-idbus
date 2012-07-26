@@ -31,7 +31,7 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
     public void before(TransformEvent event) throws TransformException {
         // Define partenr apps in Binding provider
         JOSSO1Resource josso1Resource = (JOSSO1Resource) event.getData();
-        ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
+        InternalSaml2ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
 
         Beans bpBeans = (Beans) event.getContext().get("bpBeans");
         Collection<Bean> bpMediators = getBeansOfType(bpBeans, JossoMediator.class.getName());
@@ -165,8 +165,7 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
 
             return baseLocation + isapiExtension  + "?josso_security_check";
 
-        } else if (execEnv instanceof PHPExecutionEnvironment ||
-                execEnv instanceof PhpBBExecutionEnvironment) {
+        } else if (execEnv instanceof PHPExecutionEnvironment) {
             return appLocation + "josso-security-check.php";
 
         } else if (execEnv instanceof WeblogicExecutionEnvironment) {

@@ -40,7 +40,7 @@ import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.Resource;
 import com.atricore.idbus.console.services.dto.SamlR2SPConfig;
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import flash.events.Event;
@@ -252,7 +252,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         identityApplianceDefinition.providers = new ArrayCollection();
         identityApplianceDefinition.serviceResources = new ArrayCollection();
         for (var i:int = 0; i < _wizardDataModel.spData.length; i++) {
-            var sp:ServiceProvider = _wizardDataModel.spData[i] as ServiceProvider;
+            var sp:InternalSaml2ServiceProvider = _wizardDataModel.spData[i] as InternalSaml2ServiceProvider;
             sp.config = config;
             /*
             var spConfig:SamlR2SPConfig = ObjectUtil.copy(config) as SamlR2SPConfig;

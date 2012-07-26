@@ -24,7 +24,6 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
-import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
 import org.atricore.idbus.kernel.main.mediation.provider.FederationServiceImpl;
 import org.atricore.idbus.kernel.main.util.HashGenerator;
 
@@ -48,7 +47,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
 
     protected String contextIdpChannelBean = "idpChannelBean";
 
-    protected void generateSPComponents(ServiceProvider sp,
+    protected void generateSPComponents(InternalSaml2ServiceProvider sp,
                                      IdentityProviderChannel idpChannel,
                                      FederatedConnection fc,
                                      FederatedProvider target,

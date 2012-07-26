@@ -62,27 +62,27 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof ServiceProvider;
+        return event.getData() instanceof InternalSaml2ServiceProvider;
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
         try {
-            ServiceProvider provider = (ServiceProvider) event.getData();
+            InternalSaml2ServiceProvider providerInternalSaml2 = (InternalSaml2ServiceProvider) event.getData();
             IdProjectModule module = event.getContext().getCurrentModule();
             String baseDestPath = (String) event.getContext().get("idauPath");
-            String providerBeanName = normalizeBeanName(provider.getName());
+            String providerBeanName = normalizeBeanName(providerInternalSaml2.getName());
 
             List<IdentityProviderChannel> idpChannels = new ArrayList<IdentityProviderChannel>();
 
-            for (FederatedConnection fedConn : provider.getFederatedConnectionsA()) {
+            for (FederatedConnection fedConn : providerInternalSaml2.getFederatedConnectionsA()) {
                 IdentityProviderChannel idpChannel = (IdentityProviderChannel) fedConn.getChannelA();
                 if (idpChannel.isOverrideProviderSetup()) {
                     idpChannels.add(idpChannel);
                 }
             }
 
-            for (FederatedConnection fedConn : provider.getFederatedConnectionsB()) {
+            for (FederatedConnection fedConn : providerInternalSaml2.getFederatedConnectionsB()) {
                 IdentityProviderChannel idpChannel = (IdentityProviderChannel) fedConn.getChannelB();
                 if (idpChannel.isOverrideProviderSetup()) {
                     idpChannels.add(idpChannel);
@@ -91,7 +91,7 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
 
             // generate metadata for default channel
             IdProjectResource<EntityDescriptorType> spMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
-                baseDestPath + providerBeanName, providerBeanName, "saml2", generateIDPChannelMetadata(provider, null));
+                baseDestPath + providerBeanName, providerBeanName, "saml2", generateIDPChannelMetadata(providerInternalSaml2, null));
             spMetadata.setClassifier("jaxb");
             module.addResource(spMetadata);
 
@@ -99,7 +99,7 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
             for (IdentityProviderChannel idpChannel : idpChannels) {
                 String resourceName = normalizeBeanName(idpChannel.getName());
                 IdProjectResource<EntityDescriptorType> channelMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
-                    baseDestPath + providerBeanName, resourceName, "saml2", generateIDPChannelMetadata(provider, idpChannel));
+                    baseDestPath + providerBeanName, resourceName, "saml2", generateIDPChannelMetadata(providerInternalSaml2, idpChannel));
                 channelMetadata.setClassifier("jaxb");
                 module.addResource(channelMetadata);
             }
@@ -108,25 +108,25 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
         }
     }
     
-    private EntityDescriptorType generateIDPChannelMetadata(ServiceProvider provider, IdentityProviderChannel idpChannel) throws TransformException {
-        SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
+    private EntityDescriptorType generateIDPChannelMetadata(InternalSaml2ServiceProvider providerInternalSaml2, IdentityProviderChannel idpChannel) throws TransformException {
+        SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) providerInternalSaml2.getConfig();
 
         EntityDescriptorType entityDescriptor = new EntityDescriptorType();
-        // TODO : Take ID from provider entityId attribute (To be created)
+        // TODO : Take ID from providerInternalSaml2 entityId attribute (To be created)
         entityDescriptor.setID(idGenerator.generateId());
-        entityDescriptor.setEntityID(resolveLocationUrl(provider, idpChannel) + "/SAML2/MD");
+        entityDescriptor.setEntityID(resolveLocationUrl(providerInternalSaml2, idpChannel) + "/SAML2/MD");
 
         // SPSSODescriptor
         SPSSODescriptorType spSSODescriptor = new SPSSODescriptorType();
-        // TODO : Take ID from provider entityId attribute (To be created)
+        // TODO : Take ID from providerInternalSaml2 entityId attribute (To be created)
         spSSODescriptor.setID(idGenerator.generateId());
         spSSODescriptor.getProtocolSupportEnumeration().add(SAMLR2Constants.SAML_PROTOCOL_NS);
         if (idpChannel != null) {
             spSSODescriptor.setAuthnRequestsSigned(idpChannel.isSignAuthenticationRequests());
             spSSODescriptor.setWantAssertionsSigned(idpChannel.isWantAssertionSigned());
         } else {
-            spSSODescriptor.setAuthnRequestsSigned(provider.isSignAuthenticationRequests());
-            spSSODescriptor.setWantAssertionsSigned(provider.isWantAssertionSigned());
+            spSSODescriptor.setAuthnRequestsSigned(providerInternalSaml2.isSignAuthenticationRequests());
+            spSSODescriptor.setWantAssertionsSigned(providerInternalSaml2.isWantAssertionSigned());
         }
 
         // signing key descriptor
@@ -169,7 +169,7 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
                 throw new TransformException(e);
             }
         } else {
-            throw new TransformException("No Signer defined for " + provider.getName());
+            throw new TransformException("No Signer defined for " + providerInternalSaml2.getName());
         }
 
         JAXBElement jaxbSigningX509Certificate = new JAXBElement(
@@ -205,7 +205,7 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
                 throw new TransformException(e);
             }
         } else {
-            throw new TransformException("No Encrypter defined for " + provider.getName());
+            throw new TransformException("No Encrypter defined for " + providerInternalSaml2.getName());
         }
         JAXBElement jaxbEncryptionX509Certificate = new JAXBElement(
                                     new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
@@ -224,7 +224,7 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
         // services
 
         // profiles
-        Set<Profile> activeProfiles = provider.getActiveProfiles();
+        Set<Profile> activeProfiles = providerInternalSaml2.getActiveProfiles();
         if (idpChannel != null) {
             activeProfiles = idpChannel.getActiveProfiles();
         }
@@ -239,7 +239,7 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
         }
 
         // bindings
-        Set<Binding> activeBindings = provider.getActiveBindings();
+        Set<Binding> activeBindings = providerInternalSaml2.getActiveBindings();
         if (idpChannel != null) {
             activeBindings = idpChannel.getActiveBindings();
         }
@@ -259,7 +259,7 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
             }
         }
 
-        String idpChannelLocation = resolveLocationUrl(provider, idpChannel);
+        String idpChannelLocation = resolveLocationUrl(providerInternalSaml2, idpChannel);
         
         // ArtifactResolutionService must alwasy be enabled
         // if (artifactEnabled)
@@ -274,7 +274,7 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
             IndexedEndpointType artifactResolutionService1 = new IndexedEndpointType();
             artifactResolutionService1.setBinding(SSOBinding.SAMLR2_LOCAL.getValue());
             artifactResolutionService1.setLocation("local://" + (idpChannel != null ?
-                    idpChannel.getLocation().getUri().toUpperCase() : provider.getLocation().getUri().toUpperCase()) + "/SAML2/ARTIFACT/LOCAL");
+                    idpChannel.getLocation().getUri().toUpperCase() : providerInternalSaml2.getLocation().getUri().toUpperCase()) + "/SAML2/ARTIFACT/LOCAL");
             artifactResolutionService1.setIndex(1);
             //artifactResolutionService1.setIsDefault(true);
             spSSODescriptor.getArtifactResolutionService().add(artifactResolutionService1);
@@ -316,7 +316,7 @@ public class SPMetadataTransformer extends AbstractTransformer implements Initia
             EndpointType singleLogoutServiceLocal = new EndpointType();
             singleLogoutServiceLocal.setBinding(SSOBinding.SAMLR2_LOCAL.getValue());
             singleLogoutServiceLocal.setLocation("local://" + (idpChannel != null ?
-                    idpChannel.getLocation().getUri().toUpperCase() : provider.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
+                    idpChannel.getLocation().getUri().toUpperCase() : providerInternalSaml2.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
             spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceLocal);
         }
 

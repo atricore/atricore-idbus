@@ -104,15 +104,23 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
         resourcesPaletteDrawer.add(
                 new PaletteEntry("SAS", EmbeddedIcons.sasResourceMiniIcon, "SAS", DiagramElementTypes.SAS_RESOURCE_ELEMENT_TYPE)
         );
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("Alfresco", EmbeddedIcons.alfrescoResourceMiniIcon, "Alfresco Environment Entry", DiagramElementTypes.ALFRESCO_RESOURCE_ELEMENT_TYPE)
+        );
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("JBoss Portal", EmbeddedIcons.jbossPortalEnvironmentMiniIcon, "JBoss Portal Environment Entry", DiagramElementTypes.JBOSS_PORTAL_RESOURCE_ELEMENT_TYPE)
+        );
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("Liferay Portal", EmbeddedIcons.liferayResourceMiniIcon, "Liferay Portal Environment Entry", DiagramElementTypes.LIFERAY_RESOURCE_ELEMENT_TYPE)
+        );
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("PhpBB", EmbeddedIcons.phpbbResourceMiniIcon, "PhpBB Environment Entry", DiagramElementTypes.PHPBB_RESOURCE_ELEMENT_TYPE)
+        );
 
         pr.add(resourcesPaletteDrawer);
 
         // Execution Environments drawer
         var environmentsPaletteDrawer:PaletteDrawer = new PaletteDrawer("Execution Environments", null, null);
-
-        environmentsPaletteDrawer.add(
-                new PaletteEntry("Alfresco", EmbeddedIcons.alfrescoEnvironmentMiniIcon, "Alfresco Environment Entry", DiagramElementTypes.ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
-        );
 
         environmentsPaletteDrawer.add(
                 new PaletteEntry("Apache", EmbeddedIcons.apacheEnvironmentMiniIcon, "Apache Environment Entry", DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
@@ -127,19 +135,7 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
         );
 
         environmentsPaletteDrawer.add(
-                new PaletteEntry("JBoss Portal", EmbeddedIcons.jbossEnvironmentMiniIcon, "JBoss Portal Environment Entry", DiagramElementTypes.JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
-        );
-
-        environmentsPaletteDrawer.add(
-                new PaletteEntry("Liferay Portal", EmbeddedIcons.liferayEnvironmentMiniIcon, "Liferay Portal Environment Entry", DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
-        );
-
-        environmentsPaletteDrawer.add(
                 new PaletteEntry("PHP", EmbeddedIcons.phpEnvironmentMiniIcon, "PHP Environment Entry", DiagramElementTypes.PHP_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
-        );
-
-        environmentsPaletteDrawer.add(
-                new PaletteEntry("PhpBB", EmbeddedIcons.phpbbEnvironmentMiniIcon, "PhpBB Environment Entry", DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
         );
 
         environmentsPaletteDrawer.add(

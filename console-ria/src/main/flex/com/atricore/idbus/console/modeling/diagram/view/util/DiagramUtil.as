@@ -15,8 +15,8 @@ import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.OpenIDServiceProvider;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.Saml2IdentityProvider;
-import com.atricore.idbus.console.services.dto.Saml2ServiceProvider;
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
+import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceResource;
 
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
@@ -31,14 +31,14 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id && !nodeLinkExists(node1.node, node2.node) && !nodeLinkExists(node2.node, node1.node)) {
             // TODO: finish this
-            if ((node1.data is ServiceProvider && (node2.data is IdentityProvider || node2.data is Saml2IdentityProvider
+            if ((node1.data is InternalSaml2ServiceProvider && (node2.data is IdentityProvider || node2.data is Saml2IdentityProvider
                             || node2.data is OpenIDIdentityProvider || node2.data is OAuth2IdentityProvider))
-                    || (node1.data is IdentityProvider && (node2.data is ServiceProvider || node2.data is Saml2ServiceProvider
+                    || (node1.data is IdentityProvider && (node2.data is InternalSaml2ServiceProvider || node2.data is ExternalSaml2ServiceProvider
                             || node2.data is OpenIDServiceProvider || node2.data is OAuth2ServiceProvider))
-                    || ((node1.data is Saml2ServiceProvider || node1.data is OpenIDServiceProvider || node1.data is OAuth2ServiceProvider)
+                    || ((node1.data is ExternalSaml2ServiceProvider || node1.data is OpenIDServiceProvider || node1.data is OAuth2ServiceProvider)
                             && node2.data is IdentityProvider)
                     || ((node1.data is Saml2IdentityProvider || node1.data is OpenIDIdentityProvider || node1.data is OAuth2IdentityProvider)
-                            && node2.data is ServiceProvider)) {
+                            && node2.data is InternalSaml2ServiceProvider)) {
                 canBeLinked = true;
             }
         }
@@ -48,13 +48,13 @@ public class DiagramUtil {
     public static function nodesCanBeLinkedWithServiceConnection(node1:IVisualNode, node2:IVisualNode):Boolean {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
-            if (node1.data is ServiceProvider && node2.data is ServiceResource){
-                var sp1:ServiceProvider = node1.data as ServiceProvider;
+            if (node1.data is InternalSaml2ServiceProvider && node2.data is ServiceResource){
+                var sp1:InternalSaml2ServiceProvider = node1.data as InternalSaml2ServiceProvider;
                 if(sp1.serviceConnection == null){
                     canBeLinked = true;
                 }
-            } else if (node1.data is ServiceResource && node2.data is ServiceProvider) {
-                var sp2:ServiceProvider = node2.data as ServiceProvider;
+            } else if (node1.data is ServiceResource && node2.data is InternalSaml2ServiceProvider) {
+                var sp2:InternalSaml2ServiceProvider = node2.data as InternalSaml2ServiceProvider;
                 if(sp2.serviceConnection == null){
                     canBeLinked = true;
                 }
@@ -186,24 +186,24 @@ public class DiagramUtil {
                 return EmbeddedIcons.weblogicEnvironmentMiniIcon;
             case DiagramElementTypes.TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.tomcatEnvironmentMiniIcon;
-            case DiagramElementTypes.JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                return EmbeddedIcons.jbossEnvironmentMiniIcon;
-            case DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                return EmbeddedIcons.liferayEnvironmentMiniIcon;
+            case DiagramElementTypes.JBOSS_PORTAL_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.jbossPortalResourceMiniIcon;
+            case DiagramElementTypes.LIFERAY_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.liferayResourceMiniIcon;
             case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.websphereEnvironmentMiniIcon;
             case DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.apacheEnvironmentMiniIcon;
             case DiagramElementTypes.WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.windowsEnvironmentMiniIcon;
-            case DiagramElementTypes.ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                return EmbeddedIcons.alfrescoEnvironmentMiniIcon;
+            case DiagramElementTypes.ALFRESCO_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.alfrescoResourceMiniIcon;
             case DiagramElementTypes.JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.javaEnvironmentMiniIcon;
             case DiagramElementTypes.PHP_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.phpEnvironmentMiniIcon;
-            case DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                return EmbeddedIcons.phpbbEnvironmentMiniIcon;
+            case DiagramElementTypes.PHPBB_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.phpbbResourceMiniIcon;
             case DiagramElementTypes.WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.webEnvironmentMiniIcon;
         }

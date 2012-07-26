@@ -41,18 +41,18 @@ public class STSTransformer extends AbstractTransformer {
             ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
 
-            if (fc.getRoleA() instanceof Saml2IdentityProvider && fc.getRoleA().isRemote())
+            if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote())
                 return true;
                 // TODO : Change this once the front-end supports it
                 /*
-                return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof Saml2IdentityProvider
+                return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof ExternalSaml2IdentityProvider
                         && fc.getRoleA().isRemote();
                         */
-            if (fc.getRoleB() instanceof Saml2IdentityProvider && fc.getRoleB().isRemote()) {
+            if (fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote()) {
                 return true;
                 // TODO : Change this once the front-end supports it
                 /*
-                return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof Saml2IdentityProvider
+                return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof ExternalSaml2IdentityProvider
                         && fc.getRoleB().isRemote();
                         */
             }
@@ -75,9 +75,9 @@ public class STSTransformer extends AbstractTransformer {
             ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
             isProxy = true;
-            if (fc.getRoleA() instanceof Saml2IdentityProvider && fc.getRoleA().isRemote())
+            if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote())
                 provider = fc.getRoleA();
-            else if (fc.getRoleB() instanceof Saml2IdentityProvider && fc.getRoleB().isRemote()) {
+            else if (fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote()) {
                 provider = fc.getRoleB();
             }
         }

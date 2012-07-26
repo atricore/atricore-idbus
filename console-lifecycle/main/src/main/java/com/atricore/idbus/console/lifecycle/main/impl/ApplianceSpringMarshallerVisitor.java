@@ -142,7 +142,7 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
-    public void arrive(ServiceProvider node) throws Exception {
+    public void arrive(InternalSaml2ServiceProvider node) throws Exception {
 
         Bean providerBean = newBean(beans, node.getName(), node.getClass());
         setBeanDescription(providerBean, node.toString());
@@ -220,17 +220,17 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
-    public Object[] leave(ServiceProvider node, Object[] results) throws Exception {
+    public Object[] leave(InternalSaml2ServiceProvider node, Object[] results) throws Exception {
         return null;
     }
 
     @Override
-    public Object[] leave(Saml2IdentityProvider node, Object[] results) throws Exception {
+    public Object[] leave(ExternalSaml2IdentityProvider node, Object[] results) throws Exception {
         return null;
     }
 
     @Override
-    public void arrive(Saml2ServiceProvider node) throws Exception {
+    public void arrive(ExternalSaml2ServiceProvider node) throws Exception {
 
         Bean providerBean = newBean(beans, node.getName(), node.getClass());
         setBeanDescription(providerBean, node.toString());
@@ -272,7 +272,7 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
-    public Object[] leave(Saml2ServiceProvider node, Object[] results) throws Exception {
+    public Object[] leave(ExternalSaml2ServiceProvider node, Object[] results) throws Exception {
         return null;
     }
 

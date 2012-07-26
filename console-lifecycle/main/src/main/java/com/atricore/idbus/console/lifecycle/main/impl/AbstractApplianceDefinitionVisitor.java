@@ -20,15 +20,15 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;  
     }
 
-    public void arrive(ServiceProvider node) throws Exception {
+    public void arrive(InternalSaml2ServiceProvider node) throws Exception {
         
     }
 
-    public Object[] leave(ServiceProvider node, Object[] results) throws Exception {
+    public Object[] leave(InternalSaml2ServiceProvider node, Object[] results) throws Exception {
         return new Object[0];  
     }
 
-    public boolean walkNextChild(ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(InternalSaml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;  
     }
 
@@ -44,27 +44,27 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;  
     }
 
-    public void arrive(Saml2IdentityProvider node) throws Exception {
+    public void arrive(ExternalSaml2IdentityProvider node) throws Exception {
 
     }
 
-    public Object[] leave(Saml2IdentityProvider node, Object[] results) throws Exception {
+    public Object[] leave(ExternalSaml2IdentityProvider node, Object[] results) throws Exception {
         return new Object[0];
     }
 
-    public boolean walkNextChild(Saml2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(ExternalSaml2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
-    public void arrive(Saml2ServiceProvider node) throws Exception {
+    public void arrive(ExternalSaml2ServiceProvider node) throws Exception {
 
     }
 
-    public Object[] leave(Saml2ServiceProvider node, Object[] results) throws Exception {
+    public Object[] leave(ExternalSaml2ServiceProvider node, Object[] results) throws Exception {
         return new Object[0];
     }
 
-    public boolean walkNextChild(Saml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(ExternalSaml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 

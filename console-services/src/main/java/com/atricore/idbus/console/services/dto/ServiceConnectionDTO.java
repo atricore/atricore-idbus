@@ -4,15 +4,15 @@ public class ServiceConnectionDTO extends ConnectionDTO {
 
     private static final long serialVersionUID = 3086610222762604163L;
 
-    private ServiceProviderDTO sp;
+    private InternalSaml2ServiceProviderDTO sp;
 
     private ServiceResourceDTO resource;
 
-    public ServiceProviderDTO getSp() {
+    public InternalSaml2ServiceProviderDTO getSp() {
         return sp;
     }
 
-    public void setSp(ServiceProviderDTO sp) {
+    public void setSp(InternalSaml2ServiceProviderDTO sp) {
         this.sp = sp;
     }
 

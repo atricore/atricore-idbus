@@ -61,9 +61,9 @@
         <property name="propertySheetMediator" ref="propertySheetMediator"/>
         <property name="diagramMediator" ref="diagramMediator"/>
         <property name="identityProviderCreateMediator" ref="identityProviderCreateMediator"/>
-        <property name="externalIdentityProviderCreateMediator" ref="externalIdentityProviderCreateMediator"/>
-        <property name="saml2IdentityProviderCreateMediator" ref="saml2IdentityProviderCreateMediator"/>
-        <property name="saml2ServiceProviderCreateMediator" ref="saml2ServiceProviderCreateMediator"/>
+        <property name="internalSaml2ServiceProviderCreateMediator" ref="internalSaml2ServiceProviderCreateMediator"/>
+        <property name="externalSaml2IdentityProviderCreateMediator" ref="externalSaml2IdentityProviderCreateMediator"/>
+        <property name="externalSaml2ServiceProviderCreateMediator" ref="externalSaml2ServiceProviderCreateMediator"/>
         <property name="openIDIdentityProviderCreateMediator" ref="openIDIdentityProviderCreateMediator"/>
         <property name="openIDServiceProviderCreateMediator" ref="openIDServiceProviderCreateMediator"/>
         <property name="oauth2IdentityProviderCreateMediator" ref="oauth2IdentityProviderCreateMediator"/>
@@ -80,21 +80,19 @@
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
         <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />
-        <property name="jbossPortalExecutionEnvironmentCreateMediator" ref="jbossPortalExecutionEnvironmentCreateMediator" />
-        <property name="liferayPortalExecutionEnvironmentCreateMediator" ref="liferayPortalExecutionEnvironmentCreateMediator" />
+        <property name="jbossPortalResourceCreateMediator" ref="jbossPortalResourceCreateMediator" />
+        <property name="liferayPortalResourceCreateMediator" ref="liferayPortalResourceCreateMediator" />
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
-        <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />
+        <property name="alfrescoResourceCreateMediator" ref="alfrescoResourceCreateMediator" />
         <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator" />
         <property name="phpExecutionEnvironmentCreateMediator" ref="phpExecutionEnvironmentCreateMediator" />
-        <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator" />
+        <property name="phpBBResourceCreateMediator" ref="phpBBResourceCreateMediator" />
         <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator" />
         <property name="sharepointResourceCreateMediator" ref="sharepointResourceCreateMediator"/>
         <property name="coldfusionResourceCreateMediator" ref="coldfusionResourceCreateMediator"/>
         <property name="microStrategyResourceCreateMediator" ref="microStrategyResourceCreateMediator"/>
-        <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>
-        <property name="externalServiceProviderCreateMediator" ref="externalServiceProviderCreateMediator"/>
         <property name="browserMediator" ref="browserMediator"/>
         <property name="paletteMediator" ref="paletteMediator"/>
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
@@ -116,14 +114,12 @@
         <property name="createSimpleSSOIdentityApplianceCommand" ref="createSimpleSSOIdentityApplianceCommand"/>
         <property name="identityApplianceListLoadCommand" ref="identityApplianceListLoadCommand"/>
         <property name="identityApplianceRemoveCommand" ref="identityApplianceRemoveCommand"/>
-        <property name="serviceProviderRemoveCommand" ref="serviceProviderRemoveCommand"/>
-        <property name="externalServiceProviderRemoveCommand" ref="externalServiceProviderRemoveCommand"/>
         <property name="identityApplianceCreateCommand" ref="identityApplianceCreateCommand"/>
         <property name="identityApplianceImportCommand" ref="identityApplianceImportCommand"/>
         <property name="identityProviderRemoveCommand" ref="identityProviderRemoveCommand"/>
-        <property name="externalIdentityProviderRemoveCommand" ref="externalIdentityProviderRemoveCommand"/>
-        <property name="saml2IdentityProviderRemoveCommand" ref="saml2IdentityProviderRemoveCommand"/>
-        <property name="saml2ServiceProviderRemoveCommand" ref="saml2ServiceProviderRemoveCommand"/>
+        <property name="internalSaml2ServiceProviderRemoveCommand" ref="internalSaml2ServiceProviderRemoveCommand"/>
+        <property name="externalSaml2IdentityProviderRemoveCommand" ref="externalSaml2IdentityProviderRemoveCommand"/>
+        <property name="externalSaml2ServiceProviderRemoveCommand" ref="externalSaml2ServiceProviderRemoveCommand"/>
         <property name="openIDIdentityProviderRemoveCommand" ref="openIDIdentityProviderRemoveCommand"/>
         <property name="openIDServiceProviderRemoveCommand" ref="openIDServiceProviderRemoveCommand"/>
         <property name="oauth2IdentityProviderRemoveCommand" ref="oauth2IdentityProviderRemoveCommand"/>
@@ -212,7 +208,7 @@
 
     <object id="settingsStartupCommand"
             class="com.atricore.idbus.console.settings.main.controller.SettingsStartUpCommand">
-        <property name="settingsMediator" ref="settingsMediator"/>
+        <property name="appSectionMediator" ref="settingsMediator"/>
 
         <!-- Mediators -->
         <property name="menuMediator" ref="settingsMenuMediator"/>
@@ -230,7 +226,7 @@
 
     <object id="helpStartupCommand"
             class="com.atricore.idbus.console.help.main.controller.HelpStartUpCommand">
-        <property name="helpMediator" ref="helpMediator"/>
+        <property name="appSectionMediator" ref="helpMediator"/>
     </object>
 
     <!-- Commands -->
@@ -286,14 +282,6 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="serviceProviderRemoveCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
-    <object id="externalServiceProviderRemoveCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.ExternalServiceProviderRemoveCommand">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
     <object id="deployIdentityApplianceCommand"
             class="com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -341,16 +329,20 @@
             class="com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="externalIdentityProviderRemoveCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.ExternalIdentityProviderRemoveCommand">
+    <object id="externalSaml2IdentityProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExternalSaml2IdentityProviderRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="saml2IdentityProviderRemoveCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.Saml2IdentityProviderRemoveCommand">
+    <object id="internalSaml2ServiceProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.InternalSaml2ServiceProviderRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="saml2ServiceProviderRemoveCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.Saml2ServiceProviderRemoveCommand">
+    <object id="externalSaml2IdentityProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExternalSaml2IdentityProviderRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="externalSaml2ServiceProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExternalSaml2ServiceProviderRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="openIDIdentityProviderRemoveCommand"
@@ -681,32 +673,20 @@
             class="com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="externalIdentityProviderCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.externalidp.ExternalIdentityProviderCreateMediator">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
-    <object id="saml2IdentityProviderCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.saml2.Saml2IdentityProviderCreateMediator">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
-    <object id="saml2ServiceProviderCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.saml2.Saml2ServiceProviderCreateMediator">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
     <object id="openIDIdentityProviderCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDIdentityProviderCreateMediator">
+            class="com.atricore.idbus.console.modeling.diagram.view.openid.idp.OpenIDIdentityProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="openIDServiceProviderCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDServiceProviderCreateMediator">
+            class="com.atricore.idbus.console.modeling.diagram.view.openid.sp.OpenIDServiceProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="oauth2IdentityProviderCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.oauth2.OAuth2IdentityProviderCreateMediator">
+            class="com.atricore.idbus.console.modeling.diagram.view.oauth2.idp.OAuth2IdentityProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="oauth2ServiceProviderCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.oauth2.OAuth2ServiceProviderCreateMediator">
+            class="com.atricore.idbus.console.modeling.diagram.view.oauth2.sp.OAuth2ServiceProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="identityVaultCreateMediator"
@@ -745,12 +725,12 @@
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="jbossPortalExecutionEnvironmentCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateMediator">
+    <object id="jbossPortalResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.jbossportal.JBossPortalResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="liferayPortalExecutionEnvironmentCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateMediator">
+    <object id="liferayPortalResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.liferayportal.LiferayPortalResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="wasceExecutionEnvironmentCreateMediator"
@@ -765,8 +745,8 @@
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="alfrescoExecutionEnvironmentCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateMediator">
+    <object id="alfrescoResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.alfresco.AlfrescoResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="javaEEExecutionEnvironmentCreateMediator"
@@ -777,8 +757,8 @@
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="phpBBExecutionEnvironmentCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateMediator">
+    <object id="phpBBResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.phpbb.PhpBBResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="webserverExecutionEnvironmentCreateMediator"
@@ -807,12 +787,16 @@
     <!--class="com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator">-->
     <!--<property name="projectProxy" ref="projectProxy"/>-->
     <!--</object>-->
-    <object id="serviceProviderCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator">
+    <object id="internalSaml2ServiceProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.saml2.sp.internal.InternalSaml2ServiceProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="externalServiceProviderCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.externalsp.ExternalServiceProviderCreateMediator">
+    <object id="externalSaml2ServiceProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.saml2.sp.external.ExternalSaml2ServiceProviderCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="externalSaml2IdentityProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.saml2.idp.external.ExternalSaml2IdentityProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="salesforceCreateMediator"
@@ -1035,19 +1019,17 @@
         <property name="simpleSSOWizardMediator" ref="simpleSSOWizardViewMediator"/>
         <property name="identityApplianceWizardMediator" ref="identityApplianceWizardMediator"/>
         <property name="manageCertificateMediator" ref="manageCertificateMediator"/>
-        <property name="identityProviderMediator" ref="identityProviderCreateMediator"/>
-        <property name="serviceProviderMediator" ref="serviceProviderCreateMediator"/>
-        <property name="externalIdentityProviderMediator" ref="externalIdentityProviderCreateMediator"/>
-        <property name="externalServiceProviderMediator" ref="externalServiceProviderCreateMediator"/>
-        <property name="saml2IdentityProviderMediator" ref="saml2IdentityProviderCreateMediator"/>
-        <property name="saml2ServiceProviderMediator" ref="saml2ServiceProviderCreateMediator"/>
-        <property name="openIDIdentityProviderMediator" ref="openIDIdentityProviderCreateMediator"/>
-        <property name="openIDServiceProviderMediator" ref="openIDServiceProviderCreateMediator"/>
-        <property name="oauth2IdentityProviderMediator" ref="oauth2IdentityProviderCreateMediator"/>
-        <property name="oauth2ServiceProviderMediator" ref="oauth2ServiceProviderCreateMediator"/>
-        <property name="salesforceMediator" ref="salesforceCreateMediator"/>
-        <property name="googleAppsMediator" ref="googleAppsCreateMediator"/>
-        <property name="sugarCRMMediator" ref="sugarCRMCreateMediator"/>
+        <property name="identityProviderCreateMediator" ref="identityProviderCreateMediator"/>
+        <property name="internalSaml2ServiceProviderCreateMediator" ref="internalSaml2ServiceProviderCreateMediator"/>
+        <property name="externalSaml2IdentityProviderCreateMediator" ref="externalSaml2IdentityProviderCreateMediator"/>
+        <property name="externalSaml2ServiceProviderCreateMediator" ref="externalSaml2ServiceProviderCreateMediator"/>
+        <property name="openIDIdentityProviderCreateMediator" ref="openIDIdentityProviderCreateMediator"/>
+        <property name="openIDServiceProviderCreateMediator" ref="openIDServiceProviderCreateMediator"/>
+        <property name="oauth2IdentityProviderCreateMediator" ref="oauth2IdentityProviderCreateMediator"/>
+        <property name="oauth2ServiceProviderCreateMediator" ref="oauth2ServiceProviderCreateMediator"/>
+        <property name="salesforceCreateMediator" ref="salesforceCreateMediator"/>
+        <property name="googleAppsCreateMediator" ref="googleAppsCreateMediator"/>
+        <property name="sugarCRMCreateMediator" ref="sugarCRMCreateMediator"/>
         <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
         <!--<property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>-->
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
@@ -1058,23 +1040,23 @@
         <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator"/>
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator"/>
         <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator"/>
-        <property name="josso1ResourceMediator" ref="josso1ResourceCreateMediator"/>
-        <property name="josso2ResourceMediator" ref="josso2ResourceCreateMediator"/>
+        <property name="josso1ResourceCreateMediator" ref="josso1ResourceCreateMediator"/>
+        <property name="josso2ResourceCreateMediator" ref="josso2ResourceCreateMediator"/>
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator"/>
         <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator"/>
-        <property name="jbossPortalExecutionEnvironmentCreateMediator"
-                  ref="jbossPortalExecutionEnvironmentCreateMediator"/>
-        <property name="liferayPortalExecutionEnvironmentCreateMediator"
-                  ref="liferayPortalExecutionEnvironmentCreateMediator"/>
+        <property name="jbossPortalResourceCreateMediator"
+                  ref="jbossPortalResourceCreateMediator"/>
+        <property name="liferayPortalResourceCreateMediator"
+                  ref="liferayPortalResourceCreateMediator"/>
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator"/>
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator"/>
         <property name="windowsIISExecutionEnvironmentCreateMediator"
                   ref="windowsIISExecutionEnvironmentCreateMediator"/>
-        <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator"/>
+        <property name="alfrescoResourceCreateMediator" ref="alfrescoResourceCreateMediator"/>
         <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator"/>
         <property name="phpExecutionEnvironmentCreateMediator" ref="phpExecutionEnvironmentCreateMediator"/>
-        <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator"/>
+        <property name="phpBBResourceCreateMediator" ref="phpBBResourceCreateMediator"/>
         <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator"/>
         <property name="sharepointResourceCreateMediator" ref="sharepointResourceCreateMediator"/>
         <property name="coldfusionResourceCreateMediator" ref="coldfusionResourceCreateMediator"/>

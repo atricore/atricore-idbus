@@ -1,9 +1,8 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO1Resource;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceConnection;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
@@ -16,9 +15,7 @@ import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedLogoutReqToS
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SPSessionHeartBeatReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
-import org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
-import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
 
 import java.util.ArrayList;
@@ -45,7 +42,7 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
         Beans spBeans = (Beans) event.getContext().get("spBeans");
 
         JOSSO1Resource josso1Resource = (JOSSO1Resource) event.getData();
-        ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
+        InternalSaml2ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
 
         if (logger.isTraceEnabled())
             logger.trace("Generating Beans for JOSSO 1 Resources " + josso1Resource.getName()  + " of SP " + sp.getName());

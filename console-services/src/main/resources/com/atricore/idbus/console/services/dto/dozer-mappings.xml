@@ -24,9 +24,9 @@
             <b>providers</b>
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
@@ -38,7 +38,7 @@
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
-                com.atricore.idbus.console.services.dto.ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
@@ -61,9 +61,9 @@
               <b>providers</b>
               <a-hint>
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
@@ -75,19 +75,19 @@
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding
               </a-hint>
             <b-hint>
-                  com.atricore.idbus.console.services.dto.IdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.OpenIDServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.OAuth2ServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.UserDashboardBrandingDTO
+                com.atricore.idbus.console.services.dto.IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.OpenIDServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.OAuth2ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.UserDashboardBrandingDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -111,11 +111,25 @@
             <b>serviceResources</b>
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO1Resource,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO2Resource
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO2Resource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.AlfrescoResource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossPortalResource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.LiferayResourceEnvironment,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.PhpBBResource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.Sharepoint2010Resource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ColdfusionResource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.MicroStrategyResource
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.JOSSO1ResourceDTO,
-                com.atricore.idbus.console.services.dto.JOSSO2ResourceDTO
+                com.atricore.idbus.console.services.dto.JOSSO2ResourceDTO,
+                com.atricore.idbus.console.services.dto.AlfrescoResource,
+                com.atricore.idbus.console.services.dto.JBossPortalResource,
+                com.atricore.idbus.console.services.dto.LiferayResourceEnvironment,
+                com.atricore.idbus.console.services.dto.PhpBBResource,
+                com.atricore.idbus.console.services.dto.Sharepoint2010Resource,
+                com.atricore.idbus.console.services.dto.ColdfusionResource,
+                com.atricore.idbus.console.services.dto.MicroStrategyResource
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -126,36 +140,22 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.TomcatExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WeblogicExecutionEnvironment,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossPortalExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WASCEExecutionEnvironment,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.LiferayExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIISExecutionEnvironment,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.AlfrescoExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.PHPExecutionEnvironment,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.PhpBBExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JEEExecutionEnvironment,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.WebserverExecutionEnvironment,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.Sharepoint2010ExecutionEnvironment,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ColdfusionExecutionEnvironment,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.MicroStrategyExecutionEnvironment
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WebserverExecutionEnvironment
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.ApacheExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.TomcatExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.JbossExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.WASCEExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.LiferayExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.PHPExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.JEEExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.WebserverExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.SharepointResourceDTO,
-                com.atricore.idbus.console.services.dto.ColdfusionResourceDTO,
-                com.atricore.idbus.console.services.dto.MicroStrategyResourceDTO
+                com.atricore.idbus.console.services.dto.WebserverExecutionEnvironmentDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -243,17 +243,17 @@
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.ServiceProviderDTO</class-b>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderDTO</class-b>
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO</class-b>
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO</class-b>
     </mapping>
 
@@ -387,9 +387,9 @@
               <b>providers</b>
               <a-hint>
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
@@ -400,18 +400,18 @@
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider
               </a-hint>
             <b-hint>
-                  com.atricore.idbus.console.services.dto.IdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.OpenIDServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.OAuth2ServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO
+                com.atricore.idbus.console.services.dto.IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.OpenIDServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO,
+                com.atricore.idbus.console.services.dto.OAuth2ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO
             </b-hint>
         </field>
     </mapping>
@@ -432,9 +432,9 @@
             <b>target</b>
               <a-hint>
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProviderrviceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProviderProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProviderProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
@@ -446,7 +446,7 @@
               </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderDTO,
-                  com.atricore.idbus.console.services.dto.ServiceProviderDTO,
+                  com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderDTOceProviderDTO,
                   com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
@@ -468,7 +468,7 @@
 
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO</class-b>
+        <class-b>com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderChannelDTO</class-b>
         <!--field>
             <a>identitySource</a>
             <b>identitySource</b>
@@ -591,8 +591,8 @@
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossPortalExecutionEnvironment</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironmentDTO</class-b>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossPortalResource</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.JBossPortalResourceDTO</class-b>
     </mapping>
 
     <mapping>
@@ -602,7 +602,7 @@
 
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.LiferayExecutionEnvironment</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.LiferayExecutionEnvironmentDTO</class-b>
+        <class-b>com.atricore.idbus.console.services.dto.LiferayResourceDTO</class-b>
     </mapping>
 
     <mapping>
@@ -616,8 +616,8 @@
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.AlfrescoExecutionEnvironment</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironmentDTO</class-b>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.AlfrescoResource</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.AlfrescoResourceDTO</class-b>
     </mapping>
 
     <mapping>
@@ -631,8 +631,8 @@
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.PhpBBExecutionEnvironment</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironmentDTO</class-b>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.PhpBBResource</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.PhpBBResourceDTO</class-b>
     </mapping>
 
     <mapping>
@@ -719,9 +719,9 @@
             <b>roleA</b>
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
@@ -733,7 +733,7 @@
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
-                com.atricore.idbus.console.services.dto.ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
@@ -751,9 +751,9 @@
             <b>roleB</b>
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2ServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDIdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
@@ -765,7 +765,7 @@
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
-                com.atricore.idbus.console.services.dto.ServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.Saml2ServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.OpenIDIdentityProviderDTO,
@@ -787,7 +787,7 @@
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO,
-                com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO
+                com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderChannelDTO
             </b-hint>
         </field>
         <field>
@@ -799,7 +799,7 @@
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO,
-                com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO
+                com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderChannelDTO
             </b-hint>
         </field>        
     </mapping>
@@ -841,11 +841,11 @@
             <b>provider</b>
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
-                com.atricore.idbus.console.services.dto.ServiceProviderDTO
+                com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderDTO
             </b-hint>
         </field>
     </mapping>

@@ -58,7 +58,7 @@ public class IdentityLookupTransformer extends AbstractTransformer {
             Bean providerBean = null;
             Collection<Bean> b = null;
 
-            if (provider instanceof ServiceProvider) {
+            if (provider instanceof InternalSaml2ServiceProvider) {
                 providerBeans = (Beans) event.getContext().get("spBeans");
                 b = getBeansOfType(providerBeans, ServiceProviderImpl.class.getName());
             } else if (provider instanceof IdentityProvider) {

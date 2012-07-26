@@ -218,8 +218,8 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         // providers that are currently in providers list are service providers
         for (ProviderDTO sp : iad.getProviders()) {
             if (sp.getRole().equals(ProviderRoleDTO.SSOServiceProvider)) {
-                populateJOSSOActivation(iad, (ServiceProviderDTO)sp);
-                createFederatedConnection(idp, (ServiceProviderDTO)sp);
+                populateJOSSOActivation(iad, (InternalSaml2ServiceProviderDTO)sp);
+                createFederatedConnection(idp, (InternalSaml2ServiceProviderDTO)sp);
             }
         }
 
@@ -233,8 +233,8 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         }
 
         for (ProviderDTO p : idAppliance.getIdApplianceDefinition().getProviders()) {
-            if (p instanceof ServiceProviderDTO) {
-                populateServiceProvider((ServiceProviderDTO)p, iad);
+            if (p instanceof InternalSaml2ServiceProviderDTO) {
+                populateServiceProvider((InternalSaml2ServiceProviderDTO)p, iad);
             }
         }
 
@@ -795,7 +795,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
      * Helper methods
      ******************************************************/
 
-    private void populateServiceProvider(ServiceProviderDTO sp, IdentityApplianceDefinitionDTO iad) {
+    private void populateServiceProvider(InternalSaml2ServiceProviderDTO sp, IdentityApplianceDefinitionDTO iad) {
         sp.setIdentityAppliance(iad);
         sp.setDescription(sp.getName() + " description");
 
@@ -870,7 +870,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         sp.setWantSignedRequests(true);
     }
 
-    private void createFederatedConnection(IdentityProviderDTO idp, ServiceProviderDTO sp){
+    private void createFederatedConnection(IdentityProviderDTO idp, InternalSaml2ServiceProviderDTO sp){
         IdentityProviderChannelDTO idpChannel = new IdentityProviderChannelDTO();
         idpChannel.setName(sp.getName() + "-to-" + idp.getName() + "-default-channel");
         idpChannel.setDescription(sp.getName() + " Default Channel");
@@ -886,7 +886,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idpChannel.setSignAuthenticationRequests(true);
         idpChannel.setWantAssertionSigned(true);
 
-        ServiceProviderChannelDTO spChannel = new ServiceProviderChannelDTO();
+        InternalSaml2ServiceProviderChannelDTO spChannel = new InternalSaml2ServiceProviderChannelDTO();
         spChannel.setName(idp.getName() + "-to-" + sp.getName() + "-default-channel");
         spChannel.setDescription(sp.getName() + " Default Channel");
         spChannel.setOverrideProviderSetup(false);
@@ -1007,7 +1007,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return idp;
     }
 
-    private JOSSOActivationDTO populateJOSSOActivation(IdentityApplianceDefinitionDTO iad, ServiceProviderDTO sp) {
+    private JOSSOActivationDTO populateJOSSOActivation(IdentityApplianceDefinitionDTO iad, InternalSaml2ServiceProviderDTO sp) {
         JOSSOActivationDTO activation = (JOSSOActivationDTO)sp.getServiceConnection().getResource().getActivation();
         activation.setResource(sp.getServiceConnection().getResource());
         //activation.getPartnerAppLocation().setUri("");

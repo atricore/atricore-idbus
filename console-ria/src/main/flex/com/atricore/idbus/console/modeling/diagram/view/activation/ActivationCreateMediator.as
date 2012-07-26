@@ -31,7 +31,7 @@ import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
 
 import com.atricore.idbus.console.services.dto.Location;
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceResource;
 
 import flash.events.MouseEvent;
@@ -94,7 +94,7 @@ public class ActivationCreateMediator extends IocFormMediator {
     }
 
     override public function bindForm():void {
-        var sp:ServiceProvider = null;
+        var sp:InternalSaml2ServiceProvider = null;
         var name:String = _resource.name;
         if (_resource.serviceConnection != null && _resource.serviceConnection.sp != null) {
             sp = _resource.serviceConnection.sp;

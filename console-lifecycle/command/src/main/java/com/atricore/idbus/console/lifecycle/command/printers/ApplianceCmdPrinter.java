@@ -8,7 +8,6 @@ import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationEx
 import com.atricore.idbus.console.lifecycle.main.impl.ValidationError;
 
 import java.util.Collection;
-import java.util.Map;
 
 
 /**
@@ -144,8 +143,8 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
                 sb.append(getNameString(p));
                 sb.append(getLocationString(p));
 
-                if (p instanceof ServiceProvider) {
-                    ServiceProvider sp = (ServiceProvider) p;
+                if (p instanceof InternalSaml2ServiceProvider) {
+                    InternalSaml2ServiceProvider sp = (InternalSaml2ServiceProvider) p;
                     if (sp.getServiceConnection() != null && sp.getServiceConnection().getResource() != null) {
                         
                         if (sp.getServiceConnection().getResource() instanceof JOSSO1Resource) {

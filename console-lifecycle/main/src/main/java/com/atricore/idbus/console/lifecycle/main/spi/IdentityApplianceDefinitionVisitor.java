@@ -81,7 +81,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(ServiceProvider node) throws Exception;
+    void arrive(InternalSaml2ServiceProvider node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -97,7 +97,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(ServiceProvider node, Object[] results) throws Exception;
+    Object[] leave(InternalSaml2ServiceProvider node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -116,7 +116,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(InternalSaml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
 
     /**
@@ -172,7 +172,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(Saml2IdentityProvider node) throws Exception;
+    void arrive(ExternalSaml2IdentityProvider node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -188,7 +188,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(Saml2IdentityProvider node, Object[] results) throws Exception;
+    Object[] leave(ExternalSaml2IdentityProvider node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -207,7 +207,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(Saml2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(ExternalSaml2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
     /**
      * This method is called before walking any children of the argument
@@ -217,7 +217,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(Saml2ServiceProvider node) throws Exception;
+    void arrive(ExternalSaml2ServiceProvider node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -233,7 +233,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(Saml2ServiceProvider node, Object[] results) throws Exception;
+    Object[] leave(ExternalSaml2ServiceProvider node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -252,7 +252,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(Saml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(ExternalSaml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
     /**
      * This method is called before walking any children of the argument

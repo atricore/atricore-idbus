@@ -123,10 +123,10 @@ public class ApplianceAssert {
         Provider testL = (Provider) test;
         assertConfigsAreEqual(originalL.getConfig(), testL.getConfig(), ignoreIds);
 
-        if (originalL instanceof ServiceProvider) {
+        if (originalL instanceof InternalSaml2ServiceProvider) {
 
-            ServiceProvider originalSp = (ServiceProvider) originalL;
-            ServiceProvider testSp = (ServiceProvider) testL;
+            InternalSaml2ServiceProvider originalSp = (InternalSaml2ServiceProvider) originalL;
+            InternalSaml2ServiceProvider testSp = (InternalSaml2ServiceProvider) testL;
 
             assertIdenityLookupsAreEqual(originalSp.getIdentityLookup(), testSp.getIdentityLookup(), ignoreIds);
             assertActivationsAreEqual(originalSp.getActivation(), testSp.getActivation(), ignoreIds);

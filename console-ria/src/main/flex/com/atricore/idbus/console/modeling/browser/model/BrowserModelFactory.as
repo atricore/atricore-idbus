@@ -23,7 +23,7 @@ package com.atricore.idbus.console.modeling.browser.model {
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.main.view.util.Constants;
 import com.atricore.idbus.console.services.dto.Activation;
-import com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.AlfrescoResource;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.ColdfusionResource;
@@ -32,9 +32,9 @@ import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
-import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
-import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
+import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
+import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.GoogleAppsServiceProvider;
@@ -45,18 +45,20 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceUnitType;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.JBossPortalResource;
 import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
 import com.atricore.idbus.console.services.dto.JOSSO2Resource;
 import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
+import com.atricore.idbus.console.services.dto.LiferayResource;
 import com.atricore.idbus.console.services.dto.MicroStrategyResource;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
 import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
-import com.atricore.idbus.console.services.dto.PhpBBExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.PhpBBResource;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
-import com.atricore.idbus.console.services.dto.Saml2ServiceProvider;
+import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.SasResource;
 import com.atricore.idbus.console.services.dto.ServiceConnection;
 import com.atricore.idbus.console.services.dto.ServiceResource;
@@ -126,11 +128,11 @@ public class BrowserModelFactory {
             providerNode.parentNode = parentNode;
             if (provider is IdentityProvider) {
                 providerNode.icon = EmbeddedIcons.idpMiniIcon;
-            } else if (provider is Saml2ServiceProvider) {
+            } else if (provider is ExternalSaml2ServiceProvider) {
                 providerNode.icon = EmbeddedIcons.saml2SpMiniIcon;
-            } else if (provider is ExternalIdentityProvider) {
+            } else if (provider is ExternalSaml2IdentityProvider) {
                 providerNode.icon = EmbeddedIcons.externalSaml2IdpMiniIcon;
-            } else if (provider is ExternalServiceProvider) {
+            } else if (provider is ExternalSaml2ServiceProvider) {
                 providerNode.icon = EmbeddedIcons.externalSaml2SpMiniIcon;
             } else if (provider is ExternalOpenIDIdentityProvider) {
                 providerNode.icon = EmbeddedIcons.externalOpenidIdpMiniIcon;
@@ -207,7 +209,16 @@ public class BrowserModelFactory {
                 resourceNode.icon = EmbeddedIcons.sharepointResourceMiniIcon;
             } else if (serviceResource is ColdfusionResource) {
                 resourceNode.icon = EmbeddedIcons.coldfusionResourceMiniIcon;
+            } else if (serviceResource is AlfrescoResource){
+                resourceNode.icon = EmbeddedIcons.alfrescoResourceMiniIcon;
+            } else if (serviceResource is PhpBBResource) {
+               resourceNode.icon = EmbeddedIcons.phpbbResourceMiniIcon;
+            } else if (serviceResource is LiferayResource) {
+                resourceNode.icon = EmbeddedIcons.liferayResourceMiniIcon;
+            } else if (serviceResource is JBossPortalResource) {
+                resourceNode.icon = EmbeddedIcons.jbossPortalResourceMiniIcon;
             }
+
 
             return resourceNode;
         }
@@ -230,14 +241,10 @@ public class BrowserModelFactory {
                 execEnvironmentNode.icon = EmbeddedIcons.apacheEnvironmentMiniIcon;
             }else if(executionEnvironment is WindowsIISExecutionEnvironment){
                 execEnvironmentNode.icon = EmbeddedIcons.windowsEnvironmentMiniIcon;
-            } else if (executionEnvironment is AlfrescoExecutionEnvironment){
-                execEnvironmentNode.icon = EmbeddedIcons.alfrescoEnvironmentMiniIcon;
             } else if (executionEnvironment is JEEExecutionEnvironment) {
                 execEnvironmentNode.icon = EmbeddedIcons.javaEnvironmentMiniIcon;
             } else if (executionEnvironment is PHPExecutionEnvironment) {
                 execEnvironmentNode.icon = EmbeddedIcons.phpEnvironmentMiniIcon;
-            } else if (executionEnvironment is PhpBBExecutionEnvironment) {
-                execEnvironmentNode.icon = EmbeddedIcons.phpbbEnvironmentMiniIcon;
             } else if (executionEnvironment is WebserverExecutionEnvironment) {
                 execEnvironmentNode.icon = EmbeddedIcons.webEnvironmentMiniIcon;
             } else {

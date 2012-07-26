@@ -36,7 +36,7 @@ public class SamlR2SPTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof Saml2ServiceProvider ||
+        return event.getData() instanceof ExternalSaml2ServiceProvider ||
                event.getData() instanceof GoogleAppsServiceProvider ||
                event.getData() instanceof SugarCRMServiceProvider;
     }
@@ -122,7 +122,7 @@ public class SamlR2SPTransformer extends AbstractTransformer {
     @Override
     public Object after(TransformEvent event) throws TransformException {
 
-        Saml2ServiceProvider provider = (Saml2ServiceProvider) event.getData();
+        ExternalSaml2ServiceProvider provider = (ExternalSaml2ServiceProvider) event.getData();
         IdProjectModule module = event.getContext().getCurrentModule();
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans spBeans = (Beans) event.getContext().get("spBeans");

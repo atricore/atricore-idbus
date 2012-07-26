@@ -67,7 +67,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceRemoveCommand</symbol>
-        <symbol>com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.InternalSaml2ServiceProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExternalServiceProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.UndeployIdentityApplianceCommand</symbol>
@@ -129,17 +129,17 @@
 
         <symbol>com.atricore.idbus.console.modeling.diagram.DiagramMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.jbossportal.JBossPortalExecutionEnvironmentCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.liferayportal.LiferayPortalExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.alfresco.AlfrescoExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.phpbb.PhpBBExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.sharepoint.Sharepoint2010ExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator</symbol>
@@ -158,9 +158,9 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.windows.WindowsIntegratedAuthnCreateMediator</symbol>
-
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.Saml2IdentityProviderCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.Saml2ServiceProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.InternalSaml2IdentityProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.ExternalSaml2IdentityProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.ExternalSaml2ServiceProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDIdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDServiceProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.oauth2.OAuth2IdentityProviderCreateMediator</symbol>
