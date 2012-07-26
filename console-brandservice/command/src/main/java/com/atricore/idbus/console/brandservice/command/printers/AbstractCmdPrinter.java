@@ -72,12 +72,19 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
 
     protected String getIdString(BrandingDefinition def) {
         String id = def.getId() + "";
-        while (id.length() < 4) {
+        while (id.length() < 12) {
             id = " " + id;
         }
         return id;
     }
 
+    protected String getWebIdString(BrandingDefinition def) {
+        String id = def.getWebBrandingId() + "";
+        while (id.length() < 12) {
+            id = " " + id;
+        }
+        return id;
+    }
 
 
 }

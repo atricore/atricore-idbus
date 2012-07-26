@@ -12,14 +12,14 @@ public class BrandingDefinitionCmdPrinter extends AbstractCmdPrinter<BrandingDef
 
     public void print(BrandingDefinition def) {
         StringBuilder sb = new StringBuilder();
-        sb.append("\u001B[1m  ID      Name           Type        Description\u001B[0m\n");
+        sb.append("\u001B[1m  ID               Name            Web-ID               Type        Description\u001B[0m\n");
         printDetails(def, sb, true);
         getOut().println(sb);
     }
 
     public void printAll(Collection<BrandingDefinition> os) {
         StringBuilder sb = new StringBuilder();
-        sb.append("\u001B[1m  ID      Name           Type        Description\u001B[0m\n");
+        sb.append("\u001B[1m  ID               Name            Web-ID               Type        Description\u001B[0m\n");
         for (BrandingDefinition def : os) {
             printDetails(def, sb, false);
         }
@@ -32,6 +32,8 @@ public class BrandingDefinitionCmdPrinter extends AbstractCmdPrinter<BrandingDef
         sb.append(getIdString(def));
         sb.append("]  [");
         sb.append(getNameString(def));
+        sb.append("]  [");
+        sb.append(getWebIdString(def));
         sb.append("]  [");
         sb.append(getTypeString(def));
         sb.append("]");
