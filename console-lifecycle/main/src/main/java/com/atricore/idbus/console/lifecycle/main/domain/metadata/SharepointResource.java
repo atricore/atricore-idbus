@@ -6,7 +6,7 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class Sharepoint2010ExecutionEnvironment extends ExecutionEnvironment {
+public class SharepointResource extends Resource {
 
     private static final long serialVersionUID = 873640871223858432L;
 

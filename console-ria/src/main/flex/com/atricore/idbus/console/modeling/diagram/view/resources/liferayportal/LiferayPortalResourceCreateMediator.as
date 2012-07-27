@@ -52,7 +52,7 @@ public class LiferayPortalResourceCreateMediator extends IocFormMediator {
 
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    private var _newExecutionEnvironment:LiferayResource;
+    private var _newResource:LiferayResource;
 
     private var _locationValidator:Validator;
     
@@ -109,19 +109,19 @@ public class LiferayPortalResourceCreateMediator extends IocFormMediator {
     }
 
     override public function bindModel():void {
-        var executionEnvironment:LiferayResource = new LiferayResource();
-        executionEnvironment.name = view.executionEnvironmentName.text;
-        executionEnvironment.description = view.executionEnvironmentDescription.text;
-        executionEnvironment.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
-        executionEnvironment.installUri = view.homeDirectory.text;
-        if (executionEnvironment.type.name == ExecEnvType.REMOTE.name)
-            executionEnvironment.location = view.location.text;
-        executionEnvironment.containerType = view.containerType.selectedItem.data;
-        executionEnvironment.containerPath = view.containerPath.text;
-        executionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        executionEnvironment.installDemoApps = view.installSamples.selected;
-        executionEnvironment.platformId = "liferay";
-        _newExecutionEnvironment = executionEnvironment;
+        var liferayResource:LiferayResource = new LiferayResource();
+        liferayResource.name = view.executionEnvironmentName.text;
+        liferayResource.description = view.executionEnvironmentDescription.text;
+        liferayResource.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
+        liferayResource.installUri = view.homeDirectory.text;
+        if (liferayResource.type.name == ExecEnvType.REMOTE.name)
+            liferayResource.location = view.location.text;
+        liferayResource.containerType = view.containerType.selectedItem.data;
+        liferayResource.containerPath = view.containerPath.text;
+        liferayResource.overwriteOriginalSetup = view.replaceConfFiles.selected;
+        liferayResource.installDemoApps = view.installSamples.selected;
+        liferayResource.platformId = "liferay";
+        _newResource = liferayResource;
     }
 
     private function handleLiferayPortalResourceSave(event:MouseEvent):void {
@@ -158,11 +158,11 @@ public class LiferayPortalResourceCreateMediator extends IocFormMediator {
 
     private function save():void {
         bindModel();
-        if (_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null) {
-            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
+        if (_projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources == null) {
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources = new ArrayCollection();
         }
-        _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newExecutionEnvironment);
-        _projectProxy.currentIdentityApplianceElement = _newExecutionEnvironment;
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.addItem(_newResource);
+        _projectProxy.currentIdentityApplianceElement = _newResource;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

@@ -85,7 +85,7 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
     
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnOk.removeEventListener(MouseEvent.CLICK, handleSharepoint2010ExecutionEnvironmentSave);
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleSharepointResourceSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
         }
 
@@ -106,7 +106,7 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
 
         view.selectedHost.addEventListener(Event.CHANGE, handleHostChange);
 
-        view.btnOk.addEventListener(MouseEvent.CLICK, handleSharepoint2010ExecutionEnvironmentSave);
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleSharepointResourceSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.focusManager.setFocus(view.resourceName);
@@ -163,7 +163,7 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
         _newResource = sharepointResource;
     }
 
-    private function handleSharepoint2010ExecutionEnvironmentSave(event:MouseEvent):void {
+    private function handleSharepointResourceSave(event:MouseEvent):void {
         view.homeDirectory.errorString = "";
         view.location.errorString = "";
         if (validate(true)) {
@@ -203,10 +203,10 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
 
     private function save():void {
         bindModel();
-        if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null){
-            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
+        if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources == null){
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources = new ArrayCollection();
         }
-        _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newResource);
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.addItem(_newResource);
         _projectProxy.currentIdentityApplianceElement = _newResource;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);

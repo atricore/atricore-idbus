@@ -54,6 +54,7 @@
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitType;
         import com.atricore.idbus.console.services.dto.IdentityProvider;
         import com.atricore.idbus.console.services.dto.IdentitySource;
+        import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
         import com.atricore.idbus.console.services.dto.JBossPortalResource;
         import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.JOSSO1Resource;
@@ -136,8 +137,8 @@
                 var xs2sp:ExternalSaml2ServiceProvider = obj as ExternalSaml2ServiceProvider;
                 _linkLabel = xs2sp.name;
                 _linkIcon = EmbeddedIcons.externalSaml2SpIcon;
-            } else if (obj is ExternalSaml2ServiceProvider) {
-                var s2sp:ExternalSaml2ServiceProvider = obj as ExternalSaml2ServiceProvider;
+            } else if (obj is InternalSaml2ServiceProvider) {
+                var s2sp:InternalSaml2ServiceProvider = obj as InternalSaml2ServiceProvider;
                 _linkLabel = s2sp.name;
                 _linkIcon = EmbeddedIcons.saml2SpIcon;
             } else if (obj is OpenIDIdentityProvider) {

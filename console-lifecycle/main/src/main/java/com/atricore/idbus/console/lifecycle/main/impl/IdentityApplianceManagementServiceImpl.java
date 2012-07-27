@@ -2290,14 +2290,7 @@ public class IdentityApplianceManagementServiceImpl implements
         } else if (execEnv instanceof WeblogicExecutionEnvironment) {
             WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
             req.setWeblogicDomain(wlExecEnv.getDomain());
-        } else if (execEnv instanceof LiferayExecutionEnvironment) {
-            LiferayExecutionEnvironment liferayExecEnv = (LiferayExecutionEnvironment) execEnv;
-            if ("tomcat".equals(liferayExecEnv.getContainerType())) {
-                req.setTomcatInstallDir(liferayExecEnv.getContainerPath());
-            } else if ("jboss".equals(liferayExecEnv.getContainerType())) {
-                req.setJbossInstallDir(liferayExecEnv.getContainerPath());
-            }
-        } // TODO : Add support for JBPortal, Alfresco, PHP, PHPBB, etc ...
+        }
 
         return req;
     }
@@ -2319,14 +2312,7 @@ public class IdentityApplianceManagementServiceImpl implements
         } else if (execEnv instanceof WeblogicExecutionEnvironment) {
             WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
             req.setWeblogicDomain(wlExecEnv.getDomain());
-        } else if (execEnv instanceof LiferayExecutionEnvironment) {
-            LiferayExecutionEnvironment liferayExecEnv = (LiferayExecutionEnvironment) execEnv;
-            if ("tomcat".equals(liferayExecEnv.getContainerType())) {
-                req.setTomcatInstallDir(liferayExecEnv.getContainerPath());
-            } else if ("jboss".equals(liferayExecEnv.getContainerType())) {
-                req.setJbossInstallDir(liferayExecEnv.getContainerPath());
-            }
-        } // TODO : Add support for JBPortal, Alfresco, PHP, PHPBB, etc ...
+        }
 
         return req;
     }
@@ -2345,14 +2331,7 @@ public class IdentityApplianceManagementServiceImpl implements
         } else if (execEnv instanceof WeblogicExecutionEnvironment) {
             WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
             req.setWeblogicDomain(wlExecEnv.getDomain());
-        } else if (execEnv instanceof LiferayExecutionEnvironment) {
-            LiferayExecutionEnvironment liferayExecEnv = (LiferayExecutionEnvironment) execEnv;
-            if ("tomcat".equals(liferayExecEnv.getContainerType())) {
-                req.setTomcatInstallDir(liferayExecEnv.getContainerPath());
-            } else if ("jboss".equals(liferayExecEnv.getContainerType())) {
-                req.setJbossInstallDir(liferayExecEnv.getContainerPath());
-            }
-        } // TODO : Add support for JBPortal, Alfresco, PHP, PHPBB, etc ...
+        }
 
         return req;
     }
@@ -2372,14 +2351,7 @@ public class IdentityApplianceManagementServiceImpl implements
         } else if (execEnv instanceof WeblogicExecutionEnvironment) {
             WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
             req.setWeblogicDomain(wlExecEnv.getDomain());
-        } else if (execEnv instanceof LiferayExecutionEnvironment) {
-            LiferayExecutionEnvironment liferayExecEnv = (LiferayExecutionEnvironment) execEnv;
-            if ("tomcat".equals(liferayExecEnv.getContainerType())) {
-                req.setTomcatInstallDir(liferayExecEnv.getContainerPath());
-            } else if ("jboss".equals(liferayExecEnv.getContainerType())) {
-                req.setJbossInstallDir(liferayExecEnv.getContainerPath());
-            }
-        } // TODO : Add support for JBPortal, Alfresco, PHP, PHPBB, etc ...
+        }
 
         return req;
     }

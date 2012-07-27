@@ -97,10 +97,10 @@ public class MicroStrategyResourceCreateMediator extends IocFormMediator {
 
     private function save():void {
         bindModel();
-        if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null){
-            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
+        if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources == null){
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources = new ArrayCollection();
         }
-        _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newResource);
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.addItem(_newResource);
         _projectProxy.currentIdentityApplianceElement = _newResource;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);

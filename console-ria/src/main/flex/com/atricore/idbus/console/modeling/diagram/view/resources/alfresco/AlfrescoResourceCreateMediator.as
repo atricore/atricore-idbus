@@ -50,7 +50,7 @@ public class AlfrescoResourceCreateMediator extends IocFormMediator {
 
     private static var _environmentName:String = "ALFRESCO";    
 
-    private var _newExecutionEnvironment:AlfrescoResource;
+    private var _newResource:AlfrescoResource;
 
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
@@ -107,19 +107,19 @@ public class AlfrescoResourceCreateMediator extends IocFormMediator {
 
     override public function bindModel():void {
 
-        var alfrescoExecutionEnvironment:AlfrescoResource = new AlfrescoResource();
+        var alfrescoResource:AlfrescoResource = new AlfrescoResource();
 
-        alfrescoExecutionEnvironment.name = view.executionEnvironmentName.text;
-        alfrescoExecutionEnvironment.description = view.executionEnvironmentDescription.text;
-        alfrescoExecutionEnvironment.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
-        alfrescoExecutionEnvironment.installUri = view.homeDirectory.text;
-        if (alfrescoExecutionEnvironment.type.name == ExecEnvType.REMOTE.name)
-            alfrescoExecutionEnvironment.location = view.location.text;
-        alfrescoExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        alfrescoExecutionEnvironment.installDemoApps = false;
-        alfrescoExecutionEnvironment.platformId = "alfresco";
-        alfrescoExecutionEnvironment.tomcatInstallDir = view.tomcatInstallDir.text;
-        _newExecutionEnvironment = alfrescoExecutionEnvironment;
+        alfrescoResource.name = view.executionEnvironmentName.text;
+        alfrescoResource.description = view.executionEnvironmentDescription.text;
+        alfrescoResource.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
+        alfrescoResource.installUri = view.homeDirectory.text;
+        if (alfrescoResource.type.name == ExecEnvType.REMOTE.name)
+            alfrescoResource.location = view.location.text;
+        alfrescoResource.overwriteOriginalSetup = view.replaceConfFiles.selected;
+        alfrescoResource.installDemoApps = false;
+        alfrescoResource.platformId = "alfresco";
+        alfrescoResource.tomcatInstallDir = view.tomcatInstallDir.text;
+        _newResource = alfrescoResource;
     }
 
     private function handleAlfrescoExecutionEnvironmentSave(event:MouseEvent):void {
@@ -156,11 +156,11 @@ public class AlfrescoResourceCreateMediator extends IocFormMediator {
 
     private function save():void {
         bindModel();
-        if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null){
-            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
+        if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources == null){
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources = new ArrayCollection();
         }
-        _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newExecutionEnvironment);
-        _projectProxy.currentIdentityApplianceElement = _newExecutionEnvironment;
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.addItem(_newResource);
+        _projectProxy.currentIdentityApplianceElement = _newResource;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

@@ -170,8 +170,6 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
 
         } else if (execEnv instanceof WeblogicExecutionEnvironment) {
             return appLocation + "josso-wls/josso_security_check.jsp";
-        } else if (execEnv instanceof ColdfusionExecutionEnvironment) {
-            return appLocation + "jossoSecurityCheck.cfm";
         }
 
         // Defautl value

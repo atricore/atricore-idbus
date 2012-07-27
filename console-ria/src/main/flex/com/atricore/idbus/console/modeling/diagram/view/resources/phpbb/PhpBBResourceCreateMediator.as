@@ -50,7 +50,7 @@ public class PhpBBResourceCreateMediator extends IocFormMediator {
 
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    private var _newExecutionEnvironment:PhpBBResource;
+    private var _newResource:PhpBBResource;
 
     private var _locationValidator:Validator;
     
@@ -68,7 +68,7 @@ public class PhpBBResourceCreateMediator extends IocFormMediator {
     
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnOk.removeEventListener(MouseEvent.CLICK, handlePhpBBExecutionEnvironmentSave);
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handlePhpBBResourceSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
         }
 
@@ -83,7 +83,7 @@ public class PhpBBResourceCreateMediator extends IocFormMediator {
 
         view.selectedHost.addEventListener(Event.CHANGE, handleHostChange);
 
-        view.btnOk.addEventListener(MouseEvent.CLICK, handlePhpBBExecutionEnvironmentSave);
+        view.btnOk.addEventListener(MouseEvent.CLICK, handlePhpBBResourceSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.focusManager.setFocus(view.executionEnvironmentName);
@@ -116,10 +116,10 @@ public class PhpBBResourceCreateMediator extends IocFormMediator {
         phpBBResource.overwriteOriginalSetup = view.replaceConfFiles.selected;
         phpBBResource.installDemoApps = view.installSamples.selected;
         phpBBResource.platformId = "phpBB";
-        _newExecutionEnvironment = phpBBResource;
+        _newResource = phpBBResource;
     }
 
-    private function handlePhpBBExecutionEnvironmentSave(event:MouseEvent):void {
+    private function handlePhpBBResourceSave(event:MouseEvent):void {
         view.homeDirectory.errorString = "";
         view.location.errorString = "";
         if (validate(true)) {
@@ -147,11 +147,11 @@ public class PhpBBResourceCreateMediator extends IocFormMediator {
 
     private function save():void {
         bindModel();
-        if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null){
-            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
+        if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources == null){
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources = new ArrayCollection();
         }
-        _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newExecutionEnvironment);
-        _projectProxy.currentIdentityApplianceElement = _newExecutionEnvironment;
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.addItem(_newResource);
+        _projectProxy.currentIdentityApplianceElement = _newResource;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
