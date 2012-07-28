@@ -64,8 +64,7 @@
         <property name="internalSaml2ServiceProviderCreateMediator" ref="internalSaml2ServiceProviderCreateMediator"/>
         <property name="externalSaml2IdentityProviderCreateMediator" ref="externalSaml2IdentityProviderCreateMediator"/>
         <property name="externalSaml2ServiceProviderCreateMediator" ref="externalSaml2ServiceProviderCreateMediator"/>
-        <property name="openIDIdentityProviderCreateMediator" ref="openIDIdentityProviderCreateMediator"/>
-        <property name="openIDServiceProviderCreateMediator" ref="openIDServiceProviderCreateMediator"/>
+        <property name="externalOpenIDIdentityProviderCreateMediator" ref="externalOpenIDIdentityProviderCreateMediator"/>
         <property name="oauth2IdentityProviderCreateMediator" ref="oauth2IdentityProviderCreateMediator"/>
         <property name="oauth2ServiceProviderCreateMediator" ref="oauth2ServiceProviderCreateMediator"/>
         <property name="salesforceCreateMediator" ref="salesforceCreateMediator"/>
@@ -120,8 +119,7 @@
         <property name="internalSaml2ServiceProviderRemoveCommand" ref="internalSaml2ServiceProviderRemoveCommand"/>
         <property name="externalSaml2IdentityProviderRemoveCommand" ref="externalSaml2IdentityProviderRemoveCommand"/>
         <property name="externalSaml2ServiceProviderRemoveCommand" ref="externalSaml2ServiceProviderRemoveCommand"/>
-        <property name="openIDIdentityProviderRemoveCommand" ref="openIDIdentityProviderRemoveCommand"/>
-        <property name="openIDServiceProviderRemoveCommand" ref="openIDServiceProviderRemoveCommand"/>
+        <property name="externalOpenIDIdentityProviderRemoveCommand" ref="externalOpenIDIdentityProviderRemoveCommand"/>
         <property name="oauth2IdentityProviderRemoveCommand" ref="oauth2IdentityProviderRemoveCommand"/>
         <property name="oauth2ServiceProviderRemoveCommand" ref="oauth2ServiceProviderRemoveCommand"/>
         <property name="josso1ResourceRemoveCommand" ref="josso1ResourceRemoveCommand"/>
@@ -345,12 +343,8 @@
             class="com.atricore.idbus.console.modeling.main.controller.ExternalSaml2ServiceProviderRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="openIDIdentityProviderRemoveCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.OpenIDIdentityProviderRemoveCommand">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
-    <object id="openIDServiceProviderRemoveCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.OpenIDServiceProviderRemoveCommand">
+    <object id="externalOpenIDIdentityProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExternalOpenIDIdentityProviderRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="oauth2IdentityProviderRemoveCommand"
@@ -673,12 +667,8 @@
             class="com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="openIDIdentityProviderCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.openid.idp.OpenIDIdentityProviderCreateMediator">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
-    <object id="openIDServiceProviderCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.openid.sp.OpenIDServiceProviderCreateMediator">
+    <object id="externalOpenIDIdentityProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.openid.idp.ExternalOpenIDIdentityProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="oauth2IdentityProviderCreateMediator"
@@ -1023,8 +1013,7 @@
         <property name="internalSaml2ServiceProviderCreateMediator" ref="internalSaml2ServiceProviderCreateMediator"/>
         <property name="externalSaml2IdentityProviderCreateMediator" ref="externalSaml2IdentityProviderCreateMediator"/>
         <property name="externalSaml2ServiceProviderCreateMediator" ref="externalSaml2ServiceProviderCreateMediator"/>
-        <property name="openIDIdentityProviderCreateMediator" ref="openIDIdentityProviderCreateMediator"/>
-        <property name="openIDServiceProviderCreateMediator" ref="openIDServiceProviderCreateMediator"/>
+        <property name="externalOpenIDIdentityProviderCreateMediator" ref="externalOpenIDIdentityProviderCreateMediator"/>
         <property name="oauth2IdentityProviderCreateMediator" ref="oauth2IdentityProviderCreateMediator"/>
         <property name="oauth2ServiceProviderCreateMediator" ref="oauth2ServiceProviderCreateMediator"/>
         <property name="salesforceCreateMediator" ref="salesforceCreateMediator"/>

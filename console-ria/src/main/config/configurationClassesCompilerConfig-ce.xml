@@ -79,11 +79,9 @@
         <!--<symbol>com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand</symbol>-->
         <!--<symbol>com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand</symbol>-->
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand</symbol>
-        <symbol>com.atricore.idbus.console.modeling.main.controller.ExternalIdentityProviderRemoveCommand</symbol>
-        <symbol>com.atricore.idbus.console.modeling.main.controller.Saml2IdentityProviderRemoveCommand</symbol>
-        <symbol>com.atricore.idbus.console.modeling.main.controller.Saml2ServiceProviderRemoveCommand</symbol>
-        <symbol>com.atricore.idbus.console.modeling.main.controller.OpenIDIdentityProviderRemoveCommand</symbol>
-        <symbol>com.atricore.idbus.console.modeling.main.controller.OpenIDServiceProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.ExternalSaml2IdentityProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.ExternalSaml2ServiceProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.ExternalOpenIDIdentityProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.OAuth2IdentityProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.OAuth2ServiceProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.JOSSO1ResourceRemoveCommand</symbol>
@@ -161,8 +159,7 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.InternalSaml2IdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.ExternalSaml2IdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.ExternalSaml2ServiceProviderCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDIdentityProviderCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.openid.OpenIDServiceProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.openid.ExternalOpenIDIdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.oauth2.OAuth2IdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.oauth2.OAuth2ServiceProviderCreateMediator</symbol>
 

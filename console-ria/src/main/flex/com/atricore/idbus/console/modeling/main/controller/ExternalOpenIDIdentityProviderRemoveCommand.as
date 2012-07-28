@@ -23,20 +23,20 @@ package com.atricore.idbus.console.modeling.main.controller
 {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
-import com.atricore.idbus.console.services.dto.OpenIDServiceProvider;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class OpenIDServiceProviderRemoveCommand extends IocSimpleCommand {
+public class ExternalOpenIDIdentityProviderRemoveCommand extends IocSimpleCommand {
 
-    public static const SUCCESS : String = "OpenIDServiceProviderRemoveCommand.SUCCESS";
+    public static const SUCCESS : String = "ExternalOpenIDIdentityProviderRemoveCommand.SUCCESS";
 
     private var _projectProxy:ProjectProxy;
 
-    public function OpenIDServiceProviderRemoveCommand() {
+    public function ExternalOpenIDIdentityProviderRemoveCommand() {
     }
 
     public function get projectProxy():ProjectProxy {
@@ -48,24 +48,24 @@ public class OpenIDServiceProviderRemoveCommand extends IocSimpleCommand {
     }
 
     override public function execute(notification:INotification):void {
-        var serviceProvider:OpenIDServiceProvider = notification.getBody() as OpenIDServiceProvider;
+        var identityProvider:ExternalOpenIDIdentityProvider = notification.getBody() as ExternalOpenIDIdentityProvider;
 
         var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
 
         for (var i:int=identityAppliance.idApplianceDefinition.providers.length-1; i>=0; i--) {
-            if (identityAppliance.idApplianceDefinition.providers[i] == serviceProvider) {
+            if (identityAppliance.idApplianceDefinition.providers[i] == identityProvider) {
                 identityAppliance.idApplianceDefinition.providers.removeItemAt(i);
-                if (serviceProvider.federatedConnectionsA != null) {
-                    for each (var fedConnA:FederatedConnection in serviceProvider.federatedConnectionsA) {
+                if (identityProvider.federatedConnectionsA != null) {
+                    for each (var fedConnA:FederatedConnection in identityProvider.federatedConnectionsA) {
                         fedConnA.roleB.federatedConnectionsB.removeItemAt(fedConnA.roleB.federatedConnectionsB.getItemIndex(fedConnA));
                     }
                 }
-                if (serviceProvider.federatedConnectionsB != null) {
-                    for each (var fedConnB:FederatedConnection in serviceProvider.federatedConnectionsB) {
+                if (identityProvider.federatedConnectionsB != null) {
+                    for each (var fedConnB:FederatedConnection in identityProvider.federatedConnectionsB) {
                         fedConnB.roleA.federatedConnectionsA.removeItemAt(fedConnB.roleA.federatedConnectionsA.getItemIndex(fedConnB));
                     }
                 }
-                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, serviceProvider);
+                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, identityProvider);
                 break;
             }
         }

@@ -88,8 +88,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.oauth2.idp.OAuth2IdentityProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.oauth2.sp.OAuth2ServiceProviderCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.openid.idp.OpenIDIdentityProviderCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.openid.sp.OpenIDServiceProviderCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.openid.idp.ExternalOpenIDIdentityProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.salesforce.SalesforceContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.salesforce.SalesforceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.saml2.idp.external.ExternalSaml2IdentityProviderCertificateSection;
@@ -120,6 +119,7 @@ import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
@@ -147,15 +147,12 @@ import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.MicroStrategyResource;
 import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
-import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
-import com.atricore.idbus.console.services.dto.OpenIDServiceProvider;
 import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.PhpBBResource;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.Resource;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
-import com.atricore.idbus.console.services.dto.Saml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
 import com.atricore.idbus.console.services.dto.ServiceConnection;
@@ -223,14 +220,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _externalSpCoreSection:ExternalSaml2ServiceProviderCoreSection;
     private var _externalSpContractSection:ExternalSaml2ServiceProviderContractSection;
     private var _externalSpCertificateSection:ExternalSaml2ServiceProviderCertificateSection;
-    private var _saml2IdpCoreSection:ExternalSaml2IdentityProviderCoreSection;
-    private var _saml2IdpContractSection:ExternalSaml2IdentityProviderContractSection;
-    private var _saml2IdpCertificateSection:ExternalSaml2IdentityProviderCertificateSection;
-    private var _saml2SpCoreSection:ExternalSaml2ServiceProviderCoreSection;
-    private var _saml2SpContractSection:ExternalSaml2ServiceProviderContractSection;
-    private var _saml2SpCertificateSection:ExternalSaml2ServiceProviderCertificateSection;
-    private var _openIDIdpCoreSection:OpenIDIdentityProviderCoreSection;
-    private var _openIDSpCoreSection:OpenIDServiceProviderCoreSection;
+    private var _openIDIdpCoreSection:ExternalOpenIDIdentityProviderCoreSection;
     private var _oauth2IdpCoreSection:OAuth2IdentityProviderCoreSection;
     private var _oauth2SpCoreSection:OAuth2ServiceProviderCoreSection;
     private var _salesforceCoreSection:SalesforceCoreSection;
@@ -468,14 +458,8 @@ public class PropertySheetMediator extends IocMediator {
                     enableExternalSaml2IdentityProviderPropertyTabs();
                 } else if (_currentIdentityApplianceElement is ExternalSaml2ServiceProvider) {
                     enableExternalSaml2ServiceProviderPropertyTabs();
-                } else if (_currentIdentityApplianceElement is Saml2IdentityProvider) {
-                    enableSaml2IdentityProviderPropertyTabs();
-                } else if (_currentIdentityApplianceElement is ExternalSaml2ServiceProvider) {
-                    enableSaml2ServiceProviderPropertyTabs();
-                } else if (_currentIdentityApplianceElement is OpenIDIdentityProvider) {
-                    enableOpenIDIdentityProviderPropertyTabs();
-                } else if (_currentIdentityApplianceElement is OpenIDServiceProvider) {
-                    enableOpenIDServiceProviderPropertyTabs();
+                } else if (_currentIdentityApplianceElement is ExternalOpenIDIdentityProvider) {
+                    enableExternalOpenIDIdentityProviderPropertyTabs();
                 } else if (_currentIdentityApplianceElement is OAuth2IdentityProvider) {
                     enableOAuth2IdentityProviderPropertyTabs();
                 } else if (_currentIdentityApplianceElement is OAuth2ServiceProvider) {
@@ -2878,7 +2862,7 @@ public class PropertySheetMediator extends IocMediator {
         _dirty = false;
     }
 
-    protected function enableSaml2IdentityProviderPropertyTabs():void {
+    protected function enableExternalOpenIDIdentityProviderPropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();
 
         // Core Tab
@@ -2890,274 +2874,17 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
-        _saml2IdpCoreSection = new ExternalSaml2IdentityProviderCoreSection();
-        corePropertyTab.addElement(_saml2IdpCoreSection);
-        _propertySheetsViewStack.addNewChild(corePropertyTab);
-        _tabbedPropertiesTabBar.selectedIndex = 0;
-
-        _saml2IdpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSaml2IdentityProviderCorePropertyTabCreationComplete);
-        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSaml2IdentityProviderCorePropertyTabRollOut);
-
-        // Contract Tab
-        var contractPropertyTab:Group = new Group();
-        contractPropertyTab.layoutDirection = LayoutDirection.LTR;
-        contractPropertyTab.id = "propertySheetMetadataSection";
-        contractPropertyTab.name = "Contract";
-        contractPropertyTab.width = Number("100%");
-        contractPropertyTab.height = Number("100%");
-        contractPropertyTab.setStyle("borderStyle", "solid");
-
-        _saml2IdpContractSection = new ExternalSaml2IdentityProviderContractSection();
-        contractPropertyTab.addElement(_saml2IdpContractSection);
-        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        _saml2IdpContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSaml2IdentityProviderContractPropertyTabCreationComplete);
-
-        // Certificate Tab
-        var certificatePropertyTab:Group = new Group();
-        certificatePropertyTab.layoutDirection = LayoutDirection.LTR;
-        certificatePropertyTab.id = "propertySheetMetadataSection";
-        certificatePropertyTab.name = "Certificate";
-        certificatePropertyTab.width = Number("100%");
-        certificatePropertyTab.height = Number("100%");
-        certificatePropertyTab.setStyle("borderStyle", "solid");
-
-        _saml2IdpCertificateSection = new ExternalSaml2IdentityProviderCertificateSection();
-        certificatePropertyTab.addElement(_saml2IdpCertificateSection);
-        _propertySheetsViewStack.addNewChild(certificatePropertyTab);
-
-        var identityProvider:Saml2IdentityProvider = _currentIdentityApplianceElement as Saml2IdentityProvider;
-
-        // if identityProvider is null that means some other element was selected before completing this
-        if (identityProvider != null) {
-            sendNotification(ApplicationFacade.GET_METADATA_INFO, ["IDPSSO", identityProvider.metadata.value]);
-        }
-    }
-
-    private function handleSaml2IdentityProviderCorePropertyTabCreationComplete(event:Event):void {
-        var identityProvider:Saml2IdentityProvider = _currentIdentityApplianceElement as Saml2IdentityProvider;
-
-        // if identityProvider is null that means some other element was selected before completing this
-        if (identityProvider != null) {
-
-            resetUploadMetadataFields();
-
-            // bind view
-            _saml2IdpCoreSection.identityProviderName.text = identityProvider.name;
-            _saml2IdpCoreSection.identityProvDescription.text = identityProvider.description;
-
-            _saml2IdpCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
-            _saml2IdpCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
-
-            _saml2IdpCoreSection.metadataFile.addEventListener(MouseEvent.CLICK, browseMetadataHandler);
-            BindingUtils.bindProperty(_saml2IdpCoreSection.metadataFile, "dataProvider", this, "_selectedMetadataFiles");
-
-            //clear all existing validators and add idp core section validators
-            _validators = [];
-            _validators.push(_saml2IdpCoreSection.nameValidator);
-        }
-    }
-
-    private function handleSaml2IdentityProviderCorePropertyTabRollOut(e:Event):void {
-        if (_dirty && validate(true)) {
-
-            if (_selectedMetadataFiles != null && _selectedMetadataFiles.length > 0) {
-                _metadataFileRef.load();
-            } else {
-                updateSaml2IdentityProvider();
-            }
-
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _applianceSaved = false;
-            _dirty = false;
-        }
-    }
-
-    private function handleSaml2IdentityProviderContractPropertyTabCreationComplete(event:Event):void {
-        var identityProvider:Saml2IdentityProvider = _currentIdentityApplianceElement as Saml2IdentityProvider;
-
-        // if identityProvider is null that means some other element was selected before completing this
-        if (identityProvider != null) {
-            if (_applianceSaved) {
-                _saml2IdpContractSection.btnExportMetadata.enabled = true;
-                _saml2IdpContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
-            }
-        }
-    }
-
-    private function updateSaml2IdentityProvider():void {
-        var identityProvider:Saml2IdentityProvider = _currentIdentityApplianceElement as Saml2IdentityProvider;
-
-        identityProvider.name = _saml2IdpCoreSection.identityProviderName.text;
-        identityProvider.description = _saml2IdpCoreSection.identityProvDescription.text;
-
-        if (_uploadedMetadata != null && _uploadedMetadataName != null) {
-            var resource:Resource = identityProvider.metadata;
-            resource.name = _uploadedMetadataName.substring(0, _uploadedMetadataName.lastIndexOf("."));
-            resource.displayName = _uploadedMetadataName;
-            resource.uri = _uploadedMetadataName;
-            resource.value = _uploadedMetadata;
-            identityProvider.metadata = resource;
-            sendNotification(ApplicationFacade.GET_METADATA_INFO, ["IDPSSO", _uploadedMetadata]);
-        }
-
-        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-        _applianceSaved = false;
-        _dirty = false;
-    }
-
-    protected function enableSaml2ServiceProviderPropertyTabs():void {
-        _propertySheetsViewStack.removeAllChildren();
-
-        // Core Tab
-        var corePropertyTab:Group = new Group();
-        corePropertyTab.layoutDirection = LayoutDirection.LTR;
-        corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.name = "Core";
-        corePropertyTab.width = Number("100%");
-        corePropertyTab.height = Number("100%");
-        corePropertyTab.setStyle("borderStyle", "solid");
-
-        _saml2SpCoreSection = new ExternalSaml2ServiceProviderCoreSection();
-        corePropertyTab.addElement(_saml2SpCoreSection);
-        _propertySheetsViewStack.addNewChild(corePropertyTab);
-        _tabbedPropertiesTabBar.selectedIndex = 0;
-
-        _saml2SpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSaml2ServiceProviderCorePropertyTabCreationComplete);
-        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSaml2ServiceProviderCorePropertyTabRollOut);
-
-        // Contract Tab
-        var contractPropertyTab:Group = new Group();
-        contractPropertyTab.layoutDirection = LayoutDirection.LTR;
-        contractPropertyTab.id = "propertySheetMetadataSection";
-        contractPropertyTab.name = "Contract";
-        contractPropertyTab.width = Number("100%");
-        contractPropertyTab.height = Number("100%");
-        contractPropertyTab.setStyle("borderStyle", "solid");
-
-        _saml2SpContractSection = new ExternalSaml2ServiceProviderContractSection();
-        contractPropertyTab.addElement(_saml2SpContractSection);
-        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        _saml2SpContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSaml2ServiceProviderContractPropertyTabCreationComplete);
-
-        // Certificate Tab
-        var certificatePropertyTab:Group = new Group();
-        certificatePropertyTab.layoutDirection = LayoutDirection.LTR;
-        certificatePropertyTab.id = "propertySheetMetadataSection";
-        certificatePropertyTab.name = "Certificate";
-        certificatePropertyTab.width = Number("100%");
-        certificatePropertyTab.height = Number("100%");
-        certificatePropertyTab.setStyle("borderStyle", "solid");
-
-        _saml2SpCertificateSection = new ExternalSaml2ServiceProviderCertificateSection();
-        certificatePropertyTab.addElement(_saml2SpCertificateSection);
-        _propertySheetsViewStack.addNewChild(certificatePropertyTab);
-
-        var serviceProvider:ExternalSaml2ServiceProvider = _currentIdentityApplianceElement as ExternalSaml2ServiceProvider;
-
-        // if serviceProvider is null that means some other element was selected before completing this
-        if (serviceProvider != null) {
-            sendNotification(ApplicationFacade.GET_METADATA_INFO, ["SPSSO", serviceProvider.metadata.value]);
-        }
-    }
-
-    private function handleSaml2ServiceProviderCorePropertyTabCreationComplete(event:Event):void {
-        var serviceProvider:ExternalSaml2ServiceProvider = _currentIdentityApplianceElement as ExternalSaml2ServiceProvider;
-
-        // if serviceProvider is null that means some other element was selected before completing this
-        if (serviceProvider != null) {
-            resetUploadMetadataFields();
-
-            // bind view
-            _saml2SpCoreSection.serviceProviderName.text = serviceProvider.name;
-            _saml2SpCoreSection.serviceProvDescription.text = serviceProvider.description;
-
-            _saml2SpCoreSection.serviceProviderName.addEventListener(Event.CHANGE, handleSectionChange);
-            _saml2SpCoreSection.serviceProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
-
-            _saml2SpCoreSection.metadataFile.addEventListener(MouseEvent.CLICK, browseMetadataHandler);
-            BindingUtils.bindProperty(_saml2SpCoreSection.metadataFile, "dataProvider", this, "_selectedMetadataFiles");
-
-            //clear all existing validators and add idp core section validators
-            _validators = [];
-            _validators.push(_saml2SpCoreSection.nameValidator);
-        }
-    }
-
-    private function handleSaml2ServiceProviderCorePropertyTabRollOut(e:Event):void {
-        if (_dirty && validate(true)) {
-
-            if (_selectedMetadataFiles != null && _selectedMetadataFiles.length > 0) {
-                _metadataFileRef.load();
-            } else {
-                updateSaml2ServiceProvider();
-            }
-
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _applianceSaved = false;
-            _dirty = false;
-        }
-    }
-
-    private function handleSaml2ServiceProviderContractPropertyTabCreationComplete(event:Event):void {
-        var serviceProvider:ExternalSaml2ServiceProvider = _currentIdentityApplianceElement as ExternalSaml2ServiceProvider;
-
-        // if serviceProvider is null that means some other element was selected before completing this
-        if (serviceProvider != null) {
-            if (_applianceSaved) {
-                _saml2SpContractSection.btnExportMetadata.enabled = true;
-                _saml2SpContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
-            }
-        }
-    }
-
-    private function updateSaml2ServiceProvider():void {
-        var serviceProvider:ExternalSaml2ServiceProvider = _currentIdentityApplianceElement as ExternalSaml2ServiceProvider;
-
-        serviceProvider.name = _saml2SpCoreSection.serviceProviderName.text;
-        serviceProvider.description = _saml2SpCoreSection.serviceProvDescription.text;
-
-        if (_uploadedMetadata != null && _uploadedMetadataName != null) {
-            var resource:Resource = serviceProvider.metadata;
-            resource.name = _uploadedMetadataName.substring(0, _uploadedMetadataName.lastIndexOf("."));
-            resource.displayName = _uploadedMetadataName;
-            resource.uri = _uploadedMetadataName;
-            resource.value = _uploadedMetadata;
-            serviceProvider.metadata = resource;
-            sendNotification(ApplicationFacade.GET_METADATA_INFO, ["SPSSO", _uploadedMetadata]);
-        }
-
-        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-        _applianceSaved = false;
-        _dirty = false;
-    }
-
-    protected function enableOpenIDIdentityProviderPropertyTabs():void {
-        _propertySheetsViewStack.removeAllChildren();
-
-        // Core Tab
-        var corePropertyTab:Group = new Group();
-        corePropertyTab.layoutDirection = LayoutDirection.LTR;
-        corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.name = "Core";
-        corePropertyTab.width = Number("100%");
-        corePropertyTab.height = Number("100%");
-        corePropertyTab.setStyle("borderStyle", "solid");
-
-        _openIDIdpCoreSection = new OpenIDIdentityProviderCoreSection();
+        _openIDIdpCoreSection = new ExternalOpenIDIdentityProviderCoreSection();
         corePropertyTab.addElement(_openIDIdpCoreSection);
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
-        _openIDIdpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleOpenIDIdentityProviderCorePropertyTabCreationComplete);
-        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleOpenIDIdentityProviderCorePropertyTabRollOut);
+        _openIDIdpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalOpenIDIdentityProviderCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalOpenIDIdentityProviderCorePropertyTabRollOut);
     }
 
-    private function handleOpenIDIdentityProviderCorePropertyTabCreationComplete(event:Event):void {
-        var identityProvider:OpenIDIdentityProvider = _currentIdentityApplianceElement as OpenIDIdentityProvider;
+    private function handleExternalOpenIDIdentityProviderCorePropertyTabCreationComplete(event:Event):void {
+        var identityProvider:ExternalOpenIDIdentityProvider = _currentIdentityApplianceElement as ExternalOpenIDIdentityProvider;
 
         // if identityProvider is null that means some other element was selected before completing this
         if (identityProvider != null) {
@@ -3195,10 +2922,10 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function handleOpenIDIdentityProviderCorePropertyTabRollOut(e:Event):void {
+    private function handleExternalOpenIDIdentityProviderCorePropertyTabRollOut(e:Event):void {
         if (_dirty && validate(true)) {
 
-            var identityProvider:OpenIDIdentityProvider = _currentIdentityApplianceElement as OpenIDIdentityProvider;
+            var identityProvider:ExternalOpenIDIdentityProvider = _currentIdentityApplianceElement as ExternalOpenIDIdentityProvider;
 
             identityProvider.name = _openIDIdpCoreSection.identityProviderName.text;
             identityProvider.description = _openIDIdpCoreSection.identityProvDescription.text;
@@ -3208,87 +2935,6 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.location.port = parseInt(_openIDIdpCoreSection.idpLocationPort.text);
             identityProvider.location.context = _openIDIdpCoreSection.idpLocationContext.text;
             identityProvider.location.uri = _openIDIdpCoreSection.idpLocationPath.text;
-
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _applianceSaved = false;
-            _dirty = false;
-        }
-    }
-
-    protected function enableOpenIDServiceProviderPropertyTabs():void {
-        _propertySheetsViewStack.removeAllChildren();
-
-        // Core Tab
-        var corePropertyTab:Group = new Group();
-        corePropertyTab.layoutDirection = LayoutDirection.LTR;
-        corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.name = "Core";
-        corePropertyTab.width = Number("100%");
-        corePropertyTab.height = Number("100%");
-        corePropertyTab.setStyle("borderStyle", "solid");
-
-        _openIDSpCoreSection = new OpenIDServiceProviderCoreSection();
-        corePropertyTab.addElement(_openIDSpCoreSection);
-        _propertySheetsViewStack.addNewChild(corePropertyTab);
-        _tabbedPropertiesTabBar.selectedIndex = 0;
-
-        _openIDSpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleOpenIDServiceProviderCorePropertyTabCreationComplete);
-        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleOpenIDServiceProviderCorePropertyTabRollOut);
-    }
-
-    private function handleOpenIDServiceProviderCorePropertyTabCreationComplete(event:Event):void {
-        var serviceProvider:OpenIDServiceProvider = _currentIdentityApplianceElement as OpenIDServiceProvider;
-
-        // if serviceProvider is null that means some other element was selected before completing this
-        if (serviceProvider != null) {
-            // bind view
-            _openIDSpCoreSection.serviceProviderName.text = serviceProvider.name;
-            _openIDSpCoreSection.serviceProvDescription.text = serviceProvider.description;
-
-            for (var i:int = 0; i < _openIDSpCoreSection.spLocationProtocol.dataProvider.length; i++) {
-                if (serviceProvider.location != null && _openIDSpCoreSection.spLocationProtocol.dataProvider[i].data == serviceProvider.location.protocol) {
-                    _openIDSpCoreSection.spLocationProtocol.selectedIndex = i;
-                    break;
-                }
-            }
-            _openIDSpCoreSection.spLocationDomain.text = serviceProvider.location.host;
-            _openIDSpCoreSection.spLocationPort.text = serviceProvider.location.port.toString() != "0" ?
-                    serviceProvider.location.port.toString() : "";
-            _openIDSpCoreSection.spLocationContext.text = serviceProvider.location.context;
-            _openIDSpCoreSection.spLocationPath.text = serviceProvider.location.uri;
-
-            _openIDSpCoreSection.serviceProviderName.addEventListener(Event.CHANGE, handleSectionChange);
-            _openIDSpCoreSection.serviceProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
-            _openIDSpCoreSection.spLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
-            _openIDSpCoreSection.spLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
-            _openIDSpCoreSection.spLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
-            _openIDSpCoreSection.spLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
-            _openIDSpCoreSection.spLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-
-            //clear all existing validators and add sp core section validators
-            _validators = [];
-            _validators.push(_openIDSpCoreSection.nameValidator);
-            _validators.push(_openIDSpCoreSection.portValidator);
-            _validators.push(_openIDSpCoreSection.domainValidator);
-            _validators.push(_openIDSpCoreSection.contextValidator);
-            _validators.push(_openIDSpCoreSection.pathValidator);
-        }
-    }
-
-    private function handleOpenIDServiceProviderCorePropertyTabRollOut(e:Event):void {
-        if (_dirty && validate(true)) {
-
-            var serviceProvider:OpenIDServiceProvider = _currentIdentityApplianceElement as OpenIDServiceProvider;
-
-            serviceProvider.name = _openIDSpCoreSection.serviceProviderName.text;
-            serviceProvider.description = _openIDSpCoreSection.serviceProvDescription.text;
-
-            serviceProvider.location.protocol = _openIDSpCoreSection.spLocationProtocol.labelDisplay.text;
-            serviceProvider.location.host = _openIDSpCoreSection.spLocationDomain.text;
-            serviceProvider.location.port = parseInt(_openIDSpCoreSection.spLocationPort.text);
-            serviceProvider.location.context = _openIDSpCoreSection.spLocationContext.text;
-            serviceProvider.location.uri = _openIDSpCoreSection.spLocationPath.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -7908,20 +7554,6 @@ public class PropertySheetMediator extends IocMediator {
             _externalSpCoreSection.metadataFile.selectedIndex = 0;
             _externalSpCoreSection.lblUploadMsg.text = "";
             _externalSpCoreSection.lblUploadMsg.visible = false;
-        } else if (_currentIdentityApplianceElement is Saml2IdentityProvider) {
-            _saml2IdpCoreSection.metadataFile.prompt = null;
-            _selectedMetadataFiles = new ArrayCollection();
-            _selectedMetadataFiles.addItem(_metadataFileRef.name);
-            _saml2IdpCoreSection.metadataFile.selectedIndex = 0;
-            _saml2IdpCoreSection.lblUploadMsg.text = "";
-            _saml2IdpCoreSection.lblUploadMsg.visible = false;
-        } else if (_currentIdentityApplianceElement is ExternalSaml2ServiceProvider) {
-            _saml2SpCoreSection.metadataFile.prompt = null;
-            _selectedMetadataFiles = new ArrayCollection();
-            _selectedMetadataFiles.addItem(_metadataFileRef.name);
-            _saml2SpCoreSection.metadataFile.selectedIndex = 0;
-            _saml2SpCoreSection.lblUploadMsg.text = "";
-            _saml2SpCoreSection.lblUploadMsg.visible = false;
         }
 
         _dirty = true;
@@ -7949,20 +7581,6 @@ public class PropertySheetMediator extends IocMediator {
             _externalSpCoreSection.fadeFx.play([_externalSpCoreSection.lblUploadMsg]);
             _externalSpCoreSection.metadataFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "externalServiceProv.metadata.browseFile");            
             updateExternalSaml2ServiceProvider();
-        } else if (_currentIdentityApplianceElement is Saml2IdentityProvider) {
-            _saml2IdpCoreSection.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "externalIdentityProv.metadata.uploadSuccess");
-            _saml2IdpCoreSection.lblUploadMsg.setStyle("color", "Green");
-            _saml2IdpCoreSection.lblUploadMsg.visible = true;
-            _saml2IdpCoreSection.fadeFx.play([_saml2IdpCoreSection.lblUploadMsg]);
-            _saml2IdpCoreSection.metadataFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "saml2IdentityProv.metadata.browseFile");
-            updateSaml2IdentityProvider();
-        } else if (_currentIdentityApplianceElement is ExternalSaml2ServiceProvider) {
-            _saml2SpCoreSection.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "saml2ServiceProv.metadata.uploadSuccess");
-            _saml2SpCoreSection.lblUploadMsg.setStyle("color", "Green");
-            _saml2SpCoreSection.lblUploadMsg.visible = true;
-            _saml2SpCoreSection.fadeFx.play([_saml2SpCoreSection.lblUploadMsg]);
-            _saml2SpCoreSection.metadataFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "saml2ServiceProv.metadata.browseFile");
-            updateSaml2ServiceProvider();
         }
     }
 
@@ -8069,101 +7687,6 @@ public class PropertySheetMediator extends IocMediator {
                 _externalSpCertificateSection.encryptionCertNotBefore.text = _externalSpCertificateSection.dateFormatter.format(resp.encryptionCertNotBefore);
             if (resp.encryptionCertNotAfter != null)
                 _externalSpCertificateSection.encryptionCertNotAfter.text = _externalSpCertificateSection.dateFormatter.format(resp.encryptionCertNotAfter);
-        } else if (_currentIdentityApplianceElement is Saml2IdentityProvider) {
-            // entity id
-            _saml2IdpContractSection.entityId.text = resp.entityId;
-
-            // profiles
-            if (resp.ssoEnabled)
-                _saml2IdpContractSection.samlProfileSSOCheck.selected = true;
-            if (resp.sloEnabled)
-                _saml2IdpContractSection.samlProfileSLOCheck.selected = true;
-
-            // bindings
-            if (resp.postEnabled)
-                _saml2IdpContractSection.samlBindingHttpPostCheck.selected = true;
-            if (resp.redirectEnabled)
-                _saml2IdpContractSection.samlBindingHttpRedirectCheck.selected = true;
-            if (resp.artifactEnabled)
-                _saml2IdpContractSection.samlBindingArtifactCheck.selected = true;
-            if (resp.soapEnabled)
-                _saml2IdpContractSection.samlBindingSoapCheck.selected = true;
-
-            if (resp.wantAuthnRequestsSigned)
-                _saml2IdpContractSection.wantAuthnRequestsSignedCheck.selected = true;
-
-            // signing certificate
-            if (resp.signingCertIssuerDN != null) {
-                _saml2IdpContractSection.signAuthAssertionCheck.selected = true;
-                _saml2IdpCertificateSection.signingCertIssuerDN.text = resp.signingCertIssuerDN;
-            }
-            if (resp.signingCertSubjectDN != null)
-                _saml2IdpCertificateSection.signingCertSubjectDN.text = resp.signingCertSubjectDN;
-            if (resp.signingCertNotBefore != null)
-                _saml2IdpCertificateSection.signingCertNotBefore.text = _saml2IdpCertificateSection.dateFormatter.format(resp.signingCertNotBefore);
-            if (resp.signingCertNotAfter != null)
-                _saml2IdpCertificateSection.signingCertNotAfter.text = _saml2IdpCertificateSection.dateFormatter.format(resp.signingCertNotAfter);
-
-            // encryption certificate
-            if (resp.encryptionCertIssuerDN != null) {
-                _saml2IdpContractSection.encryptAuthAssertionCheck.selected = true;
-                _saml2IdpCertificateSection.encryptionCertIssuerDN.text = resp.encryptionCertIssuerDN;
-            }
-            if (resp.encryptionCertSubjectDN != null)
-                _saml2IdpCertificateSection.encryptionCertSubjectDN.text = resp.encryptionCertSubjectDN;
-            if (resp.encryptionCertNotBefore != null)
-                _saml2IdpCertificateSection.encryptionCertNotBefore.text = _saml2IdpCertificateSection.dateFormatter.format(resp.encryptionCertNotBefore);
-            if (resp.encryptionCertNotAfter != null)
-                _saml2IdpCertificateSection.encryptionCertNotAfter.text = _saml2IdpCertificateSection.dateFormatter.format(resp.encryptionCertNotAfter);
-
-        } else if (_currentIdentityApplianceElement is ExternalSaml2ServiceProvider) {
-            // entity id
-            _saml2SpContractSection.entityId.text = resp.entityId;
-
-            // profiles
-            if (resp.ssoEnabled)
-                _saml2SpContractSection.samlProfileSSOCheck.selected = true;
-            if (resp.sloEnabled)
-                _saml2SpContractSection.samlProfileSLOCheck.selected = true;
-
-            // bindings
-            if (resp.postEnabled)
-                _saml2SpContractSection.samlBindingHttpPostCheck.selected = true;
-            if (resp.redirectEnabled)
-                _saml2SpContractSection.samlBindingHttpRedirectCheck.selected = true;
-            if (resp.artifactEnabled)
-                _saml2SpContractSection.samlBindingArtifactCheck.selected = true;
-            if (resp.soapEnabled)
-                _saml2SpContractSection.samlBindingSoapCheck.selected = true;
-
-            if (resp.signAuthnRequests)
-                _saml2SpContractSection.signAuthnRequestsCheck.selected = true;
-            if (resp.wantAssertionSigned)
-                _saml2SpContractSection.wantAssertionSignedCheck.selected = true;
-
-            // signing certificate
-            if (resp.signingCertIssuerDN != null) {
-                _saml2SpContractSection.signAuthAssertionCheck.selected = true;
-                _saml2SpCertificateSection.signingCertIssuerDN.text = resp.signingCertIssuerDN;
-            }
-            if (resp.signingCertSubjectDN != null)
-                _saml2SpCertificateSection.signingCertSubjectDN.text = resp.signingCertSubjectDN;
-            if (resp.signingCertNotBefore != null)
-                _saml2SpCertificateSection.signingCertNotBefore.text = _saml2SpCertificateSection.dateFormatter.format(resp.signingCertNotBefore);
-            if (resp.signingCertNotAfter != null)
-                _saml2SpCertificateSection.signingCertNotAfter.text = _saml2SpCertificateSection.dateFormatter.format(resp.signingCertNotAfter);
-
-            // encryption certificate
-            if (resp.encryptionCertIssuerDN != null) {
-                _saml2SpContractSection.encryptAuthAssertionCheck.selected = true;
-                _saml2SpCertificateSection.encryptionCertIssuerDN.text = resp.encryptionCertIssuerDN;
-            }
-            if (resp.encryptionCertSubjectDN != null)
-                _saml2SpCertificateSection.encryptionCertSubjectDN.text = resp.encryptionCertSubjectDN;
-            if (resp.encryptionCertNotBefore != null)
-                _saml2SpCertificateSection.encryptionCertNotBefore.text = _saml2SpCertificateSection.dateFormatter.format(resp.encryptionCertNotBefore);
-            if (resp.encryptionCertNotAfter != null)
-                _saml2SpCertificateSection.encryptionCertNotAfter.text = _saml2SpCertificateSection.dateFormatter.format(resp.encryptionCertNotAfter);
         }
     }
 
@@ -8364,10 +7887,6 @@ public class PropertySheetMediator extends IocMediator {
             _externalIdpContractSection.btnExportMetadata.enabled = false;
         if (_externalSpContractSection != null)
             _externalSpContractSection.btnExportMetadata.enabled = false;
-        if (_saml2IdpContractSection != null)
-            _saml2IdpContractSection.btnExportMetadata.enabled = false;
-        if (_saml2SpContractSection != null)
-            _saml2SpContractSection.btnExportMetadata.enabled = false;
         if (_salesforceContractSection != null)
             _salesforceContractSection.btnExportMetadata.enabled = false;
         if (_googleAppsContractSection != null)

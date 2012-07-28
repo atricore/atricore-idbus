@@ -398,12 +398,8 @@ public class EmbeddedIcons {
     public static var idpIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/60x60/saml_identity_provider.png")]
-    public static var saml2IdpIcon:Class;
-
-    [Bindable]
     [Embed(source="/assets/icons/notation/60x60/saml_service_provider.png")]
-    public static var saml2SpIcon:Class;
+    public static var internalSaml2SpIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/notation/60x60/external_saml_identity_provider.png")]

@@ -19,15 +19,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.diagram.view.openid.sp {
-import com.atricore.idbus.console.modeling.diagram.view.openid.*;
+package com.atricore.idbus.console.modeling.diagram.view.openid.idp {
+import com.atricore.idbus.console.modeling.diagram.view.openid.idp.*;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
+import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.Location;
-import com.atricore.idbus.console.services.dto.OpenIDServiceProvider;
 
 import flash.events.MouseEvent;
 
@@ -35,10 +35,10 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class OpenIDServiceProviderCreateMediator extends IocFormMediator {
+public class ExternalOpenIDIdentityProviderCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
-    private var _newServiceProvider:OpenIDServiceProvider;
+    private var _newIdentityProvider:ExternalOpenIDIdentityProvider;
     //private var _uploadedFile:ByteArray;
     //private var _uploadedFileName:String;
 
@@ -50,7 +50,7 @@ public class OpenIDServiceProviderCreateMediator extends IocFormMediator {
     [Bindable]
     public var _selectedFiles:ArrayCollection;*/
 
-    public function OpenIDServiceProviderCreateMediator(name : String = null, viewComp:OpenIDServiceProviderCreateForm = null) {
+    public function ExternalOpenIDIdentityProviderCreateMediator(name:String = null, viewComp:ExternalOpenIDIdentityProviderCreateForm = null) {
         super(name, viewComp);
     }
 
@@ -61,10 +61,10 @@ public class OpenIDServiceProviderCreateMediator extends IocFormMediator {
     public function set projectProxy(value:ProjectProxy):void {
         _projectProxy = value;
     }
-
+    
     override public function setViewComponent(viewComponent:Object):void {
-        if (getViewComponent()) {
-            view.btnOk.removeEventListener(MouseEvent.CLICK, handleServiceProviderSave);
+        if (getViewComponent() != null) {
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleIdentityProviderSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
 
             /*if (_fileRef != null) {
@@ -79,24 +79,25 @@ public class OpenIDServiceProviderCreateMediator extends IocFormMediator {
     }
 
     private function init():void {
-        view.btnOk.addEventListener(MouseEvent.CLICK, handleServiceProviderSave);
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleIdentityProviderSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
-
+        
         /*// upload bindings
         view.metadataFile.addEventListener(MouseEvent.CLICK, browseHandler);
         BindingUtils.bindProperty(view.metadataFile, "dataProvider", this, "_selectedFiles");*/
-
-        view.focusManager.setFocus(view.serviceProvName);
+        
+        view.focusManager.setFocus(view.identityProviderName);
     }
 
     private function resetForm():void {
-        view.serviceProvName.text = "";
-        view.serviceProvDescription.text = "";
-        view.spLocationProtocol.selectedIndex = 0;
-        view.spLocationDomain.text = "";
-        view.spLocationPort.text = "";
-        view.spLocationContext.text = "";
-        view.spLocationPath.text = "";
+        view.identityProviderName.text = "";
+        view.identityProviderName.errorString = "";
+        view.identityProvDescription.text = "";
+        view.idpLocationProtocol.selectedIndex = 0;
+        view.idpLocationDomain.text = "";
+        view.idpLocationPort.text = "";
+        view.idpLocationContext.text = "";
+        view.idpLocationPath.text = "";
 
         /*_fileRef = null;
         _selectedFiles = new ArrayCollection();
@@ -110,35 +111,35 @@ public class OpenIDServiceProviderCreateMediator extends IocFormMediator {
         FormUtility.clearValidationErrors(_validators);
         //registerValidators();
     }
-    
+
     override public function bindModel():void {
 
-        var serviceProvider:OpenIDServiceProvider = new OpenIDServiceProvider();
+        var identityProvider:ExternalOpenIDIdentityProvider = new ExternalOpenIDIdentityProvider();
 
-        serviceProvider.name = view.serviceProvName.text;
-        serviceProvider.description = view.serviceProvDescription.text;
+        identityProvider.name = view.identityProviderName.text;
+        identityProvider.description = view.identityProvDescription.text;
         var location:Location = new Location();
-        location.protocol = view.spLocationProtocol.labelDisplay.text;
-        location.host = view.spLocationDomain.text;
-        location.port = parseInt(view.spLocationPort.text);
-        location.context = view.spLocationContext.text;
-        location.uri = view.spLocationPath.text;
-        serviceProvider.location = location;
-        serviceProvider.isRemote = true;
+        location.protocol = view.idpLocationProtocol.labelDisplay.text;
+        location.host = view.idpLocationDomain.text;
+        location.port = parseInt(view.idpLocationPort.text);
+        location.context = view.idpLocationContext.text;
+        location.uri = view.idpLocationPath.text;
+        identityProvider.location = location;
+        identityProvider.isRemote = true;
 
         /*var resource:Resource = new Resource();
         resource.name = _uploadedFileName.substring(0, _uploadedFileName.lastIndexOf("."));
         resource.displayName = _uploadedFileName;
         resource.uri = _uploadedFileName;
         resource.value = _uploadedFile;
-        serviceProvider.metadata = resource;*/
+        identityProvider.metadata = resource;*/
 
-        _newServiceProvider = serviceProvider;
+        _newIdentityProvider = identityProvider;
     }
 
-    private function handleServiceProviderSave(event:MouseEvent):void {
+    private function handleIdentityProviderSave(event:MouseEvent):void {
         if (validate(true)) {
-            saveServiceProvider();
+            saveIdentityProvider();
             /*if (_selectedFiles == null || _selectedFiles.length == 0) {
                 view.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.metadata.file.error");
                 view.lblUploadMsg.setStyle("color", "Red");
@@ -154,17 +155,17 @@ public class OpenIDServiceProviderCreateMediator extends IocFormMediator {
         }
     }
 
-    private function saveServiceProvider():void {
+    private function saveIdentityProvider():void {
         bindModel();
-        _newServiceProvider.identityAppliance = _projectProxy.currentIdentityAppliance.idApplianceDefinition;
-        _projectProxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newServiceProvider);
-        _projectProxy.currentIdentityApplianceElement = _newServiceProvider;
+        _newIdentityProvider.identityAppliance = _projectProxy.currentIdentityAppliance.idApplianceDefinition;
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newIdentityProvider);
+        _projectProxy.currentIdentityApplianceElement = _newIdentityProvider;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
         closeWindow();
     }
-
+    
     private function handleCancel(event:MouseEvent):void {
         closeWindow();
     }
@@ -204,15 +205,16 @@ public class OpenIDServiceProviderCreateMediator extends IocFormMediator {
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
         view.metadataFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.metadata.file");
-        
-        saveServiceProvider();
+
+        saveIdentityProvider();
     }*/
 
-    protected function get view():OpenIDServiceProviderCreateForm {
-        return viewComponent as OpenIDServiceProviderCreateForm;
+    protected function get view():ExternalOpenIDIdentityProviderCreateForm {
+        return viewComponent as ExternalOpenIDIdentityProviderCreateForm;
     }
 
     override public function registerValidators():void {
+        FormUtility.clearValidationErrors(_validators);
         _validators = [];
         _validators.push(view.nameValidator);
         _validators.push(view.portValidator);

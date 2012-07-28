@@ -1,24 +1,15 @@
 package com.atricore.idbus.console.services.dto;
 
-public class PhpBBResourceDTO extends ResourceDTO {
+public class PhpBBResourceDTO extends ServiceResourceDTO {
 
     private static final long serialVersionUID = 5247614083062189135L;
 
-    private String description;
     private String platformId;
     private ExecEnvTypeDTO type;
     private String installUri;
     private String location;
     private boolean overwriteOriginalSetup;
     private boolean installDemoApps;
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public String getPlatformId() {
         return platformId;

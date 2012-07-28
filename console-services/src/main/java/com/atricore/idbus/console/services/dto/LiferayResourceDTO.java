@@ -1,14 +1,12 @@
 package com.atricore.idbus.console.services.dto;
 
-public class LiferayResourceDTO extends ResourceDTO {
+public class LiferayResourceDTO extends ServiceResourceDTO {
 
     private static final long serialVersionUID = 112239879734953533L;
 
     private String containerType;
 
     private String containerPath;
-
-    private String description;
 
     private ExecEnvTypeDTO type;
 
@@ -36,14 +34,6 @@ public class LiferayResourceDTO extends ResourceDTO {
 
     public void setContainerType(String containerType) {
         this.containerType = containerType;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public ExecEnvTypeDTO getType() {

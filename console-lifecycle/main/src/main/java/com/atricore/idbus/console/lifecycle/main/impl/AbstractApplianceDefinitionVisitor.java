@@ -68,27 +68,15 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;
     }
 
-    public void arrive(OpenIDIdentityProvider node) throws Exception {
+    public void arrive(ExternalOpenIDIdentityProvider node) throws Exception {
 
     }
 
-    public Object[] leave(OpenIDIdentityProvider node, Object[] results) throws Exception {
+    public Object[] leave(ExternalOpenIDIdentityProvider node, Object[] results) throws Exception {
         return new Object[0];
     }
 
-    public boolean walkNextChild(OpenIDIdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
-        return true;
-    }
-
-    public void arrive(OpenIDServiceProvider node) throws Exception {
-
-    }
-
-    public Object[] leave(OpenIDServiceProvider node, Object[] results) throws Exception {
-        return new Object[0];
-    }
-
-    public boolean walkNextChild(OpenIDServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(ExternalOpenIDIdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 

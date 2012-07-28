@@ -81,10 +81,8 @@ import com.atricore.idbus.console.modeling.diagram.view.oauth2.idp.OAuth2Identit
 import com.atricore.idbus.console.modeling.diagram.view.oauth2.idp.OAuth2IdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.oauth2.sp.OAuth2ServiceProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.oauth2.sp.OAuth2ServiceProviderCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.openid.idp.OpenIDIdentityProviderCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.openid.idp.OpenIDIdentityProviderCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.openid.sp.OpenIDServiceProviderCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.openid.sp.OpenIDServiceProviderCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.openid.idp.ExternalOpenIDIdentityProviderCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.openid.idp.ExternalOpenIDIdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.josso1.JOSSO1ResourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.resources.josso1.JOSSO1ResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.josso2.JOSSO2ResourceCreateForm;
@@ -136,8 +134,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _internalSaml2ServiceProviderCreateMediator:InternalSaml2ServiceProviderCreateMediator;
     private var _externalSaml2ServiceProviderCreateMediator:ExternalSaml2ServiceProviderCreateMediator;
     private var _externalSaml2IdentityProviderCreateMediator:ExternalSaml2IdentityProviderCreateMediator;
-    private var _openIDIdentityProviderCreateMediator:OpenIDIdentityProviderCreateMediator;
-    private var _openIDServiceProviderCreateMediator:OpenIDServiceProviderCreateMediator;
+    private var _externalOpenIDIdentityProviderCreateMediator:ExternalOpenIDIdentityProviderCreateMediator;
     private var _oauth2IdentityProviderCreateMediator:OAuth2IdentityProviderCreateMediator;
     private var _oauth2ServiceProviderCreateMediator:OAuth2ServiceProviderCreateMediator;
     private var _salesforceCreateMediator:SalesforceCreateMediator;
@@ -186,8 +183,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _internalSaml2ServiceProviderCreateForm:InternalSaml2ServiceProviderCreateForm;
     private var _externalSaml2IdentityProviderCreateForm:ExternalSaml2IdentityProviderCreateForm;
     private var _externalSaml2ServiceProviderCreateForm:ExternalSaml2ServiceProviderCreateForm;
-    private var _openIDIdentityProviderCreateForm:OpenIDIdentityProviderCreateForm;
-    private var _openIDServiceProviderCreateForm:OpenIDServiceProviderCreateForm;
+    private var _externalOpenIDIdentityProviderCreateForm:ExternalOpenIDIdentityProviderCreateForm;
     private var _oauth2IdentityProviderCreateForm:OAuth2IdentityProviderCreateForm;
     private var _oauth2ServiceProviderCreateForm:OAuth2ServiceProviderCreateForm;
     private var _salesforceCreateForm:SalesforceCreateForm;
@@ -295,20 +291,12 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _internalSaml2ServiceProviderCreateMediator = value;
     }
 
-    public function get openIDIdentityProviderCreateMediator():OpenIDIdentityProviderCreateMediator {
-        return _openIDIdentityProviderCreateMediator;
+    public function get externalOpenIDIdentityProviderCreateMediator():ExternalOpenIDIdentityProviderCreateMediator {
+        return _externalOpenIDIdentityProviderCreateMediator;
     }
 
-    public function set openIDIdentityProviderCreateMediator(value:OpenIDIdentityProviderCreateMediator):void {
-        _openIDIdentityProviderCreateMediator = value;
-    }
-
-    public function get openIDServiceProviderCreateMediator():OpenIDServiceProviderCreateMediator {
-        return _openIDServiceProviderCreateMediator;
-    }
-
-    public function set openIDServiceProviderCreateMediator(value:OpenIDServiceProviderCreateMediator):void {
-        _openIDServiceProviderCreateMediator = value;
+    public function set externalOpenIDIdentityProviderCreateMediator(value:ExternalOpenIDIdentityProviderCreateMediator):void {
+        _externalOpenIDIdentityProviderCreateMediator = value;
     }
 
     public function get oauth2IdentityProviderCreateMediator():OAuth2IdentityProviderCreateMediator {
@@ -752,48 +740,26 @@ public class ModelerPopUpManager extends BasePopUpManager {
         externalSaml2ServiceProviderCreateMediator.handleNotification(_lastWindowNotification);
     }
 
-    public function showCreateOpenIDIdentityProviderWindow(notification:INotification):void {
+    public function showCreateExternalOpenIDIdentityProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        createOpenIDIdentityProviderCreateForm();
+        createExternalOpenIDIdentityProviderCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.openIDidp");
         _popup.width = 660;
         _popup.height = 170;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
-        showPopup(_openIDIdentityProviderCreateForm);
+        showPopup(_externalOpenIDIdentityProviderCreateForm);
         //on show call bindForm()
     }
 
-    private function createOpenIDIdentityProviderCreateForm():void {
-        _openIDIdentityProviderCreateForm = new OpenIDIdentityProviderCreateForm();
-        _openIDIdentityProviderCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleOpenIDIdentityProviderCreateFormCreated);
+    private function createExternalOpenIDIdentityProviderCreateForm():void {
+        _externalOpenIDIdentityProviderCreateForm = new ExternalOpenIDIdentityProviderCreateForm();
+        _externalOpenIDIdentityProviderCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalOpenIDIdentityProviderCreateFormCreated);
     }
 
-    private function handleOpenIDIdentityProviderCreateFormCreated(event:FlexEvent):void {
-        openIDIdentityProviderCreateMediator.setViewComponent(_openIDIdentityProviderCreateForm);
-        openIDIdentityProviderCreateMediator.handleNotification(_lastWindowNotification);
-    }
-
-    public function showCreateOpenIDServiceProviderWindow(notification:INotification):void {
-        _lastWindowNotification = notification;
-        createOpenIDServiceProviderCreateForm();
-        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.openIDsp");
-        _popup.width = 660;
-        _popup.height = 170;
-        _popup.x = (_popupParent.width / 2) - 225;
-        _popup.y = 80;
-        showPopup(_openIDServiceProviderCreateForm);
-        //on show call bindForm()
-    }
-
-    private function createOpenIDServiceProviderCreateForm():void {
-        _openIDServiceProviderCreateForm = new OpenIDServiceProviderCreateForm();
-        _openIDServiceProviderCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleOpenIDServiceProviderCreateFormCreated);
-    }
-
-    private function handleOpenIDServiceProviderCreateFormCreated(event:FlexEvent):void {
-        openIDServiceProviderCreateMediator.setViewComponent(_openIDServiceProviderCreateForm);
-        openIDServiceProviderCreateMediator.handleNotification(_lastWindowNotification);
+    private function handleExternalOpenIDIdentityProviderCreateFormCreated(event:FlexEvent):void {
+        externalOpenIDIdentityProviderCreateMediator.setViewComponent(_externalOpenIDIdentityProviderCreateForm);
+        externalOpenIDIdentityProviderCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateOAuth2IdentityProviderWindow(notification:INotification):void {

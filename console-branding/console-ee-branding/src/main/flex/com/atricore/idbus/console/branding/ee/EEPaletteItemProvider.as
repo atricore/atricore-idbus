@@ -23,10 +23,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 new PaletteEntry("SAML2 Service Provider", EmbeddedIcons.saml2SpMiniIcon, "Service Provider Entry", DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE)
         );
         providersPaletteDrawer.add(
-                new PaletteEntry("External SAML2 Identity Provider", EmbeddedIcons.externalSaml2IdpMiniIcon, "External Identity Provider Entry", DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("External SAML2 Identity Provider", EmbeddedIcons.externalSaml2IdpMiniIcon, "External Identity Provider Entry", DiagramElementTypes.EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT_TYPE)
         );
         providersPaletteDrawer.add(
-                new PaletteEntry("External SAML2 Service Provider", EmbeddedIcons.externalSaml2SpMiniIcon, "External Service Provider Entry", DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("External SAML2 Service Provider", EmbeddedIcons.externalSaml2SpMiniIcon, "External Service Provider Entry", DiagramElementTypes.EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT_TYPE)
         );
         providersPaletteDrawer.add(
                 new PaletteEntry("External OpenID Identity Provider", EmbeddedIcons.externalOpenidIdpMiniIcon, "External OpenID Identity Provider Entry", DiagramElementTypes.EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE)

@@ -25,8 +25,8 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
+import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.Resource;
-import com.atricore.idbus.console.services.dto.Saml2IdentityProvider;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -45,7 +45,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class ExternalSaml2IdentityProviderCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
-    private var _newIdentityProvider:Saml2IdentityProvider;
+    private var _newIdentityProvider:ExternalSaml2IdentityProvider;
     private var _uploadedFile:ByteArray;
     private var _uploadedFileName:String;
 
@@ -116,7 +116,7 @@ public class ExternalSaml2IdentityProviderCreateMediator extends IocFormMediator
 
     override public function bindModel():void {
 
-        var identityProvider:Saml2IdentityProvider = new Saml2IdentityProvider();
+        var identityProvider:ExternalSaml2IdentityProvider = new ExternalSaml2IdentityProvider();
 
         identityProvider.name = view.identityProviderName.text;
         identityProvider.description = view.identityProvDescription.text;

@@ -23,9 +23,9 @@ package com.atricore.idbus.console.modeling.main.controller
 {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
-import com.atricore.idbus.console.services.dto.Saml2IdentityProvider;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
@@ -48,7 +48,7 @@ public class ExternalSaml2IdentityProviderRemoveCommand extends IocSimpleCommand
     }
 
     override public function execute(notification:INotification):void {
-        var identityProvider:Saml2IdentityProvider = notification.getBody() as Saml2IdentityProvider;
+        var identityProvider:ExternalSaml2IdentityProvider = notification.getBody() as ExternalSaml2IdentityProvider;
 
         var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
 

@@ -3,11 +3,10 @@ package com.atricore.idbus.console.services.dto;
 /**
  * Author: Dejan Maric
  */
-public class AlfrescoResourceDTO extends ResourceDTO {
+public class AlfrescoResourceDTO extends ServiceResourceDTO {
     
     private static final long serialVersionUID = 3324230985098604032L;
     private String tomcatInstallDir;
-    private String description;
     private String platformId;
     private ExecEnvTypeDTO type;
     private String installUri;
@@ -22,14 +21,6 @@ public class AlfrescoResourceDTO extends ResourceDTO {
 
     public void setTomcatInstallDir(String tomcatInstallDir) {
         this.tomcatInstallDir = tomcatInstallDir;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getPlatformId() {

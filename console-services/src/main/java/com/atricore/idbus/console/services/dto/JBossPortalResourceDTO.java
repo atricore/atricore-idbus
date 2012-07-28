@@ -1,10 +1,9 @@
 package com.atricore.idbus.console.services.dto;
 
-public class JBossPortalResourceDTO extends ResourceDTO {
+public class JBossPortalResourceDTO extends ServiceResourceDTO {
 
     private static final long serialVersionUID = 1230980458040603219L;
 
-    private String description;
     private ExecEnvTypeDTO type;
     private String installUri;
     private String location;
@@ -26,14 +25,6 @@ public class JBossPortalResourceDTO extends ResourceDTO {
 
     public void setInstallDemoApps(boolean installDemoApps) {
         this.installDemoApps = installDemoApps;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public ExecEnvTypeDTO getType() {

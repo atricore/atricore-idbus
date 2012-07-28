@@ -20,16 +20,16 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.model.request {
-import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
+import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 
-public class RemoveOpenIDIdentityProviderElementRequest {
-    private var _identityProvider:OpenIDIdentityProvider;
+public class RemoveExternalOpenIDIdentityProviderElementRequest {
+    private var _identityProvider:ExternalOpenIDIdentityProvider;
 
-    public function RemoveOpenIDIdentityProviderElementRequest(identityProvider:OpenIDIdentityProvider) {
+    public function RemoveExternalOpenIDIdentityProviderElementRequest(identityProvider:ExternalOpenIDIdentityProvider) {
         _identityProvider = identityProvider;
     }
 
-    public function get identityProvider():OpenIDIdentityProvider {
+    public function get identityProvider():ExternalOpenIDIdentityProvider {
         return _identityProvider;
     }
 }

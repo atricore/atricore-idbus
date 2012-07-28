@@ -134,19 +134,23 @@ public class BrowserModelFactory {
             } else if (provider is ExternalSaml2IdentityProvider) {
                 providerNode.icon = EmbeddedIcons.externalSaml2IdpMiniIcon;
             } else if (provider is ExternalSaml2ServiceProvider) {
-                providerNode.icon = EmbeddedIcons.externalSaml2SpMiniIcon;
+                if (provider is SalesforceServiceProvider) {
+                    providerNode.icon = EmbeddedIcons.salesforceSpMiniIcon;
+                } else
+                if (provider is GoogleAppsServiceProvider) {
+                    providerNode.icon = EmbeddedIcons.googleSpMiniIcon;
+                } else
+                if (provider is SugarCRMServiceProvider) {
+                    providerNode.icon = EmbeddedIcons.sugarCRMSpMiniIcon;
+                } else {
+                    providerNode.icon = EmbeddedIcons.externalSaml2SpMiniIcon;
+                }
             } else if (provider is ExternalOpenIDIdentityProvider) {
                 providerNode.icon = EmbeddedIcons.externalOpenidIdpMiniIcon;
             } else if (provider is OAuth2ServiceProvider) {
                 providerNode.icon = EmbeddedIcons.oauth2SpMiniIcon;
             } else if (provider is ExternalWSFederationServiceProvider) {
                 providerNode.icon = EmbeddedIcons.externalWsFedSpMiniIcon;
-            } else if (provider is SalesforceServiceProvider) {
-                providerNode.icon = EmbeddedIcons.salesforceSpMiniIcon;
-            } else if (provider is GoogleAppsServiceProvider) {
-                providerNode.icon = EmbeddedIcons.googleSpMiniIcon;
-            } else if (provider is SugarCRMServiceProvider) {
-                providerNode.icon = EmbeddedIcons.sugarCRMSpMiniIcon;
             }
 
             return providerNode;

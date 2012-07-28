@@ -7,7 +7,6 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.spi.ApplianceValidator;
-import com.atricore.idbus.console.lifecycle.main.spi.ExecEnvType;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
 import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import org.apache.commons.lang.StringUtils;
@@ -277,17 +276,10 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
-    public void arrive(OpenIDIdentityProvider node) throws Exception {
+    public void arrive(ExternalOpenIDIdentityProvider node) throws Exception {
         validateName("OpenID IDP name", node.getName(), node);
         validateDisplayName("OpenID IDP display name", node.getDisplayName());
         validateLocation("OpenID IDP", node.getLocation(), node, true);
-    }
-
-    @Override
-    public void arrive(OpenIDServiceProvider node) throws Exception {
-        validateName("OpenID SP name", node.getName(), node);
-        validateDisplayName("OpenID SP display name", node.getDisplayName());
-        validateLocation("OpenID SP", node.getLocation(), node, true);
     }
 
     @Override

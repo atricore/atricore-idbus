@@ -46,11 +46,11 @@ import org.puremvc.as3.interfaces.INotification;
 public class JBossPortalResourceCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
-    private static var _environmentName:String = "JBOSS_PORTAL";
+    private static var _resourceName:String = "JBOSS_PORTAL";
 
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    private var _newExecutionEnvironment:JBossPortalResource;
+    private var _newResource:JBossPortalResource;
 
     private var _locationValidator:Validator;
     
@@ -114,7 +114,7 @@ public class JBossPortalResourceCreateMediator extends IocFormMediator {
         resource.overwriteOriginalSetup = view.replaceConfFiles.selected;
         resource.installDemoApps = view.installSamples.selected;
         resource.platformId = "jbp";
-        _newExecutionEnvironment = resource;
+        _newResource = resource;
     }
 
     private function handleJBossPortalResourceSave(event:MouseEvent):void {
@@ -130,7 +130,7 @@ public class JBossPortalResourceCreateMediator extends IocFormMediator {
             if (view.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
                 cif.homeDir = view.homeDirectory.text;
-                cif.environmentName = _environmentName;
+                cif.environmentName = _resourceName;
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
                 var lvResult:ValidationResultEvent = _locationValidator.validate(view.location.text);
@@ -145,11 +145,11 @@ public class JBossPortalResourceCreateMediator extends IocFormMediator {
 
     private function save():void {
         bindModel();
-        if (_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null) {
-            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
+        if (_projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources == null) {
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources = new ArrayCollection();
         }
-        _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newExecutionEnvironment);
-        _projectProxy.currentIdentityApplianceElement = _newExecutionEnvironment;
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.addItem(_newResource);
+        _projectProxy.currentIdentityApplianceElement = _newResource;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -197,14 +197,14 @@ public class JBossPortalResourceCreateMediator extends IocFormMediator {
         switch (notification.getName()) {
             case FolderExistsCommand.FOLDER_EXISTS:
                 var envName:String = notification.getBody() as String;
-                if(envName == _environmentName){
+                if(envName == _resourceName){
                     view.homeDirectory.errorString = "";
                     save();
                 }
                 break;
             case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
                 envName = notification.getBody() as String;
-                if(envName == _environmentName){
+                if(envName == _resourceName){
                     view.homeDirectory.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                 }
                 break;

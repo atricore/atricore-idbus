@@ -41,8 +41,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO1Res
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO2ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2ServiceProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOpenIDIdentityProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOpenIDServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalOpenIDIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2ServiceProviderElementRequest;
@@ -339,7 +338,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_OAUTH_2_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT,
-            ApplicationFacade.REMOVE_OPENID_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_OPENID_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_OAUTH2_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_OAUTH2_SERVICE_PROVIDER_ELEMENT,
@@ -486,10 +485,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 popupManager.showCreateInternalSaml2ServiceProviderWindow(notification);
                 break;
             case ApplicationFacade.CREATE_OPENID_IDENTITY_PROVIDER_ELEMENT:
-                popupManager.showCreateOpenIDIdentityProviderWindow(notification);
-                break;
-            case ApplicationFacade.CREATE_OPENID_SERVICE_PROVIDER_ELEMENT:
-                popupManager.showCreateOpenIDServiceProviderWindow(notification);
+                popupManager.showCreateExternalOpenIDIdentityProviderWindow(notification);
                 break;
             case ApplicationFacade.CREATE_OAUTH_2_IDENTITY_PROVIDER_ELEMENT:
                 popupManager.showCreateOAuth2IdentityProviderWindow(notification);
@@ -508,13 +504,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 var rs2sp:RemoveExternalSaml2ServiceProviderElementRequest = RemoveExternalSaml2ServiceProviderElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.EXTERNAL_SAML2_SERVICE_PROVIDER_REMOVE, rs2sp.serviceProvider);
                 break;
-            case ApplicationFacade.REMOVE_OPENID_IDENTITY_PROVIDER_ELEMENT:
-                var roidip:RemoveOpenIDIdentityProviderElementRequest = RemoveOpenIDIdentityProviderElementRequest(notification.getBody());
+            case ApplicationFacade.REMOVE_EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT:
+                var roidip:RemoveExternalOpenIDIdentityProviderElementRequest = RemoveExternalOpenIDIdentityProviderElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.OPENID_IDENTITY_PROVIDER_REMOVE, roidip.identityProvider);
-                break;
-            case ApplicationFacade.REMOVE_OPENID_SERVICE_PROVIDER_ELEMENT:
-                var roidsp:RemoveOpenIDServiceProviderElementRequest = RemoveOpenIDServiceProviderElementRequest(notification.getBody());
-                sendNotification(ApplicationFacade.OPENID_SERVICE_PROVIDER_REMOVE, roidsp.serviceProvider);
                 break;
             case ApplicationFacade.REMOVE_OAUTH2_IDENTITY_PROVIDER_ELEMENT:
                 var roa2ip:RemoveOAuth2IdentityProviderElementRequest = RemoveOAuth2IdentityProviderElementRequest(notification.getBody());

@@ -185,7 +185,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const REMOVE_IDENTITY_APPLIANCE_ELEMENT:String = "removeIdentityApplianceElement";
     public static const REMOVE_IDENTITY_PROVIDER_ELEMENT:String = "removeIdentityProviderElement";
     public static const REMOVE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT:String = "removeExternalIdentityProviderElement";
-    public static const REMOVE_OPENID_IDENTITY_PROVIDER_ELEMENT:String = "removeOpenIDIdentityProviderElement";
+    public static const REMOVE_EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT:String = "removeOpenIDIdentityProviderElement";
     public static const REMOVE_OPENID_SERVICE_PROVIDER_ELEMENT:String = "removeOpenIDServiceProviderElement";
     public static const REMOVE_OAUTH2_IDENTITY_PROVIDER_ELEMENT:String = "removeOAuth2IdentityProviderElement";
     public static const REMOVE_OAUTH2_SERVICE_PROVIDER_ELEMENT:String = "removeOAuth2ServiceProviderElement";

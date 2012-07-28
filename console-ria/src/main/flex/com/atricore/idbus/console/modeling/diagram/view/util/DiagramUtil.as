@@ -4,6 +4,8 @@ import com.atricore.idbus.console.base.diagram.DiagramElementTypes;
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
+import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
@@ -11,10 +13,7 @@ import com.atricore.idbus.console.services.dto.JOSSO2Resource;
 import com.atricore.idbus.console.services.dto.MicroStrategyResource;
 import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
-import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
-import com.atricore.idbus.console.services.dto.OpenIDServiceProvider;
 import com.atricore.idbus.console.services.dto.Provider;
-import com.atricore.idbus.console.services.dto.Saml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceResource;
@@ -31,13 +30,13 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id && !nodeLinkExists(node1.node, node2.node) && !nodeLinkExists(node2.node, node1.node)) {
             // TODO: finish this
-            if ((node1.data is InternalSaml2ServiceProvider && (node2.data is IdentityProvider || node2.data is Saml2IdentityProvider
-                            || node2.data is OpenIDIdentityProvider || node2.data is OAuth2IdentityProvider))
+            if ((node1.data is InternalSaml2ServiceProvider && (node2.data is IdentityProvider || node2.data is ExternalSaml2IdentityProvider
+                            || node2.data is ExternalOpenIDIdentityProvider || node2.data is OAuth2IdentityProvider))
                     || (node1.data is IdentityProvider && (node2.data is InternalSaml2ServiceProvider || node2.data is ExternalSaml2ServiceProvider
-                            || node2.data is OpenIDServiceProvider || node2.data is OAuth2ServiceProvider))
-                    || ((node1.data is ExternalSaml2ServiceProvider || node1.data is OpenIDServiceProvider || node1.data is OAuth2ServiceProvider)
+                            || node2.data is OAuth2ServiceProvider))
+                    || ((node1.data is ExternalSaml2ServiceProvider ||  node1.data is OAuth2ServiceProvider)
                             && node2.data is IdentityProvider)
-                    || ((node1.data is Saml2IdentityProvider || node1.data is OpenIDIdentityProvider || node1.data is OAuth2IdentityProvider)
+                    || ((node1.data is ExternalSaml2IdentityProvider || node1.data is ExternalOpenIDIdentityProvider || node1.data is OAuth2IdentityProvider)
                             && node2.data is InternalSaml2ServiceProvider)) {
                 canBeLinked = true;
             }
@@ -138,9 +137,9 @@ public class DiagramUtil {
                 return EmbeddedIcons.saml2IdpMiniIcon;
             case DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.saml2SpMiniIcon;
-            case DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE:
+            case DiagramElementTypes.EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.externalSaml2IdpMiniIcon;
-            case DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:
+            case DiagramElementTypes.EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.externalSaml2SpMiniIcon;
             case DiagramElementTypes.EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.externalOpenidIdpMiniIcon;

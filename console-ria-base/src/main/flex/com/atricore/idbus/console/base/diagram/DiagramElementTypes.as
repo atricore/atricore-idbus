@@ -23,8 +23,8 @@ package com.atricore.idbus.console.base.diagram {
 public class DiagramElementTypes {
     public static const IDENTITY_APPLIANCE_ELEMENT_TYPE:int = 0;
     public static const IDENTITY_PROVIDER_ELEMENT_TYPE:int = 1;
-    public static const EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 2;
-    public static const EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:int = 3;
+    public static const EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 2;
+    public static const EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT_TYPE:int = 3;
     public static const DB_IDENTITY_SOURCE_ELEMENT_TYPE:int = 4;
     public static const FEDERATED_CONNECTION_ELEMENT_TYPE:int = 5;
     public static const LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:int = 6;
@@ -54,21 +54,19 @@ public class DiagramElementTypes {
     public static const DELEGATED_AUTHENTICATION_ELEMENT_TYPE:int = 30;
     public static const DIRECTORY_SERVICE_ELEMENT_TYPE:int = 31;
     public static const WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:int =32;
-    public static const SHAREPOINT_RESOURCE_ELEMENT_TYPE:int =33;
+    public static const SHAREPOINT_RESOURCE_ELEMENT_TYPE:int = 33;
     public static const SAML_2_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 34;
     public static const SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE:int = 35;
-    public static const OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 36;
-    public static const OPENID_SERVICE_PROVIDER_ELEMENT_TYPE:int = 37;
-    public static const OAUTH_2_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 38;
-    public static const OAUTH_2_SERVICE_PROVIDER_ELEMENT_TYPE:int = 39;
-    public static const SERVICE_CONNECTION_ELEMENT_TYPE:int = 40;
-    public static const JOSSO1_RESOURCE_ELEMENT_TYPE:int = 41;
-    public static const JOSSO2_RESOURCE_ELEMENT_TYPE:int = 42;
-    public static const COLDFUSION_RESOURCE_ELEMENT_TYPE:int = 43;
-    public static const MICROSTRATEGY_RESOURCE_ELEMENT_TYPE:int = 44;
-    public static const EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE : int = 45;
-    public static const EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT_TYPE : int = 46;
-    public static const SAS_RESOURCE_ELEMENT_TYPE : int = 47;
+    public static const EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 36;
+    public static const OAUTH_2_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 37;
+    public static const OAUTH_2_SERVICE_PROVIDER_ELEMENT_TYPE:int = 38;
+    public static const SERVICE_CONNECTION_ELEMENT_TYPE:int = 39;
+    public static const JOSSO1_RESOURCE_ELEMENT_TYPE:int = 40;
+    public static const JOSSO2_RESOURCE_ELEMENT_TYPE:int = 41;
+    public static const COLDFUSION_RESOURCE_ELEMENT_TYPE:int = 42;
+    public static const MICROSTRATEGY_RESOURCE_ELEMENT_TYPE:int = 43;
+    public static const EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT_TYPE : int = 44;
+    public static const SAS_RESOURCE_ELEMENT_TYPE : int = 45;
 
 }
 }
