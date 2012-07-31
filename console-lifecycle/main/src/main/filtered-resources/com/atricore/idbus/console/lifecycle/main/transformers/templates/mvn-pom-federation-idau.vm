@@ -367,8 +367,8 @@
                             $module.getPackage()
                         </Export-Package>
                         <Import-Package>
-                            org.apache.commons.logging; version="[1.0,1.1.99)"; providerInternalSaml2=paxlogging,
-                            org.apache.log4j; version="[1.2,1.3)"; providerInternalSaml2=paxlogging,
+                            org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
+                            org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
                             org.springframework.instrument; resolution:=optional; version="${spring.version}",
                             org.springframework.osgi; version="${spring.osgi.version}",
                             org.springframework.osgi.context; version="${spring.osgi.version}",
