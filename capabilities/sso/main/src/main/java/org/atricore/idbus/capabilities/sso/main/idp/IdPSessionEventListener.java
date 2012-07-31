@@ -108,7 +108,7 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
         if (logger.isTraceEnabled())
             logger.trace("Triggering IDP Initiated SLO from IDP Session Listener for Security Context " + secCtx);
 
-        EndpointDescriptor ed = resolveIdpInitiatedSloEndpoint(identityProvider);
+        EndpointDescriptor ed = resolveIdpSloEndpoint(identityProvider);
 
         if (logger.isDebugEnabled())
             logger.debug("Using IDP Initiated SLO endpoint " + ed);
@@ -136,14 +136,15 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
 
     }
 
-    protected EndpointDescriptor resolveIdpInitiatedSloEndpoint(IdentityProvider idp) throws SSOException {
+    protected EndpointDescriptor resolveIdpSloEndpoint(IdentityProvider idp) throws SSOException {
         // User default channel to signal SLO
         Channel defaultChannel = idp.getChannel();
 
+        // Look for local SLO endpoint, it will also receive SLO IDP Initiated requests
         IdentityMediationEndpoint e = null;
         for (IdentityMediationEndpoint endpoint : defaultChannel.getEndpoints()) {
 
-            if (endpoint.getType().equals(SSOService.IDPInitiatedSingleLogoutService.toString())) {
+            if (endpoint.getType().equals(SSOService.SingleLogoutService.toString())) {
 
                 if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
                     // We need to build an endpoint descriptor descriptor now ...
@@ -152,12 +153,13 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
                             defaultChannel.getLocation() + endpoint.getLocation() :
                             endpoint.getLocation();
 
-                    return new EndpointDescriptorImpl(identityProvider.getName() + "-sso-slo-soap",
-                            SSOService.IDPInitiatedSingleLogoutService.toString(),
+                    return new EndpointDescriptorImpl(idp.getName() + "-sso-slo-local",
+                            SSOService.SingleLogoutService.toString(),
                             SSOBinding.SSO_LOCAL.toString(),
                             location,
                             null);
-                } else if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
+
+                } else if (endpoint.getBinding().equals(SSOBinding.SSO_SOAP.getValue())) {
                     e = endpoint;
                 }
             }
@@ -168,13 +170,13 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
                     defaultChannel.getLocation() + e.getLocation() :
                     e.getLocation();
 
-            return new EndpointDescriptorImpl(identityProvider.getName() + "-sso-slo-soap",
-                    SSOService.IDPInitiatedSingleLogoutService.toString(),
+            return new EndpointDescriptorImpl(idp.getName() + "-sso-slo-soap",
+                    SSOService.SingleLogoutService.toString(),
                     e.getBinding(),
                     location,
                     null);
         }
 
-        throw new SSOException("No IDP Initiated SLO endpoint using SOAP binding found!");
+        throw new SSOException("No IDP SLO endpoint using LOCAL/SOAP binding found!");
     }
 }

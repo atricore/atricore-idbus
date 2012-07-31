@@ -40,6 +40,8 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
 
     private static final Log logger = LogFactory.getLog( EmailAccountLinkEmitter.class );
 
+    boolean stripEmailDomain = false;
+
     public AccountLink emit ( Subject subject ) {
 
         // If subjectName ID  is email formatted, use it
@@ -82,8 +84,10 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
                 if (logger.isDebugEnabled())
                     logger.debug("Found email as attribute ["+email+"]");
 
-                // TODO : For now, email user and JOSSO local user MUST match!
-                return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+                if (stripEmailDomain)
+                    return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+                else
+                    return new DynamicAccountLinkImpl(subject, email, NameIDFormat.EMAIL.getValue());
             }
 
         }
@@ -113,6 +117,14 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
 
         return null;
 
+    }
+
+    public boolean isStripEmailDomain() {
+        return stripEmailDomain;
+    }
+
+    public void setStripEmailDomain(boolean stripEmailDomain) {
+        this.stripEmailDomain = stripEmailDomain;
     }
 }
 

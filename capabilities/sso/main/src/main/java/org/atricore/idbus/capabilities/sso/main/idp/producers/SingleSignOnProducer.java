@@ -1200,7 +1200,7 @@ public class SingleSignOnProducer extends SSOProducer {
             AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(status.getCurrentClaimsEndpoint().getType());
 
             // TODO : Make configurable, per authctx
-            if (authnCtxClass.isPassive() || status.getCurrentClaimsEndpointTryCount() >= 5) {
+            if (authnCtxClass.isPassive() || status.getCurrentClaimsEndpointTryCount() >= 50) {
 
                 // Passive endpoints are only tried out once. Clear current endpoint so we select a new one.
                 status.getUsedClaimsEndpoints().add(status.getCurrentClaimsEndpoint().getName());
@@ -1282,7 +1282,7 @@ public class SingleSignOnProducer extends SSOProducer {
                         if (logger.isTraceEnabled())
                             logger.trace("Requested AuthnCtxClass for claiming " + reqAuthnCtxClass);
 
-                        // TODO : Support comparison method, for now If Requested, use only matching authn context
+                        // TODO : Support comparison method as stated by SAML, for now If Requested, use only matching authn context
                         // reqAuthnCtx.getComparison()
                         if (reqAuthnCtxClass.equals(endpoint.getType())) {
 
