@@ -22,8 +22,6 @@ package com.atricore.idbus.console.lifecycle.main.transform;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionVisitor;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.impl.SpringMetadataManagerImpl;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.spi.SpringMetadataManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -115,7 +113,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    public void arrive(ServiceProvider node) {
+    public void arrive(InternalSaml2ServiceProvider node) {
         arrive(contextHolder.get(), node);
     }
 
@@ -133,7 +131,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    public Object[] leave(ServiceProvider node, Object[] results) {
+    public Object[] leave(InternalSaml2ServiceProvider node, Object[] results) {
         return leave(contextHolder.get(), node, results);
     }
 
@@ -156,7 +154,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(InternalSaml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -168,7 +166,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    public void arrive(Saml2IdentityProvider node) {
+    public void arrive(ExternalSaml2IdentityProvider node) {
         arrive(contextHolder.get(), node);
     }
 
@@ -186,7 +184,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    public Object[] leave(Saml2IdentityProvider node, Object[] results) {
+    public Object[] leave(ExternalSaml2IdentityProvider node, Object[] results) {
         return leave(contextHolder.get(), node, results);
     }
 
@@ -209,7 +207,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(Saml2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(ExternalSaml2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -221,7 +219,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    public void arrive(Saml2ServiceProvider node) {
+    public void arrive(ExternalSaml2ServiceProvider node) {
         arrive(contextHolder.get(), node);
     }
 
@@ -239,7 +237,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    public Object[] leave(Saml2ServiceProvider node, Object[] results) {
+    public Object[] leave(ExternalSaml2ServiceProvider node, Object[] results) {
         return leave(contextHolder.get(), node, results);
     }
 
@@ -262,7 +260,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(Saml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(ExternalSaml2ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -274,7 +272,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    public void arrive(OpenIDIdentityProvider node) {
+    public void arrive(ExternalOpenIDIdentityProvider node) {
         arrive(contextHolder.get(), node);
     }
 
@@ -292,7 +290,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    public Object[] leave(OpenIDIdentityProvider node, Object[] results) {
+    public Object[] leave(ExternalOpenIDIdentityProvider node, Object[] results) {
         return leave(contextHolder.get(), node, results);
     }
 
@@ -315,60 +313,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(OpenIDIdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
-        return true;
-    }
-
-    /**
-     * This method is called before walking any children of the argument
-     * <code>node</code>. A node visitor instance uses this method
-     * to perform any initialization tasks it needs for walking the node's
-     * children.
-     *
-     * @param node the node to be walked
-     */
-    public void arrive(OpenIDServiceProvider node) {
-        arrive(contextHolder.get(), node);
-    }
-
-    /**
-     * This method is called after walking the children of the argument
-     * <code>node</code>. A node visitor instance uses this method
-     * to compute the result of walking the argument <code>node</code>
-     * and it's children. This result is returned by the tree walker's
-     * <code>walk</code> method. The argument <code>results</code> holds
-     * the results of walking the children of the argument <code>node</code>.
-     * Usually, the result of the argument <code>node</code> is computed in
-     * consideration of the results of its' children.
-     *
-     * @param node    the node having been walked
-     * @param results the results of walking the node's children
-     * @return the result of walking the node and it's children
-     */
-    public Object[] leave(OpenIDServiceProvider node, Object[] results) {
-        return leave(contextHolder.get(), node, results);
-    }
-
-    /**
-     * This method is called before walking each child of the argument
-     * <code>node</code>. The return value of this method determines if
-     * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
-     * holds the result of walking the previous child of the argument
-     * <code>node</code>. Usually, it is used to determine the return value
-     * of this method. The argument <code>indexOfNextChild</code>
-     * determines the index of the next child to be walked. This index
-     * determines the position in the children array of the argument <code>node</code>.
-     * Note: The index of the first child is 0.
-     *
-     * @param node                  the parent node of the children currently walked
-     * @param resultOfPreviousChild the result of walking the node's previous child
-     * @param indexOfNextChild      the index of the next child to be walked
-     * @return <code>false</code>, if no more children should be walked, else <code>true</code>
-     */
-    public boolean walkNextChild(OpenIDServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(ExternalOpenIDIdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 

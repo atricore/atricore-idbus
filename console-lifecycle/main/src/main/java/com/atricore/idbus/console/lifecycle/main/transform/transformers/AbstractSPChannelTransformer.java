@@ -24,7 +24,6 @@ import org.atricore.idbus.capabilities.sso.main.emitter.plans.EmailNameIDBuilder
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.UnspecifiedNameIDBuiler;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
@@ -250,7 +249,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         addPropertyBean(stmtToAssertionPlan, "nameIDBuilders", emailNameIdBuilder);
 
         SubjectNameIdentifierPolicy subjectNameIDPolicy = null;
-        if (idp instanceof Saml2IdentityProvider) {
+        if (idp instanceof ExternalSaml2IdentityProvider) {
             subjectNameIDPolicy = spChannel != null ? spChannel.getSubjectNameIDPolicy() : null;
         } else if (idp instanceof IdentityProvider) {
             subjectNameIDPolicy = spChannel != null ? spChannel.getSubjectNameIDPolicy() : ((IdentityProvider)idp).getSubjectNameIDPolicy();
@@ -306,7 +305,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
 
         if (idp instanceof IdentityProvider) {
             ignoreRequestedNameIDPolicy = spChannel != null ? spChannel.isIgnoreRequestedNameIDPolicy() : ((IdentityProvider)idp).isIgnoreRequestedNameIDPolicy();
-        } else if (idp instanceof Saml2IdentityProvider) {
+        } else if (idp instanceof ExternalSaml2IdentityProvider) {
             ignoreRequestedNameIDPolicy = spChannel != null ? spChannel.isIgnoreRequestedNameIDPolicy() : true;
         }
 

@@ -20,16 +20,16 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.model.request {
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 
 public class CreateExecutionEnvironmentElementRequest {
-//    private var _owner:ServiceProvider;
+//    private var _owner:InternalSaml2ServiceProvider;
 
     public function CreateExecutionEnvironmentElementRequest() {
 //        _owner = owner;
     }
 
-//    public function get owner():ServiceProvider {
+//    public function get owner():InternalSaml2ServiceProvider {
 //        return _owner;
 //    }
 

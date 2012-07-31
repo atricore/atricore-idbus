@@ -28,7 +28,7 @@ package com.atricore.idbus.console.services.dto;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class JossoBPConfigDTO extends AbstractProviderConfigDTO {
+public class JossoBPConfigDTO extends ProviderConfigDTO {
     private static final long serialVersionUID = -7869571822629658937L;
 
     private String targetPlatform;

@@ -142,7 +142,7 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
-    public void arrive(ServiceProvider node) throws Exception {
+    public void arrive(InternalSaml2ServiceProvider node) throws Exception {
 
         Bean providerBean = newBean(beans, node.getName(), node.getClass());
         setBeanDescription(providerBean, node.toString());
@@ -220,17 +220,17 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
-    public Object[] leave(ServiceProvider node, Object[] results) throws Exception {
+    public Object[] leave(InternalSaml2ServiceProvider node, Object[] results) throws Exception {
         return null;
     }
 
     @Override
-    public Object[] leave(Saml2IdentityProvider node, Object[] results) throws Exception {
+    public Object[] leave(ExternalSaml2IdentityProvider node, Object[] results) throws Exception {
         return null;
     }
 
     @Override
-    public void arrive(Saml2ServiceProvider node) throws Exception {
+    public void arrive(ExternalSaml2ServiceProvider node) throws Exception {
 
         Bean providerBean = newBean(beans, node.getName(), node.getClass());
         setBeanDescription(providerBean, node.toString());
@@ -272,12 +272,12 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
-    public Object[] leave(Saml2ServiceProvider node, Object[] results) throws Exception {
+    public Object[] leave(ExternalSaml2ServiceProvider node, Object[] results) throws Exception {
         return null;
     }
 
     @Override
-    public void arrive(OpenIDIdentityProvider node) throws Exception {
+    public void arrive(ExternalOpenIDIdentityProvider node) throws Exception {
 
         Bean providerBean = newBean(beans, node.getName(), node.getClass());
         setBeanDescription(providerBean, node.toString());
@@ -317,52 +317,7 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
-    public Object[] leave(OpenIDIdentityProvider node, Object[] results) throws Exception {
-        return null;
-    }
-
-    @Override
-    public void arrive(OpenIDServiceProvider node) throws Exception {
-
-        Bean providerBean = newBean(beans, node.getName(), node.getClass());
-        setBeanDescription(providerBean, node.toString());
-
-        setPropertyValue(providerBean, "id", node.getId() + "");
-        setPropertyValue(providerBean, "name", node.getName());
-        setPropertyValue(providerBean, "displayName", node.getDisplayName());
-        setPropertyValue(providerBean, "description", node.getDescription());
-        setPropertyRef(providerBean, "identityAppliance", applianceDefBean.getName());
-        setPropertyValue(providerBean, "remote", node.isRemote());
-
-        setPropertyValue(providerBean, "x", String.valueOf(node.getX()));
-        setPropertyValue(providerBean, "y", String.valueOf(node.getY()));
-
-        // Federated Connections
-        if (node.getFederatedConnectionsA() != null) {
-            for (FederatedConnection fc : node.getFederatedConnectionsA()) {
-                addPropertyRefsToSet(providerBean, "federatedConnectionsA", fc.getName() );
-            }
-        }
-
-        if (node.getFederatedConnectionsB() != null) {
-            for (FederatedConnection fc : node.getFederatedConnectionsB()) {
-                addPropertyRefsToSet(providerBean, "federatedConnectionsB", fc.getName() );
-            }
-        }
-
-        // Location
-        if (node.getLocation() != null)
-            setLocationPropertyValue(providerBean, "location", node.getLocation());
-
-        // TODO: Config not saml?
-        if (node.getConfig() != null)
-            setSamlR2ConfigurationPropertyValue(providerBean, "config", (SamlR2ProviderConfig) node.getConfig());
-
-        addPropertyBeansAsRefsToSet(applianceDefBean, "providers", providerBean);
-    }
-
-    @Override
-    public Object[] leave(OpenIDServiceProvider node, Object[] results) throws Exception {
+    public Object[] leave(ExternalOpenIDIdentityProvider node, Object[] results) throws Exception {
         return null;
     }
 

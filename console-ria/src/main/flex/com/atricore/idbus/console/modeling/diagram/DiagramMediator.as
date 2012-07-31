@@ -42,8 +42,9 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateDbIdentit
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDirectoryServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalIdentityProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalSaml2IdentityProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalSaml2IdentityProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalSaml2ServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateGoogleAppsElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
@@ -54,10 +55,9 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateJosso2Res
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateOpenIDIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSalesforceElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.CreateSaml2IdentityProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.CreateSaml2ServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateInternalSaml2ServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateInternalSaml2ServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceConnectionElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateWikidElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateWindowsIntegratedAuthnElementRequest;
@@ -66,8 +66,8 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivatio
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDirectoryServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalIdentityProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2IdentityProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2ServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveGoogleAppsElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
@@ -78,13 +78,11 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO1Res
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO2ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2ServiceProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOpenIDIdentityProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOpenIDServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalOpenIDIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforceElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSaml2IdentityProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSaml2ServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2IdentityProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2ServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceConnectionElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWikidElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWindowsIntegratedAuthnElementRequest;
@@ -98,8 +96,8 @@ import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
-import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
-import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
+import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
+import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.GoogleAppsServiceProvider;
@@ -114,14 +112,12 @@ import com.atricore.idbus.console.services.dto.JOSSOActivation;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
-import com.atricore.idbus.console.services.dto.OpenIDIdentityProvider;
-import com.atricore.idbus.console.services.dto.OpenIDServiceProvider;
+import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
-import com.atricore.idbus.console.services.dto.Saml2IdentityProvider;
-import com.atricore.idbus.console.services.dto.Saml2ServiceProvider;
+import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceConnection;
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceResource;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
@@ -331,13 +327,13 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
 
                         break;
-                    case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
+                    case DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE:
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
                         var spOwnerAppliance:IdentityAppliance = _identityAppliance;
 
-                        var csp:CreateServiceProviderElementRequest = new CreateServiceProviderElementRequest(
+                        var csp:CreateInternalSaml2ServiceProviderElementRequest = new CreateInternalSaml2ServiceProviderElementRequest(
                                 spOwnerAppliance ,
                             //                                        _currentlySelectedNode.stringid
                                 null
@@ -345,18 +341,18 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
                         // this notification will be grabbed by the modeler mediator which will open
                         // the corresponding form
-                        sendNotification(ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT, csp);
+                        sendNotification(ApplicationFacade.CREATE_INTERNAL_SAML_2_SERVICE_PROVIDER_ELEMENT, csp);
                         //                            }
 
 
                         break;
-                    case DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                    case DiagramElementTypes.EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT_TYPE:
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
                         var extIdpOwnerAppliance:IdentityAppliance = _identityAppliance;
 
-                        var ceip:CreateExternalIdentityProviderElementRequest = new CreateExternalIdentityProviderElementRequest(
+                        var ceip:CreateExternalSaml2IdentityProviderElementRequest = new CreateExternalSaml2IdentityProviderElementRequest(
                                 extIdpOwnerAppliance,
                             //                                        _currentlySelectedNode.stringid
                                 null
@@ -364,18 +360,18 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
                         // this notification will be grabbed by the modeler mediator which will open
                         // the corresponding form
-                        sendNotification(ApplicationFacade.CREATE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT, ceip);
+                        sendNotification(ApplicationFacade.CREATE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT, ceip);
                         //                            }
 
 
                         break;
-                    case DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:
+                    case DiagramElementTypes.EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT_TYPE:
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
                         var extSpOwnerAppliance:IdentityAppliance = _identityAppliance;
 
-                        var cesp:CreateExternalServiceProviderElementRequest = new CreateExternalServiceProviderElementRequest(
+                        var cesp:CreateExternalSaml2ServiceProviderElementRequest = new CreateExternalSaml2ServiceProviderElementRequest(
                                 extSpOwnerAppliance,
                             //                                        _currentlySelectedNode.stringid
                                 null
@@ -383,7 +379,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
                         // this notification will be grabbed by the modeler mediator which will open
                         // the corresponding form
-                        sendNotification(ApplicationFacade.CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT, cesp);
+                        sendNotification(ApplicationFacade.CREATE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT, cesp);
                         //                            }
 
 
@@ -394,7 +390,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
                         var saml2IdpOwnerAppliance:IdentityAppliance = _identityAppliance;
 
-                        var cs2ip:CreateSaml2IdentityProviderElementRequest = new CreateSaml2IdentityProviderElementRequest(
+                        var cs2ip:CreateExternalSaml2IdentityProviderElementRequest = new CreateExternalSaml2IdentityProviderElementRequest(
                                 saml2IdpOwnerAppliance,
                                 //                                        _currentlySelectedNode.stringid
                                 null
@@ -407,26 +403,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
 
                         break;
-                    case DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE:
-                        // assert that source end is an Identity Appliance
-                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
-                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
-                        var saml2SpOwnerAppliance:IdentityAppliance = _identityAppliance;
-
-                        var cs2sp:CreateSaml2ServiceProviderElementRequest = new CreateSaml2ServiceProviderElementRequest(
-                                saml2SpOwnerAppliance,
-                                //                                        _currentlySelectedNode.stringid
-                                null
-                        );
-
-                        // this notification will be grabbed by the modeler mediator which will open
-                        // the corresponding form
-                        sendNotification(ApplicationFacade.CREATE_SAML_2_SERVICE_PROVIDER_ELEMENT, cs2sp);
-                        //                            }
-
-
-                        break;
-                    case DiagramElementTypes.OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                    case DiagramElementTypes.EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
@@ -441,25 +418,6 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // this notification will be grabbed by the modeler mediator which will open
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_OPENID_IDENTITY_PROVIDER_ELEMENT, coiip);
-                        //                            }
-
-
-                        break;
-                    case DiagramElementTypes.OPENID_SERVICE_PROVIDER_ELEMENT_TYPE:
-                        // assert that source end is an Identity Appliance
-                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
-                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
-                        var openIdSpOwnerAppliance:IdentityAppliance = _identityAppliance;
-
-                        var coisp:CreateSaml2ServiceProviderElementRequest = new CreateSaml2ServiceProviderElementRequest(
-                                openIdSpOwnerAppliance,
-                                //                                        _currentlySelectedNode.stringid
-                                null
-                        );
-
-                        // this notification will be grabbed by the modeler mediator which will open
-                        // the corresponding form
-                        sendNotification(ApplicationFacade.CREATE_OPENID_SERVICE_PROVIDER_ELEMENT, coisp);
                         //                            }
 
 
@@ -489,7 +447,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
                         var oauth2SpOwnerAppliance:IdentityAppliance = _identityAppliance;
 
-                        var coa2sp:CreateSaml2ServiceProviderElementRequest = new CreateSaml2ServiceProviderElementRequest(
+                        var coa2sp:CreateInternalSaml2ServiceProviderElementRequest = new CreateInternalSaml2ServiceProviderElementRequest(
                                 oauth2SpOwnerAppliance,
                                 //                                        _currentlySelectedNode.stringid
                                 null
@@ -648,7 +606,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT, cteenv);
                         break;
-                    case DiagramElementTypes.JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                    case DiagramElementTypes.JBOSS_PORTAL_RESOURCE_ELEMENT_TYPE:
                         var cjpeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                 );
                         _projectProxy.currentIdentityAppliance = _identityAppliance;
@@ -656,7 +614,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT, cjpeenv);
                         break;
-                    case DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                    case DiagramElementTypes.LIFERAY_RESOURCE_ELEMENT_TYPE:
                         var clpeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                 );
                         _projectProxy.currentIdentityAppliance = _identityAppliance;
@@ -688,7 +646,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT, cwiiseenv);
                         break;
-                    case DiagramElementTypes.ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                    case DiagramElementTypes.ALFRESCO_RESOURCE_ELEMENT_TYPE:
                         var calfenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                 );
                         _projectProxy.currentIdentityAppliance = _identityAppliance;
@@ -712,7 +670,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_PHP_EXECUTION_ENVIRONMENT_ELEMENT, cphpenv);
                         break;
-                    case DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                    case DiagramElementTypes.PHPBB_RESOURCE_ELEMENT_TYPE:
                         var cphpbbenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                 );
                         _projectProxy.currentIdentityAppliance = _identityAppliance;
@@ -843,68 +801,41 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_IDENTITY_PROVIDER_ELEMENT, rip);
                             break;
-                        case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
-                            var serviceProvider:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
+                        case DiagramElementTypes.EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                            var externalIdentityProvider:ExternalSaml2IdentityProvider = _currentlySelectedNode.data as ExternalSaml2IdentityProvider;
 
-                            var rsp:RemoveServiceProviderElementRequest = new RemoveServiceProviderElementRequest(serviceProvider);
+                            var reip:RemoveExternalSaml2IdentityProviderElementRequest = new RemoveExternalSaml2IdentityProviderElementRequest(externalIdentityProvider);
 
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
+                            sendNotification(ApplicationFacade.REMOVE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT, reip);
                             break;
-                        case DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE:
-                            var externalIdentityProvider:ExternalIdentityProvider = _currentlySelectedNode.data as ExternalIdentityProvider;
+                        case DiagramElementTypes.EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT_TYPE:
+                            var externalServiceProvider:ExternalSaml2ServiceProvider = _currentlySelectedNode.data as ExternalSaml2ServiceProvider;
 
-                            var reip:RemoveExternalIdentityProviderElementRequest = new RemoveExternalIdentityProviderElementRequest(externalIdentityProvider);
-
-                            // this notification will be grabbed by the modeler mediator which will invoke
-                            // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.REMOVE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT, reip);
-                            break;
-                        case DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:
-                            var externalServiceProvider:ExternalServiceProvider = _currentlySelectedNode.data as ExternalServiceProvider;
-
-                            var resp:RemoveExternalServiceProviderElementRequest = new RemoveExternalServiceProviderElementRequest(externalServiceProvider);
+                            var resp:RemoveExternalSaml2ServiceProviderElementRequest = new RemoveExternalSaml2ServiceProviderElementRequest(externalServiceProvider);
 
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT, resp);
+                            sendNotification(ApplicationFacade.REMOVE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT, resp);
                             break;
                         case DiagramElementTypes.SAML_2_IDENTITY_PROVIDER_ELEMENT_TYPE:
-                            var saml2IdentityProvider:Saml2IdentityProvider = _currentlySelectedNode.data as Saml2IdentityProvider;
+                            var saml2IdentityProvider:ExternalSaml2IdentityProvider = _currentlySelectedNode.data as ExternalSaml2IdentityProvider;
 
-                            var rsip:RemoveSaml2IdentityProviderElementRequest = new RemoveSaml2IdentityProviderElementRequest(saml2IdentityProvider);
+                            var rsip:RemoveExternalSaml2IdentityProviderElementRequest = new RemoveExternalSaml2IdentityProviderElementRequest(saml2IdentityProvider);
 
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.REMOVE_SAML2_IDENTITY_PROVIDER_ELEMENT, rsip);
+                            sendNotification(ApplicationFacade.REMOVE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT, rsip);
                             break;
-                        case DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE:
-                            var saml2ServiceProvider:Saml2ServiceProvider = _currentlySelectedNode.data as Saml2ServiceProvider;
+                        case DiagramElementTypes.EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                            var openIDIdentityProvider:ExternalOpenIDIdentityProvider = _currentlySelectedNode.data as ExternalOpenIDIdentityProvider;
 
-                            var rssp:RemoveSaml2ServiceProviderElementRequest = new RemoveSaml2ServiceProviderElementRequest(saml2ServiceProvider);
-
-                            // this notification will be grabbed by the modeler mediator which will invoke
-                            // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.REMOVE_SAML2_SERVICE_PROVIDER_ELEMENT, rssp);
-                            break;
-                        case DiagramElementTypes.OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE:
-                            var openIDIdentityProvider:OpenIDIdentityProvider = _currentlySelectedNode.data as OpenIDIdentityProvider;
-
-                            var roidip:RemoveOpenIDIdentityProviderElementRequest = new RemoveOpenIDIdentityProviderElementRequest(openIDIdentityProvider);
+                            var roidip:RemoveExternalOpenIDIdentityProviderElementRequest = new RemoveExternalOpenIDIdentityProviderElementRequest(openIDIdentityProvider);
 
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.REMOVE_OPENID_IDENTITY_PROVIDER_ELEMENT, roidip);
-                            break;
-                        case DiagramElementTypes.OPENID_SERVICE_PROVIDER_ELEMENT_TYPE:
-                            var openIDServiceProvider:OpenIDServiceProvider = _currentlySelectedNode.data as OpenIDServiceProvider;
-
-                            var roidsp:RemoveOpenIDServiceProviderElementRequest = new RemoveOpenIDServiceProviderElementRequest(openIDServiceProvider);
-
-                            // this notification will be grabbed by the modeler mediator which will invoke
-                            // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.REMOVE_OPENID_SERVICE_PROVIDER_ELEMENT, roidsp);
+                            sendNotification(ApplicationFacade.REMOVE_EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT, roidip);
                             break;
                         case DiagramElementTypes.OAUTH_2_IDENTITY_PROVIDER_ELEMENT_TYPE:
                             var oauth2IdentityProvider:OAuth2IdentityProvider = _currentlySelectedNode.data as OAuth2IdentityProvider;
@@ -1242,8 +1173,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
                         }
                         //                            }
-                        if(locProv is ServiceProvider){
-                            var sp:ServiceProvider = locProv as ServiceProvider;
+                        if(locProv is InternalSaml2ServiceProvider){
+                            var sp:InternalSaml2ServiceProvider = locProv as InternalSaml2ServiceProvider;
 
                             if (sp.serviceConnection != null && sp.serviceConnection.resource != null) {  //check for service resource
                                 var resourceExists:Boolean = false;
@@ -1397,8 +1328,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         if (locProv.identityLookup != null) {
                             updateGraphEdgeData(locProv.identityLookup);
                         }
-                        if (locProv is ServiceProvider) {
-                            var sp:ServiceProvider = locProv as ServiceProvider;
+                        if (locProv is InternalSaml2ServiceProvider) {
+                            var sp:InternalSaml2ServiceProvider = locProv as InternalSaml2ServiceProvider;
                             if (sp.serviceConnection != null) {
                                 updateGraphEdgeData(sp.serviceConnection);
                             }
@@ -1539,20 +1470,12 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.IDENTITY_APPLIANCE_ELEMENT_TYPE;
             } else if (node.data is IdentityProvider) {
                 elementType = DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE;
-            } else if (node.data is ServiceProvider) {
-                elementType = DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE;
-            } else if (node.data is ExternalIdentityProvider) {
-                elementType = DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE;
-            } else if (node.data is ExternalServiceProvider) {
-                elementType = DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE;
-            } else if (node.data is Saml2IdentityProvider) {
-                elementType = DiagramElementTypes.SAML_2_IDENTITY_PROVIDER_ELEMENT_TYPE;
-            } else if (node.data is Saml2ServiceProvider) {
-                elementType = DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE;
-            } else if (node.data is OpenIDIdentityProvider) {
-                elementType = DiagramElementTypes.OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE;
-            } else if (node.data is OpenIDServiceProvider) {
-                elementType = DiagramElementTypes.OPENID_SERVICE_PROVIDER_ELEMENT_TYPE;
+            } else if (node.data is ExternalSaml2IdentityProvider) {
+                elementType = DiagramElementTypes.EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT_TYPE;
+            } else if (node.data is ExternalSaml2ServiceProvider) {
+                elementType = DiagramElementTypes.EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT_TYPE;
+            } else if (node.data is ExternalOpenIDIdentityProvider) {
+                elementType = DiagramElementTypes.EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE;
             } else if (node.data is OAuth2IdentityProvider) {
                 elementType = DiagramElementTypes.OAUTH_2_IDENTITY_PROVIDER_ELEMENT_TYPE;
             } else if (node.data is OAuth2ServiceProvider) {
@@ -1604,11 +1527,11 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         var node2:IVisualNode = event.vnode2;
 
         var csc:CreateServiceConnectionElementRequest = new CreateServiceConnectionElementRequest();
-        if(node1.data is ServiceProvider && node2.data is ServiceResource) {
-            csc.sp = node1.data as ServiceProvider;
+        if(node1.data is InternalSaml2ServiceProvider && node2.data is ServiceResource) {
+            csc.sp = node1.data as InternalSaml2ServiceProvider;
             csc.resource = node2.data as ServiceResource;
-        } else if (node1.data is ServiceResource && node2.data is ServiceProvider) {
-            csc.sp = node2.data as ServiceProvider;
+        } else if (node1.data is ServiceResource && node2.data is InternalSaml2ServiceProvider) {
+            csc.sp = node2.data as InternalSaml2ServiceProvider;
             csc.resource = node1.data as ServiceResource;
         }
         sendNotification(ApplicationFacade.CREATE_SERVICE_CONNECTION, csc);

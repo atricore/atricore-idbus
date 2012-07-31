@@ -26,7 +26,7 @@ package com.atricore.idbus.console.services.dto;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SamlR2ProviderConfigDTO extends AbstractProviderConfigDTO {
+public class SamlR2ProviderConfigDTO extends ProviderConfigDTO {
 
     private KeystoreDTO signer;
 

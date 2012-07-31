@@ -153,13 +153,11 @@ public class ColdfusionResourceCreateMediator extends IocFormMediator {
 
     private function save():void {
         bindModel();
-        /** TODO: add place holder for resources in meta-model
-        if (_projectProxy.currentIdentityAppliance.idApplianceDefinition.resources == null) {
-            _projectProxy.currentIdentityAppliance.idApplianceDefinition.resources = new ArrayCollection();
+        if (_projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources == null) {
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources = new ArrayCollection();
         }
-        _projectProxy.currentIdentityAppliance.idApplianceDefinition.resources.addItem(_newResource);
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.addItem(_newResource);
         _projectProxy.currentIdentityApplianceElement = _newResource;
-        */
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

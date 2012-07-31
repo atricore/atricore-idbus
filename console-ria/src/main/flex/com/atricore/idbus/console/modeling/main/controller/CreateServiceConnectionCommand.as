@@ -4,8 +4,9 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceConnectionElementRequest;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
+import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceConnection;
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceResource;
 
 import mx.rpc.Fault;
@@ -35,7 +36,7 @@ public class CreateServiceConnectionCommand extends IocSimpleCommand implements 
 
     override public function execute(notification:INotification):void {
         var cscr:CreateServiceConnectionElementRequest = notification.getBody() as CreateServiceConnectionElementRequest;
-        var sp:ServiceProvider = cscr.sp;
+        var sp:InternalSaml2ServiceProvider = cscr.sp;
         var resource:ServiceResource = cscr.resource;
 
         var resourceIndex:int = _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.getItemIndex(resource);

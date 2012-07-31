@@ -37,11 +37,11 @@ public class SPFederatedConnectionTransformer extends AbstractIdPChannelTransfor
 
             if (roleA) {
                 // Accept all Federated connection nodes that have an SP as role A
-                return idpChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof ServiceProvider
+                return idpChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof InternalSaml2ServiceProvider
                         && !fc.getRoleA().isRemote();
             } else {
                 // Accept all Federated connection nodes that have an SP as role B
-                return idpChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof ServiceProvider
+                return idpChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof InternalSaml2ServiceProvider
                         && !fc.getRoleB().isRemote();
             }
 
@@ -56,7 +56,7 @@ public class SPFederatedConnectionTransformer extends AbstractIdPChannelTransfor
         FederatedConnection federatedConnection = (FederatedConnection) event.getContext().getParentNode();
         IdentityProviderChannel idpChannel = (IdentityProviderChannel) event.getData();
 
-        ServiceProvider sp;
+        InternalSaml2ServiceProvider sp;
 
         FederatedProvider target;
         FederatedChannel targetChannel;
@@ -69,7 +69,7 @@ public class SPFederatedConnectionTransformer extends AbstractIdPChannelTransfor
                     "IDP Channel " + idpChannel.getName() + " should be 'A' channel in federated connection " +
                             federatedConnection.getName();
 
-            sp = (ServiceProvider) federatedConnection.getRoleA();
+            sp = (InternalSaml2ServiceProvider) federatedConnection.getRoleA();
             idpChannel = (IdentityProviderChannel) federatedConnection.getChannelA();
 
             target = federatedConnection.getRoleB();
@@ -86,7 +86,7 @@ public class SPFederatedConnectionTransformer extends AbstractIdPChannelTransfor
                             federatedConnection.getName();
 
 
-            sp = (ServiceProvider) federatedConnection.getRoleB();
+            sp = (InternalSaml2ServiceProvider) federatedConnection.getRoleB();
             idpChannel = (IdentityProviderChannel) federatedConnection.getChannelB();
 
             target = federatedConnection.getRoleA();

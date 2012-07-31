@@ -31,8 +31,6 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivatio
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDirectoryServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalIdentityProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveGoogleAppsElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
@@ -43,13 +41,12 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO1Res
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO2ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2ServiceProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOpenIDIdentityProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOpenIDServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalOpenIDIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforceElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSaml2IdentityProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSaml2ServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2IdentityProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2ServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceConnectionElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveInternalSaml2ServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWikidElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWindowsIntegratedAuthnElementRequest;
@@ -329,19 +326,19 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.REMOVE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT,
-            ApplicationFacade.CREATE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT,
-            ApplicationFacade.REMOVE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT,
-            ApplicationFacade.CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT,
-            ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.CREATE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.CREATE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_SAML_2_IDENTITY_PROVIDER_ELEMENT,
-            ApplicationFacade.CREATE_SAML_2_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.CREATE_INTERNAL_SAML_2_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_OPENID_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_OPENID_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_OAUTH_2_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_OAUTH_2_SERVICE_PROVIDER_ELEMENT,
-            ApplicationFacade.REMOVE_SAML2_IDENTITY_PROVIDER_ELEMENT,
-            ApplicationFacade.REMOVE_SAML2_SERVICE_PROVIDER_ELEMENT,
-            ApplicationFacade.REMOVE_OPENID_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_OPENID_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_OAUTH2_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_OAUTH2_SERVICE_PROVIDER_ELEMENT,
@@ -457,13 +454,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 // TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.IDENTITY_PROVIDER_REMOVE, rip.identityProvider);
                 break;
-            case ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT:
-                popupManager.showCreateServiceProviderWindow(notification);
-                break;
             case ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT:
-                var rsp:RemoveServiceProviderElementRequest = RemoveServiceProviderElementRequest(notification.getBody());
+                var rsp:RemoveInternalSaml2ServiceProviderElementRequest = RemoveInternalSaml2ServiceProviderElementRequest(notification.getBody());
                 //                 TODO: Perform UI handling for confirming removal action
-                sendNotification(ApplicationFacade.SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);
+                sendNotification(ApplicationFacade.INTERNAL_SAML2_SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);
                 break;
             //            case ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT:
             //                popupManager.showCreateIdpChannelWindow(notification);
@@ -481,31 +475,17 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             //                //                 TODO: Perform UI handling for confirming removal action
             //                sendNotification(ApplicationFacade.SP_CHANNEL_REMOVE, rspc.spChannel);
             //                break;
-            case ApplicationFacade.CREATE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT:
-                popupManager.showCreateExternalIdentityProviderWindow(notification);
+            case ApplicationFacade.CREATE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT:
+                popupManager.showCreateExternalSaml2IdentityProviderWindow(notification);
                 break;
-            case ApplicationFacade.REMOVE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT:
-                var reip:RemoveExternalIdentityProviderElementRequest = RemoveExternalIdentityProviderElementRequest(notification.getBody());
-                sendNotification(ApplicationFacade.EXTERNAL_IDENTITY_PROVIDER_REMOVE, reip.identityProvider);
+            case ApplicationFacade.CREATE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT:
+                popupManager.showCreateExternalSaml2ServiceProviderWindow(notification);
                 break;
-            case ApplicationFacade.CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:
-                popupManager.showCreateExternalServiceProviderWindow(notification);
-                break;
-            case ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:
-                var resp:RemoveExternalServiceProviderElementRequest = RemoveExternalServiceProviderElementRequest(notification.getBody());
-                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, resp.serviceProvider);
-                break;
-            case ApplicationFacade.CREATE_SAML_2_IDENTITY_PROVIDER_ELEMENT:
-                popupManager.showCreateSaml2IdentityProviderWindow(notification);
-                break;
-            case ApplicationFacade.CREATE_SAML_2_SERVICE_PROVIDER_ELEMENT:
-                popupManager.showCreateSaml2ServiceProviderWindow(notification);
+            case ApplicationFacade.CREATE_INTERNAL_SAML_2_SERVICE_PROVIDER_ELEMENT:
+                popupManager.showCreateInternalSaml2ServiceProviderWindow(notification);
                 break;
             case ApplicationFacade.CREATE_OPENID_IDENTITY_PROVIDER_ELEMENT:
-                popupManager.showCreateOpenIDIdentityProviderWindow(notification);
-                break;
-            case ApplicationFacade.CREATE_OPENID_SERVICE_PROVIDER_ELEMENT:
-                popupManager.showCreateOpenIDServiceProviderWindow(notification);
+                popupManager.showCreateExternalOpenIDIdentityProviderWindow(notification);
                 break;
             case ApplicationFacade.CREATE_OAUTH_2_IDENTITY_PROVIDER_ELEMENT:
                 popupManager.showCreateOAuth2IdentityProviderWindow(notification);
@@ -516,21 +496,17 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case ApplicationFacade.CREATE_SALESFORCE_ELEMENT:
                 popupManager.showCreateSalesforceWindow(notification);
                 break;
-            case ApplicationFacade.REMOVE_SAML2_IDENTITY_PROVIDER_ELEMENT:
-                var rs2ip:RemoveSaml2IdentityProviderElementRequest = RemoveSaml2IdentityProviderElementRequest(notification.getBody());
-                sendNotification(ApplicationFacade.SAML2_IDENTITY_PROVIDER_REMOVE, rs2ip.identityProvider);
+            case ApplicationFacade.REMOVE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT:
+                var rs2ip:RemoveExternalSaml2IdentityProviderElementRequest = RemoveExternalSaml2IdentityProviderElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_SAML2_IDENTITY_PROVIDER_REMOVE, rs2ip.identityProvider);
                 break;
-            case ApplicationFacade.REMOVE_SAML2_SERVICE_PROVIDER_ELEMENT:
-                var rs2sp:RemoveSaml2ServiceProviderElementRequest = RemoveSaml2ServiceProviderElementRequest(notification.getBody());
-                sendNotification(ApplicationFacade.SAML2_SERVICE_PROVIDER_REMOVE, rs2sp.serviceProvider);
+            case ApplicationFacade.REMOVE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT:
+                var rs2sp:RemoveExternalSaml2ServiceProviderElementRequest = RemoveExternalSaml2ServiceProviderElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_SAML2_SERVICE_PROVIDER_REMOVE, rs2sp.serviceProvider);
                 break;
-            case ApplicationFacade.REMOVE_OPENID_IDENTITY_PROVIDER_ELEMENT:
-                var roidip:RemoveOpenIDIdentityProviderElementRequest = RemoveOpenIDIdentityProviderElementRequest(notification.getBody());
+            case ApplicationFacade.REMOVE_EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT:
+                var roidip:RemoveExternalOpenIDIdentityProviderElementRequest = RemoveExternalOpenIDIdentityProviderElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.OPENID_IDENTITY_PROVIDER_REMOVE, roidip.identityProvider);
-                break;
-            case ApplicationFacade.REMOVE_OPENID_SERVICE_PROVIDER_ELEMENT:
-                var roidsp:RemoveOpenIDServiceProviderElementRequest = RemoveOpenIDServiceProviderElementRequest(notification.getBody());
-                sendNotification(ApplicationFacade.OPENID_SERVICE_PROVIDER_REMOVE, roidsp.serviceProvider);
                 break;
             case ApplicationFacade.REMOVE_OAUTH2_IDENTITY_PROVIDER_ELEMENT:
                 var roa2ip:RemoveOAuth2IdentityProviderElementRequest = RemoveOAuth2IdentityProviderElementRequest(notification.getBody());
@@ -542,21 +518,21 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.REMOVE_SALESFORCE_ELEMENT:
                 var rsf:RemoveSalesforceElementRequest = RemoveSalesforceElementRequest(notification.getBody());
-                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, rsf.salesforceProvider);
+                sendNotification(ApplicationFacade.EXTERNAL_SAML2_SERVICE_PROVIDER_REMOVE, rsf.salesforceProvider);
                 break;
             case ApplicationFacade.CREATE_GOOGLE_APPS_ELEMENT:
                 popupManager.showCreateGoogleAppsWindow(notification);
                 break;
             case ApplicationFacade.REMOVE_GOOGLE_APPS_ELEMENT:
                 var rga:RemoveGoogleAppsElementRequest = RemoveGoogleAppsElementRequest(notification.getBody());
-                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, rga.googleAppsProvider);
+                sendNotification(ApplicationFacade.EXTERNAL_SAML2_SERVICE_PROVIDER_REMOVE, rga.googleAppsProvider);
                 break;
             case ApplicationFacade.CREATE_SUGAR_CRM_ELEMENT:
                 popupManager.showCreateSugarCRMWindow(notification);
                 break;
             case ApplicationFacade.REMOVE_SUGAR_CRM_ELEMENT:
                 var rscrm:RemoveSugarCRMElementRequest = RemoveSugarCRMElementRequest(notification.getBody());
-                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, rscrm.sugarCRMProvider);
+                sendNotification(ApplicationFacade.EXTERNAL_SAML2_SERVICE_PROVIDER_REMOVE, rscrm.sugarCRMProvider);
                 break;
             case ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT:
                 popupManager.showCreateIdentityVaultWindow(notification);
@@ -599,10 +575,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 popupManager.showCreateTomcatExecutionEnvironmentWindow(notification);
                 break;
             case ApplicationFacade.CREATE_JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT:
-                popupManager.showCreateJBossPortalExecutionEnvironmentWindow(notification);
+                popupManager.showCreateJBossPortalResourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT:
-                popupManager.showCreateLiferayPortalExecutionEnvironmentWindow(notification);
+                popupManager.showCreateLiferayPortalResourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateWASCEExecutionEnvironmentWindow(notification);
@@ -614,7 +590,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 popupManager.showCreateWindowsIISExecutionEnvironmentWindow(notification);
                 break;
             case ApplicationFacade.CREATE_ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT:
-                popupManager.showCreateAlfrescoExecutionEnvironmentWindow(notification);
+                popupManager.showCreateAlfrescoResourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateJavaEEExecutionEnvironmentWindow(notification);
@@ -623,19 +599,19 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 popupManager.showCreatePHPExecutionEnvironmentWindow(notification);
                 break;
             case ApplicationFacade.CREATE_PHPBB_EXECUTION_ENVIRONMENT_ELEMENT:
-                popupManager.showCreatePhpBBExecutionEnvironmentWindow(notification);
+                popupManager.showCreatePhpBBResourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateWebserverExecutionEnvironmentWindow(notification);
                 break;
             case ApplicationFacade.CREATE_SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT:
-                popupManager.showCreateSharepoint2010ExecutionEnvironmentWindow(notification);
+                popupManager.showCreateSharepointResourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT:
-                popupManager.showCreateColdfusionExecutionEnvironmentWindow(notification);
+                popupManager.showCreateColdfusionResourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT:
-                popupManager.showCreateMicroStrategyExecutionEnvironmentWindow(notification);
+                popupManager.showCreateMicroStrategyResourceWindow(notification);
                 break;
             /*case ApplicationFacade.CREATE_ACTIVATION:
                 popupManager.showCreateActivationWindow(notification);

@@ -21,7 +21,7 @@
 
 package com.atricore.idbus.console.services.dto;
 
-public class SalesforceServiceProviderDTO extends ExternalServiceProviderDTO {
+public class SalesforceServiceProviderDTO extends ExternalSaml2ServiceProviderDTO {
 
     private String loginUrl;
 

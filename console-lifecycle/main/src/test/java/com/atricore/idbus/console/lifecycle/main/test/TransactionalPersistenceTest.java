@@ -178,8 +178,8 @@ public class TransactionalPersistenceTest {
         assert fp != null : "No provider found with name " + name;
 
         // Exec envs
-        if (fp instanceof ServiceProvider) {
-            ServiceProvider sp = (ServiceProvider) fp;
+        if (fp instanceof InternalSaml2ServiceProvider) {
+            InternalSaml2ServiceProvider sp = (InternalSaml2ServiceProvider) fp;
 
             if (sp.getActivation() != null) {
                 ExecutionEnvironment execEnv1 = sp.getActivation().getExecutionEnv();

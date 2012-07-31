@@ -7,7 +7,6 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.spi.ApplianceValidator;
-import com.atricore.idbus.console.lifecycle.main.spi.ExecEnvType;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
 import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import org.apache.commons.lang.StringUtils;
@@ -228,7 +227,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
-    public void arrive(ServiceProvider node) throws Exception {
+    public void arrive(InternalSaml2ServiceProvider node) throws Exception {
         validateName("SP name", node.getName(), node);
         validateDisplayName("SP display name", node.getDisplayName());
         validateLocation("SP", node.getLocation(), node, true);
@@ -263,31 +262,24 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
-    public void arrive(Saml2IdentityProvider node) throws Exception {
+    public void arrive(ExternalSaml2IdentityProvider node) throws Exception {
         validateName("Saml2 IDP name", node.getName(), node);
         validateDisplayName("Saml2 IDP display name", node.getDisplayName());
         validateMetadata("Saml2 IDP metadata", node.getMetadata(), node);
     }
 
     @Override
-    public void arrive(Saml2ServiceProvider node) throws Exception {
+    public void arrive(ExternalSaml2ServiceProvider node) throws Exception {
         validateName("Saml2 SP name", node.getName(), node);
         validateDisplayName("Saml2 SP display name", node.getDisplayName());
         validateMetadata("Saml2 SP metadata", node.getMetadata(), node);
     }
 
     @Override
-    public void arrive(OpenIDIdentityProvider node) throws Exception {
+    public void arrive(ExternalOpenIDIdentityProvider node) throws Exception {
         validateName("OpenID IDP name", node.getName(), node);
         validateDisplayName("OpenID IDP display name", node.getDisplayName());
         validateLocation("OpenID IDP", node.getLocation(), node, true);
-    }
-
-    @Override
-    public void arrive(OpenIDServiceProvider node) throws Exception {
-        validateName("OpenID SP name", node.getName(), node);
-        validateDisplayName("OpenID SP display name", node.getDisplayName());
-        validateLocation("OpenID SP", node.getLocation(), node, true);
     }
 
     @Override
@@ -453,20 +445,6 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
         validateName("Execution Environment name" , node.getName(), node);
         validateDisplayName("Execution Environment display name" , node.getDisplayName());
-
-        if (!(node instanceof MicroStrategyExecutionEnvironment)) {
-            if (node.getPlatformId() == null)
-                addError("Execution Environment platform ID cannot be null");
-
-            if (node.getType() == null)
-                addError("Execution Environment type cannot be null");
-
-            if (node.getType() == ExecEnvType.LOCAL && node.getInstallUri() == null)
-                addError("Execution Environment install URI cannot be null");
-
-            if (node.getType() == ExecEnvType.REMOTE && node.getLocation() == null)
-                addError("Execution Environment location cannot be null");
-        }
 
         if (node instanceof JBossExecutionEnvironment) {
             JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) node;
@@ -666,9 +644,9 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.isOverrideProviderSetup())
             validateLocation("Identity Provider channel ", node.getLocation(), node, true);
 
-        // validate policies only for ServiceProvider (not for Saml2ServiceProvider)
-        if ((node.getConnectionA() != null && node.getConnectionA().getRoleA() instanceof ServiceProvider) ||
-                (node.getConnectionB() != null && node.getConnectionB().getRoleB() instanceof ServiceProvider)) {
+        // validate policies only for InternalSaml2ServiceProvider (not for ExternalSaml2ServiceProvider)
+        if ((node.getConnectionA() != null && node.getConnectionA().getRoleA() instanceof InternalSaml2ServiceProvider) ||
+                (node.getConnectionB() != null && node.getConnectionB().getRoleB() instanceof InternalSaml2ServiceProvider)) {
             if (node.getAccountLinkagePolicy() == null)
                 addError("No account linkage policy for " + node.getName());
 
@@ -868,9 +846,9 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 MetadataUtil.findEntityId(md);
                 // find SSODescriptor
                 String descriptorName = null;
-                if (obj instanceof Saml2IdentityProvider) {
+                if (obj instanceof ExternalSaml2IdentityProvider) {
                     descriptorName = "IDPSSODescriptor";
-                } else if (obj instanceof Saml2ServiceProvider) {
+                } else if (obj instanceof ExternalSaml2ServiceProvider) {
                     descriptorName = "SPSSODescriptor";
                 }
                 MetadataUtil.findSSODescriptor(md, descriptorName);

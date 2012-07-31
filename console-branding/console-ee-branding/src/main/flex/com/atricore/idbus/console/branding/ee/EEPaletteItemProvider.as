@@ -23,10 +23,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 new PaletteEntry("SAML2 Service Provider", EmbeddedIcons.saml2SpMiniIcon, "Service Provider Entry", DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE)
         );
         providersPaletteDrawer.add(
-                new PaletteEntry("External SAML2 Identity Provider", EmbeddedIcons.externalSaml2IdpMiniIcon, "External Identity Provider Entry", DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("External SAML2 Identity Provider", EmbeddedIcons.externalSaml2IdpMiniIcon, "External Identity Provider Entry", DiagramElementTypes.EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT_TYPE)
         );
         providersPaletteDrawer.add(
-                new PaletteEntry("External SAML2 Service Provider", EmbeddedIcons.externalSaml2SpMiniIcon, "External Service Provider Entry", DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("External SAML2 Service Provider", EmbeddedIcons.externalSaml2SpMiniIcon, "External Service Provider Entry", DiagramElementTypes.EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT_TYPE)
         );
         providersPaletteDrawer.add(
                 new PaletteEntry("External OpenID Identity Provider", EmbeddedIcons.externalOpenidIdpMiniIcon, "External OpenID Identity Provider Entry", DiagramElementTypes.EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT_TYPE)
@@ -104,15 +104,23 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
         resourcesPaletteDrawer.add(
                 new PaletteEntry("SAS", EmbeddedIcons.sasResourceMiniIcon, "SAS", DiagramElementTypes.SAS_RESOURCE_ELEMENT_TYPE)
         );
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("Alfresco", EmbeddedIcons.alfrescoResourceMiniIcon, "Alfresco Environment Entry", DiagramElementTypes.ALFRESCO_RESOURCE_ELEMENT_TYPE)
+        );
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("JBoss Portal", EmbeddedIcons.jbossPortalEnvironmentMiniIcon, "JBoss Portal Environment Entry", DiagramElementTypes.JBOSS_PORTAL_RESOURCE_ELEMENT_TYPE)
+        );
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("Liferay Portal", EmbeddedIcons.liferayResourceMiniIcon, "Liferay Portal Environment Entry", DiagramElementTypes.LIFERAY_RESOURCE_ELEMENT_TYPE)
+        );
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("PhpBB", EmbeddedIcons.phpbbResourceMiniIcon, "PhpBB Environment Entry", DiagramElementTypes.PHPBB_RESOURCE_ELEMENT_TYPE)
+        );
 
         pr.add(resourcesPaletteDrawer);
 
         // Execution Environments drawer
         var environmentsPaletteDrawer:PaletteDrawer = new PaletteDrawer("Execution Environments", null, null);
-
-        environmentsPaletteDrawer.add(
-                new PaletteEntry("Alfresco", EmbeddedIcons.alfrescoEnvironmentMiniIcon, "Alfresco Environment Entry", DiagramElementTypes.ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
-        );
 
         environmentsPaletteDrawer.add(
                 new PaletteEntry("Apache", EmbeddedIcons.apacheEnvironmentMiniIcon, "Apache Environment Entry", DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
@@ -127,19 +135,7 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
         );
 
         environmentsPaletteDrawer.add(
-                new PaletteEntry("JBoss Portal", EmbeddedIcons.jbossEnvironmentMiniIcon, "JBoss Portal Environment Entry", DiagramElementTypes.JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
-        );
-
-        environmentsPaletteDrawer.add(
-                new PaletteEntry("Liferay Portal", EmbeddedIcons.liferayEnvironmentMiniIcon, "Liferay Portal Environment Entry", DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
-        );
-
-        environmentsPaletteDrawer.add(
                 new PaletteEntry("PHP", EmbeddedIcons.phpEnvironmentMiniIcon, "PHP Environment Entry", DiagramElementTypes.PHP_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
-        );
-
-        environmentsPaletteDrawer.add(
-                new PaletteEntry("PhpBB", EmbeddedIcons.phpbbEnvironmentMiniIcon, "PhpBB Environment Entry", DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
         );
 
         environmentsPaletteDrawer.add(

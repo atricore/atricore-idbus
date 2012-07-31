@@ -311,7 +311,23 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/40x40/coldfusion_resource.png")]
     public static var coldfusionResourceMiniIcon:Class;
 
-    // Connections
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/alfresco_resource.png")]
+    public static var alfrescoResourceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/jboss_portal_resource.png")]
+    public static var jbossPortalResourceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/liferay_resource.png")]
+    public static var liferayResourceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/phpbb_resource.png")]
+    public static var phpbbResourceMiniIcon:Class;
+
+   // Connections
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/federated_connection.png")]
     public static var federatedConnectionMiniIcon:Class;
@@ -334,10 +350,6 @@ public class EmbeddedIcons {
 
     // Execution environments
     [Bindable]
-    [Embed(source="/assets/icons/notation/40x40/alfresco_execution_environment.png")]
-    public static var alfrescoEnvironmentMiniIcon:Class;
-
-    [Bindable]
     [Embed(source="/assets/icons/notation/40x40/apache_web_server_execution_environment.png")]
     public static var apacheEnvironmentMiniIcon:Class;
 
@@ -350,16 +362,8 @@ public class EmbeddedIcons {
     public static var jbossEnvironmentMiniIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/40x40/liferay_execution_environment.png")]
-    public static var liferayEnvironmentMiniIcon:Class;
-
-    [Bindable]
     [Embed(source="/assets/icons/notation/40x40/apache_web_server_execution_environment.png")]
     public static var phpEnvironmentMiniIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/40x40/phpbb_execution_environment.png")]
-    public static var phpbbEnvironmentMiniIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/tomcat_execution_environment.png")]
@@ -394,12 +398,8 @@ public class EmbeddedIcons {
     public static var idpIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/60x60/saml_identity_provider.png")]
-    public static var saml2IdpIcon:Class;
-
-    [Bindable]
     [Embed(source="/assets/icons/notation/60x60/saml_service_provider.png")]
-    public static var saml2SpIcon:Class;
+    public static var internalSaml2SpIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/notation/60x60/external_saml_identity_provider.png")]
@@ -489,6 +489,22 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/60x60/coldfusion_resource.png")]
     public static var coldfusionResourceIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/alfresco_resource.png")]
+    public static var alfrescoResourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/jboss_portal_resource.png")]
+    public static var jbossPortalResourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/liferay_resource.png")]
+    public static var liferayResourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/phpbb_resource.png")]
+    public static var phpbbResourceIcon:Class;
+
     // Connections
     [Bindable]
     [Embed(source="/assets/icons/notation/60x60/federated_connection.png")]
@@ -512,10 +528,6 @@ public class EmbeddedIcons {
 
     // Execution environments
     [Bindable]
-    [Embed(source="/assets/icons/notation/60x60/alfresco_execution_environment.png")]
-    public static var alfrescoEnvironmentIcon:Class;
-
-    [Bindable]
     [Embed(source="/assets/icons/notation/60x60/apache_web_server_execution_environment.png")]
     public static var apacheEnvironmentIcon:Class;
 
@@ -528,16 +540,8 @@ public class EmbeddedIcons {
     public static var jbossEnvironmentIcon:Class;
 
     [Bindable]
-    [Embed(source="/assets/icons/notation/60x60/liferay_execution_environment.png")]
-    public static var liferayEnvironmentIcon:Class;
-
-    [Bindable]
     [Embed(source="/assets/icons/notation/60x60/apache_web_server_execution_environment.png")]
     public static var phpEnvironmentIcon:Class;
-
-    [Bindable]
-    [Embed(source="/assets/icons/notation/60x60/phpbb_execution_environment.png")]
-    public static var phpbbEnvironmentIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/notation/60x60/tomcat_execution_environment.png")]

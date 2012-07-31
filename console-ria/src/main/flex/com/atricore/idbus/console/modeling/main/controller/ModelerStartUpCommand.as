@@ -20,13 +20,10 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     private var _identityApplianceWizardMediator:IIocMediator;
     private var _identityProviderCreateMediator:IIocMediator;
-    private var _serviceProviderCreateMediator:IIocMediator;
-    private var _externalIdentityProviderCreateMediator:IIocMediator;
-    private var _externalServiceProviderCreateMediator:IIocMediator;
-    private var _saml2IdentityProviderCreateMediator:IIocMediator;
-    private var _saml2ServiceProviderCreateMediator:IIocMediator;
-    private var _openIDIdentityProviderCreateMediator:IIocMediator;
-    private var _openIDServiceProviderCreateMediator:IIocMediator;
+    private var _internalSaml2ServiceProviderCreateMediator:IIocMediator;
+    private var _externalSaml2IdentityProviderCreateMediator:IIocMediator;
+    private var _externalSaml2ServiceProviderCreateMediator:IIocMediator;
+    private var _externalOpenIDIdentityProviderCreateMediator:IIocMediator;
     private var _oauth2IdentityProviderCreateMediator:IIocMediator;
     private var _oauth2ServiceProviderCreateMediator:IIocMediator;
     private var _salesforceCreateMediator:IIocMediator;
@@ -41,14 +38,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _jbossExecutionEnvironmentCreateMediator:IIocMediator;
     private var _weblogicExecutionEnvironmentCreateMediator:IIocMediator;
     private var _tomcatExecutionEnvironmentCreateMediator:IIocMediator;
-    private var _jbossPortalExecutionEnvironmentCreateMediator:IIocMediator;
-    private var _liferayPortalExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _jbossPortalResourceCreateMediator:IIocMediator;
+    private var _liferayPortalResourceCreateMediator:IIocMediator;
     private var _wasceExecutionEnvironmentCreateMediator:IIocMediator;
     private var _apacheExecutionEnvironmentCreateMediator:IIocMediator;
-    private var _alfrescoExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _alfrescoResourceCreateMediator:IIocMediator;
     private var _javaEEExecutionEnvironmentCreateMediator:IIocMediator;
     private var _phpExecutionEnvironmentCreateMediator:IIocMediator;
-    private var _phpBBExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _phpBBResourceCreateMediator:IIocMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:IIocMediator;
     private var _webserverExecutionEnvironmentCreateMediator:IIocMediator;
     private var _sharepointResourceCreateMediator:IIocMediator;
@@ -73,13 +70,10 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _identityApplianceImportCommand:IIocCommand;
     private var _identityApplianceRemoveCommand:IIocCommand;
     private var _identityProviderRemoveCommand:IIocCommand;
-    private var _serviceProviderRemoveCommand:IIocCommand;
-    private var _externalIdentityProviderRemoveCommand:IIocCommand;
-    private var _externalServiceProviderRemoveCommand:IIocCommand;
-    private var _saml2IdentityProviderRemoveCommand:IIocCommand;
-    private var _saml2ServiceProviderRemoveCommand:IIocCommand;
-    private var _openIDIdentityProviderRemoveCommand:IIocCommand;
-    private var _openIDServiceProviderRemoveCommand:IIocCommand;
+    private var _internalSaml2ServiceProviderRemoveCommand:IIocCommand;
+    private var _externalSaml2IdentityProviderRemoveCommand:IIocCommand;
+    private var _externalSaml2ServiceProviderRemoveCommand:IIocCommand;
+    private var _externalOpenIDIdentityProviderRemoveCommand:IIocCommand;
     private var _oauth2IdentityProviderRemoveCommand:IIocCommand;
     private var _oauth2ServiceProviderRemoveCommand:IIocCommand;
     private var _josso1ResourceRemoveCommand:IIocCommand;
@@ -117,14 +111,6 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     public function ModelerStartUpCommand() {
     }
 
-    public function get modelerMediator():ModelerMediator {
-        return appSectionMediator as ModelerMediator;
-    }
-
-    public function set modelerMediator(value:ModelerMediator):void {
-        appSectionMediator = value;
-    }
-
     override protected function setupMediators(ctx:BaseStartupContext):void {
         super.setupMediators(ctx);
 
@@ -136,13 +122,10 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(simpleSSOWizardViewMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(identityApplianceWizardMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(identityProviderCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(serviceProviderCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(externalIdentityProviderCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(externalServiceProviderCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(saml2IdentityProviderCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(saml2ServiceProviderCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(openIDIdentityProviderCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(openIDServiceProviderCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(internalSaml2ServiceProviderCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(externalSaml2IdentityProviderCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(externalSaml2ServiceProviderCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(externalOpenIDIdentityProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(oauth2IdentityProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(oauth2ServiceProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(salesforceCreateMediator.getConfigName());
@@ -157,14 +140,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(jbossExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(weblogicExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(tomcatExecutionEnvironmentCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(jbossPortalExecutionEnvironmentCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(liferayPortalExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(jbossPortalResourceCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(liferayPortalResourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(wasceExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(apacheExecutionEnvironmentCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(alfrescoExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(alfrescoResourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(javaEEExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(phpExecutionEnvironmentCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(phpBBExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(phpBBResourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(windowsIISExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(webserverExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(sharepointResourceCreateMediator.getConfigName());
@@ -188,13 +171,10 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.IMPORT_IDENTITY_APPLIANCE, identityApplianceImportCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_REMOVE, identityApplianceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_PROVIDER_REMOVE, identityProviderRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_PROVIDER_REMOVE, serviceProviderRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.EXTERNAL_IDENTITY_PROVIDER_REMOVE, externalIdentityProviderRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, externalServiceProviderRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.SAML2_IDENTITY_PROVIDER_REMOVE, saml2IdentityProviderRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.SAML2_SERVICE_PROVIDER_REMOVE, saml2ServiceProviderRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.OPENID_IDENTITY_PROVIDER_REMOVE, openIDIdentityProviderRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.OPENID_SERVICE_PROVIDER_REMOVE, openIDServiceProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.INTERNAL_SAML2_SERVICE_PROVIDER_REMOVE, internalSaml2ServiceProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.EXTERNAL_SAML2_IDENTITY_PROVIDER_REMOVE, externalSaml2IdentityProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.EXTERNAL_SAML2_SERVICE_PROVIDER_REMOVE, externalSaml2ServiceProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.OPENID_IDENTITY_PROVIDER_REMOVE, externalOpenIDIdentityProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.OAUTH2_IDENTITY_PROVIDER_REMOVE, oauth2IdentityProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.OAUTH2_SERVICE_PROVIDER_REMOVE, oauth2ServiceProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.JOSSO1_RESOURCE_REMOVE, josso1ResourceRemoveCommand.getConfigName());
@@ -279,60 +259,36 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _identityProviderCreateMediator = value;
     }
 
-    public function get serviceProviderCreateMediator():IIocMediator {
-        return _serviceProviderCreateMediator;
+    public function get internalSaml2ServiceProviderCreateMediator():IIocMediator {
+        return _internalSaml2ServiceProviderCreateMediator;
     }
 
-    public function set serviceProviderCreateMediator(value:IIocMediator):void {
-        _serviceProviderCreateMediator = value;
+    public function set internalSaml2ServiceProviderCreateMediator(value:IIocMediator):void {
+        _internalSaml2ServiceProviderCreateMediator = value;
     }
 
-    public function get externalIdentityProviderCreateMediator():IIocMediator {
-        return _externalIdentityProviderCreateMediator;
+    public function get externalSaml2IdentityProviderCreateMediator():IIocMediator {
+        return _externalSaml2IdentityProviderCreateMediator;
     }
 
-    public function set externalIdentityProviderCreateMediator(value:IIocMediator):void {
-        _externalIdentityProviderCreateMediator = value;
+    public function set externalSaml2IdentityProviderCreateMediator(value:IIocMediator):void {
+        _externalSaml2IdentityProviderCreateMediator = value;
     }
 
-    public function get externalServiceProviderCreateMediator():IIocMediator {
-        return _externalServiceProviderCreateMediator;
+    public function get externalSaml2ServiceProviderCreateMediator():IIocMediator {
+        return _externalSaml2ServiceProviderCreateMediator;
     }
 
-    public function set externalServiceProviderCreateMediator(value:IIocMediator):void {
-        _externalServiceProviderCreateMediator = value;
+    public function set externalSaml2ServiceProviderCreateMediator(value:IIocMediator):void {
+        _externalSaml2ServiceProviderCreateMediator = value;
     }
 
-    public function get saml2IdentityProviderCreateMediator():IIocMediator {
-        return _saml2IdentityProviderCreateMediator;
+    public function get externalOpenIDIdentityProviderCreateMediator():IIocMediator {
+        return _externalOpenIDIdentityProviderCreateMediator;
     }
 
-    public function set saml2IdentityProviderCreateMediator(value:IIocMediator):void {
-        _saml2IdentityProviderCreateMediator = value;
-    }
-
-    public function get saml2ServiceProviderCreateMediator():IIocMediator {
-        return _saml2ServiceProviderCreateMediator;
-    }
-
-    public function set saml2ServiceProviderCreateMediator(value:IIocMediator):void {
-        _saml2ServiceProviderCreateMediator = value;
-    }
-
-    public function get openIDIdentityProviderCreateMediator():IIocMediator {
-        return _openIDIdentityProviderCreateMediator;
-    }
-
-    public function set openIDIdentityProviderCreateMediator(value:IIocMediator):void {
-        _openIDIdentityProviderCreateMediator = value;
-    }
-
-    public function get openIDServiceProviderCreateMediator():IIocMediator {
-        return _openIDServiceProviderCreateMediator;
-    }
-
-    public function set openIDServiceProviderCreateMediator(value:IIocMediator):void {
-        _openIDServiceProviderCreateMediator = value;
+    public function set externalOpenIDIdentityProviderCreateMediator(value:IIocMediator):void {
+        _externalOpenIDIdentityProviderCreateMediator = value;
     }
 
     public function get oauth2IdentityProviderCreateMediator():IIocMediator {
@@ -447,20 +403,20 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _tomcatExecutionEnvironmentCreateMediator = value;
     }
 
-    public function get jbossPortalExecutionEnvironmentCreateMediator():IIocMediator {
-        return _jbossPortalExecutionEnvironmentCreateMediator;
+    public function get jbossPortalResourceCreateMediator():IIocMediator {
+        return _jbossPortalResourceCreateMediator;
     }
 
-    public function set jbossPortalExecutionEnvironmentCreateMediator(value:IIocMediator):void {
-        _jbossPortalExecutionEnvironmentCreateMediator = value;
+    public function set jbossPortalResourceCreateMediator(value:IIocMediator):void {
+        _jbossPortalResourceCreateMediator = value;
     }
 
-    public function get liferayPortalExecutionEnvironmentCreateMediator():IIocMediator {
-        return _liferayPortalExecutionEnvironmentCreateMediator;
+    public function get liferayPortalResourceCreateMediator():IIocMediator {
+        return _liferayPortalResourceCreateMediator;
     }
 
-    public function set liferayPortalExecutionEnvironmentCreateMediator(value:IIocMediator):void {
-        _liferayPortalExecutionEnvironmentCreateMediator = value;
+    public function set liferayPortalResourceCreateMediator(value:IIocMediator):void {
+        _liferayPortalResourceCreateMediator = value;
     }
 
     public function get wasceExecutionEnvironmentCreateMediator():IIocMediator {
@@ -479,12 +435,12 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _apacheExecutionEnvironmentCreateMediator = value;
     }
 
-    public function get alfrescoExecutionEnvironmentCreateMediator():IIocMediator {
-        return _alfrescoExecutionEnvironmentCreateMediator;
+    public function get alfrescoResourceCreateMediator():IIocMediator {
+        return _alfrescoResourceCreateMediator;
     }
 
-    public function set alfrescoExecutionEnvironmentCreateMediator(value:IIocMediator):void {
-        _alfrescoExecutionEnvironmentCreateMediator = value;
+    public function set alfrescoResourceCreateMediator(value:IIocMediator):void {
+        _alfrescoResourceCreateMediator = value;
     }
 
     public function get javaEEExecutionEnvironmentCreateMediator():IIocMediator {
@@ -503,12 +459,12 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _phpExecutionEnvironmentCreateMediator = value;
     }
 
-    public function get phpBBExecutionEnvironmentCreateMediator():IIocMediator {
-        return _phpBBExecutionEnvironmentCreateMediator;
+    public function get phpBBResourceCreateMediator():IIocMediator {
+        return _phpBBResourceCreateMediator;
     }
 
-    public function set phpBBExecutionEnvironmentCreateMediator(value:IIocMediator):void {
-        _phpBBExecutionEnvironmentCreateMediator = value;
+    public function set phpBBResourceCreateMediator(value:IIocMediator):void {
+        _phpBBResourceCreateMediator = value;
     }
 
     public function get windowsIISExecutionEnvironmentCreateMediator():IIocMediator {
@@ -689,60 +645,36 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _identityProviderRemoveCommand = value;
     }
 
-    public function get serviceProviderRemoveCommand():IIocCommand {
-        return _serviceProviderRemoveCommand;
+    public function get externalSaml2IdentityProviderRemoveCommand():IIocCommand {
+        return _externalSaml2IdentityProviderRemoveCommand;
     }
 
-    public function set serviceProviderRemoveCommand(value:IIocCommand):void {
-        _serviceProviderRemoveCommand = value;
+    public function set externalSaml2IdentityProviderRemoveCommand(value:IIocCommand):void {
+        _externalSaml2IdentityProviderRemoveCommand = value;
     }
 
-    public function get externalIdentityProviderRemoveCommand():IIocCommand {
-        return _externalIdentityProviderRemoveCommand;
+    public function get externalSaml2ServiceProviderRemoveCommand():IIocCommand {
+        return _externalSaml2ServiceProviderRemoveCommand;
     }
 
-    public function set externalIdentityProviderRemoveCommand(value:IIocCommand):void {
-        _externalIdentityProviderRemoveCommand = value;
+    public function set externalSaml2ServiceProviderRemoveCommand(value:IIocCommand):void {
+        _externalSaml2ServiceProviderRemoveCommand = value;
     }
 
-    public function get externalServiceProviderRemoveCommand():IIocCommand {
-        return _externalServiceProviderRemoveCommand;
+    public function get internalSaml2ServiceProviderRemoveCommand():IIocCommand {
+        return _internalSaml2ServiceProviderRemoveCommand;
     }
 
-    public function set externalServiceProviderRemoveCommand(value:IIocCommand):void {
-        _externalServiceProviderRemoveCommand = value;
+    public function set internalSaml2ServiceProviderRemoveCommand(value:IIocCommand):void {
+        _internalSaml2ServiceProviderRemoveCommand = value;
     }
 
-    public function get saml2IdentityProviderRemoveCommand():IIocCommand {
-        return _saml2IdentityProviderRemoveCommand;
+    public function get externalOpenIDIdentityProviderRemoveCommand():IIocCommand {
+        return _externalOpenIDIdentityProviderRemoveCommand;
     }
 
-    public function set saml2IdentityProviderRemoveCommand(value:IIocCommand):void {
-        _saml2IdentityProviderRemoveCommand = value;
-    }
-
-    public function get saml2ServiceProviderRemoveCommand():IIocCommand {
-        return _saml2ServiceProviderRemoveCommand;
-    }
-
-    public function set saml2ServiceProviderRemoveCommand(value:IIocCommand):void {
-        _saml2ServiceProviderRemoveCommand = value;
-    }
-
-    public function get openIDIdentityProviderRemoveCommand():IIocCommand {
-        return _openIDIdentityProviderRemoveCommand;
-    }
-
-    public function set openIDIdentityProviderRemoveCommand(value:IIocCommand):void {
-        _openIDIdentityProviderRemoveCommand = value;
-    }
-
-    public function get openIDServiceProviderRemoveCommand():IIocCommand {
-        return _openIDServiceProviderRemoveCommand;
-    }
-
-    public function set openIDServiceProviderRemoveCommand(value:IIocCommand):void {
-        _openIDServiceProviderRemoveCommand = value;
+    public function set externalOpenIDIdentityProviderRemoveCommand(value:IIocCommand):void {
+        _externalOpenIDIdentityProviderRemoveCommand = value;
     }
 
     public function get oauth2IdentityProviderRemoveCommand():IIocCommand {

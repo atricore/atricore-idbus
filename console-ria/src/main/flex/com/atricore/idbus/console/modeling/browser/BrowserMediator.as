@@ -35,7 +35,7 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.Provider;
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceResource;
 
 import flash.events.Event;
@@ -194,8 +194,8 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                             idLookupConnections.addItem(locProv.identityLookup);
                             idSourceConnections[idSource] = idLookupConnections;
                         }
-                        if (locProv is ServiceProvider) {
-                            var sp:ServiceProvider = locProv as ServiceProvider;
+                        if (locProv is InternalSaml2ServiceProvider) {
+                            var sp:InternalSaml2ServiceProvider = locProv as InternalSaml2ServiceProvider;
 
                             // add service resource to provider node and service connection to connections node
                             if (sp.serviceConnection != null && sp.serviceConnection.resource != null) {

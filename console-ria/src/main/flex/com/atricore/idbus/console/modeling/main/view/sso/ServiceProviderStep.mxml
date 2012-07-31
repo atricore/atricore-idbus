@@ -33,7 +33,6 @@
 
         <fx:Script>
         <![CDATA[
-
             import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
             import com.atricore.idbus.console.modeling.main.view.sso.event.SsoEvent;
             import com.atricore.idbus.console.services.dto.ExecEnvType;
@@ -42,7 +41,7 @@
             import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
             import com.atricore.idbus.console.services.dto.Location;
             import com.atricore.idbus.console.services.dto.ServiceConnection;
-            import com.atricore.idbus.console.services.dto.ServiceProvider;
+            import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
             import com.atricore.idbus.console.services.dto.ServiceResource;
             import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 
@@ -138,7 +137,7 @@
             }
 
             private function addSPToArray():void {
-                var sp:ServiceProvider = new ServiceProvider();
+                var sp:InternalSaml2ServiceProvider = new InternalSaml2ServiceProvider();
                 sp.name = jossoSPName.text;
 
                 // temporary location
@@ -236,7 +235,7 @@
                 return partnerappLocationProtocol.labelDisplay.text + '://' + partnerappLocationDomain.text + port + '/' +
                         partnerappLocationContext.text;
             }
-        ]]>
+            ]]>
     </fx:Script>
 
     <fx:Declarations>

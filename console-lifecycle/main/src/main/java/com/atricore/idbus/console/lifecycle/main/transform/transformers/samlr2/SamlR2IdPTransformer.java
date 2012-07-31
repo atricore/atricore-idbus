@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers.samlr2;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Saml2IdentityProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
@@ -38,13 +38,13 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof Saml2IdentityProvider;
+        return event.getData() instanceof ExternalSaml2IdentityProvider;
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
 
-        Saml2IdentityProvider provider = (Saml2IdentityProvider) event.getData();
+        ExternalSaml2IdentityProvider provider = (ExternalSaml2IdentityProvider) event.getData();
 
         Date now = new Date();
 
@@ -122,7 +122,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
     @Override
     public Object after(TransformEvent event) throws TransformException {
 
-        Saml2IdentityProvider provider = (Saml2IdentityProvider) event.getData();
+        ExternalSaml2IdentityProvider provider = (ExternalSaml2IdentityProvider) event.getData();
         IdProjectModule module = event.getContext().getCurrentModule();
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");

@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers.sso;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractIdPChannelTransformer;
@@ -23,13 +23,13 @@ public class SPDefaultIdPChannelTransformer extends AbstractIdPChannelTransforme
     }
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof ServiceProvider &&
-                !((ServiceProvider)event.getData()).isRemote();
+        return event.getData() instanceof InternalSaml2ServiceProvider &&
+                !((InternalSaml2ServiceProvider)event.getData()).isRemote();
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
-        ServiceProvider sp = (ServiceProvider) event.getData();
+        InternalSaml2ServiceProvider sp = (InternalSaml2ServiceProvider) event.getData();
         generateSPComponents(sp, null, null, null, null, event.getContext());
     }
 

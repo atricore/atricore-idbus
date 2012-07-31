@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
-public class SugarCRMServiceProvider extends Saml2ServiceProvider {
+public class SugarCRMServiceProvider extends ExternalSaml2ServiceProvider {
 
     private String url;
 

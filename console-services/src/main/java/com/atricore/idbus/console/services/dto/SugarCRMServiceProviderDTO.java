@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.services.dto;
 
-public class SugarCRMServiceProviderDTO extends ExternalServiceProviderDTO {
+public class SugarCRMServiceProviderDTO extends ExternalSaml2ServiceProviderDTO {
 
     private String url;
 

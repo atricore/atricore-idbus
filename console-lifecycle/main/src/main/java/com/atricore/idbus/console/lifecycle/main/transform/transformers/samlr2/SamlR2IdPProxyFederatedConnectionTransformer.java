@@ -28,7 +28,6 @@ import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2AuthnResponseToSP
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.federation.*;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
-import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
@@ -85,15 +84,15 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
             if (roleA) {
                 // Accept all Federated connection nodes that have an IdP as role A
-                return fc.getRoleA() instanceof Saml2IdentityProvider && fc.getRoleA().isRemote();
+                return fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote();
                 /* TODO : Enable after console support is added in the front-end
-                return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof Saml2IdentityProvider
+                return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof ExternalSaml2IdentityProvider
                         && fc.getRoleA().isRemote(); */
             } else {
                 // Accept all Federated connection nodes that have an IdP as role B
-                return fc.getRoleB() instanceof Saml2IdentityProvider && fc.getRoleB().isRemote();
+                return fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote();
                 /* TODO : Enable after console support is added in the front-end
-                return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof Saml2IdentityProvider
+                return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof ExternalSaml2IdentityProvider
                         && fc.getRoleB().isRemote(); */
             }
 
@@ -109,8 +108,8 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
         IdentityProviderChannel idpChannel = (IdentityProviderChannel) (roleA ? federatedConnection.getChannelB() : federatedConnection.getChannelA());
 
-        Saml2IdentityProvider remoteIdentityProvider;
-        ServiceProvider localServiceProvider;
+        ExternalSaml2IdentityProvider remoteIdentityProvider;
+        InternalSaml2ServiceProvider localInternalSaml2ServiceProvider;
 
         if (roleA) {
 
@@ -118,8 +117,8 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
                     "SP Channel " + spChannel.getName() + " should be 'A' channel in federated connection " +
                             federatedConnection.getName();
 
-            remoteIdentityProvider = (Saml2IdentityProvider) federatedConnection.getRoleA();
-            localServiceProvider = (ServiceProvider) federatedConnection.getRoleB();
+            remoteIdentityProvider = (ExternalSaml2IdentityProvider) federatedConnection.getRoleA();
+            localInternalSaml2ServiceProvider = (InternalSaml2ServiceProvider) federatedConnection.getRoleB();
             spChannel = (ServiceProviderChannel) federatedConnection.getChannelA();
 
             if (!remoteIdentityProvider.getName().equals(federatedConnection.getRoleA().getName()))
@@ -133,8 +132,8 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
                             federatedConnection.getName();
 
 
-            remoteIdentityProvider = (Saml2IdentityProvider) federatedConnection.getRoleB();
-            localServiceProvider = (ServiceProvider) federatedConnection.getRoleA();
+            remoteIdentityProvider = (ExternalSaml2IdentityProvider) federatedConnection.getRoleB();
+            localInternalSaml2ServiceProvider = (InternalSaml2ServiceProvider) federatedConnection.getRoleA();
             spChannel = (ServiceProviderChannel) federatedConnection.getChannelB();
 
             if (!remoteIdentityProvider.getName().equals(federatedConnection.getRoleB().getName()))
@@ -146,10 +145,10 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         Beans idpProxyBeans = (Beans) event.getContext().get("idpProxyBeans");
 
         // Generated SP proxy and IDP Channel proxy
-        generateIdPComponents(event, idpProxyBeans, remoteIdentityProvider, spChannel, localServiceProvider, idpChannel, federatedConnection, event.getContext());
+        generateIdPComponents(event, idpProxyBeans, remoteIdentityProvider, spChannel, localInternalSaml2ServiceProvider, idpChannel, federatedConnection, event.getContext());
 
         // Generated IDP proxy and SP Channel proxy
-        generateSPComponents(event, idpProxyBeans, localServiceProvider,  idpChannel, remoteIdentityProvider, spChannel, federatedConnection, event.getContext());
+        generateSPComponents(event, idpProxyBeans, localInternalSaml2ServiceProvider,  idpChannel, remoteIdentityProvider, spChannel, federatedConnection, event.getContext());
 
     }
 
@@ -207,7 +206,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
     protected void generateSPComponents(TransformEvent event,
                                         Beans spBeans,
-                                        ServiceProvider sp,
+                                        InternalSaml2ServiceProvider sp,
                                         IdentityProviderChannel idpChannel,
                                         FederatedProvider target,
                                         FederatedChannel targetChannel,
@@ -866,7 +865,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         addPropertyBean(stmtToAssertionPlan, "nameIDBuilders", emailNameIdBuilder);
 
         SubjectNameIdentifierPolicy subjectNameIDPolicy = null;
-        if (remoteIdentityProvider instanceof Saml2IdentityProvider) {
+        if (remoteIdentityProvider instanceof ExternalSaml2IdentityProvider) {
             subjectNameIDPolicy = spChannel != null ? spChannel.getSubjectNameIDPolicy() : null;
         } else if (remoteIdentityProvider instanceof IdentityProvider) {
             subjectNameIDPolicy = spChannel != null ? spChannel.getSubjectNameIDPolicy() : ((IdentityProvider)remoteIdentityProvider).getSubjectNameIDPolicy();
@@ -922,7 +921,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         if (remoteIdentityProvider instanceof IdentityProvider) {
             ignoreRequestedNameIDPolicy = spChannel != null ? spChannel.isIgnoreRequestedNameIDPolicy() : ((IdentityProvider)remoteIdentityProvider).isIgnoreRequestedNameIDPolicy();
-        } else if (remoteIdentityProvider instanceof Saml2IdentityProvider) {
+        } else if (remoteIdentityProvider instanceof ExternalSaml2IdentityProvider) {
             ignoreRequestedNameIDPolicy = spChannel != null ? spChannel.isIgnoreRequestedNameIDPolicy() : true;
         }
 

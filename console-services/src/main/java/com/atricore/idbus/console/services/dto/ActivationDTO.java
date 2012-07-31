@@ -12,7 +12,7 @@ public class ActivationDTO extends ConnectionDTO {
     private ServiceResourceDTO resource;
 
     // TODO: Remove me!!! [JOSSO-370]
-    private ServiceProviderDTO sp;
+    private InternalSaml2ServiceProviderDTO sp;
 
     public ExecutionEnvironmentDTO getExecutionEnv() {
         return executionEnv;
@@ -30,11 +30,11 @@ public class ActivationDTO extends ConnectionDTO {
         this.resource = resource;
     }
 
-    public ServiceProviderDTO getSp() {
+    public InternalSaml2ServiceProviderDTO getSp() {
         return sp;
     }
 
-    public void setSp(ServiceProviderDTO sp) {
+    public void setSp(InternalSaml2ServiceProviderDTO sp) {
         this.sp = sp;
     }
 }
