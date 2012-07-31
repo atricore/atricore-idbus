@@ -163,6 +163,9 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         // warningUrl
         setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
+        // dashboardUrl
+        setPropertyValue(idpMediator, "dashboardUrl", provider.getDashboardUrl());
+
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
         Keystore signKs = null;

@@ -151,7 +151,7 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         setPropertyValue(aisAuthLocal, "name", aisAuthLocal.getName());
         setPropertyValue(aisAuthLocal, "type", SSOMetadataConstants.AssertIdentityWithSimpleAuthenticationService_QNAME.toString());
         setPropertyValue(aisAuthLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
-        setPropertyValue(aisAuthLocal, "location", "local://" + sp.getLocation().getUri().toUpperCase() + "/SSO/IAAUTHN/LOCAL");
+        setPropertyValue(aisAuthLocal, "location", "SSlocal://" + sp.getLocation().getUri().toUpperCase() + "/SSO/IAAUTHN/LOCAL");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
         plan.setBean(spSloToSamlPlan.getName());

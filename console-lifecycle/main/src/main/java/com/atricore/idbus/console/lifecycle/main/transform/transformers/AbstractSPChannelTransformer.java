@@ -518,31 +518,31 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
 
         // IDP Initiated SSO
         if (ssoEnabled) {
-            Bean idpSsoInit11 = newAnonymousBean(IdentityMediationEndpointImpl.class);
-            idpSsoInit11.setName(spChannelBean.getName() + "-idp-initiated-saml11");
-            setPropertyValue(idpSsoInit11, "name", idpSsoInit11.getName());
-            setPropertyValue(idpSsoInit11, "type", SSOMetadataConstants.SingleSignOnService_QNAME.toString());
-            setPropertyValue(idpSsoInit11, "binding", SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML11.getValue());
-            setPropertyValue(idpSsoInit11, "location", "/SAML11/SSO/IDP_INITIATE");
+            Bean idpSsoInit = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            idpSsoInit.setName(spChannelBean.getName() + "-idp-initiated-saml2");
+            setPropertyValue(idpSsoInit, "name", idpSsoInit.getName());
+            setPropertyValue(idpSsoInit, "type", SSOMetadataConstants.SingleSignOnService_QNAME.toString());
+            setPropertyValue(idpSsoInit, "binding", SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML11.getValue());
+            setPropertyValue(idpSsoInit, "location", "/SAML11/SSO/IDP_INITIATE");
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
             plan.setBean(samlr2IdpInitToSamlr2AuthnReqPlan.getName());
             plansList.add(plan);
-            setPropertyRefs(idpSsoInit11, "identityPlans", plansList);
-            endpoints.add(idpSsoInit11);
+            setPropertyRefs(idpSsoInit, "identityPlans", plansList);
+            endpoints.add(idpSsoInit);
 
-            Bean idpSsoInit2 = newAnonymousBean(IdentityMediationEndpointImpl.class);
-            idpSsoInit2.setName(spChannelBean.getName() + "-idp-initiated-saml2");
-            setPropertyValue(idpSsoInit2, "name", idpSsoInit2.getName());
-            setPropertyValue(idpSsoInit2, "type", SSOMetadataConstants.SingleSignOnService_QNAME.toString());
-            setPropertyValue(idpSsoInit2, "binding", SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.getValue());
-            setPropertyValue(idpSsoInit2, "location", "/SAML2/SSO/IDP_INITIATE");
+            Bean idpSsoInit11 = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            idpSsoInit11.setName(spChannelBean.getName() + "-idp-initiated-saml11");
+            setPropertyValue(idpSsoInit11, "name", idpSsoInit11.getName());
+            setPropertyValue(idpSsoInit11, "type", SSOMetadataConstants.SingleSignOnService_QNAME.toString());
+            setPropertyValue(idpSsoInit11, "binding", SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.getValue());
+            setPropertyValue(idpSsoInit11, "location", "/SAML2/SSO/IDP_INITIATE");
             plansList = new ArrayList<Ref>();
             plan = new Ref();
             plan.setBean(samlr2IdpInitToSamlr2AuthnReqPlan.getName());
             plansList.add(plan);
-            setPropertyRefs(idpSsoInit2, "identityPlans", plansList);
-            endpoints.add(idpSsoInit2);
+            setPropertyRefs(idpSsoInit11, "identityPlans", plansList);
+            endpoints.add(idpSsoInit11);
         }
 
         // SessionHeartBeatService (non-saml)
