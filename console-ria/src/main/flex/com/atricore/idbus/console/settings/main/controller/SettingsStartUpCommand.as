@@ -22,6 +22,7 @@ public class SettingsStartUpCommand extends AppSectionStartUpCommand {
     private var _createBrandingCommand:IIocCommand;
     private var _updateBrandingCommand:IIocCommand;
     private var _removeBrandingCommand:IIocCommand;
+    private var _publishBrandingCommand:IIocCommand;
 
     public function SettingsStartUpCommand() {
     }
@@ -43,6 +44,7 @@ public class SettingsStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_BRANDING, createBrandingCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_BRANDING, updateBrandingCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.REMOVE_BRANDING, removeBrandingCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.PUBLISH_BRANDING, publishBrandingCommand.getConfigName());
     }
 
     override protected function setupMediators(ctx:BaseStartupContext):void {
@@ -121,6 +123,14 @@ public class SettingsStartUpCommand extends AppSectionStartUpCommand {
 
     public function set removeBrandingCommand(value:IIocCommand):void {
         _removeBrandingCommand = value;
+    }
+
+    public function get publishBrandingCommand():IIocCommand {
+        return _publishBrandingCommand;
+    }
+
+    public function set publishBrandingCommand(value:IIocCommand):void {
+        _publishBrandingCommand = value;
     }
 }
 }

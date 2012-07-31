@@ -126,6 +126,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_BRANDING:String = "createBranding";
     public static const EDIT_BRANDING:String = "editBranding";
     public static const REMOVE_BRANDING:String = "removeBranding";
+    public static const PUBLISH_BRANDING:String = "publishBranding";
     public static const DISPLAY_CREATE_BRANDING_WIZARD:String = "displayCreateBrandingWizard";
     public static const DISPLAY_EDIT_BRANDING:String = "displayEditBranding";
 

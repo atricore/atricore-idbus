@@ -80,7 +80,7 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
 
     override public function setViewComponent(viewComponent:Object):void {
         if (_created) {
-            sendNotification(ApplicationFacade.LOOKUP_BRANDING, lookupId);
+            getBranding();
         }
         (viewComponent as EditCustomBrandingView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         super.setViewComponent(viewComponent);
@@ -103,7 +103,7 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
                 _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
             }
 
-            view..bundleFile.addEventListener(MouseEvent.CLICK, browseHandler);
+            view.bundleFile.addEventListener(MouseEvent.CLICK, browseHandler);
             BindingUtils.bindProperty(view.bundleFile, "dataProvider", this, "_selectedFiles");
 
             _fileRef = null;
@@ -112,7 +112,7 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
             _selectedFiles = new ArrayCollection();
             view.bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.form.bundle.file.browseFile");
 
-            sendNotification(ApplicationFacade.LOOKUP_BRANDING, lookupId);
+            getBranding();
         }
     }
 
@@ -126,7 +126,24 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
             _branding.bundleSymbolicName = _uploadedFileName;
         }
     }
-    
+
+    public function reset():void {
+        _fileRef = null;
+        _uploadedFile = null;
+        _uploadedFileName = null;
+        _selectedFiles = new ArrayCollection();
+        view.brandingName.text = "";
+        view.brandingDescription.text = "";
+        view.bundleURI.text = "";
+        view.webID.text = "";
+        view.bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.form.bundle.file.browseFile");
+    }
+
+    public function getBranding():void {
+        reset();
+        sendNotification(ApplicationFacade.LOOKUP_BRANDING, lookupId);
+    }
+
     private function handleSave(event:MouseEvent):void {
         if (validate(true)) {
             if (_selectedFiles != null && _selectedFiles.length > 0) {

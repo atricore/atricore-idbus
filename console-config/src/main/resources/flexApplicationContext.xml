@@ -204,6 +204,7 @@
         <property name="createBrandingCommand" ref="createBrandingCommand"/>
         <property name="updateBrandingCommand" ref="updateBrandingCommand"/>
         <property name="removeBrandingCommand" ref="removeBrandingCommand"/>
+        <property name="publishBrandingCommand" ref="publishBrandingCommand"/>
     </object>
 
     <object id="helpStartupCommand"
@@ -562,6 +563,12 @@
 
     <object id="removeBrandingCommand"
             class="com.atricore.idbus.console.config.main.controller.RemoveBrandingCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="configProxy" ref="serviceConfigProxy"/>
+    </object>
+
+    <object id="publishBrandingCommand"
+            class="com.atricore.idbus.console.config.main.controller.PublishBrandingCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
