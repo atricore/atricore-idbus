@@ -28,21 +28,9 @@ public class JOSSO1ResourceDTO extends ServiceResourceDTO {
 
     private static final long serialVersionUID = 8404812833078161141L;
 
-    private String partnerAppId;
-
     private LocationDTO partnerAppLocation;
 
     private Set<String> ignoredWebResources;
-
-    // TODO : Add other properties used to create JOSSO Agent config (PHP, ISAPI, Java, etc)
-
-    public String getPartnerAppId() {
-        return partnerAppId;
-    }
-
-    public void setPartnerAppId(String partnerAppId) {
-        this.partnerAppId = partnerAppId;
-    }
 
     public LocationDTO getPartnerAppLocation() {
         return partnerAppLocation;

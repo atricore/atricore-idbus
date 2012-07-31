@@ -2436,7 +2436,11 @@ public class PropertySheetMediator extends IocMediator {
                     serviceProvider.serviceConnection.resource is JOSSO1Resource) {
                 var location:String = resolveProviderLocationUrl(serviceProvider);
                 _spSaml2Section.entityID.text = location + "/SAML2/MD";
-                location += "/" + (serviceProvider.serviceConnection.resource as JOSSO1Resource).partnerAppId.toUpperCase();
+
+
+                //location += "/" + (serviceProvider.serviceConnection.resource as JOSSO1Resource).partnerAppId.toUpperCase();
+                location += "/" + serviceProvider.name.toUpperCase();
+
                 _spSaml2Section.spInitiatedSsoRedirectUrl.text = location + "/SSO/SSO/REDIR";
                 _spSaml2Section.spInitiatedSsoArtifactUrl.text = location + "/SSO/SSO/ARTIFACT";
                 _spSaml2Section.spInitiatedSloRedirectUrl.text = location + "/SSO/SLO/REDIR";
@@ -4374,8 +4378,6 @@ public class PropertySheetMediator extends IocMediator {
             _josso1ResourceCoreSection.resourceName.text = josso1Resource.name;
             _josso1ResourceCoreSection.resourceDescription.text = josso1Resource.description;
 
-            _josso1ResourceCoreSection.partnerAppId.text = josso1Resource.partnerAppId;
-
             var location:Location = josso1Resource.partnerAppLocation;
             for (var i:int = 0; i < _josso1ResourceCoreSection.partnerAppLocationProtocol.dataProvider.length; i++) {
                 if (location != null && location.protocol == _josso1ResourceCoreSection.partnerAppLocationProtocol.dataProvider[i].label) {
@@ -4401,7 +4403,6 @@ public class PropertySheetMediator extends IocMediator {
 
             _josso1ResourceCoreSection.resourceName.addEventListener(Event.CHANGE, handleSectionChange);
             _josso1ResourceCoreSection.resourceDescription.addEventListener(Event.CHANGE, handleSectionChange);
-            _josso1ResourceCoreSection.partnerAppId.addEventListener(Event.CHANGE, handleSectionChange);
             _josso1ResourceCoreSection.partnerAppLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
             _josso1ResourceCoreSection.partnerAppLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
             _josso1ResourceCoreSection.partnerAppLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
@@ -4412,7 +4413,6 @@ public class PropertySheetMediator extends IocMediator {
             //clear all existing validators and add josso1 resource core section validators
             _validators = [];
             _validators.push(_josso1ResourceCoreSection.nameValidator);
-            _validators.push(_josso1ResourceCoreSection.appIdValidator);
             _validators.push(_josso1ResourceCoreSection.domainValidator);
             _validators.push(_josso1ResourceCoreSection.contextValidator);
             _validators.push(_josso1ResourceCoreSection.portValidator);
@@ -4428,7 +4428,6 @@ public class PropertySheetMediator extends IocMediator {
             josso1Resource.name = _josso1ResourceCoreSection.resourceName.text;
             josso1Resource.description = _josso1ResourceCoreSection.resourceDescription.text;
 
-            josso1Resource.partnerAppId = _josso1ResourceCoreSection.partnerAppId.text;
             josso1Resource.partnerAppLocation.protocol = _josso1ResourceCoreSection.partnerAppLocationProtocol.selectedItem.label;
             josso1Resource.partnerAppLocation.host = _josso1ResourceCoreSection.partnerAppLocationDomain.text;
             josso1Resource.partnerAppLocation.port = parseInt(_josso1ResourceCoreSection.partnerAppLocationPort.text);

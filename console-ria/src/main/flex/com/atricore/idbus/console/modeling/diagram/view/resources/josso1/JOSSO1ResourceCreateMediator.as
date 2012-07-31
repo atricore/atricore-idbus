@@ -55,7 +55,6 @@ public class JOSSO1ResourceCreateMediator extends IocFormMediator {
         view.resourcePort.text = "8080";
         view.resourceContext.text = "";
         view.resourcePath.text = "";
-        view.resourcePartnerAppId.text = "";
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -74,8 +73,6 @@ public class JOSSO1ResourceCreateMediator extends IocFormMediator {
         loc.context = view.resourceContext.text;
         loc.uri = view.resourcePath.text;
         resource.partnerAppLocation = loc;
-
-        resource.partnerAppId = view.resourcePartnerAppId.text;
 
         _newResource = resource;
     }
@@ -111,7 +108,6 @@ public class JOSSO1ResourceCreateMediator extends IocFormMediator {
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
-        _validators.push(view.appIdValidator);
         _validators.push(view.portValidator);
         _validators.push(view.domainValidator);
         _validators.push(view.contextValidator);

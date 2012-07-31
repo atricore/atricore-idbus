@@ -29,8 +29,6 @@
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{resourceName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
-        <utils:NameValidator id="appIdValidator" source="{resourcePartnerAppId}" required="true" property="text" trigger="{btnOk}"
-                             triggerEvent="click"/>
         <mx:NumberValidator id="portValidator" source="{resourcePort}" required="false" property="text"
                             trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
@@ -48,10 +46,6 @@
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.description')}:">
         <s:TextInput id="resourceDescription" width="300"/>
-    </mx:FormItem>
-
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.partnerappid')}:" required="true">
-        <s:TextInput id="resourcePartnerAppId" width="300"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.location')}:" required="true"
