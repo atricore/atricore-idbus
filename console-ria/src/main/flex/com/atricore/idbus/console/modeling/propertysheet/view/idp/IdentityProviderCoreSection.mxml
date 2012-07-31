@@ -68,6 +68,10 @@
                 <s:TextInput id="ssoSessionTimeout"/>
             </mx:FormItem>
 
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.dashboardUrl')}:">
+                <s:TextInput id="dashboardUrl" width="230"/>
+            </mx:FormItem>
+
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:"
                          direction="horizontal">
                 <s:DropDownList id="idpLocationProtocol" width="70" selectedIndex="0">

@@ -89,7 +89,7 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
         ssoHttpRedirect.setName(spBean.getName() + "-sso-sso-http-redirect");
         setPropertyValue(ssoHttpRedirect, "name", ssoHttpRedirect.getName());
         setPropertyValue(ssoHttpRedirect, "type", SSOMetadataConstants.SPInitiatedSingleSignOnService_QNAME.toString());
-        setPropertyValue(ssoHttpRedirect, "binding", SSOBinding.SS0_REDIRECT.getValue());
+        setPropertyValue(ssoHttpRedirect, "binding", SSOBinding.SSO_REDIRECT.getValue());
         setPropertyValue(ssoHttpRedirect, "location", "/SSO/SSO/REDIR");
         List<Ref> plansList = new ArrayList<Ref>();
         Ref plan = new Ref();
@@ -115,7 +115,7 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
         sloHttpRedirect.setName(spBean.getName() + "-sso-slo-http-redirect");
         setPropertyValue(sloHttpRedirect, "name", sloHttpRedirect.getName());
         setPropertyValue(sloHttpRedirect, "type", SSOMetadataConstants.SPInitiatedSingleLogoutService_QNAME.toString());
-        setPropertyValue(sloHttpRedirect, "binding", SSOBinding.SS0_REDIRECT.getValue());
+        setPropertyValue(sloHttpRedirect, "binding", SSOBinding.SSO_REDIRECT.getValue());
         setPropertyValue(sloHttpRedirect, "location", "/SSO/SLO/REDIR");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
@@ -158,7 +158,7 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
         setPropertyValue(aisAuthLocal, "name", aisAuthLocal.getName());
         setPropertyValue(aisAuthLocal, "type", SSOMetadataConstants.AssertIdentityWithSimpleAuthenticationService_QNAME.toString());
         setPropertyValue(aisAuthLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
-        setPropertyValue(aisAuthLocal, "location", "local://" + sp.getLocation().getUri().toUpperCase() + "/SSO/IAAUTHN/LOCAL");
+        setPropertyValue(aisAuthLocal, "location", "SSlocal://" + sp.getLocation().getUri().toUpperCase() + "/SSO/IAAUTHN/LOCAL");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
         plan.setBean(spSloToSamlPlan.getName());

@@ -46,6 +46,8 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     private boolean openIdEnabled;
 
+    private String dashboardUrl;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicyDTO subjectNameIDPolicy;
 
@@ -223,5 +225,14 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     public void setMessageTtlTolerance(int messageTtlTolerance) {
         this.messageTtlTolerance = messageTtlTolerance;
+    }
+
+    public String getDashboardUrl() {
+        return dashboardUrl;
+    }
+
+    public void setDashboardUrl(String dashboardUrl) {
+        this.dashboardUrl = dashboardUrl;
+
     }
 }

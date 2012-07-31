@@ -105,4 +105,13 @@ public class BrandManagerAjaxServiceImpl implements BrandManagerAjaxService {
             throw new BrandingServiceException(e);
         }
     }
+
+    public boolean publish() throws BrandingServiceException {
+        try {
+            brandManager.publish();
+            return true;
+        } catch (com.atricore.idbus.console.brandservice.main.BrandingServiceException e) {
+            throw new BrandingServiceException(e);
+        }
+    }
 }

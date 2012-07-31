@@ -59,7 +59,7 @@
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.bundle.uri')}:" required="true">
                 <s:HGroup>
                     <s:TextInput id="bundleURI" width="200"/>
-                    <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.bundle.uri.format')}" paddingTop="5"/>
+                    <!--<s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.form.bundle.uri.format')}" paddingTop="5"/>-->
                 </s:HGroup>
             </mx:FormItem>
 

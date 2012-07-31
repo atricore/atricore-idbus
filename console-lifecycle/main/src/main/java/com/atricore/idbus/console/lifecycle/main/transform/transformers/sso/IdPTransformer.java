@@ -163,6 +163,9 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         // warningUrl
         setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
+        // dashboardUrl
+        setPropertyValue(idpMediator, "dashboardUrl", provider.getDashboardUrl());
+
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
         Keystore signKs = null;

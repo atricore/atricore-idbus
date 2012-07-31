@@ -148,6 +148,10 @@
                     <s:TextInput id="ssoSessionTimeout" />
                 </mx:FormItem>
 
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.dashboardUrl')}:">
+                    <s:TextInput id="dashboardUrl" width="230"/>
+                </mx:FormItem>
+
                 <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.ignoreRequestedNameIDPolicy')}:">
                     <s:CheckBox id="ignoreRequestedNameIDPolicy" selected="true"/>
                 </mx:FormItem>
