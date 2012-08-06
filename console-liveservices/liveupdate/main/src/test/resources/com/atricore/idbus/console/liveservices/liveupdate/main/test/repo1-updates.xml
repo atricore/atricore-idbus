@@ -6,12 +6,12 @@
                     http://www.atricore.com/liveservices/liveupdate/atricore-liveupdate-md-1.0.xsd"
         ID="id0000001100">
 
-    <updateDescriptor ID="id0000000300" description="JOSSO 2 EE 1.2.1-SNAPSHOT" IssueInstant="2010-12-25T19:32:52Z">
+    <updateDescriptor ID="id0000000300" description="JOSSO 2 EE 1.3.0-SNAPSHOT" IssueInstant="2010-12-25T19:32:52Z">
 
         <installableUnit ID="id0000000110"
                          group="com.atricore.josso"
                          name="com.atricore.josso.ee.install"
-                         version="1.2.1-SNAPSHOT"
+                         version="1.3.0-SNAPSHOT"
                          description="JOSSO 2 EE"
                          updateNature="UPGRADE">
 
@@ -23,7 +23,7 @@
             <artifact ID="id0000000111"
                       group="com.atricore.josso"
                       name="josso-ee"
-                      version="1.2.1-SNAPSHOT"
+                      version="1.3.0-SNAPSHOT"
                       type="tar.gz"
                       classifier="liveupdate"/>
 
@@ -31,7 +31,7 @@
             <artifact ID="id0000000112"
                       group="com.atricore.josso"
                       name="josso-ee"
-                      version="1.2.1-SNAPSHOT"
+                      version="1.3.0-SNAPSHOT"
                       type="zip"
                       classifier="liveupdate"/>
 
@@ -40,7 +40,7 @@
             <artifact ID="id0000000113"
                       group="com.atricore.josso"
                       name="com.atricore.josso.ee.install"
-                      version="1.2.1-SNAPSHOT"
+                      version="1.3.0-SNAPSHOT"
                       type="bundle"
                       classifier="liveupdate"/>
 
