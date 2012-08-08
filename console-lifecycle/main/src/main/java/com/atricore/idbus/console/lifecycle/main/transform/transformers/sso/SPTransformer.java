@@ -71,7 +71,6 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
     }
 
-
     @Override
     public boolean accept(TransformEvent event) {
         return event.getData() instanceof InternalSaml2ServiceProvider &&
@@ -202,6 +201,8 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
 
         // TODO : [JOSSO-370] This might be null somewhere on the chain
+
+
         ExecutionEnvironment execEnv = providerInternalSaml2.getServiceConnection().getResource().getActivation().getExecutionEnv();
 
         IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();

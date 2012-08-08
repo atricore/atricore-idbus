@@ -2,21 +2,31 @@ package com.atricore.idbus.console.modeling.diagram.view.util {
 
 import com.atricore.idbus.console.base.diagram.DiagramElementTypes;
 import com.atricore.idbus.console.main.EmbeddedIcons;
+import com.atricore.idbus.console.services.dto.AlfrescoResource;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.JBossPortalResource;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
 import com.atricore.idbus.console.services.dto.JOSSO2Resource;
+import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.LiferayResource;
 import com.atricore.idbus.console.services.dto.MicroStrategyResource;
 import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
+import com.atricore.idbus.console.services.dto.PhpBBResource;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
+import com.atricore.idbus.console.services.dto.SasResource;
 import com.atricore.idbus.console.services.dto.ServiceResource;
+import com.atricore.idbus.console.services.dto.SharepointResource;
+import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
@@ -65,29 +75,82 @@ public class DiagramUtil {
     public static function nodesCanBeLinkedWithActivation(node1:IVisualNode, node2:IVisualNode):Boolean {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
-            if (node1.data is JOSSO1Resource && node2.data is ExecutionEnvironment &&
-                    !(node2.data is MicroStrategyResource)){
-                var josso1Resource1:JOSSO1Resource = node1.data as JOSSO1Resource;
-                if(josso1Resource1.activation == null){
-                    canBeLinked = true;
-                }
-            } else if (node1.data is ExecutionEnvironment && !(node1.data is MicroStrategyResource) &&
-                    node2.data is JOSSO1Resource) {
-                var josso1Resource2:JOSSO1Resource = node2.data as JOSSO1Resource;
-                if(josso1Resource2.activation == null){
-                    canBeLinked = true;
-                }
-            } else if (node1.data is JOSSO2Resource && node2.data is MicroStrategyResource) {
-                var josso2Resource1:JOSSO2Resource = node1.data as JOSSO2Resource;
-                if(josso2Resource1.activation == null){
-                    canBeLinked = true;
-                }
-            } else if (node1.data is MicroStrategyResource && node2.data is JOSSO2Resource) {
-                var josso2Resource2:JOSSO2Resource = node2.data as JOSSO2Resource;
-                if(josso2Resource2.activation == null){
-                    canBeLinked = true;
-                }
+
+            var resource:ServiceResource = null;
+            var execEnv:ExecutionEnvironment = null;
+
+            // ----------------------------------------------------
+            // Make sure that we have an exec. env. and a resource:
+            // ----------------------------------------------------
+
+            if (node1.data is ServiceResource) {
+                resource = ServiceResource(node1.data);
+            } else if (node2.data is ServiceResource) {
+                resource = ServiceResource(node2.data);
+            } else {
+                return false;
             }
+
+            if (node1.data is ExecutionEnvironment) {
+                execEnv = ExecutionEnvironment(node1.data);
+            } else if (node2.data is ExecutionEnvironment) {
+                execEnv = ExecutionEnvironment(node2.data);
+            } else {
+                return false;
+            }
+
+            // ---------------------------------------------------
+            // Now, check valid resource/exec.env. combinations
+            // ---------------------------------------------------
+
+            // JOSSO 1 Resources can be linked to any execution environment
+            if (resource is JOSSO1Resource) {
+                return true;
+            }
+
+            // JOSSO 2 Resources cannot be linked to execution environments (for now)
+            if (resource is JOSSO2Resource) {
+                return false;
+            }
+
+            // Sharepoint resources can only be linked to IIS
+            if (resource is SharepointResource) {
+                return execEnv is WindowsIISExecutionEnvironment;
+            }
+
+            // Microstrategy only supports Tomcat
+            if (resource is MicroStrategyResource) {
+                return execEnv is TomcatExecutionEnvironment;
+            }
+
+            // SAS runs on ?????
+            if (resource is SasResource) {
+                return false;
+            }
+
+            // Alfresco runs in Tomcat/ JBoss ?!
+            if (resource is AlfrescoResource) {
+                return execEnv is TomcatExecutionEnvironment || execEnv is JbossExecutionEnvironment;
+            }
+
+            // JBoss portal runs only in JBoss
+            if (resource is JBossPortalResource) {
+                return execEnv is JbossExecutionEnvironment;
+            }
+
+            // PHP BB runs in generic web containers
+            if (resource is PhpBBResource) {
+                return execEnv is WebserverExecutionEnvironment;
+            }
+
+            // Liferay runs only in JBoss
+            if (resource is LiferayResource) {
+                return execEnv is JbossExecutionEnvironment;
+            }
+
+            // unknown resource type ?!?!?
+            return false;
+
         }
         return canBeLinked;
     }
