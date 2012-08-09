@@ -26,12 +26,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
         <artifactId>oauth2</artifactId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.3.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
     <artifactId>org.atricore.idbus.capabilities.oauth2.rserver</artifactId>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.3.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : OAUTH2 Resource Server Component</name>
 
