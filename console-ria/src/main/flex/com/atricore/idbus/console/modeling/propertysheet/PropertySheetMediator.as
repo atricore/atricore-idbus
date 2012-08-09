@@ -49,17 +49,17 @@ import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.E
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.delegatedauthentication.DelegatedAuthenticationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.alfresco.AlfrescoResourceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.alfresco.AlfrescoResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.coldfusion.ColdfusionExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.coldfusion.ColdfusionResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.javaee.JavaEEExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jboss.JBossExecEnvCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jbossportal.JBossPortalResourceCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.liferayportal.LiferayPortalResourceCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.microstrategy.MicroStrategyResourceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.jbossportal.JBossPortalResourceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.liferayportal.LiferayPortalResourceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.microstrategy.MicroStrategyResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.php.PHPExecEnvCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.phpbb.PhpBBResourceCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.sharepoint2010.Sharepoint2010ExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.phpbb.PhpBBResourceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.sharepoint.Sharepoint2010ResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.tomcat.TomcatExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.wasce.WASCEExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.weblogic.WeblogicExecEnvCoreSection;
@@ -81,8 +81,8 @@ import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProvid
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderSaml2Section;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.TwoFactorAuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.WindowsAuthenticationSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.josso1resource.JOSSO1ResourceCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.josso2resource.JOSSO2ResourceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.josso1.JOSSO1ResourceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.josso2.JOSSO2ResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.jossoactivation.JOSSOActivationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceLookupSection;
@@ -264,8 +264,8 @@ public class PropertySheetMediator extends IocMediator {
     private var _phpExecEnvCoreSection:PHPExecEnvCoreSection;
     private var _phpBBResourceCoreSection:PhpBBResourceCoreSection;
     private var _webserverExecEnvCoreSection:WebserverExecEnvCoreSection;
-    private var _sharepoint2010ExecEnvCoreSection:Sharepoint2010ExecEnvCoreSection;
-    private var _coldfusionExecEnvCoreSection:ColdfusionExecEnvCoreSection;
+    private var _sharepoint2010ResourceCoreSection:Sharepoint2010ResourceCoreSection;
+    private var _coldfusionExecEnvCoreSection:ColdfusionResourceCoreSection;
     private var _microStrategyExecEnvCoreSection:MicroStrategyResourceCoreSection;
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     //private var _authenticationPropertyTab:Group;
@@ -321,8 +321,7 @@ public class PropertySheetMediator extends IocMediator {
     [Bindable]
     public var _selectedKeyTabFiles:ArrayCollection;
 
-
-    private var _execEnvLocationValidator:Validator;
+    private var _locationValidator:Validator;
 
     [Bindable]
     public var _accountLinkagePolicies:ArrayCollection;
@@ -391,8 +390,8 @@ public class PropertySheetMediator extends IocMediator {
         _tabbedPropertiesTabBar.selectedIndex = 0;
         _tabbedPropertiesTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
 
-        _execEnvLocationValidator = new URLValidator();
-        _execEnvLocationValidator.required = true;
+        _locationValidator = new URLValidator();
+        _locationValidator.required = true;
     }
 
     private function stackChanged(event:IndexChangeEvent):void {
@@ -5245,8 +5244,8 @@ public class PropertySheetMediator extends IocMediator {
             if (tomcatExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _tomcatExecEnvCoreSection.location.text = tomcatExecEnv.location;
 
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             _tomcatExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _tomcatExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -5284,7 +5283,7 @@ public class PropertySheetMediator extends IocMediator {
                 cif.environmentName = "n/a";
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_tomcatExecEnvCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_tomcatExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
                     tomcatSave();
                 } else {
@@ -5385,8 +5384,8 @@ public class PropertySheetMediator extends IocMediator {
             if (weblogicExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _weblogicExecEnvCoreSection.location.text = weblogicExecEnv.location;
 
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             _weblogicExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _weblogicExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -5426,7 +5425,7 @@ public class PropertySheetMediator extends IocMediator {
                 cif.environmentName = "n/a";
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_weblogicExecEnvCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_weblogicExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
                     weblogicSave();
                 } else {
@@ -5518,8 +5517,8 @@ public class PropertySheetMediator extends IocMediator {
             if (jbossPortalResource.type.name == ExecEnvType.REMOTE.name)
                 _jbossPortalResourceCoreSection.location.text = jbossPortalResource.location;
             
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             _jbossPortalResourceCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _jbossPortalResourceCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -5556,7 +5555,7 @@ public class PropertySheetMediator extends IocMediator {
                 cif.environmentName = "n/a";
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_jbossPortalResourceCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_jbossPortalResourceCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
                     jbossPortalSave();
                 } else {
@@ -5647,8 +5646,8 @@ public class PropertySheetMediator extends IocMediator {
             _liferayResourceCoreSection.homeDirectory.text = liferayResource.installUri;
             if (liferayResource.type.name == ExecEnvType.REMOTE.name)
                 _liferayResourceCoreSection.location.text = liferayResource.location;
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             for (var j:int=0; j < _liferayResourceCoreSection.containerType.dataProvider.length; j++){
                 if (_liferayResourceCoreSection.containerType.dataProvider[j].data == liferayResource.containerType) {
@@ -5690,7 +5689,7 @@ public class PropertySheetMediator extends IocMediator {
             }
             
             if (_liferayResourceCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_liferayResourceCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_liferayResourceCoreSection.location.text);
                 if (lvResult.type != ValidationResultEvent.VALID) {
                     _liferayResourceCoreSection.location.errorString = lvResult.results[0].errorMessage;
                     return;
@@ -5797,8 +5796,8 @@ public class PropertySheetMediator extends IocMediator {
             if (wasceExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _wasceExecEnvCoreSection.location.text = wasceExecEnv.location;
 
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             _wasceExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _wasceExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -5835,7 +5834,7 @@ public class PropertySheetMediator extends IocMediator {
                 cif.environmentName = "n/a";
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_wasceExecEnvCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_wasceExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
                     wasceSave();
                 } else {
@@ -5934,8 +5933,8 @@ public class PropertySheetMediator extends IocMediator {
             if (jbossExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _jbossExecEnvCoreSection.location.text = jbossExecEnv.location;
             
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             _jbossExecEnvCoreSection.instance.text = jbossExecEnv.instance;
 
@@ -5977,7 +5976,7 @@ public class PropertySheetMediator extends IocMediator {
                 cif.environmentName = "n/a";
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_jbossExecEnvCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_jbossExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
                     jbossSave();
                 } else {
@@ -6070,8 +6069,8 @@ public class PropertySheetMediator extends IocMediator {
             if (apacheExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _apacheExecEnvCoreSection.location.text = apacheExecEnv.location;
 
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             _apacheExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _apacheExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -6108,7 +6107,7 @@ public class PropertySheetMediator extends IocMediator {
                 cif.environmentName = "n/a";
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_apacheExecEnvCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_apacheExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
                     apacheSave();
                 } else {
@@ -6201,8 +6200,8 @@ public class PropertySheetMediator extends IocMediator {
             if (windowsIISExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _windowsIISExecEnvCoreSection.location.text = windowsIISExecEnv.location;
             
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             for (var j:int=0; j < _windowsIISExecEnvCoreSection.architecture.dataProvider.length; j++) {
                 if (_windowsIISExecEnvCoreSection.architecture.dataProvider[j].data == windowsIISExecEnv.platformId) {
@@ -6248,7 +6247,7 @@ public class PropertySheetMediator extends IocMediator {
                 cif.environmentName = "n/a";
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_windowsIISExecEnvCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_windowsIISExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
                     windowsIISSave();
                 } else {
@@ -6342,8 +6341,8 @@ public class PropertySheetMediator extends IocMediator {
             if (alfrescoExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _alfrescoExecEnvCoreSection.location.text = alfrescoExecEnv.location;
 
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             _alfrescoExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _alfrescoExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -6376,7 +6375,7 @@ public class PropertySheetMediator extends IocMediator {
             }
 
             if (_alfrescoExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_alfrescoExecEnvCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_alfrescoExecEnvCoreSection.location.text);
                 if (lvResult.type != ValidationResultEvent.VALID) {
                     _alfrescoExecEnvCoreSection.location.errorString = lvResult.results[0].errorMessage;
                     return;
@@ -6482,8 +6481,8 @@ public class PropertySheetMediator extends IocMediator {
             if (javaEEExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _javaEEExecEnvCoreSection.location.text = javaEEExecEnv.location;
 
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             _javaEEExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _javaEEExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -6520,7 +6519,7 @@ public class PropertySheetMediator extends IocMediator {
                 cif.environmentName = "n/a";
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_javaEEExecEnvCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_javaEEExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
                     javaEESave();
                 } else {
@@ -6597,8 +6596,8 @@ public class PropertySheetMediator extends IocMediator {
             if (phpExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _phpExecEnvCoreSection.location.text = phpExecEnv.location;
 
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             _phpExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _phpExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -6635,7 +6634,7 @@ public class PropertySheetMediator extends IocMediator {
                 cif.environmentName = "n/a";
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_phpExecEnvCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_phpExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
                     phpSave();
                 } else {
@@ -6728,8 +6727,8 @@ public class PropertySheetMediator extends IocMediator {
             if (phpBBResource.type.name == ExecEnvType.REMOTE.name)
                 _phpBBResourceCoreSection.location.text = phpBBResource.location;
             
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             _phpBBResourceCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _phpBBResourceCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -6766,7 +6765,7 @@ public class PropertySheetMediator extends IocMediator {
                 cif.environmentName = "n/a";
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_phpBBResourceCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_phpBBResourceCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
                     phpBBSave();
                 } else {
@@ -6843,8 +6842,8 @@ public class PropertySheetMediator extends IocMediator {
             if (webserverExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _webserverExecEnvCoreSection.location.text = webserverExecEnv.location;
             
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
             _webserverExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _webserverExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -6882,7 +6881,7 @@ public class PropertySheetMediator extends IocMediator {
                 cif.environmentName = "n/a";
                 sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
             } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_webserverExecEnvCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_webserverExecEnvCoreSection.location.text);
                 if (lvResult.type == ValidationResultEvent.VALID) {
                     webserverSave();
                 } else {
@@ -6927,12 +6926,12 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
-        _sharepoint2010ExecEnvCoreSection = new Sharepoint2010ExecEnvCoreSection();
-        corePropertyTab.addElement(_sharepoint2010ExecEnvCoreSection);
+        _sharepoint2010ResourceCoreSection = new Sharepoint2010ResourceCoreSection();
+        corePropertyTab.addElement(_sharepoint2010ResourceCoreSection);
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
-        _sharepoint2010ExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSharepoint2010ExecEnvCorePropertyTabCreationComplete);
+        _sharepoint2010ResourceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSharepoint2010ExecEnvCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSharepoint2010ExecEnvCorePropertyTabRollOut);
     }
 
@@ -6941,91 +6940,105 @@ public class PropertySheetMediator extends IocMediator {
 
         if (sharepointResource != null) {
             // bind view
-            _sharepoint2010ExecEnvCoreSection.executionEnvironmentName.text = sharepointResource.name;
-            _sharepoint2010ExecEnvCoreSection.executionEnvironmentDescription.text = sharepointResource.description;
-            //_sharepoint2010ExecEnvCoreSection.executionEnvironmentType.text = sharepointResource.containerType;
+            _sharepoint2010ResourceCoreSection.resourceName.text = sharepointResource.name;
+            _sharepoint2010ResourceCoreSection.resourceDescription.text = sharepointResource.description;
 
-            /*
-            for(var i:int=0; i < _sharepoint2010ExecEnvCoreSection.platform.dataProvider.length; i++){
-                if(_sharepoint2010ExecEnvCoreSection.platform.dataProvider[i].data == sharepointResource.platformId){
-                    _sharepoint2010ExecEnvCoreSection.platform.selectedIndex = i;
-                    break;
+            if (sharepointResource.stsLocation != null) {
+
+                for (var i:int = 0; i < _sharepoint2010ResourceCoreSection.resourceProtocol.dataProvider.length; i++) {
+                    if (sharepointResource.stsLocation.protocol == _sharepoint2010ResourceCoreSection.resourceProtocol.dataProvider[i].label) {
+                        _sharepoint2010ResourceCoreSection.resourceProtocol.selectedIndex = i;
+                        break;
+                    }
                 }
+
+                _sharepoint2010ResourceCoreSection.resourceDomain.text = sharepointResource.stsLocation.host;
+                _sharepoint2010ResourceCoreSection.resourcePort.text = sharepointResource.stsLocation.port.toString();
+                _sharepoint2010ResourceCoreSection.resourceContext.text = sharepointResource.stsLocation.context;
+                _sharepoint2010ResourceCoreSection.resourcePath.text = sharepointResource.stsLocation.uri;
             }
 
-            for (var j:int=0; j < _sharepoint2010ExecEnvCoreSection.selectedHost.dataProvider.length; j++) {
-                if (_sharepoint2010ExecEnvCoreSection.selectedHost.dataProvider[j].data == sharepointResource.type.toString()) {
-                    _sharepoint2010ExecEnvCoreSection.selectedHost.selectedIndex = j;
-                    break;
+            if (sharepointResource.appLocation != null) {
+
+                for (var i:int = 0; i < _sharepoint2010ResourceCoreSection.appResourceProtocol.dataProvider.length; i++) {
+                    if (sharepointResource.stsLocation.protocol == _sharepoint2010ResourceCoreSection.appResourceProtocol.dataProvider[i].label) {
+                        _sharepoint2010ResourceCoreSection.appResourceProtocol.selectedIndex = i;
+                        break;
+                    }
                 }
+                        _sharepoint2010ResourceCoreSection.appResourceDomain.text = sharepointResource.appLocation.host;
+                _sharepoint2010ResourceCoreSection.appResourcePort.text = sharepointResource.appLocation.port.toString();
+                _sharepoint2010ResourceCoreSection.appResourceContext.text = sharepointResource.appLocation.context;
+                _sharepoint2010ResourceCoreSection.appResourcePath.text = sharepointResource.appLocation.uri;
+
             }
-            */
 
-            if (_sharepoint2010ExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
-                _sharepoint2010ExecEnvCoreSection.locationItem.includeInLayout = true;
-                _sharepoint2010ExecEnvCoreSection.locationItem.visible = true;
-            }
 
-            /*
-            _sharepoint2010ExecEnvCoreSection.homeDirectory.text = sharepointResource.installUri;
-            if (sharepointResource.type.name == ExecEnvType.REMOTE.name)
-                _sharepoint2010ExecEnvCoreSection.location.text = sharepointResource.location;
-            */
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
 
-            _sharepoint2010ExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
-            _sharepoint2010ExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
-            _sharepoint2010ExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
-            _sharepoint2010ExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
-            _sharepoint2010ExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
-            _sharepoint2010ExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ResourceCoreSection.resourceName.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _sharepoint2010ExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
-                handleHostChange(_sharepoint2010ExecEnvCoreSection);
-            });
+            _sharepoint2010ResourceCoreSection.resourceProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ResourceCoreSection.resourceDomain.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ResourceCoreSection.resourcePort.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ResourceCoreSection.resourceContext.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ResourceCoreSection.resourcePath.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _sharepoint2010ResourceCoreSection.appResourceDomain.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ResourceCoreSection.appResourcePort.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ResourceCoreSection.appResourceContext.addEventListener(Event.CHANGE, handleSectionChange);
+            _sharepoint2010ResourceCoreSection.appResourcePath.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
-            _validators.push(_sharepoint2010ExecEnvCoreSection.nameValidator);
-            //_validators.push(_sharepoint2010ExecEnvCoreSection.typeValidator);
-            _validators.push(_sharepoint2010ExecEnvCoreSection.homeDirValidator);
+            _validators.push(_sharepoint2010ResourceCoreSection.nameValidator);
+
+            _validators.push(_sharepoint2010ResourceCoreSection.appPortValidator);
+            _validators.push(_sharepoint2010ResourceCoreSection.appDomainValidator);
+            _validators.push(_sharepoint2010ResourceCoreSection.appContextValidator);
+            _validators.push(_sharepoint2010ResourceCoreSection.appPathValidator);
+
+            _validators.push(_sharepoint2010ResourceCoreSection.portValidator);
+            _validators.push(_sharepoint2010ResourceCoreSection.domainValidator);
+            _validators.push(_sharepoint2010ResourceCoreSection.contextValidator);
+            _validators.push(_sharepoint2010ResourceCoreSection.pathValidator);
+
         }
     }
 
     private function handleSharepoint2010ExecEnvCorePropertyTabRollOut(e:Event):void {
-        trace(e);
-        _sharepoint2010ExecEnvCoreSection.homeDirectory.errorString = "";
-        _sharepoint2010ExecEnvCoreSection.location.errorString = "";
         if (_dirty && validate(true)) {
-            var hvResult:ValidationResultEvent;
-            if ((hvResult = _sharepoint2010ExecEnvCoreSection.homeDirValidator.validate(_sharepoint2010ExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
-                _sharepoint2010ExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
-                return;
-            }
 
-            if (_sharepoint2010ExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
-                _execEnvSaveFunction = sharepoint2010Save;
-                _execEnvHomeDir = _sharepoint2010ExecEnvCoreSection.homeDirectory;
-                var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-                cif.homeDir = _sharepoint2010ExecEnvCoreSection.homeDirectory.text;
-                cif.environmentName = "n/a";
-                sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-            } else {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_sharepoint2010ExecEnvCoreSection.location.text);
-                if (lvResult.type == ValidationResultEvent.VALID) {
-                    sharepoint2010Save();
-                } else {
-                    _sharepoint2010ExecEnvCoreSection.location.errorString = lvResult.results[0].errorMessage;
-                }
-            }
+            var sharepointResource:SharepointResource = _currentIdentityApplianceElement as SharepointResource;
+
+            sharepointResource.name = _sharepoint2010ResourceCoreSection.resourceName.text;
+            sharepointResource.description = _sharepoint2010ResourceCoreSection.resourceDescription.text;
+
+            sharepointResource.stsLocation.protocol = _sharepoint2010ResourceCoreSection.resourceProtocol.selectedItem.label;
+            sharepointResource.stsLocation.host = _sharepoint2010ResourceCoreSection.resourceDomain.text;
+            sharepointResource.stsLocation.port = parseInt(_sharepoint2010ResourceCoreSection.resourcePort.text);
+            sharepointResource.stsLocation.context = _sharepoint2010ResourceCoreSection.resourceContext.text;
+            sharepointResource.stsLocation.uri = _sharepoint2010ResourceCoreSection.resourcePath.text;
+
+            sharepointResource.appLocation.protocol = _sharepoint2010ResourceCoreSection.appResourceProtocol.selectedItem.label;
+            sharepointResource.appLocation.host = _sharepoint2010ResourceCoreSection.appResourceDomain.text;
+            sharepointResource.appLocation.port = parseInt(_sharepoint2010ResourceCoreSection.appResourcePort.text);
+            sharepointResource.appLocation.context = _sharepoint2010ResourceCoreSection.appResourceContext.text;
+            sharepointResource.appLocation.uri = _sharepoint2010ResourceCoreSection.appResourcePath.text;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
         }
+
     }
 
     private function sharepoint2010Save(): void {
          // bind model
         var sharepointResource:SharepointResource = projectProxy.currentIdentityApplianceElement as SharepointResource;
-        sharepointResource.name = _sharepoint2010ExecEnvCoreSection.executionEnvironmentName.text;
-        sharepointResource.description = _sharepoint2010ExecEnvCoreSection.executionEnvironmentDescription.text;
+        sharepointResource.name = _sharepoint2010ResourceCoreSection.executionEnvironmentName.text;
+        sharepointResource.description = _sharepoint2010ResourceCoreSection.executionEnvironmentDescription.text;
         //sharepointResource.containerType = _sharepoint2010ExecEnvCoreSection.executionEnvironmentType.text;
         //TODO CHECK PLATFORM ID
         /**
@@ -7057,7 +7070,7 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
-        _coldfusionExecEnvCoreSection = new ColdfusionExecEnvCoreSection();
+        _coldfusionExecEnvCoreSection = new ColdfusionResourceCoreSection();
         corePropertyTab.addElement(_coldfusionExecEnvCoreSection);
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
@@ -7109,8 +7122,8 @@ public class PropertySheetMediator extends IocMediator {
             if (coldfusionExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _coldfusionExecEnvCoreSection.location.text = coldfusionExecEnv.location;
             
-            _execEnvLocationValidator = new URLValidator();
-            _execEnvLocationValidator.required = true;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
             */
 
             _coldfusionExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
@@ -7141,7 +7154,7 @@ public class PropertySheetMediator extends IocMediator {
             }
             
             if (_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
-                var lvResult:ValidationResultEvent = _execEnvLocationValidator.validate(_coldfusionExecEnvCoreSection.location.text);
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_coldfusionExecEnvCoreSection.location.text);
                 if (lvResult.type != ValidationResultEvent.VALID) {
                     _coldfusionExecEnvCoreSection.location.errorString = lvResult.results[0].errorMessage;
                     return;

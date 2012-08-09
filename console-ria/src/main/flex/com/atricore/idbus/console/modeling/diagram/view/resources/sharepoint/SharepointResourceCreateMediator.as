@@ -29,6 +29,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFol
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
+import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.SharepointResource;
 
 import flash.events.Event;
@@ -104,11 +105,9 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
         _locationValidator = new URLValidator();
         _locationValidator.required = true;
 
-        view.selectedHost.addEventListener(Event.CHANGE, handleHostChange);
-
         view.btnOk.addEventListener(MouseEvent.CLICK, handleSharepointResourceSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
-        view.selectedHost.selectedIndex = 0;
+
         view.focusManager.setFocus(view.resourceName);
 
         // upload bindings
@@ -122,13 +121,14 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
         view.resourceDescription.text = "";
         view.resourceSigningCertSubject.text = "";
         view.resourceEncryptingCertSubject.text = "";
-        view.homeDirectory.text = "";
-        view.location.text = "";
-        view.homeDirectory.errorString = "";
-        view.location.errorString = "";
-        view.selectedHost.selectedIndex = 0;
-        view.replaceConfFiles.selected = false;
-        view.installSamples.selected = false;
+
+        view.resourceDomain.text = "";
+        view.resourceContext.text = "";
+        view.resourcePath.text = "";
+
+        view.appResourceDomain.text = "";
+        view.appResourceContext.text = "";
+        view.appResourcePath.text = "";
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
@@ -149,6 +149,27 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
         sharepointResource.stsSigningCertSubject = view.resourceSigningCertSubject.text;
         sharepointResource.stsEncryptingCertSubject = view.resourceEncryptingCertSubject.text;
 
+        // STS location
+        var stsLocation:Location = new Location();
+        stsLocation.protocol = view.resourceProtocol.labelDisplay.text;
+        stsLocation.host = view.resourceDomain.text;
+        stsLocation.port = parseInt(view.resourcePort.text);
+        stsLocation.context = view.resourceContext.text;
+        stsLocation.uri = view.resourcePath.text;
+
+        sharepointResource.stsLocation = stsLocation;
+
+        // App location
+        var appLocation:Location = new Location();
+        appLocation.protocol = view.resourceProtocol.labelDisplay.text;
+        appLocation.host = view.resourceDomain.text;
+        appLocation.port = parseInt(view.resourcePort.text);
+        appLocation.context = view.resourceContext.text;
+        appLocation.uri = view.resourcePath.text;
+
+        sharepointResource.appLocation = appLocation;
+
+
         /* TODO: where do we place execution environment-specific attributes ?
         sharepointResource.platformId = view.platform.selectedItem.data;
 
@@ -164,11 +185,25 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
     }
 
     private function handleSharepointResourceSave(event:MouseEvent):void {
+
+        if (validate(true)) {
+            bindModel();
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.addItem(_newResource);
+            _projectProxy.currentIdentityApplianceElement = _newResource;
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+            sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            closeWindow();
+        }
+        else {
+            event.stopImmediatePropagation();
+        }
+
+        /*
         view.homeDirectory.errorString = "";
         view.location.errorString = "";
         if (validate(true)) {
 
-            /*
             if (_selectedFiles == null || _selectedFiles.length == 0) {
                 view.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.metadata.file.error");
                 view.lblUploadMsg.setStyle("color", "Red");
@@ -177,7 +212,7 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
                 return;
             } else {
                 _fileRef.load();
-            } */
+            }
 
             var hvResult:ValidationResultEvent;
             if ((hvResult = view.homeDirValidator.validate(view.homeDirectory.text)).type != ValidationResultEvent.VALID) {
@@ -199,6 +234,7 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
                 }
             }
         }
+        */
     }
 
     private function save():void {
@@ -216,18 +252,6 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
 
     private function handleCancel(event:MouseEvent):void {
         closeWindow();
-    }
-
-    private function handleHostChange(event:Event):void {
-        if (view.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
-            view.locationItem.includeInLayout = true;
-            view.locationItem.visible = true;
-            view.parent.height += 20;
-        } else {
-            view.locationItem.includeInLayout = false;
-            view.locationItem.visible = false;
-            view.parent.height -= 20;
-        }
     }
 
     private function closeWindow():void {
@@ -280,7 +304,17 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
-        _validators.push(view.homeDirValidator);
+
+        _validators.push(view.portValidator);
+        _validators.push(view.domainValidator);
+        _validators.push(view.contextValidator);
+        _validators.push(view.pathValidator);
+
+        _validators.push(view.appPortValidator);
+        _validators.push(view.appDomainValidator);
+        _validators.push(view.appContextValidator);
+        _validators.push(view.appPathValidator);
+
     }
 
     override public function listNotificationInterests():Array {
@@ -290,21 +324,7 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
     }
 
     override public function handleNotification(notification:INotification):void {
-        switch (notification.getName()) {
-            case FolderExistsCommand.FOLDER_EXISTS:
-                var envName:String = notification.getBody() as String;
-                if(envName == _environmentName){
-                    view.homeDirectory.errorString = "";
-                    save();
-                }
-                break;
-            case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
-                envName = notification.getBody() as String;
-                if(envName == _environmentName){
-                    view.homeDirectory.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
-                }
-                break;
-        }
+
     }
 }
 }

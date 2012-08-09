@@ -6,6 +6,8 @@ package com.atricore.idbus.console.services.dto;
 public class SharepointResourceDTO extends ServiceResourceDTO {
     private static final long serialVersionUID = 475740871227635432L;
 
+    private LocationDTO appLocation;
+
     private LocationDTO stsLocation;
 
     private String stsSigningCertSubject;
@@ -13,6 +15,14 @@ public class SharepointResourceDTO extends ServiceResourceDTO {
     private String stsEncryptingCertSubject;
 
     private ResourceDTO stsMetadata;
+
+    public LocationDTO getAppLocation() {
+        return appLocation;
+    }
+
+    public void setAppLocation(LocationDTO appLocation) {
+        this.appLocation = appLocation;
+    }
 
     public LocationDTO getStsLocation() {
         return stsLocation;

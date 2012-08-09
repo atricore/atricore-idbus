@@ -10,6 +10,8 @@ public class SharepointResource extends ServiceResource {
 
     private static final long serialVersionUID = 873640871223858432L;
 
+    private Location appLocation;
+
     private Location stsLocation;
 
     private String stsSigningCertSubject;
@@ -17,6 +19,14 @@ public class SharepointResource extends ServiceResource {
     private String stsEncryptingCertSubject;
 
     private Resource stsMetadata;
+
+    public Location getAppLocation() {
+        return appLocation;
+    }
+
+    public void setAppLocation(Location appLocation) {
+        this.appLocation = appLocation;
+    }
 
     public Location getStsLocation() {
         return stsLocation;

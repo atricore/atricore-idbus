@@ -222,7 +222,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _wikidCreateForm:WikidCreateForm;
     private var _directoryServiceCreateForm:DirectoryServiceCreateForm;
     private var _windowsIntegratedAuthnCreateForm:WindowsIntegratedAuthnCreateForm;
-    private var _sharepoint2010ExecutionEnvironmentCreateForm:SharepointResourceCreateForm;
+    private var _sharepoint2010ResourceCreateForm:SharepointResourceCreateForm;
     private var _coldfusionExecutionEnvironmentCreateForm:ColdfusionResourceCreateForm;
     private var _microStrategyResourceCreateForm:MicroStrategyResourceCreateForm;
 
@@ -1254,20 +1254,20 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createSharepointResourceCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.sharepoint2010");
-        _popup.width = 500;
+        _popup.width = 800;
         _popup.height = 350;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
-        showPopup(_sharepoint2010ExecutionEnvironmentCreateForm);
+        showPopup(_sharepoint2010ResourceCreateForm);
     }
 
     private function createSharepointResourceCreateForm():void {
-        _sharepoint2010ExecutionEnvironmentCreateForm = new SharepointResourceCreateForm();
-        _sharepoint2010ExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleSharepointResourceCreateFormCreated);
+        _sharepoint2010ResourceCreateForm = new SharepointResourceCreateForm();
+        _sharepoint2010ResourceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleSharepointResourceCreateFormCreated);
     }
 
     private function handleSharepointResourceCreateFormCreated(event:FlexEvent):void {
-        sharepointResourceCreateMediator.setViewComponent(_sharepoint2010ExecutionEnvironmentCreateForm);
+        sharepointResourceCreateMediator.setViewComponent(_sharepoint2010ResourceCreateForm);
         sharepointResourceCreateMediator.handleNotification(_lastWindowNotification);
     }
 
