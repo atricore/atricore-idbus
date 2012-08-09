@@ -1036,8 +1036,8 @@
 
     <!-- Local Services Menu -->
     <object id="localServicesMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">
-        <property name="label" value="Local Services"/>
-        <property name="shortDescription" value="Local Services Drawer"/>
+        <property name="label" value="Platform Services"/>
+        <property name="shortDescription" value="Platform Services Drawer"/>
         <property name="viewPriority" value="10"/>
         <property name="children">
             <array>
@@ -1053,8 +1053,8 @@
     </object>
 
     <object id="httpServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="HTTP Service"/>
-        <property name="shortDescription" value="HTTP Service Entry"/>
+        <property name="label" value="HTTP Settings"/>
+        <property name="shortDescription" value="HTTP Settings Entry"/>
         <property name="iconName" value="httpService"/>
         <property name="mediatorName" value="httpServiceMediator"/>
         <property name="viewName" value="httpServiceView"/>
@@ -1067,8 +1067,8 @@
     <object id="httpServiceView" class="com.atricore.idbus.console.config.http.HttpServiceView"/>
 
     <object id="sshServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="SSH Service"/>
-        <property name="shortDescription" value="SSH Service Entry"/>
+        <property name="label" value="SSH Settings"/>
+        <property name="shortDescription" value="SSH Settings Entry"/>
         <property name="iconName" value="sshService"/>
         <property name="mediatorName" value="sshServiceMediator"/>
         <property name="viewName" value="sshServiceView"/>
@@ -1081,8 +1081,8 @@
     <object id="sshServiceView" class="com.atricore.idbus.console.config.ssh.SshServiceView"/>
 
     <object id="persistenceServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="Persistence Service"/>
-        <property name="shortDescription" value="Persistence Service Entry"/>
+        <property name="label" value="Persistence Settings"/>
+        <property name="shortDescription" value="Persistence Settings Entry"/>
         <property name="iconName" value="persistenceService"/>
         <property name="mediatorName" value="persistenceServiceMediator"/>
         <property name="viewName" value="persistenceServiceView"/>
@@ -1096,8 +1096,8 @@
     <object id="persistenceServiceView" class="com.atricore.idbus.console.config.persistence.PersistenceServiceView"/>
 
     <object id="managementServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="Management Service"/>
-        <property name="shortDescription" value="Management Service Entry"/>
+        <property name="label" value="Management Settings"/>
+        <property name="shortDescription" value="Management Settings Entry"/>
         <property name="iconName" value="managementService"/>
         <property name="mediatorName" value="managementServiceMediator"/>
         <property name="viewName" value="managementServiceView"/>
@@ -1110,8 +1110,8 @@
     <object id="managementServiceView" class="com.atricore.idbus.console.config.management.ManagementServiceView"/>
 
     <object id="aqmServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="Artifact Queue Manager Service"/>
-        <property name="shortDescription" value="Artifact Queue Manager Service Entry"/>
+        <property name="label" value="Queue Settings"/>
+        <property name="shortDescription" value="Queue Settings Entry"/>
         <property name="iconName" value="aqmService"/>
         <property name="mediatorName" value="aqmServiceMediator"/>
         <property name="viewName" value="aqmServiceView"/>
@@ -1124,8 +1124,8 @@
     <object id="aqmServiceView" class="com.atricore.idbus.console.config.aqm.ArtifactQueueManagerServiceView"/>
 
     <object id="logServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="Log Service"/>
-        <property name="shortDescription" value="Log Service Entry"/>
+        <property name="label" value="Logging Settings"/>
+        <property name="shortDescription" value="Logging Settings Entry"/>
         <property name="iconName" value="logService"/>
         <property name="mediatorName" value="logServiceMediator"/>
         <property name="viewName" value="logServiceView"/>
@@ -1138,8 +1138,8 @@
     <object id="logServiceView" class="com.atricore.idbus.console.config.log.LogServiceView"/>
 
     <object id="brandingServiceMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="Branding Service"/>
-        <property name="shortDescription" value="Branding Service Entry"/>
+        <property name="label" value="Branding Settings"/>
+        <property name="shortDescription" value="Branding Settings Entry"/>
         <property name="iconName" value="brandingService"/>
         <property name="mediatorName" value="brandingServiceMediator"/>
         <property name="viewName" value="brandingServiceView"/>

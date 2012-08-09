@@ -607,5 +607,33 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/settings/system_update.png")]
     public static var systemUpdateIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/http_settings.png")]
+    public static var httpSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/ssh_settings.png")]
+    public static var sshSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/persistence_settings.png")]
+    public static var persistenceSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/management_settings.png")]
+    public static var managementSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/queue_settings.png")]
+    public static var queueSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/logging_settings.png")]
+    public static var logggingSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/branding_settings.png")]
+    public static var brandingSettingsIcon:Class;
 }
 }

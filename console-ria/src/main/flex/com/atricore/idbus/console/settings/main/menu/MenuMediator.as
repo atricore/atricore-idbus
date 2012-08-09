@@ -66,19 +66,20 @@ public class MenuMediator extends IocMediator {
                 else if (settingsMenuEntry.iconName == "liveUpdate")
                     settingsMenuEntry.icon = EmbeddedIcons.liveUpdateIcon;
                 else if (settingsMenuEntry.iconName == "httpService")
-                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                    settingsMenuEntry.icon = EmbeddedIcons.httpSettingsIcon;
                 else if (settingsMenuEntry.iconName == "sshService")
-                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                    settingsMenuEntry.icon = EmbeddedIcons.sshSettingsIcon;
                 else if (settingsMenuEntry.iconName == "persistenceService")
-                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                    settingsMenuEntry.icon = EmbeddedIcons.persistenceSettingsIcon;
                 else if (settingsMenuEntry.iconName == "managementService")
-                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                    settingsMenuEntry.icon = EmbeddedIcons.managementSettingsIcon;
                 else if (settingsMenuEntry.iconName == "aqmService")
-                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                    settingsMenuEntry.icon = EmbeddedIcons.queueSettingsIcon;
                 else if (settingsMenuEntry.iconName == "logService")
-                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                    settingsMenuEntry.icon = EmbeddedIcons.logggingSettingsIcon;
                 else if (settingsMenuEntry.iconName == "brandingService")
-                    settingsMenuEntry.icon = EmbeddedIcons.spMiniIcon;
+                    settingsMenuEntry.icon = EmbeddedIcons.brandingSettingsIcon;
+
             }
 
             smr.add(settingsMenuDrawer);
