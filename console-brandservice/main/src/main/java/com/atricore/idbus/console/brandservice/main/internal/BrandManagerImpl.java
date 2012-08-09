@@ -148,7 +148,7 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
                 for (BrandingInstaller installer : installers) {
                     if (installer.canHandle(def)) {
                         // Uninstall the old version and install the new one
-                        def = installer.uninstall(def);
+                        installer.uninstall(currentDef);
                         def = installer.install(def);
                     }
                 }

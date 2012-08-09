@@ -26,7 +26,7 @@ public class CustomBrandingInstaller extends OsgiBrandingInstaller {
             String bundleUri = cd.getBundleUri();
             Bundle bundle = getBundleContext().installBundle(bundleUri, null);
             
-            // TODO : Validate the bundle ! It should be a fragment HOST for SSO UI!
+            // Validate the bundle ! It should be a fragment HOST for SSO UI!
             
             Dictionary d = bundle.getHeaders();
             String hostBundle = (String) d.get("Fragment-Host");
