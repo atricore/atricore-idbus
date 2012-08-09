@@ -29,18 +29,18 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.sso</groupId>
         <artifactId>sso</artifactId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.3.0</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.sso</groupId>
     <artifactId>org.atricore.idbus.capabilities.sso.ui</artifactId>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.3.0</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : SSO UI Component</name>
 
     <properties>
         <apache-wicket.version>1.4.18</apache-wicket.version>
-        <idbus.cap.sso.version>1.3.0-SNAPSHOT</idbus.cap.sso.version>
+        <idbus.cap.sso.version>1.3.0</idbus.cap.sso.version>
         <ops4j.paxwicket.version>0.8.2</ops4j.paxwicket.version>
         <osgi.version>4.0.1</osgi.version>
         <pax.web.version>0.7.2</pax.web.version>

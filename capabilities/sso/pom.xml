@@ -26,12 +26,12 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.3.0</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.sso</groupId>
     <artifactId>sso</artifactId>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.3.0</version>
     <name>Atricore IDBus :: Capability : SSO POM</name>
     <packaging>pom</packaging>
 
@@ -44,8 +44,8 @@
 
     <properties>
 
-        <idbus.kernel.version>1.3.0-SNAPSHOT</idbus.kernel.version>
-        <idbus.sts.version>1.3.0-SNAPSHOT</idbus.sts.version>
+        <idbus.kernel.version>1.3.0</idbus.kernel.version>
+        <idbus.sts.version>1.3.0</idbus.sts.version>
         
         <apache.jasper.version>5.5.9</apache.jasper.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
