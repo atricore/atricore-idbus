@@ -1702,6 +1702,7 @@
                 <module>console-settings</module>
                 <module>console-lifecycle</module>
                 <module>console-activation</module>
+                <module>console-brandservice</module>
                 <module>console-2factor</module>
 
                 <!-- Flex specific modules -->
