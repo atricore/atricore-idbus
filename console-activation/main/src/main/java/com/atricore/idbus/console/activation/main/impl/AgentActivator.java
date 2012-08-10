@@ -29,8 +29,6 @@ public class AgentActivator extends ActivatorSupport {
     protected FileObject srcsDir;
     protected FileObject trdpartyDir;
     protected FileObject confDir;
-    protected FileObject iis32Dir;
-    protected FileObject iis64Dir;
 
     public AgentActivator(List<Installer> installers,
                           MessagePrinter printer,
@@ -67,8 +65,6 @@ public class AgentActivator extends ActivatorSupport {
         srcsDir = jossoDistDir.resolveFile("dist/agents/src");
         trdpartyDir = libsDir.resolveFile("3rdparty");
         confDir = jossoDistDir.resolveFile("dist/agents/config/" + request.getTargetPlatformId());
-        iis32Dir = libsDir.resolveFile("Win32");
-        iis64Dir = libsDir.resolveFile("Win64");
     }
 
     protected void verifyTarget() throws Exception {
@@ -90,8 +86,6 @@ public class AgentActivator extends ActivatorSupport {
 
     protected void installJOSSOAgentJars() throws Exception {
         processDir(libsDir, false);
-        processDir(iis32Dir, true);
-        processDir(iis64Dir, true);
     }
     
     protected void installJOSSOAgentJarsFromSrc() throws Exception {
