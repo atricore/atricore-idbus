@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: ssh://www.fsf.org.
  */
 
-package com.atricore.idbus.console.config.ssh
+package com.atricore.idbus.console.config.management
 {
 import com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand;
 import com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand;
@@ -27,8 +27,8 @@ import com.atricore.idbus.console.config.main.model.ServiceConfigProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.services.dto.settings.ManagementServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ServiceType;
-import com.atricore.idbus.console.services.dto.settings.SshServiceConfiguration;
 import com.atricore.idbus.console.services.spi.response.ConfigureServiceResponse;
 
 import flash.events.Event;
@@ -42,25 +42,25 @@ import mx.resources.ResourceManager;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 
-public class SshServiceMediator extends IocFormMediator implements IDisposable {
+public class ManagementSettingsMediator extends IocFormMediator implements IDisposable {
 
     private var _configProxy:ServiceConfigProxy;
 
     protected var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    private var _created:Boolean;    
+    private var _created:Boolean;
 
-    private var _sshServiceConfig:SshServiceConfiguration;
+    private var _managementServiceConfig:ManagementServiceConfiguration;
 
-    public function SshServiceMediator(name:String = null, viewComp:SshServiceView = null) {
+    public function ManagementSettingsMediator(name:String = null, viewComp:ManagementSettingsView = null) {
         super(name, viewComp);
     }
 
     override public function setViewComponent(viewComponent:Object):void {
         if (_created) {
-            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.SSH);
+            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.MANAGEMENT);
         }
-        (viewComponent as SshServiceView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+        (viewComponent as ManagementSettingsView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         super.setViewComponent(viewComponent);
     }
 
@@ -74,7 +74,7 @@ public class SshServiceMediator extends IocFormMediator implements IDisposable {
             view.titleDisplay.width = 0;
             view.titleDisplay.height = 0;
             view.btnSave.addEventListener(MouseEvent.CLICK, handleSave);
-            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.SSH);
+            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.MANAGEMENT);
         }
     }
 
@@ -90,8 +90,9 @@ public class SshServiceMediator extends IocFormMediator implements IDisposable {
             case UpdateServiceConfigCommand.SUCCESS:
                 var resp:ConfigureServiceResponse = notification.getBody() as ConfigureServiceResponse;
                 var serviceType1:ServiceType = resp.serviceType;
-                if (serviceType1.name == ServiceType.SSH.name) {
+                if (serviceType1.name == ServiceType.MANAGEMENT.name) {
                     sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.MANAGEMENT);
                     if (resp.restart) {
                         Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.service.restartMessage'));
                     }
@@ -99,15 +100,15 @@ public class SshServiceMediator extends IocFormMediator implements IDisposable {
                 break;
             case UpdateServiceConfigCommand.FAILURE:
                 var serviceType2:ServiceType = notification.getBody() as ServiceType;
-                if (serviceType2.name == ServiceType.SSH.name) {
+                if (serviceType2.name == ServiceType.MANAGEMENT.name) {
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            resourceManager.getString(AtricoreConsole.BUNDLE, "config.ssh.save.error"));
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "config.management.save.error"));
                 }
                 break;
             case GetServiceConfigCommand.SUCCESS:
                 var serviceType3:ServiceType = notification.getBody() as ServiceType;
-                if (serviceType3.name == ServiceType.SSH.name) {
+                if (serviceType3.name == ServiceType.MANAGEMENT.name) {
                     displayServiceConfig();
                 }
                 break;
@@ -118,15 +119,15 @@ public class SshServiceMediator extends IocFormMediator implements IDisposable {
     }
 
     override public function bindModel():void {
-        _sshServiceConfig.port = parseInt(view.port.text);
-        _sshServiceConfig.bindAddress = view.bindAddress.text;
+        _managementServiceConfig.rmiRegistryPort = parseInt(view.rmiRegistryPort.text);
+        _managementServiceConfig.rmiServerPort = parseInt(view.rmiServerPort.text);
     }
 
     private function handleSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.ssh.save.progress"));
-            sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _sshServiceConfig);
+            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.management.save.progress"));
+            sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _managementServiceConfig);
         }
         else {
             event.stopImmediatePropagation();
@@ -134,21 +135,22 @@ public class SshServiceMediator extends IocFormMediator implements IDisposable {
     }
 
     public function displayServiceConfig():void {
-        _sshServiceConfig = _configProxy.sshService;
+        _managementServiceConfig = _configProxy.managementService;
 
-        view.port.text = String(_sshServiceConfig.port);
-        view.bindAddress.text = _sshServiceConfig.bindAddress;
+        view.rmiRegistryPort.text = String(_managementServiceConfig.rmiRegistryPort);
+        view.rmiServerPort.text = String(_managementServiceConfig.rmiServerPort);
+        view.serviceUrl.text = _managementServiceConfig.serviceUrl;
         view.btnSave.enabled = true;
     }
 
-    protected function get view():SshServiceView {
-        return viewComponent as SshServiceView;
+    protected function get view():ManagementSettingsView {
+        return viewComponent as ManagementSettingsView;
     }
 
     override public function registerValidators():void {
         _validators = [];
-        _validators.push(view.portValidator);
-        _validators.push(view.bindAddressValidator);
+        _validators.push(view.rmiRegistryPortValidator);
+        _validators.push(view.rmiServerPortValidator);
     }
 
     public function set configProxy(value:ServiceConfigProxy):void {

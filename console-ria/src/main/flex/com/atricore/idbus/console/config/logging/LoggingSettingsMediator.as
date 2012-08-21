@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: ssh://www.fsf.org.
  */
 
-package com.atricore.idbus.console.config.log
+package com.atricore.idbus.console.config.logging
 {
 import com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand;
 import com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand;
@@ -43,7 +43,7 @@ import mx.resources.ResourceManager;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 
-public class LogServiceMediator extends IocFormMediator implements IDisposable {
+public class LoggingSettingsMediator extends IocFormMediator implements IDisposable {
 
     private var _configProxy:ServiceConfigProxy;
 
@@ -53,7 +53,7 @@ public class LogServiceMediator extends IocFormMediator implements IDisposable {
 
     private var _logServiceConfig:LogServiceConfiguration;
 
-    public function LogServiceMediator(name:String = null, viewComp:LogServiceView = null) {
+    public function LoggingSettingsMediator(name:String = null, viewComp:LoggingSettingsView = null) {
         super(name, viewComp);
     }
 
@@ -61,7 +61,7 @@ public class LogServiceMediator extends IocFormMediator implements IDisposable {
         if (_created) {
             sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.LOG);
         }
-        (viewComponent as LogServiceView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+        (viewComponent as LoggingSettingsView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         super.setViewComponent(viewComponent);
     }
 
@@ -169,8 +169,8 @@ public class LogServiceMediator extends IocFormMediator implements IDisposable {
         view.customLogData.validateNow();
     }
 
-    protected function get view():LogServiceView {
-        return viewComponent as LogServiceView;
+    protected function get view():LoggingSettingsView {
+        return viewComponent as LoggingSettingsView;
     }
 
     override public function registerValidators():void {

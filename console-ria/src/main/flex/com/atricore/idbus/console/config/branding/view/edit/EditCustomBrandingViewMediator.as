@@ -69,8 +69,8 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
     [Bindable]
     public var _uploadedFileName:String;
 
-    private var _brandingServiceMediatorName:String;
-    private var _brandingServiceViewName:String;
+    private var _brandingSettingsMediatorName:String;
+    private var _brandingSettingsViewName:String;
 
     private var _lookupId:Number;
 
@@ -167,12 +167,12 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
     }
 
     private function close():void {
-        var brandingServiceMediator:IIocMediator = iocFacade.container.getObject(brandingServiceMediatorName) as IIocMediator;
-        var brandingServiceView:IVisualElement = iocFacade.container.getObject(brandingServiceViewName) as IVisualElement;
+        var brandingSettingsMediator:IIocMediator = iocFacade.container.getObject(brandingSettingsMediatorName) as IIocMediator;
+        var brandingSettingsView:IVisualElement = iocFacade.container.getObject(brandingSettingsViewName) as IVisualElement;
         var parentGroup:Group = view.parent as Group;
         parentGroup.removeAllElements();
-        parentGroup.addElement(brandingServiceView);
-        brandingServiceMediator.setViewComponent(brandingServiceView);
+        parentGroup.addElement(brandingSettingsView);
+        brandingSettingsMediator.setViewComponent(brandingSettingsView);
     }
 
     override public function listNotificationInterests():Array {
@@ -251,20 +251,20 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
         _configProxy = value;
     }
 
-    public function get brandingServiceMediatorName():String {
-        return _brandingServiceMediatorName;
+    public function get brandingSettingsMediatorName():String {
+        return _brandingSettingsMediatorName;
     }
 
-    public function set brandingServiceMediatorName(value:String):void {
-        _brandingServiceMediatorName = value;
+    public function set brandingSettingsMediatorName(value:String):void {
+        _brandingSettingsMediatorName = value;
     }
 
-    public function get brandingServiceViewName():String {
-        return _brandingServiceViewName;
+    public function get brandingSettingsViewName():String {
+        return _brandingSettingsViewName;
     }
 
-    public function set brandingServiceViewName(value:String):void {
-        _brandingServiceViewName = value;
+    public function set brandingSettingsViewName(value:String):void {
+        _brandingSettingsViewName = value;
     }
 
     public function get lookupId():Number {

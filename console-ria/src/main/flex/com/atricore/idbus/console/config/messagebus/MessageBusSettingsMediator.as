@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: ssh://www.fsf.org.
  */
 
-package com.atricore.idbus.console.config.management
+package com.atricore.idbus.console.config.messagebus
 {
 import com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand;
 import com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand;
@@ -27,7 +27,7 @@ import com.atricore.idbus.console.config.main.model.ServiceConfigProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.services.dto.settings.ManagementServiceConfiguration;
+import com.atricore.idbus.console.services.dto.settings.ArtifactQueueManagerConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ServiceType;
 import com.atricore.idbus.console.services.spi.response.ConfigureServiceResponse;
 
@@ -42,7 +42,7 @@ import mx.resources.ResourceManager;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 
-public class ManagementServiceMediator extends IocFormMediator implements IDisposable {
+public class MessageBusSettingsMediator extends IocFormMediator implements IDisposable {
 
     private var _configProxy:ServiceConfigProxy;
 
@@ -50,17 +50,17 @@ public class ManagementServiceMediator extends IocFormMediator implements IDispo
 
     private var _created:Boolean;
 
-    private var _managementServiceConfig:ManagementServiceConfiguration;
+    private var _artifactQueueManagerConfig:ArtifactQueueManagerConfiguration;
 
-    public function ManagementServiceMediator(name:String = null, viewComp:ManagementServiceView = null) {
+    public function MessageBusSettingsMediator(name:String = null, viewComp:MessageBusSettingsView = null) {
         super(name, viewComp);
     }
 
     override public function setViewComponent(viewComponent:Object):void {
         if (_created) {
-            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.MANAGEMENT);
+            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.AQM);
         }
-        (viewComponent as ManagementServiceView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+        (viewComponent as MessageBusSettingsView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         super.setViewComponent(viewComponent);
     }
 
@@ -74,7 +74,7 @@ public class ManagementServiceMediator extends IocFormMediator implements IDispo
             view.titleDisplay.width = 0;
             view.titleDisplay.height = 0;
             view.btnSave.addEventListener(MouseEvent.CLICK, handleSave);
-            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.MANAGEMENT);
+            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.AQM);
         }
     }
 
@@ -90,9 +90,8 @@ public class ManagementServiceMediator extends IocFormMediator implements IDispo
             case UpdateServiceConfigCommand.SUCCESS:
                 var resp:ConfigureServiceResponse = notification.getBody() as ConfigureServiceResponse;
                 var serviceType1:ServiceType = resp.serviceType;
-                if (serviceType1.name == ServiceType.MANAGEMENT.name) {
+                if (serviceType1.name == ServiceType.AQM.name) {
                     sendNotification(ProcessingMediator.STOP);
-                    sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.MANAGEMENT);
                     if (resp.restart) {
                         Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.service.restartMessage'));
                     }
@@ -100,15 +99,15 @@ public class ManagementServiceMediator extends IocFormMediator implements IDispo
                 break;
             case UpdateServiceConfigCommand.FAILURE:
                 var serviceType2:ServiceType = notification.getBody() as ServiceType;
-                if (serviceType2.name == ServiceType.MANAGEMENT.name) {
+                if (serviceType2.name == ServiceType.AQM.name) {
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            resourceManager.getString(AtricoreConsole.BUNDLE, "config.management.save.error"));
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "config.aqm.save.error"));
                 }
                 break;
             case GetServiceConfigCommand.SUCCESS:
                 var serviceType3:ServiceType = notification.getBody() as ServiceType;
-                if (serviceType3.name == ServiceType.MANAGEMENT.name) {
+                if (serviceType3.name == ServiceType.AQM.name) {
                     displayServiceConfig();
                 }
                 break;
@@ -119,15 +118,17 @@ public class ManagementServiceMediator extends IocFormMediator implements IDispo
     }
 
     override public function bindModel():void {
-        _managementServiceConfig.rmiRegistryPort = parseInt(view.rmiRegistryPort.text);
-        _managementServiceConfig.rmiServerPort = parseInt(view.rmiServerPort.text);
+        _artifactQueueManagerConfig.brokerName = view.brokerName.text;
+        _artifactQueueManagerConfig.brokerHost = view.brokerHost.text;
+        _artifactQueueManagerConfig.brokerBindAddress = view.brokerBindAddress.text;
+        _artifactQueueManagerConfig.brokerPort = parseInt(view.brokerPort.text);
     }
 
     private function handleSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.management.save.progress"));
-            sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _managementServiceConfig);
+            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.aqm.save.progress"));
+            sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _artifactQueueManagerConfig);
         }
         else {
             event.stopImmediatePropagation();
@@ -135,22 +136,25 @@ public class ManagementServiceMediator extends IocFormMediator implements IDispo
     }
 
     public function displayServiceConfig():void {
-        _managementServiceConfig = _configProxy.managementService;
+        _artifactQueueManagerConfig = _configProxy.artifactQueueManagerService;
 
-        view.rmiRegistryPort.text = String(_managementServiceConfig.rmiRegistryPort);
-        view.rmiServerPort.text = String(_managementServiceConfig.rmiServerPort);
-        view.serviceUrl.text = _managementServiceConfig.serviceUrl;
+        view.brokerName.text = _artifactQueueManagerConfig.brokerName;
+        view.brokerHost.text = _artifactQueueManagerConfig.brokerHost;
+        view.brokerBindAddress.text = _artifactQueueManagerConfig.brokerBindAddress;
+        view.brokerPort.text = String(_artifactQueueManagerConfig.brokerPort);
         view.btnSave.enabled = true;
     }
 
-    protected function get view():ManagementServiceView {
-        return viewComponent as ManagementServiceView;
+    protected function get view():MessageBusSettingsView {
+        return viewComponent as MessageBusSettingsView;
     }
 
     override public function registerValidators():void {
         _validators = [];
-        _validators.push(view.rmiRegistryPortValidator);
-        _validators.push(view.rmiServerPortValidator);
+        _validators.push(view.brokerNameValidator);
+        _validators.push(view.brokerHostValidator);
+        _validators.push(view.brokerBindAddressValidator);
+        _validators.push(view.brokerPortValidator);
     }
 
     public function set configProxy(value:ServiceConfigProxy):void {

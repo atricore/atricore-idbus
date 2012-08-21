@@ -19,10 +19,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.config.http
+package com.atricore.idbus.console.config.web
 {
-import com.atricore.idbus.console.config.http.event.BindAddressGridEvent;
-import com.atricore.idbus.console.config.http.event.IncludeExcludeURLGridEvent;
+import com.atricore.idbus.console.config.web.event.BindAddressGridEvent;
+import com.atricore.idbus.console.config.web.event.IncludeExcludeURLGridEvent;
 import com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand;
 import com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand;
 import com.atricore.idbus.console.config.main.model.ServiceConfigProxy;
@@ -48,7 +48,7 @@ import mx.resources.ResourceManager;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 
-public class HttpServiceMediator extends IocFormMediator implements IDisposable {
+public class WebSettingsMediator extends IocFormMediator implements IDisposable {
 
     public static const ADD_BIND_ADDRESS:String = "Click to Add Bind Address";
     public static const ADD_URL:String = "Click to Add URL";
@@ -72,7 +72,7 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
     [Bindable]
     public var _excludeURLs:ArrayCollection;
 
-    public function HttpServiceMediator(name:String = null, viewComp:HttpServiceView = null) {
+    public function WebSettingsMediator(name:String = null, viewComp:WebSettingsView = null) {
         super(name, viewComp);
     }
 
@@ -80,7 +80,7 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
         if (_created) {
             sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.HTTP);
         }
-        (viewComponent as HttpServiceView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+        (viewComponent as WebSettingsView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         super.setViewComponent(viewComponent);
     }
 
@@ -429,8 +429,8 @@ public class HttpServiceMediator extends IocFormMediator implements IDisposable 
         }
     }
 
-    protected function get view():HttpServiceView {
-        return viewComponent as HttpServiceView;
+    protected function get view():WebSettingsView {
+        return viewComponent as WebSettingsView;
     }
 
     override public function registerValidators():void {

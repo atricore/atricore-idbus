@@ -53,7 +53,7 @@ import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 
 import spark.components.Group;
 
-public class BrandingServiceMediator extends IocFormMediator implements IDisposable {
+public class BrandingSettingsMediator extends IocFormMediator implements IDisposable {
 
     private var _configProxy:ServiceConfigProxy;
 
@@ -70,7 +70,7 @@ public class BrandingServiceMediator extends IocFormMediator implements IDisposa
     private var _editCustomBrandingViewName:String;
     private var _editCustomBrandingInitialized:Boolean = false;
 
-    public function BrandingServiceMediator(name:String = null, viewComp:BrandingServiceView = null) {
+    public function BrandingSettingsMediator(name:String = null, viewComp:BrandingSettingsView = null) {
         super(name, viewComp);
     }
 
@@ -78,7 +78,7 @@ public class BrandingServiceMediator extends IocFormMediator implements IDisposa
         if (_created) {
             sendNotification(ApplicationFacade.LIST_BRANDINGS);
         }
-        (viewComponent as BrandingServiceView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+        (viewComponent as BrandingSettingsView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         super.setViewComponent(viewComponent);
     }
 
@@ -212,8 +212,8 @@ public class BrandingServiceMediator extends IocFormMediator implements IDisposa
         }
     }
 
-    protected function get view():BrandingServiceView {
-        return viewComponent as BrandingServiceView;
+    protected function get view():BrandingSettingsView {
+        return viewComponent as BrandingSettingsView;
     }
 
     override public function registerValidators():void {

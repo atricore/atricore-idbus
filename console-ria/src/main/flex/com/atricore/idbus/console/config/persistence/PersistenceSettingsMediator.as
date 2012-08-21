@@ -48,7 +48,7 @@ import mx.resources.ResourceManager;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 
-public class PersistenceServiceMediator extends IocFormMediator implements IDisposable {
+public class PersistenceSettingsMediator extends IocFormMediator implements IDisposable {
 
     private var _configProxy:ServiceConfigProxy;
 
@@ -63,7 +63,7 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
     [Bindable]
     public var _jdbcDrivers:ArrayCollection;
 
-    public function PersistenceServiceMediator(name:String = null, viewComp:PersistenceServiceView = null) {
+    public function PersistenceSettingsMediator(name:String = null, viewComp:PersistenceSettingsView = null) {
         super(name, viewComp);
     }
 
@@ -71,7 +71,7 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
         if (_created) {
             sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.PERSISTENCE);
         }
-        (viewComponent as PersistenceServiceView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+        (viewComponent as PersistenceSettingsView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         super.setViewComponent(viewComponent);
     }
 
@@ -211,8 +211,8 @@ public class PersistenceServiceMediator extends IocFormMediator implements IDisp
         validate(true);
     }
 
-    protected function get view():PersistenceServiceView {
-        return viewComponent as PersistenceServiceView;
+    protected function get view():PersistenceSettingsView {
+        return viewComponent as PersistenceSettingsView;
     }
 
     override public function registerValidators():void {

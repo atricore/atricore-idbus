@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: ssh://www.fsf.org.
  */
 
-package com.atricore.idbus.console.config.aqm
+package com.atricore.idbus.console.config.remoteconsole
 {
 import com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand;
 import com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand;
@@ -27,8 +27,8 @@ import com.atricore.idbus.console.config.main.model.ServiceConfigProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.services.dto.settings.ArtifactQueueManagerConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ServiceType;
+import com.atricore.idbus.console.services.dto.settings.SshServiceConfiguration;
 import com.atricore.idbus.console.services.spi.response.ConfigureServiceResponse;
 
 import flash.events.Event;
@@ -42,25 +42,25 @@ import mx.resources.ResourceManager;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 
-public class ArtifactQueueManagerServiceMediator extends IocFormMediator implements IDisposable {
+public class RemoteConsoleSettingsMediator extends IocFormMediator implements IDisposable {
 
     private var _configProxy:ServiceConfigProxy;
 
     protected var resourceManager:IResourceManager = ResourceManager.getInstance();
 
-    private var _created:Boolean;
+    private var _created:Boolean;    
 
-    private var _artifactQueueManagerConfig:ArtifactQueueManagerConfiguration;
+    private var _sshServiceConfig:SshServiceConfiguration;
 
-    public function ArtifactQueueManagerServiceMediator(name:String = null, viewComp:ArtifactQueueManagerServiceView = null) {
+    public function RemoteConsoleSettingsMediator(name:String = null, viewComp:RemoteConsoleSettingsView = null) {
         super(name, viewComp);
     }
 
     override public function setViewComponent(viewComponent:Object):void {
         if (_created) {
-            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.AQM);
+            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.SSH);
         }
-        (viewComponent as ArtifactQueueManagerServiceView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+        (viewComponent as RemoteConsoleSettingsView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         super.setViewComponent(viewComponent);
     }
 
@@ -74,7 +74,7 @@ public class ArtifactQueueManagerServiceMediator extends IocFormMediator impleme
             view.titleDisplay.width = 0;
             view.titleDisplay.height = 0;
             view.btnSave.addEventListener(MouseEvent.CLICK, handleSave);
-            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.AQM);
+            sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.SSH);
         }
     }
 
@@ -90,7 +90,7 @@ public class ArtifactQueueManagerServiceMediator extends IocFormMediator impleme
             case UpdateServiceConfigCommand.SUCCESS:
                 var resp:ConfigureServiceResponse = notification.getBody() as ConfigureServiceResponse;
                 var serviceType1:ServiceType = resp.serviceType;
-                if (serviceType1.name == ServiceType.AQM.name) {
+                if (serviceType1.name == ServiceType.SSH.name) {
                     sendNotification(ProcessingMediator.STOP);
                     if (resp.restart) {
                         Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.service.restartMessage'));
@@ -99,15 +99,15 @@ public class ArtifactQueueManagerServiceMediator extends IocFormMediator impleme
                 break;
             case UpdateServiceConfigCommand.FAILURE:
                 var serviceType2:ServiceType = notification.getBody() as ServiceType;
-                if (serviceType2.name == ServiceType.AQM.name) {
+                if (serviceType2.name == ServiceType.SSH.name) {
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            resourceManager.getString(AtricoreConsole.BUNDLE, "config.aqm.save.error"));
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "config.ssh.save.error"));
                 }
                 break;
             case GetServiceConfigCommand.SUCCESS:
                 var serviceType3:ServiceType = notification.getBody() as ServiceType;
-                if (serviceType3.name == ServiceType.AQM.name) {
+                if (serviceType3.name == ServiceType.SSH.name) {
                     displayServiceConfig();
                 }
                 break;
@@ -118,17 +118,15 @@ public class ArtifactQueueManagerServiceMediator extends IocFormMediator impleme
     }
 
     override public function bindModel():void {
-        _artifactQueueManagerConfig.brokerName = view.brokerName.text;
-        _artifactQueueManagerConfig.brokerHost = view.brokerHost.text;
-        _artifactQueueManagerConfig.brokerBindAddress = view.brokerBindAddress.text;
-        _artifactQueueManagerConfig.brokerPort = parseInt(view.brokerPort.text);
+        _sshServiceConfig.port = parseInt(view.port.text);
+        _sshServiceConfig.bindAddress = view.bindAddress.text;
     }
 
     private function handleSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.aqm.save.progress"));
-            sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _artifactQueueManagerConfig);
+            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "config.ssh.save.progress"));
+            sendNotification(ApplicationFacade.UPDATE_SERVICE_CONFIG, _sshServiceConfig);
         }
         else {
             event.stopImmediatePropagation();
@@ -136,25 +134,21 @@ public class ArtifactQueueManagerServiceMediator extends IocFormMediator impleme
     }
 
     public function displayServiceConfig():void {
-        _artifactQueueManagerConfig = _configProxy.artifactQueueManagerService;
+        _sshServiceConfig = _configProxy.sshService;
 
-        view.brokerName.text = _artifactQueueManagerConfig.brokerName;
-        view.brokerHost.text = _artifactQueueManagerConfig.brokerHost;
-        view.brokerBindAddress.text = _artifactQueueManagerConfig.brokerBindAddress;
-        view.brokerPort.text = String(_artifactQueueManagerConfig.brokerPort);
+        view.port.text = String(_sshServiceConfig.port);
+        view.bindAddress.text = _sshServiceConfig.bindAddress;
         view.btnSave.enabled = true;
     }
 
-    protected function get view():ArtifactQueueManagerServiceView {
-        return viewComponent as ArtifactQueueManagerServiceView;
+    protected function get view():RemoteConsoleSettingsView {
+        return viewComponent as RemoteConsoleSettingsView;
     }
 
     override public function registerValidators():void {
         _validators = [];
-        _validators.push(view.brokerNameValidator);
-        _validators.push(view.brokerHostValidator);
-        _validators.push(view.brokerBindAddressValidator);
-        _validators.push(view.brokerPortValidator);
+        _validators.push(view.portValidator);
+        _validators.push(view.bindAddressValidator);
     }
 
     public function set configProxy(value:ServiceConfigProxy):void {

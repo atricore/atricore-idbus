@@ -1,8 +1,8 @@
-package com.atricore.idbus.console.config.http.event {
+package com.atricore.idbus.console.config.web.event {
 import flash.events.Event;
 
 public class IncludeExcludeURLGridEvent extends Event {
-    public static const CLICK:String = "com.atricore.idbus.console.config.http.event.IncludeExcludeURLGridEvent.CLICK";
+    public static const CLICK:String = "com.atricore.idbus.console.config.web.event.IncludeExcludeURLGridEvent.CLICK";
 
     public static const ACTION_REMOVE_INCLUDE_URL:int = 0;
     public static const ACTION_REMOVE_EXCLUDE_URL:int = 1;

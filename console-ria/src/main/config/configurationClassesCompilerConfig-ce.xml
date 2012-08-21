@@ -220,13 +220,13 @@
         <symbol>com.atricore.idbus.console.config.main.model.ServiceConfigProxy</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand</symbol>
-        <symbol>com.atricore.idbus.console.config.http.HttpServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.ssh.SshServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.persistence.PersistenceServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.management.ManagementServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.aqm.ArtifactQueueManagerServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.log.LogServiceMediator</symbol>
-        <symbol>com.atricore.idbus.console.config.branding.BrandingServiceMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.web.WebSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.remoteconsole.RemoteConsoleSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.persistence.PersistenceSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.management.ManagementSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.messagebus.MessageBusSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.logging.LoggingSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.branding.BrandingSettingsMediator</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.LookupBrandingCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.ListBrandingsCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.CreateBrandingCommand</symbol>

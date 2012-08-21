@@ -78,9 +78,9 @@
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
                                                                toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.bindAddress.toolTips.remove')}"
                                                                click="dispatchEvent(new BindAddressGridEvent(true, true, data, BindAddressGridEvent.ACTION_REMOVE));"
-                                                               visible="{data.bindAddress != HttpServiceMediator.ADD_BIND_ADDRESS}">
+                                                               visible="{data.bindAddress != WebSettingsMediator.ADD_BIND_ADDRESS}">
                                             <fx:Script><![CDATA[
-                                                import com.atricore.idbus.console.config.http.event.BindAddressGridEvent;
+                                                import com.atricore.idbus.console.config.web.event.BindAddressGridEvent;
                                                 import com.atricore.idbus.console.main.EmbeddedIcons;
                                                 ]]></fx:Script>
                                         </utils:IconButton>
@@ -150,9 +150,9 @@
                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url.toolTips.remove')}"
                                                               click="dispatchEvent(new IncludeExcludeURLGridEvent(true, true, data, IncludeExcludeURLGridEvent.ACTION_REMOVE_INCLUDE_URL));"
-                                                              visible="{data.url != HttpServiceMediator.ADD_URL}">
+                                                              visible="{data.url != WebSettingsMediator.ADD_URL}">
                                                 <fx:Script><![CDATA[
-                                                    import com.atricore.idbus.console.config.http.event.IncludeExcludeURLGridEvent;
+                                                    import com.atricore.idbus.console.config.web.event.IncludeExcludeURLGridEvent;
                                                     import com.atricore.idbus.console.main.EmbeddedIcons;
                                                     ]]></fx:Script>
                                             </utils:IconButton>
@@ -178,9 +178,9 @@
                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url.toolTips.remove')}"
                                                               click="dispatchEvent(new IncludeExcludeURLGridEvent(true, true, data, IncludeExcludeURLGridEvent.ACTION_REMOVE_EXCLUDE_URL));"
-                                                              visible="{data.url != HttpServiceMediator.ADD_URL}">
+                                                              visible="{data.url != WebSettingsMediator.ADD_URL}">
                                                 <fx:Script><![CDATA[
-                                                    import com.atricore.idbus.console.config.http.event.IncludeExcludeURLGridEvent;
+                                                    import com.atricore.idbus.console.config.web.event.IncludeExcludeURLGridEvent;
                                                     import com.atricore.idbus.console.main.EmbeddedIcons;
                                                     ]]></fx:Script>
                                             </utils:IconButton>

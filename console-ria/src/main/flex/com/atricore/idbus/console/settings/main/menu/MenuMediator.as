@@ -65,19 +65,19 @@ public class MenuMediator extends IocMediator {
                     settingsMenuEntry.icon = EmbeddedIcons.licenseIcon;
                 else if (settingsMenuEntry.iconName == "liveUpdate")
                     settingsMenuEntry.icon = EmbeddedIcons.liveUpdateIcon;
-                else if (settingsMenuEntry.iconName == "httpService")
-                    settingsMenuEntry.icon = EmbeddedIcons.httpSettingsIcon;
-                else if (settingsMenuEntry.iconName == "sshService")
-                    settingsMenuEntry.icon = EmbeddedIcons.sshSettingsIcon;
-                else if (settingsMenuEntry.iconName == "persistenceService")
+                else if (settingsMenuEntry.iconName == "webSettings")
+                    settingsMenuEntry.icon = EmbeddedIcons.webSettingsIcon;
+                else if (settingsMenuEntry.iconName == "remoteConsoleSettings")
+                    settingsMenuEntry.icon = EmbeddedIcons.remoteConsoleSettingsIcon;
+                else if (settingsMenuEntry.iconName == "persistenceSettings")
                     settingsMenuEntry.icon = EmbeddedIcons.persistenceSettingsIcon;
-                else if (settingsMenuEntry.iconName == "managementService")
+                else if (settingsMenuEntry.iconName == "managementSettings")
                     settingsMenuEntry.icon = EmbeddedIcons.managementSettingsIcon;
-                else if (settingsMenuEntry.iconName == "aqmService")
-                    settingsMenuEntry.icon = EmbeddedIcons.queueSettingsIcon;
-                else if (settingsMenuEntry.iconName == "logService")
-                    settingsMenuEntry.icon = EmbeddedIcons.logggingSettingsIcon;
-                else if (settingsMenuEntry.iconName == "brandingService")
+                else if (settingsMenuEntry.iconName == "messageBusSettings")
+                    settingsMenuEntry.icon = EmbeddedIcons.messageBusSettingsIcon;
+                else if (settingsMenuEntry.iconName == "loggingSettings")
+                    settingsMenuEntry.icon = EmbeddedIcons.loggingSettingsIcon;
+                else if (settingsMenuEntry.iconName == "brandingSettings")
                     settingsMenuEntry.icon = EmbeddedIcons.brandingSettingsIcon;
 
             }
