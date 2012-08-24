@@ -137,10 +137,10 @@ public class LoggingSettingsMediator extends IocFormMediator implements IDisposa
         _logServiceConfig = _configProxy.logService;
 
         var serviceMods:ArrayCollection = new ArrayCollection();
-        serviceMods.addItem({data:0,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.serviceMode.development')});
-        serviceMods.addItem({data:10,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.serviceMode.production')});
+        serviceMods.addItem({data:0,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.loggingVerbosity.detailed')});
+        serviceMods.addItem({data:10,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.loggingVerbosity.normal')});
         if (_logServiceConfig.serviceMode == 20) {
-            serviceMods.addItem({data:20,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.serviceMode.custom')});
+            serviceMods.addItem({data:20,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.loggingVerbosity.custom')});
         }
         view.serviceMode.dataProvider = serviceMods;
         view.serviceMode.validateNow();
