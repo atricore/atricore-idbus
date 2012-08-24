@@ -110,7 +110,7 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
             _uploadedFile = null;
             _uploadedFileName = null;
             _selectedFiles = new ArrayCollection();
-            view.bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.form.bundle.file.browseFile");
+            view.bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.create.form.bundle.file.browseFile");
 
             getBranding();
         }
@@ -136,7 +136,7 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
         view.brandingDescription.text = "";
         view.bundleURI.text = "";
         view.webID.text = "";
-        view.bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.form.bundle.file.browseFile");
+        view.bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.create.form.bundle.file.browseFile");
     }
 
     public function getBranding():void {
@@ -238,7 +238,7 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.form.bundle.file.browseFile");
+        view.bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.create.form.bundle.file.browseFile");
 
         saveBranding();
     }

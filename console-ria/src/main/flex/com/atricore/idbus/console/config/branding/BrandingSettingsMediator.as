@@ -26,7 +26,7 @@ import com.atricore.idbus.console.config.branding.view.BrandingPopUpManager;
 import com.atricore.idbus.console.config.branding.view.edit.EditCustomBrandingViewMediator;
 import com.atricore.idbus.console.config.main.controller.CreateBrandingCommand;
 import com.atricore.idbus.console.config.main.controller.ListBrandingsCommand;
-import com.atricore.idbus.console.config.main.controller.PublishBrandingCommand;
+import com.atricore.idbus.console.config.main.controller.ActivateBrandingChangesCommand;
 import com.atricore.idbus.console.config.main.controller.RemoveBrandingCommand;
 import com.atricore.idbus.console.config.main.controller.UpdateBrandingCommand;
 import com.atricore.idbus.console.config.main.model.ServiceConfigProxy;
@@ -92,7 +92,7 @@ public class BrandingSettingsMediator extends IocFormMediator implements IDispos
             view.titleDisplay.width = 0;
             view.titleDisplay.height = 0;
             view.btnCreate.addEventListener(MouseEvent.CLICK, handleCreate);
-            view.btnPublishChanges.addEventListener(MouseEvent.CLICK, handlePublishChanges);
+            view.btnActivateChanges.addEventListener(MouseEvent.CLICK, handleActivateChanges);
             BindingUtils.bindProperty(view.brandings, "dataProvider", this, "_brandings");
             view.brandings.addEventListener(BrandingGridEvent.CLICK, handleBrandingGridEvent);
             sendNotification(ApplicationFacade.LIST_BRANDINGS);
@@ -109,8 +109,8 @@ public class BrandingSettingsMediator extends IocFormMediator implements IDispos
             UpdateBrandingCommand.FAILURE,
             RemoveBrandingCommand.SUCCESS,
             RemoveBrandingCommand.FAILURE,
-            PublishBrandingCommand.SUCCESS,
-            PublishBrandingCommand.FAILURE,
+            ActivateBrandingChangesCommand.SUCCESS,
+            ActivateBrandingChangesCommand.FAILURE,
             ApplicationFacade.DISPLAY_CREATE_BRANDING_WIZARD,
             ApplicationFacade.DISPLAY_EDIT_BRANDING];
     }
@@ -127,7 +127,7 @@ public class BrandingSettingsMediator extends IocFormMediator implements IDispos
                         resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.list.error"));
                 break;
             case ApplicationFacade.DISPLAY_CREATE_BRANDING_WIZARD:
-                popupManager.showCreateBrandingWizardWindow(notification);
+                popupManager.showCreateBrandingExtensionWindow(notification);
                 break;
             case ApplicationFacade.DISPLAY_EDIT_BRANDING:
                 var editCustomBrandingViewMediator:IIocMediator = iocFacade.container.getObject(editCustomBrandingViewMediatorName) as IIocMediator;
@@ -167,14 +167,14 @@ public class BrandingSettingsMediator extends IocFormMediator implements IDispos
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.remove.error"));
                 break;
-            case PublishBrandingCommand.SUCCESS:
+            case ActivateBrandingChangesCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
-                Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.publish.success'));
+                Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.activate.success'));
                 break;
-            case PublishBrandingCommand.FAILURE:
+            case ActivateBrandingChangesCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.publish.error"));
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.activate.error"));
                 break;
         }
     }
@@ -183,10 +183,10 @@ public class BrandingSettingsMediator extends IocFormMediator implements IDispos
         sendNotification(ApplicationFacade.DISPLAY_CREATE_BRANDING_WIZARD);
     }
 
-    private function handlePublishChanges(event:MouseEvent):void {
+    private function handleActivateChanges(event:MouseEvent):void {
         sendNotification(ProcessingMediator.START,
-                resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.publish.progress"));
-        sendNotification(ApplicationFacade.PUBLISH_BRANDING);
+                resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.activate.progress"));
+        sendNotification(ApplicationFacade.ACTIVATE_BRANDING_CHANGES);
     }
 
     private function handleBrandingGridEvent(event:BrandingGridEvent):void {

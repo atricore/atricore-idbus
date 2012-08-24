@@ -204,7 +204,7 @@
         <property name="createBrandingCommand" ref="createBrandingCommand"/>
         <property name="updateBrandingCommand" ref="updateBrandingCommand"/>
         <property name="removeBrandingCommand" ref="removeBrandingCommand"/>
-        <property name="publishBrandingCommand" ref="publishBrandingCommand"/>
+        <property name="activateBrandingChangesCommand" ref="activateBrandingChangesCommand"/>
     </object>
 
     <object id="helpStartupCommand"
@@ -567,8 +567,8 @@
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
 
-    <object id="publishBrandingCommand"
-            class="com.atricore.idbus.console.config.main.controller.PublishBrandingCommand">
+    <object id="activateBrandingChangesCommand"
+            class="com.atricore.idbus.console.config.main.controller.ActivateBrandingChangesCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
@@ -998,11 +998,11 @@
 
     <object id="brandingPopUpManager"
             class="com.atricore.idbus.console.config.branding.view.BrandingPopUpManager">
-        <property name="createBrandingWizardMediator" ref="createBrandingWizardMediator"/>
+        <property name="createBrandingExtensionMediator" ref="createBrandingExtensionMediator"/>
     </object>
 
-    <object id="createBrandingWizardMediator"
-            class="com.atricore.idbus.console.config.branding.view.create.CreateBrandingWizardViewMediator">
+    <object id="createBrandingExtensionMediator"
+            class="com.atricore.idbus.console.config.branding.view.create.CreateBrandingExtensionMediator">
     </object>
 
     <!-- App Section View Factories -->

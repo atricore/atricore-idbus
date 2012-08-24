@@ -20,8 +20,8 @@
  */
 
 package com.atricore.idbus.console.config.branding.view {
-import com.atricore.idbus.console.config.branding.view.create.CreateBrandingWizardView;
-import com.atricore.idbus.console.config.branding.view.create.CreateBrandingWizardViewMediator;
+import com.atricore.idbus.console.config.branding.view.create.CreateBrandingExtensionView;
+import com.atricore.idbus.console.config.branding.view.create.CreateBrandingExtensionMediator;
 import com.atricore.idbus.console.main.BasePopUpManager;
 
 import mx.core.UIComponent;
@@ -33,10 +33,10 @@ import org.puremvc.as3.interfaces.INotification;
 public class BrandingPopUpManager extends BasePopUpManager {
 
     // mediators
-    private var _createBrandingWizardMediator:CreateBrandingWizardViewMediator;
+    private var _createBrandingExtensionMediator:CreateBrandingExtensionMediator;
 
     // views
-    private var _createBrandingWizardView:CreateBrandingWizardView;
+    private var _createBrandingExtensionView:CreateBrandingExtensionView;
 
     public function BrandingPopUpManager() {
         super();
@@ -47,28 +47,31 @@ public class BrandingPopUpManager extends BasePopUpManager {
         _popup.styleName = "brandingPopup";
     }
 
-    public function get createBrandingWizardMediator():CreateBrandingWizardViewMediator {
-        return _createBrandingWizardMediator;
+    public function get createBrandingExtensionMediator():CreateBrandingExtensionMediator {
+        return _createBrandingExtensionMediator;
     }
 
-    public function set createBrandingWizardMediator(value:CreateBrandingWizardViewMediator):void {
-        _createBrandingWizardMediator = value;
+    public function set createBrandingExtensionMediator(value:CreateBrandingExtensionMediator):void {
+        _createBrandingExtensionMediator = value;
     }
 
-    public function showCreateBrandingWizardWindow(notification:INotification):void {
+    public function showCreateBrandingExtensionWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        createBrandingCreationWizardView();
-        showWizard(_createBrandingWizardView);
+        createBrandingCreationView();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.title');
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_createBrandingExtensionView);
     }
 
-    private function createBrandingCreationWizardView():void {
-        _createBrandingWizardView = new CreateBrandingWizardView();
-        _createBrandingWizardView.addEventListener(FlexEvent.CREATION_COMPLETE, handleCreateBrandingWizardViewCreated);
+    private function createBrandingCreationView():void {
+        _createBrandingExtensionView = new CreateBrandingExtensionView();
+        _createBrandingExtensionView.addEventListener(FlexEvent.CREATION_COMPLETE, handleCreateBrandingViewCreated);
     }
 
-    private function handleCreateBrandingWizardViewCreated(event:FlexEvent):void {
-        createBrandingWizardMediator.setViewComponent(_createBrandingWizardView);
-        createBrandingWizardMediator.handleNotification(_lastWindowNotification);
+    private function handleCreateBrandingViewCreated(event:FlexEvent):void {
+        createBrandingExtensionMediator.setViewComponent(_createBrandingExtensionView);
+        createBrandingExtensionMediator.handleNotification(_lastWindowNotification);
     }
 }
 }
