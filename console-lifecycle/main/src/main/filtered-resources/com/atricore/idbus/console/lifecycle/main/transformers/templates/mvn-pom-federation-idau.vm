@@ -325,6 +325,10 @@
 #set ( $artifactType = "ini")
 #set ( $artifactClassifier = $resource.getNameSpace().substring(16, $resource.getNameSpace().lastIndexOf("/")))
 #set ( $artifactFile = "target/classes/" + $resource.getNameSpace() + "/" + $resource.getName() + ".ini")
+#elseif($resource.getExtension() == "reg")
+#set ( $artifactType = "reg")
+#set ( $artifactClassifier = $resource.getNameSpace().substring(16, $resource.getNameSpace().lastIndexOf("/")) + "-" + $resource.getValue());
+#set ( $artifactFile = "target/classes/" + $resource.getNameSpace() + "/" + $resource.getName() + ".reg")
 #else
 #set ( $artifactType = "xml")
 #set ( $artifactFile = "target/classes/META-INF/spring/" + $resource.getNameSpace() + "/" + $resource.getName() + "-config.xml")

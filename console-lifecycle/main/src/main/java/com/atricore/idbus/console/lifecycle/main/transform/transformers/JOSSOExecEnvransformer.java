@@ -399,6 +399,9 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                     }
                     params.put("iisPath", iisPath);
 
+                    String iisArch = execEnv.getPlatformId().equals("iis") ? "32" : "64";
+                    params.put("iisArch", iisArch);
+
                     String isapiExtensionPath = "/josso/agent.sso";
                     if (execEnv instanceof WindowsIISExecutionEnvironment) {
                         isapiExtensionPath = ((WindowsIISExecutionEnvironment)execEnv).getIsapiExtensionPath();
@@ -409,7 +412,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                     params.put("isapiExtensionPath", isapiExtensionPath);
 
                     IdProjectResource<String> configReg = new IdProjectResource<String>(idGen.generateId(),
-                            "META-INF/spring/" + bpBean.getName() + "/josso", "JOSSO-ISAPI-Config", "iis", "config-reg");
+                            "META-INF/spring/" + bpBean.getName() + "/josso", "josso-agent-isapi", "iis", "config-reg");
                     configReg.setClassifier("velocity");
                     configReg.setExtension("reg");
                     configReg.setParams(params);
@@ -417,7 +420,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                     module.addResource(configReg);
 
                     IdProjectResource<String> eventLogReg = new IdProjectResource<String>(idGen.generateId(),
-                            "META-INF/spring/" + bpBean.getName() + "/josso", "JOSSO-ISAPI-EventLog", "iis", "eventlog-reg");
+                            "META-INF/spring/" + bpBean.getName() + "/josso", "josso-agent-eventLog", "iis", "eventlog-reg");
                     eventLogReg.setClassifier("velocity");
                     eventLogReg.setExtension("reg");
                     eventLogReg.setParams(params);

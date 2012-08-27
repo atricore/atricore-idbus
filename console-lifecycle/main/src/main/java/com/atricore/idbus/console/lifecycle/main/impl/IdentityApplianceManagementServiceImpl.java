@@ -26,10 +26,7 @@ import com.atricore.idbus.console.activation.main.client.ActivationClient;
 import com.atricore.idbus.console.activation.main.client.ActivationClientFactory;
 import com.atricore.idbus.console.activation.main.exception.ActivationException;
 import com.atricore.idbus.console.activation.main.spi.ActivationService;
-import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
-import com.atricore.idbus.console.activation.main.spi.request.ActivateSamplesRequest;
-import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequest;
-import com.atricore.idbus.console.activation.main.spi.request.PlatformSupportedRequest;
+import com.atricore.idbus.console.activation.main.spi.request.*;
 import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResponse;
 import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesResponse;
 import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
@@ -56,6 +53,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
@@ -1745,6 +1743,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
         try {
 
+            String [] agentCfgResources = null;
 
             String agentCfgLocation = appliance.getNamespace();
             agentCfgLocation = agentCfgLocation.replace('.', '/');
@@ -1758,10 +1757,18 @@ public class IdentityApplianceManagementServiceImpl implements
                     appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
                     appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase();
 
-            if (execEnv.getPlatformId().startsWith("iis"))
+            if (execEnv.getPlatformId().startsWith("iis")) {
                 agentCfgName += ".ini";
-            else
+                // Add IIS Configuration resources
+
+                agentCfgResources = new String[] {
+                        appliance.getNamespace() + "." + appliance.getIdApplianceDefinition().getName() + ".idau-1.0." + appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName() + "-eventlog-reg.reg",
+                        appliance.getNamespace() + "." + appliance.getIdApplianceDefinition().getName() + ".idau-1.0." + appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName() + "-config-reg.reg"
+                };
+
+            } else {
                 agentCfgName += ".xml";
+            }
 
             String agentCfg = agentCfgLocation + "/" + agentCfgName;
             agentCfg = agentCfg.toLowerCase();
@@ -1770,12 +1777,37 @@ public class IdentityApplianceManagementServiceImpl implements
                 logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
 
             switch (execEnv.getType()) {
+                // Trigger local execution environment activation :
                 case LOCAL:
                     ConfigureAgentRequest activationReq = doMakeConfigureAgentRequest(execEnv);
                     activationReq.setJossoAgentConfigUri(agentCfg);
                     activationReq.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
 
-                    ConfigureAgentResponse actiationResponse = activationService.configureAgent(activationReq);
+                    if (agentCfgResources != null) {
+                        InputStream is = null;
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
+
+                        try {
+                            FileSystemManager fs = VFS.getManager();
+                            for (String agentCfgResource : agentCfgResources) {
+
+                                FileObject homeDir = fs.resolveFile(getHomeDir());
+                                FileObject appliancesDir = homeDir.resolveFile("appliances");
+
+                                FileObject agentResourceFile = appliancesDir .resolveFile(agentCfgLocation + "/" + agentCfgResource);
+                                is = agentResourceFile.getContent().getInputStream();
+                                IOUtils.copy(is, baos);
+
+                                ConfigureAgentResource cfgResource = new ConfigureAgentResource(agentCfgLocation + "/" + agentCfgResource, baos.toString());
+                                activationReq.getReosurces().add(cfgResource);
+                            }
+                        } catch (IOException e) {
+                            logger.error("Cannot configure JOSSO agent resources " + e.getMessage(), e);
+                            IOUtils.closeQuietly(is);
+                        }
+
+                    }
+                    ConfigureAgentResponse activationResponse = activationService.configureAgent(activationReq);
                     break;
 
                 case REMOTE:

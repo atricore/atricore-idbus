@@ -155,10 +155,12 @@ public class AgentConfigActivator extends ActivatorSupport {
 
                 if (ar.getTargetPlatformId().startsWith("iis"))
                     agentCfgFileName = "josso-agent-config.ini";
+
                 FileObject finalAgentCfg = tmpDir.resolveFile(agentCfgFileName);
                 FileUtil.copyContent(agentCfg, finalAgentCfg);
                 getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, agentCfgFileName), ar.isReplaceConfig());
                 finalAgentCfg.delete();
+
             }
         }
 
@@ -166,24 +168,25 @@ public class AgentConfigActivator extends ActivatorSupport {
             // We have embedded resources ...
 
             for (ConfigureAgentResource r : ar.getReosurces()) {
-                if (r.getName().startsWith("josso-agent-config")) {
-                    // Write resource to tmp dir:
 
-                    FileObject agentCfg = tmpDir.resolveFile(r.getName());
-                    if (!agentCfg.exists())
-                        agentCfg.createFile();
+                // Write resource to tmp dir
+                FileObject agentResource = appliancesDir.resolveFile(r.getName());
+                if (agentResource.exists()) {
 
-                    OutputStream out = null;
-                    try {
-                        out = agentCfg.getContent().getOutputStream(false);
-                        IOUtils.copy(new ByteArrayInputStream(r.getResource().getBytes()), out);
-
-                    } finally {
-                        IOUtils.closeQuietly(out);
+                    String agentResourceName = r.getName().substring(r.getName().lastIndexOf("/"));
+                    if (ar.getTargetPlatformId().startsWith("iis")) {
+                        if (r.getName().contains("eventlog-reg.reg"))
+                            agentResourceName = "josso-agent-eventlog.reg";
+                        if (r.getName().contains("config-reg.reg"))
+                            agentResourceName = "josso-agent-isapi.reg";
                     }
 
-                    getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, r.getName()), ar.isReplaceConfig());
+                    FileObject finalAgentResource = tmpDir.resolveFile(agentResourceName);
+                    FileUtil.copyContent(agentResource, finalAgentResource);
+                    getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, agentResourceName), ar.isReplaceConfig());
+                    finalAgentResource.delete();
                 }
+
             }
 
         }
