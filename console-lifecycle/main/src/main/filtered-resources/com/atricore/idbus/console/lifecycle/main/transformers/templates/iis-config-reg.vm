@@ -13,11 +13,11 @@ Windows Registry Editor Version 5.00
 ; ************************************************************************
 ; UNCOMMENT ONLY WHEN RUNNING 32-bit IIS applications on 64 bit servers !!
 ; ************************************************************************
-; [HKEY_LOCAL_MACHINE\SOFTWARE\wow3264\Atricore]
+; [HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Atricore]
 
-; [HKEY_LOCAL_MACHINE\SOFTWARE\wow3264\Atricore\JOSSO Isapi Agent]
+; [HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Atricore\JOSSO Isapi Agent]
 
-; [HKEY_LOCAL_MACHINE\SOFTWARE\wow3264\Atricore\JOSSO Isapi Agent\1.8]
+; [HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Atricore\JOSSO Isapi Agent\1.8]
 ; "LogLevel"="trace"
 ; "ExtensionUri"="$isapiExtensionPath"
 ; "LogFile"="$iisPath\\log\\josso_isapi.log"
