@@ -1841,8 +1841,46 @@ public class IdentityApplianceManagementServiceImpl implements
 
                         } catch (IOException e) {
                             logger.error("Cannot configure JOSSO agent : " + e.getMessage(), e);
+                        } finally {
                             IOUtils.closeQuietly(is);
                         }
+
+
+
+                        if (agentCfgResources != null) {
+                            is = null;
+                            baos = new ByteArrayOutputStream(4096);
+
+                            try {
+                                FileSystemManager fs = VFS.getManager();
+                                for (String agentCfgResource : agentCfgResources) {
+
+                                    FileObject homeDir = fs.resolveFile(getHomeDir());
+                                    FileObject appliancesDir = homeDir.resolveFile("appliances");
+
+                                    FileObject agentResourceFile = appliancesDir .resolveFile(agentCfgLocation + "/" + agentCfgResource);
+                                    is = agentResourceFile.getContent().getInputStream();
+                                    IOUtils.copy(is, baos);
+
+                                    //  Attach activation resources to request
+                                    AgentConfigResourceType agentCfgResourceWs = new AgentConfigResourceType ();
+
+                                    // Force resource name to josso-agent-config.
+                                    agentCfgResourceWs.setName(agentCfgResource);
+                                    agentCfgResourceWs.setConfigResourceContent(baos.toString());
+                                    agentCfgResourceWs.setReplaceOriginal(execEnv.isOverwriteOriginalSetup());
+
+                                    wsActivationReq.getAgentConfigResource().add(agentCfgResourceWs);
+                                    IOUtils.closeQuietly(is);
+
+                                }
+
+                            } catch (IOException e) {
+                                logger.error("Cannot configure JOSSO agent resources " + e.getMessage(), e);
+                                IOUtils.closeQuietly(is);
+                            }
+                        }
+
 
                         wsActivationReq.setJossoAgentConfigUri(null);
                         wsActivationReq.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
