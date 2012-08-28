@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*"
+         width="100%" height="100%"
+         skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
+        >
+
+    <fx:Metadata>
+        [ResourceBundle("console")]
+    </fx:Metadata>
+
+    <fx:Declarations>
+        <utils:NameValidator id="serverIdValidator" source="{serverId}" required="true" property="text"/>
+        <mx:NumberValidator id="portValidator" source="{port}" required="true" property="text"
+                            minValue="1" maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <mx:NumberValidator id="sessionTimeoutValidator" source="{sessionTimeout}" required="true" property="text"
+                            minValue="0" maxValue="NaN"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.sessionTimeoutValidationError')}"/>
+        <mx:NumberValidator id="maxHeaderBufferSizeValidator" source="{maxHeaderBufferSize}" required="true" property="text"
+                            minValue="0" maxValue="NaN"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.maxHeaderBufferSizeValidationError')}"/>
+        <mx:NumberValidator id="sslPortValidator" source="{sslPort}" required="true" property="text"
+                            minValue="1" maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <mx:StringValidator id="sslKeystorePathValidator" source="{sslKeystorePath}" required="true" property="text"/>
+        <mx:StringValidator id="sslKeystorePasswordValidator" source="{sslKeystorePassword}" required="true" property="text"/>
+        <mx:StringValidator id="sslKeyPasswordValidator" source="{sslKeyPassword}" required="true" property="text"/>
+    </fx:Declarations>
+
+    <s:Scroller width="100%" height="100%">
+    <s:Group width="100%" height="100%">
+
+        <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.serverId')}:" required="true">
+                <s:TextInput id="serverId" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.port')}:" required="true">
+                <s:TextInput id="port" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.bindAddresses')}:" required="true">
+                <mx:DataGrid id="bindAddresses" width="100%" height="100%" rowCount="4"
+                             sortableColumns="false" editable="true">
+                    <mx:columns>
+                        <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.bindAddress')}" width="150" dataField="bindAddress"/>
+                        <mx:DataGridColumn headerText="" width="50" editable="false">
+                            <mx:itemRenderer>
+                                <fx:Component>
+                                    <s:MXAdvancedDataGridItemRenderer>
+                                        <utils:IconButton iconUp="{EmbeddedIcons.removeNodeIcon}"
+                                                               iconWidth="16" iconHeight="16"
+                                                               paddingTop="3" paddingLeft="20"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.bindAddress.toolTips.remove')}"
+                                                               click="dispatchEvent(new BindAddressGridEvent(true, true, data, BindAddressGridEvent.ACTION_REMOVE));"
+                                                               visible="{data.bindAddress != WebSettingsMediator.ADD_BIND_ADDRESS}">
+                                            <fx:Script><![CDATA[
+                                                import com.atricore.idbus.console.config.web.event.BindAddressGridEvent;
+                                                import com.atricore.idbus.console.main.EmbeddedIcons;
+                                                ]]></fx:Script>
+                                        </utils:IconButton>
+                                    </s:MXAdvancedDataGridItemRenderer>
+                                </fx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                    </mx:columns>
+                </mx:DataGrid>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.sessionTimeout')}:" required="true">
+                <s:TextInput id="sessionTimeout" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.maxHeaderBufferSize')}:" required="true">
+                <s:TextInput id="maxHeaderBufferSize" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.disableSessionURL')}:" required="true">
+                <s:CheckBox id="disableSessionURL"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl.enable')}:" required="true">
+                <s:CheckBox id="enableSSL"/>
+            </mx:FormItem>
+
+            <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl')}" height="130" width="350" paddingLeft="5" paddingRight="5" paddingTop="15"
+                                   paddingBottom="5">
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl.port')}:" labelWidth="125" required="true">
+                    <s:TextInput id="sslPort" width="200"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl.keystore.path')}:" labelWidth="125" required="true">
+                    <s:TextInput id="sslKeystorePath" width="200"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl.keystore.password')}:" labelWidth="125" required="true">
+                    <s:TextInput id="sslKeystorePassword" width="200" displayAsPassword="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl.key.password')}:" labelWidth="125" required="true">
+                    <s:TextInput id="sslKeyPassword" width="200" displayAsPassword="true"/>
+                </mx:FormItem>
+
+            </utils:TitledBorderBox>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.followRedirects')}:" required="true">
+                <s:CheckBox id="followRedirects"/>
+            </mx:FormItem>
+
+            <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.followRedirects.includeExcludeURLs')}" width="350" height="290" paddingLeft="5" paddingRight="5" paddingTop="15"
+                                   paddingBottom="5">
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.followRedirects.includeURLs')}:" labelWidth="100" paddingTop="10">
+                    <mx:DataGrid id="includeFollowUrls" width="100%" height="100%" rowCount="4" sortableColumns="false" editable="true">
+                        <mx:columns>
+                            <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url')}" width="150" dataField="url"/>
+                            <mx:DataGridColumn headerText="" width="50" editable="false">
+                                <mx:itemRenderer>
+                                    <fx:Component>
+                                        <s:MXAdvancedDataGridItemRenderer>
+                                            <utils:IconButton iconUp="{EmbeddedIcons.removeNodeIcon}"
+                                                              iconWidth="16" iconHeight="16"
+                                                              paddingTop="3" paddingLeft="20"
+                                                              skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                              toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url.toolTips.remove')}"
+                                                              click="dispatchEvent(new IncludeExcludeURLGridEvent(true, true, data, IncludeExcludeURLGridEvent.ACTION_REMOVE_INCLUDE_URL));"
+                                                              visible="{data.url != WebSettingsMediator.ADD_URL}">
+                                                <fx:Script><![CDATA[
+                                                    import com.atricore.idbus.console.config.web.event.IncludeExcludeURLGridEvent;
+                                                    import com.atricore.idbus.console.main.EmbeddedIcons;
+                                                    ]]></fx:Script>
+                                            </utils:IconButton>
+                                        </s:MXAdvancedDataGridItemRenderer>
+                                    </fx:Component>
+                                </mx:itemRenderer>
+                            </mx:DataGridColumn>
+                        </mx:columns>
+                    </mx:DataGrid>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.followRedirects.excludeURLs')}:" labelWidth="100">
+                    <mx:DataGrid id="excludeFollowUrls" width="100%" height="100%" rowCount="4" sortableColumns="false" editable="true">
+                        <mx:columns>
+                            <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url')}" width="150" dataField="url"/>
+                            <mx:DataGridColumn headerText="" width="50" editable="false">
+                                <mx:itemRenderer>
+                                    <fx:Component>
+                                        <s:MXAdvancedDataGridItemRenderer>
+                                            <utils:IconButton iconUp="{EmbeddedIcons.removeNodeIcon}"
+                                                              iconWidth="16" iconHeight="16"
+                                                              paddingTop="3" paddingLeft="20"
+                                                              skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                              toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.url.toolTips.remove')}"
+                                                              click="dispatchEvent(new IncludeExcludeURLGridEvent(true, true, data, IncludeExcludeURLGridEvent.ACTION_REMOVE_EXCLUDE_URL));"
+                                                              visible="{data.url != WebSettingsMediator.ADD_URL}">
+                                                <fx:Script><![CDATA[
+                                                    import com.atricore.idbus.console.config.web.event.IncludeExcludeURLGridEvent;
+                                                    import com.atricore.idbus.console.main.EmbeddedIcons;
+                                                    ]]></fx:Script>
+                                            </utils:IconButton>
+                                        </s:MXAdvancedDataGridItemRenderer>
+                                    </fx:Component>
+                                </mx:itemRenderer>
+                            </mx:DataGridColumn>
+                        </mx:columns>
+                    </mx:DataGrid>
+                </mx:FormItem>
+
+            </utils:TitledBorderBox>
+
+            <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.save')}" enabled="false"/>
+
+        </mx:Form>
+
+    </s:Group>
+    </s:Scroller>
+
+</s:Panel>

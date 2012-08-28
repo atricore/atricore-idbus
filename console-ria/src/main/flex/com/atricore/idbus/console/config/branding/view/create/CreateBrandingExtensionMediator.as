@@ -20,10 +20,9 @@
  */
 
 package com.atricore.idbus.console.config.branding.view.create {
-import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.services.dto.branding.BrandingDefinition;
 import com.atricore.idbus.console.services.dto.branding.BrandingType;
 import com.atricore.idbus.console.services.dto.branding.CustomBrandingDefinition;
 
@@ -33,21 +32,15 @@ import flash.net.FileFilter;
 import flash.net.FileReference;
 import flash.utils.ByteArray;
 
-import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
-import mx.utils.ObjectProxy;
 
-import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
-
-public class CreateBrandingWizardViewMediator extends IocMediator
+public class CreateBrandingExtensionMediator extends IocFormMediator
 {
-    private var _wizardDataModel:ObjectProxy = new ObjectProxy();
-
-    private var _processingStarted:Boolean;
-
+    private var _newCustomBrandingDefinition:CustomBrandingDefinition;
+    
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     [Bindable]
@@ -62,14 +55,12 @@ public class CreateBrandingWizardViewMediator extends IocMediator
     [Bindable]
     public var _uploadedFileName:String;
 
-    public function CreateBrandingWizardViewMediator(name:String = null, viewComp:CreateBrandingWizardView = null) {
+    public function CreateBrandingExtensionMediator(name:String = null, viewComp:CreateBrandingExtensionView = null) {
         super(name, viewComp);
     }
 
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.addEventListener(WizardEvent.WIZARD_COMPLETE, onCreateBrandingWizardComplete);
-            view.addEventListener(WizardEvent.WIZARD_CANCEL, onCreateBrandingWizardCancelled);
             view.addEventListener(CloseEvent.CLOSE, handleClose);
 
             if (_fileRef != null) {
@@ -84,59 +75,76 @@ public class CreateBrandingWizardViewMediator extends IocMediator
     }
 
     private function init():void {
-        view.dataModel = _wizardDataModel;
-        view.addEventListener(WizardEvent.WIZARD_COMPLETE, onCreateBrandingWizardComplete);
-        view.addEventListener(WizardEvent.WIZARD_CANCEL, onCreateBrandingWizardCancelled);
+        view.brandingName.addEventListener(Event.CHANGE, handleFormChange);
+        view.brandingDescription.addEventListener(Event.CHANGE, handleFormChange);
+        view.bundleURI.addEventListener(Event.CHANGE, handleFormChange);
+        view.bundleFile.addEventListener(Event.CHANGE, handleFormChange);
+        view.btnSave.addEventListener(MouseEvent.CLICK, handleSave );
+        view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+
         view.addEventListener(CloseEvent.CLOSE, handleClose);
 
         // upload bindings
-        view.steps[1].bundleFile.addEventListener(MouseEvent.CLICK, browseHandler);
-        BindingUtils.bindProperty(view.steps[1], "uploadedFile", this, "_uploadedFile");
-        BindingUtils.bindProperty(view.steps[1], "uploadedFileName", this, "_uploadedFileName");
-        BindingUtils.bindProperty(view.steps[1].bundleFile, "dataProvider", this, "_selectedFiles");
+        _selectedFiles = new ArrayCollection();
+        view.bundleFile.dataProvider = _selectedFiles;
+        view.bundleFile.addEventListener(MouseEvent.CLICK, browseHandler);
+        view.bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.create.form.bundle.file.browseFile");
 
         _fileRef = null;
         _uploadedFile = null;
         _uploadedFileName = null;
-        _selectedFiles = new ArrayCollection();
-        view.steps[1].bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.form.bundle.file.browseFile");
     }
 
-    private function onCreateBrandingWizardComplete(event:WizardEvent):void {
-        _processingStarted = true;
-
-        view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
-        sendNotification(ProcessingMediator.START,
-                         resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.save.progress"));
-
-        _fileRef.load();
+    override public function bindModel():void {
+        var newCustomBrandingDefinition:CustomBrandingDefinition = new CustomBrandingDefinition();
+        newCustomBrandingDefinition.type = BrandingType.CUSTOM;
+        newCustomBrandingDefinition.name = view.brandingName.text;
+        newCustomBrandingDefinition.description = view.brandingDescription.text;
+        newCustomBrandingDefinition.bundleUri = view.bundleURI.text;
+        newCustomBrandingDefinition.resource = _uploadedFile;
+        newCustomBrandingDefinition.bundleSymbolicName = _uploadedFileName;
+        newCustomBrandingDefinition.webBrandingId = view.brandingName.text;
+        
+        _newCustomBrandingDefinition = newCustomBrandingDefinition;
     }
+    
 
     private function saveBranding():void {
-        var branding:BrandingDefinition = _wizardDataModel.baseData;
-        if (branding.type.name == BrandingType.CUSTOM.name) {
-            var customData:CustomBrandingDefinition = _wizardDataModel.customData;
-            var customBranding:CustomBrandingDefinition = branding as CustomBrandingDefinition;
-            customBranding.bundleUri = customData.bundleUri;
-            customBranding.resource = _uploadedFile;
-            customBranding.bundleSymbolicName = _uploadedFileName;
-            customBranding.webBrandingId = customData.webBrandingId;
-            sendNotification(ApplicationFacade.CREATE_BRANDING, customBranding);
-        }
-    }
+        view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+        sendNotification(ProcessingMediator.START,
+                resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.save.progress"));
 
-    private function onCreateBrandingWizardCancelled(event:WizardEvent):void {
-        //closeWizard();
+        bindModel();
+        sendNotification(ApplicationFacade.CREATE_BRANDING, _newCustomBrandingDefinition);
     }
 
     private function closeWindow():void {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
+    private function handleFormChange(event:Event):void {
+        view.brandingForm.validateForm(event);
+
+        if (view.bundleFile.dataProvider == null || view.bundleFile.dataProvider.length == 0) {
+            view.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.create.form.bundle.file.browseFile.error");
+            view.lblUploadMsg.setStyle("color", "Red");
+            view.lblUploadMsg.visible = true;
+        }
+    }
+
+    private function handleSave(event:MouseEvent):void {
+        saveBranding()
+    }
+
+    private function handleCancel(event:MouseEvent):void {
+        closeWindow();
+    }
+
     private function handleClose(event:Event):void {
     }
 
     private function browseHandler(event:MouseEvent):void {
+
         if (_fileRef == null) {
             _fileRef = new FileReference();
             _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
@@ -148,29 +156,31 @@ public class CreateBrandingWizardViewMediator extends IocMediator
     }
 
     private function fileSelectHandler(evt:Event):void {
-        view.steps[1].bundleFile.prompt = null;
-        _selectedFiles = new ArrayCollection();
-        _selectedFiles.addItem(_fileRef.name);
-        view.steps[1].bundleFile.selectedIndex = 0;
 
-        view.steps[1].lblUploadMsg.text = "";
-        view.steps[1].lblUploadMsg.visible = false;
-        view.steps[1].handleFormChange(null);
+        _selectedFiles.addItem(_fileRef.name);
+        view.bundleFile.prompt = null;
+        view.bundleFile.selectedIndex = 0;
+
+        view.lblUploadMsg.text = "";
+        view.lblUploadMsg.visible = false;
+
+        _fileRef.load();
+
+        view.bundleFile.dispatchEvent(new Event(Event.CHANGE, true));
     }
 
     private function uploadCompleteHandler(event:Event):void {
+
         _uploadedFile = _fileRef.data;
         _uploadedFileName = _fileRef.name;
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.steps[1].bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.form.bundle.file.browseFile");
+        view.bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.create.form.bundle.file.browseFile");
+   }
 
-        saveBranding();
-    }
-
-    protected function get view():CreateBrandingWizardView {
-        return viewComponent as CreateBrandingWizardView;
+    protected function get view():CreateBrandingExtensionView {
+        return viewComponent as CreateBrandingExtensionView;
     }
 }
 }

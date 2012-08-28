@@ -240,21 +240,30 @@
         <symbol>com.atricore.idbus.console.config.main.model.ServiceConfigProxy</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.GetServiceConfigCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.UpdateServiceConfigCommand</symbol>
+<<<<<<< HEAD
         <symbol>com.atricore.idbus.console.config.http.HttpSettingsMediator</symbol>
         <symbol>com.atricore.idbus.console.config.ssh.SshSettingsMediator</symbol>
         <symbol>com.atricore.idbus.console.config.persistence.PersistenceSettingsMediator</symbol>
         <symbol>com.atricore.idbus.console.config.management.ManagementSettingsMediator</symbol>
         <symbol>com.atricore.idbus.console.config.queue.QueueSettingsMediator</symbol>
         <symbol>com.atricore.idbus.console.config.log.LoggingSettingsMediator</symbol>
+=======
+        <symbol>com.atricore.idbus.console.config.web.WebSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.remoteconsole.RemoteConsoleSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.persistence.PersistenceSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.management.ManagementSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.messagebus.MessageBusSettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.logging.LoggingSettingsMediator</symbol>
+>>>>>>> 1.2.1
         <symbol>com.atricore.idbus.console.config.branding.BrandingSettingsMediator</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.LookupBrandingCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.ListBrandingsCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.CreateBrandingCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.UpdateBrandingCommand</symbol>
         <symbol>com.atricore.idbus.console.config.main.controller.RemoveBrandingCommand</symbol>
-        <symbol>com.atricore.idbus.console.config.main.controller.PublishBrandingCommand</symbol>
+        <symbol>com.atricore.idbus.console.config.main.controller.ActivateBrandingChangesCommand</symbol>
         <symbol>com.atricore.idbus.console.config.branding.view.BrandingPopUpManager</symbol>
-        <symbol>com.atricore.idbus.console.config.branding.view.create.CreateBrandingWizardViewMediator</symbol>
+        <symbol>com.atricore.idbus.console.config.branding.view.create.CreateBrandingExtensionMediator</symbol>
         <symbol>com.atricore.idbus.console.config.branding.view.edit.EditCustomBrandingViewMediator</symbol>
 
         <!-- General classes -->

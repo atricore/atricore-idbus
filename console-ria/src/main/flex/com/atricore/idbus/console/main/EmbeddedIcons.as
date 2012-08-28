@@ -677,12 +677,21 @@ public class EmbeddedIcons {
     public static var systemUpdateIcon:Class;
 
     [Bindable]
+<<<<<<< HEAD
     [Embed(source="/assets/icons/settings/http_settings.png")]
     public static var httpSettingsIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/settings/ssh_settings.png")]
     public static var sshSettingsIcon:Class;
+=======
+    [Embed(source="/assets/icons/settings/web_settings.png")]
+    public static var webSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/remote_console_settings.png")]
+    public static var remoteConsoleSettingsIcon:Class;
+>>>>>>> 1.2.1
 
     [Bindable]
     [Embed(source="/assets/icons/settings/persistence_settings.png")]
@@ -693,16 +702,28 @@ public class EmbeddedIcons {
     public static var managementSettingsIcon:Class;
 
     [Bindable]
+<<<<<<< HEAD
     [Embed(source="/assets/icons/settings/queue_settings.png")]
     public static var queueSettingsIcon:Class;
 
     [Bindable]
     [Embed(source="/assets/icons/settings/logging_settings.png")]
     public static var logggingSettingsIcon:Class;
+=======
+    [Embed(source="/assets/icons/settings/message_bus_settings.png")]
+    public static var messageBusSettingsIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/settings/logging_settings.png")]
+    public static var loggingSettingsIcon:Class;
+>>>>>>> 1.2.1
 
     [Bindable]
     [Embed(source="/assets/icons/settings/branding_settings.png")]
     public static var brandingSettingsIcon:Class;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1.2.1
 }
 }

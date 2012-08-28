@@ -139,6 +139,7 @@ public class AgentConfigActivator extends ActivatorSupport {
     protected void installJOSSOAgentConfig() throws Exception {
         ConfigureAgentRequest ar = (ConfigureAgentRequest) request;
 
+        // Install default configuration
         FileObject[] cfgFiles = confDir.getChildren();
         for (int i = 0; i < confDir.getChildren().length; i++) {
             FileObject cfgFile = cfgFiles[i];
@@ -146,6 +147,7 @@ public class AgentConfigActivator extends ActivatorSupport {
             getInstaller(request).installConfiguration(createArtifact(confDir.getURL().toString(), JOSSOScope.AGENT, fileName), ar.isReplaceConfig());
         }
 
+        // Install locally generated configuration
         if (ar.getJossoAgentConfigUri() != null) {
             FileObject agentCfg = appliancesDir.resolveFile(ar.getJossoAgentConfigUri());
             if (agentCfg.exists()) {
@@ -155,35 +157,47 @@ public class AgentConfigActivator extends ActivatorSupport {
 
                 if (ar.getTargetPlatformId().startsWith("iis"))
                     agentCfgFileName = "josso-agent-config.ini";
+
                 FileObject finalAgentCfg = tmpDir.resolveFile(agentCfgFileName);
                 FileUtil.copyContent(agentCfg, finalAgentCfg);
                 getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, agentCfgFileName), ar.isReplaceConfig());
                 finalAgentCfg.delete();
+
             }
         }
 
+        // Install received resources (when acting as remote client, this will actually install the agent configuration file)
         if (ar.getReosurces().size() > 0) {
             // We have embedded resources ...
 
             for (ConfigureAgentResource r : ar.getReosurces()) {
-                if (r.getName().startsWith("josso-agent-config")) {
-                    // Write resource to tmp dir:
 
-                    FileObject agentCfg = tmpDir.resolveFile(r.getName());
-                    if (!agentCfg.exists())
-                        agentCfg.createFile();
+                // Write resource's content to tmp dir
 
-                    OutputStream out = null;
-                    try {
-                        out = agentCfg.getContent().getOutputStream(false);
-                        IOUtils.copy(new ByteArrayInputStream(r.getResource().getBytes()), out);
+                String agentResourceName = r.getName().contains("/") ? r.getName().substring(r.getName().lastIndexOf("/")) : r.getName();
 
-                    } finally {
-                        IOUtils.closeQuietly(out);
-                    }
+                // Some convenience platform renaming
+                if (ar.getTargetPlatformId().startsWith("iis")) {
 
-                    getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, r.getName()), ar.isReplaceConfig());
+                    if (r.getName().contains("eventlog-reg.reg"))
+                        agentResourceName = "josso-agent-eventlog.reg";
+
+                    if (r.getName().contains("config-reg.reg"))
+                        agentResourceName = "josso-agent-isapi.reg";
+
                 }
+
+                FileObject finalAgentResource = tmpDir.resolveFile(agentResourceName);
+
+                // Write resource content to a temporary file
+                OutputStream out = finalAgentResource.getContent().getOutputStream();
+                IOUtils.write(r.getResource(), out);
+                IOUtils.closeQuietly(out);
+
+                // Install content
+                getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, agentResourceName), ar.isReplaceConfig());
+                finalAgentResource.delete();
+
             }
 
         }

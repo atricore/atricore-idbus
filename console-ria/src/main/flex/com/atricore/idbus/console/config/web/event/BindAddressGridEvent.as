@@ -1,8 +1,8 @@
-package com.atricore.idbus.console.config.http.event {
+package com.atricore.idbus.console.config.web.event {
 import flash.events.Event;
 
 public class BindAddressGridEvent extends Event {
-    public static const CLICK:String = "com.atricore.idbus.console.config.http.event.BindAddressGridEvent.CLICK";
+    public static const CLICK:String = "com.atricore.idbus.console.config.web.event.BindAddressGridEvent.CLICK";
 
     public static const ACTION_REMOVE:int = 0;
 

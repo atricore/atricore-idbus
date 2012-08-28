@@ -33,15 +33,15 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class PublishBrandingCommand extends IocSimpleCommand implements IResponder
+public class ActivateBrandingChangesCommand extends IocSimpleCommand implements IResponder
 {
-    public static const SUCCESS:String = "PublishBrandingCommand.SUCCESS";
-    public static const FAILURE:String = "PublishBrandingCommand.FAILURE";
+    public static const SUCCESS:String = "ActivateBrandingChangesCommand.SUCCESS";
+    public static const FAILURE:String = "ActivateBrandingChangesCommand.FAILURE";
 
     private var _registry:ServiceRegistry;
     private var _configProxy:ServiceConfigProxy;
 
-    public function PublishBrandingCommand() {
+    public function ActivateBrandingChangesCommand() {
     }
 
     public function get registry():ServiceRegistry {

@@ -77,25 +77,14 @@
                                 </fx:Component>
                             </mx:itemRenderer>
                         </mx:DataGridColumn>
-                        <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.type')}" width="70" dataField="type">
-                            <mx:itemRenderer>
-                                <fx:Component>
-                                    <s:MXAdvancedDataGridItemRenderer>
-                                        <s:Label paddingLeft="5" paddingTop="3" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.type.' + data.type.name)}"/>
-                                    </s:MXAdvancedDataGridItemRenderer>
-                                </fx:Component>
-                            </mx:itemRenderer>
-                        </mx:DataGridColumn>
-                        <mx:DataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.webId')}" width="120" dataField="webBrandingId"/>
                     </mx:columns>
                 </mx:DataGrid>
-
             </mx:FormItem>
 
             <mx:FormItem>
                 <s:HGroup>
                     <s:Button id="btnCreate" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create')}"/>
-                    <s:Button id="btnPublishChanges" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.publish')}"/>
+                    <s:Button id="btnActivateChanges" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.activate')}"/>
                 </s:HGroup>
             </mx:FormItem>
 

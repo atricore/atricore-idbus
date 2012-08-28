@@ -51,7 +51,11 @@
                 id: "atricore-console",
                 name: "atricore-console"
             };
+<<<<<<< HEAD
             swfobject.embedSWF("<%=request.getContextPath()%>/console-ria-1.3.0-SNAPSHOT.swf", "flashcontent", "100%", "100%", "10.0.0", "<%=request.getContextPath()%>/js/swf/expressInstall.swf", flashvars, params, attributes);
+=======
+            swfobject.embedSWF("<%=request.getContextPath()%>/console-ria-1.2.1-SNAPSHOT.swf", "flashcontent", "100%", "100%", "10.0.0", "<%=request.getContextPath()%>/js/swf/expressInstall.swf", flashvars, params, attributes);
+>>>>>>> 1.2.1
 
             function init() {
                 var fl = document.getElementById("atricore-console");

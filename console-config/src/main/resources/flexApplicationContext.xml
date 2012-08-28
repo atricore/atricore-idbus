@@ -220,7 +220,7 @@
         <property name="createBrandingCommand" ref="createBrandingCommand"/>
         <property name="updateBrandingCommand" ref="updateBrandingCommand"/>
         <property name="removeBrandingCommand" ref="removeBrandingCommand"/>
-        <property name="publishBrandingCommand" ref="publishBrandingCommand"/>
+        <property name="activateBrandingChangesCommand" ref="activateBrandingChangesCommand"/>
     </object>
 
     <object id="helpStartupCommand"
@@ -627,8 +627,8 @@
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
 
-    <object id="publishBrandingCommand"
-            class="com.atricore.idbus.console.config.main.controller.PublishBrandingCommand">
+    <object id="activateBrandingChangesCommand"
+            class="com.atricore.idbus.console.config.main.controller.ActivateBrandingChangesCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
@@ -1093,11 +1093,11 @@
 
     <object id="brandingPopUpManager"
             class="com.atricore.idbus.console.config.branding.view.BrandingPopUpManager">
-        <property name="createBrandingWizardMediator" ref="createBrandingWizardMediator"/>
+        <property name="createBrandingExtensionMediator" ref="createBrandingExtensionMediator"/>
     </object>
 
-    <object id="createBrandingWizardMediator"
-            class="com.atricore.idbus.console.config.branding.view.create.CreateBrandingWizardViewMediator">
+    <object id="createBrandingExtensionMediator"
+            class="com.atricore.idbus.console.config.branding.view.create.CreateBrandingExtensionMediator">
     </object>
 
     <!-- App Section View Factories -->
@@ -1130,6 +1130,7 @@
     <object id="licenseView" class="com.atricore.idbus.console.licensing.LicenseView"/>
 
     <!-- Platform Services Menu -->
+<<<<<<< HEAD
     <object id="platformServicesMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">
         <property name="label" value="Platform Services"/>
         <property name="shortDescription" value="Platform Services Drawer"/>
@@ -1141,12 +1142,26 @@
                 <value><ref>persistenceSettingsMenuEntry</ref></value>
                 <value><ref>managementSettingsMenuEntry</ref></value>
                 <value><ref>queueSettingsMenuEntry</ref></value>
+=======
+    <object id="platformSettingsMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">
+        <property name="label" value="Platform Settings"/>
+        <property name="shortDescription" value="Platform Settings Drawer"/>
+        <property name="viewPriority" value="10"/>
+        <property name="children">
+            <array>
+                <value><ref>webSettingsMenuEntry</ref></value>
+                <value><ref>remoteConsoleSettingsMenuEntry</ref></value>
+                <value><ref>persistenceSettingsMenuEntry</ref></value>
+                <value><ref>managementSettingsMenuEntry</ref></value>
+                <value><ref>messageBusSettingsMenuEntry</ref></value>
+>>>>>>> 1.2.1
                 <value><ref>loggingSettingsMenuEntry</ref></value>
                 <value><ref>brandingSettingsMenuEntry</ref></value>
             </array>
         </property>
     </object>
 
+<<<<<<< HEAD
     <object id="httpSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
         <property name="label" value="HTTP Settings"/>
         <property name="shortDescription" value="HTTP Settings Entry"/>
@@ -1177,6 +1192,38 @@
 
     <object id="persistenceSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
         <property name="label" value="Persistence Settings"/>
+=======
+    <object id="webSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Web"/>
+        <property name="shortDescription" value="Web Settings Entry"/>
+        <property name="iconName" value="webSettings"/>
+        <property name="mediatorName" value="webSettingsMediator"/>
+        <property name="viewName" value="webSettingsView"/>
+    </object>
+
+    <object id="webSettingsMediator" class="com.atricore.idbus.console.config.web.WebSettingsMediator">
+        <property name="configProxy" ref="serviceConfigProxy"/>
+    </object>
+
+    <object id="webSettingsView" class="com.atricore.idbus.console.config.web.WebSettingsView"/>
+
+    <object id="remoteConsoleSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Remote Console"/>
+        <property name="shortDescription" value="Remote Console Settings Entry"/>
+        <property name="iconName" value="remoteConsoleSettings"/>
+        <property name="mediatorName" value="remoteConsoleSettingsMediator"/>
+        <property name="viewName" value="remoteConsoleSettingsView"/>
+    </object>
+
+    <object id="remoteConsoleSettingsMediator" class="com.atricore.idbus.console.config.remoteconsole.RemoteConsoleSettingsMediator">
+        <property name="configProxy" ref="serviceConfigProxy"/>
+    </object>
+
+    <object id="remoteConsoleSettingsView" class="com.atricore.idbus.console.config.remoteconsole.RemoteConsoleSettingsView"/>
+
+    <object id="persistenceSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Persistence"/>
+>>>>>>> 1.2.1
         <property name="shortDescription" value="Persistence Settings Entry"/>
         <property name="iconName" value="persistenceSettings"/>
         <property name="mediatorName" value="persistenceSettingsMediator"/>
@@ -1191,8 +1238,13 @@
     <object id="persistenceSettingsView" class="com.atricore.idbus.console.config.persistence.PersistenceSettingsView"/>
 
     <object id="managementSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+<<<<<<< HEAD
         <property name="label" value="Management Settings"/>
         <property name="shortDescription" value="Management Settings Entry"/>
+=======
+        <property name="label" value="Monitoring and Management"/>
+        <property name="shortDescription" value="Monitoring and Management Settings Entry"/>
+>>>>>>> 1.2.1
         <property name="iconName" value="managementSettings"/>
         <property name="mediatorName" value="managementSettingsMediator"/>
         <property name="viewName" value="managementSettingsView"/>
@@ -1204,6 +1256,7 @@
 
     <object id="managementSettingsView" class="com.atricore.idbus.console.config.management.ManagementSettingsView"/>
 
+<<<<<<< HEAD
     <object id="queueSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
         <property name="label" value="Queue Settings"/>
         <property name="shortDescription" value="Queue Settings Entry"/>
@@ -1220,12 +1273,31 @@
 
     <object id="loggingSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
         <property name="label" value="Logging Settings"/>
+=======
+    <object id="messageBusSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Message Bus"/>
+        <property name="shortDescription" value="Messsage Bus Settings Entry"/>
+        <property name="iconName" value="messageBusSettings"/>
+        <property name="mediatorName" value="messageBusSettingsMediator"/>
+        <property name="viewName" value="messageBusSettingsView"/>
+    </object>
+
+    <object id="messageBusSettingsMediator" class="com.atricore.idbus.console.config.messagebus.MessageBusSettingsMediator">
+        <property name="configProxy" ref="serviceConfigProxy"/>
+    </object>
+
+    <object id="messageBusSettingsView" class="com.atricore.idbus.console.config.messagebus.MessageBusSettingsView"/>
+
+    <object id="loggingSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Logging"/>
+>>>>>>> 1.2.1
         <property name="shortDescription" value="Logging Settings Entry"/>
         <property name="iconName" value="loggingSettings"/>
         <property name="mediatorName" value="loggingSettingsMediator"/>
         <property name="viewName" value="loggingSettingsView"/>
     </object>
 
+<<<<<<< HEAD
     <object id="loggingSettingsMediator" class="com.atricore.idbus.console.config.log.LoggingSettingsMediator">
         <property name="configProxy" ref="serviceConfigProxy"/>
     </object>
@@ -1234,6 +1306,16 @@
 
     <object id="brandingSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
         <property name="label" value="Branding Settings"/>
+=======
+    <object id="loggingSettingsMediator" class="com.atricore.idbus.console.config.logging.LoggingSettingsMediator">
+        <property name="configProxy" ref="serviceConfigProxy"/>
+    </object>
+
+    <object id="loggingSettingsView" class="com.atricore.idbus.console.config.logging.LoggingSettingsView"/>
+
+    <object id="brandingSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="Branding"/>
+>>>>>>> 1.2.1
         <property name="shortDescription" value="Branding Settings Entry"/>
         <property name="iconName" value="brandingSettings"/>
         <property name="mediatorName" value="brandingSettingsMediator"/>
