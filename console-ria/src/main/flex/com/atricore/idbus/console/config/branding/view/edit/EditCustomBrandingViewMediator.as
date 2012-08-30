@@ -167,13 +167,8 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
     }
 
     private function close():void {
-<<<<<<< HEAD
-        var brandingServiceMediator:IIocMediator = iocFacade.container.getObject(brandingSettingsMediatorName) as IIocMediator;
-        var brandingServiceView:IVisualElement = iocFacade.container.getObject(brandingSettingsViewName) as IVisualElement;
-=======
         var brandingSettingsMediator:IIocMediator = iocFacade.container.getObject(brandingSettingsMediatorName) as IIocMediator;
         var brandingSettingsView:IVisualElement = iocFacade.container.getObject(brandingSettingsViewName) as IVisualElement;
->>>>>>> 1.2.1
         var parentGroup:Group = view.parent as Group;
         parentGroup.removeAllElements();
         parentGroup.addElement(brandingSettingsView);

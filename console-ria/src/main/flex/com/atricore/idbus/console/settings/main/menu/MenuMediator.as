@@ -65,29 +65,14 @@ public class MenuMediator extends IocMediator {
                     settingsMenuEntry.icon = EmbeddedIcons.licenseIcon;
                 else if (settingsMenuEntry.iconName == "liveUpdate")
                     settingsMenuEntry.icon = EmbeddedIcons.liveUpdateIcon;
-<<<<<<< HEAD
-                else if (settingsMenuEntry.iconName == "httpSettings")
-                    settingsMenuEntry.icon = EmbeddedIcons.httpSettingsIcon;
-                else if (settingsMenuEntry.iconName == "sshSettings")
-                    settingsMenuEntry.icon = EmbeddedIcons.sshSettingsIcon;
-=======
                 else if (settingsMenuEntry.iconName == "webSettings")
                     settingsMenuEntry.icon = EmbeddedIcons.webSettingsIcon;
                 else if (settingsMenuEntry.iconName == "remoteConsoleSettings")
                     settingsMenuEntry.icon = EmbeddedIcons.remoteConsoleSettingsIcon;
->>>>>>> 1.2.1
                 else if (settingsMenuEntry.iconName == "persistenceSettings")
                     settingsMenuEntry.icon = EmbeddedIcons.persistenceSettingsIcon;
                 else if (settingsMenuEntry.iconName == "managementSettings")
                     settingsMenuEntry.icon = EmbeddedIcons.managementSettingsIcon;
-<<<<<<< HEAD
-                else if (settingsMenuEntry.iconName == "queueSettings")
-                    settingsMenuEntry.icon = EmbeddedIcons.queueSettingsIcon;
-                else if (settingsMenuEntry.iconName == "loggingSettings")
-                    settingsMenuEntry.icon = EmbeddedIcons.logggingSettingsIcon;
-                else if (settingsMenuEntry.iconName == "brandingSettings")
-                    settingsMenuEntry.icon = EmbeddedIcons.brandingSettingsIcon;
-=======
                 else if (settingsMenuEntry.iconName == "messageBusSettings")
                     settingsMenuEntry.icon = EmbeddedIcons.messageBusSettingsIcon;
                 else if (settingsMenuEntry.iconName == "loggingSettings")
@@ -95,7 +80,6 @@ public class MenuMediator extends IocMediator {
                 else if (settingsMenuEntry.iconName == "brandingSettings")
                     settingsMenuEntry.icon = EmbeddedIcons.brandingSettingsIcon;
 
->>>>>>> 1.2.1
             }
 
             smr.add(settingsMenuDrawer);

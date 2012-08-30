@@ -158,11 +158,7 @@ public class MetadataRepositoryManagerImplTest extends VFSTestSupport {
     @Test
     public void testGetUpdate2() throws Exception {
         UpdateDescriptorType update = mdRepositoryManager.getUpdate(
-<<<<<<< HEAD
                 "com.atricore.josso", "com.atricore.josso.ee.install", "1.3.0-SNAPSHOT");
-=======
-                "com.atricore.josso", "com.atricore.josso.ee.install", "1.2.1-SNAPSHOT");
->>>>>>> 1.2.1
         Assert.assertNotNull(update);
 
         update = mdRepositoryManager.getUpdate("com.test", "test", "1.0.0");
