@@ -7037,21 +7037,31 @@ public class PropertySheetMediator extends IocMediator {
     private function sharepoint2010Save(): void {
          // bind model
         var sharepointResource:SharepointResource = projectProxy.currentIdentityApplianceElement as SharepointResource;
-        sharepointResource.name = _sharepoint2010ResourceCoreSection.executionEnvironmentName.text;
-        sharepointResource.description = _sharepoint2010ResourceCoreSection.executionEnvironmentDescription.text;
-        //sharepointResource.containerType = _sharepoint2010ExecEnvCoreSection.executionEnvironmentType.text;
-        //TODO CHECK PLATFORM ID
-        /**
-        sharepointResource.platformId = "sp2010";
+        sharepointResource.name = _sharepoint2010ResourceCoreSection.resourceName.text;
+        sharepointResource.description = _sharepoint2010ResourceCoreSection.resourceDescription.text;
 
-        sharepointResource.type = ExecEnvType.valueOf(_sharepoint2010ExecEnvCoreSection.selectedHost.selectedItem.data);
-        sharepointResource.installUri = _sharepoint2010ExecEnvCoreSection.homeDirectory.text;
-        if (sharepointResource.type.name == ExecEnvType.REMOTE.name) {
-            sharepointResource.location = _sharepoint2010ExecEnvCoreSection.location.text;
-        } else {
-            sharepointResource.location = null;
-        }
-        */
+        sharepointResource.stsSigningCertSubject = _sharepoint2010ResourceCoreSection.resourceSigningCertSubject.text;
+        sharepointResource.stsEncryptingCertSubject = _sharepoint2010ResourceCoreSection.resourceEncryptingCertSubject.text;
+
+        // STS location
+        var stsLocation:Location = new Location();
+        stsLocation.protocol = _sharepoint2010ResourceCoreSection.resourceProtocol.labelDisplay.text;
+        stsLocation.host = _sharepoint2010ResourceCoreSection.resourceDomain.text;
+        stsLocation.port = parseInt(_sharepoint2010ResourceCoreSection.resourcePort.text);
+        stsLocation.context = _sharepoint2010ResourceCoreSection.resourceContext.text;
+        stsLocation.uri = _sharepoint2010ResourceCoreSection.resourcePath.text;
+
+        sharepointResource.stsLocation = stsLocation;
+
+        // App location
+        var appLocation:Location = new Location();
+        appLocation.protocol = _sharepoint2010ResourceCoreSection.resourceProtocol.labelDisplay.text;
+        appLocation.host = _sharepoint2010ResourceCoreSection.resourceDomain.text;
+        appLocation.port = parseInt(_sharepoint2010ResourceCoreSection.resourcePort.text);
+        appLocation.context = _sharepoint2010ResourceCoreSection.resourceContext.text;
+        appLocation.uri = _sharepoint2010ResourceCoreSection.resourcePath.text;
+
+        sharepointResource.appLocation = appLocation;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

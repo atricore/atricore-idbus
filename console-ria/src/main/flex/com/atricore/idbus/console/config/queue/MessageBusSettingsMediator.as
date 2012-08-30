@@ -42,7 +42,7 @@ import mx.resources.ResourceManager;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 
-public class QueueSettingsMediator extends IocFormMediator implements IDisposable {
+public class MessageBusSettingsMediator extends IocFormMediator implements IDisposable {
 
     private var _configProxy:ServiceConfigProxy;
 
@@ -52,7 +52,7 @@ public class QueueSettingsMediator extends IocFormMediator implements IDisposabl
 
     private var _artifactQueueManagerConfig:ArtifactQueueManagerConfiguration;
 
-    public function QueueSettingsMediator(name:String = null, viewComp:QueueSettingsView = null) {
+    public function MessageBusSettingsMediator(name:String = null, viewComp:MessageBusSettingsView = null) {
         super(name, viewComp);
     }
 
@@ -60,7 +60,7 @@ public class QueueSettingsMediator extends IocFormMediator implements IDisposabl
         if (_created) {
             sendNotification(ApplicationFacade.GET_SERVICE_CONFIG, ServiceType.AQM);
         }
-        (viewComponent as QueueSettingsView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+        (viewComponent as MessageBusSettingsView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         super.setViewComponent(viewComponent);
     }
 
@@ -145,8 +145,8 @@ public class QueueSettingsMediator extends IocFormMediator implements IDisposabl
         view.btnSave.enabled = true;
     }
 
-    protected function get view():QueueSettingsView {
-        return viewComponent as QueueSettingsView;
+    protected function get view():MessageBusSettingsView {
+        return viewComponent as MessageBusSettingsView;
     }
 
     override public function registerValidators():void {

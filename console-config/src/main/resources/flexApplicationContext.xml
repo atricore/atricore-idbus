@@ -1204,7 +1204,6 @@
 
     <object id="managementSettingsView" class="com.atricore.idbus.console.config.management.ManagementSettingsView"/>
 
-<<<<<<< HEAD
     <object id="queueSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
         <property name="label" value="Queue Settings"/>
         <property name="shortDescription" value="Queue Settings Entry"/>
@@ -1213,15 +1212,6 @@
         <property name="viewName" value="queueSettingsView"/>
     </object>
 
-    <object id="queueSettingsMediator" class="com.atricore.idbus.console.config.queue.QueueSettingsMediator">
-        <property name="configProxy" ref="serviceConfigProxy"/>
-    </object>
-
-    <object id="queueSettingsView" class="com.atricore.idbus.console.config.queue.QueueSettingsView"/>
-
-    <object id="loggingSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
-        <property name="label" value="Logging Settings"/>
-=======
     <object id="messageBusSettingsMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
         <property name="label" value="Message Bus"/>
         <property name="shortDescription" value="Messsage Bus Settings Entry"/>
