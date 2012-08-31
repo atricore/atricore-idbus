@@ -6960,9 +6960,9 @@ public class PropertySheetMediator extends IocMediator {
 
             if (sharepointResource.appLocation != null) {
 
-                for (var i:int = 0; i < _sharepoint2010ResourceCoreSection.appResourceProtocol.dataProvider.length; i++) {
-                    if (sharepointResource.stsLocation.protocol == _sharepoint2010ResourceCoreSection.appResourceProtocol.dataProvider[i].label) {
-                        _sharepoint2010ResourceCoreSection.appResourceProtocol.selectedIndex = i;
+                for (var ij:int = 0; ij < _sharepoint2010ResourceCoreSection.appResourceProtocol.dataProvider.length; ij++) {
+                    if (sharepointResource.stsLocation.protocol == _sharepoint2010ResourceCoreSection.appResourceProtocol.dataProvider[ij].label) {
+                        _sharepoint2010ResourceCoreSection.appResourceProtocol.selectedIndex = ij;
                         break;
                     }
                 }
@@ -7014,13 +7014,19 @@ public class PropertySheetMediator extends IocMediator {
             sharepointResource.name = _sharepoint2010ResourceCoreSection.resourceName.text;
             sharepointResource.description = _sharepoint2010ResourceCoreSection.resourceDescription.text;
 
-            sharepointResource.stsLocation.protocol = _sharepoint2010ResourceCoreSection.resourceProtocol.selectedItem.label;
+            if (sharepointResource.stsLocation == null)
+                sharepointResource.stsLocation = new Location();
+
+            sharepointResource.stsLocation.protocol = _sharepoint2010ResourceCoreSection.resourceProtocol.labelDisplay.text;
             sharepointResource.stsLocation.host = _sharepoint2010ResourceCoreSection.resourceDomain.text;
             sharepointResource.stsLocation.port = parseInt(_sharepoint2010ResourceCoreSection.resourcePort.text);
             sharepointResource.stsLocation.context = _sharepoint2010ResourceCoreSection.resourceContext.text;
             sharepointResource.stsLocation.uri = _sharepoint2010ResourceCoreSection.resourcePath.text;
 
-            sharepointResource.appLocation.protocol = _sharepoint2010ResourceCoreSection.appResourceProtocol.selectedItem.label;
+            if (sharepointResource.appLocation == null)
+                sharepointResource.appLocation = new Location();
+
+            sharepointResource.appLocation.protocol = _sharepoint2010ResourceCoreSection.appResourceProtocol.labelDisplay.text;
             sharepointResource.appLocation.host = _sharepoint2010ResourceCoreSection.appResourceDomain.text;
             sharepointResource.appLocation.port = parseInt(_sharepoint2010ResourceCoreSection.appResourcePort.text);
             sharepointResource.appLocation.context = _sharepoint2010ResourceCoreSection.appResourceContext.text;
