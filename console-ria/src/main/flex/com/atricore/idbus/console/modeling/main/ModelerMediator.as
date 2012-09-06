@@ -325,7 +325,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT,
-            ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_SAML2_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT,
@@ -454,7 +454,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 // TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.IDENTITY_PROVIDER_REMOVE, rip.identityProvider);
                 break;
-            case ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT:
+            case ApplicationFacade.REMOVE_SAML2_SERVICE_PROVIDER_ELEMENT:
                 var rsp:RemoveInternalSaml2ServiceProviderElementRequest = RemoveInternalSaml2ServiceProviderElementRequest(notification.getBody());
                 //                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.INTERNAL_SAML2_SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);

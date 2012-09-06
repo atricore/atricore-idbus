@@ -283,7 +283,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
-    public void arrive(OAuth2IdentityProvider node) throws Exception {
+    public void arrive(ExternalOAuth2IdentityProvider node) throws Exception {
         validateName("OAuth2 IDP name", node.getName(), node);
         validateDisplayName("OAuth2 IDP display name", node.getDisplayName());
         validateLocation("OAuth2 IDP", node.getLocation(), node, true);

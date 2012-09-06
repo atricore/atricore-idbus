@@ -28,7 +28,7 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOpenIDIdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOAuth2IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
@@ -63,7 +63,7 @@
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOpenIDIdentityProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOAuth2IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
@@ -259,7 +259,7 @@
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOAuth2IdentityProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.OAuth2IdentityProviderDTO</class-b>
     </mapping>
 
@@ -377,7 +377,7 @@
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOpenIDIdentityProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOAuth2IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
@@ -421,7 +421,7 @@
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProviderProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOpenIDIdentityProviderProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OpenIDServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOAuth2IdentityProviderProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
@@ -707,7 +707,7 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOpenIDIdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOAuth2IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
@@ -737,7 +737,7 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalSaml2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOpenIDIdentityProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalOAuth2IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.OAuth2ServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,

@@ -322,7 +322,7 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
-    public void arrive(OAuth2IdentityProvider node) throws Exception {
+    public void arrive(ExternalOAuth2IdentityProvider node) throws Exception {
 
         Bean providerBean = newBean(beans, node.getName(), node.getClass());
         setBeanDescription(providerBean, node.toString());
@@ -362,7 +362,7 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
-    public Object[] leave(OAuth2IdentityProvider node, Object[] results) throws Exception {
+    public Object[] leave(ExternalOAuth2IdentityProvider node, Object[] results) throws Exception {
         return null;
     }
 

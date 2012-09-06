@@ -201,7 +201,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:String = "createLdapIdentitySourceElement";
     public static const CREATE_XML_IDENTITY_SOURCE_ELEMENT:String = "createXmlIdentitySourceElement";
     public static const CREATE_IDENTITY_VAULT_ELEMENT:String = "createIdentityVaultElement";
-    public static const REMOVE_SERVICE_PROVIDER_ELEMENT:String = "removeServiceProviderElement";
+    public static const REMOVE_SAML2_SERVICE_PROVIDER_ELEMENT:String = "removeSaml2ServiceProviderElement";
     public static const REMOVE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT:String = "removeExternalServiceProviderElement";
     public static const REMOVE_SALESFORCE_ELEMENT:String = "removeSalesforceElement";
     public static const REMOVE_GOOGLE_APPS_ELEMENT:String = "removeGoogleAppsElement";

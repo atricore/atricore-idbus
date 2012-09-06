@@ -196,8 +196,6 @@ public class DiagramUtil {
         switch (elementType) {
             case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.idpMiniIcon;
-            case DiagramElementTypes.SAML_2_IDENTITY_PROVIDER_ELEMENT_TYPE:
-                return EmbeddedIcons.saml2IdpMiniIcon;
             case DiagramElementTypes.SAML_2_SERVICE_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.saml2SpMiniIcon;
             case DiagramElementTypes.EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT_TYPE:

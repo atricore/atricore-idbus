@@ -307,7 +307,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(OAuth2IdentityProvider node) throws Exception;
+    void arrive(ExternalOAuth2IdentityProvider node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -323,7 +323,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(OAuth2IdentityProvider node, Object[] results) throws Exception;
+    Object[] leave(ExternalOAuth2IdentityProvider node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -342,7 +342,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(OAuth2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(ExternalOAuth2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
     /**
      * This method is called before walking any children of the argument

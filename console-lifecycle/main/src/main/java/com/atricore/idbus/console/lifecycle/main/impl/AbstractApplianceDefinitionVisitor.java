@@ -80,15 +80,15 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;
     }
 
-    public void arrive(OAuth2IdentityProvider node) throws Exception {
+    public void arrive(ExternalOAuth2IdentityProvider node) throws Exception {
 
     }
 
-    public Object[] leave(OAuth2IdentityProvider node, Object[] results) throws Exception {
+    public Object[] leave(ExternalOAuth2IdentityProvider node, Object[] results) throws Exception {
         return new Object[0];
     }
 
-    public boolean walkNextChild(OAuth2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(ExternalOAuth2IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
