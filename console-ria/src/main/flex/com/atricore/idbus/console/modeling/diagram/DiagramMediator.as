@@ -1507,6 +1507,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             } else if (node.data is WindowsIntegratedAuthentication) {
                 elementType = DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE;
             }
+            // TODO : Add new elements not already supported
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE, elementType);
         }

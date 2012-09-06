@@ -6973,7 +6973,6 @@ public class PropertySheetMediator extends IocMediator {
 
             }
 
-
             _locationValidator = new URLValidator();
             _locationValidator.required = true;
 
