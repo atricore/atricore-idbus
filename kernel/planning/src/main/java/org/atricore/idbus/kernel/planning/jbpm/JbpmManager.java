@@ -125,14 +125,10 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
         JbpmContext jbpmContext = jbpmConfiguration.createJbpmContext();
         try {
             // Look up the process instance from the database.
-            synchronized (this) {
                 processInstance = jbpmContext.getGraphSession().loadProcessInstance(toLong(processId));
-            }
         }
         finally {
-            synchronized (this) {
                 jbpmContext.close();
-            }
         }
         return processInstance;
     }
@@ -171,10 +167,8 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
         try {
             // Some access needs to be serialized:
             ProcessDefinition processDefinition = null;
-            synchronized (this) {
-                processDefinition = jbpmContext.getGraphSession().findLatestProcessDefinition(
-                    (String) processType);
-            }
+            processDefinition = jbpmContext.getGraphSession().findLatestProcessDefinition(
+                (String) processType);
 
             if (processDefinition == null)
                 throw new IllegalArgumentException("No process definition found for process " + processType);
@@ -194,27 +188,19 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
                 logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP signal process");
 
             // Leave the start state.
-            synchronized (this) {
-                processInstance.signal();
-
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP save process");
-
-                jbpmContext.save(processInstance);
-            }
+            processInstance.signal();
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP save process");
+            jbpmContext.save(processInstance);
 
         } catch (Exception e) {
-            synchronized (this) {
-                jbpmContext.setRollbackOnly();
-            }
+            jbpmContext.setRollbackOnly();
             throw e;
         } finally {
 
             if (logger.isTraceEnabled())
                 logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP close process");
-            synchronized (this) {
-                jbpmContext.close();
-            }
+            jbpmContext.close();
         }
 
         return processInstance;
@@ -241,9 +227,7 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
         JbpmContext jbpmContext = jbpmConfiguration.createJbpmContext();
         try {
             // Look up the process instance from the database.
-            synchronized (this) {
-                processInstance = jbpmContext.getGraphSession().loadProcessInstance(toLong(processId));
-            }
+            processInstance = jbpmContext.getGraphSession().loadProcessInstance(toLong(processId));
 
             if (processInstance.hasEnded()) {
                 throw new IllegalStateException(
@@ -261,29 +245,22 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
                 processInstance.getContextInstance().setTransientVariables(transientVariables);
             }
 
-            synchronized (this) {
-                // Advance the workflow.
-                if (transition != null) {
-                    processInstance.signal((String) transition);
-                } else {
-                    processInstance.signal();
-                }
-
-                // Save the process state back to the database.
-
-                jbpmContext.save(processInstance);
+            // Advance the workflow.
+            if (transition != null) {
+                processInstance.signal((String) transition);
+            } else {
+                processInstance.signal();
             }
+
+            // Save the process state back to the database.
+
+            jbpmContext.save(processInstance);
 
         } catch (Exception e) {
-            synchronized (this) {
-                jbpmContext.setRollbackOnly();
-            }
+            jbpmContext.setRollbackOnly();
             throw e;
         } finally {
-            synchronized (this) {
-                jbpmContext.close();
-            }
-
+            jbpmContext.close();
         }
         return processInstance;
     }
@@ -299,9 +276,7 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
         JbpmContext jbpmContext = jbpmConfiguration.createJbpmContext();
         try {
             // Look up the process instance from the database.
-            synchronized (this) {
-                processInstance = jbpmContext.getGraphSession().loadProcessInstance(toLong(processId));
-            }
+            processInstance = jbpmContext.getGraphSession().loadProcessInstance(toLong(processId));
 
             // Set any process variables.
             // Note: addVariables() will replace the old value of a variable if it
@@ -314,20 +289,14 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
                 processInstance.getContextInstance().setTransientVariables(processVariables);
             }
 
-            synchronized (this) {
-                // Save the process state back to the database.
-                jbpmContext.save(processInstance);
-            }
+            // Save the process state back to the database.
+            jbpmContext.save(processInstance);
 
         } catch (Exception e) {
-            synchronized (this) {
-                jbpmContext.setRollbackOnly();
-            }
+            jbpmContext.setRollbackOnly();
             throw e;
         } finally {
-            synchronized (this) {
-                jbpmContext.close();
-            }
+            jbpmContext.close();
         }
         return processInstance;
     }
@@ -337,32 +306,27 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
      */
     public void abortProcess(Object processId) throws Exception {
         JbpmContext jbpmContext = jbpmConfiguration.createJbpmContext();
-        synchronized (this) {
-            try {
-                jbpmContext.getGraphSession().deleteProcessInstance(toLong(processId));
-            } catch (Exception e) {
-                jbpmContext.setRollbackOnly();
-                throw e;
-            } finally {
-                jbpmContext.close();
-            }
+        try {
+            jbpmContext.getGraphSession().deleteProcessInstance(toLong(processId));
+        } catch (Exception e) {
+            jbpmContext.setRollbackOnly();
+            throw e;
+        } finally {
+            jbpmContext.close();
         }
     }
 
     public void destroyProcess(Object processId) {
         JbpmContext jbpmContext = jbpmConfiguration.createJbpmContext();
-        synchronized (this) {
-            try {
-                jbpmContext.getGraphSession().deleteProcessInstance(toLong(processId));
+        try {
+            jbpmContext.getGraphSession().deleteProcessInstance(toLong(processId));
 
-            } catch (Exception e) {
-                jbpmContext.setRollbackOnly();
-                logger.error(e.getMessage(), e);
-            } finally {
-                jbpmContext.close();
-            }
+        } catch (Exception e) {
+            jbpmContext.setRollbackOnly();
+            logger.error(e.getMessage(), e);
+        } finally {
+            jbpmContext.close();
         }
-
     }
 
     /**
@@ -377,17 +341,15 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
         Map processVariables = null;
 
         JbpmContext jbpmContext = jbpmConfiguration.createJbpmContext();
-        synchronized (this) {
-            try {
-                ProcessInstance processInstance = null;
-                // Look up the process instance from the database.
-                processInstance = jbpmContext.getGraphSession().loadProcessInstance(toLong(processId));
+        try {
+            ProcessInstance processInstance = null;
+            // Look up the process instance from the database.
+            processInstance = jbpmContext.getGraphSession().loadProcessInstance(toLong(processId));
 
-                processVariables = processInstance.getContextInstance().getVariables();
+            processVariables = processInstance.getContextInstance().getVariables();
 
-            } finally {
-                jbpmContext.close();
-            }
+        } finally {
+            jbpmContext.close();
         }
 
         return processVariables;
@@ -409,32 +371,27 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
         processDefinition = ProcessDefinition.parseXmlInputStream(processDefinitionIs);
         String processType = processDefinition.getName();
 
-        synchronized (this) {
-
-            try {
-                jbpmContext.deployProcessDefinition(processDefinition);
-            } finally {
-                jbpmContext.close();
-            }
-
-            return processType;
+        try {
+            jbpmContext.deployProcessDefinition(processDefinition);
+        } finally {
+            jbpmContext.close();
         }
+
+        return processType;
 
     }
 
     private String deployProcess(ProcessDefinition processDefinition) {
         JbpmContext jbpmContext = jbpmConfiguration.createJbpmContext();
         String processType = processDefinition.getName();
-        synchronized (this) {
 
-            try {
-                jbpmContext.deployProcessDefinition(processDefinition);
-            } finally {
-                jbpmContext.close();
-            }
-
-            return processType;
+        try {
+            jbpmContext.deployProcessDefinition(processDefinition);
+        } finally {
+            jbpmContext.close();
         }
+
+        return processType;
     }
 
 

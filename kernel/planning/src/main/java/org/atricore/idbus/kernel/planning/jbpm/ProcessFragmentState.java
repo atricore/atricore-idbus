@@ -308,12 +308,10 @@ public class ProcessFragmentState extends Node implements Parsable {
                 if (logger.isTraceEnabled())
                     logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment before signal " + processFragmentName);
 
-                synchronized (bpmsManager) {
-                    processFragmentInstance.signal();
+                processFragmentInstance.signal();
 
-                    if (!processFragmentInstance.hasEnded()) {
-                        logger.warn("Identity Plan process fragment '"+processFragmentName+"' [" + processFragmentInstance.getId() + "] has not ended! Check your process definition");
-                    }
+                if (!processFragmentInstance.hasEnded()) {
+                    logger.warn("Identity Plan process fragment '"+processFragmentName+"' [" + processFragmentInstance.getId() + "] has not ended! Check your process definition");
                 }
 
                 if (logger.isTraceEnabled())

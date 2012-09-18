@@ -35,7 +35,7 @@
 
     <!-- JDBC connection properties (begin) -->
     <property name="hibernate.connection.driver_class">org.h2.Driver</property>
-    <property name="hibernate.connection.url">jdbc:h2:mem:idbus-planning;MULTI_THREADED=FALSE;LOCK_MODE=0;MVCC=TRUE;DB_CLOSE_DELAY=-1</property>
+    <property name="hibernate.connection.url">jdbc:h2:mem:idbus-planning;MVCC=TRUE;DB_CLOSE_DELAY=-1</property>
     <property name="hibernate.connection.username">idbus</property>
     <property name="hibernate.connection.password"></property>
 
