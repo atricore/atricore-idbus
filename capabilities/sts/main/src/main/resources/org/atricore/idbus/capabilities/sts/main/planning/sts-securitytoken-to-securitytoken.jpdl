@@ -23,7 +23,7 @@
 
 <process-definition name='SecurityToken from SecurityToken'>
 
-    <description>Emit a Security Token based on a recieved Security Token</description>
+    <description>Emit a Security Token based on a received Security Token</description>
 
     <start-state name="start">
         <transition to="initializeSecurityToken" />
@@ -66,7 +66,7 @@
     -->
     <process-fragment-state name="provideContentInformation">
         <process-fragment lifecycle="emit-st" phase="provide-content-info"/>
-        <transition to="ensureContentConfidentiality"/>
+        <transition to="ensureConfidentiality"/>
         <!-- IN/OUT Artifacts are automatically propagated! -->
         <!-- Subject -->
         <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
@@ -80,8 +80,8 @@
     <!--
     Encrypt token content (attributes, etc)
     -->
-    <process-fragment-state name="ensureContentConfidentiality">
-        <process-fragment lifecycle="emit-st" phase="ensure-content-confidentiality"/>
+    <process-fragment-state name="ensureConfidentiality">
+        <process-fragment lifecycle="emit-st" phase="ensure-confidentiality"/>
         <transition to="ensureAuthenticity"/>
         <!-- IN/OUT Artifacts are automatically propagated! -->
         <!-- Subject -->
@@ -114,7 +114,7 @@
     -->
     <process-fragment-state name="validateEmittedToken">
         <process-fragment lifecycle="emit-st" phase="validate-emitted-token"/>
-        <transition to="ensureConfidentiality"/>
+        <transition to="ensureTokenConfidentiality"/>
         <!-- IN/OUT Artifacts are automatically propagated! -->
         <!-- Subject -->
         <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
@@ -128,9 +128,9 @@
     <!--
     Encrypt the entire token ?
     -->
-    <process-fragment-state name="ensureConfidentiality">
+    <process-fragment-state name="ensureTokenConfidentiality">
         <process-fragment lifecycle="emit-st" phase="ensure-token-confidentiality"/>
-        <transition to="end"/>
+        <transition to="sts-end"/>
         <!-- IN/OUT Artifacts are automatically propagated! -->
         <!-- Subject -->
         <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
@@ -141,6 +141,6 @@
 
     </process-fragment-state>
 
-    <end-state name="end" />
+    <end-state name="sts-end" />
 
 </process-definition>

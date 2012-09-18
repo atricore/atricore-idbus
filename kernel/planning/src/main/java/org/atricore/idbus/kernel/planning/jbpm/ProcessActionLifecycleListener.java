@@ -49,7 +49,9 @@ public class ProcessActionLifecycleListener implements BundleContextAware {
     }
 
     public void onBind(ProcessAction processAction, Map properties) throws Exception {
-        logger.info("Process Action [" + processAction.getQualifiedClassName() + "] Registered");
+
+        if (logger.isDebugEnabled())
+            logger.debug("Process Action [" + processAction.getQualifiedClassName() + "] Registered");
 
         String bundleSymbolicName = (String) properties.get("Bundle-SymbolicName");
         String bundleVersion = (String) properties.get("Bundle-Version");

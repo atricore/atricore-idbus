@@ -55,8 +55,14 @@ public class ProcessFragmentState extends Node implements Parsable {
 
     static ProcessFragmentResolver defaultProcessFragmentResolver;
 
+    static BPMSManager bpmsManager;
+
     public static synchronized void setDefaultProcessFragmentResolver(ProcessFragmentResolver processFragmentResolver) {
         defaultProcessFragmentResolver = processFragmentResolver;
+    }
+
+    public static synchronized void setBpmsManager(BPMSManager m) {
+        bpmsManager = m;
     }
 
     protected Set<VariableAccess> variableAccesses = null;
@@ -302,7 +308,13 @@ public class ProcessFragmentState extends Node implements Parsable {
                 if (logger.isTraceEnabled())
                     logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment before signal " + processFragmentName);
 
-                processFragmentInstance.signal();
+                synchronized (bpmsManager) {
+                    processFragmentInstance.signal();
+
+                    if (!processFragmentInstance.hasEnded()) {
+                        logger.warn("Identity Plan process fragment '"+processFragmentName+"' [" + processFragmentInstance.getId() + "] has not ended! Check your process definition");
+                    }
+                }
 
                 if (logger.isTraceEnabled())
                     logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment after signal " + processFragmentName);
