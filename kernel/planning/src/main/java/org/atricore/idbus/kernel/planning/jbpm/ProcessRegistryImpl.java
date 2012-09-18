@@ -76,7 +76,7 @@ public class ProcessRegistryImpl implements ProcessFragmentRegistry, BundleConte
         actions.add(processAction);
     }
 
-    public synchronized ProcessFragment lookupProcessFragment(String name) {
+    public ProcessFragment lookupProcessFragment(String name) {
 
         ProcessFragment targetPf = null;
 
@@ -137,7 +137,7 @@ public class ProcessRegistryImpl implements ProcessFragmentRegistry, BundleConte
     }
 
 
-    public synchronized ProcessDescriptor lookupProcessDescriptor(String name) {
+    public ProcessDescriptor lookupProcessDescriptor(String name) {
         ProcessDescriptor targetPd = null;
         if (logger.isDebugEnabled())
             logger.debug("Looking for process descriptor ["+name+"]");
@@ -155,7 +155,7 @@ public class ProcessRegistryImpl implements ProcessFragmentRegistry, BundleConte
         return targetPd;
     }
 
-    public synchronized Class findProcessActionClass(String qualifiedActionName) throws ClassNotFoundException {
+    public Class findProcessActionClass(String qualifiedActionName) throws ClassNotFoundException {
 
         Class foundClass = null;
         Set<Bundle> bundleActionKeys =  bundleActions.keySet();

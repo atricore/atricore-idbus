@@ -84,11 +84,16 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             throws ServletException, IOException {
 
         long started = 0;
+        String thread = Thread.currentThread().getName();
+        String pathInfo = req.getPathInfo();
+
         try {
 
             if (logger.isTraceEnabled()) {
+                String parentThread = req.getHeader("IDBUS-PROXIED-REQUEST");
+                String proxied = parentThread != null ? "PROXIED" : "BROWSER";
                 started = System.currentTimeMillis();
-                logger.trace("IDBUS SERVLET SERVICE START AT " + started + " ("+Thread.currentThread().getName()+")");
+                logger.trace("IDBUS-PERF " + proxied + " ["+thread+"] "+ (parentThread != null ? "{"+parentThread+"}" : "")+ " " + pathInfo + " START");
             }
 
             if (kernelConfig == null) {
@@ -124,8 +129,12 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             }
         } finally {
             if (logger.isTraceEnabled()) {
+
+                String parentThread = req.getHeader("IDBUS-PROXIED-REQUEST");
+                String proxied = parentThread != null ? "PROXIED" : "BROWSER";
+
                 long ended = System.currentTimeMillis();
-                logger.trace("IDBUS SERVLET SERVICE END AT " + ended + " TOOK: " + (ended - started) + " ms("+Thread.currentThread().getName()+")");
+                logger.trace("IDBUS-PERF " + proxied + " ["+thread+"] "+ (parentThread != null ? "{"+parentThread+"}" : "")+ " " + pathInfo + " END: " + (ended - started) + " ms");
             }
 
         }
@@ -378,7 +387,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         // Cookies are automatically managed by the client :)
         // Mark request as PROXIED, so that we don't get into an infinite loop
         HttpRequestBase proxyReq = new HttpGet(targetUrl);
-        proxyReq.addHeader("IDBUS-PROXIED-REQUEST", "TRUE");
+        proxyReq.addHeader("IDBUS-PROXIED-REQUEST", Thread.currentThread().getName());
 
         return proxyReq;
     }
@@ -408,7 +417,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
         proxyReq = new HttpGet(targetUrl.toString());
         // Mark request as PROXIED, so that we don't get into an infinite loop
-        proxyReq.addHeader("IDBUS-PROXIED-REQUEST", "TRUE");
+        proxyReq.addHeader("IDBUS-PROXIED-REQUEST", Thread.currentThread().getName());
         // Add incoming headers, like cookies!
         Enumeration<String> hNames = req.getHeaderNames();
         while (hNames.hasMoreElements()) {
@@ -429,6 +438,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             throws ServletException, IOException {
 
         // FIX For a bug in CXF!
+
         HttpServletResponse res = new WHttpServletResponse(r);
 
         // Lazy  identity mediation registry

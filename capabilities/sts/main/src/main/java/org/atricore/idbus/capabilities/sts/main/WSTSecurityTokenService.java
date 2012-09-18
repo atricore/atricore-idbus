@@ -60,6 +60,9 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     public RequestSecurityTokenResponseType requestSecurityToken(RequestSecurityTokenType rst) {
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP prepare sts");
+
         JAXBElement<String> requestType;
         JAXBElement requestToken;
 
@@ -102,16 +105,27 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             // -----------------------------------------
             // 1. Authenticate
             // -----------------------------------------
+
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP authenticate");
+
             subject = authenticate(requestToken.getValue(), tokenType.getValue());
             if (logger.isDebugEnabled())
                 logger.debug( "User " + subject + " authenticated successfully" );
 
             processingContext.setProperty(SUBJECT_PROP, subject);
 
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP emit token");
+
             // -----------------------------------------
             // 2. Emit security token
             // -----------------------------------------
             securityToken = emit(processingContext, requestToken.getValue(), tokenType.getValue());
+
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP emitted token");
+
             logger.debug("Security Token " + securityToken + " emitted successfully");
 
             if (processingContext.getProperty(RST_CTX) != null) {
@@ -120,6 +134,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                     logger.debug("Sent RST Context, artifact " + rstCtxArtifact);
 
             }
+
 
         } catch(SecurityTokenAuthenticationFailure e) {
             throw e;
@@ -130,6 +145,10 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
         // TODO : Use planning infrastructure to transfor RST to RSTR
         // Transform RST in RSTR
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP prepare response");
+
 
         org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of =
                 new org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory();
@@ -150,6 +169,10 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         requestedSecurityToken = of.createRequestedSecurityToken(new RequestedSecurityTokenType());
         requestedSecurityToken.getValue().setAny(securityToken.getContent());
         rstr.getAny().add(requestedSecurityToken);
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
+
 
         return rstr;
     }
@@ -202,6 +225,10 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     protected SecurityToken emit(SecurityTokenProcessingContext ctx, Object requestToken, String tokenType) {
 
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP select emitter");
+
         SecurityTokenEmitter selectedEmitter = null;
         for (SecurityTokenEmitter emitter : emitters) {
 
@@ -224,6 +251,9 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         }
 
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP invoke emitter");
+
         SecurityToken securityToken;
         try {
 
@@ -233,6 +263,10 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                 logger.debug("Emission successful for token [" + securityToken.getId() + "] " +
                              " type [" + tokenType + "] using " +
                              "[" + selectedEmitter.getId() + "]");
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP invoked emitter");
+
                 return securityToken;
             }
             throw new RuntimeException("Emitter [" + selectedEmitter.getId() + "] generated null security token");
@@ -240,6 +274,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         } catch (SecurityTokenEmissionException e) {
             throw new RuntimeException("Fatal error generating security token of type [" + tokenType + "]", e);
         }
+
+
 
     }
 

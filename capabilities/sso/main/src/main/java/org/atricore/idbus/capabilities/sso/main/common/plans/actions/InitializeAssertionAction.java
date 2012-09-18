@@ -81,6 +81,12 @@ public class InitializeAssertionAction extends AbstractSSOAssertionAction {
     @Override
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) {
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion START");
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP init assertion");
+
         logger.debug("starting action");
 
         if (!(out.getContent() instanceof AssertionType))
@@ -124,6 +130,10 @@ public class InitializeAssertionAction extends AbstractSSOAssertionAction {
         }
 
         logger.debug("ending action");
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP init assertion DONE");
+
     }
 
 

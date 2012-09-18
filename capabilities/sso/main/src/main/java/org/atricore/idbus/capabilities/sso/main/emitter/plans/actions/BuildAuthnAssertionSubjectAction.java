@@ -121,6 +121,8 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
 
         logger.debug("starting action");
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP build assertion subject 1");
 
         if (!(out.getContent() instanceof AssertionType))
             throw new IllegalArgumentException("Output Identity Artifact MUST be contain SAMLR2 Assertion");
@@ -134,6 +136,9 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
 
         oasis.names.tc.saml._2_0.assertion.ObjectFactory samlObjectFactory;
         samlObjectFactory = new oasis.names.tc.saml._2_0.assertion.ObjectFactory();
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP build assertion subject 2");
 
         // Subject Confirmation Data
 
@@ -160,6 +165,8 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
             }
 
         }
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP build assertion subject 3");
 
         // Subject Confirmation : NotOnOrAfter (required)
         Date dateNow = new java.util.Date();
@@ -179,8 +186,8 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
 
         // TODO : Set SPNameQualifier
         //subjectNameID.setSPNameQualifier("google.com/a/atricore.com");
-
-
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP build assertion subject 4");
 
         NameIDType subjectNameID = null;
         NameIDPolicyType nameIDPolicy = resolveNameIDPolicy(ctx);
@@ -190,6 +197,9 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
         if (subjectNameID == null)
             throw new RuntimeException("No NameID builder found for " + nameIDPolicy.getFormat());
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP build assertion subject 5");
+
         // Previously built parts
         subject.getContent().add(samlObjectFactory.createNameID(subjectNameID));
         subject.getContent().add(samlObjectFactory.createSubjectConfirmation(subjectConfirmation));
@@ -198,6 +208,10 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
         assertion.setSubject(subject);
 
         logger.debug("ending-action");
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP build assertion subject 6");
+
 
     }
 
