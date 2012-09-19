@@ -147,8 +147,19 @@ public class ActiveMQMessageQueueManager implements MessageQueueManager, BundleC
 
             Message message = pullMessageSync(artifact, consumer);
 
+            if (message == null) {
+                try {
+                    wait(100);
+                    message = pullMessageSync(artifact, consumer);
+                } catch (InterruptedIOException e) {
+                    /* */
+                }
+            }
+
             // Workaround for OSGi classloader issues
             ActiveMQObjectMessage amqMsg = (ActiveMQObjectMessage) message;
+
+
             if (message == null) {
                 log.warn("No message received for ["+qry+"]");
                 return null;

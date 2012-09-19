@@ -41,4 +41,6 @@ public interface ProcessDescriptor {
     ProcessConfiguration getConfiguration();
 
     void setProcessFragmentRegistry(ProcessFragmentRegistry processFragmentRegitry);
+
+
 }

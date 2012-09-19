@@ -30,26 +30,27 @@
 
 
     <!-- ==================================================================================== -->
-    <!-- hibernate dialect -->
-    <property name="hibernate.dialect">org.hibernate.dialect.H2Dialect</property>
-
-    <!-- JDBC connection properties (begin) -->
-    <property name="hibernate.connection.driver_class">org.h2.Driver</property>
-    <property name="hibernate.connection.url">jdbc:h2:mem:idbus-planning;MVCC=TRUE;DB_CLOSE_DELAY=-1</property>
-    <property name="hibernate.connection.username">idbus</property>
-    <property name="hibernate.connection.password"></property>
-
-    <!-- ==================================================================================== -->
-    <!-- HSQLDB Setup -->
     <!-- hibernate dialect
-    <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+    <property name="hibernate.dialect">org.hibernate.dialect.H2Dialect</property>
     -->
 
     <!-- JDBC connection properties (begin)
+    <property name="hibernate.connection.driver_class">org.h2.Driver</property>
+    <property name="hibernate.connection.url">jdbc:h2:mem:idbus-planning;MULTI_THREADED=true</property>
+    <property name="hibernate.connection.username">idbus</property>
+    <property name="hibernate.connection.password"></property>
+    -->
+
+    <!-- ==================================================================================== -->
+    <!-- HSQLDB Setup -->
+    <!-- hibernate dialect -->
+    <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+
+    <!-- JDBC connection properties (begin) -->
     <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
     <property name="hibernate.connection.url">jdbc:hsqldb:mem:jbpm</property>
     <property name="hibernate.connection.username">sa</property>
-    <property name="hibernate.connection.password"></property> -->
+    <property name="hibernate.connection.password"></property>
     <!-- JDBC connection properties (end) -->
     <!-- ==================================================================================== -->
 
@@ -137,6 +138,7 @@
    <mapping resource="org/jbpm/graph/node/EndState.hbm.xml"/>
    <mapping resource="org/jbpm/graph/node/ProcessState.hbm.xml"/>
    <mapping resource="org/atricore/idbus/kernel/planning/jbpm/ProcessFragmentState.hbm.xml"/>
+   <mapping resource="org/atricore/idbus/kernel/planning/jbpm/InLineProcessFragmentState.hbm.xml"/>
    <mapping resource="org/jbpm/graph/node/Decision.hbm.xml"/>
    <mapping resource="org/jbpm/graph/node/Fork.hbm.xml"/>
    <mapping resource="org/jbpm/graph/node/Join.hbm.xml"/>

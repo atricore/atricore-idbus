@@ -47,11 +47,17 @@ public class SpringProcessFragmentResolver implements ProcessFragmentResolver {
     }
 
     public ProcessFragment findProcessFragment(Element processFragmentElement) {
-        ProcessDefinition processFragmentDefinition = null;
-        Collection<ProcessFragment> boundProcessFragments = null;
 
         String processFragmentLifecycle = processFragmentElement.attributeValue("lifecycle");
         String processFragmentPhase = processFragmentElement.attributeValue("phase");
+
+        return findProcessFragment(processFragmentLifecycle, processFragmentPhase);
+    }
+
+    public ProcessFragment findProcessFragment(String processFragmentLifecycle, String processFragmentPhase) {
+
+        ProcessDefinition processFragmentDefinition = null;
+        Collection<ProcessFragment> boundProcessFragments = null;
 
         logger.debug("Looking for process fragment contributors for lifecycle ["
                 + processFragmentLifecycle + "] phase [" + processFragmentPhase + "]");
@@ -61,6 +67,7 @@ public class SpringProcessFragmentResolver implements ProcessFragmentResolver {
 
         ProcessFragment boundProcessFragment = null;
         if (boundProcessFragments.size() > 0 ) {
+            // One and Only one process can be bound to a phase/lifecycle !
             boundProcessFragment = boundProcessFragments.iterator().next();
             logger.debug("Fragment " + boundProcessFragment.getName() + " matched for lifecycle ["
                 + processFragmentLifecycle + "] phase [" + processFragmentPhase + "]");
@@ -79,8 +86,7 @@ public class SpringProcessFragmentResolver implements ProcessFragmentResolver {
                 boundProcessFragment.loadDefinition(processFragmentDefinition);
                 
             } catch (IOException e) {
-                throw new JpdlException("cannot load process definition for process fragment: " +
-                        processFragmentElement.asXML() + ", " + e.getMessage(), e);
+                throw new JpdlException("cannot load process definition for process fragment: " + e.getMessage(), e);
             }
         }
 

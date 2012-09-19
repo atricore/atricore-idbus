@@ -61,6 +61,10 @@ public class ProcessFragmentState extends Node implements Parsable {
         defaultProcessFragmentResolver = processFragmentResolver;
     }
 
+    public static ProcessFragmentResolver getDefaultProcessFragmentResolver() {
+        return defaultProcessFragmentResolver;
+    }
+
     public static synchronized void setBpmsManager(BPMSManager m) {
         bpmsManager = m;
     }
@@ -91,7 +95,7 @@ public class ProcessFragmentState extends Node implements Parsable {
         if (logger.isTraceEnabled())
             logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP read fragment start");
 
-        log.debug("Start reading JPDL from XML ...");
+        logger.debug("Start reading JPDL from XML ...");
 
         ProcessFragment processFragment;
         Element processFragmentElement = processStateElement.element("process-fragment");
@@ -178,7 +182,7 @@ public class ProcessFragmentState extends Node implements Parsable {
         }
 
         if (processFragmentDefinition != null) {
-            log.debug("processfragment for process-state '" + name + "' bound to '" +
+            logger.debug("processfragment for process-state '" + name + "' bound to '" +
                     processFragmentDefinition.getName() + "'");
         } 
 
@@ -190,7 +194,7 @@ public class ProcessFragmentState extends Node implements Parsable {
             this.variableAccesses.add((VariableAccess) va);
         }
 
-        log.debug("End reading JPDL from XML");
+        logger.debug("End reading JPDL from XML");
 
         if (logger.isTraceEnabled())
             logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP read fragment end");
@@ -279,10 +283,10 @@ public class ProcessFragmentState extends Node implements Parsable {
                                     variableAccess.getVariableName();
 
                             if (value != null) {
-                                log.debug("Copying super process var '" + variableName + "' to sub process var '" + mappedName + "': " + value);
+                                logger.debug("Copying super process var '" + variableName + "' to sub process var '" + mappedName + "': " + value);
                                 subContextInstance.setVariable(mappedName, value);
                             } else {
-                                log.debug("Super process var '" + variableName + "' has no value, ignoring");
+                                logger.debug("Super process var '" + variableName + "' has no value, ignoring");
                             }
                         }
                     }
@@ -291,15 +295,15 @@ public class ProcessFragmentState extends Node implements Parsable {
 
                 // TODO : If BPM enigne is removed from planning, this must go way
                 // Always add IN/OUT Artifacts as variables!
-                if (log.isDebugEnabled())
-                    log.debug("Automatically Copying super process var '" + Constants.VAR_IN_IDENTITY_ARTIFACT
+                if (logger.isDebugEnabled())
+                    logger.debug("Automatically Copying super process var '" + Constants.VAR_IN_IDENTITY_ARTIFACT
                         + "' to sub process var '" + Constants.VAR_IN_IDENTITY_ARTIFACT + "': " +
                         superContextInstance.getVariable(Constants.VAR_IN_IDENTITY_ARTIFACT, superProcessToken));
                 subContextInstance.setVariable(Constants.VAR_IN_IDENTITY_ARTIFACT,
                         superContextInstance.getVariable(Constants.VAR_IN_IDENTITY_ARTIFACT, superProcessToken));
 
-                if (log.isDebugEnabled())
-                    log.debug("Automatically Copying super process var '" + Constants.VAR_OUT_IDENTITY_ARTIFACT
+                if (logger.isDebugEnabled())
+                    logger.debug("Automatically Copying super process var '" + Constants.VAR_OUT_IDENTITY_ARTIFACT
                         + "' to sub process var '" + Constants.VAR_OUT_IDENTITY_ARTIFACT + "': " +
                         superContextInstance.getVariable(Constants.VAR_OUT_IDENTITY_ARTIFACT, superProcessToken));
                 subContextInstance.setVariable(Constants.VAR_OUT_IDENTITY_ARTIFACT,
@@ -370,7 +374,7 @@ public class ProcessFragmentState extends Node implements Parsable {
                         String variableName = variableAccess.getVariableName();
 
                         if (value != null) {
-                            log.debug("copying sub process var '" + mappedName + "' to super process var '" + variableName + "': " + value);
+                            logger.debug("copying sub process var '" + mappedName + "' to super process var '" + variableName + "': " + value);
                             superContextInstance.setVariable(variableName, value, superProcessToken);
                         }
                     }
@@ -399,5 +403,5 @@ public class ProcessFragmentState extends Node implements Parsable {
     }
 
 
-    private static Log log = LogFactory.getLog(ProcessFragmentState.class);
+    
 }

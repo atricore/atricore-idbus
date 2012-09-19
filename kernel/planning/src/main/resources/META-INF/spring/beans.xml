@@ -74,16 +74,17 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     -->
     <!-- BPM Service -->
 
-    <!-- Statefull BPM engine implemementation -->
+    <!-- Statefull BPM engine implemementation
     <bean name="bpms-manager" class="org.atricore.idbus.kernel.planning.jbpm.JbpmManager">
         <property name="processFragmentRegistry" ref="process-fragment-registry"/>        
     </bean>
+    -->
 
-    <!-- Stateless BPM engine implementation
+    <!-- Stateless BPM engine implementation -->
     <bean name="bpms-manager" class="org.atricore.idbus.kernel.planning.jbpm.StatelessJbpmManager">
         <property name="processFragmentRegistry" ref="process-fragment-registry"/>
     </bean>
-    -->
+
     <osgi:service id="osgi-bpms-manager"
                   ref="bpms-manager"
                   interface="org.atricore.idbus.kernel.planning.jbpm.BPMSManager" />
