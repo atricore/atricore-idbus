@@ -32,6 +32,8 @@ import org.dom4j.Element;
  */
 public interface ProcessFragmentResolver extends Serializable {
 
-  ProcessFragment findProcessFragment(Element processFragmentElement);
+    ProcessFragment findProcessFragment(String lifecycle, String phase);
+
+    ProcessFragment findProcessFragment(Element processFragmentElement);
 
 }

@@ -29,7 +29,7 @@
   <node-type element="join" class="org.jbpm.graph.node.Join" />
   <node-type element="decision" class="org.jbpm.graph.node.Decision" />
   <node-type element="process-state" class="org.jbpm.graph.node.ProcessState" />
-  <node-type element="process-fragment-state" class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentState" />
+  <node-type element="process-fragment-state" class="org.atricore.idbus.kernel.planning.jbpm.InLineProcessFragmentState" />
   <node-type element="super-state" class="org.jbpm.graph.def.SuperState" />
   <node-type element="merge" class="org.jbpm.graph.node.Merge" />
   <node-type element="milestone-node" class="org.jbpm.graph.node.MilestoneNode" />

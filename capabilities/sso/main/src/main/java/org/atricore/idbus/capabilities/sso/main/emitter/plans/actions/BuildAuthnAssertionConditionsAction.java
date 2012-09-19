@@ -45,6 +45,10 @@ public class BuildAuthnAssertionConditionsAction extends AbstractSSOAssertionAct
     protected void doExecute(IdentityArtifact in , IdentityArtifact out, ExecutionContext executionContext) {
         logger.debug("starting action");
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP build assertion condition ");
+
+
         AssertionType assertion = (AssertionType) out.getContent();
 
         SamlR2SecurityTokenEmissionContext ctx =
@@ -62,5 +66,9 @@ public class BuildAuthnAssertionConditionsAction extends AbstractSSOAssertionAct
         conditions.setNotOnOrAfter(DateUtils.toXMLGregorianCalendar(dateNow.getTime() + (1000L * 60L * 5)));
 
         logger.debug("ending action");
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP build assertion condition end");
+
     }
 }

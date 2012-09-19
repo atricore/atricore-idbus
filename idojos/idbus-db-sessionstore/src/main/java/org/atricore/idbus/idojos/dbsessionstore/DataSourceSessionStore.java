@@ -85,20 +85,26 @@ public class DataSourceSessionStore extends DbSessionStore {
      *
      * @throws SSOSessionException
      */
-    protected synchronized DataSource getDataSource() throws SSOSessionException {
+    protected DataSource getDataSource() throws SSOSessionException {
         if (_datasource == null) {
-            try {
-                if (logger.isDebugEnabled())
-                    logger.debug("[getDatasource() : ]" + _dsJndiName);
 
-                InitialContext ic = new InitialContext();
-                _datasource = (DataSource) ic.lookup(_dsJndiName);
+            synchronized (this) {
 
-            }
-            catch (NamingException ne) {
-                logger.error("Error during DB connection lookup", ne);
-                throw new SSOSessionException(
-                        "Error During Lookup\n" + ne.getMessage());
+                if (_datasource == null) {
+                    try {
+                        if (logger.isDebugEnabled())
+                            logger.debug("[getDatasource() : ]" + _dsJndiName);
+
+                        InitialContext ic = new InitialContext();
+                        _datasource = (DataSource) ic.lookup(_dsJndiName);
+
+                    }
+                    catch (NamingException ne) {
+                        logger.error("Error during DB connection lookup", ne);
+                        throw new SSOSessionException(
+                                "Error During Lookup\n" + ne.getMessage());
+                    }
+                }
             }
 
         }

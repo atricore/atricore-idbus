@@ -21,7 +21,7 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<process-definition name='SecurityToken from SecurityToken'>
+<process-definition name='RequestToken to Request Token Response'>
 
     <description>Emit a Request Security Token Reqponse (RSTR) based on a recieved Request Security Token (RST)</description>
 

@@ -50,6 +50,10 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertion
     protected void doExecute(IdentityArtifact in , IdentityArtifact out, ExecutionContext executionContext) {
         logger.debug("starting action");
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP build assertion authn stmt ");
+
+
         AssertionType assertion = (AssertionType) out.getContent();
         oasis.names.tc.saml._2_0.assertion.ObjectFactory samlObjectFactory;
         samlObjectFactory = new oasis.names.tc.saml._2_0.assertion.ObjectFactory();

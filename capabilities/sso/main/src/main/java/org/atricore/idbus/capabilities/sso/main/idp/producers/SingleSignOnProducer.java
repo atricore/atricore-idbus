@@ -120,35 +120,65 @@ public class SingleSignOnProducer extends SSOProducer {
 
         try {
 
+            String thread = Thread.currentThread().getName();
+
             if (content instanceof IDPInitiatedAuthnRequestType) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessIDPInitiantedSSO START");
 
                 // New IDP Initiated Single Sign-On
                 doProcessIDPInitiantedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
 
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessIDPInitiantedSSO END");
             } else if (content instanceof SecTokenAuthnRequestType) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessAssertIdentityWithBasicAuth START");
 
                 // New Assert Identity with Basic authentication
                 doProcessAssertIdentityWithBasicAuth(exchange, (SecTokenAuthnRequestType) content);
 
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessAssertIdentityWithBasicAuth END");
             } else if (content instanceof AuthnRequestType) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessAuthnRequest START");
 
                 // New SP Initiated Single SignOn
                 doProcessAuthnRequest(exchange, (AuthnRequestType) content, in.getMessage().getRelayState());
 
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessAuthnRequest END");
             } else if (content instanceof SSOClaimsResponse) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessClaimsResponse START");
 
                 // Processing Claims to create authn resposne
                 doProcessClaimsResponse(exchange, (SSOClaimsResponse) content);
-
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessClaimsResponse END");
             } else if (content instanceof PolicyEnforcementResponse) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessPolicyEnforcementResponse START");
 
                 // Process policy enforcement response
                 doProcessPolicyEnforcementResponse(exchange, (PolicyEnforcementResponse) content);
-
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessPolicyEnforcementResponse END");
             } else if (content instanceof SPAuthnResponseType) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessProxyResponse START");
 
                 // Process proxy responses
                 doProcessProxyResponse(exchange, (SPAuthnResponseType) content);
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessProxyResponse END");
 
             } else {
                 throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
@@ -647,6 +677,9 @@ public class SingleSignOnProducer extends SSOProducer {
             // Authenticate the user, send a RequestSecurityToken to the Security Token Service (STS)
             // and emit a SAML 2.0 Assertion
             // ----------------------------------------------------------------------------------------
+
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP emit assertion from claims");
             SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
                     securityTokenEmissionCtx,
                     claimsResponse.getClaimSet(),
@@ -659,6 +692,8 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                     (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP create sec. ctx.");
 
             // Create a new SSO Session
             IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion);
@@ -667,6 +702,8 @@ public class SingleSignOnProducer extends SSOProducer {
             // We already validated authn request issuer, so we can use it.
             secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
 
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP build saml resp");
 
             // Build a response for the SP
             ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
@@ -681,10 +718,17 @@ public class SingleSignOnProducer extends SSOProducer {
             // --------------------------------------------------------------------
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP sign 1.1 resp");
+
                 saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
                 SamlR2Signer signer = ((SSOIDPMediator) channel.getIdentityMediator()).getSigner();
                 saml11Response = signer.sign(saml11Response);
             }
+
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
 
             // Clear the current authentication state
             clearAuthnState(exchange);
@@ -731,6 +775,9 @@ public class SingleSignOnProducer extends SSOProducer {
                         in.getMessage().getState()));
                 return;
             }
+
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
@@ -1501,21 +1548,34 @@ public class SingleSignOnProducer extends SSOProducer {
         // Emit a new security token
         // -------------------------------------------------------
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP aqm push");
+
         // TODO : Improve communication mechanism between STS and IDP!
 
         // Queue this contenxt and send the artifact as RST context information
         Artifact emitterCtxArtifact = aqm.pushMessage(securityTokenEmissionCtx);
 
-        SecurityTokenService sts = spChannel.getSecurityTokenService();
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP build rst");
 
+        SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
         // Send artifact id as RST context information, similar to relay state.
         RequestSecurityTokenType rst = buildRequestSecurityToken(receivedClaims, emitterCtxArtifact.getContent());
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP request st");
+
 
         if (logger.isDebugEnabled())
             logger.debug("Requesting Security Token (RST) w/context " + rst.getContext());
 
         // Send request to STS
         RequestSecurityTokenResponseType rstrt = sts.requestSecurityToken(rst);
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP aqm pull");
+
 
         if (logger.isDebugEnabled())
             logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
@@ -1530,6 +1590,10 @@ public class SingleSignOnProducer extends SSOProducer {
             logger.debug("Generated SamlR2 Assertion " + assertion.getID());
 
         securityTokenEmissionCtx.setAssertion(assertion);
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
+
 
         // Return context with Assertion and Subject
         return securityTokenEmissionCtx;
@@ -1579,6 +1643,8 @@ public class SingleSignOnProducer extends SSOProducer {
                                              AssertionType assertion,
                                              CircleOfTrustMemberDescriptor sp,
                                              EndpointDescriptor spEndpoint) throws Exception {
+
+
         // Build authnresponse
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2AuthnRequestToSamlR2ResponsePlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
@@ -1601,11 +1667,21 @@ public class SingleSignOnProducer extends SSOProducer {
                         new ResponseType());
         idPlanExchange.setOut(out);
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /buildSamlResponse START");
+
         // Prepare execution
         identityPlan.prepare(idPlanExchange);
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /buildSamlResponse STEP start samlr bpm");
+
         // Perform execution
         identityPlan.perform(idPlanExchange);
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /buildSamlResponse END");
+
 
         if (!idPlanExchange.getStatus().equals(IdentityPlanExecutionStatus.SUCCESS)) {
             throw new SecurityTokenEmissionException("Identity plan returned : " + idPlanExchange.getStatus());

@@ -64,14 +64,13 @@ public class ProcessDescriptorImpl implements ProcessDescriptor {
     }
 
     public boolean isActive(String processFragmentName) {
-        boolean active = false;
 
         for (String f : activeProcessFragments) {
             if (f.equals(processFragmentName))
-                active = true;
+                return true;
         }
 
-        return active;
+        return false;
     }
 
     /**

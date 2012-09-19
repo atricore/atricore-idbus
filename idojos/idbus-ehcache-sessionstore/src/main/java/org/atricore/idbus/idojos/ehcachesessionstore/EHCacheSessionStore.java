@@ -87,44 +87,50 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         this.cache = cache;
     }
 
-    public synchronized void init() {
+    public void init() {
 
         if (init)
             return;
 
-        ClassLoader orig = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
-    
-            logger.info("Initializing EHCache Session store using cache " + cacheName);
-            if (cacheManager.cacheExists(cacheName)) {
-                logger.info("Cache already exists '"+cacheName+"', reusing it");
-                // This is probably a bundle restart, ignore it.
-            } else {
-                logger.info("Cache does not exists '"+cacheName+"', adding it");
-                cacheManager.addCache(cacheName);
-            }
+        synchronized (this) {
 
-            cache = cacheManager.getCache(cacheName);
-
-            if (cache == null) {
-                logger.error("No chache definition found with name '" + cacheName + "'");
+            if (init)
                 return;
-            } else {
-                if (logger.isTraceEnabled()) {
 
-                    logger.trace("Initialized EHCache Session store using cache : " + cache);
-                    logger.trace("Cache Bootstrap loader " + cache.getBootstrapCacheLoader());
-                    logger.trace("Cache Bootstrap loader " + cache.getBootstrapCacheLoader());
-                    logger.trace("Cache Event Notification service " + cache.getCacheEventNotificationService());
+            ClassLoader orig = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
+
+                logger.info("Initializing EHCache Session store using cache " + cacheName);
+                if (cacheManager.cacheExists(cacheName)) {
+                    logger.info("Cache already exists '"+cacheName+"', reusing it");
+                    // This is probably a bundle restart, ignore it.
+                } else {
+                    logger.info("Cache does not exists '"+cacheName+"', adding it");
+                    cacheManager.addCache(cacheName);
                 }
+
+                cache = cacheManager.getCache(cacheName);
+
+                if (cache == null) {
+                    logger.error("No chache definition found with name '" + cacheName + "'");
+                    return;
+                } else {
+                    if (logger.isTraceEnabled()) {
+
+                        logger.trace("Initialized EHCache Session store using cache : " + cache);
+                        logger.trace("Cache Bootstrap loader " + cache.getBootstrapCacheLoader());
+                        logger.trace("Cache Bootstrap loader " + cache.getBootstrapCacheLoader());
+                        logger.trace("Cache Event Notification service " + cache.getCacheEventNotificationService());
+                    }
+                }
+
+                logger.info("Initialized EHCache Session store using cache " + cacheName + ". Size: " + cache.getSize());
+
+                init = true;
+            } finally {
+                Thread.currentThread().setContextClassLoader(orig);
             }
-
-            logger.info("Initialized EHCache Session store using cache " + cacheName + ". Size: " + cache.getSize());
-
-            init = true;
-        } finally {
-            Thread.currentThread().setContextClassLoader(orig);
         }
     }
 

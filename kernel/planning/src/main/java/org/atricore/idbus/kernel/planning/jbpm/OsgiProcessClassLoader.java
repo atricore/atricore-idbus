@@ -38,14 +38,12 @@ public class OsgiProcessClassLoader extends ProcessClassLoader {
     private static ProcessFragmentRegistry processRegistry;
 
     static synchronized void setProcessRegistry(ProcessFragmentRegistry processRegistry) {
-
         OsgiProcessClassLoader.processRegistry = processRegistry;
     }
 
     public OsgiProcessClassLoader(ClassLoader parent, ProcessDefinition processDefinition) {
         super(parent, processDefinition);
     }
-
 
     public Class findClass(String name) throws ClassNotFoundException {
         Class clazz = null;

@@ -41,6 +41,10 @@ public class BuildAuthnAssertionAudienceAction extends AbstractSSOAssertionActio
     protected void doExecute(IdentityArtifact in , IdentityArtifact out, ExecutionContext executionContext) {
         logger.debug("starting action");
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP build assertion audience ");
+
+
         AssertionType assertion = (AssertionType) out.getContent();
 
         // TODO : User SP SAMLR2 Metadata Information and AuthnRequest, if present

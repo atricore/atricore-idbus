@@ -55,8 +55,18 @@ public class ProcessFragmentState extends Node implements Parsable {
 
     static ProcessFragmentResolver defaultProcessFragmentResolver;
 
+    static BPMSManager bpmsManager;
+
     public static synchronized void setDefaultProcessFragmentResolver(ProcessFragmentResolver processFragmentResolver) {
         defaultProcessFragmentResolver = processFragmentResolver;
+    }
+
+    public static ProcessFragmentResolver getDefaultProcessFragmentResolver() {
+        return defaultProcessFragmentResolver;
+    }
+
+    public static synchronized void setBpmsManager(BPMSManager m) {
+        bpmsManager = m;
     }
 
     protected Set<VariableAccess> variableAccesses = null;
@@ -82,7 +92,10 @@ public class ProcessFragmentState extends Node implements Parsable {
 
     public void read(Element processStateElement, JpdlXmlReader jpdlReader) {
 
-        log.debug("Start reading JPDL from XML ...");
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP read fragment start");
+
+        logger.debug("Start reading JPDL from XML ...");
 
         ProcessFragment processFragment;
         Element processFragmentElement = processStateElement.element("process-fragment");
@@ -169,7 +182,7 @@ public class ProcessFragmentState extends Node implements Parsable {
         }
 
         if (processFragmentDefinition != null) {
-            log.debug("processfragment for process-state '" + name + "' bound to '" +
+            logger.debug("processfragment for process-state '" + name + "' bound to '" +
                     processFragmentDefinition.getName() + "'");
         } 
 
@@ -181,7 +194,11 @@ public class ProcessFragmentState extends Node implements Parsable {
             this.variableAccesses.add((VariableAccess) va);
         }
 
-        log.debug("End reading JPDL from XML");
+        logger.debug("End reading JPDL from XML");
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP read fragment end");
+
     }
 
     private ProcessFragmentResolver getProcessFragmentResolver() {
@@ -197,6 +214,9 @@ public class ProcessFragmentState extends Node implements Parsable {
         ProcessFragment processFragment;
         Token superProcessToken = executionContext.getToken();
         ProcessDefinition usedProcessFragmentDefinition = processFragmentDefinition;
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment start " + processFragmentName);
 
         ProcessFragmentRegistry pfr;
         String pdn;
@@ -217,15 +237,23 @@ public class ProcessFragmentState extends Node implements Parsable {
             boolean isProcessFragmentActive = currentProcessDescriptor.isActive(processFragment.getName());
             if (isProcessFragmentActive) {
 
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment lookup ok " + processFragmentName);
+
                 logger.debug("Contributions found for lifecycle [" + processFragmentLifecycle + "], " +
                             "phase [" + processFragmentPhase + "]. Spawning enabled fragment " + processFragment.getName());
 
                 // create the processfragment
                 ProcessInstance processFragmentInstance = superProcessToken.createSubProcessInstance(usedProcessFragmentDefinition);
 
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment subprocess ok " + processFragmentName);
+
                 // fire the processfragment created event
                 fireEvent(Event.EVENTTYPE_SUBPROCESS_CREATED, executionContext);
 
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment fired event " + processFragmentName);
 
                 // Copy all transient variables
                 ContextInstance superContextInstance = executionContext.getContextInstance();
@@ -255,10 +283,10 @@ public class ProcessFragmentState extends Node implements Parsable {
                                     variableAccess.getVariableName();
 
                             if (value != null) {
-                                log.debug("Copying super process var '" + variableName + "' to sub process var '" + mappedName + "': " + value);
+                                logger.debug("Copying super process var '" + variableName + "' to sub process var '" + mappedName + "': " + value);
                                 subContextInstance.setVariable(mappedName, value);
                             } else {
-                                log.debug("Super process var '" + variableName + "' has no value, ignoring");
+                                logger.debug("Super process var '" + variableName + "' has no value, ignoring");
                             }
                         }
                     }
@@ -267,21 +295,32 @@ public class ProcessFragmentState extends Node implements Parsable {
 
                 // TODO : If BPM enigne is removed from planning, this must go way
                 // Always add IN/OUT Artifacts as variables!
-                if (log.isDebugEnabled())
-                    log.debug("Automatically Copying super process var '" + Constants.VAR_IN_IDENTITY_ARTIFACT
+                if (logger.isDebugEnabled())
+                    logger.debug("Automatically Copying super process var '" + Constants.VAR_IN_IDENTITY_ARTIFACT
                         + "' to sub process var '" + Constants.VAR_IN_IDENTITY_ARTIFACT + "': " +
                         superContextInstance.getVariable(Constants.VAR_IN_IDENTITY_ARTIFACT, superProcessToken));
                 subContextInstance.setVariable(Constants.VAR_IN_IDENTITY_ARTIFACT,
                         superContextInstance.getVariable(Constants.VAR_IN_IDENTITY_ARTIFACT, superProcessToken));
 
-                if (log.isDebugEnabled())
-                    log.debug("Automatically Copying super process var '" + Constants.VAR_OUT_IDENTITY_ARTIFACT
+                if (logger.isDebugEnabled())
+                    logger.debug("Automatically Copying super process var '" + Constants.VAR_OUT_IDENTITY_ARTIFACT
                         + "' to sub process var '" + Constants.VAR_OUT_IDENTITY_ARTIFACT + "': " +
                         superContextInstance.getVariable(Constants.VAR_OUT_IDENTITY_ARTIFACT, superProcessToken));
                 subContextInstance.setVariable(Constants.VAR_OUT_IDENTITY_ARTIFACT,
                         superContextInstance.getVariable(Constants.VAR_OUT_IDENTITY_ARTIFACT, superProcessToken));
 
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment before signal " + processFragmentName);
+
                 processFragmentInstance.signal();
+
+                if (!processFragmentInstance.hasEnded()) {
+                    logger.warn("Identity Plan process fragment '"+processFragmentName+"' [" + processFragmentInstance.getId() + "] has not ended! Check your process definition");
+                }
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment after signal " + processFragmentName);
+
 
                 logger.debug("Spawned enabled Process Fragment " + processFragment.getName());
 
@@ -303,6 +342,10 @@ public class ProcessFragmentState extends Node implements Parsable {
                        );
             leave(executionContext, getDefaultLeavingTransition());
         }
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment end");
+
     }
 
 
@@ -331,7 +374,7 @@ public class ProcessFragmentState extends Node implements Parsable {
                         String variableName = variableAccess.getVariableName();
 
                         if (value != null) {
-                            log.debug("copying sub process var '" + mappedName + "' to super process var '" + variableName + "': " + value);
+                            logger.debug("copying sub process var '" + mappedName + "' to super process var '" + variableName + "': " + value);
                             superContextInstance.setVariable(variableName, value, superProcessToken);
                         }
                     }
@@ -360,5 +403,5 @@ public class ProcessFragmentState extends Node implements Parsable {
     }
 
 
-    private static Log log = LogFactory.getLog(ProcessFragmentState.class);
+    
 }
