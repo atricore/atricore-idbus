@@ -148,11 +148,13 @@ public class ActiveMQMessageQueueManager implements MessageQueueManager, BundleC
             Message message = pullMessageSync(artifact, consumer);
 
             if (message == null) {
-                try {
-                    wait(100);
-                    message = pullMessageSync(artifact, consumer);
-                } catch (InterruptedIOException e) {
-                    /* */
+                synchronized(this) {
+                    try {
+                        wait(100);
+                        message = pullMessageSync(artifact, consumer);
+                    } catch (InterruptedIOException e) {
+                        /* */
+                    }
                 }
             }
 
