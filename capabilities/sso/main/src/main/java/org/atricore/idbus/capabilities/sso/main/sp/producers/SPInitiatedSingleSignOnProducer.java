@@ -85,6 +85,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
             AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
             in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
 
+            // TODO : Support no authn request !
             SPInitiatedAuthnRequestType ssoAuthnReq =
                     (SPInitiatedAuthnRequestType) in.getMessage().getContent();
 
@@ -94,10 +95,9 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
             SPSecurityContext secCtx =
                     (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
-
             if (secCtx != null && secCtx.getSessionIndex() != null) {
 
-                if (ssoAuthnReq.isForceAuthn() != null && !ssoAuthnReq.isForceAuthn()) {
+                if (ssoAuthnReq != null && ssoAuthnReq.isForceAuthn() != null && !ssoAuthnReq.isForceAuthn()) {
 
                     // TODO ! Check that the session belongs to the IdP associated with this request
 
@@ -253,7 +253,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
         // --------------------------------------------------------------
         // Try with the received IdP alias, if any
         // --------------------------------------------------------------
-        if (ssoAuthnReq.getRequestAttribute() != null) {
+        if (ssoAuthnReq != null && ssoAuthnReq.getRequestAttribute() != null) {
             for (int i = 0; i < ssoAuthnReq.getRequestAttribute().size(); i++) {
                 RequestAttributeType a =
                         ssoAuthnReq.getRequestAttribute().get(i);

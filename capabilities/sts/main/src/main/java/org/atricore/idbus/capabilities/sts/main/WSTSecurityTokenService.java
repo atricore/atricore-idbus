@@ -270,8 +270,6 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                 throw new RuntimeException("Fatal error generating security token of type [" + tokenType + "]", e);
             }
 
-
-
         }
 
         if (securityToken == null) {

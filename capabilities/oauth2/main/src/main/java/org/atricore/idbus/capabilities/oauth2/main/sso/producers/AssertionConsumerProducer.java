@@ -41,7 +41,7 @@ public class AssertionConsumerProducer extends AbstractCamelProducer<CamelMediat
 
         // TODO : Add support for IDP initiated SSO in OAUTH2
         OAuth2AuthnContext authnCtx = (OAuth2AuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
-        SPInitiatedAuthnRequestType request = authnCtx.getAuthnRequest();
+        SPInitiatedAuthnRequestType request = authnCtx != null ? authnCtx.getAuthnRequest() : null;
         if (request == null) {
             // Process unsolicited response
             validateUnsolicitedAuthnResposne(exchange, response);
