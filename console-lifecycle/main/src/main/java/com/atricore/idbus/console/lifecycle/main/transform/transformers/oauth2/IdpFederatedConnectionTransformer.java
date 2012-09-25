@@ -3,7 +3,7 @@ package com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractOAuth2SPChannelTransformer;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.AbstractOAuth2SPChannelTransformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,10 +40,10 @@ public class IdpFederatedConnectionTransformer extends AbstractOAuth2SPChannelTr
 
             if (roleA) {
                 return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof IdentityProvider
-                        && !fc.getRoleA().isRemote();
+                        && !fc.getRoleA().isRemote() && ((IdentityProvider) fc.getRoleA()).isOauth2Enabled();
             } else {
                 return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof IdentityProvider
-                        && !fc.getRoleB().isRemote();
+                        && !fc.getRoleB().isRemote() && ((IdentityProvider) fc.getRoleB()).isOauth2Enabled();
             }
 
         }

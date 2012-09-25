@@ -1,10 +1,12 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.mstr;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO1Resource;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceConnection;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSO1Resource;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.MicroStrategyResource;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceConnection;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
@@ -23,17 +25,22 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyRef;
 
 /**
- * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
+ * Created with IntelliJ IDEA.
+ * User: sgonzalez
+ * Date: 9/24/12
+ * Time: 2:11 PM
+ * To change this template use File | Settings | File Templates.
  */
-public class JOSSO1ResourceTransformer extends AbstractTransformer {
+public class MstrResoruceTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(JOSSO1ResourceTransformer.class);
+    private static final Log logger = LogFactory.getLog(MstrResoruceTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof JOSSO1Resource &&
+        return event.getData() instanceof MicroStrategyResource &&
                event.getContext().getParentNode() instanceof ServiceConnection;
     }
 
@@ -41,11 +48,11 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
     public void before(TransformEvent event) throws TransformException {
         Beans spBeans = (Beans) event.getContext().get("spBeans");
 
-        JOSSO1Resource josso1Resource = (JOSSO1Resource) event.getData();
-        InternalSaml2ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
+        MicroStrategyResource mstrResource = (MicroStrategyResource) event.getData();
+        InternalSaml2ServiceProvider sp = mstrResource.getServiceConnection().getSp();
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating Beans for JOSSO 1 Resources " + josso1Resource.getName()  + " of SP " + sp.getName());
+            logger.trace("Generating Beans for MicroStrategy Resources " + mstrResource.getName()  + " of SP " + sp.getName());
 
         Bean spBean = null;
         Collection<Bean> b = getBeansOfType(spBeans, ServiceProviderImpl.class.getName());
@@ -54,19 +61,19 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
         }
         spBean = b.iterator().next();
 
-        String bcName = normalizeBeanName(sp.getName() + "-" + josso1Resource.getName() + "-josso1-rsrc");
+        String bcName = normalizeBeanName(sp.getName() + "-" + mstrResource.getName() + "-mstr-rsrc");
 
         Bean bc = newBean(spBeans, bcName,
                 "org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl");
 
         setPropertyValue(bc, "name", bc.getName());
         setPropertyValue(bc, "description", "JOSSO 1 Resource binding channel for " + sp.getName() + " :  " +
-                josso1Resource.getName() + "[appId:"+sp.getName()+"]");
+                mstrResource.getName() + "[appId:"+sp.getName()+"]");
 
         setPropertyRef(bc, "unitContainer", sp.getIdentityAppliance().getName() + "-container");
 
         setPropertyRef(bc, "provider", spBean.getName());
-        setPropertyValue(bc, "location", resolveLocationUrl(sp) + "/" + sp.getName().toUpperCase());
+        setPropertyValue(bc, "location", resolveLocationUrl(sp));
 
         setPropertyRef(bc, "identityMediator", spBean.getName() + "-samlr2-mediator");
 
@@ -155,7 +162,7 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
         setPropertyValue(aisAuthLocal, "name", aisAuthLocal.getName());
         setPropertyValue(aisAuthLocal, "type", SSOMetadataConstants.AssertIdentityWithSimpleAuthenticationService_QNAME.toString());
         setPropertyValue(aisAuthLocal, "binding", SSOBinding.SSO_LOCAL.getValue());
-        setPropertyValue(aisAuthLocal, "location", "SSlocal://" + sp.getLocation().getUri().toUpperCase() + "/SSO/IAAUTHN/LOCAL");
+        setPropertyValue(aisAuthLocal, "location", "local://" + sp.getLocation().getUri().toUpperCase() + "/SSO/IAAUTHN/LOCAL");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
         plan.setBean(spSloToSamlPlan.getName());
@@ -186,11 +193,5 @@ public class JOSSO1ResourceTransformer extends AbstractTransformer {
 
         setPropertyRef(spBean, "bindingChannel", bc.getName());
 
-     }
-
-    @Override
-    public Object after(TransformEvent event) throws TransformException {
-        return null;
     }
 }
-

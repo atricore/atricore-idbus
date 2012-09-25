@@ -29,8 +29,10 @@ public class OAuth2STSTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
+        // Only work for Local IdPs with OAuth 2.0 support enabled
         return event.getData() instanceof IdentityProvider &&
-                !((IdentityProvider)event.getData()).isRemote();
+                !((IdentityProvider)event.getData()).isRemote() &&
+                ((IdentityProvider)event.getData()).isOauth2Enabled();
     }
 
     @Override
@@ -91,9 +93,10 @@ public class OAuth2STSTransformer extends AbstractTransformer {
         Bean hmacSigner = newAnonymousBean(HMACTokenSigner.class);
         setPropertyValue(hmacSigner, "key", oauth2Key);
         setPropertyBean(oauth2StsEmitter, "tokenSigner", hmacSigner);
+        setPropertyValue(oauth2StsEmitter, "emitWhenNotTargeted", "true");
 
-        // Add emitter to STS
-        addPropertyBean(sts, "emitters", oauth2StsEmitter);
+        // Add emitter to STS : the emitter MUST be the first in the list (or run before SAML2) // TODO : Mange dependencies ?
+        insertPropertyBean(sts, "emitters", oauth2StsEmitter);
     }
 
 }

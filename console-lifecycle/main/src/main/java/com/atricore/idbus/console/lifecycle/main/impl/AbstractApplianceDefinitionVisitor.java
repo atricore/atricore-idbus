@@ -248,6 +248,18 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;
     }
 
+    public void arrive(MicroStrategyResource node) throws Exception {
+
+    }
+
+    public Object[] leave(MicroStrategyResource node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(MicroStrategyResource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
     public void arrive(ServiceConnection node) throws Exception {
 
     }

@@ -1,23 +1,21 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceTransformationContext;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.AbstractSPChannelTransformer;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.oauth2.common.OAuth2Constants;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2Service;
 import org.atricore.idbus.capabilities.oauth2.main.binding.OAuth2Binding;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
-import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
 import org.atricore.idbus.kernel.main.mediation.provider.FederationServiceImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.util.HashGenerator;

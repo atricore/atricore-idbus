@@ -630,6 +630,30 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
 
     }
 
+    @Override
+    public void arrive(MicroStrategyResource node) throws Exception {
+
+
+        Bean idSourceBean = newBean(beans, node.getName(), node.getClass());
+        setBeanDescription(idSourceBean, node.toString());
+
+        setPropertyValue(idSourceBean, "id", node.getId() + "");
+        setPropertyValue(idSourceBean, "name", node.getName());
+        setPropertyValue(idSourceBean, "description", node.getDescription());
+
+        setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
+        setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));
+
+        // TODO : [JOSSO-370] What's the resource here ?!
+        if (node.getServiceConnection().getResource() != null)
+            setPropertyRef(idSourceBean, "resource", node.getServiceConnection().getResource().getName());
+
+        if (node.getServiceConnection().getSp() != null)
+            setPropertyRef(idSourceBean, "sp", node.getServiceConnection().getSp().getName());
+
+    }
+
+
 
     @Override
     public void arrive(FederatedConnection node) throws Exception {

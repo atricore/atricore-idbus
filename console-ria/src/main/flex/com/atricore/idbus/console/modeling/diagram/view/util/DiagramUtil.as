@@ -148,6 +148,10 @@ public class DiagramUtil {
                 return execEnv is JbossExecutionEnvironment;
             }
 
+            if (resource is MicroStrategyResource) {
+                return execEnv is TomcatExecutionEnvironment;
+            }
+
             // unknown resource type ?!?!?
             return false;
 

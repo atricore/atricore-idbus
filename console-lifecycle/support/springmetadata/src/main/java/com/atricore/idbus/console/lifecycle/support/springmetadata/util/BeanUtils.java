@@ -677,6 +677,24 @@ public class BeanUtils {
         setPropertyAsBeans(bean, listName, beansToAdd);
     }
 
+    public static void insertPropertyBean(Bean bean, String listName, Bean beanToAdd) {
+        java.util.List<Bean> beansToAdd = new ArrayList<Bean>();
+        com.atricore.idbus.console.lifecycle.support.springmetadata.model.List beanList = getListOfValuesAndRefs(bean, listName);
+        if(beanList == null){
+            beanList = new com.atricore.idbus.console.lifecycle.support.springmetadata.model.List();
+        } else {
+            beansToAdd.add(beanToAdd);
+            for (Object tmpObj : beanList.getBeenAndRevesAndIdreves()) {
+                if(tmpObj instanceof Bean){
+                    beansToAdd.add((Bean)tmpObj);
+                }
+            }
+        }
+
+        setPropertyAsBeans(bean, listName, beansToAdd);
+    }
+
+
     public static void addEntryToMap(Bean bean, String name, Entry entryToAdd) {
         java.util.List<Entry> entriesToAdd = new ArrayList<Entry>();
         com.atricore.idbus.console.lifecycle.support.springmetadata.model.Map map = null;

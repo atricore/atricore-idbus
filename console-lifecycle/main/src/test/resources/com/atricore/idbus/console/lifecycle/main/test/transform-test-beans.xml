@@ -53,16 +53,16 @@
     </bean>
 
     <bean name="claimsChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationClaimsChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.claims.BasicAuthenticationClaimsChannelTransformer"/>
 
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.STSTransformer"/>
 
     <bean name="basicAuthenticationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.BasicAuthenticationTransformer"/>
 
     <bean name="twoFactorAuthenticationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WiKIDAuthenticationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.WiKIDAuthenticationTransformer"/>
     
     <bean name="spLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPTransformer"/>
@@ -71,13 +71,13 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.samlr2.SamlR2SPTransformer"/>
 
     <bean name="salesforceTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SalesforceTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.cloud.SalesforceTransformer"/>
 
     <bean name="googleAppsTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.GoogleAppsTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.cloud.GoogleAppsTransformer"/>
 
     <bean name="sugarCRMTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SugarCRMTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.cloud.SugarCRMTransformer"/>
 
     <bean name="spDefaultIdPChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPDefaultIdPChannelTransformer"/>
@@ -93,13 +93,13 @@
     </bean>
 
     <bean name="spJOSSOActivationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSO1ResourceTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.josso1.JOSSO1ResourceTransformer"/>
 
     <bean name="execEnvJOSSOActivationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSO1ResourceBindingTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.josso1.JOSSO1ResourceBindingTransformer"/>
 
     <bean name="execEnvJOSSOTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSOExecEnvransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.josso1.JOSSO1ExecEnvransformer"/>
 
     <bean name="identityLookupTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>

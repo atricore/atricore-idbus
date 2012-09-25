@@ -78,54 +78,58 @@ public class IdpTransformer extends AbstractTransformer implements InitializingB
         // ----------------------------------------
         // OAuth 2 Identity Provider Mediator
         // ----------------------------------------
-        Bean idpMediator = newBean(idpBeans, idpBean.getName() + "-oauth2-mediator",
-                OAuth2IdPMediator.class.getName());
-        setPropertyValue(idpMediator, "logMessages", true);
+        if (provider.isOauth2Enabled()) {
 
-        // artifactQueueManager
-        // setPropertyRef(idpMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
-        setPropertyRef(idpMediator, "artifactQueueManager", "artifactQueueManager");
+            Bean idpMediator = newBean(idpBeans, idpBean.getName() + "-oauth2-mediator",
+                    OAuth2IdPMediator.class.getName());
+            setPropertyValue(idpMediator, "logMessages", true);
 
-        // bindingFactory
-        setPropertyBean(idpMediator, "bindingFactory", newAnonymousBean(OAuth2BindingFactory.class));
+            // artifactQueueManager
+            // setPropertyRef(idpMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
+            setPropertyRef(idpMediator, "artifactQueueManager", "artifactQueueManager");
 
-        // logger
-        List<Bean> idpLogBuilders = new ArrayList<Bean>();
-        idpLogBuilders.add(newAnonymousBean(OAuth2LogMessageBuilder.class));
-        idpLogBuilders.add(newAnonymousBean(CamelLogMessageBuilder.class));
-        idpLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
+            // bindingFactory
+            setPropertyBean(idpMediator, "bindingFactory", newAnonymousBean(OAuth2BindingFactory.class));
 
-        Bean idpLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
-        idpLogger.setName(idpBean.getName() + "-mediation-logger");
-        setPropertyValue(idpLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + idpBean.getName());
-        setPropertyAsBeans(idpLogger, "messageBuilders", idpLogBuilders);
-        setPropertyBean(idpMediator, "logger", idpLogger);
+            // logger
+            List<Bean> idpLogBuilders = new ArrayList<Bean>();
+            idpLogBuilders.add(newAnonymousBean(OAuth2LogMessageBuilder.class));
+            idpLogBuilders.add(newAnonymousBean(CamelLogMessageBuilder.class));
+            idpLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
 
-        // errorUrl
-        setPropertyValue(idpMediator, "errorUrl", resolveUiErrorLocation(appliance));
+            Bean idpLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
+            idpLogger.setName(idpBean.getName() + "-mediation-logger");
+            setPropertyValue(idpLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + idpBean.getName());
+            setPropertyAsBeans(idpLogger, "messageBuilders", idpLogBuilders);
+            setPropertyBean(idpMediator, "logger", idpLogger);
 
-        // warningUrl
-        setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance));
+            // errorUrl
+            setPropertyValue(idpMediator, "errorUrl", resolveUiErrorLocation(appliance));
 
-        // we need to create OAuth2 Client definitions, for now use Client Config string as JSON serialization
+            // warningUrl
+            setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
-        if (provider.getOauth2ClientsConfig() != null && !"".equals(provider.getOauth2ClientsConfig())) {
+            // we need to create OAuth2 Client definitions, for now use Client Config string as JSON serialization
 
-            try {
-                // TODO : Use a metadata-specific class ?!
-                List<OAuth2Client> clients = JasonUtils.unmarshallClients(provider.getOauth2ClientsConfig());
-                if (clients != null) {
-                    for (OAuth2Client oauth2ClientDef : clients) {
-                        Bean oauth2ClientBean = newAnonymousBean(OAuth2Client.class);
-                        setPropertyValue(oauth2ClientBean, "id", oauth2ClientDef.getId());
-                        setPropertyValue(oauth2ClientBean, "secret", oauth2ClientDef.getSecret());
+            if (provider.getOauth2ClientsConfig() != null && !"".equals(provider.getOauth2ClientsConfig())) {
 
-                        addPropertyBean(idpMediator, "clients", oauth2ClientBean);
+                try {
+                    // TODO : Use a metadata-specific class ?!
+                    List<OAuth2Client> clients = JasonUtils.unmarshallClients(provider.getOauth2ClientsConfig());
+                    if (clients != null) {
+                        for (OAuth2Client oauth2ClientDef : clients) {
+                            Bean oauth2ClientBean = newAnonymousBean(OAuth2Client.class);
+                            setPropertyValue(oauth2ClientBean, "id", oauth2ClientDef.getId());
+                            setPropertyValue(oauth2ClientBean, "secret", oauth2ClientDef.getSecret());
+
+                            addPropertyBean(idpMediator, "clients", oauth2ClientBean);
+                        }
                     }
+                } catch (IOException e) {
+                    throw new TransactionSuspensionNotSupportedException(e.getMessage(), e);
                 }
-            } catch (IOException e) {
-                throw new TransactionSuspensionNotSupportedException(e.getMessage(), e);
             }
+
         }
 
 

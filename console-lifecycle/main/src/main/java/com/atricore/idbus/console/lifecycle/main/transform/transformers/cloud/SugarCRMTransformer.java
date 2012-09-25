@@ -1,10 +1,11 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.cloud;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
@@ -26,19 +27,19 @@ import java.util.Date;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
-public class GoogleAppsTransformer extends AbstractTransformer {
+public class SugarCRMTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(GoogleAppsTransformer.class);
+    private static final Log logger = LogFactory.getLog(SugarCRMTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof GoogleAppsServiceProvider;
+        return event.getData() instanceof SugarCRMServiceProvider;
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
 
-        GoogleAppsServiceProvider provider = (GoogleAppsServiceProvider) event.getData();
+        SugarCRMServiceProvider provider = (SugarCRMServiceProvider) event.getData();
 
         Date now = new Date();
 
@@ -57,12 +58,12 @@ public class GoogleAppsTransformer extends AbstractTransformer {
         event.getContext().put("spBeans", spBeans);
 
         if (logger.isDebugEnabled())
-            logger.debug("Generating Google Apps " + provider.getName() + " configuration model");
+            logger.debug("Generating SugarCRM " + provider.getName() + " configuration model");
 
         // Define all required beans! (We can break down this in the future ...)
 
         // ----------------------------------------
-        // Google Apps Provider
+        // SugarCRM Provider
         // ----------------------------------------
 
         Bean sp = newBean(spBeans, normalizeBeanName(provider.getName()),
@@ -84,7 +85,7 @@ public class GoogleAppsTransformer extends AbstractTransformer {
         // metadata file
         EntityDescriptorType ed;
         try {
-            ed = MetadataUtil.createGoogleAppsDescriptor(provider);
+            ed = MetadataUtil.createSugarCRMDescriptor(provider);
 
             IdProjectResource<EntityDescriptorType> spMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
                 idauPath + sp.getName(), sp.getName(), "saml2", ed);
@@ -92,7 +93,7 @@ public class GoogleAppsTransformer extends AbstractTransformer {
             event.getContext().getCurrentModule().addResource(spMetadata);
 
         } catch (Exception e) {
-            throw new TransformException("Error creating Google Apps entity descriptor for '" + provider.getName() + "'", e);
+            throw new TransformException("Error creating SugarCRM entity descriptor for '" + provider.getName() + "'", e);
         }
 
         // ResourceCircleOfTrustMemberDescriptor
@@ -107,7 +108,6 @@ public class GoogleAppsTransformer extends AbstractTransformer {
         }
         setPropertyValue(spMd, "alias", alias);
         setPropertyValue(spMd, "resource", "classpath:" + idauPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
-
         Bean mdIntrospector = newAnonymousBean(SamlR2MetadataDefinitionIntrospector.class);
         setPropertyBean(spMd, "metadataIntrospector", mdIntrospector);
 
@@ -118,11 +118,11 @@ public class GoogleAppsTransformer extends AbstractTransformer {
     @Override
     public Object after(TransformEvent event) throws TransformException {
 
-        GoogleAppsServiceProvider provider = (GoogleAppsServiceProvider) event.getData();
+        SugarCRMServiceProvider provider = (SugarCRMServiceProvider) event.getData();
         IdProjectModule module = event.getContext().getCurrentModule();
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans spBeans = (Beans) event.getContext().get("spBeans");
-        
+
         Bean spBean = getBeansOfType(spBeans, FederatedRemoteProviderImpl.class.getName()).iterator().next();
 
         // Wire provider to COT

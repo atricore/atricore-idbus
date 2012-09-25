@@ -3,7 +3,7 @@ package com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractOAuth2SPChannelTransformer;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.AbstractOAuth2SPChannelTransformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,7 +27,8 @@ public class IdPDefaultSPChannelTransformer extends AbstractOAuth2SPChannelTrans
     public boolean accept(TransformEvent event) {
         // TODO : Make sure that OAuth 2.0 is enabled
         return event.getData() instanceof IdentityProvider &&
-                !((IdentityProvider)event.getData()).isRemote();
+                !((IdentityProvider)event.getData()).isRemote() &&
+                ((IdentityProvider)event.getData()).isOauth2Enabled();
     }
 
     @Override

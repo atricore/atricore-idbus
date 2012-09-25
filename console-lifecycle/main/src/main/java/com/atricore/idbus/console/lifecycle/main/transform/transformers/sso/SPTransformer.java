@@ -200,15 +200,17 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         setPropertyValue(spMediator, "preferredIdpSSOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
 
-        // TODO : [JOSSO-370] This might be null somewhere on the chain
-
-
-        ExecutionEnvironment execEnv = providerInternalSaml2.getServiceConnection().getResource().getActivation().getExecutionEnv();
+        // Some resources have an execution environment, but others do not.
+        ServiceResource svcResource = providerInternalSaml2.getServiceConnection().getResource();
+        ExecutionEnvironment execEnv = svcResource.getActivation() != null ? svcResource.getActivation().getExecutionEnv() : null;
 
         IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
         IdentityApplianceDefinition applianceDef = providerInternalSaml2.getIdentityAppliance();
 
-        String bpLocationPath = resolveLocationPath(applianceDef.getLocation()) + "/" + execEnv.getName().toUpperCase();
+        // TODO [IDP-PXY]: Use either service resource or execution environment !!!!
+        String bpLocationPath = resolveLocationPath(applianceDef.getLocation()) + "/" +
+                (execEnv != null ? execEnv.getName().toUpperCase() : svcResource.getName().toUpperCase());
+
         String bpLocation = resolveLocationBaseUrl(applianceDef.getLocation()) + bpLocationPath;
 
         setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");

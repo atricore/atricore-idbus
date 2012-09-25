@@ -25,6 +25,7 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
+import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.MicroStrategyResource;
 
 import flash.events.MouseEvent;
@@ -86,6 +87,17 @@ public class MicroStrategyResourceCreateMediator extends IocFormMediator {
 
         microStrategyResource.name = view.executionEnvironmentName.text;
         microStrategyResource.description = view.executionEnvironmentDescription.text;
+        microStrategyResource.secret = view.sharedSecret.text;
+
+        //location
+        var loc:Location = new Location();
+        loc.protocol = view.resourceProtocol.labelDisplay.text;
+        loc.host = view.resourceDomain.text;
+        loc.port = parseInt(view.resourcePort.text);
+        loc.context = view.resourceContext.text;
+        loc.uri = view.resourcePath.text;
+        microStrategyResource.location = loc;
+
         _newResource = microStrategyResource;
     }
 
@@ -125,6 +137,10 @@ public class MicroStrategyResourceCreateMediator extends IocFormMediator {
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
+        _validators.push(view.portValidator);
+        _validators.push(view.domainValidator);
+        _validators.push(view.contextValidator);
     }
+
 }
 }

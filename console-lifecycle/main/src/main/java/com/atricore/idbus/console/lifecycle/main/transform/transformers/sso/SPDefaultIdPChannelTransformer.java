@@ -3,7 +3,7 @@ package com.atricore.idbus.console.lifecycle.main.transform.transformers.sso;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractIdPChannelTransformer;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.AbstractIdPChannelTransformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

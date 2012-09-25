@@ -6,7 +6,7 @@ import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractSPChannelTransformer;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.AbstractSPChannelTransformer;
 import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;

@@ -266,7 +266,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _webserverExecEnvCoreSection:WebserverExecEnvCoreSection;
     private var _sharepoint2010ResourceCoreSection:Sharepoint2010ResourceCoreSection;
     private var _coldfusionExecEnvCoreSection:ColdfusionResourceCoreSection;
-    private var _microStrategyExecEnvCoreSection:MicroStrategyResourceCoreSection;
+    private var _microStrategyResourceCoreSection:MicroStrategyResourceCoreSection;
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     //private var _authenticationPropertyTab:Group;
     private var _authenticationSection:AuthenticationSection;
@@ -1431,7 +1431,10 @@ public class PropertySheetMediator extends IocMediator {
 
             var location:String = resolveProviderLocationUrl(identityProvider);
             _ipSaml2Section.entityID.text = location + "/SAML2/MD";
-            _ipSaml2Section.idpInitiatedUrl.text = location + "/SAML2/SSO/IDP_INITIATE?atricore_sp_alias=";
+
+            // TODO : Review this :
+            _ipSaml2Section.idpInitiatedSSOUrl.text = location + "/SAML2/SSO/IDP_INITIATE?atricore_sp_alias=<REPLACE>";
+            _ipSaml2Section.idpInitiatedSLOUrl.text = location + "/SAML2/SLO/IDP_INITIATE?atricore_sp_alias=<REPLACE>";
 
             if (_applianceSaved) {
                 _ipSaml2Section.btnExportMetadata.enabled = true;
@@ -1536,6 +1539,7 @@ public class PropertySheetMediator extends IocMediator {
             _ipOAuth2Section.oauth2ClientsConfig.text = identityProvider.oauth2ClientsConfig;
             _ipOAuth2Section.oauth2Key.text = identityProvider.oauth2Key;
 
+            _ipOAuth2Section.oauth2Enabled.addEventListener(Event.CHANGE, handleSectionChange);
             _ipOAuth2Section.oauth2UsernamePasswordFlow.addEventListener(Event.CHANGE,  handleSectionChange);
             _ipOAuth2Section.oauth2BindingRestfulCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipOAuth2Section.oauth2BindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
@@ -2432,7 +2436,7 @@ public class PropertySheetMediator extends IocMediator {
             }
 
             if (serviceProvider.serviceConnection != null &&
-                    serviceProvider.serviceConnection.resource is JOSSO1Resource) {
+                serviceProvider.serviceConnection.resource is JOSSO1Resource) {
                 var location:String = resolveProviderLocationUrl(serviceProvider);
                 _spSaml2Section.entityID.text = location + "/SAML2/MD";
 
@@ -2440,6 +2444,7 @@ public class PropertySheetMediator extends IocMediator {
                 //location += "/" + (serviceProvider.serviceConnection.resource as JOSSO1Resource).partnerAppId.toUpperCase();
                 location += "/" + serviceProvider.name.toUpperCase();
 
+                // TODO : Try to take this from MD ....
                 _spSaml2Section.spInitiatedSsoRedirectUrl.text = location + "/SSO/SSO/REDIR";
                 _spSaml2Section.spInitiatedSsoArtifactUrl.text = location + "/SSO/SSO/ARTIFACT";
                 _spSaml2Section.spInitiatedSloRedirectUrl.text = location + "/SSO/SLO/REDIR";
@@ -7224,12 +7229,12 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
-        _microStrategyExecEnvCoreSection = new MicroStrategyResourceCoreSection();
-        corePropertyTab.addElement(_microStrategyExecEnvCoreSection);
+        _microStrategyResourceCoreSection = new MicroStrategyResourceCoreSection();
+        corePropertyTab.addElement(_microStrategyResourceCoreSection);
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
-        _microStrategyExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleMicroStrategyExecEnvCorePropertyTabCreationComplete);
+        _microStrategyResourceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleMicroStrategyExecEnvCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleMicroStrategyExecEnvCorePropertyTabRollOut);
     }
 
@@ -7238,14 +7243,43 @@ public class PropertySheetMediator extends IocMediator {
 
         if (microStrategyResource != null) {
             // bind view
-            _microStrategyExecEnvCoreSection.executionEnvironmentName.text = microStrategyResource.name;
-            _microStrategyExecEnvCoreSection.executionEnvironmentDescription.text = microStrategyResource.description;
+            _microStrategyResourceCoreSection.executionEnvironmentName.text = microStrategyResource.name;
+            _microStrategyResourceCoreSection.executionEnvironmentDescription.text = microStrategyResource.description;
+            _microStrategyResourceCoreSection.sharedSecret.text = microStrategyResource.secret;
 
-            _microStrategyExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
-            _microStrategyExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            var location:Location = microStrategyResource.location;
+            if (location == null)
+                location = new Location();
+
+            for (var i:int = 0; i < _microStrategyResourceCoreSection.resourceProtocol.dataProvider.length; i++) {
+                if (location != null && location.protocol == _microStrategyResourceCoreSection.resourceProtocol.dataProvider[i].label) {
+                    _microStrategyResourceCoreSection.resourceProtocol.selectedIndex = i;
+                    break;
+                }
+            }
+            _microStrategyResourceCoreSection.resourceDomain.text = location.host;
+            _microStrategyResourceCoreSection.resourcePort.text = location.port.toString() != "0" ? location.port.toString() : "";
+            _microStrategyResourceCoreSection.resourceContext.text = location.context;
+            _microStrategyResourceCoreSection.resourcePath.text = location.uri;
+
+            _microStrategyResourceCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _microStrategyResourceCoreSection.sharedSecret.addEventListener(Event.CHANGE, handleSectionChange);
+            _microStrategyResourceCoreSection.resourceProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+            _microStrategyResourceCoreSection.resourcePort.addEventListener(Event.CHANGE, handleSectionChange);
+            _microStrategyResourceCoreSection.resourceDomain.addEventListener(Event.CHANGE, handleSectionChange);
+            _microStrategyResourceCoreSection.resourceContext.addEventListener(Event.CHANGE, handleSectionChange);
+            _microStrategyResourceCoreSection.resourcePath.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _microStrategyResourceCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
-            _validators.push(_microStrategyExecEnvCoreSection.nameValidator);
+            _validators.push(_microStrategyResourceCoreSection.nameValidator);
+
+            _validators.push(_microStrategyResourceCoreSection.portValidator);
+            _validators.push(_microStrategyResourceCoreSection.domainValidator);
+            _validators.push(_microStrategyResourceCoreSection.contextValidator);
+
+
         }
     }
 
@@ -7257,8 +7291,19 @@ public class PropertySheetMediator extends IocMediator {
 
     private function microStrategySave(): void {
         var microStrategyResource:MicroStrategyResource = projectProxy.currentIdentityApplianceElement as MicroStrategyResource;
-        microStrategyResource.name = _microStrategyExecEnvCoreSection.executionEnvironmentName.text;
-        microStrategyResource.description = _microStrategyExecEnvCoreSection.executionEnvironmentDescription.text;
+        microStrategyResource.name = _microStrategyResourceCoreSection.executionEnvironmentName.text;
+        microStrategyResource.secret = _microStrategyResourceCoreSection.sharedSecret.text;
+
+        if (microStrategyResource.location == null)
+            microStrategyResource.location = new Location();
+
+        microStrategyResource.location.protocol = _microStrategyResourceCoreSection.resourceProtocol.selectedItem.label;
+        microStrategyResource.location.host = _microStrategyResourceCoreSection.resourceDomain.text;
+        microStrategyResource.location.port = parseInt(_microStrategyResourceCoreSection.resourcePort.text);
+        microStrategyResource.location.context = _microStrategyResourceCoreSection.resourceContext.text;
+        microStrategyResource.location.uri = _microStrategyResourceCoreSection.resourcePath.text;
+
+        microStrategyResource.description = _microStrategyResourceCoreSection.executionEnvironmentDescription.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

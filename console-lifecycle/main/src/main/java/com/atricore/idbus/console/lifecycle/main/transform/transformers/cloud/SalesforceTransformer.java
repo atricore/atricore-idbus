@@ -1,10 +1,11 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.cloud;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;

@@ -101,13 +101,13 @@
     </bean>
 
     <bean name="basicAuthnClaimsChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationClaimsChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.claims.BasicAuthenticationClaimsChannelTransformer"/>
 
     <bean name="2faAuthnClaimsChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.TwoFactorAuthenticationClaimsChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.claims.TwoFactorAuthenticationClaimsChannelTransformer"/>
 
     <bean name="wiaAuthnClaimsChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WindowsIntegratedAuthenticationClaimsChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.claims.WindowsIntegratedAuthenticationClaimsChannelTransformer"/>
 
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.STSTransformer"/>
@@ -116,16 +116,16 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2STSTransformer"/>
 
     <bean name="basicAuthenticationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BasicAuthenticationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.BasicAuthenticationTransformer"/>
 
     <bean name="twoFactorAuthenticationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WiKIDAuthenticationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.WiKIDAuthenticationTransformer"/>
 
     <bean name="directoryServiceAuthenticationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.DirectoryServiceAuthenticationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.DirectoryServiceAuthenticationTransformer"/>
 
     <bean name="windowsIntegratedAuthenticationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.WindowsIntegratedAuthenticationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.WindowsIntegratedAuthenticationTransformer"/>
 
     <bean name="spLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPTransformer">
@@ -136,13 +136,13 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.samlr2.SamlR2SPTransformer"/>
 
     <bean name="salesforceTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SalesforceTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.cloud.SalesforceTransformer"/>
 
     <bean name="googleAppsTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.GoogleAppsTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.cloud.GoogleAppsTransformer"/>
 
     <bean name="sugarCRMTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SugarCRMTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.cloud.SugarCRMTransformer"/>
 
     <bean name="spDefaultIdPChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPDefaultIdPChannelTransformer"/>
@@ -157,14 +157,170 @@
         <property name="roleA" value="false"/>
     </bean>
 
-    <bean name="spJOSSOActivationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSO1ResourceTransformer"/>
+    <bean name="mstrResoruceTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.mstr.MstrResoruceTransformer"/>
 
-    <bean name="JOSSOActivationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSO1ResourceBindingTransformer"/>
+    <bean name="mstrResourceBindingTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.mstr.MstrResourceBindingTransformer"/>
 
-    <bean name="JOSSOExecEnvTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSOExecEnvransformer">
+    <bean name="mstrExecEnvTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.mstr.MstrExecEnvTransformer">
+        <!--
+        <property name="execEnvProperties">
+            <map>
+                <entry key="tc50">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="tc50"/>
+                        <property name="javaAgentClass" value="org.josso.tc50.agent.CatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="tc55">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="tc55"/>
+                        <property name="javaAgentClass" value="org.josso.tc55.agent.CatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="tc60">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="tc60"/>
+                        <property name="javaAgentClass" value="org.josso.tc60.agent.CatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="tc70">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="tc70"/>
+                        <property name="javaAgentClass" value="org.josso.tc70.agent.CatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="jb32">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="jb32"/>
+                        <property name="javaAgentClass" value="org.josso.jb32.agent.JBossCatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="jb40">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="jb40"/>
+                        <property name="javaAgentClass" value="org.josso.jb40.agent.JBossCatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="jb42">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="jb42"/>
+                        <property name="javaAgentClass" value="org.josso.jb42.agent.JBossCatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="jb5">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="jb5"/>
+                        <property name="javaAgentClass" value="org.josso.agent.http.JaasHttpSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="jb6">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="jb6"/>
+                        <property name="javaAgentClass" value="org.josso.agent.http.JaasHttpSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="wl81">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="wl81"/>
+                        <property name="javaAgentClass" value="org.josso.wls81.agent.WLSSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="wl92">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="wl92"/>
+                        <property name="javaAgentClass" value="org.josso.wls92.agent.WLSSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="wl10">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="wl10"/>
+                        <property name="javaAgentClass" value="org.josso.wls10.agent.WLSSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="alfresco">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="alfresco"/>
+                        <property name="javaAgentClass" value="org.josso.servlet.agent.GenericServletSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="liferay">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="liferay"/>
+                        <property name="enableAutoLogin" value="false"/>
+                        <property name="javaAgentClass" value="org.josso.liferay.agent.LiferaySSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="coldfusion">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="coldfusion"/>
+                        <property name="javaAgentClass" value="org.josso.servlet.agent.GenericServletSSOAgent"/>
+                        <property name="enableJaxws" value="true"/>
+                        <property name="disableJaas" value="true"/>
+                        <property name="loginUri" value="jossoLogin.cfm"/>
+                        <property name="logoutUri" value="jossoLogout.cfm"/>
+                        <property name="securityCheckUri" value="jossoSecurityCheck.cfm"/>
+                    </bean>
+                </entry>
+
+                <entry key="apache">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="apache"/>
+                    </bean>
+                </entry>
+
+                <entry key="php">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="php"/>
+                    </bean>
+                </entry>
+
+                <entry key="phpBB">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="phpBB"/>
+                    </bean>
+                </entry>
+
+                <entry key="iis">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="iis"/>
+                    </bean>
+                </entry>
+
+                <entry key="iis64">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="iis64"/>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+        -->
+    </bean>
+
+    <bean name="josso1ResourceTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.josso1.JOSSO1ResourceTransformer"/>
+
+    <bean name="josso1ResourceBindingTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.josso1.JOSSO1ResourceBindingTransformer"/>
+
+    <bean name="josso1ExecEnvTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.josso1.JOSSO1ExecEnvransformer">
         <property name="execEnvProperties">
             <map>
                 <!-- Tomcat Family -->
@@ -443,16 +599,23 @@
                                         <ref bean="sugarCRMTransformer"/>
                                         <ref bean="samlr2SpExternalTransformer"/>
                                         <ref bean="spDefaultIdPChannelTransformer"/>
+
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
-                                        <ref bean="spJOSSOActivationTransformer"/>
-                                        <ref bean="JOSSOActivationTransformer"/>
+
+                                        <ref bean="josso1ResourceTransformer"/>
+                                        <ref bean="josso1ResourceBindingTransformer"/>
+
+                                        <ref bean="mstrResoruceTransformer"/>
+                                        <ref bean="mstrResourceBindingTransformer"/>
+
                                         <ref bean="samlr2SPTransformer"/>
 
                                         <!-- PSP Transformers -->
 
                                         <!-- Other Transformers -->
-                                        <ref bean="JOSSOExecEnvTransformer"/>
+                                        <ref bean="josso1ExecEnvTransformer"/>
+                                        <ref bean="mstrExecEnvTransformer"/>
                                         <ref bean="identityLookupTransformer"/>
 
                                     </list>

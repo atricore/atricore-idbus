@@ -1,8 +1,9 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.josso1;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +30,7 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
 
     @Override
     public void before(TransformEvent event) throws TransformException {
-        // Define partenr apps in Binding provider
+        // Define partner apps in Binding provider
         JOSSO1Resource josso1Resource = (JOSSO1Resource) event.getData();
         InternalSaml2ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
 
@@ -109,7 +110,7 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
                     (!josso1Resource.getPartnerAppLocation().getContext().startsWith("/") ? "/" : "") +
                     josso1Resource.getPartnerAppLocation().getContext());
 
-            // TODO : Support ignored web resources, rememberme, disable autologin, etc. ....
+            // TODO : Support ignored web resources, remember me, disable auto-login, etc. ....
 
             addPropertyBean(cfgBean, "ssoPartnerApps", agentAppBean);
 
@@ -130,7 +131,6 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
         String appLocation = resolveLocationUrl(josso1Resource.getPartnerAppLocation());
         if (!appLocation.endsWith("/"))
             appLocation = appLocation + "/";
-
 
         String baseLocation = resolveLocationBaseUrl(josso1Resource.getPartnerAppLocation());
         if (!baseLocation.endsWith("/"))

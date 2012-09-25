@@ -1,16 +1,17 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.claims;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.AuthenticationMechanism;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsAuthentication;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.TwoFactorAuthentication;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
@@ -34,9 +35,9 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends AbstractTransformer {
+public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(BasicAuthenticationClaimsChannelTransformer.class);
+    private static final Log logger = LogFactory.getLog(TwoFactorAuthenticationClaimsChannelTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
@@ -50,7 +51,7 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
             return false;
 
         for (AuthenticationMechanism a : idp.getAuthenticationMechanisms()) {
-            if (a instanceof WindowsAuthentication)
+            if (a instanceof TwoFactorAuthentication)
                 return true;
         }
 
@@ -59,6 +60,7 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
     }
 
     /**
+     *  TODO : Support multiple claim channels per IDP!
      * @param event
      * @throws com.atricore.idbus.console.lifecycle.main.exception.TransformException
      */
@@ -83,23 +85,24 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
         }
         idpBean = b.iterator().next();
 
-        // ----------------------------------------
-        // Claims Channel, we have a single claim channel for spnego, no matter how many WIA instances are.
-        // ----------------------------------------
-        String claimChannelBeanName = normalizeBeanName(idpBean.getName() + "-wia-authn-claim-channel");
+        String claimChannelBeanName = normalizeBeanName(idpBean.getName() + "-2fa-authn-claim-channel");
         if (getBean(idpBeans, claimChannelBeanName) != null) {
             // We already created the basic authentication claim channel ..
             if (logger.isDebugEnabled())
-                logger.debug("WIA claim channel already created");
+                logger.debug("2FA claim channel already created");
             return;
         }
 
+
+
         Bean claimChannelBean = null;
-
         for (AuthenticationMechanism authnMechanism : provider.getAuthenticationMechanisms()) {
-
             // Bind authn is a variant of basic authn
-            if (authnMechanism instanceof WindowsAuthentication) {
+            if (authnMechanism instanceof TwoFactorAuthentication) {
+
+                // ----------------------------------------
+                // Claims Channel
+                // ----------------------------------------
 
                 if (claimChannelBean != null) {
                     int currentPriority = Integer.parseInt(getPropertyValue(claimChannelBean, "priority"));
@@ -109,7 +112,6 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
                     // Only create one channel
                     continue;
                 }
-
 
                 claimChannelBean = newBean(idpBeans, claimChannelBeanName, ClaimChannelImpl.class);
 
@@ -127,60 +129,46 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
                 // endpoints
                 List<Bean> ccEndpoints = new ArrayList<Bean>();
 
-                Bean ccWiaSpnegoArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                ccWiaSpnegoArtifact.setName(idpBean.getName() + "-cc-spnego-artifact");
-                setPropertyValue(ccWiaSpnegoArtifact, "name", ccWiaSpnegoArtifact.getName());
-                setPropertyValue(ccWiaSpnegoArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
-                setPropertyValue(ccWiaSpnegoArtifact, "location", "/SPNEGO/ARTIFACT");
-                setPropertyValue(ccWiaSpnegoArtifact, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos");
-                ccEndpoints.add(ccWiaSpnegoArtifact);
+                Bean cc2faArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                cc2faArtifact.setName(idpBean.getName() + "-cc-2fa-artifact");
+                setPropertyValue(cc2faArtifact, "name", cc2faArtifact.getName());
+                setPropertyValue(cc2faArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
+                setPropertyValue(cc2faArtifact, "location", "/2FA/ARTIFACT");
+                setPropertyValue(cc2faArtifact, "responseLocation", "/2FA/POST-RESP");
+                setPropertyValue(cc2faArtifact, "type", AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue());
+                ccEndpoints.add(cc2faArtifact);
 
-                Bean ccWiaSpnegoHttpInit = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                ccWiaSpnegoHttpInit.setName(idpBean.getName() + "-cc-spnego-initiator");
-                setPropertyValue(ccWiaSpnegoHttpInit, "name", ccWiaSpnegoHttpInit.getName());
-                setPropertyValue(ccWiaSpnegoHttpInit, "binding", "urn:org:atricore:idbus:spnego:bindings:HTTP-INITIATION");
-                setPropertyValue(ccWiaSpnegoHttpInit, "location", "/SPNEGO/INITIATE");
-                setPropertyValue(ccWiaSpnegoHttpInit, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos");
-                ccEndpoints.add(ccWiaSpnegoHttpInit);
-
-                Bean ccWiaSpnegoHttpNegotiate = newAnonymousBean(IdentityMediationEndpointImpl.class);
-                ccWiaSpnegoHttpNegotiate.setName(idpBean.getName() + "-cc-spnego-negotiatior");
-                setPropertyValue(ccWiaSpnegoHttpNegotiate, "name", ccWiaSpnegoHttpNegotiate.getName());
-                setPropertyValue(ccWiaSpnegoHttpNegotiate, "binding", "urn:org:atricore:idbus:spnego:bindings:HTTP-NEGOTIATION");
-                setPropertyValue(ccWiaSpnegoHttpNegotiate, "location", "/SPNEGO/NEGOTIATE");
-                setPropertyValue(ccWiaSpnegoHttpNegotiate, "responseLocation", "/SPNEGO/NEGOTIATE-RESP");
-                setPropertyValue(ccWiaSpnegoHttpNegotiate, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos");
-                ccEndpoints.add(ccWiaSpnegoHttpNegotiate);
+                Bean cc2faPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                cc2faPost.setName(idpBean.getName() + "-cc-2fa-post");
+                setPropertyValue(cc2faPost, "name", cc2faPost.getName());
+                setPropertyValue(cc2faPost, "binding", SSOBinding.SSO_POST.getValue());
+                setPropertyValue(cc2faPost, "location", "/2FA/POST");
+                setPropertyValue(cc2faPost, "type", AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue());
+                ccEndpoints.add(cc2faPost);
 
                 setPropertyAsBeans(claimChannelBean, "endpoints", ccEndpoints);
 
                 // ----------------------------------------
                 // Claims Mediator
                 // ----------------------------------------
-                // TODO : Do not force spnego on name
-                Bean ccMediator = newBean(idpBeans, claimChannelBeanName + "-mediator", "org.atricore.idbus.capabilities.spnego.SpnegoMediator");
-
-                // Realm
-                setPropertyValue(ccMediator, "realm", authnMechanism.getDelegatedAuthentication().getName());
-
-                // Service Principal Name
-                WindowsIntegratedAuthentication wia = (WindowsIntegratedAuthentication) authnMechanism.getDelegatedAuthentication().getAuthnService();
-
-                String spn = WindowsIntegratedAuthenticationTransformer.buildSpn(wia);
-
-                setPropertyValue(ccMediator, "principal", spn);
+                Bean ccMediator = newBean(idpBeans, claimChannelBeanName + "-mediator", SSOClaimsMediator.class);
 
                 // logMessages
                 setPropertyValue(ccMediator, "logMessages", true);
+
+                // 2faAuthnUILocation
+                // setPropertyValue(ccMediator, "twoFactorAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-passcode.do");
+                setPropertyValue(ccMediator, "twoFactorAuthnUILocation", resolveUiLocationPath(appliance) + "/SSO/LOGIN/2FA");
 
                 // artifactQueueManager
                 // setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
                 setPropertyRef(ccMediator, "artifactQueueManager", "artifactQueueManager");
 
                 // bindingFactory
-                setPropertyBean(ccMediator, "bindingFactory", newAnonymousBean("org.atricore.idbus.capabilities.spnego.SpnegoBindingFactory"));
+                setPropertyBean(ccMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));
 
                 List<Bean> ccLogBuilders = new ArrayList<Bean>();
+                ccLogBuilders.add(newAnonymousBean(SamlR2LogMessageBuilder.class));
                 ccLogBuilders.add(newAnonymousBean(CamelLogMessageBuilder.class));
                 ccLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
 
@@ -190,6 +178,12 @@ public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends Abs
 
                 // logger
                 setPropertyBean(ccMediator, "logger", ccLogger);
+
+                // errorUrl
+                setPropertyValue(ccMediator, "errorUrl", resolveUiErrorLocation(appliance));
+
+                // warningUrl
+                setPropertyValue(ccMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
                 // identityMediator
                 setPropertyRef(claimChannelBean, "identityMediator", ccMediator.getName());

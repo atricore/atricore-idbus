@@ -1,13 +1,13 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.josso1;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExecutionEnvironment;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIISExecutionEnvironment;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties;
 import com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdPTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
@@ -37,21 +37,39 @@ import java.util.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
 /**
+ * Creates JOSSO 1 Service endpoints for execution environments running a JOSSO Agent
+ *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class JOSSOExecEnvransformer extends AbstractTransformer {
+public class JOSSO1ExecEnvransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(IdPTransformer.class);
+    private static final Log logger = LogFactory.getLog(JOSSO1ExecEnvransformer.class);
 
     private Map<String, ExecutionEnvironmentProperties> execEnvProperties =
             new HashMap<String, ExecutionEnvironmentProperties>();
 
     @Override
     public boolean accept(TransformEvent event) {
-        // Only act when we're accessed from the root node.
-        return event.getData() instanceof ExecutionEnvironment &&
-               event.getContext().getParentNode() instanceof IdentityApplianceDefinition;
+        // Only act when we're accessed from the root node to avoid duplicates:
+        if (!(event.getData() instanceof ExecutionEnvironment))
+            return false;
+
+        if (!(event.getContext().getParentNode() instanceof IdentityApplianceDefinition))
+            return false;
+
+        ExecutionEnvironment ex = (ExecutionEnvironment) event.getData();
+
+        boolean hasJosso1Resources = false;
+        for (Activation activation : ex.getActivations()) {
+            if (activation.getResource() instanceof JOSSO1Resource) {
+                hasJosso1Resources = true;
+                break;
+            }
+        }
+
+        return hasJosso1Resources;
+
     }
 
     @Override
@@ -451,14 +469,6 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         if (cots.size() == 1) {
             Bean cot = cots.iterator().next();
             addPropertyBeansAsRefsToSet(cot, "providers", bpBean);
-            /*
-            String dependsOn = cot.getDependsOn();
-            if (dependsOn == null || dependsOn.equals("")) {
-                cot.setDependsOn(bpBean.getName());
-            } else {
-                cot.setDependsOn(dependsOn + "," + bpBean.getName());
-            }
-            */
         }
 
         // Mediation Unit for binding channel

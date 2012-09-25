@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.authn;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.AuthenticationService;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.BindAuthentication;
@@ -7,6 +7,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvide
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;

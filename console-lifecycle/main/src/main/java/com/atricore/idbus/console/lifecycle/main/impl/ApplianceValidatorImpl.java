@@ -216,13 +216,23 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         }
 
         // Try to unmarshall this as JSON
-        if (node.getOauth2ClientsConfig() != null && !node.getOauth2ClientsConfig().equals("")) {
-            try {
-                JasonUtils.unmarshallClients(node.getOauth2ClientsConfig());
-            } catch (Exception e) {
-                addError("Invalid OAuth 2.0 clients definition for " + node.getName() + ": " + e.getMessage(), e);
-            }
 
+        if (node.isOauth2Enabled()) {
+
+            if (node.getOauth2ClientsConfig() == null)
+                addError("OAuth2 client configuration is required when OAuth 2.0 is enabled " + node.getName());
+
+            if (node.getOauth2Key() == null)
+                addError("OAuth2 key is required when OAuth 2.0 is enabled " + node.getName());
+
+            if (node.getOauth2ClientsConfig() != null && !node.getOauth2ClientsConfig().equals("")) {
+                try {
+                    JasonUtils.unmarshallClients(node.getOauth2ClientsConfig());
+                } catch (Exception e) {
+                    addError("Invalid OAuth 2.0 clients definition for " + node.getName() + ": " + e.getMessage(), e);
+                }
+
+            }
         }
     }
 
@@ -251,7 +261,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         }
 
         if (node.getServiceConnection() == null) {
-            addError("Local Serivice Provider requires an service connection " + node.getName());
+            addError("Local Serivice Provider requires a service connection " + node.getName());
         }
 
         if (node.getAccountLinkagePolicy() == null)
@@ -630,6 +640,28 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.getServiceConnection() == null)
             addError("JOSSO2 Resource [" + node.getName() + "] Service Connection cannot be null");
     }
+
+    @Override
+    public void arrive(MicroStrategyResource node) throws Exception {
+        validateName("MicroStrategy Resource name" , node.getName(), node);
+
+        if (node.getServiceConnection() == null)
+            addError("MicroStrategy Resource [" + node.getName() + "] Service Connection cannot be null");
+
+        if (node.getActivation() == null)
+            addError("MicroStrategy Resource [" + node.getName() + "] Activation Connection cannot be null");
+
+        ExecutionEnvironment execEnv = node.getActivation().getExecutionEnv();
+
+        if (execEnv == null || !(execEnv instanceof  TomcatExecutionEnvironment))
+            addError("MicroStrategy Resource [" + node.getName() + "] Execution environment must not be null, and must be Apache Tomcat");
+
+
+        if (execEnv.getActivations().size() > 1)
+            addError("MicroStrategy Resource [" + node.getName() + "] Execution environment must be exclusive, it can't have other activation connections");
+
+    }
+
 
     @Override
     public void arrive(ServiceProviderChannel node) throws Exception {

@@ -84,10 +84,16 @@
             <s:TextInput id="entityID" selectable="true" editable="false" width="600"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.initiated.url')}:"
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoInitiated.url')}:"
                      labelWidth="230" direction="horizontal">
-            <s:TextInput id="idpInitiatedUrl" selectable="true" editable="false" width="600"/>
+            <s:TextInput id="idpInitiatedSSOUrl" selectable="true" editable="false" width="600"/>
         </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sloInitiated.url')}:"
+                     labelWidth="230" direction="horizontal">
+            <s:TextInput id="idpInitiatedSLOUrl" selectable="true" editable="false" width="600"/>
+        </mx:FormItem>
+
 
         <s:Button id="btnExportMetadata" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'export.metadata')}" enabled="false"/>
 
