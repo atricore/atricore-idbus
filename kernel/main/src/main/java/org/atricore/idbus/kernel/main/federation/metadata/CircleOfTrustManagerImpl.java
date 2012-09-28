@@ -62,6 +62,9 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
 
     public void init() throws CircleOfTrustManagerException {
 
+        if (init)
+            return;
+
         synchronized (this) {
 
             if (init)
