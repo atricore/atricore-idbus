@@ -213,9 +213,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                 }
             }
             
-            // TODO : COMPLETE THIS
-            
-            // Auto-discovery all resources in AppResourceLocator class' package
+            // Auto-discovery all resources bound to AppResourceLocator class package.
+            // Make them available as global resources
             Bundle b = bundleContext.getBundle();
             String basePath = "/" + AppResourceLocator.class.getPackage().getName().replace('.', '/');
             
