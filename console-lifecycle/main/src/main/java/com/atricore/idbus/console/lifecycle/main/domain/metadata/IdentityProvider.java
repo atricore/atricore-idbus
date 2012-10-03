@@ -48,6 +48,8 @@ public class IdentityProvider extends FederatedProvider {
 
     private boolean openIdEnabled;
 
+    private String userDashboardBranding;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicy subjectNameIDPolicy;
 
@@ -231,5 +233,13 @@ public class IdentityProvider extends FederatedProvider {
     public void setDashboardUrl(String dashboardUrl) {
         this.dashboardUrl = dashboardUrl;
 
+    }
+
+    public String getUserDashboardBranding() {
+        return userDashboardBranding;
+    }
+
+    public void setUserDashboardBranding(String userDashboardBranding) {
+        this.userDashboardBranding = userDashboardBranding;
     }
 }

@@ -6,7 +6,9 @@ import com.atricore.idbus.console.brandservice.main.domain.CustomBrandingDefinit
 import com.atricore.idbus.console.brandservice.main.spi.BrandManager;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
 import com.atricore.idbus.console.lifecycle.main.transform.*;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Service;
@@ -73,7 +75,7 @@ public class IdauUITransformer extends AbstractTransformer {
         */
 
         // ----------------------------------------
-        // SSO Capability application
+        // SSO Capability application(s)
         // ----------------------------------------
         {
 
@@ -127,6 +129,42 @@ public class IdauUITransformer extends AbstractTransformer {
             appCfgBeanOsgi.setInterface("org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
 
             idauBeansUi.getImportsAndAliasAndBeen().add(appCfgBeanOsgi);
+
+            // Now, do we need special apps for an IDP ?
+            for (Provider p : ida.getProviders()) {
+                if (p instanceof IdentityProvider) {
+                    IdentityProvider idp = (IdentityProvider) p;
+                    String idpBrandingId = idp.getUserDashboardBranding();
+
+                    // If the IdP uses a different branding, create an application for it
+                    if (idpBrandingId != null && !idpBrandingId.equals(ida.getUserDashboardBranding().getId())) {
+
+                        Application idpUiApp = new Application();
+                        idpUiApp.setId(normalizeBeanName(ida.getName() + "-" + idp.getName() + "-sso-ui"));
+                        idpUiApp.setApplicationName(ida.getName().toLowerCase() + "-" + idp.getName().toLowerCase() + "-sso-ui");
+                        idpUiApp.setClazz(pkg + "." + clazz);
+                        idpUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/" + idp.getName().toUpperCase() + "/SSO");
+                        idpUiApp.setInjectionSource("spring");
+
+                        idauBeansUi.getImportsAndAliasAndBeen().add(idpUiApp);
+
+                        // App Configuration
+                        Bean idpAppCfgBean = newBean(idauBeansUi, idpUiApp.getId() + "-cfg", "org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
+                        setPropertyValue(idpAppCfgBean, "appName", idpUiApp.getId());
+                        setPropertyValue(idpAppCfgBean, "mountPoint", idpUiApp.getMountPoint());
+                        setPropertyValue(idpAppCfgBean, "brandingId", idpBrandingId);
+
+                        // Export App Configuration
+                        Service idpAppCfgBeanOsgi = new Service();
+                        idpAppCfgBeanOsgi.setId(idpAppCfgBean.getName() + "-osgi");
+                        idpAppCfgBeanOsgi.setRef(idpAppCfgBean.getName());
+                        idpAppCfgBeanOsgi.setInterface("org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
+
+                        idauBeansUi.getImportsAndAliasAndBeen().add(idpAppCfgBeanOsgi);
+
+                    }
+                }
+            }
 
         }
 

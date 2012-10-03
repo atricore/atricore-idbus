@@ -332,7 +332,6 @@ public class PropertySheetMediator extends IocMediator {
     [Bindable]
     public var _userDashboardBrandings:ArrayCollection;
 
-
     [Bindable]
     public var _impersonateUserPolicies:ArrayCollection;
 
@@ -669,7 +668,9 @@ public class PropertySheetMediator extends IocMediator {
                 break;
             case UserDashboardBrandingsListCommand.SUCCESS:
                 if (_currentIdentityApplianceElement != null) {
+
                     if (_currentIdentityApplianceElement is IdentityAppliance) {
+
                         _userDashboardBrandings = projectProxy.userDashboardBrandings;
 
                         var ida1:IdentityAppliance = _currentIdentityApplianceElement as IdentityAppliance;
@@ -684,12 +685,38 @@ public class PropertySheetMediator extends IocMediator {
                             }
                         } else {
                             for (var pi:int=0; pi < _iaCoreSection.userDashboardBrandingCombo.dataProvider.length; pi++) {
-                                _iaCoreSection.userDashboardBrandingCombo.selectedIndex = pi;
-                                break;
+                                if (_iaCoreSection.userDashboardBrandingCombo.dataProvider[pi].id = "josso2-default-branding") {
+                                    _iaCoreSection.userDashboardBrandingCombo.selectedIndex = pi;
+                                    break;
+                                }
                             }
                         }
                         _iaCoreSection.userDashboardBrandingCombo.addEventListener(Event.CHANGE, handleSectionChange);
+
+                    } else if (_currentIdentityApplianceElement is IdentityProvider && _ipCoreSection != null) {
+
+                        _userDashboardBrandings = projectProxy.userDashboardBrandings;
+                        var ip4:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+                        var brandingId4:String = ip4.userDashboardBranding;
+
+                        if (brandingId4 != null) {
+                            for (var n4:int=0; n4 < _ipCoreSection.userDashboardBrandingCombo.dataProvider.length; n4++) {
+                                if (_ipCoreSection.userDashboardBrandingCombo.dataProvider[n4].id == brandingId4) {
+                                    _ipCoreSection.userDashboardBrandingCombo.selectedIndex = n4;
+                                    break;
+                                }
+                            }
+                        } else {
+                            for (var p4:int=0; p4 < _ipCoreSection.userDashboardBrandingCombo.dataProvider.length; p4++) {
+                                if (_ipCoreSection.userDashboardBrandingCombo.dataProvider[p4].id  == "josso2-default-branding") {
+                                    _ipCoreSection.userDashboardBrandingCombo.selectedIndex = p4;
+                                    break;
+                                }
+                            }
+                        }
+                        _ipCoreSection.userDashboardBrandingCombo.addEventListener(Event.CHANGE, handleSectionChange);
                     }
+
                 }
                 break;
             case IdentityMappingPoliciesListCommand.SUCCESS:
@@ -1130,6 +1157,9 @@ public class PropertySheetMediator extends IocMediator {
             BindingUtils.bindProperty(_ipCoreSection.subjectNameIdPolicyCombo, "dataProvider", this, "_subjectNameIdPolicies");
             sendNotification(ApplicationFacade.LIST_NAMEID_POLICIES);
 
+            BindingUtils.bindProperty(_ipCoreSection.userDashboardBrandingCombo, "dataProvider", this, "_userDashboardBrandings");
+            sendNotification(ApplicationFacade.LIST_USER_DASHBOARD_BRANDINGS);
+
             for (var i:int = 0; i < _ipCoreSection.idpLocationProtocol.dataProvider.length; i++) {
                 if (identityProvider.location != null && _ipCoreSection.idpLocationProtocol.dataProvider[i].data == identityProvider.location.protocol) {
                     _ipCoreSection.idpLocationProtocol.selectedIndex = i;
@@ -1206,6 +1236,7 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.location.context = _ipCoreSection.idpLocationContext.text;
             identityProvider.location.uri = _ipCoreSection.idpLocationPath.text;
             identityProvider.subjectNameIDPolicy = _ipCoreSection.subjectNameIdPolicyCombo.selectedItem;
+            identityProvider.userDashboardBranding = _ipCoreSection.userDashboardBrandingCombo.selectedItem.id;
             identityProvider.ignoreRequestedNameIDPolicy = _ipCoreSection.ignoreRequestedNameIDPolicy.selected;
 
             // update default sp channels

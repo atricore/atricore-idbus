@@ -98,6 +98,9 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
         // ----------------------------------------
         // Claim Channel
         // ----------------------------------------
+        boolean overrideBrinding = provider.getUserDashboardBranding() != null &&
+                !provider.getUserDashboardBranding().equals(appliance.getIdApplianceDefinition().getUserDashboardBranding().getId());
+
         Bean claimChannelBean = null;
         for (AuthenticationMechanism authnMechanism : provider.getAuthenticationMechanisms()) {
 
@@ -180,8 +183,9 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 setPropertyValue(ccMediator, "logMessages", true);
 
                 // basicAuthnUILocation
-                //setPropertyValue(ccMediator, "basicAuthnUILocation", resolveUiLocationPath(appliance) + "/idbus-ui/claims/username-password.do");
-                setPropertyValue(ccMediator, "basicAuthnUILocation", resolveUiLocationPath(appliance) + "/SSO/LOGIN/SIMPLE");
+                setPropertyValue(ccMediator, "basicAuthnUILocation",
+                        resolveUiLocationPath(appliance) +
+                                (overrideBrinding ? "/" + provider.getName().toUpperCase() : "" ) + "/SSO/LOGIN/SIMPLE");
 
                 // artifactQueueManager
                 //setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
