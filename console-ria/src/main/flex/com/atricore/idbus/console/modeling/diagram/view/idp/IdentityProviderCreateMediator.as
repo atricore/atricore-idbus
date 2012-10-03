@@ -237,6 +237,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
         identityProvider.ignoreRequestedNameIDPolicy = view.ignoreRequestedNameIDPolicy.selected;
         identityProvider.subjectNameIDPolicy = view.subjectNameIdPolicyCombo.selectedItem;
+        identityProvider.userDashboardBranding = view.userDashboardBrandingCombo.selectedItem.id;
 
         identityProvider.oauth2ClientsConfig = view.oauth2ClientsConfig.text;
         identityProvider.oauth2Key = view.oauth2Key.text;
