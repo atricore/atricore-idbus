@@ -30,6 +30,7 @@
         <property name="builtInBrandings">
             <list>
                 <bean class="com.atricore.idbus.console.brandservice.main.domain.BuiltInBrandingDefinition">
+                    <!-- Name is referenced somewhere else -->
                     <property name="name" value="josso2-default-branding"/>
                     <property name="description" value="JOSSO 2.X Default"/>
                     <property name="webBrandingId" value="josso2-default-branding"/>

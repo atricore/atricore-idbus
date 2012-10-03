@@ -131,6 +131,9 @@
                     </s:DropDownList>
                 </mx:FormItem>
 
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.branding')}:">
+                    <s:DropDownList id="userDashboardBrandingCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" />
+                </mx:FormItem>
 
                 <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.subjectNameIDPolicy')}:">
                     <s:DropDownList id="subjectNameIdPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>

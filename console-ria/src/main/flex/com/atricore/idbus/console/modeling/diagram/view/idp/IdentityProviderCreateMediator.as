@@ -25,12 +25,14 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand;
+import com.atricore.idbus.console.modeling.main.controller.UserDashboardBrandingsListCommand;
 import com.atricore.idbus.console.modeling.main.view.Util;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPolicy;
 import com.atricore.idbus.console.services.dto.AuthenticationContract;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.Location;
@@ -76,6 +78,9 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     [Bindable]
     public var _subjectNameIdPolicies:ArrayCollection;
 
+    [Bindable]
+    public var _userDashboardBrandings:ArrayCollection;
+
     public function IdentityProviderCreateMediator(name:String = null, viewComp:IdentityProviderCreateForm = null) {
         super(name, viewComp);
     }
@@ -114,11 +119,13 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.certificateManagementType.addEventListener(ItemClickEvent.ITEM_CLICK, handleManagementTypeClicked);
         view.identityProviderName.addEventListener(Event.CHANGE, handleProviderNameChange);
 
+
+
         // upload bindings
         view.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
         //view.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         BindingUtils.bindProperty(view.certificateKeyPair, "dataProvider", this, "_selectedFiles");
-
+        BindingUtils.bindProperty(view.userDashboardBrandingCombo, "dataProvider", this, "_userDashboardBrandings");
         BindingUtils.bindProperty(view.subjectNameIdPolicyCombo, "dataProvider", this, "_subjectNameIdPolicies");
         sendNotification(ApplicationFacade.LIST_NAMEID_POLICIES);
 
@@ -182,6 +189,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         _uploadedFileName = null;
 
         _subjectNameIdPolicies = new ArrayCollection();
+        _userDashboardBrandings = new ArrayCollection()
 
         FormUtility.clearValidationErrors(_validators);
 //        registerValidators();
@@ -472,7 +480,9 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
     override public function listNotificationInterests():Array {
         return [SubjectNameIDPolicyListCommand.SUCCESS,
-            SubjectNameIDPolicyListCommand.FAILURE];
+            SubjectNameIDPolicyListCommand.FAILURE,
+            UserDashboardBrandingsListCommand.SUCCESS,
+            UserDashboardBrandingsListCommand.FAILURE];
     }
 
 
@@ -490,8 +500,22 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
                     }
                 }
                 break;
+            case UserDashboardBrandingsListCommand.SUCCESS:
+                if (view != null && view.parent != null) {
+                    _userDashboardBrandings = projectProxy.userDashboardBrandings;
+                    for (var i:int=0; i < view.userDashboardBrandingCombo.dataProvider.length; i++) {
+                        var appliance:IdentityApplianceDefinition = _projectProxy.currentIdentityAppliance.idApplianceDefinition;
+                        var idaBranding:String = appliance.userDashboardBranding != null ? appliance.userDashboardBranding.id : "josso2-default-branding";
+                        if (view.userDashboardBrandingCombo.dataProvider[i].id.toString() == idaBranding) {
+                            view.userDashboardBrandingCombo.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                break;
             default:
                 initLocation();
+                sendNotification(ApplicationFacade.LIST_USER_DASHBOARD_BRANDINGS);
                 break;
         }
 
