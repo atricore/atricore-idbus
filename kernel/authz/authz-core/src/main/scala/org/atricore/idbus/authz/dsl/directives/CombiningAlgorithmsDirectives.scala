@@ -51,17 +51,8 @@ private[dsl] trait CombiningAlgorithmsDirectives extends Logging {
   def firstApplicable(route : AccessControlRoute, obligations : Option[Obligations]) : AccessControlRoute = {
     dispatchAndCollect(route, obligations) {
       results =>
-      // TODO
-        throw new UnsupportedOperationException("Only one applicable combining Algorithm not implemented")
 
-        /*
-        for ( a <- results ) {
-          if ( a == DoPermit || a == DoDeny)
-            return a;
-        }
-
-        DoNotApplicable
-        */
+        results.foldLeft(AccessControlAction(NotApplicable))( (a, b) => if (b == DoPermit || b == DoDeny) b else a)
 
     }
   }
