@@ -105,6 +105,7 @@
         <module>ha</module>
         <module>web</module>
         <module>authz</module>
+        <module>proxy</module>
         <!--
         <module>agent</module>
         -->
