@@ -97,6 +97,10 @@ public class HttpServiceConfiguration implements  ServiceConfiguration {
         return enableSsl;
     }
 
+    public Boolean getEnableSsl() {
+        return enableSsl;
+    }
+
     public void setEnableSsl(Boolean enableSsl) {
         this.enableSsl = enableSsl;
     }

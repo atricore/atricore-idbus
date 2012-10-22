@@ -144,10 +144,7 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
         if (config.isDisableSessionUrl() != null) 
             d.put("org.ops4j.pax.web.session.url", config.isDisableSessionUrl().toString());
         
-        if (config.isEnableSsl() != null)
-            d.put("org.osgi.service.http.secure.enabled", config.isEnableSsl().toString());
-        
-        if (config.getMaxHeaderBufferSize() != null) 
+        if (config.getMaxHeaderBufferSize() != null)
             d.put("org.ops4j.pax.web.max.header.buffer.size", config.getMaxHeaderBufferSize() + "");
         
         if (config.getPort() != null) 
@@ -155,10 +152,14 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
         
         if (config.getServerId() != null) 
             d.put("org.ops4j.pax.web.worker.name", config.getServerId());
-        
+
         if (config.getSessionTimeout() != null)
             d.put("org.ops4j.pax.web.session.timeout", config.getSessionTimeout().toString());
-        
+
+        // SSL setup
+        if (config.isEnableSsl() != null)
+            d.put("org.osgi.service.http.secure.enabled", config.isEnableSsl().toString());
+
         if (config.getSslKeyPassword() != null)
             d.put("org.ops4j.pax.web.ssl.keypassword", config.getSslKeyPassword());
         
@@ -183,12 +184,13 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
             cfg.setBindAddresses(new String[] {"0.0.0.0"});
         
         cfg.setDisableSessionUrl(getBoolean(props, "org.ops4j.pax.web.session.url"));
-        cfg.setEnableSsl(getBoolean(props, "org.osgi.service.http.secure.enabled"));
+
         cfg.setMaxHeaderBufferSize(getInt(props, "org.ops4j.pax.web.max.header.buffer.size"));
         cfg.setPort(getInt(props, "org.osgi.service.http.port"));
         cfg.setServerId(getString(props, "org.ops4j.pax.web.worker.name"));
         cfg.setSessionTimeout(getInt(props, "org.ops4j.pax.web.session.timeout"));
-        
+
+        cfg.setEnableSsl(getBoolean(props, "org.osgi.service.http.secure.enabled"));
         cfg.setSslKeyPassword(getString(props, "org.ops4j.pax.web.ssl.keypassword"));
         cfg.setSslKeystorePassword(getString(props, "org.ops4j.pax.web.ssl.password"));
         cfg.setSslKeystorePath(getString(props, "org.ops4j.pax.web.ssl.keystore"));
