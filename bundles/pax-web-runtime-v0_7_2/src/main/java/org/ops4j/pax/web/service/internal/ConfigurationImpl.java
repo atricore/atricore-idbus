@@ -231,6 +231,19 @@ public class ConfigurationImpl extends PropertyStore
         return getResolvedIntegerProperty( PROPERTY_MAX_HEADER_BUFFER_SIZE );
     }
 
+
+    public String getTrustStore() {
+        return getResolvedStringProperty( PROPERTY_TRUST_STORE);
+    }
+
+    public String getTrustPassword() {
+        return getResolvedStringProperty( PROPERTY_TRUST_PASSWORD);
+    }
+
+    public String getTrustStoreType() {
+        return getResolvedStringProperty( PROPERTY_TRUST_STORE_TYPE);
+    }
+
     @Override
     public String toString()
     {

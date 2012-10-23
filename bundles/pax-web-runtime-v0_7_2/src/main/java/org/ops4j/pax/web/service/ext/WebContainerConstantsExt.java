@@ -7,6 +7,12 @@ import org.ops4j.pax.web.service.WebContainerConstants;
  */
 public interface WebContainerConstantsExt extends WebContainerConstants {
 
-    java.lang.String PROPERTY_MAX_HEADER_BUFFER_SIZE = "org.ops4j.pax.web.max.header.buffer.size";
+    String PROPERTY_MAX_HEADER_BUFFER_SIZE = "org.ops4j.pax.web.max.header.buffer.size";
+
+    String PROPERTY_TRUST_STORE  = "org.ops4j.pax.web.trustStore";
+
+    String PROPERTY_TRUST_PASSWORD  = "org.ops4j.pax.web.trustPassword";
+
+    String PROPERTY_TRUST_STORE_TYPE  = "org.ops4j.pax.web.trustStore";
 
 }
