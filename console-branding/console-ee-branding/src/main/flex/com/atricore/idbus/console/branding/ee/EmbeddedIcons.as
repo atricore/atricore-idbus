@@ -69,6 +69,14 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/22x22/win_integrated_authn.png")]
     public static var windowsIntegratedAuthnMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/domino_authentication_service.png")]
+    public static var dominoMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/clientcert_authentication_service.png")]
+    public static var clientCertMiniIcon:Class;
+
     // Identity sources
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/identity_vault.png")]

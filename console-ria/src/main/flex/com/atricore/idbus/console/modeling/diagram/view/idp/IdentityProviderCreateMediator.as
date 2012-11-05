@@ -504,11 +504,11 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             case UserDashboardBrandingsListCommand.SUCCESS:
                 if (view != null && view.parent != null) {
                     _userDashboardBrandings = projectProxy.userDashboardBrandings;
-                    for (var i:int=0; i < view.userDashboardBrandingCombo.dataProvider.length; i++) {
+                    for (var j:int=0; j < view.userDashboardBrandingCombo.dataProvider.length; j++) {
                         var appliance:IdentityApplianceDefinition = _projectProxy.currentIdentityAppliance.idApplianceDefinition;
                         var idaBranding:String = appliance.userDashboardBranding != null ? appliance.userDashboardBranding.id : "josso2-default-branding";
-                        if (view.userDashboardBrandingCombo.dataProvider[i].id.toString() == idaBranding) {
-                            view.userDashboardBrandingCombo.selectedIndex = i;
+                        if (view.userDashboardBrandingCombo.dataProvider[j].id.toString() == idaBranding) {
+                            view.userDashboardBrandingCombo.selectedIndex = j;
                             break;
                         }
                     }

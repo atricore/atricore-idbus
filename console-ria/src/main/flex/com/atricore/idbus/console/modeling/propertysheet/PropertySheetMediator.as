@@ -43,6 +43,8 @@ import com.atricore.idbus.console.modeling.propertysheet.view.appliance.Identity
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.directory.DirectoryAuthnServiceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.directory.DirectoryAuthnServiceLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.wikid.WikidAuthnServiceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.domino.DominoAuthenticationServiceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.clientcert.ClientCertAuthnServiceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.windows.WindowsIntegratedAuthnCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
@@ -150,6 +152,8 @@ import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
+import com.atricore.idbus.console.services.dto.DominoAuthenticationService;
+import com.atricore.idbus.console.services.dto.ClientCertAuthnService;
 import com.atricore.idbus.console.services.dto.WindowsAuthentication;
 import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
@@ -247,6 +251,8 @@ public class PropertySheetMediator extends IocMediator {
     private var _windowsAuthenticationSection:WindowsAuthenticationSection;
     private var _certificateSection:CertificateSection;
     private var _wikidAuthnServiceCoreSection:WikidAuthnServiceCoreSection;
+    private var _dominoAuthnServiceCoreSection:DominoAuthenticationServiceCoreSection;
+    private var _clientCertAuthnServiceCoreSection:ClientCertAuthnServiceCoreSection;
     private var _directoryAuthnServiceCoreSection:DirectoryAuthnServiceCoreSection;
     private var _directoryAuthnServiceLookupSection:DirectoryAuthnServiceLookupSection;
     private var _windowsIntegratedAuthnCoreSection:WindowsIntegratedAuthnCoreSection;
@@ -432,6 +438,10 @@ public class PropertySheetMediator extends IocMediator {
                     enableWikidAuthnServicePropertyTabs();
                 } else if (_currentIdentityApplianceElement is DirectoryAuthenticationService) {
                     enableDirectoryAuthnServicePropertyTabs();
+                } else if (_currentIdentityApplianceElement is DominoAuthenticationService) {
+                    enableDominoAuthnPropertyTabs();
+                } else if (_currentIdentityApplianceElement is ClientCertAuthnService) {
+                    enableClientCertAuthnPropertyTabs();
                 } else if (_currentIdentityApplianceElement is WindowsIntegratedAuthentication) {
                     enableWindowsIntegratedAuthnPropertyTabs();
                 } else if (_currentIdentityApplianceElement is IdentitySource) {
@@ -3222,6 +3232,189 @@ public class PropertySheetMediator extends IocMediator {
         _applianceSaved = false;
         _dirty = false;
     }
+
+    // Domino authn
+
+    protected function enableDominoAuthnPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _dominoAuthnServiceCoreSection = new DominoAuthenticationServiceCoreSection();
+        corePropertyTab.addElement(_dominoAuthnServiceCoreSection  );
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _dominoAuthnServiceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleDominoAuthnCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleDominoAuthnCorePropertyTabRollOut);
+
+
+    }
+
+    private function handleDominoAuthnCorePropertyTabCreationComplete(event:Event):void {
+        var dominoAuth:DominoAuthenticationService = _currentIdentityApplianceElement as DominoAuthenticationService;
+
+        // if windowsIntegratedAuth is null that means some other element was selected before completing this
+        if (dominoAuth != null) {
+            // bind view
+
+            _dominoAuthnServiceCoreSection.dominoName.text = dominoAuth.name;
+            _dominoAuthnServiceCoreSection.dominoDescription.text = dominoAuth.description;
+            _dominoAuthnServiceCoreSection.serverUrl.text = dominoAuth.registryUrl;
+
+            _dominoAuthnServiceCoreSection.dominoName.addEventListener(Event.CHANGE, handleSectionChange);
+            _dominoAuthnServiceCoreSection.dominoDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _dominoAuthnServiceCoreSection.serverUrl.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_dominoAuthnServiceCoreSection.nameValidator);
+
+        }
+    }
+
+    private function handleDominoAuthnCorePropertyTabRollOut(e:Event):void {
+
+        if (_dirty && validate(true)) {
+
+            updateDominoAuthn();
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+
+    }
+
+    protected function updateDominoAuthn():void {
+
+        var dominoAuthn:DominoAuthenticationService = _currentIdentityApplianceElement as DominoAuthenticationService;
+        var oldName:String = dominoAuthn.name;
+        dominoAuthn.name = _dominoAuthnServiceCoreSection.dominoName.text;
+        dominoAuthn.description = _dominoAuthnServiceCoreSection.dominoDescription.text;
+        dominoAuthn.registryUrl = _dominoAuthnServiceCoreSection.serverUrl.text;
+
+        if (oldName != dominoAuthn.name &&
+                dominoAuthn.delegatedAuthentications != null &&
+                dominoAuthn.delegatedAuthentications.length > 0) {
+            for each (var delegatedAuthentication:DelegatedAuthentication in dominoAuthn.delegatedAuthentications) {
+                var idp:IdentityProvider = delegatedAuthentication.idp;
+                if (idp.authenticationMechanisms != null) {
+                    for each (var authenticationMechanism:AuthenticationMechanism in idp.authenticationMechanisms) {
+                        if (authenticationMechanism.delegatedAuthentication == delegatedAuthentication) {
+                            authenticationMechanism.name = Util.getAuthnMechanismName(authenticationMechanism, idp.name, dominoAuthn.name);
+                            authenticationMechanism.displayName = Util.getAuthnMechanismDisplayName(authenticationMechanism, idp.name, dominoAuthn.name);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
+    // Client Cert auth
+
+    protected function enableClientCertAuthnPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _clientCertAuthnServiceCoreSection = new ClientCertAuthnServiceCoreSection();
+        corePropertyTab.addElement(_clientCertAuthnServiceCoreSection  );
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _clientCertAuthnServiceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleClientCertAuthnCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleClientCertAuthnCorePropertyTabRollOut);
+
+
+    }
+
+    private function handleClientCertAuthnCorePropertyTabCreationComplete(event:Event):void {
+        var clientCertAuth:ClientCertAuthnService = _currentIdentityApplianceElement as ClientCertAuthnService;
+
+        // if windowsIntegratedAuth is null that means some other element was selected before completing this
+        if (clientCertAuth != null) {
+            // bind view
+
+            _clientCertAuthnServiceCoreSection.clientCertName.text = clientCertAuth.name;
+            _clientCertAuthnServiceCoreSection.clientCertDescription.text = clientCertAuth.description;
+            _clientCertAuthnServiceCoreSection.clientCertCrlUrl.text = clientCertAuth.crlUrl;
+
+            _clientCertAuthnServiceCoreSection.clientCertName.addEventListener(Event.CHANGE, handleSectionChange);
+            _clientCertAuthnServiceCoreSection.clientCertDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _clientCertAuthnServiceCoreSection.clientCertCrlUrl.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_clientCertAuthnServiceCoreSection .nameValidator);
+
+        }
+    }
+
+    private function handleClientCertAuthnCorePropertyTabRollOut(e:Event):void {
+
+        if (_dirty && validate(true)) {
+
+            updateClientCertAuthn();
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+
+    }
+
+    protected function updateClientCertAuthn():void {
+
+        var clientCertAuthn:ClientCertAuthnService = _currentIdentityApplianceElement as ClientCertAuthnService;
+        var oldName:String = clientCertAuthn.name;
+        clientCertAuthn.name = _clientCertAuthnServiceCoreSection.clientCertName.text;
+        clientCertAuthn.description = _clientCertAuthnServiceCoreSection.clientCertDescription.text;
+        clientCertAuthn.crlUrl = _clientCertAuthnServiceCoreSection.clientCertCrlUrl.text;
+
+        if (oldName != clientCertAuthn.name &&
+                clientCertAuthn.delegatedAuthentications != null &&
+                clientCertAuthn.delegatedAuthentications.length > 0) {
+            for each (var delegatedAuthentication:DelegatedAuthentication in clientCertAuthn.delegatedAuthentications) {
+                var idp:IdentityProvider = delegatedAuthentication.idp;
+                if (idp.authenticationMechanisms != null) {
+                    for each (var authenticationMechanism:AuthenticationMechanism in idp.authenticationMechanisms) {
+                        if (authenticationMechanism.delegatedAuthentication == delegatedAuthentication) {
+                            authenticationMechanism.name = Util.getAuthnMechanismName(authenticationMechanism, idp.name, clientCertAuthn.name);
+                            authenticationMechanism.displayName = Util.getAuthnMechanismDisplayName(authenticationMechanism, idp.name, clientCertAuthn.name);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
+
+    // Identity vault
     
 
     protected function enableIdentityVaultPropertyTabs():void {

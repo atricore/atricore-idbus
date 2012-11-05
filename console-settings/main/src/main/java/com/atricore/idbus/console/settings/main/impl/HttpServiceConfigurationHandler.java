@@ -171,7 +171,25 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
         
         if (config.getSslPort() != null)
             d.put("org.osgi.service.http.port.secure", config.getSslPort() + "");
-        
+
+        if (config.getSslClientAuthn() != null) {
+
+            if (config.getSslClientAuthn().equalsIgnoreCase("wanted")) {
+                d.put("org.ops4j.pax.web.ssl.clientauthwanted", "true");
+                d.put("org.ops4j.pax.web.ssl.clientauthneeded", "false");
+
+            } else if (config.getSslClientAuthn().equalsIgnoreCase("needed")) {
+                d.put("org.ops4j.pax.web.ssl.clientauthwanted", "false");
+                d.put("org.ops4j.pax.web.ssl.clientauthneeded", "true");
+
+            } else {
+                d.put("org.ops4j.pax.web.ssl.clientauthwanted", "false");
+                d.put("org.ops4j.pax.web.ssl.clientauthneeded", "false");
+            }
+
+        }
+
+
         return d;
     }
     
@@ -182,6 +200,18 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
             cfg.setBindAddresses(getArrayFromCsv(props.get("org.ops4j.pax.web.listening.addresses")));
         else
             cfg.setBindAddresses(new String[] {"0.0.0.0"});
+
+        if (props.get("org.ops4j.pax.web.ssl.clientauthneeded") != null &&
+                getBoolean(props, "org.ops4j.pax.web.ssl.clientauthneeded")) {
+            cfg.setSslClientAuthn("needed");
+
+        } else if (props.get("org.ops4j.pax.web.ssl.clientauthwanted") != null &&
+                getBoolean(props, "org.ops4j.pax.web.ssl.clientauthwanted")) {
+            cfg.setSslClientAuthn("wanted");
+
+        } else {
+            cfg.setSslClientAuthn("disabled");
+        }
         
         cfg.setDisableSessionUrl(getBoolean(props, "org.ops4j.pax.web.session.url"));
 

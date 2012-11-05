@@ -57,6 +57,8 @@ public class DiagramElementTypes {
     public static const WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:int =33;
     public static const SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int =34;
     public static const COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int =35;
+    public static const CLIENTCERT_ELEMENT_TYPE:int =36;
+    public static const DOMINO_ELEMENT_TYPE:int =37;
 
 }
 }

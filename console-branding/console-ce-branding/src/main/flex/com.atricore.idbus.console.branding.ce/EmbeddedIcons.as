@@ -49,6 +49,14 @@ public class EmbeddedIcons {
     public static var directoryServiceMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/clientcert_authentication_service.png")]
+    public static var clientCertMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/domino_authentication_service.png")]
+    public static var dominoMiniIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/22x22/win_integrated_authn.png")]
     public static var windowsIntegratedAuthnMiniIcon:Class;
 

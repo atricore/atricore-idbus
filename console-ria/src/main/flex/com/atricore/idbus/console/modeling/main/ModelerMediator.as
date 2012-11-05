@@ -43,6 +43,8 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforc
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWikidElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDominoElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveClientCertElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWindowsIntegratedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceImportCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
@@ -369,7 +371,11 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.EXPORT_METADATA,
             ApplicationFacade.DISPLAY_ACTIVATION_DIALOG,
             ApplicationFacade.CREATE_WIKID_ELEMENT,
+            ApplicationFacade.CREATE_DOMINO_ELEMENT,
+            ApplicationFacade.CREATE_CLIENTCERT_ELEMENT,
             ApplicationFacade.REMOVE_WIKID_ELEMENT,
+            ApplicationFacade.REMOVE_CLIENTCERT_ELEMENT,
+            ApplicationFacade.REMOVE_DOMINO_ELEMENT,
             ApplicationFacade.CREATE_DIRECTORY_SERVICE_ELEMENT,
             ApplicationFacade.REMOVE_DIRECTORY_SERVICE_ELEMENT,
             ApplicationFacade.CREATE_WINDOWS_INTEGRATED_AUTHN_ELEMENT,
@@ -734,9 +740,23 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case ApplicationFacade.CREATE_WIKID_ELEMENT:
                 popupManager.showCreateWikidWindow(notification);
                 break;
+            case ApplicationFacade.CREATE_DOMINO_ELEMENT:
+                popupManager.showCreateDominoWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_CLIENTCERT_ELEMENT:
+                popupManager.showCreateClientCertWindow(notification);
+                break;
             case ApplicationFacade.REMOVE_WIKID_ELEMENT:
                 var rwikid:RemoveWikidElementRequest = RemoveWikidElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rwikid.wikidAuthnService);
+                break;
+            case ApplicationFacade.REMOVE_DOMINO_ELEMENT:
+                var rdomino:RemoveDominoElementRequest = RemoveDominoElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rdomino.dominoAuthnService);
+                break;
+            case ApplicationFacade.REMOVE_CLIENTCERT_ELEMENT:
+                var rclientcert:RemoveClientCertElementRequest = RemoveClientCertElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rclientcert.clientCertAuthnService);
                 break;
             case ApplicationFacade.CREATE_DIRECTORY_SERVICE_ELEMENT:
                 popupManager.showCreateDirectoryServiceWindow(notification);

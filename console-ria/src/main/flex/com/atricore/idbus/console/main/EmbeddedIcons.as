@@ -236,6 +236,15 @@ public class EmbeddedIcons {
     public static var wikidIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/domino_authentication_service.png")]
+    public static var dominoIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/clientcert_authentication_service.png")]
+    public static var clientCertIcon:Class;
+
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/48x48/directory_service.png")]
     public static var directoryServiceIcon:Class;
 
@@ -309,6 +318,16 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/wikid.png")]
     public static var wikidMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/wikid.png")]
+    public static var dominoMiniIcon:Class;
+
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/wikid.png")]
+    public static var clientCertMiniIcon:Class;
+
 
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/directory_service.png")]

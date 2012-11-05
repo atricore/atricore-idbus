@@ -27,10 +27,12 @@ import com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.BindingProvider;
+import com.atricore.idbus.console.services.dto.ClientCertAuthnService;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
+import com.atricore.idbus.console.services.dto.DominoAuthenticationService;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
@@ -148,6 +150,10 @@ public class BrowserModelFactory {
                 authnServiceNode.icon = EmbeddedIcons.directoryServiceMiniIcon;
             } else if (authnService is WindowsIntegratedAuthentication) {
                 authnServiceNode.icon = EmbeddedIcons.windowsIntegratedAuthnMiniIcon;
+            } else if (authnService is DominoAuthenticationService) {
+                authnServiceNode.icon = EmbeddedIcons.dominoMiniIcon;
+            } else if (authnService is ClientCertAuthnService) {
+                authnServiceNode.icon = EmbeddedIcons.clientCertMiniIcon;
             }
             return authnServiceNode;
         }

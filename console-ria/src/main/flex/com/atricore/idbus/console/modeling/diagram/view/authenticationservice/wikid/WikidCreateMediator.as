@@ -91,6 +91,7 @@ public class WikidCreateMediator extends IocFormMediator {
 
         view.btnOk.addEventListener(MouseEvent.CLICK, handleWikidSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+        resetForm();
         view.focusManager.setFocus(view.wikidName);
     }
 

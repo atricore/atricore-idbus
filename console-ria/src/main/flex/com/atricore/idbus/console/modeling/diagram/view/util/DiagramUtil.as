@@ -144,6 +144,10 @@ public class DiagramUtil {
                 return EmbeddedIcons.coldfusionEnvironmentMiniIcon;
             case DiagramElementTypes.WIKID_ELEMENT_TYPE:
                 return EmbeddedIcons.wikidMiniIcon;
+            case DiagramElementTypes.DOMINO_ELEMENT_TYPE:
+                return EmbeddedIcons.dominoMiniIcon;
+            case DiagramElementTypes.CLIENTCERT_ELEMENT_TYPE:
+                return EmbeddedIcons.clientCertMiniIcon;
             case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
                 return EmbeddedIcons.directoryServiceMiniIcon;
             case DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:

@@ -37,6 +37,8 @@
         import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
         import com.atricore.idbus.console.services.dto.BasicAuthentication;
         import com.atricore.idbus.console.services.dto.BindAuthentication;
+        import com.atricore.idbus.console.services.dto.ClientCertAuthentication;
+        import com.atricore.idbus.console.services.dto.DominoAuthn;
         import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
         import com.atricore.idbus.console.services.dto.WindowsAuthentication;
 
@@ -48,6 +50,10 @@
                 iconClass = EmbeddedIcons.directoryServiceMiniIcon;
             } else if (item is TwoFactorAuthentication) {
                 iconClass = EmbeddedIcons.wikidMiniIcon;
+            } else if (item is DominoAuthn) {
+                iconClass = EmbeddedIcons.dominoMiniIcon;
+            } else if (item is ClientCertAuthentication) {
+                iconClass = EmbeddedIcons.clientCertMiniIcon;
             } else if (item is WindowsAuthentication) {
                 iconClass = EmbeddedIcons.windowsIntegratedAuthnMiniIcon;
             }

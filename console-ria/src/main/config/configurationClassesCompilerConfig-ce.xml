@@ -144,6 +144,8 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.googleapps.GoogleAppsCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.sugarcrm.SugarCRMCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.domino.DominoCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.clientcert.ClientCertCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.windows.WindowsIntegratedAuthnCreateMediator</symbol>
 

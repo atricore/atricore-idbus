@@ -64,6 +64,17 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 new PaletteEntry("Windows Domain", EmbeddedIcons.windowsIntegratedAuthnMiniIcon, "Windows Domain Entry", DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE)
 
                 );
+/*
+        authenticationPaletteDrawer.add(
+                new PaletteEntry("Domino LTPA", EmbeddedIcons.dominoMiniIcon, "Domino LTPA Entry", DiagramElementTypes.DOMINO_ELEMENT_TYPE)
+
+        );
+*/
+        authenticationPaletteDrawer.add(
+                new PaletteEntry("Client Certificate", EmbeddedIcons.clientCertMiniIcon, "Client Certificate Entry", DiagramElementTypes.CLIENTCERT_ELEMENT_TYPE)
+
+        );
+
 
 
         pr.add(authenticationPaletteDrawer);
