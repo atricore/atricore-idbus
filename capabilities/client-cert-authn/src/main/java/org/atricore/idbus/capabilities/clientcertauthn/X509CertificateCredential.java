@@ -18,7 +18,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.atricore.idbus.idojos.strongauthscheme;
+package org.atricore.idbus.capabilities.clientcertauthn;
 
 import org.atricore.idbus.kernel.main.authn.BaseCredential;
 

@@ -65,6 +65,8 @@
         <module>capabilities/oauth2</module>
         <module>capabilities/atricoreid</module>
 
+        <module>capabilities/client-cert-authn</module>
+
         <module>idojos/idbus-db-identitystore</module>
         <module>idojos/idbus-db-sessionstore</module>
         <module>idojos/idbus-ldap-identitystore</module>
@@ -72,7 +74,7 @@
         <module>idojos/idbus-memory-sessionstore</module>
         <module>idojos/idbus-serialized-sessionstore</module>
         <module>idojos/idbus-ehcache-sessionstore</module>
-        <module>idojos/idbus-strong-authscheme</module>
+        <!--module>idojos/idbus-strong-authscheme</module-->
         <module>idojos/idbus-impersonateusr-authscheme</module>
 
         <module>connectors/idbus-jdo-identityvault</module>

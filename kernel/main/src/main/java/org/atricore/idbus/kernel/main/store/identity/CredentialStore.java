@@ -44,5 +44,4 @@ public interface CredentialStore {
      */
     Credential[] loadCredentials(CredentialKey key, CredentialProvider cp) throws SSOIdentityException; // This is the wrong exception !
 
-
 }
