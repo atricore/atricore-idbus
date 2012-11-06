@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 3. The Building Blocks</title><link rel="stylesheet" href="css/josso.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="JOSSO"/><link rel="up" href="index.html" title="JOSSO"/><link rel="prev" href="JOSSO2_Rollout.html" title="Chapter 2. JOSSO2 Rollout"/><link rel="next" href="Atricore_Console_and_Model_Driven_Identity.html" title="Chapter 4. Atricore Console and Model Driven Identity"/></head><body><p id="title"><a href="http://www.josso.org" class="site_href"><strong>JOSSO.org</strong></a><a href="http://docs.josso.org" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="JOSSO2_Rollout.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="Atricore_Console_and_Model_Driven_Identity.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Building_Blocks"/>Chapter 3. The Building Blocks</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="Building_Blocks.html#Architecture">3.1. Architecture</a></span></dt><dd><dl><dt><span class="section"><a href="Building_Blocks.html#OSGi_Background">3.1.1. OSGi background</a></span></dt><dt><span class="section"><a href="Building_Blocks.html#Identity_Appliances">3.1.2. Identity Appliances</a></span></dt></dl></dd><dt><span class="section"><a href="Building_Blocks.html#JOSSO2_Building_Blocks">3.2. JOSSO2 Building Blocks</a></span></dt><dd><dl><dt><span class="section"><a href="Building_Blocks.html#Providers">3.2.1. Providers</a></span></dt><dt><span class="section"><a href="Building_Blocks.html#Identity_Sources">3.2.2. Identity Sources</a></span></dt><dt><span class="section"><a href="Building_Blocks.html#Execution_Environments">3.2.3. Execution Environments</a></span></dt><dt><span class="section"><a href="Building_Blocks.html#Connections">3.2.4. Connections</a></span></dt></dl></dd><dt><span class="section"><a href="Building_Blocks.html#The_JOSSO2_Layout">3.3. The JOSSO2 Layout</a></span></dt></dl></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Architecture"/>3.1. Architecture</h2></div></div></div><p>
+            JOSSO builds on the Atricore Identity Bus. It is distributed as stand-alone software within which
+            your specific Identity and Access Management solutions can be specified and implemented.
+            As opposed to an end-solution, JOSSO is an infrastructure on top of which solutions can be implemented. In
+            some sense, JOSSO acts as an application server specifically targeted for realizing Internet Single Sign-On
+            (SSO) scenarios.
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="OSGi_Background"/>3.1.1. OSGi background</h3></div></div></div><p>
+                OSGi (the Open Services Gateway Initiative) is many things to many people. A full discussion
+                of the history of, viewpoints on, and capabilities of OSGi is beyond the scope of this book and would
+                likely fill an entire volume on its own. We encourage readers who are interested in OSGi's origins and
+                rationale to consult http://en.wikipedia.org/wiki/OSGi and http://www.osgi.org/Main/HomePage.
+                As of November 2010, JOSSO uses version 4.1 of the OSGi standard, also known as JSR-291 within
+                the Java Community Process.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Identity_Appliances"/>3.1.2. Identity Appliances</h3></div></div></div><p>
+                Internet SSO solutions are known within JOSSO as "Identity Appliances". An Identity Appliance is an
+                artifact which holds the definitions necessary to instantiate Internet SSO services, in order to realize
+                a specific identity architecture.
+            </p><p>
+                For instance, upon deployment of an identity appliance, defined Internet SSO endpoints are enabled.
+                Each endpoint will expose a specific behavior, such as for a specific authentication service, or
+                identity data streams from an arbitrary identity store responding to a specific user schema.
+            </p><p>
+                Identity Appliances can be specified either by using a visual notation (using the Atricore Console) or
+                directly, using a textual notation based on XML descriptors .
+            </p><p>
+                Identity Appliances are standard OSGi Bundles, as are all the artifacts that make up JOSSO. A bundle is
+                a single file containing all the information about a given component; this single file is in "jar"
+                format, nearly identical to the "jar archives" that Java developers use to distribute libraries of code.
+                The bundle is composed of a MANIFEST.MF file which specifies its identity and the bundles upon which it
+                depends, as well as what is visible for other bundles to use.
+            </p><p>
+                Descriptors are based on Spring Dynamic Modules for OSGi Service Platforms.
+                The Spring Dynamic Modules for OSGi(tm) Service Platforms projects make it easy to build Spring
+                applications that run in an OSGi framework. A Spring application written in this way provides better
+                separation of modules with the ability to dynamically add, remove, and update modules in a running
+                system, the ability to deploy multiple versions of a module simultaneously (and allow clients to
+                automatically bind to the appropriate one), and a dynamic service model. For more detailed information
+                consult http://www.springsource.org/osgi.
+            </p><p>
+                Apache Maven is the recommended build system for packaging an identity appliance, though any build
+                system can be used.
+                Apache Maven is a software project management and comprehension tool. Based on the concept of a project
+                object model (POM), Maven can manage a project's build, reporting and documentation from a central piece of
+                information.
+            </p><p>
+                In addition, identity appliances generated through the Atricore Console include a build descriptor - namely
+                pom.xml - for packaging the identity appliance in an out-of-the-box fashion through Apache Maven 3.
+                Additionally, the layout used internally by JOSSO to reference identity appliances is the one used by
+                Apache Maven.
+            </p><p>
+                A Maven repository is a collection of project artifacts stored in a directory structure that closely
+                matches a project's Maven coordinates. You can see this structure by opening up a Web browser and
+                browsing the central Maven repository at http://repo1.maven.org/maven2/.
+                You will see that an artifact with the coordinates org.apache.commons:commons-email:1.1 is available
+                under the directory /org/apache/commons/commons-email/1.1/ in a file named commons-email-1.1.jar.
+                The standard for a Maven repository is to store an artifact in the following directory relative to the
+                root of the repository:
+            </p><pre class="programlisting">
+                
+        /&lt;groupId&gt;/&lt;artifactId&gt;/&lt;version&gt;/&lt;artifactId&gt;-&lt;version&gt;.
+        &lt;packaging&gt;
+        &lt;/programlisting&gt;
+    
+            </pre><p>
+                Maven downloads artifacts and plugins from a remote repository to your local machine and stores these
+                artifacts in your local Maven repository. Once Maven has downloaded an artifact from the remote
+                Maven repository, it never needs to download that artifact again. Maven will always look for the
+                artifact in the local repository before looking elsewhere.
+            </p><p>
+                JOSSO hosts two internal Maven Repositories which are accessed each time an OSGi bundle needs to be
+                installed.
+            </p><p>
+                The first repository, located under ${JOSSO_HOME}/system, contains the executable artifacts that make up the
+                JOSSO distribution. Both JOSSO-specific artifacts and their dependencies can be found here.
+            </p><p>
+                The second repository, located under ${JOSSO_HOME}/appliances, contains identity appliances which are OSGi
+                bundles as well. Identity appliances represent the deployment-specific artifacts, building on the
+                JOSSO ones. Every time an identity appliance is generated and packaged using the lifecycle management
+                facilities provided with the Atricore Console, it is dropped into this location.
+            </p><p>
+                Once dropped into the ${JOSSO_HOME}/appliances repository, the appliance can be referenced whenever a deployment action
+                is requested for a specific identity appliance. Once deployed, its lifecycle can be managed the same as any other
+                OSGi bundle.
+            </p><p>
+                Feature descriptors are used in order to simplify the provisioning of capabilities within JOSSO.
+                These provide a simple yet flexible way to provision applications, or "features". Such a mechanism
+                is mainly provided by a set of commands available in the features shell.
+                JOSSO features are stored in the ${JOSSO_HOME}/features folder which complies with the Maven repository
+                layout.
+            </p><p>
+                For instance, the main features descriptor for the JOSSO2 distribution looks like this :
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">features</span><span class="xml_plain">&nbsp;&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;atricore-josso-2.0.0&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">feature</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;josso-console&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">version</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;2.0.0&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">feature</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">version</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;2.0.0&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">josso-console-svcs</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">feature</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">feature</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">version</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;2.0.0&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">josso-console-web</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">feature</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">feature</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">feature</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;josso-console-svcs&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">version</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;2.0.0&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">mvn:org.atricore.josso/org.atricore.josso.services/2.0.0</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">mvn:com.atricore.idbus.console.appliance/com.atricore.idbus.console.appliance.console-default-idau/1.0.0-m1</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">mvn:com.atricore.idbus.console.activation/com.atricore.idbus.console.activation.main/1.0.0-m1</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">mvn:com.atricore.idbus.console.activation/com.atricore.idbus.console.activation.command/1.0.0-m1</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">mvn:com.atricore.idbus.console.lifecycle/com.atricore.idbus.console.lifecycle.main/1.0.0-m1</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">mvn:com.atricore.idbus.console.lifecycle/com.atricore.idbus.console.lifecycle.command/1.0.0-m1</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">feature</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">feature</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;josso-console-web&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">version</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;2.0.0&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">mvn:com.atricore.idbus.console/com.atricore.idbus.console.web/1.0.0-m1/war</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">bundle</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">feature</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">feature</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;josso&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">version</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;2.0.0&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">feature</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">version</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;1.0.0&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">atricore</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">feature</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">feature</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">version</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;1.0.0&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">atricore-management</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">feature</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">feature</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">version</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;2.0.0&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">josso-console</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">feature</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">feature</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">features</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">programlisting</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+</pre><p>
+                As you might notice, a feature encompasses one or more bundles whose coordinates follow the Maven
+                repository model. On the other hand, features can depend on other features. For instance, the upper
+                descriptor shows that JOSSO depends on Atricore Identity Bus-specific features which encompass
+                Atricore Identity Bus OSGi bundles.
+            </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="JOSSO2_Building_Blocks"/>3.2. JOSSO2 Building Blocks</h2></div></div></div><p>
+            This section covers the building blocks of JOSSO2. Federated SSO usage scenarios are implemented by
+            mixing and matching those building blocks in identity appliance models, using a purely visual approach.
+        </p><p>
+            The following is a high-level overview which introduces element semantics without covering the precise usage
+            details of every element.
+            Those usage details are covered in the 'Setup' section.
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Providers"/>3.2.1. Providers</h3></div></div></div><p>
+                Providers can be categorized as either a Service Provider (SP) or and Identity Provider (IdP).
+                An SP role is played by a system entity, when the system entity provides services to
+                principals
+                or other system entities.
+                An IdP is a type of SP that creates, maintains, and manages identity
+                information
+                for principals, and provides principal authentication to other SPs within a federation.
+                In a nutshell, an IdP provides authentication for a user, while a
+                Service
+                Provider relies on an IdP to authorize it, and establishes a security
+                context.
+
+
+                An IdP element is represented with this figure :
+
+                TODO: insert IdP figure
+
+                An SP element is represented in the figure below :
+
+                TODO: insert SP figure
+
+                An IdP can be connected with an SP through a Federated Identity connection.
+                This establishes a trust relationship between the IdP and the SP, which implies that
+                the latter is willing to rely on the claims about a principal established by the former. The common
+                trust system
+                for SSO exchanges is based on digital signature, which ensures message integrity, authentication
+                and non-repudiation.
+
+                An IdP can be associated with an Identity Source through an identity lookup connection.
+                This makes the IdP point to a specific identity store for consuming user and entitlement
+                information.
+                Such information is then leveraged for backing authentication processes and obtaining claim entries for
+                populating security tokens.
+
+                A Service Provider, as mentioned earlier, can be connected with one or more IdPs through a
+                Federated
+                Identity Connection, meaning that the SP will rely upon the claims presented by the
+                trusted IdP.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Identity_Sources"/>3.2.2. Identity Sources</h3></div></div></div><p>
+                Identity Sources represent the data layer of providers. Identity and access management processes require
+                such a layer in order to back authentication and related processes such as SSO. For instance, Identity
+                Providers
+                use
+                the information provided by identity sources for retrieving the user entry that will be used to carry out
+                the
+                authentication process, and extract the claims that will populate a security token. SPs
+                also
+                rely on a data layer. Common usage scenarios for this process include augmenting IdP-facing claims with
+                additional
+                claims, or supporting the local authentication of principals.
+
+                Identity Sources have three main distinctive characteristics which determine their nature: storage
+                mechanism, user schema and access protocol.
+
+                The storage mechanism determines the technological support and information model - such as the
+                relational or
+                hierarchical - which will be used to persist user information. A commonly used storage mechanism is the
+                directory, which relies on a hierarchical information model.
+
+                The user schema determines how user entries are structured: how user attributes are going to be
+                referenced,
+                and how the semantics for these will be placed. This represents the data contract with which consumers need to comply
+                in
+                order
+                to be allowed to access user information. JOSSO Identity Sources are schema-agnostic; they're capable of
+                adapting to
+                the schema supplied.
+
+                The access protocol determines the set of messages for operating on user entries as well as the means
+                of delivering these over the network. The most common access protocol used to locate user entries from a
+                directory is LDAP (Lightweight Directory Access Protocol).
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Execution_Environments"/>3.2.3. Execution Environments</h3></div></div></div><p>
+                In order to offer their services to end-users and applications, SPs build on a third-party
+                software piece which acts as the supporting infrastructure for distributed communication, security and
+                connectivity,
+                among others. In the specific case of supporting the execution of Web-based SPs
+                - or simply Web applications - Web containers are used.
+
+                Within this setting, Web access management concerns are handled by underlying security
+                mechanisms which
+                handle user authentication and authorization. When these processes are complete, the corresponding
+                security context
+                - namely valid claims concerning user identity - are passed on to the underlying Web application. Within
+                the scope of the application, the security context can be leveraged further by performing finer-grained
+                authorization or
+                support
+                application services in a business-specific way.
+
+                While enterprise-grade SSO standards exist (i.e. SAML), there is no standard API for
+                introducing
+                SSO support onto Web applications. Therefore, in order for the SP to become
+                SSO-enabled,
+                the most common approach in SSO products is to impact on the codebase. This is usually accomplished by
+                adapting
+                an application's logic
+               through coupling with the SSO vendor's application programming interfaces (the API) in order to harness
+                any supplied
+                SSO services.
+
+                JOSSO takes a different approach. It leverages standard, as well as container-specific, application
+                Security Service
+                Provider interfaces (SPIs) in order to build the SSO capabilities onto the container, as opposed to the
+                specific
+                application.
+                Therefore, as long as the SP consumes security services that are provided by the underlying
+                container,
+                it will become SSO-enabled in a transparent fashion.
+                There's no need to partner it with any SSO vendor API; no need to have access to the application's
+                source code, and no
+                rebuilding of
+                the application.
+
+                Within the JOSSO domain, an execution environment is where SPs run in order to offer
+                services to
+                end users and applications.
+                Execution environments can range from Web containers to application servers, Web portals to application
+                platforms.
+                Within the identity appliance model, defining the characteristics of an execution
+                environment and binding it to an SP is key to activating SSO support onto
+                the specific execution environment, and from there, onto the underlying applications.
+
+                An activation connection is employed as the means for binding an SP with an execution
+                environment.
+                The semantics of the activation is covered in the 'Connections' section (TODO: point
+                to 'Connections' section).
+
+                The upcoming sections describe all the JOSSO-supported execution environments onto which service
+                providers
+                can build, for participation in a Federated SSO setting.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Connections"/>3.2.4. Connections</h3></div></div></div><p>
+                In the previous chapter, we introduced all the building blocks - identity appliance elements - that
+                can play a part in an Internet SSO
+                setting.
+                In order to put together a meaningful identity appliance model, one that can be transformed to something
+                that
+                can actually execute, all the different pieces need to be brought together.
+                Connections are used to join two identity appliance elements.
+                In our model, connections are edges, representing flows of control and
+                data between identity appliance elements. Each connection enables a flow of data and control from one
+                identity appliance element to
+                another, creating a contract between the two elements.
+                A connection is capable of associating identity appliance elements of a specific
+                type.
+                In the next section we'll cover the available connection elements.
+            </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="Federated_Connection"/>3.2.4.1. Federated Connection</h4></div></div></div><p>
+                    Federated Identity Management describes a model which enables users to employ their digital identities in
+                    collaborating organizations, regardless of organizational borders. The essential pre-requisite to
+                    sharing
+                    user authentication across different security domains is the establishment of trust between the
+                    collaborating partners. Usually, this is done by setting up complex contracts, that describe common
+                    policies, obligations and procedures that must be followed by each collaboration member.
+                </p><p>
+                    Multiple providers can connect to form a trust network, known as a Circle of Trust.
+                    The trust system is based on a contract between separate parties and authentication that is
+                    enforced using cryptographic
+                    key certificates.
+                    A federated connection allows the association of an IdP element with an SP element.
+                    The federated connection defines a relationship of mutual trust between the service and the IdP,
+                    indicating that one provider is willing to rely on the other
+                    to handle its principal identities.
+                </p><p>
+                    Setting up a Circle of Trust among providers provides users with new value-added services
+                    and enhanced operational efficiency, by delivering the SSO
+                    experience in a cross-domain fashion.
+                </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h5 class="title"><a id="SAML_Binding"/>3.2.4.1.1. SAML Binding</h5></div></div></div><p>
+                        Security Assertion Markup Language (SAML) is an XML-based standard for exchanging authentication
+                        and authorization data between security domains. That is, between an IdP (a
+                        producer of assertions) and an SP (a consumer of assertions). SAML is a product of
+                        the OASIS Security Services Technical Committee.
+                    </p><p>
+                        SAML assumes that the principal (often a user) has enrolled with at least one IdP. This
+                       IdP is expected to provide local authentication services to the principal.
+                        However, SAML does not specify the implementation of these local services; indeed, SAML does not
+                        care how local authentication services are implemented (although individual SPs
+                        most certainly will).
+                        So an SP is reliant upon an IdP to identify the principal. At the
+                        principal's request, the IdP passes a SAML assertion to the SP. On
+                        the basis of this assertion, the SP makes an access control decision.
+                    </p><p>
+                        JOSSO is SAML 1.1 and 2 compliant. IdPs and SPs build on
+                        exchanges based on SAML so that they can inter-operate in terms of identity management and realize
+                        usage scenarios like cross-domain SSO.
+                    </p><p>
+                        From within the Identity Appliance Modeler, Identity and Service Provider entity elements are
+                        SAML2-based. Consequently, a Federation Connection is a SAML2 Federation Connection,
+                        given that it specifically deals with binding two SAML2 entities together.
+                    </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="Identity_Lookup"/>3.2.4.2. Identity Lookup</h4></div></div></div><p>
+                    At some point, both IdPs and SPs need to rely on one or more authoritative sources
+                    to
+                    obtain user and entitlement entries. IdPs can then use this information to back
+                    authentication
+                    and authorization processes, as well as to populate security tokens with the claims thus derived.
+                    On the other hand, SP's usage scenarios are close to the ones of an IdP.
+                   SPs can consume user information from alternative authoritative identity sources, in
+                    addition to relying
+                    on claims submitted by one or more trusted IdPs. Within a typical federated identity
+                    setting, upon relaying an authentication request from an IdP, SPs are able to
+                    leverage an internal identity source to carry out the account linkage.  User
+                    details are located
+                    within the local authoritative source, based on the account identifier referenced by the Identity
+                    Provider. Once a local account counterpart is obtained, the claims conveyed by the IdP
+                    can be augmented with user details, obtained from the local authoritative source.
+                </p><p>
+                    An identity lookup connection defines the identity source as an entity - either IdP or SP - and
+                    is willing to rely on that definintion to support identity and access management processes such as
+                    those involving authentication and authorization.
+                </p><p>
+                    An identity lookup edge, connecting an IdP with an identity source, determines two things: which
+                    authoritative identity source will be used, and what means will be employed in order to access the
+                    source in order
+                    to obtain
+                    the user credentials required for performing authentication. Moreover, it specifies the authoritative
+                    source from which user and entitlement details, that will populate security tokens, will be
+                    obtained.
+                </p><p>
+                    An identity lookup edge, connecting an SP with an identity source, determines which
+                    local authoritative identity source is going to be used as well as the means to access it.
+                    In addition to relying on authentication requests from IdPs, SPs may
+                    authenticate users in order to grant access to the protected resources that they host. In other words,
+                    the local authoritative source may be used to obtain user credentials for supporting authentication.
+                    In addition, the SP can be part of a Circle of Trust, relaying authentication
+                    requests conveyed by trusted IdPs. In this case the SP can build on
+                    the local authoritative source to obtain the local account record based on the name identifier
+                    conveyed
+                    in the authentication request. This procedure is known as Account Linkage. Based on the claims
+                    conveyed by the IdP and the local account information, a new set of
+                    claims can be created that will be passed on for application consumption. For instance, a user
+                    having a set of
+                    roles
+                    at the IdP end, might have a different set of roles when navigating to a partner site,
+                    which restrict the actions the user is entitled to perform within the target partner site.
+                    Alternatively, in cases where a local account is not available for the supplied name identifier, the
+                    SP can provision (i.e., create) it. This is known as Federated Provisioning.
+                    This might be a requirement where SPs need to rely on a local account in addition
+                    to the security context.
+                </p><p>
+                    The semantics placed for an identity lookup edge connecting an SP with an identity
+                    source determine only how the identity source will be harnessed to feed the account linkage
+                    operation.
+                    What means will be employed by the SP to obtain user
+                    credentials in
+                    order
+                    to carry out local authentication are still left undetermined.
+                </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="Activation"/>3.2.4.3. Activation</h4></div></div></div><p>
+                    One distinctive feature of JOSSO is the ability to support transparent SSO. In a nutshell, this
+                    translates
+                    to instant SSO-enablement of SPs, by removing the system integration effort involved
+                    in leveraging the SSO solution which typically involved coupling with the SSO solution APIs.
+                </p><p>
+                    This feature is mainly based on SSO-enabling applications by JOSSifying the execution environments
+                    on top of which they run; and passing on a security context that is standard-compliant (therefore accessible),
+                    to any application which relies on standard security contracts - such as the JavaEE ones - for their
+                    access control operations.  TBD: GB please review this sentence!
+                </p><p>
+                    An "activation" is a kind of connection for binding the SP to an execution environment,
+                    applying SSO-enablement semantics to execution environments hosting SPs for a specific
+                    identity appliance.
+                </p><p>
+                    The execution environment element type determines the specific SSO agent that will be
+                    provisioned
+                    for bringing the SSO capabilities on board for the associated SP.
+                </p><p>
+                    Activation is a two-phase process. The first phase involves introducing SSO-support onto the
+                    target execution environment. This takes place at "design time"; during the modeling process of an
+                    identity appliance.
+                </p><p>
+                    The second phase happens when the identity appliance model is transformed to an executable
+                    artifact. Within this phase, the execution environment is set up so that it recognizes the service
+                    providers that will be hosting .
+                </p></div></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="The_JOSSO2_Layout"/>3.3. The JOSSO2 Layout</h2></div></div></div><p>
+            The directory structure of JOSSO 2 is as follows :
+        </p><pre class="screen">
+
+            -&lt;JOSSO_HOME&gt;/ - the path to your JOSSO installation.
+                |-- appliances
+                |-- bin
+                |-- data
+                |   |-- cache
+                |   |-- derby
+                |   |-- generated-bundles
+                |   |-- log
+                |   |-- port
+                |   |-- work
+                |       │   │-- repository
+                |       │   │-- config
+                |-- lib
+                |-- lock
+                |-- system
+    
+        </pre><p>
+            The 'appliances' folder contains identity appliances currently managed by JOSSO. The layout of its content
+            follows the one used for Apache Maven repositories.
+            The 'bin' folder contains start scripts.
+            The 'data' folder contains files representing persistent application state information, such as the OSGi
+            bundle
+            cache, database files, log files and temporary artifacts produced as a result of transformation procedures.
+            The 'lib' folder contains the core libraries for the OSGi Microkernel Implementation on top of which JOSSO
+            builds.
+            The 'lock' folder is used as a support for fail-over settings when more than one JOSSO instance is used.
+            The 'system' folder contains the libraries that make up the JOSSO distribution. Its layout is based on the
+            Apache
+            Maven repository.
+        </p></div></div><ul class="docnav"><li class="previous"><a accesskey="p" href="JOSSO2_Rollout.html"><strong>Prev</strong>Chapter 2. JOSSO2 Rollout</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="Atricore_Console_and_Model_Driven_Identity.html"><strong>Next</strong>Chapter 4. Atricore Console and Model Driven Iden...</a></li></ul></body></html>

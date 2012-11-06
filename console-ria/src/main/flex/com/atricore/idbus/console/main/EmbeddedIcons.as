@@ -269,6 +269,14 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/40x40/windows_authentication_service.png")]
     public static var windowsAuthenticationServiceMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/domino_authentication_service.png")]
+    public static var dominoAuthenticationServiceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/clientcert_authentication_service.png")]
+    public static var clientAuthenticationServiceMiniCertIcon:Class;
+
     // Identity sources
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/identity_vault.png")]
@@ -447,7 +455,16 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/60x60/windows_authentication_service.png")]
     public static var windowsAuthenticationServiceIcon:Class;
 
-    // Identity sources
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/domino_authentication_service.png")]
+    public static var dominoAuthenticationServiceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/clientcert_authentication_service.png")]
+    public static var clientcertAuthenticationServiceIcon:Class;
+
+
+// Identity sources
     [Bindable]
     [Embed(source="/assets/icons/notation/60x60/identity_vault.png")]
     public static var vaultIcon:Class;

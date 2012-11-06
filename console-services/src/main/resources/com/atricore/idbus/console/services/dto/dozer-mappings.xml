@@ -160,12 +160,16 @@
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WikidAuthenticationService,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ClientCertAuthnService,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthenticationService
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO,
                 com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO ,
-                com.atricore.idbus.console.services.dto.WindowsIntegratedAuthenticationDTO
+                com.atricore.idbus.console.services.dto.WindowsIntegratedAuthenticationDTO,
+                com.atricore.idbus.console.services.dto.ClientCertAuthnServiceDTO,
+                com.atricore.idbus.console.services.dto.DominoAuthenticationServiceDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -223,13 +227,17 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.TwoFactorAuthentication,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.BindAuthentication,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsAuthentication
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsAuthentication,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ClientCertAuthentication,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthn
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.BasicAuthenticationDTO,
                 com.atricore.idbus.console.services.dto.TwoFactorAuthenticationDTO,
                 com.atricore.idbus.console.services.dto.BindAuthenticationDTO,
-                com.atricore.idbus.console.services.dto.WindowsAuthenticationDTO
+                com.atricore.idbus.console.services.dto.WindowsAuthenticationDTO,
+                com.atricore.idbus.console.services.dto.ClientCertAuthenticationDTO,
+                com.atricore.idbus.console.services.dto.DominoAuthnDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -305,6 +313,16 @@
     </mapping>
 
     <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthenticationService</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.DominoAuthenticationServiceDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ClientCertAuthnService</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.ClientCertAuthnServiceDTO</class-b>
+    </mapping>
+
+    <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService</class-a>
         <class-b>com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO</class-b>
     </mapping>
@@ -340,12 +358,17 @@
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WikidAuthenticationService,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ClientCertAuthnService,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthenticationService
+
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO,
                 com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO,
-                com.atricore.idbus.console.services.dto.WindowsIntegratedAuthenticationDTO
+                com.atricore.idbus.console.services.dto.WindowsIntegratedAuthenticationDTO,
+                com.atricore.idbus.console.services.dto.ClientCertAuthnServiceDTO,
+                com.atricore.idbus.console.services.dto.DominoAuthenticationServiceDTO
             </b-hint>
         </field>
     </mapping>
@@ -878,6 +901,16 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsAuthentication</class-a>
         <class-b>com.atricore.idbus.console.services.dto.WindowsAuthenticationDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ClientCertAuthentication</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.ClientCertAuthenticationDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthn</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.DominoAuthnDTO</class-b>
     </mapping>
 
     <mapping>

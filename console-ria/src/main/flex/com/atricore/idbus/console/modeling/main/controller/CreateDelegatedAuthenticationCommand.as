@@ -7,11 +7,15 @@ import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
 import com.atricore.idbus.console.services.dto.BindAuthentication;
+import com.atricore.idbus.console.services.dto.ClientCertAuthentication;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
+import com.atricore.idbus.console.services.dto.DominoAuthn;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
 import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
+import com.atricore.idbus.console.services.dto.DominoAuthenticationService;
+import com.atricore.idbus.console.services.dto.ClientCertAuthnService;
 import com.atricore.idbus.console.services.dto.WindowsAuthentication;
 import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
 
@@ -60,6 +64,7 @@ public class CreateDelegatedAuthenticationCommand extends IocSimpleCommand imple
             idp.delegatedAuthentications.addItem(delegatedAuthentication);
 
             // set authentication mechanism
+            // TODO : Avoid depending on the authn type
             var authnMechanism:AuthenticationMechanism = null;
             if (authnService is WikidAuthenticationService) {
                 authnMechanism = new TwoFactorAuthentication();
@@ -67,7 +72,12 @@ public class CreateDelegatedAuthenticationCommand extends IocSimpleCommand imple
                 authnMechanism = new BindAuthentication();
             } else if (authnService is WindowsIntegratedAuthentication) {
                 authnMechanism = new WindowsAuthentication();
-            } // TODO : Avoid depending on the authn type
+            } else if (authnService is DominoAuthenticationService) {
+                authnMechanism = new DominoAuthn();
+            } else if (authnService is ClientCertAuthnService) {
+                authnMechanism = new ClientCertAuthentication();
+            }
+
             authnMechanism.name = Util.getAuthnMechanismName(authnMechanism, idp.name, authnService.name);
             authnMechanism.displayName = Util.getAuthnMechanismDisplayName(authnMechanism, idp.name, authnService.name);
             authnMechanism.delegatedAuthentication = delegatedAuthentication;

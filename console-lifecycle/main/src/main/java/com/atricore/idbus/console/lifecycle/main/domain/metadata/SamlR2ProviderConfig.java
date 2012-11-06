@@ -4,7 +4,7 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SamlR2ProviderConfig extends AbstractProviderConfig {
+public abstract class SamlR2ProviderConfig extends AbstractProviderConfig {
 
     private static final long serialVersionUID = 8401310209898123598L;
 

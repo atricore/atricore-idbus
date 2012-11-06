@@ -78,6 +78,8 @@
         import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
+        import com.atricore.idbus.console.services.dto.DominoAuthenticationService;
+        import com.atricore.idbus.console.services.dto.ClientCertAuthnService;
         import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
         import com.atricore.idbus.console.services.dto.XmlIdentitySource;
@@ -163,6 +165,14 @@
                 var wikid:WikidAuthenticationService = obj as WikidAuthenticationService;
                 _linkLabel = wikid.name;
                 _linkIcon = EmbeddedIcons.wikidAuthenticationServiceIcon;
+            } else if (obj is DominoAuthenticationService) {
+                var domino:DominoAuthenticationService = obj as DominoAuthenticationService;
+                _linkLabel = domino.name;
+                _linkIcon = EmbeddedIcons.dominoAuthenticationServiceIcon;
+            } else if (obj is ClientCertAuthnService) {
+                var clientCert:ClientCertAuthnService = obj as ClientCertAuthnService;
+                _linkLabel = clientCert.name;
+                _linkIcon = EmbeddedIcons.clientcertAuthenticationServiceIcon;
             } else if (obj is DirectoryAuthenticationService) {
                 var directoryService:DirectoryAuthenticationService = obj as DirectoryAuthenticationService;
                 _linkLabel = directoryService.name;

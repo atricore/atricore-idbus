@@ -29,8 +29,13 @@ import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCre
 import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.domino.DominoCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.domino.DominoCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.domino.DominoCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.clientcert.ClientCertCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.clientcert.ClientCertCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.windows.WindowsIntegratedAuthnCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.windows.WindowsIntegratedAuthnCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateForm;
@@ -170,6 +175,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportAgentConfigMediator:ExportAgentConfigMediator;
     private var _activationMediator:ExecEnvActivationMediator;
     private var _wikidCreateMediator:WikidCreateMediator;
+    private var _dominoCreateMediator:DominoCreateMediator;
+    private var _clientCertCreateMediator:ClientCertCreateMediator;
     private var _directoryServiceCreateMediator:DirectoryServiceCreateMediator;
     private var _windowsIntegratedAuthnCreateMediator:WindowsIntegratedAuthnCreateMediator;
     private var _sharepointResourceCreateMediator:SharepointResourceCreateMediator;
@@ -220,6 +227,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportAgentConfigView:ExportAgentConfigView;
     private var _activationView:ExecEnvActivationView;
     private var _wikidCreateForm:WikidCreateForm;
+    private var _dominoCreateForm:DominoCreateForm;
+    private var _clientCertCreateForm:ClientCertCreateForm;
     private var _directoryServiceCreateForm:DirectoryServiceCreateForm;
     private var _windowsIntegratedAuthnCreateForm:WindowsIntegratedAuthnCreateForm;
     private var _sharepoint2010ResourceCreateForm:SharepointResourceCreateForm;
@@ -577,6 +586,22 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set wikidCreateMediator(value:WikidCreateMediator):void {
         _wikidCreateMediator = value;
+    }
+
+    public function get dominoCreateMediator():DominoCreateMediator {
+        return _dominoCreateMediator;
+    }
+
+    public function set dominoCreateMediator(value:DominoCreateMediator):void {
+        _dominoCreateMediator = value;
+    }
+
+    public function get clientCertCreateMediator():ClientCertCreateMediator {
+        return _clientCertCreateMediator;
+    }
+
+    public function set clientCertCreateMediator(value:ClientCertCreateMediator):void {
+        _clientCertCreateMediator = value;
     }
 
     public function get directoryServiceCreateMediator():DirectoryServiceCreateMediator {
@@ -1583,6 +1608,48 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleWikidCreateFormCreated(event:FlexEvent):void {
         wikidCreateMediator.setViewComponent(_wikidCreateForm);
         wikidCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateDominoWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createDominoCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.dominoAuthn");
+        _popup.width = 510;
+        _popup.height = 225;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_dominoCreateForm);
+    }
+
+    private function createDominoCreateForm():void {
+        _dominoCreateForm = new DominoCreateForm();
+        _dominoCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleDominoCreateFormCreated);
+    }
+
+    private function handleDominoCreateFormCreated(event:FlexEvent):void {
+        dominoCreateMediator.setViewComponent(_dominoCreateForm);
+        dominoCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateClientCertWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createClientCertCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.clientCertAuthn");
+        _popup.width = 510;
+        _popup.height = 225;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_clientCertCreateForm);
+    }
+
+    private function createClientCertCreateForm():void {
+        _clientCertCreateForm = new ClientCertCreateForm();
+        _clientCertCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleClientCertCreateFormCreated);
+    }
+
+    private function handleClientCertCreateFormCreated(event:FlexEvent):void {
+        clientCertCreateMediator.setViewComponent(_clientCertCreateForm);
+        clientCertCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateDirectoryServiceWindow(notification:INotification):void {

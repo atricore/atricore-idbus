@@ -68,6 +68,8 @@ public class DiagramElementTypes {
     public static const EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT_TYPE : int = 44;
     public static const SAS_RESOURCE_ELEMENT_TYPE : int = 45;
     public static const SERVICE_RESOURCE_ELEMENT_TYPE : int = 46;
+    public static const CLIENTCERT_ELEMENT_TYPE:int = 47;
+    public static const DOMINO_ELEMENT_TYPE:int = 48;
 
 }
 }

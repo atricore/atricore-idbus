@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 2. JOSSO2 Rollout</title><link rel="stylesheet" href="css/josso.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="JOSSO"/><link rel="up" href="index.html" title="JOSSO"/><link rel="prev" href="JOSSO_Introduction.html" title="Chapter 1. Introduction"/><link rel="next" href="Building_Blocks.html" title="Chapter 3. The Building Blocks"/></head><body><p id="title"><a href="http://www.josso.org" class="site_href"><strong>JOSSO.org</strong></a><a href="http://docs.josso.org" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="JOSSO_Introduction.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="Building_Blocks.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="JOSSO2_Rollout"/>Chapter 2. JOSSO2 Rollout</h2></div></div></div><p>
+        </p><p>
+            The first step is to download the JOSSO2 distribution from this location:
+            http://sourceforge.net/projects/josso/files/JOSSO%202/
+        </p><p>
+
+        </p><p>
+            Expand the file into a directory of your choice. This directory will be the JOSSO2 home directory, which
+            we will refer to as JOSSO2_HOME.
+        </p><p>
+        </p><p>
+            Change to the "bin" directory within JOSSO2_HOME, and execute the "atricore" command.
+            This will bootstrap JOSSO2 and the built-in identity appliances, which offer the essential provisioning
+            interfaces upon which the Atricore Console depends. This process can take several minutes depending on
+            the processing capabilities of the host equipment.
+        </p><p>
+        </p><p>
+            All bundles need to be up and running before using the product, so make sure that they all show an
+            initialization state of "Active". Through the command line console, you can monitor the execution status of
+            all the modules that make up the product. The following command can be used to determine that all JOSSO
+            modules are up and running :
+        </p><p>
+
+        </p><pre class="screen">
+            osgi:list | grep Atricore
+        </pre><p>
+
+        </p><p>
+            Make sure that all listed bundles are in the "Active" state.
+        </p><p>
+        </p><p>
+            If startup fails, use the log file located within the JOSSO2_HOME/data/logs directory to diagnose the reason
+            for the failure.
+        </p><p>
+
+        </p><p>
+            From the Atricore Console, you can specify your digital identity architecture at a birds-eye view level,
+            while still retaining the ability to "drill down" on any single component. Atricore Console also makes it
+            possible for you to seamlessly mix and match the building blocks of your Internet SSO setting, realizing
+            both SAML-compliant Identity Provider and Service Provider roles. These can then be connected to any number
+            of identity sources, automatically provisioning SSO capabilities onto the web container or application
+            server of your choice.
+        </p><p>
+
+        </p><p>
+            Now you're ready to run the Atricore Console. In order to launch it, hit the following URL:
+            http://josso2host:8081/atricore-console and sign in using the default credentials:'admin' as the username
+            and 'admin' as the password.
+        </p><p>
+    </p></div><ul class="docnav"><li class="previous"><a accesskey="p" href="JOSSO_Introduction.html"><strong>Prev</strong>Chapter 1. Introduction</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="Building_Blocks.html"><strong>Next</strong>Chapter 3. The Building Blocks</a></li></ul></body></html>

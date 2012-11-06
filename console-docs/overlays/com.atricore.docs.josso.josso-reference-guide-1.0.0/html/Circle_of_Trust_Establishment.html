@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 9. Circle of Trust Establishment</title><link rel="stylesheet" href="css/josso.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="JOSSO"/><link rel="up" href="index.html" title="JOSSO"/><link rel="prev" href="Service_Provider_Setup.html" title="Chapter 8. Service Provider Setup"/><link rel="next" href="Identity_Appliance_Lifecycle_Management.html" title="Chapter 10. Identity Appliance Lifecycle Management"/></head><body><p id="title"><a href="http://www.josso.org" class="site_href"><strong>JOSSO.org</strong></a><a href="http://docs.josso.org" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="Service_Provider_Setup.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="Identity_Appliance_Lifecycle_Management.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Circle_of_Trust_Establishment"/>Chapter 9. Circle of Trust Establishment</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="Circle_of_Trust_Establishment.html#Connecting_Identity_Providers_with_the_Service_Providers">9.1. Connecting Identity Providers with Service Providers</a></span></dt></dl></div><p>
+        A Circle of Trust is a group of Service Providers that share linked identities and have pertinent business
+        agreements in place regarding how to do business and interact with identities.
+    </p><p>
+        The first and most obvious way in which trust is established, is through existing relationships with
+        partners, vendors and customers. If
+        your organization already has agreements in place with another organization and you have a history of
+        working together, they're already part of your circle.
+    </p><p>
+        Having put together the building blocks of an Identity Appliance defining at least one Identity Provider (IdP)
+        and a
+        set of Service Providers, the next step is to enable a seamless SSO experience for users to leverage when
+        consuming
+        the business services provided by the Service Provider (SP).
+    </p><p>
+        This is accomplished by creating a relationship of trust between IdPs and SPs, who
+        agree to honor one another's authentication and authorization information.
+    </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Connecting_Identity_Providers_with_the_Service_Providers"/>9.1. Connecting Identity Providers with Service Providers</h2></div></div></div><p>
+            To connect IdP and SP elements in order to create a relationship of trust, use the "Federated Connection"
+            edge available in the "Connections" palette drawer.
+        </p><p>
+            Click on the "Federation Connection" element. Select the SP and drag the edge onto the target IdP.
+        </p><p>
+            The following dialog will appear for defining the characteristics of the federation connection between
+            the chosen entities.
+        </p><p>
+            On the
+            <span class="bold"><strong>Contract</strong></span>
+            screen, specify the SAML Profiles and Bindings
+            to be enabled, as well as the level of security of the artifacts involved in message exchanges between
+            SPs and the IdP.
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_federated_connection_idp.png" align="middle"/></span>
+        </p><p>
+            <span class="bold"><strong>Field Descriptions</strong></span>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Name</p>
+                            </td><td>
+                                <p>
+                                    The unique identifier of the Federated SSO connection.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Description</p>
+                            </td><td>
+                                <p>
+                                    A descriptive text for the Federated SSO connection.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p><p>
+            In the "Identity Provider Channel" section, define the SP's contract, specific to the
+            IdP end of the Federated SSO connection. IdP Channel properties
+            specified within this section will override the default contract established by the SP toward
+            trusted IdPs.
+        </p><p>
+            <span class="bold"><strong>Field Descriptions</strong></span>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Use Inherited Service Provider Settings</p>
+                            </td><td>
+                                <p>
+                                    Select this checkbox if you wish to override the default contract
+                                    established by the SP toward the IdP.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Enabled SAML Profiles</p>
+                            </td><td>
+                                <p>
+                                    The SAML Profile to activate in the SP for the IdPs.
+
+                                    These mainly represent usage scenarios which arerealized by the SP for
+                                    this
+                                    specific IdP.
+                                    The most important SAML profile is the "Web Browser Single Sign-On Profile", which
+                                    can be
+                                    enabled by selecting the
+                                    <span class="bold"><strong>SSO</strong></span>
+                                    checkbox.
+                                    Select the
+                                    <span class="bold"><strong>SLO</strong></span>
+                                    checkbox to enable
+                                    Single Logout Support.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Enabled SAML Bindings</p>
+                            </td><td>
+                                <p>
+                                    Enable SAML bindings for selected SAML profiles.
+                                    This action specifies the mapping of a SAML protocol message onto standard messaging
+                                    formats and/or communications protocols.
+                                    Select the
+                                    <span class="bold"><strong>Http Post</strong></span>
+                                    checkbox to convey
+                                    SAML messages through HTTP Post.
+                                    Select the
+                                    <span class="bold"><strong>Http Redirect</strong></span>
+                                    checkbox to convey
+                                    SAML messages through HTTP Get.
+                                    Select
+                                    <span style="color: red">&lt;the&gt;&lt;/the&gt;</span>
+                                    <span class="bold"><strong>Artifact</strong></span>
+                                    checkbox to convey
+                                    SAML messages through the SAML Artifact Binding, which builds on both
+                                    HTTP Redirect and SOAP bindings to exchange SAML messages.
+                                    Select the
+                                    <span class="bold"><strong>SOAP</strong></span>
+                                    checkbox to convey
+                                    SAML messages through SOAP over HTTP(s).
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Account Linkage Policy</p>
+                            </td><td>
+                                <p>
+                                    (TBD: there is a configure button which is not bound to any action at all. Remove
+                                    or realize it's behavior)
+                                    The means by which input claims conveyed in the security token, which are issued
+                                    and submitted by the IdP's end of the Federated SSO connection, are mapped
+                                    to output claims; which will in turn be consumed by the relevant party in order to
+                                    authorize users and grant appropriate access.
+                                </p>
+                                <p>
+                                    Select "Use Theirs" to link IdP and SP accounts
+                                    using the supplied name identifier, and mapping input to output claims in a
+                                    one-to-one fashion.
+                                </p>
+                                <p>
+                                    Select "Use Ours" to link IdP and SP accounts
+                                    using the supplied name identifier, and to issue output claims based only on the
+                                    user
+                                    details that are available within the identity source that is connected to the SP.
+
+                                </p>
+                                <p>
+                                    Select "Aggregate" to link IdP and SP accounts
+                                    using the supplied name identifier, and to issue output claims based on merging
+                                    both
+                                    the
+                                    user details conveyed in the security token and those obtained from the
+                                    identity source connected to the SP.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Preferred IdP Channel</p>
+                            </td><td>
+                                <p>
+                                    Select this checkbox to select the IdP of this connection as
+                                    the
+                                    SP's default authority for identification of a user when a protected
+                                    resource is requested. More specifically,
+                                    this is the IdP to which the user will be redirected in an
+                                    SP-initiated
+                                    usage scenario.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p><p>
+            In the "Service Provider Channel" section, define the IdP's contract specific to the
+            SP end of the Federated SSO connection. Service Provider Channel properties
+            specified within this section override the default contract established by the IdP toward
+            trusted SPs.
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_federated_connection_sp.png" align="middle"/></span>
+        </p><p>
+            <span class="bold"><strong>Field Descriptions</strong></span>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Use Inherited Identity Provider Settings</p>
+                            </td><td>
+                                <p>
+                                    Select this checkbox if you wish to override the default contract,
+                                    established by the IdP end, toward trusted SPs.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Enabled SAML Profiles</p>
+                            </td><td>
+                                <p>
+                                    The SAML Profile to activate in the IdP, for SPs.
+                                    These profiles mainly represent usage scenarios which have been realized by the IdP
+                                    for a
+                                    specific SP.
+                                    The most important SAML profile is the "Web Browser Single Sign-On Profile", which
+                                    can be
+                                    enabled by selecting the
+                                    <span class="bold"><strong>SSO</strong></span>
+                                    checkbox.
+                                    Select the
+                                    <span class="bold"><strong>SLO</strong></span>
+                                    checkbox to enable
+                                    Single Logout Support.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Enabled SAML Bindings</p>
+                            </td><td>
+                                <p>
+                                    The SAML bindings to be enabled for your chosen SAML profiles.
+                                    This specifies the mapping of a SAML protocol message onto standard messaging
+                                    formats and/or communications protocols.
+                                    Select the
+                                    <span class="bold"><strong>Http Post</strong></span>
+                                    checkbox to convey
+                                    SAML messages through HTTP Post.
+                                    Select the
+                                    <span class="bold"><strong>Http Redirect</strong></span>
+                                    checkbox to convey
+                                    SAML messages through HTTP Get.
+                                    Select
+                                    <span style="color: red">&lt;the&gt;&lt;/the&gt;</span>
+                                    <span class="bold"><strong>Artifact</strong></span>
+                                    checkbox to convey
+                                    SAML messages through the SAML Artifact Binding, which builds on both
+                                    HTTP Redirect and SOAP bindings for exchanging SAML messages.
+                                    Select the
+                                    <span class="bold"><strong>SOAP</strong></span>
+                                    checkbox to convey
+                                    SAML messages through SOAP over HTTP(s).
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Sign Authentication Assertions</p>
+                            </td><td>
+                                <p>
+                                    Determines whether SAML Authentication Assertions pushed to this SP will be
+                                    digitally signed. Digitally signing SAML Authentication Assertions provides
+                                    proof-of-identity
+                                    of the IdP to Service Providers, as well as ensuring their
+                                    integrity.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Encrypt Authentication Assertions</p>
+                            </td><td>
+                                <p>
+                                    Determines whether SAML Authentication Assertions pushed to this SP
+                                     will be encrypted. Encrypting
+                                    SAML Authentication Assertions provides confidentiality to SAML messages,
+                                    thus
+                                    preventing eavesdropping.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Authentication Contract</p>
+                            </td><td>
+                                <p>
+                                    The message contract for submitting input claims (such as user credentials) that
+                                    have been made to this SP, to the Identity Provider. The default and only available
+                                    contract builds on
+                                    JOSSO-specific
+                                    parameters which are submitted when simple web-based authentication is
+                                    attempted.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Authentication Mechanism</p>
+                            </td><td>
+                                <p>
+                                    The specific means by which the SP's connection end can authenticate users. The
+                                    only supported authentication
+                                    mechanism is
+                                    <span class="bold"><strong>Simple Authentication</strong></span>
+                                    , which
+                                    identifies users based on username and password.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Authentication Assertion Emission Policy</p>
+                            </td><td>
+                                <p>
+                                    This enables you to customize how, upon succesful authentication, assertions are
+                                    emitted for the SP's
+                                    connection end.
+                                    The emitted authentication assertions are conveyed in security tokens pushed
+                                    to relying parties.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p></div></div><ul class="docnav"><li class="previous"><a accesskey="p" href="Service_Provider_Setup.html"><strong>Prev</strong>Chapter 8. Service Provider Setup</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="Identity_Appliance_Lifecycle_Management.html"><strong>Next</strong>Chapter 10. Identity Appliance Lifecycle Manageme...</a></li></ul></body></html>

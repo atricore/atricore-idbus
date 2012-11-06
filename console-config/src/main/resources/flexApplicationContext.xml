@@ -102,6 +102,8 @@
         <property name="exportAgentConfigMediator" ref="exportAgentConfigMediator"/>
         <property name="activationMediator" ref="activationMediator"/>
         <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
+        <property name="dominoCreateMediator" ref="dominoCreateMediator"/>
+        <property name="clientCertCreateMediator" ref="dominoCreateMediator"/>
         <property name="directoryServiceCreateMediator" ref="directoryServiceCreateMediator"/>
         <property name="windowsIntegratedAuthnCreateMediator" ref="windowsIntegratedAuthnCreateMediator"/>
 
@@ -812,6 +814,14 @@
             class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wikid.WikidCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="dominoCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.domino.DominoCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="clientCertCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.clientcert.ClientCertCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="directoryServiceCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -1065,6 +1075,8 @@
         <property name="exportAgentConfigMediator" ref="exportAgentConfigMediator"/>
         <property name="activationMediator" ref="activationMediator"/>
         <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
+        <property name="dominoCreateMediator" ref="dominoCreateMediator"/>
+        <property name="clientCertCreateMediator" ref="clientCertCreateMediator"/>
         <property name="directoryServiceCreateMediator" ref="directoryServiceCreateMediator"/>
         <property name="windowsIntegratedAuthnCreateMediator" ref="windowsIntegratedAuthnCreateMediator"/>
     </object>

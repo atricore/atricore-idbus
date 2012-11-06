@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 10. Identity Appliance Lifecycle Management</title><link rel="stylesheet" href="css/josso.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="JOSSO"/><link rel="up" href="index.html" title="JOSSO"/><link rel="prev" href="Circle_of_Trust_Establishment.html" title="Chapter 9. Circle of Trust Establishment"/><link rel="next" href="Account_and_Entitlement_Management.html" title="Chapter 11. Account and Entitlement Management"/></head><body><p id="title"><a href="http://www.josso.org" class="site_href"><strong>JOSSO.org</strong></a><a href="http://docs.josso.org" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="Circle_of_Trust_Establishment.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="Account_and_Entitlement_Management.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Identity_Appliance_Lifecycle_Management"/>Chapter 10. Identity Appliance Lifecycle Management</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="Identity_Appliance_Lifecycle_Management.html#Build_an_Identity_Appliance">10.1. Build an Identity Appliance</a></span></dt><dt><span class="section"><a href="Identity_Appliance_Lifecycle_Management.html#Deploy_an_Identity_Appliance">10.2. Deploy an Identity Appliance</a></span></dt><dt><span class="section"><a href="Identity_Appliance_Lifecycle_Management.html#Managing_Identity_Appliance_Execution">10.3. Managing Identity Appliance Execution</a></span></dt><dd><dl><dt><span class="section"><a href="Identity_Appliance_Lifecycle_Management.html#Start_an_Identity_Appliance">10.3.1. Start an Identity Appliance</a></span></dt><dt><span class="section"><a href="Identity_Appliance_Lifecycle_Management.html#Stop_an_Identity_Appliance">10.3.2. Stop an Identity Appliance</a></span></dt></dl></dd><dt><span class="section"><a href="Identity_Appliance_Lifecycle_Management.html#Undeploy_an_Identity_Appliance">10.4. Undeploy an Identity Appliance</a></span></dt><dt><span class="section"><a href="Identity_Appliance_Lifecycle_Management.html#Dispose_an_Identity_Appliance">10.5. Dispose an Identity Appliance</a></span></dt><dt><span class="section"><a href="Identity_Appliance_Lifecycle_Management.html#Remove_an_Identity_Appliance">10.6. Remove an Identity Appliance</a></span></dt></dl></div><p>
+        The Identity Architect also controls the transformation of the identity architecture model into a fully
+        executing artifact. As in the identity appliance modeler, this process is carried out in a point-and-click
+        fashion.
+    </p><p>
+        The Identity Appliance Lifecycle Management screen offers a grid-based layout, within which tables
+        represent the different states the identity appliance artifact can be in.
+        Transitioning the identity appliance from one state to another state is achieved by dragging the identity
+        appliance item from one table of the grid - representing the source state - and dropping it onto the table
+        representing the target state.
+    </p><p>
+        <span class="inlinemediaobject"><img src="images/lifecycle_birds_eye.png" align="middle"/></span>
+    </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Build_an_Identity_Appliance"/>10.1. Build an Identity Appliance</h2></div></div></div><p>
+            Enabling an Identity Appliance Model to deliver the specified identity and access
+            management services requires that you transform it to an executable artifact. Simply put, the executable
+            artifact onto which an identity appliance is mapped is a set of JOSSO2 descriptors that are packaged as an
+            OSGi bundle. JOSSO2 descriptors contribute identity and access management service definitions - such as
+            SAML endpoints - to the underlying core.
+        </p><p>
+            In order to build an identity appliance, select the corresponding row for the target identity appliance
+            within the "Saved" table of the lifecycle management grid.
+        </p><p>
+            The "Saved" table holds entries for the identity appliances that are candidates for
+            compilation, and will ultimately be deployed and executed. Within this state, identity appliances can be
+            edited and removed. To continue with the design process, click on the TBD:insert image button to
+            open the identity appliance within the modeler view. To delete an identity appliance, click
+            on the TBD: insert image button.
+        </p><p>
+            To build an identity appliance, select and drag the row for the target identity appliance item
+            from the "Saved" table and drop it onto the "Staged" table of the grid. If the operation is
+            successful, the target identity appliance will appear in the "Deployed" table of the lifecycle
+            management grid.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Deploy_an_Identity_Appliance"/>10.2. Deploy an Identity Appliance</h2></div></div></div><p>
+            Once an identity appliance has been transformed to an executable artifact it is still not available for
+            execution, since the underlying execution environment is not aware of its existence. In order to
+            execute an identity appliance you must first deploy it by installing the corresponding artifact onto
+            the JOSSO2 execution environment.
+        </p><p>
+            The identity appliances candidates for deployment are shown in the "Staged" table of the lifecycle
+            management grid.
+        </p><p>
+            The "Staged" table holds entries for the identity appliances that have been successfully compiled.
+            Within this state, identity appliances can be viewed and rebuilt. To continue the design process, click
+            on the TBD: insert image button to open the identity appliance within the modeler view. Then, click on the
+            TBD:insert image button to rebuild the identity appliance (required in order to achieve visibility of the
+            latest changes made in the editing session).
+        </p><p>
+            To deploy an identity appliance, select and drag the row for the target identity appliance item
+            from the "Staged" table and drop it onto the "Deployed" table. The target identity appliance should appear
+            in the "Deployed" table of the lifecycle management grid.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Managing_Identity_Appliance_Execution"/>10.3. Managing Identity Appliance Execution</h2></div></div></div><p>
+            Once an identity appliance has been deployed - meaning that it is now hosted within the JOSSO2 execution
+            environment - it is available for execution.
+        </p><p>
+            The "Deployed" table holds the entries for identity appliances which have been deployed and are candidates
+            for execution. Within the deployed state, identity appliances can be either running or stopped. The
+            "State" column shows the identity appliance's current state. Possible states include: "Deployed", "Started"
+            or "Stopped". The deployed state, identified as "DEPLOYED" in the State column, represents identity
+            appliances which have been deployed, but have not been started. The started state ("STARTED" in the State
+            column) represents identity appliances which have been deployed and started. These identity appliance
+            definitions are being realized through identity and access management services which are available
+            to consumers. Finally, the stopped state ("STOPPED" in the State column) represents identity
+            appliances that are no longer executing. Services corresponding to these identity appliance
+            definitions are no longer up and running. Within the "Actions" columns three actions can be applied to the
+            identity appliance: "Start","Stop" and "Undeploy".
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Start_an_Identity_Appliance"/>10.3.1. Start an Identity Appliance</h3></div></div></div><p>
+                Within the "Deployed" table of the lifecycle management grid, click on the TBD: insert image button in
+                the Actions column. This starts the identity appliance, transitioning it to the "Started" state.
+                The target identity appliance should display as "started" in the State column.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Stop_an_Identity_Appliance"/>10.3.2. Stop an Identity Appliance</h3></div></div></div><p>
+                Within the "Deployed" table of the lifecycle management grid, click on the TBD: insert image button
+                to stop an identity appliance. It will be transitioned to the "Stopped" state. The target identity
+                appliance should display as "stopped" in the State column.
+            </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Undeploy_an_Identity_Appliance"/>10.4. Undeploy an Identity Appliance</h2></div></div></div><p>
+            Identity Appliance undeployment can be carried out from the "Deployed" table of the lifecycle
+            management grid. Click on the TBD: insert image button to undeploy an identity appliance, which will
+            transition it to the staged state. The target Identity Appliance will be undeployed and transitioned to the
+            "Staged" state, and should appear in the "Staged" table of the lifecycle management grid.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Dispose_an_Identity_Appliance"/>10.5. Dispose an Identity Appliance</h2></div></div></div><p>
+            Identity Appliance disposal can be carried out from the "Staged" table of the lifecycle
+            management grid.
+            This can be accomplished in two distinct ways:
+            1) Click on the TBD: insert image button to dispose of an identity appliance, transitioning it to the
+            "Disposed" state.
+            2) Select and drag the row for the target identity appliance item from the "Staged" table and drop it onto
+            the "Disposed" table.
+            The target Identity Appliance will be disposed and transitioned to the "Disposed" state, and should appear
+            in the "Disposed" table of the lifecycle management grid.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Remove_an_Identity_Appliance"/>10.6. Remove an Identity Appliance</h2></div></div></div><p>
+            An identity appliance that is no longer in use may be discarded and completely erased from the system.
+            Once an identity appliance is removed, it cannot be recovered.
+        </p><p>
+            Disposal can be realized for appliances in either the "Saved" and "Disposed" states.
+            The "Disposed" table holds the entries for the identity appliances that have been discarded, and are no
+            longer available to be edited or executed. Identity Appliances within this states are candidates for
+            definitive removal.
+        </p><p>
+            In order to dispose of an identity appliance in the "Disposed" table, select the row for the identity
+            appliance and click on the TBD: insert image button within the state column. The disposed-of identity
+            appliance should no longer show up within the state-specific tables of the lifecycle management grid.
+        </p><p>
+            In order to
+            dispose of an identity appliance in the "Saved" table, select the row for the identity appliance and click
+            on the TBD: insert image button within the state column. The disposed-of identity appliance should no
+            longer show up within the state-specific tables of the lifecycle management grid.
+
+        </p></div></div><ul class="docnav"><li class="previous"><a accesskey="p" href="Circle_of_Trust_Establishment.html"><strong>Prev</strong>Chapter 9. Circle of Trust Establishment</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="Account_and_Entitlement_Management.html"><strong>Next</strong>Chapter 11. Account and Entitlement Management</a></li></ul></body></html>

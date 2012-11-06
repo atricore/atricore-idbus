@@ -83,11 +83,10 @@ public class WindowsIntegratedAuthnCreateMediator extends IocFormMediator {
         view.port.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
         view.serviceName.addEventListener(Event.CHANGE, handleWindowsIntegratedAuthnSPNAttributeChange);
 
-
-
         // upload bindings
         view.keyTabFile.addEventListener(MouseEvent.CLICK, browseHandler);
         BindingUtils.bindProperty(view.keyTabFile, "dataProvider", this, "_selectedFiles");
+        resetForm();
 
     }
 

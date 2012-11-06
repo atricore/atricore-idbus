@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 6. Identity Source Setup</title><link rel="stylesheet" href="css/josso.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="JOSSO"/><link rel="up" href="index.html" title="JOSSO"/><link rel="prev" href="Identity_Appliance_Creation.html" title="Chapter 5. Identity Appliance Creation"/><link rel="next" href="Identity_Provider_Setup.html" title="Chapter 7. Identity Provider Setup"/></head><body><p id="title"><a href="http://www.josso.org" class="site_href"><strong>JOSSO.org</strong></a><a href="http://docs.josso.org" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="Identity_Appliance_Creation.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="Identity_Provider_Setup.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Identity_Source_Setup"/>Chapter 6. Identity Source Setup</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="Identity_Source_Setup.html#Set Up_an_Identity_Vault">6.1. Setup of an Identity Vault</a></span></dt><dt><span class="section"><a href="Identity_Source_Setup.html#Setup_an_LDAP_Directory_Identity_Source">6.2. Setup of an LDAP Directory Identity Source</a></span></dt><dt><span class="section"><a href="Identity_Source_Setup.html#Setup_an_RDBMS_Identity_Source">6.3. Set Up an RDBMS Identity Source</a></span></dt><dt><span class="section"><a href="Identity_Source_Setup.html#Set Up_an_XML_Identity_Source">6.4. Set Up an XML Identity Source</a></span></dt></dl></div><p>
+        TBD: add introduction
+    </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Set Up_an_Identity_Vault"/>6.1. Setup of an Identity Vault</h2></div></div></div><p>
+            An Identity Vault is a type of Identity Source which is built in to the product. The account and
+            entitlement management functionality can only act on ID Vaults instances. The ID Vault
+            is based on an Apache Derby relational database engine. An ID Vault, like any identity source,
+            can be bound to both an Identity Provider (IdP) and a Service Provider (SP). In the former case, the
+            ID Vault is used to back authentication processes. In the latter case, the ID Vault is used to
+            support account linkage, for augmenting IdP-facing claims with those provided by the local ID Vault.
+        </p><p>
+            An Identity Vault is represented in the figure below :
+            TODO: insert identity vault figure
+        </p><p>
+            Using an ID Vault over a general purpose identity source allows you to leverage the existing visual
+            account and entitlement management facilities, as well as decrease the time to deployment; since the
+            activities involved in setting up an external identity store and linking it to the identity
+            infrastructure are not required.
+        </p><p>
+            From the Palette, click "Identity Vault" in the "Identity Sources" drawer.
+        </p><p>
+            Click on and drag the "Identity Vault" element to the preferred location within the Diagram Canvas.
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_identity_vault.png" align="middle"/></span>
+        </p><p>
+            On the "New Identity Vault" window, enter the name of the "Identity Vault" element.
+        </p><p>
+            Optionally, enter a description for the ID Vault definition that is being created.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Setup_an_LDAP_Directory_Identity_Source"/>6.2. Setup of an LDAP Directory Identity Source</h2></div></div></div><p>
+            LDAP (Lightweight Directory Access Protocol) is a software protocol which enables anyone to locate
+            organizations, individuals and other resources - such as files and devices - in a network, whether on the
+            public Internet or on a corporate Intranet.
+        </p><p>
+            An LDAP Identity Source is a type of identity source which can be accessed through the LDAP protocol and
+            which exposes user entries in a hierarchical form, responding to an arbitrary user schema.
+        </p><p>
+            TODO: insert identity source figure
+        </p><p>
+            LDAP Identity Sources can be bound to both Identity and Service Providers. Connecting an IdP to an LDAP
+            Identity Source implies that queries for retrieving user records to back authentication and related
+            processes will be performed against a directory using the LDAP Procotol.
+            Connecting an SP to an Identity Source implies that queries meant to authenticate users locally, or to
+            augment IdP-facing claims, will be backed by an directory accessible through the LDAP protocol. In order to
+            adapt to arbitrary schemas - and realize schema-agnosticity - the identity source can be customized in terms
+            of the LDAP queries used to access user identity records.
+        </p><p>
+            From the Palette, click "LDAP Identity Source" in the "Identity Sources" drawer.
+        </p><p>
+            Click on and drag the "LDAP Identity Source" element to the preferred location within the Diagram Canvas.
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_ldap_base.png" align="middle"/></span>
+        </p><p>
+            In the "Create LDAP Identity Source" window, enter the name of the LDAP Identity Source element to be
+            added to the Identity Appliance Diagram.
+        </p><p>
+            <span class="bold"><strong>Field Descriptions</strong></span>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Name</p>
+                            </td><td>
+                                <p>
+
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Description</p>
+                            </td><td>
+                                <p>
+
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Initial Context Factory</p>
+                            </td><td>
+                                <p>
+                                    The fully qualified class name of the InitialContextFactory implementation.
+                                    This defaults to the Sun LDAP provider implementation
+                                    com.sun.jndi.ldap.LdapCtxFactory.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Provider URL</p>
+                            </td><td>
+                                <p>
+                                    Enter the LDAP URL for the LDAP Directory Server.
+                                    This defaults to "ldap://localhost:389", thus expecting a directory server
+                                    listening on the standard port available in the same server that JOSSO (and the
+                                    identity appliance) executes.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Security Principal</p>
+                            </td><td>
+                                <p>
+                                    Enter the security principal for authenticating the caller to the service.
+                                    This defaults to "uid=admin,ou=system", the default for OpenLDAP.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Security Credential</p>
+                            </td><td>
+                                <p>
+                                    Enter the credential for the security principal that will be passed on to
+                                    authenticate the caller to the service. The semantics of this field depend on the
+                                    chosen authentication mechanism, as described below.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Security Authentication</p>
+                            </td><td>
+                                <p>
+                                    Determines what authentication mechanism will be used to authenticate the caller to
+                                    the service. Available options are "None" for anonymous binding, "Simple" for
+                                    password-based authentication and "Strong" for authenticating using X.509 client
+                                    certificates.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Search Scope</p>
+                            </td><td>
+                                <p>
+                                    Enter the search strategy used to query user and role entries in the target LDAP
+                                    directory. The default is "Subtree". Setting the search scope to "Base" queries
+                                    within the specified contexts. Setting the search scope to "One" will cause LDAP
+                                    queries to search only the immediate children of the LDAP object corresponding to
+                                    the DN for users and roles. Setting it to "Subtree" will query the entire LDAP
+                                    directory subtree below the search baseDN for users and roles.
+                                    TODO: children ?
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p><p>
+            On the "Lookup" screen, you can determine how user and role entries are to be retrieved. This is required in
+            order to access identity data responding to arbitrary schemas. The forced migration of user data to a
+            product-specific user schema is avoided, allowing you to re-use existing identity silos independently of
+            user data structure.
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_ldap_lookup.png" align="middle"/></span>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>User DN</p>
+                            </td><td>
+                                <p>
+                                    Enter the Distinguished Name (DN) that will be used as the context for user searches.
+                                    This defaults to "ou=People,dc=my-domain,dc=com".
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Principal UID (User Identity) Attribute ID</p>
+                            </td><td>
+                                <p>
+                                    Enter the LDAP attribute name that holds the distinctive identifier of the user.
+                                    This defaults to "uid".
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Role Matching Mode</p>
+                            </td><td>
+                                <p>
+                                    Select the mechanism used to obtain the roles for a user. Every mode builds on 
+                                    a specific user attribute to obtain user roles. If "Distinguished Name" is selected,
+                                    roles will be retrieved by using the DN of the user entry as the key.
+                                    If "User ID" is selected, roles will be retrieved by using the user identity.
+                                    If "User Principal" is selected TODO: not sure of this option semantics
+                                    This defaults to "Distinguished Name".
+                                </p>
+                            </td></tr><tr><td>
+                                <p>UID Attribute ID</p>
+                            </td><td>
+                                <p>
+                                    Enter the attribute identifier holding the UID. This defaults to "uniquemember".
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Role Attribute ID</p>
+                            </td><td>
+                                <p>
+                                    Enter the attribute identifier for the role name.
+                                    This default to "cn".
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Updatable Credential Attr (Attribute)</p>
+                            </td><td>
+                                <p>
+                                    TDB: explain semantics
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Credential Query</p>
+                            </td><td>
+                                <p>
+                                    Enter the query used to obtain username and password values from the user entry. The
+                                    left-hand part represents the LDAP attribute name, while the right-hand one
+                                    identifies the variable name that holds its value. In this case, "username"
+                                    identifies the placeholder for the username portion; and "password" identifies the
+                                    placeholder for the password portion. Both need to be defined in order for the IdP
+                                    to retrieve the user credentials that are required for authentication.
+                                    This defaults to uid=username, userPassword=password.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>User Properties Query</p>
+                            </td><td>
+                                <p>
+                                    Enter the query used to obtain user attributes from the user entry. The left-hand
+                                    part represents the LDAP attribute name, while the right-hand one identifies the
+                                    variable name holding its value. In this case, the left-hand portion contains the
+                                    LDAP attribute name for the user attribute to be extracted, while the right-hand
+                                    portion holds the property name that will be bound to it.
+                                    This defaults to mail=mail,cn=description.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p><p>
+            Click on
+            <span class="bold"><strong>OK</strong></span>
+            to confirm LDAP Identity Source element creation.
+        </p><p>
+            Click on
+            <span class="bold"><strong>Cancel</strong></span>
+            to abort LDAP Identity Source element creation.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Setup_an_RDBMS_Identity_Source"/>6.3. Set Up an RDBMS Identity Source</h2></div></div></div><p>
+            RDBMS stands for Relational Database Management System. RDBMS data is structured in database tables,
+            fields and records. Each RDBMS table consists of database table rows. Each database table row consists of
+            one or more database table fields.
+        </p><p>
+            An RDBMS Identity Source is a type of identity source which is accessible through the vendor's JDBC
+            (Java Database Connectivity) driver. The JDBC driver hides the internal details of the protocol used 
+            to access databases.
+        </p>
+        TODO: insert identity source figure
+
+        <p>
+            Within an RDBMS, user details are stored in database rows grouped using tables. Each single user
+            attribute is stored in table fields. User information might span to more than one table.
+            For instance, user details can be spanned in two different tables: one for holding user attributes and
+            another for holding the related entitlement records.
+        </p><p>
+            RDBMS Identity Sources can be bound to both Identity and Service Providers. Connecting an IdP to an RDBMS
+            Identity Source implies that queries for retrieving user records (in order to back authentication and
+            related processes) will be performed against a database using the supplied JDBC driver.
+        </p><p>
+            Connecting a Service Provider to an Identity Source implies that queries meant to authenticate users
+            locally, or to augment IdP-facing claims, will be backed by a database made accessible through the supplied
+            JDBC driver.
+        </p><p>
+            In order to adapt to arbitrary schemas - and realize schema-agnosticity - the identity source can be
+            customized in terms of the SQL queries that are used to access user identity records.
+        </p><p>
+            TBD: mention how to contribute third-party JDBC drivers
+        </p><p>
+            From the Palette, click "DB Identity Source" in the "Identity Sources" drawer.
+        </p><p>
+            Click on and drag the "DB Identity Source" element to the preferred location within the Diagram
+            Canvas.
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_db_connection.png" align="middle"/></span>
+        </p><p>
+            In the "Create DB Identity Source" window, enter the name of the DB Identity Source element to
+            be added to the identity appliance diagram.
+        </p><p>
+            <span class="bold"><strong>Field Descriptions</strong></span>
+        </p><p>
+            Connection attributes can be specified within the "Connection" screen.
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Driver</p>
+                            </td><td>
+                                <p>
+                                    The only available option for connecting with a database system, that is allowed
+                                    from the identity appliance scaffolding wizard, is through a JDBC-ODBC driver.
+                                    This approach is tailored to a Windows-based system (Open Database
+                                    Connectivity, or ODBC, is a Windows standard) but it can also be made to work from
+                                    a Linux
+                                    host. Upon completion of the scaffolding
+                                    wizard, a native JDBC (Type 4) driver can be used, in case the RDBMS vendor has not
+                                    supplied an ODBC driver, or if JOSSO is being hosted in a system running the Unix
+                                    operating system (e.g. Linux).
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Connection URL</p>
+                            </td><td>
+                                <p>
+                                    The connection string employed to establish a connection to the
+                                    target database, in JDBC-ODBC Bridge format.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Username</p>
+                            </td><td>
+                                <p>
+                                    The "Username" portion of the credentials set, which will be passed along upon
+                                    establishment of a connection to the target database.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Password</p>
+                            </td><td>
+                                <p>
+                                    The "Password" portion of the credentials set, which will be passed along upon
+                                    establishment of
+                                    a connection to the target database.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Skip Connection Test</p>
+                            </td><td>
+                                <p>
+                                    Check in case the connection against the database will not be verified.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Test Connection</p>
+                            </td><td>
+                                <p>
+                                    Click to verify that JOSSO is able to reach the database using the connection
+                                    attributes that have been supplied. This avoids "show stopper" issues at execution
+                                    time which can, for instance, break authentication.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p><p>
+            Within the "User Lookup" tab you can supply the SQL queries that will be used by an Identity
+            Provider to retrieve user credentials and details, as well as roles. Supplying this information is required,
+            since JOSSO is schema-agnostic and therefore requires the directives in order to adapt to an arbitrary
+            schema.
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_db_lookup.png" align="middle"/></span>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>User Query</p>
+                            </td><td>
+                                <p>
+                                    SQL query for selecting the record from the table that stores users. If you're
+                                    employing the reference schema, use the following query : TODO: insert query
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Roles Query</p>
+                            </td><td>
+                                <p>
+                                    SQL query for selecting the role records for the selected user. If you're employing
+                                    the reference schema, use the following query : TODO: insert query
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Credentials Query</p>
+                            </td><td>
+                                <p>
+                                    SQL query for selecting the credential records for the selected user. If you're
+                                    employing the reference schema, use the following query : TODO:
+                                    insert
+                                    query
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Properties Query</p>
+                            </td><td>
+                                <p>
+                                    SQL query for selecting custom user attributes that will be
+                                    conveyed as claims in authentication assertions.
+                                    If you're employing the reference schema, use the following query : TODO:
+                                    insert
+                                    query
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Test Queries</p>
+                            </td><td>
+                                <p>
+                                    Click to make sure that SQL queries are well formed, and will return the expected
+                                    information.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p><p>
+            Within the "Password Update" screen you can supply the SQL queries employed for self-services, such as
+            password change.
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_db_password.png" align="middle"/></span>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Credentials Update</p>
+                            </td><td>
+                                <p>
+                                    SQL update statement for changing user credentials.
+                                    If you're employing the reference schema, use the following query : TODO:
+                                    insert
+                                    query
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Relay Credentials</p>
+                            </td><td>
+                                <p>
+                                    SQL update statement for updating the credentials
+                                    backing Remember Me functionality.
+                                    If you're employing the reference schema, use the following query : TODO:
+                                    insert
+                                    query
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Test Update</p>
+                            </td><td>
+                                <p>
+                                    Click to make sure that update statements are well-formed, and will perform
+                                    the required changes.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p><p>
+            Click on
+            <span class="bold"><strong>OK</strong></span>
+            to confirm DB Identity Source element creation.
+        </p><p>
+            Click on
+            <span class="bold"><strong>Cancel</strong></span>
+            to abort DB Identity Source element creation.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Set Up_an_XML_Identity_Source"/>6.4. Set Up an XML Identity Source</h2></div></div></div><p>
+            XML (Extensible Markup Language) is a flexible way to create common information formats and share both
+            the format and the data on the Internet, intranets, and elsewhere. XML's design goals emphasize simplicity,
+            generality, and Internet usability. Although the design of XML focuses on documents, it is widely used for
+            the representation of arbitrary data structures, for example in Web services.
+
+            An XML identity source is a type of identity source that is based on a hierarchical information model.
+            The basic building blocks of XML are elements and attributes. Elements describe data, whereas attributes
+            are like the properties of an element, in that they provide further definition of the element. The
+            semantics of XML documents are defined using XML schemas, through which it becomes possible to define the
+            individual elements and attributes, and to assign valid types to them.
+
+            An XML Identity Source needs to be backed by a single XML document responding to a JOSSO-specific
+            schema. Such a document should be stored in a file system that can be accessed by the JOSSO server.
+            Both user details and entitlement records are stored in a single XML document. User credentials are stored
+            in a separate file due to the sensitive nature of the information.
+
+            Here's a sample of XML documents, showing user details and entitlement records:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">josso-users</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">users</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">user</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user1</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">properties</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user.name</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">User&nbsp;1&nbsp;Name</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user.lastName</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">User&nbsp;1&nbsp;Last&nbsp;Name</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user.registrationDate</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">2004/09/11</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">properties</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">roles</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">role1&nbsp;,&nbsp;role2</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">roles</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">user</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">user</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user2</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">properties</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user.name</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">User&nbsp;2&nbsp;Name</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user.lastName</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">User&nbsp;2&nbsp;Last&nbsp;Name</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user.registrationDate</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">2004/09/10</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">properties</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">roles</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">role2</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">roles</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">user</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">user</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user3</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">properties</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user.name</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">User&nbsp;3&nbsp;Name</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user.lastName</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">User&nbsp;3&nbsp;Last&nbsp;Name</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user.registrationDate</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">2005/01/1</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">property</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">properties</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">roles</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">role1</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">roles</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">user</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">users</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">roles</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">role</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">role1</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">role</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">role</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">role2</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">role</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">roles</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">josso-users</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+</pre><p>
+            Here's a sample XML document holding the credential set for the users defined in the previous document :
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">josso-credentials</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">credential-set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user1</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">key</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">credential</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">username</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user1</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">credential</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">credential</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">password</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">7ea2bd72bfc7dabdfecc0b5760ebcf52</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">credential</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">credential</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">userCertificate</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-----BEGIN&nbsp;CERTIFICATE-----</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MIIDjjCCAvegAwIBAgIBAjANBgkqhkiG9w0BAQQFADCBijELMAkGA1UEBhMCVVMx</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DDAKBgNVBAgTA04vQTEMMAoGA1UEBxMDTi9BMRswGQYDVQQKExJKT1NTTyBPcmdh</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bmlzYXRpb24xETAPBgNVBAsTCFNlY3VyaXR5MRIwEAYDVQQDEwlqb3Nzby5vcmcx</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GzAZBgkqhkiG9w0BCQEWDGNhQGpvc3NvLm9yZzAeFw0wNDExMTExOTQ3MTFaFw0w</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NTExMTExOTQ3MTFaMHUxCzAJBgNVBAYTAlVTMQwwCgYDVQQIEwNOL0ExGzAZBgNV</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BAoTEkpPU1NPIE9yZ2FuaXNhdGlvbjELMAkGA1UECxMCSVQxDjAMBgNVBAMTBXVz</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZXIxMR4wHAYJKoZIhvcNAQkBFg91c2VyMUBqb3Nzby5vcmcwgZ8wDQYJKoZIhvcN</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AQEBBQADgY0AMIGJAoGBAKvwai6JYYycNRHfLyJNMehfUiv9tgEJcejTnsR1AwMS</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TFlk95RY09/T7vmDNaWw+aupFVu3yg+UOwc4lrh0nIR74HXbnCwBftyVYnqv0TJu</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VwFakOoRuwTnFyUw7WvzLkDzgqddoiua5f4jVpHCAeq8KuCDXmE9v6BUi2QPrbTZ</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AgMBAAGjggEWMIIBEjAJBgNVHRMEAjAAMCwGCWCGSAGG+EIBDQQfFh1PcGVuU1NM</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IEdlbmVyYXRlZCBDZXJ0aWZpY2F0ZTAdBgNVHQ4EFgQUK9fZV0osJ85BRSQSAIZx</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tQZO9oUwgbcGA1UdIwSBrzCBrIAU+L2IUzRQ67GsKyNKdBK7nW5TsDuhgZCkgY0w</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gYoxCzAJBgNVBAYTAlVTMQwwCgYDVQQIEwNOL0ExDDAKBgNVBAcTA04vQTEbMBkG</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A1UEChMSSk9TU08gT3JnYW5pc2F0aW9uMREwDwYDVQQLEwhTZWN1cml0eTESMBAG</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A1UEAxMJam9zc28ub3JnMRswGQYJKoZIhvcNAQkBFgxjYUBqb3Nzby5vcmeCAQAw</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DQYJKoZIhvcNAQEEBQADgYEAaWaZypRdY7mZyKGOmJI32ElBlAmyLN+AN3TOMmg2</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oi9Pgf7xCGoQ6nsuz52pwPAfL+zhfroCz2ZgY7wMf3BT5dVnZKF97b3KDwMABvTT</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5wt3DcNSmhVCQDRkXDoTfclAeMNg7MXSy7E6XWhCwenu2P4llBCktAlclYFEzKkR</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sXY=</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-----END&nbsp;CERTIFICATE-----</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">credential</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">credential-set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">credential-set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user2</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">key</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">credential</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">username</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">user2</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">credential</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">credential</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">password</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">name</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">3d281d21c49d79f586af2cdc4419b18b</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">value</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">credential</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">credential-set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">josso-credentials</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+</pre><p>
+            From the Palette, click "XML Identity Source" in the "Identity Sources" drawer.
+        </p><p>
+            Click on and drag the XML Identity Source element to the preferred location within the Diagram Canvas.
+        </p><p>
+            In the "Create XML Identity Source" window, enter the name of the "XML Identity Source" element to
+            be added to the Identity Appliance Diagram.
+        </p><p>
+            You'll need to enter the preferences for retrieving user details and entitlement entries from XML documents.
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_xml.png" align="middle"/></span>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Name</p>
+                            </td><td>
+                                <p>
+                                    The identifier of XML Identity Source.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Description</p>
+                            </td><td>
+                                <p>
+                                    A descriptive text for the XML Identity Source.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>XML URL</p>
+                            </td><td>
+                                <p>
+                                    The absolute location for the XML document holding user and entitlement
+                                    entries.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p></div></div><ul class="docnav"><li class="previous"><a accesskey="p" href="Identity_Appliance_Creation.html"><strong>Prev</strong>Chapter 5. Identity Appliance Creation</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="Identity_Provider_Setup.html"><strong>Next</strong>Chapter 7. Identity Provider Setup</a></li></ul></body></html>

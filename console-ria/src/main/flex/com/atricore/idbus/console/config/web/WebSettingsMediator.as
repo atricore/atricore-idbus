@@ -167,11 +167,13 @@ public class WebSettingsMediator extends IocFormMediator implements IDisposable 
             _httpServiceConfig.sslKeystorePath = view.sslKeystorePath.text;
             _httpServiceConfig.sslKeystorePassword = view.sslKeystorePassword.text;
             _httpServiceConfig.sslKeyPassword = view.sslKeyPassword.text;
+            _httpServiceConfig.sslClientAuthn = view.sslClientAuthn.selectedItem.data;
         } else {
             _httpServiceConfig.sslPort = 0;
             _httpServiceConfig.sslKeystorePath = "";
             _httpServiceConfig.sslKeystorePassword = "";
             _httpServiceConfig.sslKeyPassword = "";
+            _httpServiceConfig.sslClientAuthn = "disabled"
         }
         _httpServiceConfig.followRedirects = view.followRedirects.selected;
         if (_httpServiceConfig.followRedirects) {
@@ -217,6 +219,7 @@ public class WebSettingsMediator extends IocFormMediator implements IDisposable 
         view.sslKeystorePath.enabled = enabled;
         view.sslKeystorePassword.enabled = enabled;
         view.sslKeyPassword.enabled = enabled;
+        view.sslClientAuthn.enabled = enabled;
 
         resetValidation();
         registerValidators();
@@ -260,6 +263,13 @@ public class WebSettingsMediator extends IocFormMediator implements IDisposable 
         view.sslKeystorePath.text = _httpServiceConfig.sslKeystorePath;
         view.sslKeystorePassword.text = _httpServiceConfig.sslKeystorePassword;
         view.sslKeyPassword.text = _httpServiceConfig.sslKeyPassword;
+
+        for (var i:int = 0; i < view.sslClientAuthn.dataProvider.length; i++) {
+            if (_httpServiceConfig.sslClientAuthn != null &&  _httpServiceConfig.sslClientAuthn == view.sslClientAuthn.dataProvider[i].data.toString()) {
+                view.sslClientAuthn.selectedIndex = i;
+                break;
+            }
+        }
 
         view.followRedirects.selected = _httpServiceConfig.followRedirects;
         _includeURLs = new ArrayCollection();

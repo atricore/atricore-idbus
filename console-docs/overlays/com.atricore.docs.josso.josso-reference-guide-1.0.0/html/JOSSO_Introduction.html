@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 1. Introduction</title><link rel="stylesheet" href="css/josso.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="JOSSO"/><link rel="up" href="index.html" title="JOSSO"/><link rel="prev" href="index.html" title="JOSSO"/><link rel="next" href="JOSSO2_Rollout.html" title="Chapter 2. JOSSO2 Rollout"/></head><body><p id="title"><a href="http://www.josso.org" class="site_href"><strong>JOSSO.org</strong></a><a href="http://docs.josso.org" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="index.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="JOSSO2_Rollout.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="JOSSO_Introduction"/>Chapter 1. Introduction</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="JOSSO_Introduction.html#Point_And_Click_SSO">1.1. Enter Point-and-Click Internet Single Sign On (SSO)</a></span></dt><dt><span class="section"><a href="JOSSO_Introduction.html#First_or_Second_Generation">1.2. First or Second Generation ?</a></span></dt></dl></div><p>
+        JOSSO is an open source Internet SSO solution for rapid and standards-based Internet-scale Single Sign-On
+        implementations, allowing secure Internet access to the Web-based applications or services of customers,
+        suppliers, and business partners.
+    </p><p>
+        With Single Sign-On (SSO), access to multiple applications and services that are related
+        (yet independent of one another) can be achieved without requiring multiple authentications by the user.
+        By logging in just once, the user gains access to all the applications - saving time and avoiding the
+        inconvenience of logging in to each separately.
+    </p><p>
+        JOSSO accomplishes this with ease. In most cases, deploying an SSO solution means investing some pretty
+        significant resources for SSO-enabling business applications and the set-up of authoritative sources of
+        identity data. With JOSSO things are different. Through its agent architecture, JOSSO enables these
+        capabilities transparently, making integration so simple it's practically non-existent.
+        In most cases, it won't even require an application build.
+    </p><p>
+        And third-party applications – whose source code might not be available – can be SSO-enabled just as if they
+        were in-house applications.
+    </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Point_And_Click_SSO"/>1.1. Enter Point-and-Click Internet Single Sign On (SSO)</h2></div></div></div><p>
+            Identity and Access Management is widely considered to be a highly technical domain, with an implementation
+            that's out of reach for most folks. The process of setting up a system for identity and access management
+            has a well-earned reputation for technical difficulty, inconvenience, and errors; all in pursuit of an end product
+            that most users dislike and avoid.
+        </p><p>
+            Unless you're a Subject Matter Expert (SME) or a technical architect, you're going to have some trouble
+            setting up a process that will then be really difficult to use.
+        </p><p>
+            Commercial identity and access management packages offer web-based facilities to set up their products;
+            but without an intimate knowledge of the product's inner structure, the overall set up and roll-out
+            experience is tedious and error-prone.
+        </p><p>
+            JOSSO incorporates the Atricore Console Rich Internet Application (RIA) for enabling ease of use, which
+            translates to productivity. Technically savvy people can get on board with your identity solutions,
+            significantly accelerating time-to-value for enabling federated identity settings.
+        </p><p>
+            Simply "draw" your Internet SSO setting, and bring it to life in a snap. Work at the architecture level.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="First_or_Second_Generation"/>1.2. First or Second Generation ?</h2></div></div></div><p>
+            JOSSO1 represents the first generation of the JOSSO product line. It's a mature and stable SSO solution for
+            transparent Single Sign-on, targeted to introduce web SSO capabilities onto web
+            containers hosting the SSO-enabled web applications.
+            The transparency capability is mainly achieved by having JOSSO comply with security contract standards,
+            such as the ones offered by the JavaEE platform. The main benefit of transparency is
+            that the applications relying on the the underlying platform's security contracts can be SSO-enabled without
+            any integration effort at all, and without being forced to couple with the SSO stack.
+        </p><p>
+            The wide support for application vendors makes it a compelling option for bringing on board applications
+            built on heterogeneous platforms.
+        </p><p>
+            Moreover, the product is highly extensible, offering a simple component model for implementing plug-ins
+            intended to introduce business-specific variability within the identity management layer.
+        </p><p>
+            One of the major limitations of JOSSO1 is that it doesn't "play nice" with third-party SSO solutions,
+            potentially hosted in external security domains. For instance, there is no out of the box support for
+            passing on the security context to an SaaS
+            provider. Setting up an internet-scale SSO based on JOSSO1 would force all
+            the involved entities to use JOSSO1.
+        </p><p>
+            In terms of usability, setting up the product requires the involvement of technically-savvy personnel,
+            capable of dealing with configuration descriptors and with a good working knowledge of both the SSO pieces
+            and the underlying infrastructure.
+        </p><p>
+            JOSSO1 is highly extensible in terms of the wide support provided for mainstream application
+            platforms, authentication mechanisms and identity stores, but the SSO protocol is hardwired onto the
+            product. Therefore, providing full compatibility with other protocols and their bindings - such as the
+            commonly known SAML or OpenID - is not possible.
+        </p><p>
+            Another limitation is that JOSSO1 is not oriented to work in a multi-tenant environment. Limited support is
+            provided for this feature through the definition of security domains.
+        </p><p>
+            Finally, JOSSO1 is targeted for SSO only, thus leaving account and entitlement management and storage to
+            third-party software components. As a result, more effort and
+            investment are usually involved in order to cope with the missing pieces.
+        </p><p>
+            JOSSO2 is the second generation of the JOSSO product line. This generation is an all-in-one solution that
+            enables end-to-end delivery of Internet/Federated Single Sign-On settings, building on a purely model-driven
+            approach for lowering the entry barrier and shortening time-to-value. It's also bundled with account and
+            entitlement management support, building on an RDBMS-based internal identity store. Many other building
+            blocks, which are provided by the Atricore Identity Bus kernel, enable JOSSO2 to expand its coverage to
+            other areas of identity and access management which haven't been addressed in the past.
+        </p><p>
+            If you have a rather standard and controlled setting, and you're looking to implement it in an
+            out-of-the-box fashion,
+             with little involvement from IT, JOSSO2 might be the right choice for you.
+            JOSSO2 can significantly help by delivering an Internet-scale SSO solution, thus involving
+            external/cloud-based partner sites (e.g. suppliers, remote branches, etc.) and potentially hosting their
+            internal identity back-end.
+        </p><p>
+            You might consider using JOSSO1 for solving simpler SSO scenarios scoped to a single administrative unit,
+            with little or no requirements in terms of interoperability with external entities
+            (e.g. partners, suppliers, branches, etc.) where trust relationship among these is weak. Since no account
+            and
+            entitlement management is provided, a business-specific application would need to be built.
+        </p><p>
+            Alternatively, whereas a third-party generic tooling could be leveraged for this (like an LDAP console),
+            it will provide a view only at the specific storage technology abstraction level, thus significantly
+            affecting
+            usability and information consistency, as well as increasing the entry barrier for administrators.
+        </p><p>
+            In addition, you'll find more free support from the large community of adopters that the
+            project has won during its six years of life.
+        </p></div></div><ul class="docnav"><li class="previous"><a accesskey="p" href="index.html"><strong>Prev</strong>JOSSO</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="JOSSO2_Rollout.html"><strong>Next</strong>Chapter 2. JOSSO2 Rollout</a></li></ul></body></html>

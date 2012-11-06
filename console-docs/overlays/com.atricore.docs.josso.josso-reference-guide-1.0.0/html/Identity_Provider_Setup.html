@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 7. Identity Provider Setup</title><link rel="stylesheet" href="css/josso.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="JOSSO"/><link rel="up" href="index.html" title="JOSSO"/><link rel="prev" href="Identity_Source_Setup.html" title="Chapter 6. Identity Source Setup"/><link rel="next" href="Service_Provider_Setup.html" title="Chapter 8. Service Provider Setup"/></head><body><p id="title"><a href="http://www.josso.org" class="site_href"><strong>JOSSO.org</strong></a><a href="http://docs.josso.org" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="Identity_Source_Setup.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="Service_Provider_Setup.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Identity_Provider_Setup"/>Chapter 7. Identity Provider Setup</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="Identity_Provider_Setup.html#Add_an_Identity_Provider_to_the_Identity_Appliance">7.1. Add an IdP to the Identity Appliance</a></span></dt><dt><span class="section"><a href="Identity_Provider_Setup.html#Set_Up_the_Identity_Store_of_the_Identity_Provider">7.2. Set Up the Identity Store of the Identity Provider</a></span></dt><dd><dl><dt><span class="section"><a href="Identity_Provider_Setup.html#Using_an_Identity_Vault_as_the_Authoritative_Source_for_the_Identity_Provider">7.2.1. Using an Identity Vault as the Authoritative Source for the Identity Provider</a></span></dt><dt><span class="section"><a href="Identity_Provider_Setup.html#Using_an_LDAP_Directory_as_Authoritative_Source_for_the_Identity_Provider">7.2.2. Using an LDAP Directory as Authoritative Source for the Identity Provider</a></span></dt><dt><span class="section"><a href="Identity_Provider_Setup.html#Using_an_RDBMS_as_Authoritative_Source_for_the_Identity_Provider">7.2.3. Using an RDBMS as Authoritative Source for the Identity Provider</a></span></dt><dt><span class="section"><a href="Identity_Provider_Setup.html#Using_XML_files_as_Authoritative_Source_for_the_Identity_Provider">7.2.4. Using XML files as the Authoritative source for the Identity Provider</a></span></dt></dl></dd></dl></div><p>
+        In order to enable an Internet SSO setting you'll need at least one entity playing the role of Identity
+        Provider (IdP). An IdP manages your identity, and provides an authentication service for
+        client applications. IdPs authenticate users and issue security tokens - like Security
+        Assertions Markup Language (SAML). Security Tokens contain user IDs and other identity properties of
+        the user (claims). Examples of some IdPs are: Windows Live ID, Google Accounts and Facebook.
+    </p><p>
+        Security Tokens issued by the IdP - upon successful user authentication - are pushed to
+        the parties who rely upon them, commonly known as Service Providers. A Service Provider (SP) is an application
+        that relies on the
+        claims issued by an IdP to authorize a user, and to release appropriate access to that user.
+    </p><p>
+        We're assuming that you are beginning with an empty Identity Appliance, with no defined IdP.
+
+    </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Add_an_Identity_Provider_to_the_Identity_Appliance"/>7.1. Add an IdP to the Identity Appliance</h2></div></div></div><p>                                       
+            From the Palette, click "Identity Provider" in the "Entities" drawer.
+        </p><p>
+            Drag the "Identity Provider" element to the preferred location within the Diagram Canvas.
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_idp_core.png" align="middle"/></span>
+        </p><p>
+            In the "New Identity Provider Definition" window, enter the name of the IdP.
+        </p><p>
+            On the "Core" screen, specify how the endpoints of the IdP will be reachable by consumers.
+            The default location is built using attributes supplied at identity appliance-creation time. For the sake of
+            consistency, we strongly suggest that you leave these default attributes "as-is".
+        </p><p>
+            <span class="bold"><strong>Field Descriptions</strong></span>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Location</p>
+                            </td><td>
+                                <p>
+                                    The access protocol - whether http or https. Host name, port and context path to
+                                    which the endpoints for the IdP will be bound. Clients will refer to services
+                                    provided by the IdP using URIs (Uniform Resource Identifiers) that are qualified
+                                    using the location value. We strongly suggest that you use a fully qualified host
+                                    name, so that the identity appliance services are decoupled from a specific physical
+                                    host.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Authentication Contract</p>
+                            </td><td>
+                                <p>
+                                    The message contract for submitting input claims, such as user credentials, to the
+                                    IdP. The default (and the only available contract) builds on JOSSO-specific
+                                    parameters, which are submitted whenever simple web-based authentication is
+                                    attempted.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Authentication Mechanism</p>
+                            </td><td>
+                                <p>
+                                    The means by which users are authenticated. The only supported authentication
+                                    mechanism is <span class="bold"><strong>Simple Authentication</strong></span> which performs
+                                    the identification of users based on username and password.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Authentication Assertion Emission Policy</p>
+                            </td><td>
+                                <p>
+                                    Used to customize how assertions are issued, upon successful
+                                    authentication.
+                                    The authentication assertions issued are conveyed via security tokens, which are
+                                    pushed to relying parties.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p><p>
+            On the
+            <span class="bold"><strong>Contract</strong></span>
+            screen, specify the SAML Profiles and Bindings
+            to be enabled, as well as the level of security for the artifacts involved in message exchanges between
+            SPs and the IdP.
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_idp_contract.png" align="middle"/></span>
+        </p><p>
+            <span class="bold"><strong>Field Descriptions</strong></span>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Enabled SAML Profiles</p>
+                            </td><td>
+                                <p>
+                                    The SAML Profile to activate for this IdP. These mainly represent
+                                    the usage scenarios realized by the IdP.
+                                    The most important SAML profile is the "Web Browser Single Sign-On Profile", which
+                                    can be
+                                    enabled by selecting the
+                                    <span class="bold"><strong>SSO</strong></span>
+                                    checkbox.
+                                    Select the
+                                    <span class="bold"><strong>SLO</strong></span>
+                                    checkbox to enable
+                                    Single Logout Support.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Enabled SAML Bindings</p>
+                            </td><td>
+                                <p>
+                                    The SAML bindings to be enabled for the chosen SAML profiles.
+                                    Specifies the mapping of a SAML protocol message onto standard messaging
+                                    formats and/or communications protocols.
+                                    Select the
+                                    <span class="bold"><strong>Http Post</strong></span>
+                                    checkbox to convey
+                                    SAML messages through HTTP Post.
+                                    Select the
+                                    <span class="bold"><strong>Http Redirect</strong></span>
+                                    checkbox to convey
+                                    SAML messages through HTTP Get.
+                                    Select the
+                                    <span class="bold"><strong>Artifact</strong></span>
+                                    checkbox to convey
+                                    SAML messages through the SAML Artifact Binding, which builds on both
+                                    HTTP Redirect and SOAP bindings for exchanging SAML messages.
+                                    Select the
+                                    <span class="bold"><strong>SOAP</strong></span>
+                                    checkbox to convey
+                                    SAML messages through SOAP over HTTP(s).
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Sign Authentication Assertions</p>
+                            </td><td>
+                                <p>
+                                    Determines whether SAML Authentication Assertions will be digitally signed.
+                                    Digitally signing SAML Authentication Assertions provides proof-of-identity
+                                    of the IdP to Service Providers, as well as ensuring their
+                                    integrity.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Encrypt Authentication Assertions</p>
+                            </td><td>
+                                <p>
+                                    Determines whether SAML Authentication Assertions will be encrypted. Encrypting
+                                    SAML Authentication Assertions provides confidentiality to SAML messages,
+                                    therefore
+                                    avoiding eavesdropping.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p><p>
+            On the
+            <span class="bold"><strong>Certificate</strong></span>
+            screen select the keystores holding the private and public key pairs used to secure SAML message exchanges
+            between SPs and the IdP.
+            </p><p>
+                The second step involves setting up the building blocks of the trust system, which is based on
+                public key infrastructure (PKI). The trust system allows for provision of peer authentication, integrity,
+                confidentiality and non-repudiation
+                in a transport-agnostic fashion. The SAML standard - which JOSSO supports - builds on PKI to
+                guarantee
+                these security attributes for SSO message exchanges. The requested information is mainly
+                used by providers, to access private and public key pairs.
+            </p><p>
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_idp_certificate.png" align="middle"/></span>
+        </p><p>
+            <span class="bold"><strong>Field Descriptions</strong></span>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Use Default Keystore</p>
+                            </td><td>
+                                <p>
+                                    Use a built-in JKS-compliant keystore. Choosing to use the
+                                    default keystore is only recommended for sandbox settings, where security is not
+                                    really an issue. Within
+                                    a production system, using a custom keystore is strongly recommended.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Upload the keystore file</p>
+                            </td><td>
+                                <p>
+                                    Use custom keystore file.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Certificate Key Pair</p>
+                            </td><td>
+                                <p>
+                                    Select this if you'd like to upload a keystore file from the local file system.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Format</p>
+                            </td><td>
+                                <p>
+                                    The format of the keystore file. The only supported keystore format is Java
+                                    Keystore.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Keystore Password</p>
+                            </td><td>
+                                <p>
+                                    The password that the IdP will use to decrypt the supplied keystore, in order to
+                                    access the key pair entries stored within.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Certificate Alias</p>
+                            </td><td>
+                                <p>
+                                    The identifier of the keystore entry for the IdP's public key.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Key Alias</p>
+                            </td><td>
+                                <p>
+                                    (TBD: check this with GB - same as above)
+                                    The identifier of the keystore entry for the IdP's private key.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Key Password</p>
+                            </td><td>
+                                <p>
+                                    The password required to obtain the keystore entry which holds the Identity
+                                    Provider's private key.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p><p>
+            Click on
+            <span class="bold"><strong>OK</strong></span>
+            to confirm IdP element creation.
+        </p><p>
+            Click on
+            <span class="bold"><strong>Cancel</strong></span>
+            to abort IdP element creation.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Set_Up_the_Identity_Store_of_the_Identity_Provider"/>7.2. Set Up the Identity Store of the Identity Provider</h2></div></div></div><p>
+
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_an_Identity_Vault_as_the_Authoritative_Source_for_the_Identity_Provider"/>7.2.1. Using an Identity Vault as the Authoritative Source for the Identity Provider</h3></div></div></div><p>
+                In order to use the Identity Vault as the identity store for an IdP, an identity vault
+                element needs to be defined for the identity appliance. See <a class="xref" href="">???</a>
+                to learn more on how to set up an Identity Vault.
+            </p><p>
+                Once an IdP and Identity Vault elements have been defined for the current Identity
+                Appliance, use the Identity Lookup connection to connect them both.
+            </p><p>
+                From the Palette, click "Identity Lookup" in the "Connections" drawer.
+            </p><p>
+                Click on the source IdP element and drag the edge to the target Identity Vault
+                element.
+            </p><p>
+                An edge should appear connecting the IdP and Identity Vault elements.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/idp_iv_identity_lookup.png" align="middle"/></span>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_an_LDAP_Directory_as_Authoritative_Source_for_the_Identity_Provider"/>7.2.2. Using an LDAP Directory as Authoritative Source for the Identity Provider</h3></div></div></div><p>
+                In order to use an LDAP Directory as the identity store for an IdP, an LDAP Identity Source
+                element needs to be defined for the identity appliance. See <a class="xref" href="">???</a>
+                to learn more on how to set up an LDAP Identity Source.
+            </p><p>
+                Once an IdP and LDAP Identity Source elements have been defined for the current Identity
+                Appliance, use the Identity Lookup connection to connect them both.
+            </p><p>
+                From the Palette, click "Identity Lookup" (TBD: insert image) in the "Connections" drawer.
+            </p><p>
+                Click on the source IdP element and drag the edge to the target LDAP Identity Source
+                element.
+            </p><p>
+                An edge should appear connecting the IdP and LDAP identity source elements.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/idp_ldap_identity_lookup.png" align="middle"/></span>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_an_RDBMS_as_Authoritative_Source_for_the_Identity_Provider"/>7.2.3. Using an RDBMS as Authoritative Source for the Identity Provider</h3></div></div></div><p>
+                In order to use a Relational Database as the identity store for an IdP, an RDBMS Identity Source
+                element needs to be defined for the identity appliance. See <a class="xref" href="Identity_Source_Setup.html#Setup_an_RDBMS_Identity_Source" title="6.3. Set Up an RDBMS Identity Source">Section 6.3, “Set Up an RDBMS Identity Source”</a>
+                to learn more on how to set up an RDBMS Identity Source.
+            </p><p>
+                Once an IdP and RDBMS Identity Source elements have been defined for the current Identity
+                Appliance, use the Identity Lookup connection to connect them both.
+            </p><p>
+                From the Palette, click "Identity Lookup" in the "Connections" drawer.
+            </p><p>
+                Click on the source IdP element and drag the edge to the target DB Identity Source
+                element.
+            </p><p>
+                An edge should appear connecting the IdP and DB identity source elements.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/idp_db_identity_lookup.png" align="middle"/></span>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_XML_files_as_Authoritative_Source_for_the_Identity_Provider"/>7.2.4. Using XML files as the Authoritative source for the Identity Provider</h3></div></div></div><p>
+                In order to use XML documents as the identity store for an IdP, an XML Identity Source
+                element needs to be defined for the identity appliance.
+                See <a class="xref" href="">???</a>
+                to learn more on how to set up an XML Identity Source.
+            </p><p>
+                Once an IdP and XML Identity Source elements have been defined for the current Identity
+                Appliance, use the Identity Lookup connection to connect them both.
+            </p><p>
+                From the Palette, click "Identity Lookup" in the "Connections" drawer.
+            </p><p>
+                Click on the source IdP element and drag the edge to the target XML Identity Source
+                element.
+            </p><p>
+                An edge should appear connecting the IdP and XML identity source elements.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/idp_xml_identity_lookup.png" align="middle"/></span>
+            </p></div></div></div><ul class="docnav"><li class="previous"><a accesskey="p" href="Identity_Source_Setup.html"><strong>Prev</strong>Chapter 6. Identity Source Setup</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="Service_Provider_Setup.html"><strong>Next</strong>Chapter 8. Service Provider Setup</a></li></ul></body></html>

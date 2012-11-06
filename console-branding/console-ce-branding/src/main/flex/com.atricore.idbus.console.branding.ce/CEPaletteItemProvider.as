@@ -47,6 +47,9 @@ public class CEPaletteItemProvider implements PaletteItemProvider {
         authenticationPaletteDrawer.add(
                 new PaletteEntry("Directory Service", EmbeddedIcons.directoryAuthenticationServiceMiniIcon, "Directory Service Entry", DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE)
         );
+        authenticationPaletteDrawer.add(
+                new PaletteEntry("Client Certificate", EmbeddedIcons.clientAuthenticationServiceMiniCertIcon, "Client Certificate Entry", DiagramElementTypes.CLIENTCERT_ELEMENT_TYPE)
+        );
 
         pr.add(authenticationPaletteDrawer);
 

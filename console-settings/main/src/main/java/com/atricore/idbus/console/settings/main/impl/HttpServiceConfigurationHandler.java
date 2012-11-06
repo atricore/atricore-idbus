@@ -144,10 +144,7 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
         if (config.isDisableSessionUrl() != null) 
             d.put("org.ops4j.pax.web.session.url", config.isDisableSessionUrl().toString());
         
-        if (config.isEnableSsl() != null)
-            d.put("org.osgi.service.http.secure.enabled", config.isEnableSsl().toString());
-        
-        if (config.getMaxHeaderBufferSize() != null) 
+        if (config.getMaxHeaderBufferSize() != null)
             d.put("org.ops4j.pax.web.max.header.buffer.size", config.getMaxHeaderBufferSize() + "");
         
         if (config.getPort() != null) 
@@ -155,10 +152,14 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
         
         if (config.getServerId() != null) 
             d.put("org.ops4j.pax.web.worker.name", config.getServerId());
-        
+
         if (config.getSessionTimeout() != null)
             d.put("org.ops4j.pax.web.session.timeout", config.getSessionTimeout().toString());
-        
+
+        // SSL setup
+        if (config.isEnableSsl() != null)
+            d.put("org.osgi.service.http.secure.enabled", config.isEnableSsl().toString());
+
         if (config.getSslKeyPassword() != null)
             d.put("org.ops4j.pax.web.ssl.keypassword", config.getSslKeyPassword());
         
@@ -170,7 +171,25 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
         
         if (config.getSslPort() != null)
             d.put("org.osgi.service.http.port.secure", config.getSslPort() + "");
-        
+
+        if (config.getSslClientAuthn() != null) {
+
+            if (config.getSslClientAuthn().equalsIgnoreCase("wanted")) {
+                d.put("org.ops4j.pax.web.ssl.clientauthwanted", "true");
+                d.put("org.ops4j.pax.web.ssl.clientauthneeded", "false");
+
+            } else if (config.getSslClientAuthn().equalsIgnoreCase("needed")) {
+                d.put("org.ops4j.pax.web.ssl.clientauthwanted", "false");
+                d.put("org.ops4j.pax.web.ssl.clientauthneeded", "true");
+
+            } else {
+                d.put("org.ops4j.pax.web.ssl.clientauthwanted", "false");
+                d.put("org.ops4j.pax.web.ssl.clientauthneeded", "false");
+            }
+
+        }
+
+
         return d;
     }
     
@@ -181,14 +200,27 @@ public class HttpServiceConfigurationHandler extends OsgiServiceConfigurationHan
             cfg.setBindAddresses(getArrayFromCsv(props.get("org.ops4j.pax.web.listening.addresses")));
         else
             cfg.setBindAddresses(new String[] {"0.0.0.0"});
+
+        if (props.get("org.ops4j.pax.web.ssl.clientauthneeded") != null &&
+                getBoolean(props, "org.ops4j.pax.web.ssl.clientauthneeded")) {
+            cfg.setSslClientAuthn("needed");
+
+        } else if (props.get("org.ops4j.pax.web.ssl.clientauthwanted") != null &&
+                getBoolean(props, "org.ops4j.pax.web.ssl.clientauthwanted")) {
+            cfg.setSslClientAuthn("wanted");
+
+        } else {
+            cfg.setSslClientAuthn("disabled");
+        }
         
         cfg.setDisableSessionUrl(getBoolean(props, "org.ops4j.pax.web.session.url"));
-        cfg.setEnableSsl(getBoolean(props, "org.osgi.service.http.secure.enabled"));
+
         cfg.setMaxHeaderBufferSize(getInt(props, "org.ops4j.pax.web.max.header.buffer.size"));
         cfg.setPort(getInt(props, "org.osgi.service.http.port"));
         cfg.setServerId(getString(props, "org.ops4j.pax.web.worker.name"));
         cfg.setSessionTimeout(getInt(props, "org.ops4j.pax.web.session.timeout"));
-        
+
+        cfg.setEnableSsl(getBoolean(props, "org.osgi.service.http.secure.enabled"));
         cfg.setSslKeyPassword(getString(props, "org.ops4j.pax.web.ssl.keypassword"));
         cfg.setSslKeystorePassword(getString(props, "org.ops4j.pax.web.ssl.password"));
         cfg.setSslKeystorePath(getString(props, "org.ops4j.pax.web.ssl.keystore"));

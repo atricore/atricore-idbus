@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 11. Account and Entitlement Management</title><link rel="stylesheet" href="css/josso.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="JOSSO"/><link rel="up" href="index.html" title="JOSSO"/><link rel="prev" href="Identity_Appliance_Lifecycle_Management.html" title="Chapter 10. Identity Appliance Lifecycle Management"/><link rel="next" href="Profile_Operations.html" title="Chapter 12. Profile Operations"/></head><body><p id="title"><a href="http://www.josso.org" class="site_href"><strong>JOSSO.org</strong></a><a href="http://docs.josso.org" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="Identity_Appliance_Lifecycle_Management.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="Profile_Operations.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Account_and_Entitlement_Management"/>Chapter 11. Account and Entitlement Management</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="Account_and_Entitlement_Management.html#User_Accounts">11.1. User Accounts</a></span></dt><dd><dl><dt><span class="section"><a href="Account_and_Entitlement_Management.html#General_User_Information">11.1.1. General User Information</a></span></dt><dt><span class="section"><a href="Account_and_Entitlement_Management.html#User_Language_Preferences">11.1.2. User Language Preferences</a></span></dt><dt><span class="section"><a href="Account_and_Entitlement_Management.html#User_Groups">11.1.3. User Groups</a></span></dt><dt><span class="section"><a href="Account_and_Entitlement_Management.html#User_Account_Security">11.1.4. User Account Security</a></span></dt><dt><span class="section"><a href="Account_and_Entitlement_Management.html#Account_Password">11.1.5. Account Password</a></span></dt><dt><span class="section"><a href="Account_and_Entitlement_Management.html#Provision_a_User_Account">11.1.6. Provision a User Account</a></span></dt><dt><span class="section"><a href="Account_and_Entitlement_Management.html#Update_User_Details">11.1.7. Update User Details</a></span></dt><dt><span class="section"><a href="Account_and_Entitlement_Management.html#Search_Users">11.1.8. Search Users</a></span></dt><dt><span class="section"><a href="Account_and_Entitlement_Management.html#Deprovision_a_User_Account">11.1.9. Deprovision a User Account</a></span></dt></dl></dd><dt><span class="section"><a href="Account_and_Entitlement_Management.html#Groups">11.2. Groups</a></span></dt></dl></div><p>
+        Generally speaking, when you add users and groups using the administration console, you're adding
+        that data to the database on top of which the identity vault is founded.
+        By default, even if you use an external identity source such as an LDAP (Lightweight Directory Access Protocol)
+        directory, the users you add
+        through the console will be added to JOSSO's identity vault and not to the external identity
+        source.
+    </p><p>
+        <span class="inlinemediaobject"><img src="images/account_birds_eye.png" align="middle"/></span>
+    </p><p>
+        A user account represents a person using the application's members of a circle of trust.
+        Each user account has associated attributes which make up the person's profile.
+        The console can be used to change any user's name and password, and to view and/or edit their
+        profile information.
+        It's also possible to disable a user (if, for example, that user is no longer involved) but it's best to
+        preserve their
+        profile information.
+    </p><p>
+        A group collects user accounts, typically in order to make it easier to grant all of the
+        collected users certain entitlements. For example, you might create a group of human resources workers
+        so
+        that you can give them (and only them) permission to view potentially sensitive information about
+        employees in a "Benefits" space.
+        As an Administrator, you can add users and groups, and assign users to groups in order to determine
+        their
+        permissions.
+    </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="User_Accounts"/>11.1. User Accounts</h2></div></div></div><p>
+            To reach the Account Management screen, go to the Main screen and click on Account and Entitlement
+            Management.
+        </p><p>
+            
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="General_User_Information"/>11.1.1. General User Information</h3></div></div></div><p>
+                User profile information is entered on the General User Information screen.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_user_general.png" align="middle"/></span>
+            </p><p>
+                <span class="bold"><strong>Field Descriptions</strong></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Username</p>
+                                </td><td>
+                                    <p>
+                                        The unique identifier for the person used for authentication.
+                                        An example of a username is "jdoe".
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>First Name</p>
+                                </td><td>
+                                    <p>
+                                        A given name is that part of a person's name which signifies the person's
+                                        primary individual identity. Sometimes also called a "given name" or (in
+                                        some countries) a "Christian name".
+                                        An example of a first name is "John".
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Last Name</p>
+                                </td><td>
+                                    <p>
+                                        A last name is that part of a person's name which signifies the person's
+                                        primary family association. Sometimes also called a "family name" or
+                                        "surname".
+                                        An example of a last name is "Doe".
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Full Name</p>
+                                    
+                                </td><td>
+                                    <p>
+                                        A full name name is a version of a person's name intended for display in a
+                                        user interface.
+                                        Sometimes also called a "display name" or a "formatted name".
+                                        An example of a full name is "John Doe".
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>E-mail Address</p>
+                                </td><td>
+                                    <p>
+                                        An E-mail address is the value of a mailto: the URL at which a person or other
+                                        entity can be contacted using standard electronic mail protocols.
+                                        An example of an E-Mail address is "jdoe@acme.com".
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Telephone number</p>
+                                </td><td>
+                                    <p>
+                                        A landline telephone number is a number for a traditional "PSTN" or "POTS"
+                                        telephone.
+                                        An example of a telephone number is 212-302-4434.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Fax number</p>
+                                </td><td>
+                                    <p>
+                                        A fax number is a number for a machine that handles facsimile transmissions.
+                                        An example of a Fax number is 212-302-4450.
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="User_Language_Preferences"/>11.1.2. User Language Preferences</h3></div></div></div><p>
+                A user's language preference is entered on the Preferences screen. This should be set to
+                the default language that will be used in the application screens.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_user_language.png" align="middle"/></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Language</p>
+                                </td><td>
+                                    <p>
+                                        Everyone knows at least one language well (they are able to speak or
+                                        write the language with a fair degree of fluency). Determination of whether
+                                        someone knows a language "well" or "fluently" is left to the user.
+                                        The value of this field MUST be an abbreviation for a language as specified
+                                        in RFC 4646.
+                                        An example of "Language" is "en".
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="User_Groups"/>11.1.3. User Groups</h3></div></div></div><p>
+                A user is assigned to one or more groups on the Groups screen. A user's entitlements are determined by
+                their Group association.
+
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_user_groups.png" align="middle"/></span>
+            </p><p>
+                To associate a user to one of the available groups, drag the group
+                entry from the "Available Groups" column, and drop it into the "Member Of" column.
+                If the association is successful, the target group will appear in the "Member Of" column.
+            </p><p>
+                To disassociate
+                a user from a group, drag the group entry from the "Member Of" column and drop it into the
+                "Available Groups" column.
+                If the disassociation is successful, the target group will appear in the "Available Groups".
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="User_Account_Security"/>11.1.4. User Account Security</h3></div></div></div><p>
+                On the Security screen, preferences concerning securing the account may be specified in order to
+                reduce the chances of unauthorized access.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_user_security.png" align="middle"/></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Disabled</p>
+                                </td><td>
+                                    <p>
+                                        Determines whether the user account is active.
+                                        Select this checkbox to disable the account. This will block the user from
+                                        authenticating against Identity Providers bound to an identity vault
+                                        instance.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Account Expires</p>
+                                </td><td>
+                                    <p>
+                                        Determines whether the user account will expire.
+                                        Select this checkbox to restrict the life span of the user account.
+                                        The specific life span of the account is determined by the "Account expires
+                                        date" field
+                                        below.
+                                    </p>
+                                </td></tr><tr><td>
+                                    
+                                    <p>Account Expiration Date</p>
+                                </td><td>
+                                    <p>
+                                        Determines the date upon which the account will expire.
+                                        Enter a date in the .... format.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Maximum Logins</p>
+                                </td><td>
+                                    <p>
+                                        Maximum logins allowed from this user account.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Terminate Previous Session</p>
+                                </td><td>
+                                    <p>
+                                        Determines whether, when the user establishes a new session, the previous
+                                        session
+                                        has to be terminated.
+                                        Select this checkbox to terminate the previous session when
+                                        a new session using this account is established.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Prevent new sessions</p>
+                                </td><td>
+                                    <p>
+                                        Determines whether the user is entitled to establish a session against an
+                                        Identity Provider bound to an identity vault instance.
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Account_Password"/>11.1.5. Account Password</h3></div></div></div><p>
+                On the Password screen a user's credentials - namely a password - are provided in order to identify the
+                person owning the account.
+                In addition, preferences that will maintain the security of user credentials by enforcing
+                password freshness and strength may be defined here.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_user_password.png" align="middle"/></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Allow user to change password</p>
+                                </td><td>
+                                    <p>
+                                        Determines whether the user will be able to update the password.
+                                        Select this checkbox to allow the user to change their password.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Force periodic password change</p>
+                                </td><td>
+                                    <p>
+                                        Determines whether the user is informed that the password will expire.
+                                        Select this checkbox to inform the user that their password will expire.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Days between changes</p>
+                                </td><td>
+                                    <p>
+                                        If the "Force periodic password change" option is selected, this field sets
+                                        the maximum number of days before the user is required to change their
+                                        password.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Password expiration date</p>
+                                </td><td>
+                                    <p>
+                                        The date the password for the user account will expire.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Notify Password expiration</p>
+                                </td><td>
+                                    <p>
+                                        Select this checkbox to enable e-mail notifications to the user
+                                        regarding the approach of the password expiration date.
+
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Days before expiration</p>
+                                </td><td>
+                                    <p>
+                                        Sets the desired number of days in advance of password expiration for the system
+                                        to notify the user.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Password</p>
+                                </td><td>
+                                    <p>
+                                        The password for the user account.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Retype Password</p>
+                                </td><td>
+                                    <p>
+                                        Verification of the password for the user account.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Automatically generate password</p>
+                                </td><td>
+                                    <p>
+                                        Select this checkbox to automatically generate a strong password.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>E-mail new password</p>
+                                </td><td>
+                                    <p>
+                                        Select this checkbox to have a new password e-mail sent to the e-mail address
+                                        for this account.
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Provision_a_User_Account"/>11.1.6. Provision a User Account</h3></div></div></div><p>
+                To provision a user account, click on the TBD: Insert Image button. Fill in the desired information
+                and click "Save".
+                Username, First Name, Last Name and Password are required.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Update_User_Details"/>11.1.7. Update User Details</h3></div></div></div><p>
+                </p><p>
+                    To edit an existing user account, select the corresponding user entry in the user list and click
+                    the TBD: Insert Image button. Modify the fields as needed and click Save.
+                </p><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Search_Users"/>11.1.8. Search Users</h3></div></div></div><p>
+                To search for a user entry, click on the TBD: Insert Image button. A search can be conducted
+                based on Username, First Name, Last Name and Full name criteria. Complete the field with
+                the chosen search criteria and click "Search".
+                If the search is successful, entries for users matching the search criteria will be listed in the
+                user accounts table.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/search_user.png" align="middle"/></span>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Deprovision_a_User_Account"/>11.1.9. Deprovision a User Account</h3></div></div></div><p>
+                To deprovision a user, select the target user entry in the user list and click the TBD: Insert Image
+                button.
+            </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Groups"/>11.2. Groups</h2></div></div></div><p>
+            To reach the Group Management screen, go to Account and Entitlement Management on the Main screen and
+            click "Manage Groups".
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/groups_birds_eye.png" align="middle"/></span>
+        </p><p>
+            </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="Provision_a_Group"/>1. Provision a Group</h4></div></div></div><p>
+                    To provision a group, click on the TBD: insert image button. Fill in the information needed
+                    and click "Save".
+                    The group name is required.
+                </p></div><p>
+            </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="Search_Groups"/>2. Search Groups</h4></div></div></div><p>
+                    To search for a group, click on the TBD: insert image button. A search can be conducted based on
+                    the group name and description. Fill in the field corresponding to the chosen search criteria and
+                    click "Search".
+                    If successful, the entries for groups matching the search criteria will be listed in the
+                    groups table.
+                </p><p>
+                    <span class="inlinemediaobject"><img src="images/search_group.png" align="middle"/></span>
+                </p></div><p>
+            </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="Update_a_Group"/>3. Update a Group</h4></div></div></div><p>
+                    To edit an existing group, select the corresponding group entry in the group table and click
+                    the TBD: insert image button. Modify the fields as needed and click "Save".
+                </p></div><p>
+            </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="Deprovision_a_Group"/>4. Deprovision a Group</h4></div></div></div><p>
+                    To deprovision a group, select the target group entry in the groups table and click the TBD:
+                    insert image button.
+                </p></div><p>
+        </p></div></div><ul class="docnav"><li class="previous"><a accesskey="p" href="Identity_Appliance_Lifecycle_Management.html"><strong>Prev</strong>Chapter 10. Identity Appliance Lifecycle Manageme...</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="Profile_Operations.html"><strong>Next</strong>Chapter 12. Profile Operations</a></li></ul></body></html>

@@ -60,6 +60,8 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateInternalS
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateWikidElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateDominoElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateClientCertElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateWindowsIntegratedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
@@ -86,6 +88,8 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalS
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWikidElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDominoElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveClientCertElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWindowsIntegratedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
@@ -123,6 +127,8 @@ import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceResource;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
 import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
+import com.atricore.idbus.console.services.dto.DominoAuthenticationService;
+import com.atricore.idbus.console.services.dto.ClientCertAuthnService;
 import com.atricore.idbus.console.services.dto.WindowsIntegratedAuthentication;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
@@ -716,6 +722,33 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         //                            }
 
                         break;
+
+                    case DiagramElementTypes.DOMINO_ELEMENT_TYPE:
+                        var dominoOwnerAppliance:IdentityAppliance = _identityAppliance;
+
+                        var cdomino:CreateDominoElementRequest = new CreateDominoElementRequest(
+                                dominoOwnerAppliance,
+                                //                                        _currentlySelectedNode.stringid
+                                null
+                        );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_DOMINO_ELEMENT, cdomino);
+                        break;
+                    case DiagramElementTypes.CLIENTCERT_ELEMENT_TYPE:
+                        var clientCertOwnerAppliance:IdentityAppliance = _identityAppliance;
+
+                        var cclientCert:CreateClientCertElementRequest = new CreateClientCertElementRequest(
+                                clientCertOwnerAppliance,
+                                //                                        _currentlySelectedNode.stringid
+                                null
+                        );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_CLIENTCERT_ELEMENT, cclientCert);
+                        break;
                     case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
@@ -937,6 +970,24 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_WIKID_ELEMENT, rwikid);
+                            break;
+                        case DiagramElementTypes.DOMINO_ELEMENT_TYPE:
+                            var dominoService:DominoAuthenticationService = _currentlySelectedNode.data as DominoAuthenticationService;
+
+                            var rdomino:RemoveDominoElementRequest = new RemoveDominoElementRequest(dominoService);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_DOMINO_ELEMENT, rdomino);
+                            break;
+                        case DiagramElementTypes.CLIENTCERT_ELEMENT_TYPE:
+                            var clientCertService:ClientCertAuthnService = _currentlySelectedNode.data as ClientCertAuthnService;
+
+                            var rclientCert:RemoveClientCertElementRequest = new RemoveClientCertElementRequest(clientCertService);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_CLIENTCERT_ELEMENT, rclientCert);
                             break;
                         case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
                             var directoryService:DirectoryAuthenticationService = _currentlySelectedNode.data as DirectoryAuthenticationService;
@@ -1484,6 +1535,11 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE;
             } else if (node.data is WindowsIntegratedAuthentication) {
                 elementType = DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE;
+            } else if (node.data is DominoAuthenticationService) {
+                elementType = DiagramElementTypes.DOMINO_ELEMENT_TYPE;
+            } else if (node.data is ClientCertAuthnService) {
+                elementType = DiagramElementTypes.CLIENTCERT_ELEMENT_TYPE;
+            } else if (node.data is DirectoryAuthenticationService) {
 
                 //Identity Sources
             }else if (node.data is DbIdentitySource) {

@@ -35,7 +35,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  */
 public class WindowsIntegratedAuthenticationClaimsChannelTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(BasicAuthenticationClaimsChannelTransformer.class);
+    private static final Log logger = LogFactory.getLog(WindowsIntegratedAuthenticationClaimsChannelTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {

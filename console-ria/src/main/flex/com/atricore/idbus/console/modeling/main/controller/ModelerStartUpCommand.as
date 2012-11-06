@@ -60,6 +60,8 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _exportAgentConfigMediator:IIocMediator;
     private var _activationMediator:IIocMediator;
     private var _wikidCreateMediator:IIocMediator;
+    private var _dominoCreateMediator:IIocMediator;
+    private var _clientCertCreateMediator:IIocMediator;
     private var _directoryServiceCreateMediator:IIocMediator;
     private var _windowsIntegratedAuthnCreateMediator:IIocMediator;
     
@@ -161,6 +163,9 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(exportAgentConfigMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(activationMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(wikidCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(dominoCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(clientCertCreateMediator.getConfigName());
+
         iocFacade.registerMediatorByConfigName(directoryServiceCreateMediator.getConfigName());
     }
 
@@ -578,6 +583,22 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set wikidCreateMediator(value:IIocMediator):void {
         _wikidCreateMediator = value;
+    }
+
+    public function get dominoCreateMediator():IIocMediator {
+        return _dominoCreateMediator;
+    }
+
+    public function set dominoCreateMediator(value:IIocMediator):void {
+        _dominoCreateMediator = value;
+    }
+
+    public function get clientCertCreateMediator():IIocMediator {
+        return _clientCertCreateMediator;
+    }
+
+    public function set clientCertCreateMediator(value:IIocMediator):void {
+        _clientCertCreateMediator = value;
     }
 
     public function get directoryServiceCreateMediator():IIocMediator {

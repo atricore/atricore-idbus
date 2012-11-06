@@ -1,0 +1,1281 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 8. Service Provider Setup</title><link rel="stylesheet" href="css/josso.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="JOSSO"/><link rel="up" href="index.html" title="JOSSO"/><link rel="prev" href="Identity_Provider_Setup.html" title="Chapter 7. Identity Provider Setup"/><link rel="next" href="Circle_of_Trust_Establishment.html" title="Chapter 9. Circle of Trust Establishment"/></head><body><p id="title"><a href="http://www.josso.org" class="site_href"><strong>JOSSO.org</strong></a><a href="http://docs.josso.org" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="Identity_Provider_Setup.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="Circle_of_Trust_Establishment.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Service_Provider_Setup"/>Chapter 8. Service Provider Setup</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="Service_Provider_Setup.html#Setup_the_Identity_Store_of_the_Service_Provider">8.1. Set Up the Identity Source of the Service Provider</a></span></dt><dd><dl><dt><span class="section"><a href="Service_Provider_Setup.html#Using_an_Identity_Vault_as_the_Authoritative_Source_for_the_Service_Provider">8.1.1. Using an Identity Vault as the Authoritative Source for the Service Provider</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_an_Ldap_Directory_as_the_Authoritative_Source_for_the_Service_Provider">8.1.2. Using an LDAP Directory as the Authoritative Source for the Service Provider</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_an_RDBMS_as_the_Authoritative_Source_for_the_Service_Provider">8.1.3. Using an RDBMS as the Authoritative Source for the Service Provider</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_XML_files_as__the_Authoritative_Source_for_the_Service_Provider">8.1.4. Using XML files as the Authoritative Source for the Service Provider</a></span></dt></dl></dd><dt><span class="section"><a href="Service_Provider_Setup.html#Setup_the_Execution_Environment_of_the_Service_Provider">8.2. Set Up the Execution Environment of the Service Provider</a></span></dt><dd><dl><dt><span class="section"><a href="Service_Provider_Setup.html#Using_an_Alfresco_Execution_Environment">8.2.1. Using an Alfresco Execution Environment</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_an_Apache_Web_Server_Execution_Environment">8.2.2. Using an Apache Web Server Execution Environment</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_a_JavaEE_Execution_Environment">8.2.3. Using a JavaEE Execution Environment</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_a_JBoss_Portal_Execution_Environment">8.2.4. Using a JBoss Portal Execution Environment</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_a_Liferay_Portal_Execution_Environment">8.2.5. Using a Liferay Portal Execution Environment</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_a_phpBB_Execution_Environment">8.2.6. Using a phpBB Execution Environment</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_a_Webserver_Execution_Environment">8.2.7. Using a Webserver Execution Environment</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_an_Oracle_Weblogic_Execution_Environment">8.2.8. Using an Oracle Weblogic Execution Environment</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_a_Websphere_Community_Edition_WASCE_Execution_Environment">8.2.9. Using a Websphere Community Edition (WASCE) Execution Environment</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_a_Windows_IIS_Execution_Environment">8.2.10. Using a Windows IIS Execution Environment</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_an_Apache_Tomcat_Execution_Environment">8.2.11. Using an Apache Tomcat Execution Environment</a></span></dt><dt><span class="section"><a href="Service_Provider_Setup.html#Using_a_JBoss_Execution_Environment">8.2.12. Using a JBoss Execution Environment</a></span></dt></dl></dd></dl></div><p>
+        Once an IdP has been defined as the identity source that will be used to back authentication processes, the next
+        step is to define the trusted partner sites that will consume the claims made by the IdP on behalf of
+        any given user.
+    </p><p>
+        Service Providers will build on this claim set to authorize service requests made by
+        end users and applications.
+    </p><p>
+        From the Palette, click "Service Provider" in the "Entities" drawer.
+    </p><p>
+        Drag the "Service Provider" element to the preferred location within the Diagram Canvas.
+    </p><p>
+        In the "New Service Provider Definition" window, enter the name of the Service Provider (SP).
+    </p><p>
+        On the "Core" screen, specify how consumers will reach the endpoints of the SP.
+        The default location is built using attributes supplied at identity appliance-creation time. For the sake of
+        consistency, we strongly suggest leaving the attributes as-is.
+    </p><p>
+        <span class="inlinemediaobject"><img src="images/new_sp_core.png" align="middle"/></span>
+    </p><p>
+        <span class="bold"><strong>Field Descriptions</strong></span>
+    </p><p>
+        </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                            <p>
+                                <span class="bold"><strong>Field</strong></span>
+                            </p>
+                        </td><td>
+                            <p>
+                                <span class="bold"><strong>Description</strong></span>
+                            </p>
+                        </td></tr><tr><td>
+                            <p>Name</p>
+                        </td><td>
+                            <p>
+                                The unique identifier of the SP.
+                            </p>
+                        </td></tr><tr><td>
+                            <p>Description</p>
+                        </td><td>
+                            <p>
+                                A descriptive text for the SP.
+                            </p>
+                        </td></tr><tr><td>
+                            <p>Location</p>
+                        </td><td>
+                            <p>
+                                The access protocol - whether http or https - host name, port and
+                                context path where the endpoints for the SP will be bound.
+                                Clients will refer to services provided by the SP using URIs which are
+                                qualified using this location value.
+                                We strongly suggest that you use a fully qualified host name, so that
+                                the identity appliance services are decoupled from a specific physical host.
+                            </p>
+                        </td></tr><tr><td>
+                            <p>Account Linkage Policy</p>
+                        </td><td>
+                            <p>
+                                The means by which input claims, conveyed in the security token, which are issued and
+                                submitted by a trusted IdP, will be mapped to output claims; which will in turn be
+                                consumed by the relevant party in order to authorize users and grant them
+                                appropriate access.
+                            </p>
+                            <p>
+                                Select "Use Theirs" to link IdP and SP accounts
+                                using the supplied name identifier, and to map input to output claims in a
+                                one-to-one fashion.
+                            </p>
+                            <p>
+                                Select "Use Ours" to link IdP and SP accounts
+                                using the supplied name identifier, and to issue output claims based only on the user
+                                details that are available within the identity source connected with the SP.
+                            </p>
+                            <p>
+                                Select "Aggregate" to link IdP and SP accounts
+                                using the supplied name identifier, and to issue output claims based on merging both
+                                the
+                                user details conveyed in the security token and those obtained from the
+                                identity source connected to the SP.
+                            </p>
+                        </td></tr></tbody></table></div><p>
+    </p><p>
+        On the
+        <span class="bold"><strong>Contract</strong></span>
+        screen, specify the IdP-facing SAML Profiles and Bindings
+        to enable. You can also check on the level of security of the artifacts involved in message exchanges between
+        SPs and the IdP.
+    </p><p>
+        <span class="inlinemediaobject"><img src="images/new_sp_contract.png" align="middle"/></span>
+    </p><p>
+        <span class="bold"><strong>Field Descriptions</strong></span>
+    </p><p>
+        </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                            <p>
+                                <span class="bold"><strong>Field</strong></span>
+                            </p>
+                        </td><td>
+                            <p>
+                                <span class="bold"><strong>Description</strong></span>
+                            </p>
+                        </td></tr><tr><td>
+                            <p>Enabled SAML Profiles</p>
+                        </td><td>
+                            <p>
+                                The SAML Profile to activate for this IdP. These mainly represent the usage scenarios
+                                realized by the SP.
+                                The most important SAML profile is the "Web Browser Single Sign-On Profile", which
+                                can be
+                                enabled by selecting the
+                                <span class="bold"><strong>SSO</strong></span>
+                                checkbox.
+                                Select the
+                                <span class="bold"><strong>SLO</strong></span>
+                                checkbox to enable
+                                Single Logout Support.
+                            </p>
+                        </td></tr><tr><td>
+                            <p>Enabled SAML Bindings</p>
+                        </td><td>
+                            <p>
+                                The SAML bindings to be enabled for the selected SAML profiles.
+                                These specify the mapping of a SAML protocol message onto standard messaging
+                                formats and/or communications protocols.
+                                Select the
+                                <span class="bold"><strong>Http Post</strong></span>
+                                checkbox to convey
+                                SAML messages through HTTP Post.
+                                Select the
+                                <span class="bold"><strong>Http Redirect</strong></span>
+                                checkbox to convey
+                                SAML messages through HTTP Get.
+                                Select the
+                                <span class="bold"><strong>Artifact</strong></span>
+                                checkbox to convey
+                                SAML messages through the SAML Artifact Binding, which builds on both
+                                HTTP Redirect and SOAP bindings to exchange SAML messages.
+                                Select the
+                                <span class="bold"><strong>SOAP</strong></span>
+                                checkbox to convey
+                                SAML messages through SOAP over HTTP(s).
+                            </p>
+                        </td></tr></tbody></table></div><p>
+    </p><p>
+        On the
+        <span class="bold"><strong>Certificate</strong></span>
+        screen, select the keystores which hold the private and public key pairs to secure SAML message exchanges
+        between SPs and the IdP.
+        </p><p>
+            This involves setting up the building blocks of the trust system, which is based on
+            public key infrastructure (PKI). The trust system provides peer authentication, integrity,
+            confidentiality and non-repudiation
+            in a transport-agnostic fashion. The SAML standard - which JOSSO supports - builds on PKI to
+            guarantee
+            these security attributes for SSO message exchanges. The requested information is mainly
+            used for providers to access private and public key pairs.
+        </p><p>
+        </p><p>
+            <span class="inlinemediaobject"><img src="images/new_sp_certificate.png" align="middle"/></span>
+        </p><p>
+
+        </p><p>
+            <span class="bold"><strong>Field Descriptions</strong></span>
+        </p><p>
+        </p><p>
+            </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                <p>
+                                    <span class="bold"><strong>Field</strong></span>
+                                </p>
+                            </td><td>
+                                <p>
+                                    <span class="bold"><strong>Description</strong></span>
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Use Default Keystore</p>
+                            </td><td>
+                                <p>
+                                    Use the built-in keystore portion of the distribution. We recommended this for
+                                    sandbox settings only,
+                                    where security is not really an issue. Within a
+                                    production system, using a custom keystore is strongly recommended.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Upload the keystore file</p>
+                            </td><td>
+                                <p>
+                                    Select this option if you wish to use a custom keystore.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Certificate/Key Pair</p>
+                            </td><td>
+                                <p>
+                                    Allows you to select the desired keystore file from the local filesystem.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Format</p>
+                            </td><td>
+                                <p>
+                                    The Keystore Format for the uploaded keystore file. Choose "Java Keystore"
+                                    which is currently the only supported keystore format.
+                                    It is expected that the PKCS#12 will be supported in future releases.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Keystore Password</p>
+                            </td><td>
+                                <p>
+                                    Password that providers will use to open the keystore, to obtain the private and
+                                    public certificate pairs that are required to secure SSO exchanges.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Certificate Alias</p>
+                            </td><td>
+                                <p>
+                                    Identifier of the keystore entry for the public key. The public key is
+                                     used, for instance, to validate the digital signature conveyed in SAML
+                                    messages, to identify the
+                                    requester and the integrity of the messages.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Key Alias</p>
+                            </td><td>
+                                <p>
+                                    Name of the keystore entry used to obtain the corresponding private key.
+                                    The private key is used, for instance, to digitally sign SAML messages.
+                                </p>
+                            </td></tr><tr><td>
+                                <p>Key Password</p>
+                            </td><td>
+                                <p>
+                                    The password required to obtain the private key.
+                                </p>
+                            </td></tr></tbody></table></div><p>
+        </p><p>
+    </p><p>
+        Click on
+        <span class="bold"><strong>OK</strong></span>
+        to confirm SP element creation.
+    </p><p>
+        Click on
+        <span class="bold"><strong>Cancel</strong></span>
+        to abort SP element creation.
+    </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Setup_the_Identity_Store_of_the_Service_Provider"/>8.1. Set Up the Identity Source of the Service Provider</h2></div></div></div><p>
+            An SP may build on an identity source in order to link the IdP account with
+            a local counterpart, and employ the user details available in the IdP account to augment output claims.
+            TBD: Can a service provider operate without an associated identity source ?
+        </p><p>
+            To define a local identity source for an SP, drag one of the available identity sources
+            and connect it to the target SP, using the "identity lookup" edge.
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_an_Identity_Vault_as_the_Authoritative_Source_for_the_Service_Provider"/>8.1.1. Using an Identity Vault as the Authoritative Source for the Service Provider</h3></div></div></div><p>
+                In order to build the SP on the information provided by the built-in identity store,
+                define an Identity Vault element and associate it with the IdP.
+            </p><p>
+                From the Palette, click "Identity Vault" in the "Identity Sources" drawer.
+            </p><p>
+                Click on and drag the "Identity Vault" element to the preferred location within the Diagram Canvas.
+            </p><p>
+                For more information regarding the setup of identity vaults, please refer to section TBD: point
+                to section for setting up an identity vault.
+                <a class="xref" href="">???</a>
+            </p><p>
+                In order to use an identity vault as the identity store for an IdP,
+                establish an "identity lookup" connection between them both.
+            </p><p>
+                From the Palette, click "Identity Lookup" on the "Connections" drawer.
+            </p><p>
+                Click on the source SP element, and drag the edge to the target identity vault
+                element.
+            </p><p>
+                An edge should appear, connecting the SP and identity vault elements.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_an_Ldap_Directory_as_the_Authoritative_Source_for_the_Service_Provider"/>8.1.2. Using an LDAP Directory as the Authoritative Source for the Service Provider</h3></div></div></div><p>
+                In order to build the SP using the information provided by an LDAP directory, first
+                define an LDAP Identity Source element and then associate it with the IdP.
+            </p><p>
+                From the Palette, click "Ldap Identity Source" in the "Identity Sources" drawer.
+            </p><p>
+                Click on and drag the "Ldap Identity Source" element to the preferred location within the Diagram
+                Canvas.
+            </p><p>
+                For more information regarding the setup of LDAP identity sources, please refer to section TBD: point
+                to section for setting up an ldap directory<a class="xref" href="">???</a>.
+            </p><p>
+                To employ an LDAP Directory as the identity store for an IdP,
+                establish an identity lookup connection between both.
+            </p><p>
+                From the Palette, click "Identity Lookup" on the "Connections" drawer.
+            </p><p>
+                Click on the source SP element and drag the edge to the target LDAP Identity Source
+                element.
+            </p><p>
+                An edge should appear, connecting the SP and LDAP identity source elements.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_an_RDBMS_as_the_Authoritative_Source_for_the_Service_Provider"/>8.1.3. Using an RDBMS as the Authoritative Source for the Service Provider</h3></div></div></div><p>
+                In order to build the SP on the information provided by an RDBMS-based identity source,
+                you must define an RBMS Identity Source element and associate it with the SP.
+            </p><p>
+                From the Palette, click "RDBMS Identity Source" in the "Identity Sources" drawer.
+            </p><p>
+                Click on and drag the "RDBMS Identity Source" element to the preferred location within the Diagram
+                Canvas.
+            </p><p>
+                For more information regarding the setup of RDBMS identity sources please refer to section TBD: point
+                to section for setting up an RBMS source<a class="xref" href="">???</a>.
+            </p><p>
+                In order to use an RDBMS source as the identity store for an SP, you must
+                establish an Identity Lookup connection between both.
+            </p><p>
+                From the Palette, click "Identity Lookup" in the "Connections" drawer.
+            </p><p>
+                Click on the source SP element, and drag the edge to the target XML Identity Source
+                element.
+            </p><p>
+                An edge should appear, connecting the SP and RDBMS identity source elements.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_XML_files_as__the_Authoritative_Source_for_the_Service_Provider"/>8.1.4. Using XML files as the Authoritative Source for the Service Provider</h3></div></div></div><p>
+                In order to build the SP on the information provided by an XML-based identity source,
+                you must define an XML Identity Source element and associate it with the SP.
+            </p><p>
+                From the Palette, click "XML Identity Source" in the "Identity Sources" drawer.
+            </p><p>
+                Click on and drag the "XML Identity Source" element to the preferred location within the Diagram Canvas.
+            </p><p>
+                For more information regarding the setup of XML identity sources, please refer to section TBD: point
+                to section for setting up an XML source<a class="xref" href="">???</a>.
+            </p><p>
+                In order to use an XML source as the identity store for an IdP, you must establish an Identity Lookup
+                connection between them.
+            </p><p>
+                From the Palette, click "Identity Lookup" in the "Connections" drawer.
+            </p><p>
+                Click on the source SP element, and drag the edge to the target XML Identity Source
+                element.
+            </p><p>
+                An edge should appear, connecting the SP and XML identity source elements.
+            </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="Setup_the_Execution_Environment_of_the_Service_Provider"/>8.2. Set Up the Execution Environment of the Service Provider</h2></div></div></div><p>
+            One or more SPs can be hosted applications or resources within an Apache Web
+            Server instance.
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_an_Alfresco_Execution_Environment"/>8.2.1. Using an Alfresco Execution Environment</h3></div></div></div><p>
+                Alfresco offers true Open Source Enterprise Content Management (ECM): Document Management,
+                Collaboration, Records Management, Knowledge Management, Web Content Management and Imaging.
+            </p><p>
+                In order to build the SP on the Alfresco execution environment, you must
+                define an Alfresco Execution Environment element, and associate it with the SP.
+            </p><p>
+                From the Palette, click "Alfresco" in the "Execution Environments" drawer.
+            </p><p>
+                Click on and drag the "Alfresco" element to the preferred location within the Diagram Canvas.
+            </p><p>
+                Within the setup dialog, enter the Alfresco CMS execution environment details :
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_alfresco_ee.png" align="middle"/></span>
+            </p><p>
+                <span class="bold"><strong>Field Descriptions</strong></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Name</p>
+                                </td><td>
+                                    <p>
+                                        The unique identifier for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Description</p>
+                                </td><td>
+                                    <p>
+                                        A descriptive text for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Target Host</p>
+                                </td><td>
+                                    <p>
+                                        The host where the Alfresco CMS instance is located. The only
+                                        available option is "Local". Therefore, in order for the activation to be
+                                        successful,
+                                        the execution environment has to be provisioned within the same host as the
+                                        JOSSO2 instance. Alternatively, in cases where the execution environment is on a
+                                        host other than JOSSO2, the install home folder of the execution
+                                        environment should be
+                                        accessible from this. (TBD: ask GB about this sentence)
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Home</p>
+                                </td><td>
+                                    <p>
+                                        The folder hosting the artifacts of the Alfresco CMS server instance.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Container Type</p>
+                                </td><td>
+                                    <p>
+                                        The web container flavour on top of which the Alfresco CMS server
+                                        is deployed.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Container Home</p>
+                                </td><td>
+                                    <p>
+                                        The folder hosting the web container on top of which the Alfresco CMS server
+                                        runs.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Overwrite Original Setup</p>
+                                </td><td>
+                                    <p>
+                                        Check in cases where the execution environment has been previously activated,
+                                        either from the JOSSO1 command line console or through the Atricore Console,
+                                        and you wish to replace the original settings with new ones.
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+                </p><p>
+                    In order to use an XML source as the identity store for an IdP, you must
+                    establish an Identity Lookup connection between them both.
+                </p><p>
+                </p><p>
+                    From the Palette, click "Identity Lookup" in the "Connections" drawer.
+                </p><p>
+                </p><p>
+                    Click on the source SP element, and drag the edge to the target XML Identity Source
+                    element.
+                </p><p>
+                </p><p>
+                    An edge should appear, connecting the SP and XML identity source elements.
+                </p><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_an_Apache_Web_Server_Execution_Environment"/>8.2.2. Using an Apache Web Server Execution Environment</h3></div></div></div><p>
+                The Apache HTTP Server is a popular open source, standard, secure, efficient and extensible
+                HTTP server for modern operating systems, including UNIX and Windows NT.
+            </p><p>
+                An Apache HTTP Server can run virtually all types of web applications, such as those written in
+                PHP, Perl, Ruby and Python among many others.
+            </p><p>
+                The figure for representing a Apache Web Server Execution Environment is the following :
+                TODO: insert Apache Web Server Execution Environment Figure
+            </p><p>
+                Establishing an activation connection between an SP and an Apache Web Server Execution
+                Environment implies that the SP is a web application, hosted by an Apache Web Server
+                instance.
+            </p><p>
+                There is no support for automatic activation upon an Apache Web Server execution environment that is
+                connected with an SP.
+            </p><p>
+                Applications running under Apache Web Server can be SSO-enabled seamlessly, without
+                having to couple the application to the underlying SSO infrastructure, and deal with SSO internals.
+            </p><p>
+                Once a successful security context is established, the web application - playing the service
+                provider role - can consume it by relying on the REMOTE_USER environment variable set as the JOSSO Agent
+                for
+                Apache Web Server.
+            </p><p>
+                This variable contains the user name of the authenticated user.
+                The REMOTE_USER value can be used to search for the user details as well as any other
+                business-specific user profile information.
+            </p>
+
+            TBD: complete
+
+        </div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_a_JavaEE_Execution_Environment"/>8.2.3. Using a JavaEE Execution Environment</h3></div></div></div><p>
+                Java Platform, Enterprise Edition or Java EE is a widely used platform for server programming in the
+                Java programming language. The Java platform (Enterprise Edition) differs from the Java Standard Edition
+                Platform (Java SE) in that it adds libraries which provide functionality to deploy fault-tolerant,
+                distributed, multi-tier Java software, based largely on modular components running on an application
+                server.
+            </p><p>
+                In order to build the SP on a JavaEE execution environment,
+                define a JavaEE Execution Environment element and associate it with the SP.
+            </p><p>
+                From the Palette, click "JavaEE" in the "Execution Environments" drawer.
+            </p><p>
+                Click on and drag the "JavaEE" element to the preferred location within the Diagram Canvas.
+            </p><p>
+                Within the setup dialog, enter the JavaEE execution environment details :
+            </p><p>
+                TBD: Complete
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_a_JBoss_Portal_Execution_Environment"/>8.2.4. Using a JBoss Portal Execution Environment</h3></div></div></div><p>
+                JBoss Portal provides an open source and standards-based environment for hosting and serving a portal's
+                Web interface, publishing and managing its content, and customizing its experience. It is entirely
+                standards-based and supports the JSR-168 portlet specification, which allows you to easily plug in
+                standards-compliant portlets to meet your specific portal needs.
+            </p><p>
+                In order to build the SP on the JBoss Portal execution environment,
+                define a JBoss Portal Execution Environment element and associate it with the SP.
+            </p><p>
+                From the Palette, click "JBoss Portal" in the "Execution Environments" drawer.
+            </p><p>
+                Click on and drag the "JBoss Portal" element to the preferred location within the Diagram Canvas.
+            </p><p>
+                Within the setup dialog, enter the JBoss Portal execution environment details :
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_jbportal_ee.png" align="middle"/></span>
+            </p><p>
+                <span class="bold"><strong>Field Descriptions</strong></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Name</p>
+                                </td><td>
+                                    <p>
+                                        The unique identifier for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Description</p>
+                                </td><td>
+                                    <p>
+                                        A descriptive text for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Target Host</p>
+                                </td><td>
+                                    <p>
+                                        The host where the JBoss Portal instance is located. The only
+                                        available option is "Local"; Therefore, in order for the activation to be
+                                        successful,
+                                        the execution environment has to be provisioned within the same host as the
+                                        JOSSO2 instance. Alternatively, in cases where the execution environment is on a
+                                        different host than JOSSO2, the install home folder of the execution
+                                        environment should be
+                                        accessible from this.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Home</p>
+                                </td><td>
+                                    <p>
+                                        The folder hosting the artifacts of the JBoss Portal server instance.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Overwrite Original Setup</p>
+                                </td><td>
+                                    <p>
+                                        Check in cases where the execution environment has been previously activated -
+                                        either from the JOSSO1 command line console or through the Atricore Console
+                                        -
+                                        and you wish to have the original settings replaced with new ones.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Demo Applications</p>
+                                </td><td>
+                                    <p>
+                                        TBD: Shouldn't be installing demo portlets ?
+                                        Check, if deploying JOSSO example web applications onto the target
+                                        execution environment. We strongly recommended that you check this field in
+                                        order to verify that the Internet SSO setting works as expected, before
+                                        engaging in SSO-enabling candiate business applications.
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_a_Liferay_Portal_Execution_Environment"/>8.2.5. Using a Liferay Portal Execution Environment</h3></div></div></div><p>
+                Liferay Portal is an enterprise open source portal framework, offering integrated Web
+                publishing and content management, an enterprise service bus and service-oriented architecture, and
+                compatibility with all major IT infrastructure.
+            </p><p>
+                In order to build the SP on the Liferay Portal execution environment, you must
+                define a Liferay Portal Execution Environment element, and associate it with the SP.
+            </p><p>
+                From the Palette, click "Liferay Portal" in the "Execution Environments" drawer.
+            </p><p>
+                Click on and drag the "Liferay Portal" element to the preferred location within the Diagram Canvas.
+            </p><p>
+                Within the setup dialog enter the Liferay Portal execution environment details :
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_liferay_ee.png" align="middle"/></span>
+            </p><p>
+                <span class="bold"><strong>Field Descriptions</strong></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Name</p>
+                                </td><td>
+                                    <p>
+                                        The unique identifier for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Description</p>
+                                </td><td>
+                                    <p>
+                                        A descriptive text for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Target Host</p>
+                                </td><td>
+                                    <p>
+                                        The host where the Liferay Portal instance is located. The only
+                                        available option is "Local"; Therefore, in order for the activation to be
+                                        successful,
+                                        the execution environment has to be provisioned within the same host as the
+                                        JOSSO2 instance. Alternatively, if the execution environment is on a
+                                        different host than JOSSO2, the install home folder of the execution
+                                        environment should be
+                                        accessible from this.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Home</p>
+                                </td><td>
+                                    <p>
+                                        The folder hosting the artifacts of the Liferay Portal server instance.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Container Type</p>
+                                </td><td>
+                                    <p>
+                                        The web container flavour on top of which the Liferay Portal server
+                                        is deployed.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>
+                                        TBD: App needs to show "Container Home" not "Container Path"
+
+                                        Container Home
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        The folder hosting the web container on top of which Liferay Portal server
+                                        runs.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Overwrite Original Setup</p>
+                                </td><td>
+                                    <p>
+                                        Check, if the execution environment has been previously activated -
+                                        either from the JOSSO1 command line console or through the Atricore Console
+                                        -
+                                        and you wish to have the original settings replaced with new ones.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Demo Applications</p>
+                                </td><td>
+                                    <p>
+                                        TBD: Shouldn't be installing demo portlets ?
+                                        Check for deploying JOSSO example web applications onto the target
+                                        execution environment. We strongly recommend that you check this field in
+                                        order to verify that the Internet SSO setting works as expected, before
+                                        engaging in SSO-enabling candidate business applications.
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_a_phpBB_Execution_Environment"/>8.2.6. Using a phpBB Execution Environment</h3></div></div></div><p>
+                phpBB is a free flat-forum bulletin board software solution that can be used to stay in touch with a
+                group of people, or can power your entire website.
+            </p><p>
+                In order to build the SP on the phpBB Portal execution environment, you must
+                define a phpBB Execution Environment element, and associate it with the SP.
+            </p><p>
+                From the Palette, click "phpBB" in the "Execution Environments" drawer.
+            </p><p>
+                Click on and drag the "PhpBB" element to the preferred location within the Diagram Canvas.
+            </p><p>
+                Within the setup dialog enter the phpBB execution environment details :
+            </p><p>
+                TBD: complete
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_a_Webserver_Execution_Environment"/>8.2.7. Using a Webserver Execution Environment</h3></div></div></div><p>
+                A web server execution environment represents a generic web server (or container) hosting web
+                applications
+                or resources.  Activation is not supported for this environment.
+            </p><p>
+                In order to build the SP on a Web server execution environment,  you must
+                define a Web Server Execution Environment element, and associate it with the SP.
+            </p><p>
+                From the Palette, click "Web Server" in the "Execution Environments" drawer.
+            </p><p>
+                Click on and drag the "Web Server" element to the preferred location within the Diagram Canvas.
+            </p><p>
+                Within the setup dialog, enter the Web Server execution environment details :
+            </p><p>
+                TBD: complete
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_an_Oracle_Weblogic_Execution_Environment"/>8.2.8. Using an Oracle Weblogic Execution Environment</h3></div></div></div><p>
+                WebLogic Server is a J2EE-compliant application server, produced by Oracle. It implements the
+                full range of J2EE technologies, and provides features such as advanced management, clustering,
+                and web services. It forms the core of the WebLogic platform, and provides a framework for
+                building scalable, highly available and secure applications.
+            </p><p>
+                JOSSO supports SSO-enabling JavaEE applications running under Oracle WebLogic Server 9 and 10.
+                Both web and business layers can be SSO-enabled. For instance, within a 3 or n-tier setting,
+                once the security context is established on the web tier, JOSSO will seamlessly propagate it
+                to the potentially distributed business tier. A business tier realized using Enterprise Java Beans
+                (EJB) - namely Session Beans - will then be able to leverage the security context by applying
+                the EJB-specific access control rules in both declarative - through Java annotations - and
+                programmatic form.
+            </p><p>
+                The figure used to represent a WebLogic Server Execution Environment is the following :
+                TODO: insert WebLogic Server Execution Environment Figure
+            </p><p>
+                Establishing an activation connection between an SP and a WebLogic Execution
+                Environment
+                implies that the SP is a standard JavaEE application hosted by a WebLogic Server
+                instance.
+            </p><p>
+                Launching the activation on an WebLogic Server execution environment triggers the provisioning of
+                the specific SSO Agent for the target WebLogic Server instance.
+            </p><p>
+                Once a successful security context is established, the web application - playing the service
+                provider
+                role -
+                can consume it by relying on the security methods of the standard Servlet APIs.
+            </p><p>
+                The getUserPrincipal method can be used to return the javax.security.Principal object that contains the
+                SSO user principal. The outcome of this method can be casted to the JOSSOUser class
+                for the specific release of the Apache Tomcat Agent, allowing you to access SSO-specific properties,
+                such as all the asserted claims for the user.
+            </p><p>
+                The isUserInRole allows you to assert if the remote user is granted the specified security role.
+                Through this operation, it's possible to perform Role-based Access Control based on the supplied
+                entitlement claims.
+            </p><p>
+                Within a business tier realized as Enterprise Java Beans, two approaches can be used for authorizing
+                the caller: Declarative and Programmatic Authorization.
+                With the declarative approach, access roles are defined in either the EJB descriptor or directly in
+                the EJB class, using Java annotations.
+                With the programmatic approach , the EJBContext.isCallerInRole method can be used to perform
+                finer-grained
+                access control.
+                Both declarative and programmatic authorization can be used, building on the security context
+                established by JOSSO.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_wls_ee.png" align="middle"/></span>
+            </p><p>
+                <span class="bold"><strong>Field Descriptions</strong></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Name</p>
+                                </td><td>
+                                    <p>
+                                        The unique identifier for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Description</p>
+                                </td><td>
+                                    <p>
+                                        A descriptive text for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Version</p>
+                                </td><td>
+                                    <p>
+                                        The Oracle Weblogic application server family.
+                                    </p>
+                                    <p>
+                                        Select "9.2" to define an execution environment element based on the
+                                        Oracle Weblogic 9.2 family.
+                                    </p>
+                                    <p>
+                                        Select "10" to define an execution environment element based on the
+                                        Oracle Weblogic 10 family.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Target Host</p>
+                                </td><td>
+                                    <p>
+                                        The host where the Oracle Weblogic instance is located. The only
+                                        available option is "Local". Therefore, in order for the activation to be
+                                        successful,
+                                        the execution environment has to be provisioned within the same host as the
+                                        JOSSO2 instance. Alternatively, in case the execution environment is on a
+                                        different host than JOSSO2, the install home folder of the execution
+                                        environment
+                                        should be
+                                        accessible from this.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Home</p>
+                                </td><td>
+                                    <p>
+                                        The folder which hosts the artifacts of the Oracle Weblogic execution
+                                        environment.
+                                        The
+                                        value
+                                        for this field should correspond to that of the WL_HOME environment
+                                        variable.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Overwrite Original Setup</p>
+                                </td><td>
+                                    <p>
+                                        Check in case the execution environment has been previously activated -
+                                        either from the JOSSO1 command line console or through the Atricore Console
+                                        -
+                                        and you wish to have the original settings replaced with new ones.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Demo Applications</p>
+                                </td><td>
+                                    <p>
+                                        Check, if you wish to deploy JOSSO example web applications onto the target
+                                        execution environment. It is strongly recommended that you check this field, in
+                                        order to verify that the Internet SSO setting works as expected, before
+                                        engaging in SSO-enabling candidate business applications.
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_a_Websphere_Community_Edition_WASCE_Execution_Environment"/>8.2.9. Using a Websphere Community Edition (WASCE) Execution Environment</h3></div></div></div><p>
+                The Websphere Community Edition - also known as WASCE - is an open source application server
+                developed by the Apache Software Foundation and distributed under the Apache license.
+                It is the free edition of IBM WebSphere application server and is based on Geronimo.
+            </p><p>
+                JOSSO supports SSO-enabling JavaEE applications running under WASCE 2.1 .
+                Both web and business layers can be SSO-enabled. For instance, within a 3 or n-tier setting,
+                once the security context is established on the web tier, JOSSO will seamlessly propagate it
+                to the potentially distributed business tier. A business tier realized using Enterprise Java Beans
+                (EJB) - namely Session Beans - will then be able to leverage the security context by applying
+                the EJB-specific access control rules in both declarative - through Java annotations - and
+                programmatic form.
+            </p><p>
+                The figure used to represent a Websphere Execution Environment:
+                TODO: insert Websphere Community Edition Execution Environment Figure
+            </p><p>
+                Establishing an activation connection between an SP and a Websphere Community
+                Edition Execution Environment
+                implies that the SP is a standard JavaEE application, hosted by a Websphere
+                Community Edition Server instance.
+            </p><p>
+                Launching the activation on an Websphere Community Edition execution environment triggers the
+                provisioning of
+                the specific SSO Agent for the target instance.
+            </p><p>
+                Once a successful security context is established, the web application - playing the service
+                provider
+                role -
+                can consume it by relying on the security methods of the standard Servlet APIs.
+            </p><p>
+                The getUserPrincipal method can be used to return a javax.security.Principal object, that contains the
+                SSO user principal. The outcome of this method can be casted to the JOSSOUser class
+                for the specific release of the Apache Tomcat Agent, allowing you to access SSO-specific properties,
+                such as all the asserted claims for the user.
+            </p><p>
+                The isUserInRole allows you to assert if the remote user is granted a specified security role.
+                Through this operation, it's possible to perform Role-based Access Control based on the supplied
+                entitlement claims.
+            </p><p>
+                Within a business tier realized as Enterprise Java Beans, two approaches can be used for authorizing
+                the caller : Declarative and Programmatic Authorization.
+                In the declarative approach, access roles are defined in either the EJB descriptor or directly in
+                the EJB class using Java annotations.
+                In the programmatic approach, the EJBContext.isCallerInRole method can be used to perform
+                finer-grained
+                access control.
+                Both declarative and programmatic authorization can be used, building on the security context
+                established by JOSSO.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_wasce_ee.png" align="middle"/></span>
+            </p><p>
+                <span class="bold"><strong>Field Descriptions</strong></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Name</p>
+                                </td><td>
+                                    <p>
+                                        The unique identifier for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Description</p>
+                                </td><td>
+                                    <p>
+                                        A descriptive text for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Target Host</p>
+                                </td><td>
+                                    <p>
+                                        The host where the Websphere Community Edition server instance is located.
+                                        The only
+                                        available option is "Local". Therefore, in order for the activation to be
+                                        successful,
+                                        the execution environment has to be provisioned within the same host as the
+                                        JOSSO2 instance. Alternatively, in cases where the execution environment is on a
+                                        different host than JOSSO2, the install home folder of the execution
+                                        environment
+                                        should be
+                                        accessible from this.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Home</p>
+                                </td><td>
+                                    <p>
+                                        The folder hosting the artifacts of the Websphere Community Edition
+                                        execution environment.
+                                        The
+                                        value
+                                        for this field should correspond to the one of the WASCE_HOME environment
+                                        variable.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Overwrite Original Setup</p>
+                                </td><td>
+                                    <p>
+                                        Check, in cases where the execution environment has been previously activated -
+                                        either from the JOSSO1 command line console or through the Atricore Console
+                                        -
+                                        and you wish to have the original settings replaced with new ones.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Demo Applications</p>
+                                </td><td>
+                                    <p>
+                                        Check, to deploy JOSSO example web applications onto the target
+                                        execution environment. It is strongly recommended to check this field, in
+                                        order to verify that the Internet SSO setting works as expected, before
+                                        engaging in SSO-enabling candidate business applications.
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_a_Windows_IIS_Execution_Environment"/>8.2.10. Using a Windows IIS Execution Environment</h3></div></div></div><p>
+                Internet Information Services (IIS) – formerly called Internet Information Server – is a web server
+                application and set of feature extension modules, created by Microsoft, for use with Microsoft Windows.
+            </p><p>
+                In order to build the SP on a Windows IIS execution environment, you must
+                define a Windows IIS Execution Environment element, and associate it with the SP.
+            </p><p>
+                From the Palette, click "Windows IIS" in the "Execution Environments" drawer.
+            </p><p>
+                Click on and drag the "Windows IIS" element to the preferred location within the Diagram Canvas.
+            </p><p>
+                Within the setup dialog, enter the Windows IIS execution environment details :
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_iis_ee.png" align="middle"/></span>
+            </p><p>
+                <span class="bold"><strong>Field Descriptions</strong></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Name</p>
+                                </td><td>
+                                    <p>
+                                        The unique identifier for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Description</p>
+                                </td><td>
+                                    <p>
+                                        A descriptive text for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Target Host</p>
+                                </td><td>
+                                    <p>
+                                        The host where the Windows IIS server instance is located. The only
+                                        available option is "Local". Therefore, in order for the activation to be
+                                        successful,
+                                        the execution environment has to be provisioned within the same host as the
+                                        JOSSO2 instance. Alternatively, in cases where the execution environment is on a
+                                        different host than JOSSO2, the install home folder of the execution
+                                        environment
+                                        should be
+                                        accessible from this.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Home</p>
+                                </td><td>
+                                    <p>
+                                        The folder hosting the Windows IIS installation.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Overwrite Original Setup</p>
+                                </td><td>
+                                    <p>
+                                        Check, in case the execution environment has been previously activated -
+                                        either from the JOSSO1 command line console or through the Atricore Console
+                                        -
+                                        and you wish to have the original settings replaced with new ones.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Demo Applications</p>
+                                </td><td>
+                                    <p>
+                                        Check to deploy JOSSO example web applications onto the target
+                                        execution environment. It is strongly recommended to check this field, in
+                                        order to verify that the Internet SSO setting works as expected, before
+                                        engaging in SSO-enabling candiate business applications.
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_an_Apache_Tomcat_Execution_Environment"/>8.2.11. Using an Apache Tomcat Execution Environment</h3></div></div></div><p>
+                Apache Tomcat (or Jakarta Tomcat or simply Tomcat) is an open source servlet container developed by
+                the
+                Apache Software Foundation (ASF). Tomcat implements the Java Servlet and the JavaServer Pages (JSP)
+                specifications from Sun Microsystems, and provides a "pure Java" HTTP web server environment for
+                Java
+                code to run.
+            </p><p>
+                JOSSO supports SSO-enabling JavaEE web applications running under Apache Tomcat 5.0, 5.5 and 6.0 .
+            </p><p>
+                The figure for representing an Apache Tomcat Execution Environment is the following :
+                TODO: insert Apache Tomcat Execution Environment Figure
+            </p><p>
+                Establishing an activation connection between an SP and a Tomcat Execution Environment
+                implies that the SP is a standard Java Web Application, hosted by an Apache Tomcat
+                container.
+            </p><p>
+                Launching the activation on an Apache Tomcat Execution Environment triggers the provisioning of
+                the SSO Agent for this web container.
+            </p><p>
+                Once a successful security context is established, the web application - playing the SP
+                role -
+                can consume it by relying on the security methods of the standard Servlet APIs.
+            </p><p>
+                The getUserPrincipal method can be used to return a javax.security.Principal object that contains the
+                SSO user principal. The outcome of this method can be casted to the JOSSO User class
+                pertaining
+                to the specific release of the Apache Tomcat Agent, allowing you to access SSO-specific properties, such
+                as all
+                the asserted claims for the user.
+            </p><p>
+                The isUserInRole allows you to assert if the remote user is granted the specified security role.
+                Through this operation it's possible to perform Role-based Access Control based on the supplied
+                entitlement
+                claims.
+            </p><p>
+                <span class="bold"><strong>Field Descriptions</strong></span>
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_tomcat_ee.png" align="middle"/></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Name</p>
+                                </td><td>
+                                    <p>
+                                        The unique identifier for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Description</p>
+                                </td><td>
+                                    <p>
+                                        A descriptive text for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Version</p>
+                                </td><td>
+                                    <p>
+                                        The Apache Tomcat web container family.
+                                    </p>
+                                    <p>
+                                        Select "5.0.x" to define an execution environment element based on the
+                                        Apache
+                                        Tomcat 5 family.
+                                    </p>
+                                    <p>
+                                        Select "5.5.x" to define an execution environment element based on the
+                                        Apache
+                                        Tomcat 5.5 family.
+                                    </p>
+                                    <p>
+                                        Select "6.0.x" to define an execution environment element based on the
+                                        Apache
+                                        Tomcat 6 family.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Target Host</p>
+                                </td><td>
+                                    <p>
+                                        The host where the Apache Tomcat web container instance is located. The only
+                                        available option is "Local". Therefore, in order for the activation to be
+                                        successful,
+                                        the execution environment has to be provisioned within the same host as the
+                                        JOSSO2 instance. Alternatively, in case the execution environment is on a
+                                        different host than JOSSO2, the install home folder of the execution
+                                        environment
+                                        should be
+                                        accessible from this.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Home</p>
+                                </td><td>
+                                    <p>
+                                        The folder hosting the artifacts of the Apache Tomcat execution environment.
+                                        The
+                                        value
+                                        for this field should correspond to that of the CATALINA_HOME environment
+                                        variable.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Overwrite Original Setup</p>
+                                </td><td>
+                                    <p>
+                                        Check in case the execution environment has been previously activated -
+                                        either from the JOSSO1 command line console or through the Atricore Console
+                                        -
+                                        and you wish to have the original settings replaced with new ones.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Demo Applications</p>
+                                </td><td>
+                                    <p>
+                                        Check to deploy JOSSO example web applications onto the target
+                                        execution environment. It is strongly recommended to check this field, in
+                                        order to verify that the Internet SSO setting works as expected, before
+                                        engaging in SSO-enabling candidate business applications.
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="Using_a_JBoss_Execution_Environment"/>8.2.12. Using a JBoss Execution Environment</h3></div></div></div><p>
+                JBoss is a Java EE certified platform for developing and deploying enterprise Java applications, Web
+                applications, and Portals. JBoss Application Server provides the full range of Java EE 5 features, as
+                well as extended enterprise services including clustering, caching, and persistence.
+            </p><p>
+                The Web Server component of the JBoss Application Server is the JBoss Web Server. The JBoss Web
+                Server
+                is an enterprise-ready web server designed for medium and large applications, based on Apache
+                Tomcat,
+                providing a single deployment platform for Java Server Pages (JSP) and Java Servlet technologies,
+                PHP, and CGI.
+            </p><p>
+                JOSSO supports SSO-enabling JavaEE applications running under JBoss 3.2, 4.0, 4.2 and 5.0 . Both web
+                and
+                business layers can be SSO-enabled. For instance, within a 3 or n-tier setting,
+                once the security context is established on the web tier, JOSSO will seamlessly propagate it
+                to the potentially distributed business tier. A business tier realized using Enterprise Java Beans
+                (EJB) - namely Session Beans - will then be able to leverage the security context by applying
+                the EJB-specific access control rules in both declarative - through Java annotations - and
+                programmatic form.
+            </p><p>
+                The figure for representing an Apache Tomcat Execution Environment is the following :
+                TODO: insert Apache Tomcat Execution Environment Figure
+            </p><p>
+                Establishing an activation connection between an SP and a JBoss Execution Environment
+                implies that the SP is a standard JavaEE application hosted by a JBoss Application
+                Server.
+            </p><p>
+                Launching the activation on an Apache Tomcat Execution Environment triggers the provisioning of
+                the specific SSO Agent for the target JBoss Application Server instance.
+            </p><p>
+                Once a successful security context is established, the web application - playing the service
+                provider
+                role -
+                can consume it by relying on the security methods of the standard Servlet APIs.
+            </p><p>
+                The getUserPrincipal method can be used to returnthe  javax.security.Principal object that contains the
+                SSO user principal. The outcome of this method can be casted to the JOSSOUser class
+                for the specific release of the Apache Tomcat Agent, allowing you to access SSO-specific properties,
+                such as all the asserted claims for the user.
+            </p><p>
+                The isUserInRole allows you to assert if the remote user is granted the specified security role.
+                Therefore,
+                through this operation it's possible to perform Role-based Access Control based on the supplied
+                entitlement
+                claims.
+            </p><p>
+                Within a business tier realized as Enteprise Java Beans, two approaches can be used for authorizing
+                the caller: Declarative and Programmatic Authorization.
+                In the declarative approach access roles are defined in either the EJB descriptor or directly in
+                the EJB class using Java annotations.
+                In the programmatic approach , the EJBContext.isCallerInRole method can be used to perform
+                finer-grained
+                access control.
+                Both declarative and programmatic authorization can be used, building on the security context
+                established by JOSSO.
+            </p><p>
+                <span class="inlinemediaobject"><img src="images/new_jboss_ee.png" align="middle"/></span>
+            </p><p>
+                <span class="bold"><strong>Field Descriptions</strong></span>
+            </p><p>
+                </p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><tbody><tr><td>
+                                    <p>
+                                        <span class="bold"><strong>Field</strong></span>
+                                    </p>
+                                </td><td>
+                                    <p>
+                                        <span class="bold"><strong>Description</strong></span>
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Name</p>
+                                </td><td>
+                                    <p>
+                                        The unique identifier for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Description</p>
+                                </td><td>
+                                    <p>
+                                        A descriptive text for the execution environment.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Version</p>
+                                </td><td>
+                                    <p>
+                                        The Redhat JBoss application server family.
+                                    </p>
+                                    <p>
+                                        Select "3.2.6" to define an execution environment element based on the
+                                        Redhat
+                                        JBoss 3.2.6 family.
+                                    </p>
+                                    <p>
+                                        Select "4.0.x" to define an execution environment element based on the
+                                        Redhat
+                                        JBoss 4.0 family.
+                                    </p>
+                                    <p>
+                                        Select "4.2.x" to define an execution environment element based on the
+                                        Redhat
+                                        JBoss 4.2 family.
+                                    </p>
+                                    <p>
+                                        Select "5.x" to define an execution environment element based on the
+                                        Redhat JBoss
+                                        5 family.
+                                    </p>
+
+                                </td></tr><tr><td>
+                                    <p>Target Host</p>
+                                </td><td>
+                                    <p>
+                                        The host where the Redhat JBoss application server instance is located. The
+                                        only
+                                        available option is "Local". Therefore, in order for the activation to be
+                                        successful,
+                                        the execution environment has to be provisioned within the same host as the
+                                        JOSSO2 instance. Alternatively, in case the execution environment is on a
+                                        different host than JOSSO2, the install home folder of the execution
+                                        environment
+                                        should be
+                                        accessible from this.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Home</p>
+                                </td><td>
+                                    <p>
+                                        The folder hosting the artifacts of the Redhat JBoss application server
+                                        instance.
+                                        The value
+                                        for this field should correspond to that of the JBOSS_HOME environment
+                                        variable.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Overwrite Original Setup</p>
+                                </td><td>
+                                    <p>
+                                        Check in case the execution environment has been previously activated -
+                                        either from the JOSSO1 command line console or through the Atricore Console
+                                        -
+                                        and you wish to have the original settings replaced with new ones.
+                                    </p>
+                                </td></tr><tr><td>
+                                    <p>Install Demo Applications</p>
+                                </td><td>
+                                    <p>
+                                        Check to deploy JOSSO example web applications onto the target
+                                        execution environment. It is strongly recommended that you check this field, in
+                                        order to verify that the Internet SSO setting works as expected, before
+                                        engaging in SSO-enabling candidate business applications.
+                                    </p>
+                                </td></tr></tbody></table></div><p>
+            </p></div></div></div><ul class="docnav"><li class="previous"><a accesskey="p" href="Identity_Provider_Setup.html"><strong>Prev</strong>Chapter 7. Identity Provider Setup</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="Circle_of_Trust_Establishment.html"><strong>Next</strong>Chapter 9. Circle of Trust Establishment</a></li></ul></body></html>

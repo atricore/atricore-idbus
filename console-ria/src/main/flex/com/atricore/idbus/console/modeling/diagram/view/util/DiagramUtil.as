@@ -224,6 +224,10 @@ public class DiagramUtil {
                 return EmbeddedIcons.directoryAuthenticationServiceMiniIcon;
             case DiagramElementTypes.WINDOWS_INTEGRATED_AUTHN_ELEMENT_TYPE:
                 return EmbeddedIcons.windowsAuthenticationServiceMiniIcon;
+            case DiagramElementTypes.DOMINO_ELEMENT_TYPE:
+                return EmbeddedIcons.dominoAuthenticationServiceMiniIcon;
+            case DiagramElementTypes.CLIENTCERT_ELEMENT_TYPE:
+                return EmbeddedIcons.clientAuthenticationServiceMiniCertIcon;
             case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                 return EmbeddedIcons.vaultMiniIcon;
             case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
@@ -270,6 +274,10 @@ public class DiagramUtil {
                 return EmbeddedIcons.phpbbResourceMiniIcon;
             case DiagramElementTypes.WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.webEnvironmentMiniIcon;
+            case DiagramElementTypes.SHAREPOINT_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.sharepointResourceMiniIcon;
+            case DiagramElementTypes.COLDFUSION_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.coldfusionResourceMiniIcon;
         }
         return null;
     }

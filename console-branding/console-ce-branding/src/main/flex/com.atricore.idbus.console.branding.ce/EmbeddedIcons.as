@@ -56,6 +56,7 @@ public class EmbeddedIcons {
     public static var externalOpenidIdpMiniIcon:Class;
 
     [Bindable]
+
     [Embed(source="/assets/icons/notation/40x40/oauth_service_provider.png")]
     public static var oauth2SpMiniIcon:Class;
 
@@ -67,6 +68,11 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/directory_authentication_service.png")]
     public static var directoryAuthenticationServiceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/clientcert_authentication_service.png")]
+    public static var clientAuthenticationServiceMiniCertIcon:Class;
+
 
     // Identity sources
     [Bindable]

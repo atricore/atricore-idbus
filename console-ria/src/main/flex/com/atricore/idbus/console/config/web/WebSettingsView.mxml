@@ -108,7 +108,7 @@
                 <s:CheckBox id="enableSSL"/>
             </mx:FormItem>
 
-            <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl')}" height="130" width="350" paddingLeft="5" paddingRight="5" paddingTop="15"
+            <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl')}" height="170" width="350" paddingLeft="5" paddingRight="5" paddingTop="15"
                                    paddingBottom="5">
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl.port')}:" labelWidth="125" required="true">
@@ -125,6 +125,20 @@
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl.key.password')}:" labelWidth="125" required="true">
                     <s:TextInput id="sslKeyPassword" width="200" displayAsPassword="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.http.ssl.clientAuthn')}:"
+                             labelWidth="125" direction="horizontal" required="true">
+
+                    <s:DropDownList id="sslClientAuthn" width="200" selectedIndex="0">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object label="Disabled" data="disabled"/>
+                                <fx:Object label="Wanted" data="wanted"/>
+                                <fx:Object label="Required" data="needed"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
                 </mx:FormItem>
 
             </utils:TitledBorderBox>
