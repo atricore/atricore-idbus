@@ -5,16 +5,16 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  */
 public class DominoAuthenticationService extends AuthenticationService {
 
-    private String registryUrl;
+    private String serverUrl;
 
     private String version;
 
-    public String getRegistryUrl() {
-        return registryUrl;
+    public String getServerUrl() {
+        return serverUrl;
     }
 
-    public void setRegistryUrl(String registryUrl) {
-        this.registryUrl = registryUrl;
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
     }
 
     public String getVersion() {

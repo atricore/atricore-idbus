@@ -83,7 +83,7 @@ public class DominoCreateMediator extends IocFormMediator {
         dominoAuthnService.name = view.dominoName.text;
         dominoAuthnService.description = view.dominoDescription.text;
 
-        dominoAuthnService.registryUrl = view.serverUrl.text;
+        dominoAuthnService.serverUrl = view.serverUrl.text;
 
         _newDominoAuthnService = dominoAuthnService;
     }

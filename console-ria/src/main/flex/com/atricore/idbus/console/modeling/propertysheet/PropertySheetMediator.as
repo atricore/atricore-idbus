@@ -3969,7 +3969,7 @@ public class PropertySheetMediator extends IocMediator {
 
             _dominoAuthnServiceCoreSection.dominoName.text = dominoAuth.name;
             _dominoAuthnServiceCoreSection.dominoDescription.text = dominoAuth.description;
-            _dominoAuthnServiceCoreSection.serverUrl.text = dominoAuth.registryUrl;
+            _dominoAuthnServiceCoreSection.serverUrl.text = dominoAuth.serverUrl;
 
             _dominoAuthnServiceCoreSection.dominoName.addEventListener(Event.CHANGE, handleSectionChange);
             _dominoAuthnServiceCoreSection.dominoDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -4001,7 +4001,7 @@ public class PropertySheetMediator extends IocMediator {
         var oldName:String = dominoAuthn.name;
         dominoAuthn.name = _dominoAuthnServiceCoreSection.dominoName.text;
         dominoAuthn.description = _dominoAuthnServiceCoreSection.dominoDescription.text;
-        dominoAuthn.registryUrl = _dominoAuthnServiceCoreSection.serverUrl.text;
+        dominoAuthn.serverUrl = _dominoAuthnServiceCoreSection.serverUrl.text;
 
         if (oldName != dominoAuthn.name &&
                 dominoAuthn.delegatedAuthentications != null &&

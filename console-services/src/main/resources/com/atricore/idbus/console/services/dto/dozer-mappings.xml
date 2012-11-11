@@ -229,7 +229,7 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.BindAuthentication,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsAuthentication,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ClientCertAuthentication,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthn
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthentication
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.BasicAuthenticationDTO,
@@ -909,7 +909,7 @@
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthn</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthentication</class-a>
         <class-b>com.atricore.idbus.console.services.dto.DominoAuthnDTO</class-b>
     </mapping>
 

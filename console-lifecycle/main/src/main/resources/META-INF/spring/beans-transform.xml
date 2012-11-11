@@ -109,6 +109,9 @@
     <bean name="wiaAuthnClaimsChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.claims.WindowsIntegratedAuthenticationClaimsChannelTransformer"/>
 
+    <bean name="dominoAuthnClaimsChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.claims.DominoAuthenticationClaimsChannelTransformer"/>
+
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.STSTransformer"/>
 
@@ -126,6 +129,9 @@
 
     <bean name="windowsIntegratedAuthenticationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.WindowsIntegratedAuthenticationTransformer"/>
+
+    <bean name="dominoAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.DominoAuthenticationTransformer"/>
 
     <bean name="spLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPTransformer">
