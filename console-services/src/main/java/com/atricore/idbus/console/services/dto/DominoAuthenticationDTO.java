@@ -7,5 +7,5 @@ package com.atricore.idbus.console.services.dto;
  * Time: 6:08 PM
  * To change this template use File | Settings | File Templates.
  */
-public class DominoAuthnDTO extends AuthenticationMechanismDTO {
+public class DominoAuthenticationDTO extends AuthenticationMechanismDTO {
 }

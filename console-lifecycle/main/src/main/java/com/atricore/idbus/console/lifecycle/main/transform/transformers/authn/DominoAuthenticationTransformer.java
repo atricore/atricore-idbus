@@ -66,7 +66,7 @@ public class DominoAuthenticationTransformer extends AbstractTransformer {
         if (logger.isTraceEnabled())
             logger.trace("Generating Domino Authentication Scheme for IdP " + idpBean.getName());
 
-        Bean dominoAuthn = newBean(idpBeans, normalizeBeanName(das.getName()), "org.atricore.idbus.capabilities.domino.main.Domino7AuthenticationScheme");
+        Bean dominoAuthn = newBean(idpBeans, normalizeBeanName(da.getName()), "org.atricore.idbus.capabilities.domino.main.Domino7AuthenticationScheme");
 
         // priority
         setPropertyValue(dominoAuthn, "priority", da.getPriority() + "");
@@ -82,7 +82,7 @@ public class DominoAuthenticationTransformer extends AbstractTransformer {
     public Object after(TransformEvent event) throws TransformException {
         DominoAuthentication dominoAuthn = (DominoAuthentication) event.getData();
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
-        Bean basicAuthnBean = getBean(idpBeans, normalizeBeanName(dominoAuthn.getName()));
+        Bean dominoAuthnBean = getBean(idpBeans, normalizeBeanName(dominoAuthn.getName()));
         Bean idpBean = null;
         Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
         if (b.size() != 1) {
@@ -96,7 +96,7 @@ public class DominoAuthenticationTransformer extends AbstractTransformer {
 
             // Wire domino authentication scheme to authenticator instance
             Bean legacyAuthenticator = authenticators.iterator().next();
-            addPropertyBeansAsRefs(legacyAuthenticator, "authenticationSchemes", basicAuthnBean);
+            addPropertyBeansAsRefs(legacyAuthenticator, "authenticationSchemes", dominoAuthnBean);
 
             // Add Domino Authenticator
             Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
@@ -107,7 +107,7 @@ public class DominoAuthenticationTransformer extends AbstractTransformer {
 
         }
 
-        return basicAuthnBean;
+        return dominoAuthnBean;
     }
 
 }

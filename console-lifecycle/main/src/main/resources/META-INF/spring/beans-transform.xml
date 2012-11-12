@@ -589,6 +589,7 @@
                                         <ref bean="basicAuthnClaimsChannelTransformer"/>
                                         <ref bean="2faAuthnClaimsChannelTransformer"/>
                                         <ref bean="wiaAuthnClaimsChannelTransformer"/>
+                                        <ref bean="dominoAuthnClaimsChannelTransformer"/>
 
                                         <ref bean="stsTransformer"/>
                                         <ref bean="oauth2StsTransformer"/>
@@ -597,6 +598,7 @@
                                         <ref bean="twoFactorAuthenticationTransformer"/>
                                         <ref bean="directoryServiceAuthenticationTransformer"/>
                                         <ref bean="windowsIntegratedAuthenticationTransformer"/>
+                                        <ref bean="dominoAuthenticationTransformer"/>
 
                                         <!-- SP Transformers -->
                                         <ref bean="spLocalTransformer"/>
