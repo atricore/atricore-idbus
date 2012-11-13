@@ -2,10 +2,12 @@ package com.atricore.idbus.console.services.dto;
 
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 
+import java.io.Serializable;
+
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class SubjectNameIdentifierPolicyDTO {
+public class SubjectNameIdentifierPolicyDTO implements Serializable {
 
     private String name;
 
