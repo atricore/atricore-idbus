@@ -76,7 +76,7 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws SSOException {
-        logger.debug("Processing SP Initiated Single SingOn on HTTP Redirect");
+        logger.debug("Processing SP Initiated Single Logout on HTTP Redirect");
 
         try {
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
@@ -149,9 +149,6 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
                     idpSsoEndpoint.getResponseLocation());
 
             LogoutRequestType sloRequest = buildSLORequest(exchange, idp, idpChannel, ed, secCtx);
-
-
-            // TODO : Improve this, can it be handled by the binding?
             if (binding.isFrontChannel()) {
 
                 // Send the IDP SLO Request to the browser for delivery.

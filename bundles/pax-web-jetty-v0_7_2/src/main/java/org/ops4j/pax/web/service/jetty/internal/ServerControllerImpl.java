@@ -35,6 +35,18 @@ class ServerControllerImpl
     private Connector m_httpConnector;
     private Connector m_httpSecureConnector;
 
+<<<<<<< HEAD
+=======
+    // JDK Defaults
+    private String defaultTrustStore = System.getProperty("java.home") +
+            System.getProperty("file.separator") + "lib" +
+            System.getProperty("file.separator") + "security" +
+            System.getProperty("file.separator") + "cacerts";
+
+    private String defaultTrustPassword = "changeit";
+    private String defaultTrustStoreType = "JKS";
+
+>>>>>>> c66a131... * FIX : SSO Session status detection
     ServerControllerImpl( final JettyFactory jettyFactory )
     {
         m_jettyFactory = jettyFactory;

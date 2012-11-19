@@ -82,8 +82,9 @@ public class SessionManagerProducer extends AbstractJossoProducer {
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
-            // Send SP SSO Access Session, using SOAP Binding
+            String appId = request.getRequester();
 
+            // Send SP SSO Access Session, using SOAP Binding
             BindingChannel spBindingChannel = resolveSpBindingChannel((BindingChannel)channel, request.getRequester());
             if (spBindingChannel == null) {
                 logger.error("No SP Binding channel found for channel " + channel.getName());
@@ -93,7 +94,7 @@ public class SessionManagerProducer extends AbstractJossoProducer {
             EndpointDescriptor ed = resolveAccessSSOSessionEndpoint(channel, spBindingChannel);
 
             if (logger.isTraceEnabled())
-                logger.trace("Using SP Session Heart-Beat endpoint " + ed);
+                logger.trace("Using SP Session Heart-Beat endpoint " + ed  + " for partner application " + appId);
 
             SPSessionHeartBeatRequestType heartBeatReq = new SPSessionHeartBeatRequestType();
             heartBeatReq.setID(uuidGenerator.generateId());
@@ -104,6 +105,8 @@ public class SessionManagerProducer extends AbstractJossoProducer {
                     (SPSessionHeartBeatResponseType) spBindingChannel.getIdentityMediator().sendMessage(heartBeatReq, ed, channel);
 
             if (!heartBeatRes.isValid()) {
+                // Remove all session information, just in case
+                in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
                 throw new NoSuchSessionErrorMessage(request.getSsoSessionId());
             }
 

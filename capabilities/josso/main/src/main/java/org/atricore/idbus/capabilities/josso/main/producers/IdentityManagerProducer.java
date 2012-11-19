@@ -139,9 +139,13 @@ public class IdentityManagerProducer extends AbstractJossoProducer {
             logger.debug("Find user in session " + ssoSessionId);
 
         try {
-            JossoAuthenticationAssertion aa =
-                    ((JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId)).getAuthnAssertion();
-            
+            JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
+            JossoAuthenticationAssertion aa = authnCtx != null ? authnCtx.getAuthnAssertion() : null;
+            if (aa == null) {
+                logger.error("No Authentication Assertion found for requester/session " + request.getRequester()+ "/" + ssoSessionId);
+                throw new RuntimeException("No Authentication Assertion found for requester/session " + request.getRequester()+ "/" + ssoSessionId);
+            }
+
             Subject subject = aa.getSubject();
             Collection<SSORole> roles = toSSORoles(subject);
 
