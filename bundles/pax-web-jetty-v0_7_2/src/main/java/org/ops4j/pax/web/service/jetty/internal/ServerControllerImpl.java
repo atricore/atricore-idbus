@@ -36,6 +36,7 @@ class ServerControllerImpl
     private Connector m_httpConnector;
     private Connector m_httpSecureConnector;
 
+    // JDK Defaults
     private String defaultTrustStore = System.getProperty("java.home") +
             System.getProperty("file.separator") + "lib" +
             System.getProperty("file.separator") + "security" +
