@@ -95,17 +95,24 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
                 Set<Principal> principals = new HashSet<Principal>();
                 SSOIdentityManager idMgr = getIdentityManager();
                 if (idMgr == null)
-                    throw new IllegalStateException("SSOIdentityManager not configured for plan " + getClass().getSimpleName());
-
+                    logger.trace("Moving forward with token issuance without identity manager");
+                    
                 if (logger.isTraceEnabled())
                     logger.trace("Resolving SSOUser for " + username);
 
-                // Find SSOUser principal
-                SSOUser ssoUser = idMgr.findUser(username);
-                principals.add(ssoUser);
+                // Obtain SSOUser principal
+                SSOUser ssoUser = null;
+                SSORole[] ssoRoles = null;
+                if (idMgr != null) {
+                    ssoUser = idMgr.findUser(username);
+                    ssoRoles = idMgr.findRolesByUsername(username);
+                } else {
+                    ssoUser = new BaseUserImpl(username);
+                    ssoRoles = new BaseRoleImpl[0];
 
-                // Find SSORole principals
-                SSORole[] ssoRoles = getIdentityManager().findRolesByUsername(username);
+                }
+
+                principals.add(ssoUser);
                 principals.addAll(Arrays.asList(ssoRoles));
 
                 // Use existing SSOPolicyEnforcement principals

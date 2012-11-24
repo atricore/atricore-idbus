@@ -26,26 +26,22 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.authn.*;
+import org.atricore.idbus.kernel.main.authn.Credential;
+import org.atricore.idbus.kernel.main.authn.CredentialKey;
+import org.atricore.idbus.kernel.main.authn.CredentialProvider;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.atricore.idbus.kernel.main.authn.scheme.AuthenticationScheme;
-import org.atricore.idbus.kernel.main.store.UserKey;
-import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.BindContext;
 import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
-import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
-
-import java.io.InputStream;
-import java.util.Properties;
 
 
 /**
  * @author <a href="mailto:sshah@redhat.com">Sohil Shah</a>
  * @org.apache.xbean.XBean element="gatein-store"
  */
-public class GateinIdentityStore implements BindableCredentialStore, IdentityStore {
-    private static final Log log = LogFactory.getLog(GateinIdentityStore.class);
+public class GateInBindIdentityStore implements BindableCredentialStore {
+    private static final Log log = LogFactory.getLog(GateInBindIdentityStore.class);
 
     private AuthenticationScheme authenticationScheme = null;
 
@@ -53,43 +49,7 @@ public class GateinIdentityStore implements BindableCredentialStore, IdentitySto
     private String gateInPort;
     private String gateInContext;
 
-    /**
-     *
-     *
-     */
-    public GateinIdentityStore() {
-        InputStream is = null;
-        try {
-            ///Load the GateIn properties
-            Properties properties = new Properties();
-            is = Thread.currentThread().getContextClassLoader().getResourceAsStream("gatein.properties");
-            properties.load(is);
-
-            this.gateInHost = properties.getProperty("host");
-            this.gateInPort = properties.getProperty("port");
-            this.gateInContext = properties.getProperty("context");
-
-            log
-                    .info("-------------------------------------------------------------------");
-            log.info("GateIn Host: " + this.gateInHost);
-            log
-                    .info("GateIn Identity Plugin successfully started........................");
-            log
-                    .info("-------------------------------------------------------------------");
-        } catch (Exception e) {
-            this.authenticationScheme = null;
-
-            log.error(this, e);
-            throw new RuntimeException(
-                    "GateIn Identity Plugin registration failed....");
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (Exception e) {
-                }
-            }
-        }
+    public GateInBindIdentityStore() {
     }
 
     public void setAuthenticationScheme(AuthenticationScheme authenticationScheme) {
@@ -120,34 +80,6 @@ public class GateinIdentityStore implements BindableCredentialStore, IdentitySto
         this.gateInContext = gateInContext;
     }
 
-    // ----------------IdentityStore
-    // implementation------------------------------------------------------------------------------------------------------------------------
-    public boolean userExists(UserKey userKey) throws SSOIdentityException {
-        return true;
-    }
-
-    public BaseRole[] findRolesByUserKey(UserKey userKey)
-            throws SSOIdentityException {
-        return null;
-    }
-
-    public BaseUser loadUser(UserKey userKey) throws NoSuchUserException,
-            SSOIdentityException {
-        BaseUser user = new BaseUserImpl();
-        user.setName(userKey.toString());
-        return user;
-    }
-
-    // ---------------CredentialStore
-    // implementation----------------------------------------------------------------------------------------------------------------------
-    public Credential[] loadCredentials(CredentialKey credentialKey,
-                                        CredentialProvider credentialProvider) throws SSOIdentityException {
-        return null;
-    }
-
-    public Credential[] loadCredentials(CredentialKey credentialKey) throws SSOIdentityException {
-        return null;
-    }
 
     public boolean bind(String username, String password, BindContext bindContext)
             throws SSOAuthenticationException {
@@ -158,9 +90,9 @@ public class GateinIdentityStore implements BindableCredentialStore, IdentitySto
             log.debug("Password: " + password);
 
             StringBuilder urlBuffer = new StringBuilder();
-            urlBuffer.append("http://" + this.gateInHost + ":" + this.gateInPort + "/"
-                    + this.gateInContext + "/rest/sso/authcallback/auth/" + username + "/"
-                    + password);
+            urlBuffer.append("http://" + gateInHost + ":" + gateInPort +
+                    (!gateInContext.isEmpty() ? "/" + gateInContext : "") +
+                    "/rest/sso/authcallback/auth/" + username + "/"  + password);
 
             boolean success = this.executeRemoteCall(urlBuffer.toString());
 
@@ -194,5 +126,9 @@ public class GateinIdentityStore implements BindableCredentialStore, IdentitySto
                 method.releaseConnection();
             }
         }
+    }
+
+    public Credential[] loadCredentials(CredentialKey key, CredentialProvider cp) throws SSOIdentityException {
+        throw new UnsupportedOperationException("GateIn credentials cannot be accessed through this mechanism");
     }
 }

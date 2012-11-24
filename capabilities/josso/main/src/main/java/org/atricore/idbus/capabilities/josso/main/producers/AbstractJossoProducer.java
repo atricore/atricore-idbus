@@ -153,10 +153,10 @@ public abstract class AbstractJossoProducer extends AbstractCamelProducer<CamelM
 
         if (mapping != null) {
             if (logger.isDebugEnabled())
-                logger.debug("Partner App mappig found for application ID " + appId + "=" + mapping.getPartnerAppACS());
+                logger.debug("Partner Application mapping found for application ID " + appId + "=" + mapping.getPartnerAppACS());
         } else {
             if (logger.isDebugEnabled())
-                logger.debug("No Partner App mappig found for application ID " + appId);
+                logger.debug("No Partner Application mapping found for application ID " + appId);
         }
 
         return mapping;
