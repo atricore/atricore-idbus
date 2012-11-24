@@ -12,6 +12,8 @@ import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.DominoAuthentication;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
+import com.atricore.idbus.console.services.dto.JBossEPPAuthentication;
+import com.atricore.idbus.console.services.dto.JBossEPPAuthenticationService;
 import com.atricore.idbus.console.services.dto.TwoFactorAuthentication;
 import com.atricore.idbus.console.services.dto.WikidAuthenticationService;
 import com.atricore.idbus.console.services.dto.DominoAuthenticationService;
@@ -76,6 +78,8 @@ public class CreateDelegatedAuthenticationCommand extends IocSimpleCommand imple
                 authnMechanism = new DominoAuthentication();
             } else if (authnService is ClientCertAuthnService) {
                 authnMechanism = new ClientCertAuthentication();
+            } else if (authnService is JBossEPPAuthenticationService) {
+                authnMechanism = new JBossEPPAuthentication();
             }
 
             authnMechanism.name = Util.getAuthnMechanismName(authnMechanism, idp.name, authnService.name);

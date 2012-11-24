@@ -104,6 +104,7 @@
         <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
         <property name="dominoCreateMediator" ref="dominoCreateMediator"/>
         <property name="clientCertCreateMediator" ref="dominoCreateMediator"/>
+        <property name="jbosseppAuthenticationCreateMediator" ref="jbosseppAuthenticationCreateMediator"/>
         <property name="directoryServiceCreateMediator" ref="directoryServiceCreateMediator"/>
         <property name="windowsIntegratedAuthnCreateMediator" ref="windowsIntegratedAuthnCreateMediator"/>
 
@@ -822,6 +823,11 @@
             class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.clientcert.ClientCertCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="jbosseppAuthenticationCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
     <object id="directoryServiceCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -1077,6 +1083,7 @@
         <property name="wikidCreateMediator" ref="wikidCreateMediator"/>
         <property name="dominoCreateMediator" ref="dominoCreateMediator"/>
         <property name="clientCertCreateMediator" ref="clientCertCreateMediator"/>
+        <property name="jbosseppAuthenticationCreateMediator" ref="jbosseppAuthenticationCreateMediator"/>
         <property name="directoryServiceCreateMediator" ref="directoryServiceCreateMediator"/>
         <property name="windowsIntegratedAuthnCreateMediator" ref="windowsIntegratedAuthnCreateMediator"/>
     </object>

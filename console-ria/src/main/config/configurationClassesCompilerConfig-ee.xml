@@ -156,6 +156,7 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.domino.DominoCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.clientcert.ClientCertCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.directory.DirectoryServiceCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.authenticationservice.windows.WindowsIntegratedAuthnCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.idp.external.ExternalSaml2IdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.saml2.sp.external.ExternalSaml2ServiceProviderCreateMediator</symbol>

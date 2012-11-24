@@ -60,6 +60,8 @@
         <idbus.idojo.dbidentitystore.version>1.4.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
 
         <idbus.idojo.ldapidentitystore.version>1.4.0-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
+        <idbus.idojo.gateinidentitystore.version>1.4.0-SNAPSHOT</idbus.idojo.gateinidentitystore.version>
+
         <idbus.idojo.memoryidentitystore.version>1.4.0-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
 
         <idbus.idojo.memorysessionstore.version>1.4.0-SNAPSHOT</idbus.idojo.memorysessionstore.version>

@@ -49,6 +49,7 @@ import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
+import com.atricore.idbus.console.services.dto.JBossEPPAuthenticationService;
 import com.atricore.idbus.console.services.dto.JBossPortalResource;
 import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
@@ -177,23 +178,26 @@ public class BrowserModelFactory {
                 authnServiceNode.icon = EmbeddedIcons.dominoAuthenticationServiceMiniIcon;
             } else if (authnService is ClientCertAuthnService) {
                 authnServiceNode.icon = EmbeddedIcons.clientAuthenticationServiceMiniCertIcon;
+            } else if (authnService is JBossEPPAuthenticationService) {
+                authnServiceNode.icon = EmbeddedIcons.jbosseppAuthenticationMiniIcon
             }
+
             return authnServiceNode;
         }
 
-        public static function createIdentityVaultNode(identityVault:IdentitySource, selectable:Boolean, parentNode:BrowserNode):BrowserNode {
+        public static function createIdentitySourceNode(identitySource:IdentitySource, selectable:Boolean, parentNode:BrowserNode):BrowserNode {
             var identityVaultNode:BrowserNode = new BrowserNode();
-            identityVaultNode.id = Number(identityVault.id);
-            identityVaultNode.label = identityVault.name;
+            identityVaultNode.id = Number(identitySource.id);
+            identityVaultNode.label = identitySource.name;
             identityVaultNode.type = Constants.IDENTITY_VAULT_DEEP;
-            identityVaultNode.data = identityVault;
+            identityVaultNode.data = identitySource;
             identityVaultNode.selectable = selectable;
             identityVaultNode.parentNode = parentNode;
-            if(identityVault is DbIdentitySource){
+            if(identitySource is DbIdentitySource){
                 identityVaultNode.icon = EmbeddedIcons.dbIdentitySourceMiniIcon;
-            } else if(identityVault is LdapIdentitySource){
+            } else if(identitySource is LdapIdentitySource){
                 identityVaultNode.icon = EmbeddedIcons.ldapIdentitySourceMiniIcon;
-            } else if(identityVault is XmlIdentitySource){
+            } else if(identitySource is XmlIdentitySource){
                 identityVaultNode.icon = EmbeddedIcons.xmlIdentitySourceMiniIcon;
             } else {
                 identityVaultNode.icon = EmbeddedIcons.vaultMiniIcon;

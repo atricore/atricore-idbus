@@ -133,6 +133,9 @@
     <bean name="dominoAuthenticationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.DominoAuthenticationTransformer"/>
 
+    <bean name="jbosseppAuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.JBossEPPAuthenticationTransformer"/>
+
     <bean name="spLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPTransformer">
         <property name="sampleKeystore" ref="sampleKeystore"/>
@@ -599,6 +602,7 @@
                                         <ref bean="directoryServiceAuthenticationTransformer"/>
                                         <ref bean="windowsIntegratedAuthenticationTransformer"/>
                                         <ref bean="dominoAuthenticationTransformer"/>
+                                        <ref bean="jbosseppAuthenticationTransformer"/>
 
                                         <!-- SP Transformers -->
                                         <ref bean="spLocalTransformer"/>

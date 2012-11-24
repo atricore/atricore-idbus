@@ -114,6 +114,10 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/40x40/xml_identity_source.png")]
     public static var xmlIdentitySourceMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/jbossepp_authentication_service.png")]
+    public static var jbosseppAuthenticationMiniIcon:Class;
+
     // Resources
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/josso1_resource.png")]

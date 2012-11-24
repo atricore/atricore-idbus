@@ -355,6 +355,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.CREATE_XML_IDENTITY_SOURCE_ELEMENT,
+            ApplicationFacade.CREATE_JBOSSEPP_IDENTITYSOURCE_ELEMENT,
             ApplicationFacade.CREATE_JOSSO1_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_JOSSO2_RESOURCE_ELEMENT,
             ApplicationFacade.REMOVE_JOSSO1_RESOURCE_ELEMENT,
@@ -556,6 +557,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.CREATE_XML_IDENTITY_SOURCE_ELEMENT:
                 popupManager.showCreateXmlIdentitySourceWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_JBOSSEPP_IDENTITYSOURCE_ELEMENT:
+                popupManager.showCreateJBossEPPAuthenticationServiceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_JOSSO1_RESOURCE_ELEMENT:
                 popupManager.showCreateJOSSO1ResourceWindow(notification);

@@ -33,6 +33,7 @@
         <idbus.idojo.dbidentitystore.version>${idbus.idojo.dbidentitystore.version}</idbus.idojo.dbidentitystore.version>
         <idbus.idojo.ehcachesessionstore.version>${idbus.idojo.ehcachesessionstore.version}</idbus.idojo.ehcachesessionstore.version>
         <idbus.idojo.ldapidentitystore.version>${idbus.idojo.ldapidentitystore.version}</idbus.idojo.ldapidentitystore.version>
+        <idbus.idojo.gateinidentitystore.version>${idbus.idojo.gateinidentitystore.version}</idbus.idojo.gateinidentitystore.version>
         <idbus.idojo.memoryidentitystore.version>${idbus.idojo.memoryidentitystore.version}</idbus.idojo.memoryidentitystore.version>
         <idbus.idojo.memorysessionstore.version>${idbus.idojo.memorysessionstore.version}</idbus.idojo.memorysessionstore.version>
         <idbus.idojo.serializedsessionstore.version>${idbus.idojo.serializedsessionstore.version}</idbus.idojo.serializedsessionstore.version>

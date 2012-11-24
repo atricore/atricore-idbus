@@ -64,7 +64,8 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _clientCertCreateMediator:IIocMediator;
     private var _directoryServiceCreateMediator:IIocMediator;
     private var _windowsIntegratedAuthnCreateMediator:IIocMediator;
-    
+    private var _jbosseppAuthenticationCreateMediator:IIocMediator;
+
     // Commands
     private var _createSimpleSSOIdentityApplianceCommand:IIocCommand;
     private var _identityApplianceListLoadCommand:IIocCommand;
@@ -165,8 +166,9 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(wikidCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(dominoCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(clientCertCreateMediator.getConfigName());
-
         iocFacade.registerMediatorByConfigName(directoryServiceCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(jbosseppAuthenticationCreateMediator.getConfigName());
+
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
@@ -617,6 +619,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _windowsIntegratedAuthnCreateMediator = value;
     }
 
+    public function get jbosseppAuthenticationCreateMediator():IIocMediator {
+        return _jbosseppAuthenticationCreateMediator;
+    }
+
+    public function set jbosseppAuthenticationCreateMediator(value:IIocMediator):void {
+        _jbosseppAuthenticationCreateMediator = value;
+    }
+
 
     public function get createSimpleSSOIdentityApplianceCommand():IIocCommand {
         return _createSimpleSSOIdentityApplianceCommand;
@@ -962,5 +972,6 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     public function set subjectNameIDPolicyListCommand(value:IIocCommand):void {
         _subjectNameIDPolicyListCommand = value;
     }
+
 }
 }

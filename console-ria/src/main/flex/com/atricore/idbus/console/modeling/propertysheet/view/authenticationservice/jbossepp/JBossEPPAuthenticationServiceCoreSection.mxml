@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"
+          xmlns:fx="http://ns.adobe.com/mxml/2009"
+          xmlns:s="library://ns.adobe.com/flex/spark"
+          xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
+          paddingRight="5" paddingTop="5" paddingBottom="5">
+
+    <fx:Declarations>
+        <utils:NameValidator id="nameValidator" source="{jbosseppName}" required="true" property="text"/>
+        <mx:StringValidator id="descriptionValidator" source="{description}" required="true" property="text"/>
+        <mx:StringValidator id="hostValidator" source="{host}" required="true" property="text"/>
+        <mx:NumberValidator id="portValidator" source="{port}" required="true" property="text"
+                            minValue="1" maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <mx:StringValidator id="contextValidator" source="{context}" required="true" property="text"/>
+    </fx:Declarations>
+
+    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+             verticalGap="8" labelWidth="80">
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'jbossepp.name')}:" required="true">
+            <s:TextInput id="jbosseppName" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'jbossepp.description')}:">
+            <s:TextInput id="description" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'jbossepp.host')}:" required="true">
+            <s:TextInput id="host" width="300"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'jbossepp.port')}:" required="true">
+            <s:TextInput id="port" width="200"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'jbossepp.context')}:" required="true">
+            <s:TextInput id="context" width="300"/>
+        </mx:FormItem>
+
+    </mx:Form>
+
+</s:HGroup>

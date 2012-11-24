@@ -166,6 +166,8 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         Bean spChannelBean = newBean(idpBeans, spChannelName, SPChannelImpl.class.getName());
         ctx.put(contextSpChannelBean, spChannelBean);
 
+        Bean idMgr = getBean(idpBeans, idpBean.getName() + "-identity-manager");
+
         setPropertyValue(spChannelBean, "name", spChannelName);
         setPropertyValue(spChannelBean, "description", (spChannel != null ? spChannel.getDisplayName() : idpBean.getName()));
         setPropertyValue(spChannelBean, "location", resolveLocationUrl(idp, spChannel));
@@ -173,7 +175,11 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         if (spChannel != null)
             setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
-        setPropertyRef(spChannelBean, "identityManager", idpBean.getName() + "-identity-manager");
+
+        if (idMgr != null) {
+            setPropertyRef(spChannelBean, "identityManager", idpBean.getName() + "-identity-manager");
+        }
+
         setPropertyRef(spChannelBean, "member", idpMd.getName());
 
         // identityMediator
@@ -225,6 +231,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         
 
         // SP Channel plans
+
         Bean sloToSamlPlan = newBean(idpBeans, spChannelName + "-samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);
         setPropertyRef(sloToSamlPlan, "bpmsManager", "bpms-manager");
 
@@ -236,7 +243,9 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
 
         Bean stmtToAssertionPlan = newBean(idpBeans, spChannelName + "-samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
         setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
-        setPropertyRef(stmtToAssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
+
+        if (idMgr != null)
+            setPropertyRef(stmtToAssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
 
         // Add name id builders based on channel properties
 
