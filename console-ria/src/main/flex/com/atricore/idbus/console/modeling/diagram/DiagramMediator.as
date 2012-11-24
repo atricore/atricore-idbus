@@ -78,6 +78,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityL
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveInternalSaml2ServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJBossEPPAuthenticationServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO1ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO2ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2IdentityProviderElementRequest;
@@ -1004,6 +1005,16 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_CLIENTCERT_ELEMENT, rclientCert);
+                            break;
+                        case DiagramElementTypes.JBOSSEPP_AUTHENTICATION_ELEMENT_TYPE:
+                            var jbosseppas:JBossEPPAuthenticationService = _currentlySelectedNode.data as JBossEPPAuthenticationService;
+
+                            var rjbosseppas:RemoveJBossEPPAuthenticationServiceElementRequest =
+                                    new RemoveJBossEPPAuthenticationServiceElementRequest(jbosseppas);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_JBOSSEPP_AUTHENTICATION_SERVICE_ELEMENT, rjbosseppas);
                             break;
                         case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
                             var directoryService:DirectoryAuthenticationService = _currentlySelectedNode.data as DirectoryAuthenticationService;

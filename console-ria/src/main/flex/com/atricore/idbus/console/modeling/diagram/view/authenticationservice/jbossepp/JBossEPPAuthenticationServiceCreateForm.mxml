@@ -53,7 +53,7 @@
         <s:TextInput id="port" width="200"/>
     </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'jbossepp.context')}:" required="true">
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'jbossepp.context')}:" required="false">
         <s:TextInput id="context" width="300"/>
     </mx:FormItem>
 

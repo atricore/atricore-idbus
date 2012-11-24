@@ -33,7 +33,7 @@
         <mx:NumberValidator id="portValidator" source="{port}" required="true" property="text"
                             minValue="1" maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
-        <mx:StringValidator id="contextValidator" source="{context}" required="true" property="text"/>
+        <mx:StringValidator id="contextValidator" source="{context}" required="false" property="text"/>
     </fx:Declarations>
 
     <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
@@ -55,7 +55,7 @@
             <s:TextInput id="port" width="200"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'jbossepp.context')}:" required="true">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'jbossepp.context')}:" required="false">
             <s:TextInput id="context" width="300"/>
         </mx:FormItem>
 

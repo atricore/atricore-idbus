@@ -37,6 +37,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityA
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJBossEPPAuthenticationServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO1ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO2ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2IdentityProviderElementRequest;
@@ -401,6 +402,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_CLIENTCERT_ELEMENT,
             ApplicationFacade.REMOVE_WIKID_ELEMENT,
             ApplicationFacade.REMOVE_CLIENTCERT_ELEMENT,
+            ApplicationFacade.REMOVE_JBOSSEPP_AUTHENTICATION_SERVICE_ELEMENT,
             ApplicationFacade.REMOVE_DOMINO_ELEMENT,
             ApplicationFacade.CREATE_DIRECTORY_SERVICE_ELEMENT,
             ApplicationFacade.REMOVE_DIRECTORY_SERVICE_ELEMENT,
@@ -831,6 +833,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case ApplicationFacade.REMOVE_CLIENTCERT_ELEMENT:
                 var rclientcert:RemoveClientCertElementRequest = RemoveClientCertElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rclientcert.clientCertAuthnService);
+                break;
+            case ApplicationFacade.REMOVE_JBOSSEPP_AUTHENTICATION_SERVICE_ELEMENT:
+                var rjbosseppas:RemoveJBossEPPAuthenticationServiceElementRequest = RemoveJBossEPPAuthenticationServiceElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.AUTHENTICATION_SERVICE_REMOVE, rjbosseppas.jbosseppAuthentication);
                 break;
             case ApplicationFacade.CREATE_DIRECTORY_SERVICE_ELEMENT:
                 popupManager.showCreateDirectoryServiceWindow(notification);

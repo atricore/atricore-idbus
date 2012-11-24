@@ -4165,7 +4165,10 @@ public class PropertySheetMediator extends IocMediator {
 
             _validators = [];
             _validators.push(_jbosseppAuthenticationCoreSection.nameValidator);
-
+            _validators.push(_jbosseppAuthenticationCoreSection.descriptionValidator);
+            _validators.push(_jbosseppAuthenticationCoreSection.hostValidator);
+            _validators.push(_jbosseppAuthenticationCoreSection.portValidator);
+            _validators.push(_jbosseppAuthenticationCoreSection.contextValidator);
         }
     }
 
