@@ -153,6 +153,7 @@
         <idbus.idojo.serializedsessionstore.version>1.4.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
         <idbus.idojo.strongauthscheme.version>1.4.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
         <idbus.idojo.impusr.version>1.4.0-SNAPSHOT</idbus.idojo.impusr.version>
+        <idbus.idojo.gateinidentitystore.version>1.4.0-SNAPSHOT</idbus.idojo.gateinidentitystore.version>
 
         <idbus.fragment.mysql-connector-java_v5_1_10.version>1.4.0-SNAPSHOT
         </idbus.fragment.mysql-connector-java_v5_1_10.version>
@@ -1740,7 +1741,17 @@
             <version>${idbus.idojo.impusr.version}</version>
             <type>pom</type>
         </dependency>
-
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.gateinidentitystore</artifactId>
+            <version>${idbus.idojo.gateinidentitystore.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.gateinidentitystore</artifactId>
+            <version>${idbus.idojo.gateinidentitystore.version}</version>
+            <type>pom</type>
+        </dependency>
 
         <!-- =============================== -->
         <!-- Other dependencies              -->
