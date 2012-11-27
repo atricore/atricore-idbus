@@ -19,6 +19,7 @@
 
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
 import com.atricore.idbus.console.lifecycle.main.transform.*;
@@ -29,16 +30,28 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wic
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket.ContextParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
+import org.atricore.idbus.capabilities.sso.main.binding.logging.SSOLogMessageBuilder;
+import org.atricore.idbus.capabilities.sso.main.select.SSOEntitySelectorMediator;
+import org.atricore.idbus.capabilities.sso.main.select.internal.EntitySelectorManagerImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerImpl;
+import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
+import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
+import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
+import org.atricore.idbus.kernel.main.mediation.provider.EntitySelectorProviderImpl;
+import org.atricore.idbus.kernel.main.mediation.select.SelectorChannelImpl;
 import org.atricore.idbus.kernel.planning.IdentityPlanRegistryImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.OsgiCamelIdentityMediationUnitContainerImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 
 import java.util.*;
+import java.util.List;
 import java.util.Set;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * Creates basic components configuration for an Identity Appliance Unit.
@@ -59,6 +72,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
     @Override
     public void before(TransformEvent event) {
 
+        IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
         IdentityApplianceDefinition ida = (IdentityApplianceDefinition) event.getData();
         IdApplianceTransformationContext context = event.getContext();
         IdProjectModule module = context.getCurrentModule();
@@ -131,7 +145,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
 
         // Properties
         setPropertyRef(cotMgr, "cot", cot.getName());
-        
+
         // -------------------------------------------------------
         // Define Session Event Manager
         // -------------------------------------------------------
@@ -157,6 +171,91 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         setPropertyRef(stateManager, "cacheManager", cacheManager.getName());
         setPropertyValue(stateManager, "cacheName", module.getName() + "-psm-cache");  //cache name needs to be unique
         setPropertyValue(stateManager, "forceNonDirtyStorage", false);
+
+        // -------------------------------------------------------
+        // Define Entity Selector Provider
+        // -------------------------------------------------------
+
+        Bean selectorMgr = newBean(idauBeans, appliance.getName() + "-entity-selector-mgr", EntitySelectorManagerImpl.class);
+        setPropertyRef(selectorMgr, "registry", "entity-selection-strategies-registry");
+
+        Bean entitySelectorProvider = newBean(idauBeans, appliance.getName() + "-entity-selector", EntitySelectorProviderImpl.class);
+        setPropertyValue(entitySelectorProvider, "name", entitySelectorProvider.getName());
+        setPropertyValue(entitySelectorProvider, "role", "{urn:org:atricore:idbus:sso:metadata}EntitySelectorDescriptor");
+        setPropertyRef(entitySelectorProvider, "unitContainer", appliance.getName() + "-container");
+        setPropertyRef(entitySelectorProvider, "cotManager", cotMgr.getName());
+        setPropertyRef(entitySelectorProvider, "stateManager", stateManager.getName());
+        setPropertyRef(entitySelectorProvider, "channel", idauName + "-entity-selector-channel");
+
+
+        Bean ssoEntitySelectorMediator = newBean(idauBeans, appliance.getName() + "-entity-selector-mediator", SSOEntitySelectorMediator.class);
+        setPropertyValue(ssoEntitySelectorMediator, "logMessages", "true");
+        setPropertyRef(ssoEntitySelectorMediator, "selectorManager", selectorMgr.getName());
+        if (ida.getIdpSelector() != null)
+            setPropertyValue(ssoEntitySelectorMediator, "preferredStrategy", ida.getIdpSelector().getName());
+        else
+            setPropertyValue(ssoEntitySelectorMediator, "preferredStrategy", "preferred-idp-selector");
+
+        setPropertyRef(ssoEntitySelectorMediator, "artifactQueueManager", "artifactQueueManager");
+
+        Bean samlr2BindingFactory = newAnonymousBean(SamlR2BindingFactory.class);
+        setPropertyBean(ssoEntitySelectorMediator, "bindingFactory", samlr2BindingFactory);
+
+        // logger
+        List<Bean> entitySelectorLogBuilders = new ArrayList<Bean>();
+        entitySelectorLogBuilders.add(newAnonymousBean(SSOLogMessageBuilder.class));
+        entitySelectorLogBuilders.add(newAnonymousBean(CamelLogMessageBuilder.class));
+        entitySelectorLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
+
+        Bean entitySelectorLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
+        entitySelectorLogger.setName(entitySelectorProvider.getName() + "-mediation-logger");
+        setPropertyValue(entitySelectorLogger, "category", ida.getNamespace() + "." + ida.getName() + ".wire." + entitySelectorProvider.getName());
+        setPropertyAsBeans(entitySelectorLogger, "messageBuilders", entitySelectorLogBuilders);
+        setPropertyBean(ssoEntitySelectorMediator, "logger", entitySelectorLogger);
+
+        // errorUrl
+        setPropertyValue(ssoEntitySelectorMediator, "errorUrl", resolveUiErrorLocation(appliance));
+
+        // warningUrl
+        setPropertyValue(ssoEntitySelectorMediator, "warningUrl", resolveUiWarningLocation(appliance));
+
+        // dashboardUrl
+        setPropertyValue(ssoEntitySelectorMediator, "dashboardUrl", "");
+
+        // Channel
+
+        Bean entitySelectorChannel = newBean(idauBeans, appliance.getName() + "-entity-selector-channel", SelectorChannelImpl.class);
+        setPropertyValue(entitySelectorChannel, "name", entitySelectorChannel.getName());
+
+        setPropertyValue(entitySelectorChannel, "location", resolveLocationUrl(ida.getLocation()) + "/SSO/SELECTOR");
+        setPropertyRef(entitySelectorChannel, "unitContainer", appliance.getName() + "-container");
+        setPropertyRef(entitySelectorChannel, "identityMediator", ssoEntitySelectorMediator.getName());
+        setPropertyRef(entitySelectorChannel, "provider", entitySelectorProvider.getName());
+
+        List<Bean> endpoints = new ArrayList<Bean>();
+
+        Bean ssoIdPSelectEndpoint = newBean(idauBeans, appliance.getName() + "-entity-selector-channel-sso-idpselect-http-art", IdentityMediationEndpointImpl.class);
+        setPropertyValue(ssoIdPSelectEndpoint, "name", ssoIdPSelectEndpoint.getName());
+        setPropertyValue(ssoIdPSelectEndpoint, "type", "{urn:org:atricore:idbus:sso:metadata}IdPSelectorService");
+        setPropertyValue(ssoIdPSelectEndpoint, "binding", "urn:org:atricore:idbus:sso:bindings:HTTP-Artifact");
+        setPropertyValue(ssoIdPSelectEndpoint, "location", "/IDP");
+        endpoints.add(ssoIdPSelectEndpoint);
+
+        setPropertyAsBeans(entitySelectorChannel, "endpoints", endpoints);
+
+        // Wire provider to COT
+        /* TODO : For now only federated providers accepted by COT
+        addPropertyBeansAsRefsToSet(cot, "providers", entitySelectorProvider);
+        String dependsOn = cot.getDependsOn();
+        if (dependsOn == null || dependsOn.equals("")) {
+            cot.setDependsOn(entitySelectorProvider.getName());
+        } else {
+            cot.setDependsOn(dependsOn + "," + entitySelectorProvider.getName());
+        }
+        */
+
+        // Wire channels to Unit Container
+        addPropertyBeansAsRefs(idMediationUnit , "channels", entitySelectorChannel);
 
         // -------------------------------------------------------
         // Define MBean Server Factory bean
@@ -251,6 +350,17 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         cacheManagerFactory.setInterface("org.atricore.idbus.bundles.ehcache.CacheManagerFactory");
 
         idauBeansOsgi.getImportsAndAliasAndBeen().add(cacheManagerFactory);
+
+        // ----------------------------------------
+        // Selection Strategy Registry
+        // ----------------------------------------
+        Reference selectionStrategyRegistry = new Reference();
+        selectionStrategyRegistry.setId("entity-selection-strategies-registry");
+        selectionStrategyRegistry.setCardinality("1..1");
+        selectionStrategyRegistry.setTimeout(60L);
+        selectionStrategyRegistry.setInterface("org.atricore.idbus.capabilities.sso.main.select.spi.SelectionStrategiesRegistry");
+
+        idauBeansOsgi.getImportsAndAliasAndBeen().add(selectionStrategyRegistry);
 
         // ----------------------------------------
         // Store beans as module resources

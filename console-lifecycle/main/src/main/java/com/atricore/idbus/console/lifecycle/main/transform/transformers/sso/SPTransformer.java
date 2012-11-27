@@ -214,6 +214,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
         setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLO/ARTIFACT");
+        setPropertyValue(spMediator, "idpSelector", resolveLocationUrl(appliance.getIdApplianceDefinition().getLocation()) + "/SSO/SELECTOR/IDP");
         
         setPropertyValue(spMediator, "logMessages", true);
 
@@ -423,7 +424,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         }
 
-        // Wire providerInternalSaml2 to COT
+        // Wire provider to COT
         Collection<Bean> cots = getBeansOfType(baseBeans, CircleOfTrustImpl.class.getName());
         if (cots.size() == 1) {
             Bean cot = cots.iterator().next();
@@ -436,7 +437,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
             }
         }
 
-        // Mediation Unit
+        // Wire channels to Unit Container
         Collection<Bean> mus = getBeansOfType(baseBeans, OsgiIdentityMediationUnit.class.getName());
         if (mus.size() == 1) {
             Bean mu = mus.iterator().next();

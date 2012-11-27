@@ -279,6 +279,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         // This is actually an IDP-Proxy endpoint IDBUS/DIAGEO/PROXY1-IDP
         setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACSPROXY/ARTIFACT");
         setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLOPROXY/ARTIFACT");
+        setPropertyValue(spMediator, "idpSelector", resolveLocationUrl(appliance.getIdApplianceDefinition().getLocation()) + "/SSO/SELECTOR/IDP");
 
         setPropertyValue(spMediator, "logMessages", true);
 
