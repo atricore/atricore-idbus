@@ -195,8 +195,13 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
             addError("Identity Provider needs at least one Authentication Mechanism");
         }
 
-        if (node.getIdentityLookup() == null)
-            addError("Identity Provider needs an Indentity Lookup connection");
+//        if (node.getIdentityLookup() == null)
+//            addError("Identity Provider needs an Identity Lookup connection");
+
+        if ( (node.getDelegatedAuthentications() != null && node.getDelegatedAuthentications().size() == 0) &&
+             (node.getIdentityLookup() == null) ) {
+          addError("Identity Provider needs at least either one Identity Verification or Lookup connection");
+        }
 
         if (node.getConfig() ==null)
             addError("No configuration found for IDP " + node.getName());
@@ -261,7 +266,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         }
 
         if (node.getServiceConnection() == null) {
-            addError("Local Serivice Provider requires a service connection " + node.getName());
+            addError("Local Service Provider requires a service connection " + node.getName());
         }
 
         if (node.getAccountLinkagePolicy() == null)

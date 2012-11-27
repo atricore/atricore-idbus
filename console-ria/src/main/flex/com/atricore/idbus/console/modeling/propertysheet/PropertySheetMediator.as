@@ -53,6 +53,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.E
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.delegatedauthentication.DelegatedAuthenticationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.alfresco.AlfrescoResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.coldfusion.ColdfusionResourceCoreSection;
@@ -138,6 +139,7 @@ import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.ImpersonateUserPolicy;
 import com.atricore.idbus.console.services.dto.ImpersonateUserPolicyType;
+import com.atricore.idbus.console.services.dto.JBossEPPAuthenticationService;
 import com.atricore.idbus.console.services.dto.JBossPortalResource;
 import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
@@ -284,6 +286,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _wikidAuthnServiceCoreSection:WikidAuthnServiceCoreSection;
     private var _dominoAuthnServiceCoreSection:DominoAuthenticationServiceCoreSection;
     private var _clientCertAuthnServiceCoreSection:ClientCertAuthnServiceCoreSection;
+    private var _jbosseppAuthenticationCoreSection:JBossEPPAuthenticationServiceCoreSection;
     private var _directoryAuthnServiceCoreSection:DirectoryAuthnServiceCoreSection;
     private var _directoryAuthnServiceLookupSection:DirectoryAuthnServiceLookupSection;
     private var _windowsIntegratedAuthnCoreSection:WindowsIntegratedAuthnCoreSection;
@@ -483,6 +486,8 @@ public class PropertySheetMediator extends IocMediator {
                     enableDominoAuthnPropertyTabs();
                 } else if (_currentIdentityApplianceElement is ClientCertAuthnService) {
                     enableClientCertAuthnPropertyTabs();
+                } else if (_currentIdentityApplianceElement is JBossEPPAuthenticationService) {
+                    enableJBossEPPAuthenticationServicePropertyTabs();
                 } else if (_currentIdentityApplianceElement is WindowsIntegratedAuthentication) {
                     enableWindowsIntegratedAuthnPropertyTabs();
                 } else if (_currentIdentityApplianceElement is IdentitySource) {
@@ -4160,6 +4165,104 @@ public class PropertySheetMediator extends IocMediator {
         _dirty = false;
     }
 
+
+    // JBoss EPP authentication service
+
+    protected function enableJBossEPPAuthenticationServicePropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _jbosseppAuthenticationCoreSection = new JBossEPPAuthenticationServiceCoreSection();
+        corePropertyTab.addElement(_jbosseppAuthenticationCoreSection  );
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _jbosseppAuthenticationCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleJBossEPPAuthenticationServiceCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleJBossEPPAuthenticationServiceCorePropertyTabRollOut);
+
+    }
+
+    private function handleJBossEPPAuthenticationServiceCorePropertyTabCreationComplete(event:Event):void {
+        var jbosseppas:JBossEPPAuthenticationService = _currentIdentityApplianceElement as JBossEPPAuthenticationService;
+
+        if (jbosseppas != null) {
+            // bind view
+
+            _jbosseppAuthenticationCoreSection.jbosseppName.text = jbosseppas.name;
+            _jbosseppAuthenticationCoreSection.description.text = jbosseppas.description;
+            _jbosseppAuthenticationCoreSection.host.text = jbosseppas.host;
+            _jbosseppAuthenticationCoreSection.port.text = jbosseppas.port;
+            _jbosseppAuthenticationCoreSection.context.text = jbosseppas.context;
+
+            _jbosseppAuthenticationCoreSection.jbosseppName.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppAuthenticationCoreSection.description.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppAuthenticationCoreSection.host.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppAuthenticationCoreSection.port.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppAuthenticationCoreSection.context.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_jbosseppAuthenticationCoreSection.nameValidator);
+            _validators.push(_jbosseppAuthenticationCoreSection.descriptionValidator);
+            _validators.push(_jbosseppAuthenticationCoreSection.hostValidator);
+            _validators.push(_jbosseppAuthenticationCoreSection.portValidator);
+            _validators.push(_jbosseppAuthenticationCoreSection.contextValidator);
+        }
+    }
+
+    private function handleJBossEPPAuthenticationServiceCorePropertyTabRollOut(e:Event):void {
+
+        if (_dirty && validate(true)) {
+
+            //bind model
+            updateJBossEPPAuthenticationService();
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+
+    }
+
+    protected function updateJBossEPPAuthenticationService():void {
+        var jbosseppas:JBossEPPAuthenticationService = _currentIdentityApplianceElement as JBossEPPAuthenticationService;
+        var oldName:String = jbosseppas.name;
+
+        jbosseppas.name = _jbosseppAuthenticationCoreSection.jbosseppName.text;
+        jbosseppas.description = _jbosseppAuthenticationCoreSection.description.text;
+        jbosseppas.host = _jbosseppAuthenticationCoreSection.host.text;
+        jbosseppas.port = _jbosseppAuthenticationCoreSection.port.text;
+        jbosseppas.context = _jbosseppAuthenticationCoreSection.context.text;
+
+        if (oldName != jbosseppas.name &&
+                jbosseppas.delegatedAuthentications != null &&
+                jbosseppas.delegatedAuthentications.length > 0) {
+            for each (var delegatedAuthentication:DelegatedAuthentication in jbosseppas.delegatedAuthentications) {
+                var idp:IdentityProvider = delegatedAuthentication.idp;
+                if (idp.authenticationMechanisms != null) {
+                    for each (var authenticationMechanism:AuthenticationMechanism in idp.authenticationMechanisms) {
+                        if (authenticationMechanism.delegatedAuthentication == delegatedAuthentication) {
+                            authenticationMechanism.name = Util.getAuthnMechanismName(authenticationMechanism, idp.name, jbosseppas.name);
+                            authenticationMechanism.displayName = Util.getAuthnMechanismDisplayName(authenticationMechanism, idp.name, jbosseppas.name);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
 
     // Identity vault
     

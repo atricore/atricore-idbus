@@ -181,7 +181,7 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                                 connectionsNodeAdded = true;
                             }
                             var idSource:IdentitySource = locProv.identityLookup.identitySource;
-                            var newIdentityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(idSource, true, providerNode);
+                            var newIdentityVaultNode:BrowserNode = BrowserModelFactory.createIdentitySourceNode(idSource, true, providerNode);
                             providerNode.addChild(newIdentityVaultNode);
                             // add identityLookup to connections node
                             var identityLookupNode:BrowserNode = BrowserModelFactory.createConnectionNode(locProv.identityLookup, true, connectionsNode);
@@ -274,7 +274,7 @@ public class BrowserMediator extends IocMediator implements IDisposable {
 
             if (identityApplianceDefinition.identitySources != null) {
                 for (i = 0; i < identityApplianceDefinition.identitySources.length; i++) {
-                    var identityVaultNode1:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identitySources[i], true, _applianceRootNode);
+                    var identityVaultNode1:BrowserNode = BrowserModelFactory.createIdentitySourceNode(identityApplianceDefinition.identitySources[i], true, _applianceRootNode);
                     _applianceRootNode.addChild(identityVaultNode1);
                     // set connections
                     var connections1:ArrayCollection = idSourceConnections[identityApplianceDefinition.identitySources[i]];

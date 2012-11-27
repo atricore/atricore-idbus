@@ -162,14 +162,16 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ClientCertAuthnService,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthenticationService
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthenticationService,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPAuthenticationService
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO,
                 com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO ,
                 com.atricore.idbus.console.services.dto.WindowsIntegratedAuthenticationDTO,
                 com.atricore.idbus.console.services.dto.ClientCertAuthnServiceDTO,
-                com.atricore.idbus.console.services.dto.DominoAuthenticationServiceDTO
+                com.atricore.idbus.console.services.dto.DominoAuthenticationServiceDTO,
+                com.atricore.idbus.console.services.dto.JBossEPPAuthenticationServiceDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -229,7 +231,8 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.BindAuthentication,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsAuthentication,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ClientCertAuthentication,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthentication
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthentication,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPAuthentication
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.BasicAuthenticationDTO,
@@ -237,7 +240,8 @@
                 com.atricore.idbus.console.services.dto.BindAuthenticationDTO,
                 com.atricore.idbus.console.services.dto.WindowsAuthenticationDTO,
                 com.atricore.idbus.console.services.dto.ClientCertAuthenticationDTO,
-                com.atricore.idbus.console.services.dto.DominoAuthenticationDTO
+                com.atricore.idbus.console.services.dto.DominoAuthenticationDTO,
+                com.atricore.idbus.console.services.dto.JBossEPPAuthenticationDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -360,15 +364,16 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.DirectoryAuthenticationService,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ClientCertAuthnService,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthenticationService
-
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoAuthenticationService,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPAuthenticationService
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.WikidAuthenticationServiceDTO,
                 com.atricore.idbus.console.services.dto.DirectoryAuthenticationServiceDTO,
                 com.atricore.idbus.console.services.dto.WindowsIntegratedAuthenticationDTO,
                 com.atricore.idbus.console.services.dto.ClientCertAuthnServiceDTO,
-                com.atricore.idbus.console.services.dto.DominoAuthenticationServiceDTO
+                com.atricore.idbus.console.services.dto.DominoAuthenticationServiceDTO,
+                com.atricore.idbus.console.services.dto.JBossEPPAuthenticationServiceDTO
             </b-hint>
         </field>
     </mapping>
@@ -830,13 +835,15 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.DbIdentitySource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.LdapIdentitySource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.XmlIdentitySource,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentitySource
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentitySource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPAuthenticationService
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.DbIdentitySourceDTO,
                 com.atricore.idbus.console.services.dto.LdapIdentitySourceDTO,
                 com.atricore.idbus.console.services.dto.XmlIdentitySourceDTO,
-                com.atricore.idbus.console.services.dto.EmbeddedIdentitySourceDTO
+                com.atricore.idbus.console.services.dto.EmbeddedIdentitySourceDTO,
+                com.atricore.idbus.console.services.dto.JBossEPPAuthenticationServiceDTO
             </b-hint>
         </field>
         <field>
@@ -876,6 +883,11 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.XmlIdentitySource</class-a>
         <class-b>com.atricore.idbus.console.services.dto.XmlIdentitySourceDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPAuthenticationService</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.JBossEPPAuthenticationServiceDTO</class-b>
     </mapping>
 
     <mapping>

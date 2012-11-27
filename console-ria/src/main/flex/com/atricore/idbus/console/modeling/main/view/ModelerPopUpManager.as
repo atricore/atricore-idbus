@@ -40,6 +40,9 @@ import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.wi
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.windows.WindowsIntegratedAuthnCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.alfresco.AlfrescoResourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.resources.alfresco.AlfrescoResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateForm;
@@ -177,6 +180,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _wikidCreateMediator:WikidCreateMediator;
     private var _dominoCreateMediator:DominoCreateMediator;
     private var _clientCertCreateMediator:ClientCertCreateMediator;
+    private var _jbosseppAuthenticationCreateMediator:JBossEPPAuthenticationServiceCreateMediator;
     private var _directoryServiceCreateMediator:DirectoryServiceCreateMediator;
     private var _windowsIntegratedAuthnCreateMediator:WindowsIntegratedAuthnCreateMediator;
     private var _sharepointResourceCreateMediator:SharepointResourceCreateMediator;
@@ -229,6 +233,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _wikidCreateForm:WikidCreateForm;
     private var _dominoCreateForm:DominoCreateForm;
     private var _clientCertCreateForm:ClientCertCreateForm;
+    private var _jbossEppIdentitySourceCreateForm:JBossEPPAuthenticationServiceCreateForm;
     private var _directoryServiceCreateForm:DirectoryServiceCreateForm;
     private var _windowsIntegratedAuthnCreateForm:WindowsIntegratedAuthnCreateForm;
     private var _sharepoint2010ResourceCreateForm:SharepointResourceCreateForm;
@@ -602,6 +607,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set clientCertCreateMediator(value:ClientCertCreateMediator):void {
         _clientCertCreateMediator = value;
+    }
+
+    public function get jbosseppAuthenticationCreateMediator():JBossEPPAuthenticationServiceCreateMediator {
+        return _jbosseppAuthenticationCreateMediator;
+    }
+
+    public function set jbosseppAuthenticationCreateMediator(value:JBossEPPAuthenticationServiceCreateMediator):void {
+        _jbosseppAuthenticationCreateMediator = value;
     }
 
     public function get directoryServiceCreateMediator():DirectoryServiceCreateMediator {
@@ -1652,6 +1665,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
         clientCertCreateMediator.handleNotification(_lastWindowNotification);
     }
 
+    public function showCreateJBossEPPAuthenticationServiceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createJBossEPPAuthenticationServiceCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.jbosseppAuthentication");
+        _popup.width = 510;
+        _popup.height = 225;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_jbossEppIdentitySourceCreateForm);
+    }
+
+    private function createJBossEPPAuthenticationServiceCreateForm():void {
+        _jbossEppIdentitySourceCreateForm = new JBossEPPAuthenticationServiceCreateForm();
+        _jbossEppIdentitySourceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleJBossEPPAuthenticationServiceWindowCreateFormCreated);
+    }
+
+    private function handleJBossEPPAuthenticationServiceWindowCreateFormCreated(event:FlexEvent):void {
+        jbosseppAuthenticationCreateMediator.setViewComponent(_jbossEppIdentitySourceCreateForm);
+        jbosseppAuthenticationCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
     public function showCreateDirectoryServiceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createDirectoryServiceCreateForm();
@@ -1695,5 +1729,6 @@ public class ModelerPopUpManager extends BasePopUpManager {
         windowsIntegratedAuthnCreateMediator.setViewComponent(_windowsIntegratedAuthnCreateForm);
         windowsIntegratedAuthnCreateMediator.handleNotification(_lastWindowNotification);
     }
+
 }
 }

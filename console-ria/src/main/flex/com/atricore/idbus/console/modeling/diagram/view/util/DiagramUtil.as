@@ -236,6 +236,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.ldapIdentitySourceMiniIcon;
             case DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE:
                 return EmbeddedIcons.xmlIdentitySourceMiniIcon;
+            case DiagramElementTypes.JBOSSEPP_AUTHENTICATION_ELEMENT_TYPE:
+                return EmbeddedIcons.jbosseppAuthenticationMiniIcon;
             case DiagramElementTypes.JOSSO1_RESOURCE_ELEMENT_TYPE:
                 return EmbeddedIcons.josso1ResourceMiniIcon;
             case DiagramElementTypes.JOSSO2_RESOURCE_ELEMENT_TYPE:

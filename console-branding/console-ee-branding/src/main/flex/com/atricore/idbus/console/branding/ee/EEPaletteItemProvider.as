@@ -76,6 +76,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
 
         );
 
+        authenticationPaletteDrawer.add(
+                new PaletteEntry("JBoss EPP Authentication", EmbeddedIcons.jbosseppAuthenticationMiniIcon, "JBoss EPP Authentication Entry", DiagramElementTypes.JBOSSEPP_AUTHENTICATION_ELEMENT_TYPE)
+        );
+
         pr.add(authenticationPaletteDrawer);
 
         // Identity Sources drawer

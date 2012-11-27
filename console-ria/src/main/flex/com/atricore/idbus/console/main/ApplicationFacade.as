@@ -180,6 +180,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_WIKID_ELEMENT:String = "createWikidElement";
     public static const CREATE_DOMINO_ELEMENT:String = "createDominoElement";
     public static const CREATE_CLIENTCERT_ELEMENT:String = "createClientCertElement";
+    public static const CREATE_JBOSSEPP_IDENTITYSOURCE_ELEMENT:String = "createJBossEPPAuthenticationServiceElement";
     public static const CREATE_DIRECTORY_SERVICE_ELEMENT:String = "createDirectoryServiceElement";
     public static const CREATE_WINDOWS_INTEGRATED_AUTHN_ELEMENT:String = "createWindowsIntegratedAuthnElement";
     public static const DIAGRAM_ELEMENT_CREATION_COMPLETE:String = "diagramElementCreationComplete";
@@ -212,6 +213,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const REMOVE_WIKID_ELEMENT:String = "removeWikidElement";
     public static const REMOVE_DOMINO_ELEMENT:String = "removeDominoElement";
     public static const REMOVE_CLIENTCERT_ELEMENT:String = "removeClientCertElement";
+    public static const REMOVE_JBOSSEPP_AUTHENTICATION_SERVICE_ELEMENT:String = "removeJBossEPPAuthenticationServiceElement";
     public static const REMOVE_DIRECTORY_SERVICE_ELEMENT:String = "removeDirectoryServiceElement";
     public static const REMOVE_WINDOWS_INTEGRATED_AUTHN_ELEMENT:String = "removeWindowsIntegratedAuthnElement";
     public static const CREATE_JOSSO1_RESOURCE_ELEMENT:String = "createJosso1ResourceElement";

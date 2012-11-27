@@ -50,6 +50,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateGoogleApp
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateJBossEPPAuthenticationServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateJosso1ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateJosso2ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdentitySourceElementRequest;
@@ -77,6 +78,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityL
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveInternalSaml2ServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJBossEPPAuthenticationServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO1ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO2ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2IdentityProviderElementRequest;
@@ -112,6 +114,7 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.JBossEPPAuthenticationService;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
 import com.atricore.idbus.console.services.dto.JOSSO2Resource;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
@@ -749,6 +752,20 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_CLIENTCERT_ELEMENT, cclientCert);
                         break;
+                    case DiagramElementTypes.JBOSSEPP_AUTHENTICATION_ELEMENT_TYPE:
+                        var jbosseppOwnerAppliance:IdentityAppliance = _identityAppliance;
+
+                        var cJbossEpp:CreateJBossEPPAuthenticationServiceElementRequest = new CreateJBossEPPAuthenticationServiceElementRequest(
+                                jbosseppOwnerAppliance,
+                                //                                        _currentlySelectedNode.stringid
+                                null
+                        );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_JBOSSEPP_IDENTITYSOURCE_ELEMENT, cJbossEpp);
+                        break;
+
                     case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
@@ -988,6 +1005,16 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_CLIENTCERT_ELEMENT, rclientCert);
+                            break;
+                        case DiagramElementTypes.JBOSSEPP_AUTHENTICATION_ELEMENT_TYPE:
+                            var jbosseppas:JBossEPPAuthenticationService = _currentlySelectedNode.data as JBossEPPAuthenticationService;
+
+                            var rjbosseppas:RemoveJBossEPPAuthenticationServiceElementRequest =
+                                    new RemoveJBossEPPAuthenticationServiceElementRequest(jbosseppas);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_JBOSSEPP_AUTHENTICATION_SERVICE_ELEMENT, rjbosseppas);
                             break;
                         case DiagramElementTypes.DIRECTORY_SERVICE_ELEMENT_TYPE:
                             var directoryService:DirectoryAuthenticationService = _currentlySelectedNode.data as DirectoryAuthenticationService;
@@ -1550,7 +1577,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE;
             } else if (node.data is LdapIdentitySource) {
                 elementType = DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE;
-
+            } else if (node.data is JBossEPPAuthenticationService) {
+                elementType = DiagramElementTypes.JBOSSEPP_AUTHENTICATION_ELEMENT_TYPE
                 // Resources
             } else if (node.data is JOSSO1Resource) {
                 elementType = DiagramElementTypes.JOSSO1_RESOURCE_ELEMENT_TYPE;
