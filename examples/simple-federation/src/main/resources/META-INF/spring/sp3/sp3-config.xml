@@ -346,7 +346,7 @@
 
     </bean>
 
-    <bean name="sp3-samlr2-a2Mediator" class="org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator">
+    <bean name="sp3-samlr2-a2Mediator" class="org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator">
 
         <property name="preferredIdpAlias"  value="http://localhost:8081/IDBUS/IDP-1/SAML2/MD" />
 

@@ -29,6 +29,7 @@ import oasis.names.tc.saml._2_0.metadata.*;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
@@ -43,6 +44,7 @@ import org.atricore.idbus.capabilities.sso.main.idp.IdentityProviderConstants;
 import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
+import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
@@ -1879,8 +1881,10 @@ public class SingleSignOnProducer extends SSOProducer {
         // --------------------------------------------------------------
         for (int i = 0; i < ssoAuthnReq.getRequestAttribute().size(); i++) {
             RequestAttributeType a = ssoAuthnReq.getRequestAttribute().get(i);
-            if (a.getName().equals("atricore_idp_alias"))
-                idpAlias = a.getValue();
+
+            // TODO : [ENTITY-SEL] CHECK BASE 64 ENCODING AND ENTITY SELECTOR USAGE!
+            if (a.getName().equals(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR))
+                idpAlias = new String(Base64.decodeBase64(a.getValue().getBytes()));
         }
 
         if (idpAlias != null) {

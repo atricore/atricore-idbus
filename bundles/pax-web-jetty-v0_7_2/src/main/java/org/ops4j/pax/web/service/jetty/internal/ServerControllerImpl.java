@@ -1,6 +1,5 @@
 package org.ops4j.pax.web.service.jetty.internal;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +34,6 @@ class ServerControllerImpl
     private Connector m_httpConnector;
     private Connector m_httpSecureConnector;
 
-<<<<<<< HEAD
-=======
     // JDK Defaults
     private String defaultTrustStore = System.getProperty("java.home") +
             System.getProperty("file.separator") + "lib" +
@@ -46,7 +43,6 @@ class ServerControllerImpl
     private String defaultTrustPassword = "changeit";
     private String defaultTrustStoreType = "JKS";
 
->>>>>>> c66a131... * FIX : SSO Session status detection
     ServerControllerImpl( final JettyFactory jettyFactory )
     {
         m_jettyFactory = jettyFactory;

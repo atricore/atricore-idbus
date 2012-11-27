@@ -31,11 +31,13 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
+import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
-import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
@@ -48,12 +50,18 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -73,21 +81,42 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
         logger.debug("Processing SP Initiated Single Sign-On on HTTP Redirect");
 
+        // ------------------------------------------------------------------------------------------
+        // We have to check if identity has been provided, if so. No need to go to IDP.
+        // ------------------------------------------------------------------------------------------
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+        // May be used later by HTTP-Redirect binding!
+        SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
+        in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+
+
+        Object content = in.getMessage().getContent();
+
+        if (content == null || content instanceof SPInitiatedAuthnRequestType ) {
+            doProcessSPInitiatedAuthnRequest(exchange);
+        } else if (content instanceof SelectEntityResponseType) {
+            doProcessSelectEntityResponse(exchange);
+        } else {
+            throw new SSOException("Unknown SSO message type " + content);
+        }
+
+    }
+
+    protected void doProcessSPInitiatedAuthnRequest(CamelMediationExchange exchange) throws SSOException {
+
+        logger.debug("Processing SP Initiated Single Sign-On on HTTP Redirect");
+
         try {
-
-            // ------------------------------------------------------------------------------------------
-            // We have to check if identity has been provided, if so. No need to go to IDP.
-            // ------------------------------------------------------------------------------------------
-
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
             // May be used later by HTTP-Redirect binding!
-            AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+            SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
             in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
 
-            // TODO : Support no authn request !
             SPInitiatedAuthnRequestType ssoAuthnReq =
-                    (SPInitiatedAuthnRequestType) in.getMessage().getContent();
+                (SPInitiatedAuthnRequestType) in.getMessage().getContent();
 
             // Use local state ID as our relay state,
             String relayState = in.getMessage().getState().getLocalState().getId();
@@ -97,10 +126,10 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
             if (secCtx != null && secCtx.getSessionIndex() != null) {
 
+                // Support no authentication request !
                 if (ssoAuthnReq != null && ssoAuthnReq.isForceAuthn() != null && !ssoAuthnReq.isForceAuthn()) {
 
                     // TODO ! Check that the session belongs to the IdP associated with this request
-
                     logger.debug("SSO Session found " + secCtx.getSessionIndex());
 
                     SPAuthnResponseType ssoResponse = new SPAuthnResponseType ();
@@ -143,8 +172,59 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
             // ------------------------------------------------------
             // Resolve IDP configuration!
             // ------------------------------------------------------
-            CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
-            logger.debug("Using IdP " + idp.getAlias());
+            // TODO : Check select options ... do we have a select endpoint and multiple IdPs ?!
+            BindingChannel bChannel = (BindingChannel) channel;
+            Collection<CircleOfTrustMemberDescriptor> availableIdPs = getCotManager().lookupMembersForProvider(bChannel.getProvider(),
+                    SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
+
+            // Do we have to select an IdP
+            if (availableIdPs.size() > 1) {
+                // Use IDP Selector, build a context with enough information (provider state ?!) and send a request
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Selecting from " + availableIdPs.size() + " IDps" );
+
+                SelectEntityRequestType selectIdPRequest = buildSelectEntityRequest(bChannel, ssoAuthnReq, availableIdPs);
+
+                // Look up for appliance entity select endpoint for IdPs
+                String idpSelectorLocation  = mediator.getIdpSelector();
+
+                EndpointDescriptor ed = new EndpointDescriptorImpl(
+                        "IDPSelectorEndpoint",
+                        "EntitySelector",
+                        SSOBinding.SSO_ARTIFACT.toString(),
+                        idpSelectorLocation,
+                        null);
+
+                if (ssoAuthnReq != null)
+                    in.getMessage().getState().setLocalVariable(
+                        "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", ssoAuthnReq);
+                else
+                    in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
+
+                // Send SAMLR2 Message back
+                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                        selectIdPRequest,
+                        "SelectEntityRequest",
+                        relayState,
+                        ed,
+                        in.getMessage().getState()));
+
+                // Send request
+                exchange.setOut(out);
+
+                return;
+            }
+
+            if (availableIdPs.size() < 1)
+                throw new SSOException("No Identity Providers available for " + channel.getName());
+
+            CircleOfTrustMemberDescriptor idp = availableIdPs.iterator().next();
+
+            if (logger.isDebugEnabled())
+                logger.debug("Using IdP " + idp.getAlias());
 
             // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
             EndpointType idpSsoEndpoint = resolveIdpSsoEndpoint(idp);
@@ -162,7 +242,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
             if (logger.isDebugEnabled())
                 logger.debug("Using IdP channel " + idpChannel.getName());
 
-            AuthnRequestType authnRequest = buildAuthnRequest(exchange, idp, ed, idpChannel);
+            AuthnRequestType authnRequest = buildAuthnRequest(exchange, idp, ed, idpChannel, ssoAuthnReq);
 
             // ------------------------------------------------------
             // Send Authn Request to IDP
@@ -192,10 +272,75 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
     }
 
+
+    protected void doProcessSelectEntityResponse(CamelMediationExchange exchange) throws SSOException {
+
+        try {
+
+            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+            // May be used later by HTTP-Redirect binding!
+            SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
+            in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+
+            SPInitiatedAuthnRequestType ssoAuthnReq =
+                    (SPInitiatedAuthnRequestType) in.getMessage().getState().getLocalVariable(
+                        "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
+
+            String relayState = in.getMessage().getState().getLocalState().getId();
+            SelectEntityResponseType response = (SelectEntityResponseType) in.getMessage().getContent();
+            CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberById(response.getEntityId());
+
+            if (logger.isDebugEnabled())
+                logger.debug("Using IdP " + idp.getAlias());
+
+            // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
+            EndpointType idpSsoEndpoint = resolveIdpSsoEndpoint(idp);
+            EndpointDescriptor ed = new EndpointDescriptorImpl(
+                    "IDPSSOEndpoint",
+                    "SingleSignOnService",
+                    idpSsoEndpoint.getBinding(),
+                    idpSsoEndpoint.getLocation(),
+                    idpSsoEndpoint.getResponseLocation());
+
+            // ------------------------------------------------------
+            // Create AuthnRequest using identity plan
+            // ------------------------------------------------------
+            FederationChannel idpChannel = resolveIdpChannel(idp);
+            if (logger.isDebugEnabled())
+                logger.debug("Using IdP channel " + idpChannel.getName());
+
+            AuthnRequestType authnRequest = buildAuthnRequest(exchange, idp, ed, idpChannel, ssoAuthnReq);
+
+            // ------------------------------------------------------
+            // Send Authn Request to IDP
+            // ------------------------------------------------------
+
+            in.getMessage().getState().setLocalVariable(
+                    SAMLR2Constants.SAML_PROTOCOL_NS + ":AuthnRequest", authnRequest);
+
+            // Send SAMLR2 Message back
+            CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                    authnRequest,
+                    "AuthnRequest",
+                    relayState,
+                    ed,
+                    in.getMessage().getState()));
+
+            exchange.setOut(out);
+
+        } catch (Exception e) {
+            throw new SSOException(e);
+        }
+    }
+
     protected AuthnRequestType buildAuthnRequest(CamelMediationExchange exchange,
                                                  CircleOfTrustMemberDescriptor idp,
                                                  EndpointDescriptor ed,
-                                                 FederationChannel idpChannel
+                                                 FederationChannel idpChannel,
+                                                 SPInitiatedAuthnRequestType ssoAuthnRequest
     ) throws IdentityPlanningException, SSOException {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(SPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
@@ -208,8 +353,6 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
         idPlanExchange.setProperty(VAR_RESPONSE_CHANNEL, idpChannel);
 
         // Get SPInitiated authn request, if any!
-        SPInitiatedAuthnRequestType ssoAuthnRequest =
-                (SPInitiatedAuthnRequestType) ((CamelMediationMessage)exchange.getIn()).getMessage().getContent();
 
         // Create in/out artifacts
         IdentityArtifact in =
@@ -238,81 +381,66 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
     }
 
-    protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SSOException {
 
-        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-        SPInitiatedAuthnRequestType ssoAuthnReq =
-                (SPInitiatedAuthnRequestType) in.getMessage().getContent();
+    protected SelectEntityRequestType buildSelectEntityRequest(BindingChannel bChannel,
+                                                         SPInitiatedAuthnRequestType ssoAuthnReq,
+                                                         Collection<CircleOfTrustMemberDescriptor> availableIdPs) {
 
-        // TODO : The way to resolve the IDP may vary from deployment to deployment, user intervention may be required
+        SSOSPMediator mediator = (SSOSPMediator) bChannel.getIdentityMediator();
 
-        String idpAlias = null;
-        String idpId = null;
-        CircleOfTrustMemberDescriptor idp = null;
-
-        // --------------------------------------------------------------
-        // Try with the received IdP alias, if any
-        // --------------------------------------------------------------
-        if (ssoAuthnReq != null && ssoAuthnReq.getRequestAttribute() != null) {
-            for (int i = 0; i < ssoAuthnReq.getRequestAttribute().size(); i++) {
-                RequestAttributeType a =
-                        ssoAuthnReq.getRequestAttribute().get(i);
-                if (a.getName().equals("atricore_idp_alias"))
-                    idpAlias = a.getValue();
-
-                if (a.getName().equals("atricore_idp_id"))
-                    idpId = a.getValue();
+        SelectEntityRequestType selectIdPRequest = new SelectEntityRequestType();
+        selectIdPRequest.setID(uuidGenerator.generateId());
+        selectIdPRequest.setIssuer(bChannel.getProvider().getName());
+        for (IdentityMediationEndpoint ed : channel.getEndpoints()) {
+            if (ed.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue()) &&
+                    ed.getType().equals(endpoint.getType())) {
+                selectIdPRequest.setReplyTo(channel.getLocation() + ed.getLocation());
+                break;
             }
         }
 
-        if (idpAlias != null) {
-            if (logger.isDebugEnabled())
-                logger.debug("Using IdP alias from request attribute " + idpAlias);
+        for (CircleOfTrustMemberDescriptor idp : availableIdPs) {
 
-            idp = getCotManager().lookupMemberByAlias(idpAlias);
-            if (idp == null) {
-                throw new SSOException("No IDP found in circle of trust for received alias ["+idpAlias+"], verify your setup.");
+            RequestAttributeType idpAttr = new RequestAttributeType();
+            idpAttr.setName(SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
+            idpAttr.setValue(idp.getAlias());
+
+            selectIdPRequest.getRequestAttribute().add(idpAttr);
+        }
+
+        RequestAttributeType preferredIdp = new RequestAttributeType();
+        preferredIdp.setName(EntitySelectorConstants.PREFERRED_IDP_ATTR);
+        preferredIdp.setValue(mediator.getPreferredIdpAlias());
+
+        selectIdPRequest.getRequestAttribute().add(preferredIdp);
+
+        if (ssoAuthnReq != null) {
+
+            // Add additional information about the environment ...
+
+            RequestAttributeType authnCtx = new RequestAttributeType();
+            authnCtx.setName(EntitySelectorConstants.AUTHN_CTX_ATTR);
+            authnCtx.setValue(ssoAuthnReq.getAuthnCtxClass());
+
+            selectIdPRequest.getRequestAttribute().add(authnCtx);
+
+            // All request attributes
+            if (ssoAuthnReq.getRequestAttribute() != null) {
+                for (int i = 0; i < ssoAuthnReq.getRequestAttribute().size(); i++) {
+                    RequestAttributeType a =
+                            ssoAuthnReq.getRequestAttribute().get(i);
+
+                    RequestAttributeType a1 = new RequestAttributeType();
+                    a1.setName(a.getName());
+                    a1.setValue(a.getValue());
+
+                    selectIdPRequest.getRequestAttribute().add(a1);
+
+                }
             }
         }
 
-        if (idp == null && idpId != null) {
-            if (logger.isDebugEnabled())
-                logger.debug("Using IdP ID from request attribute " + idpId);
-
-            idp = getCotManager().lookupMemberById(idpId);
-            if (idp == null) {
-                throw new SSOException("No IDP found in circle of trust for received id ["+idpId+"], verify your setup.");
-            }
-
-        }
-
-
-        if (idp != null)
-            return idp;
-
-        // --------------------------------------------------------------
-        // Try with the preferred idp alias, if any
-        // --------------------------------------------------------------
-        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
-        idpAlias = mediator.getPreferredIdpAlias();
-        if (idpAlias != null) {
-
-            if (logger.isDebugEnabled())
-                logger.debug("Using preferred IdP alias " + idpAlias);
-
-            idp = getCotManager().lookupMemberByAlias(idpAlias);
-            if (idp == null) {
-                throw new SSOException("No IDP found in circle of trust for preferred alias ["+idpAlias+"], verify your setup.");
-            }
-        }
-        if (idp != null)
-            return idp;
-
-        // --------------------------------------------------------------
-        // TODO : In the future, we could discover IdPs from COT Manager, based on COT Member role and user intervention
-
-        throw new SSOException("Cannot resolve IDP, try to configure a preferred IdP for this SP");
-
+        return selectIdPRequest;
     }
 
     /**
@@ -345,7 +473,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
     protected EndpointType resolveIdpSsoEndpoint(CircleOfTrustMemberDescriptor idp) throws SSOException {
 
-        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
         SSOBinding preferredBinding = mediator.getPreferredIdpSSOBindingValue();
         MetadataEntry idpMd = idp.getMetadata();
 
@@ -387,7 +515,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
     }
 
     protected String resolveSpBindingACS() {
-        return ((SamlR2SPMediator)channel.getIdentityMediator()).getSpBindingACS();
+        return ((SSOSPMediator)channel.getIdentityMediator()).getSpBindingACS();
     }
 
 }

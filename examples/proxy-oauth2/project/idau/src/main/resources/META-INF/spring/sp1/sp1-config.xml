@@ -24,7 +24,7 @@
             <ref bean="sp1-oauth2-resource"/>
         </property>
     </bean>
-    <bean class="org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator" name="sp1-samlr2-mediator">
+    <bean class="org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator" name="sp1-samlr2-mediator">
         <property name="preferredIdpAlias">
             <value>http://localhost:8081/IDBUS/IDA3/PROXY1-IDP/SAML2/MD</value>
         </property>

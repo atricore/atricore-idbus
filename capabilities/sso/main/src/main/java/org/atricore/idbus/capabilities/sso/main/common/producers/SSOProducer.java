@@ -47,6 +47,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.planning.IdentityPlan;
@@ -148,6 +149,8 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
             return ((FederationChannel) channel).getProvider().getCotManager();
         } else if (this.channel instanceof BindingChannel) {
             return ((BindingChannel) channel).getProvider().getCotManager();
+        } else if (this.channel instanceof SelectorChannel) {
+            return ((SelectorChannel) channel).getProvider().getCotManager();
         }
 
         if (logger.isDebugEnabled())

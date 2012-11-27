@@ -3,6 +3,7 @@ package org.atricore.idbus.kernel.main.mediation.state;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
 
 import java.util.Collection;
 
@@ -12,13 +13,13 @@ import java.util.Collection;
  */
 public class ProviderStateContext {
 
-    private FederatedLocalProvider provider;
+    private StatefulProvider provider;
 
     private ClassLoader cl;
 
     private static final Log logger = LogFactory.getLog(ProviderStateContext.class);
 
-    public ProviderStateContext(FederatedLocalProvider provider, ClassLoader cl) {
+    public ProviderStateContext(StatefulProvider provider, ClassLoader cl) {
         this.provider = provider;
         this.cl = cl;
     }
@@ -27,7 +28,7 @@ public class ProviderStateContext {
         return provider.getStateManager();
     }
 
-    public FederatedLocalProvider getProvider() {
+    public StatefulProvider  getProvider() {
         return provider;
     }
 

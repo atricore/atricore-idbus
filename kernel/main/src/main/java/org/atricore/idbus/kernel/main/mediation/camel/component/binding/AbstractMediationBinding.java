@@ -29,6 +29,8 @@ import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
+import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
@@ -73,9 +75,9 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
                 stateManagerClassloader != null ? stateManagerClassloader : getClass().getClassLoader());
     }
 
-    protected FederatedLocalProvider getProvider() {
+    protected StatefulProvider getProvider() {
 
-        FederatedLocalProvider p = null;
+        StatefulProvider p = null;
         if (channel instanceof FederationChannel) {
             FederationChannel fc = (FederationChannel) channel;
             p = fc.getProvider();
@@ -87,6 +89,9 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
         } else if (channel instanceof ClaimChannel) {
             ClaimChannel cc = (ClaimChannel) channel;
             p = cc.getProvider();
+        } else if (channel instanceof SelectorChannel) {
+            SelectorChannel sc = (SelectorChannel) channel;
+            p = sc.getProvider();
         }
 
         return p;

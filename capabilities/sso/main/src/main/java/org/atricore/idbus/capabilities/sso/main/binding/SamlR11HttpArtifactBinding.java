@@ -72,7 +72,7 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
             // Access issuer Reolver endpoint to get value!
             SamlArtifact samlArtifact = getEncoder().decode(samlArtStr);
             String sourceId = samlArtifact.getSourceID(); // Here, we assume that our artifacts always have sourceId
-            CircleOfTrustMemberDescriptor resolverMemberDescr = this.getProvider().getCotManager().lookupMemberById(sourceId);
+            CircleOfTrustMemberDescriptor resolverMemberDescr = ((FederatedLocalProvider)this.getProvider()).getCotManager().lookupMemberById(sourceId);
             if (resolverMemberDescr == null) {
                 /* Unknown SOURCE ID! */
                 logger.warn("Unkonw SAML Artifact SourceID ["+sourceId+"]");
@@ -328,7 +328,7 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
         // Publish some important attributes:
         // Circle of trust will allow actions to access identity configuration
 
-        idPlanExchange.setProperty(VAR_COT, this.getProvider().getCotManager().getCot());
+        idPlanExchange.setProperty(VAR_COT, ((FederatedLocalProvider)this.getProvider()).getCotManager().getCot());
         idPlanExchange.setProperty(VAR_COT_MEMBER, member);
         idPlanExchange.setProperty(VAR_CHANNEL, this.channel);
         idPlanExchange.setProperty(VAR_ENDPOINT, idEndpoint);

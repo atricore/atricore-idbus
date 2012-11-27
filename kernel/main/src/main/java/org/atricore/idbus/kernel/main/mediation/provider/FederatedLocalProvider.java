@@ -36,7 +36,7 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public interface FederatedLocalProvider extends FederatedProvider {
+public interface FederatedLocalProvider extends FederatedProvider, StatefulProvider {
 
     /**
      * The channel that this provider uses to communicate with other providers
@@ -72,8 +72,6 @@ public interface FederatedLocalProvider extends FederatedProvider {
     BindingChannel getBindingChannel();
 
     IdentityMediationUnitContainer getUnitContainer();
-
-    ProviderStateManager getStateManager();
 
     CircleOfTrustManager getCotManager();
 

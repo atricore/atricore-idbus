@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
-import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPSessionHeartBeatRequestType;
@@ -94,7 +94,7 @@ public class SessionHeartBeatProducer extends SSOProducer {
                 updateSPSecurityContext(secCtx, exchange);
 
                 // Check if heartbeat is needed now.
-                SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+                SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
                 if (logger.isTraceEnabled())
                     logger.trace("Checking IDP Session heart beat for:" + secCtx + ".  Configured interval: " + mediator.getIdpSessionHeartBeatInterval());
 

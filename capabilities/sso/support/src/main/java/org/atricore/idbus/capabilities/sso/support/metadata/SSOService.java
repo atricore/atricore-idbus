@@ -47,8 +47,10 @@ public enum SSOService {
 
     AuthnQueryService(SSOMetadataConstants.AuthnQueryService_QNAME),
 
+    ManageNameIDService(SSOMetadataConstants.ManageNameIDService_QNAME),
+
     /**
-     * This service is an extension to SAML 
+     * These services are an extension to SAML, to improve SSO experience
      */
     SPInitiatedSingleSignOnService(SSOMetadataConstants.SPInitiatedSingleSignOnService_QNAME),
 
@@ -61,16 +63,18 @@ public enum SSOService {
     SPSessionHeartBeatService(SSOMetadataConstants.SPSessionHeartBeatService_QNAME),
 
     IDPSessionHeartBeatService(SSOMetadataConstants.IDPSessionHeartBeatService_QNAME),
-    
-    ManageNameIDService(SSOMetadataConstants.ManageNameIDService_QNAME),
-    
+
     SPInitiatedManageNameIDService(SSOMetadataConstants.SPInitiatedManageNameIDService_QNAME),
 
     SPInitiatedSingleSignOnServiceProxy(SSOMetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME),
 
     ProxyAssertionConsumerService(SSOMetadataConstants.ProxyAssertionConsumerService_QName),
 
-    SPCredentialsCallbackService(SSOMetadataConstants.SPCredentialsCallbackService_QNAME);
+    SPCredentialsCallbackService(SSOMetadataConstants.SPCredentialsCallbackService_QNAME),
+
+    IdPSelectorService(SSOMetadataConstants.IdPSelectorService_QNAME),
+
+    SPSelectorService(SSOMetadataConstants.SPSelectorService_QNAME);
 
     private QName qname;
 

@@ -39,12 +39,12 @@ import java.util.Collection;
  * Saml v2.0 SP Mediator realizing SP SSO Role for Single SignOn profiles.
  *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: SamlR2SPMediator.java 1359 2009-07-19 16:57:57Z sgonzalez $
+ * @version $Id: SSOSPMediator.java 1359 2009-07-19 16:57:57Z sgonzalez $
  * @org.apache.xbean.XBean element="sp-mediator"
  */
-public class SamlR2SPMediator extends AbstractSSOMediator {
+public class SSOSPMediator extends AbstractSSOMediator {
 
-    private static final Log logger = LogFactory.getLog(SamlR2SPMediator.class);
+    private static final Log logger = LogFactory.getLog(SSOSPMediator.class);
 
     private String preferredIdpAlias;
 
@@ -57,6 +57,8 @@ public class SamlR2SPMediator extends AbstractSSOMediator {
     private String spBindingACS;
 
     private String spBindingSLO;
+
+    private String idpSelector;
 
     // Send IdP Heart Beat every 7 minutes by default!
     private long idpSessionHeartBeatInterval = 7L * 60L;
@@ -514,7 +516,17 @@ public class SamlR2SPMediator extends AbstractSSOMediator {
         return idpSessionHeartBeatInterval;
     }
 
+    public String getIdpSelector() {
+        return idpSelector;
+    }
+
+    public void setIdpSelector(String idpSelector) {
+        this.idpSelector = idpSelector;
+    }
+
     public void setIdpSessionHeartBeatInterval(long idpSessionHeartBeatInterval) {
         this.idpSessionHeartBeatInterval = idpSessionHeartBeatInterval;
     }
+
+
 }

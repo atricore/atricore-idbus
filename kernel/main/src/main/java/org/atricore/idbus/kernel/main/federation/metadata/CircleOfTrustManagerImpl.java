@@ -259,6 +259,9 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
         throw new CircleOfTrustManagerException("Unknown entity " + alias);
     }
 
+    /**
+     * @param role the role realized by the provider, it's protocol specific: i.e. saml 2.0 sp
+     */
     public Collection<CircleOfTrustMemberDescriptor> lookupMembersForProvider(Provider provider, String role)
             throws CircleOfTrustManagerException {
 
@@ -270,22 +273,25 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
                 if (logger.isDebugEnabled())
                     logger.debug("Provider " + destProvider .getName() + " has role " + role);
 
+                // See if this local provider can be used with our provider
                 if (destProvider instanceof FederatedLocalProvider) {
                     FederatedLocalProvider federatedDestProvider = (FederatedLocalProvider) destProvider;
 
-                    members.add(federatedDestProvider.getChannel().getMember());
-
+                    boolean useOverrideChannel = false;
                     for (FederationChannel channel : federatedDestProvider.getChannels()) {
 
+                        // The received provider is the target of the channel
                         if (channel.getTargetProvider().equals(provider)) {
+                            useOverrideChannel = true;
                             members.add(channel.getMember());
                             if (logger.isDebugEnabled())
                                 logger.debug("Selected targeting member : " + channel.getMember().getAlias());
-
                         }
-
-
                     }
+
+                    // Use the default channel
+                    if (!useOverrideChannel)
+                        members.add(federatedDestProvider.getChannel().getMember());
                 } else {
                     FederatedRemoteProvider destRemoteProvider = (FederatedRemoteProvider) destProvider;
                     for(CircleOfTrustMemberDescriptor m : destRemoteProvider.getAllMembers()) {
@@ -300,6 +306,9 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
 
             }
         }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Found " + members.size() + " members for " + provider.getName() + " with role " + role);
 
         return members;
     }

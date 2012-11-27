@@ -32,7 +32,7 @@ import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 import org.w3._1999.xhtml.*;
@@ -148,31 +148,31 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         // Loca Variables are supported by Provider State Manage or HTTP Session
 
-        FederatedLocalProvider p = null;
+        StatefulProvider provider = null;
         if (channel instanceof FederationChannel) {
             FederationChannel fc = (FederationChannel) channel;
-            p = fc.getProvider();
+            provider = fc.getProvider();
         } else if (channel instanceof BindingChannel) {
             BindingChannel bc = (BindingChannel) channel;
-            p = bc.getProvider();
+            provider = bc.getProvider();
         } else if (channel instanceof ClaimChannel) {
             ClaimChannel cc = (ClaimChannel) channel;
-            p = cc.getProvider();
+            provider = cc.getProvider();
         }
 
-        if (p != null) {
+        if (provider != null) {
 
-            String localStateVarName = p.getName().toUpperCase() + "_STATE";
+            String localStateVarName = provider.getName().toUpperCase() + "_STATE";
 
             if (logger.isDebugEnabled())
-                logger.debug("Using Provider State manager to store local state (" + p.getName() + "). Channel (" + channel.getName() + ")");
+                logger.debug("Using Provider State manager to store local state (" + provider.getName() + "). Channel (" + channel.getName() + ")");
 
             LocalState pState = state.getLocalState();
             String stateId = (String) exchange.getIn().getHeader("org.atricore.idbus.http.Cookie." + localStateVarName);
             if (stateId == null || !stateId.equals(pState.getId())) {
 
                 if (logger.isDebugEnabled())
-                    logger.debug("Updating state id " + stateId + " with new id " + pState.getId() + " (" + p.getName() + "). Channel (" + channel.getName() + ")");
+                    logger.debug("Updating state id " + stateId + " with new id " + pState.getId() + " (" + provider.getName() + "). Channel (" + channel.getName() + ")");
 
                 state.setRemoteVariable(localStateVarName, pState.getId());
             }
@@ -210,7 +210,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         if (logger.isDebugEnabled())
             logger.debug("Creating Mediation State from Exchange " + exchange.getExchangeId());
 
-        FederatedLocalProvider p = getProvider();
+        StatefulProvider p = getProvider();
         MediationStateImpl state = null;
         if (p != null) {
 

@@ -77,6 +77,8 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
         if (content instanceof SSOClaimsRequest) {
             doProcessClaimsRequest(exchange, (SSOClaimsRequest) content);
 
+            // TODO : Do process IdPSelectorContextRequest
+
         } else if (content instanceof UnauthenticatedRequest) {
             doProcessUnauthenticatedRequest(exchange, (UnauthenticatedRequest) content);
 

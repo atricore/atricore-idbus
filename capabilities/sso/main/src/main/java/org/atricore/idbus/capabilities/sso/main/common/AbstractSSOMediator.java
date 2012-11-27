@@ -197,36 +197,6 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
 
     }
 
-    /**
-     * @org.apache.xbean.Property alias="artifact-queue-mgr"
-     *
-     * @return
-     */
-    public MessageQueueManager getArtifactQueueManager() {
-        return super.getArtifactQueueManager();
-    }
-
-    public void setArtifactQueueManager(MessageQueueManager artifactQueueManager) {
-        super.setArtifactQueueManager(artifactQueueManager);
-    }
-
-
-    /**
-     * @org.apache.xbean.Property alias="log-messages"
-     *
-     * @return
-     */
-    @Override
-    public boolean isLogMessages() {
-        return super.isLogMessages();
-    }
-
-    @Override
-    public void setLogMessages(boolean logMessages) {
-        super.setLogMessages(logMessages);    //To change body of overridden methods use File | Settings | File Templates.
-    }
-
-
     public SamlR2Signer getSigner() {
         return signer;
     }

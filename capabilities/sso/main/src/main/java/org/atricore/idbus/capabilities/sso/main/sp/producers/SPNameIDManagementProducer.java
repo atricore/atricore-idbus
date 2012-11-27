@@ -34,7 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
-import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
@@ -102,7 +102,7 @@ public class SPNameIDManagementProducer extends SSOProducer {
                     subjectNameID.setLocalName(manageNameID.getNameID().getSPProvidedID());
                 } else {
                     NameIDType decryptedNameID = null;
-                    SamlR2Encrypter encrypter = ((SamlR2SPMediator) channel.getIdentityMediator()).getEncrypter();
+                    SamlR2Encrypter encrypter = ((SSOSPMediator) channel.getIdentityMediator()).getEncrypter();
                     try {
                         decryptedNameID = encrypter.decryptNameID(manageNameID.getEncryptedID());
                     } catch (SamlR2EncrypterException e) {
@@ -211,7 +211,7 @@ public class SPNameIDManagementProducer extends SSOProducer {
 
     private EndpointType resolveIdpMNIDEndpoint(CircleOfTrustMemberDescriptor idp) throws SSOException {
 
-        SamlR2SPMediator mediator = (SamlR2SPMediator) ((IdPChannel) channel).getIdentityMediator();
+        SSOSPMediator mediator = (SSOSPMediator) ((IdPChannel) channel).getIdentityMediator();
         SSOBinding preferredBinding = mediator.getPreferredIdpSSOBindingValue();
         MetadataEntry idpMd = idp.getMetadata();
 
@@ -265,7 +265,7 @@ public class SPNameIDManagementProducer extends SSOProducer {
     }
 
     protected CircleOfTrustMemberDescriptor resolveIdp() throws SSOException {
-        SamlR2SPMediator mediator = (SamlR2SPMediator) ((IdPChannel) channel).getIdentityMediator();
+        SSOSPMediator mediator = (SSOSPMediator) ((IdPChannel) channel).getIdentityMediator();
 
         String idpAlias = mediator.getPreferredIdpAlias();
         if (idpAlias == null) {
@@ -388,7 +388,7 @@ public class SPNameIDManagementProducer extends SSOProducer {
 
 
         //signature must exist for http post and http redirect bindings
-        SamlR2Signer signer = ((SamlR2SPMediator) channel.getIdentityMediator()).getSigner();
+        SamlR2Signer signer = ((SSOSPMediator) channel.getIdentityMediator()).getSigner();
         if (manageNameID.getSignature() != null) {
             try {
                 signer.validate(idpMd, manageNameID);

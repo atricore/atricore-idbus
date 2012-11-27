@@ -7,12 +7,14 @@ import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
+import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
-import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.AssertIdentityWithSimpleAuthenticationReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
@@ -289,8 +291,10 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
         // --------------------------------------------------------------
         for (int i = 0; i < ssoAuthnReq.getRequestAttribute().size(); i++) {
             RequestAttributeType a = ssoAuthnReq.getRequestAttribute().get(i);
-            if (a.getName().equals("atricore_idp_alias"))
-                idpAlias = a.getValue();
+
+            // TODO : [ENTITY-SEL] CHECK BASE 64 ENCODING AND ENTITY SELECTOR USAGE!
+            if (a.getName().equals(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR))
+                idpAlias = new String(Base64.decodeBase64(a.getValue().getBytes()));
         }
 
         if (idpAlias != null) {
@@ -309,7 +313,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
         // --------------------------------------------------------------
         // Try with the preferred idp alias, if any
         // --------------------------------------------------------------
-        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
         idpAlias = mediator.getPreferredIdpAlias();
         if (idpAlias != null) {
 
@@ -334,7 +338,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
 
     protected EndpointType resolveIdpSsoEndpoint(CircleOfTrustMemberDescriptor idp) throws SSOException {
 
-        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
         MetadataEntry idpMd = idp.getMetadata();
 
         if (idpMd == null || idpMd.getEntry() == null)

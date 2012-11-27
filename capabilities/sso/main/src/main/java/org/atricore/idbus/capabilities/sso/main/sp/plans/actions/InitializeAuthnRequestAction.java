@@ -32,8 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
-import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
-import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
@@ -121,7 +120,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         // NameIDPolicy [optional]
         // TODO : This is deployment specific, every IDP and SP can provide / support different policies, check SAMLR2 MD
 
-        SamlR2SPMediator mediator = (SamlR2SPMediator) idpChannel.getIdentityMediator();
+        SSOSPMediator mediator = (SSOSPMediator) idpChannel.getIdentityMediator();
         String nameIdPolicyFormat = resolveNameIdFormat(idp, mediator.getPreferredNameIdPolicy());
         NameIDPolicyType nameIdPolicy = new NameIDPolicyType();
         nameIdPolicy.setFormat(nameIdPolicyFormat);

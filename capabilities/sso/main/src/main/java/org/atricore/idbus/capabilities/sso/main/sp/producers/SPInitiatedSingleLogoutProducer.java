@@ -32,7 +32,7 @@ import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
-import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedLogoutReqToSamlR2LogoutReqPlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
@@ -95,7 +95,7 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
                 SSOResponseType ssoResponse = new SSOResponseType();
                 ssoResponse.setID(uuidGenerator.generateId());
                 ssoResponse.setIssuer(getProvider().getName());
-                String destinationLocation = ((SamlR2SPMediator) channel.getIdentityMediator()).getSpBindingSLO();
+                String destinationLocation = ((SSOSPMediator) channel.getIdentityMediator()).getSpBindingSLO();
 
                 EndpointDescriptor destination =
                         new EndpointDescriptorImpl("EmbeddedSPAcs",
@@ -278,7 +278,7 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
 
     protected EndpointType resolveIdpSloEndpoint(CircleOfTrustMemberDescriptor idp, boolean frontChannel) throws SSOException {
 
-        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
         SSOBinding preferredBinding = mediator.getPreferredIdpSSOBindingValue();
         MetadataEntry idpMd = idp.getMetadata();
 

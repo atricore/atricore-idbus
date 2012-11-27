@@ -101,6 +101,24 @@
         </complexContent>
     </complexType>
 
+    <element name="SelectEntityRequest" type="ssop:SelectEntityRequestType"/>
+    <complexType name="SelectEntityRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="SelectEntityResponse" type="ssop:SelectEntityResponseType"/>
+    <complexType name="SelectEntityResponseType">
+        <complexContent>
+            <extension base="ssop:SSOResponseType">
+                <attribute name="entityId" type="string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
     <element name="SPCredentialsCallbackResponse" type="ssop:SPCredentialsCallbackResponseType"/>
     <complexType name="SPCredentialsCallbackResponseType">
         <complexContent>
@@ -215,6 +233,8 @@
             </extension>
         </complexContent>
     </complexType>
+
+    <!-- -->
 
     <element name="Subject" type="ssop:SubjectType"/>
     <complexType name="SubjectType">

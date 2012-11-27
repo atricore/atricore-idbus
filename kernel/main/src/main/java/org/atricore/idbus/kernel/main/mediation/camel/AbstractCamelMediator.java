@@ -36,6 +36,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
+import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.context.ApplicationContext;
@@ -123,6 +124,8 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
             setupClaimEndpoints((ClaimChannel)channel);
         } else if (channel instanceof PsPChannel) {
             setupProvisioningServiceProviderEndpoints((PsPChannel)channel);
+        } else if (channel instanceof SelectorChannel) {
+            setupEntitySelectorProviderEndpoints((SelectorChannel)channel);
         } else {
             throw new IdentityMediationException(
                     "Cannot setup endpoints for channel type " + channel.getClass().getName());
@@ -252,6 +255,27 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     }
 
+    public void setupEntitySelectorProviderEndpoints(SelectorChannel selChannel) throws IdentityMediationException {
+        if (!isInitialized())
+            throw new IllegalStateException("Mediator not initialized!");
+
+        try {
+
+            logger.info("Setting up Selector endpoints for channel : " + selChannel.getName());
+
+            RouteBuilder pspRoutes = createSelectorRoures(selChannel);
+            context.addRoutes(pspRoutes);
+            /*
+            CamelMediationEndpoint endpoint;
+            endpoint = new CamelMediationEndpoint(claimChannel, claimRoutes);
+            return endpoint; */
+        } catch (Exception e) {
+            throw new IdentityMediationException(
+                    "Error setting up Selector endpoints for channel [" + selChannel.getName() + "]", e);
+        }
+
+    }
+
     public void start() throws IdentityMediationException {
 
     }
@@ -325,6 +349,14 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
         return new RouteBuilder() {
             public void configure() {
                 // no sp link routes added by default
+            }
+        };
+    }
+
+    protected RouteBuilder createSelectorRoures(SelectorChannel selChannel) throws Exception {
+        return new RouteBuilder() {
+            public void configure() {
+                // no select link routes added by default
             }
         };
     }

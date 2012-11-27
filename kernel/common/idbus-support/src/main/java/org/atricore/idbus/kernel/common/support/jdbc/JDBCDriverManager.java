@@ -375,7 +375,7 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
             }
 
             // no new driver found; give up
-            logger.warn("Driver class not found in drivers directory: " + className);
+            logger.info("Driver class not found in drivers directory: " + className);
             return null;
         }
 

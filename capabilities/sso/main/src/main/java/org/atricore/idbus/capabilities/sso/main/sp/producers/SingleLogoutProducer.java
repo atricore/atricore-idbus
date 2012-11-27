@@ -34,7 +34,7 @@ import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
-import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
@@ -247,7 +247,7 @@ public class SingleLogoutProducer extends SSOProducer {
         SSOResponseType ssoResponse = new SSOResponseType();
         ssoResponse.setID(uuidGenerator.generateId());
         ssoResponse.setIssuer(getProvider().getName());
-        String destinationLocation = ((SamlR2SPMediator) channel.getIdentityMediator()).getSpBindingSLO();
+        String destinationLocation = ((SSOSPMediator) channel.getIdentityMediator()).getSpBindingSLO();
 
         EndpointDescriptor destination =
                 new EndpointDescriptorImpl("EmbeddedSPAcs",
@@ -285,7 +285,7 @@ public class SingleLogoutProducer extends SSOProducer {
     protected void validateRequest(LogoutRequestType request, String originalRequest)
             throws SSORequestException, SSOException {
 
-        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
         SamlR2Encrypter encrypter = mediator.getEncrypter();
 
@@ -354,7 +354,7 @@ public class SingleLogoutProducer extends SSOProducer {
                                             MediationState state)
             throws SSOResponseException, SSOException {
 
-        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
         SamlR2Encrypter encrypter = mediator.getEncrypter();
 
