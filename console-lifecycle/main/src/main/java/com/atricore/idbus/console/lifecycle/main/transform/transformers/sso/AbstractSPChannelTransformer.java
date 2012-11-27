@@ -244,7 +244,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         Bean stmtToAssertionPlan = newBean(idpBeans, spChannelName + "-samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
         setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
 
-        if (idMgr != null)
+        if (idp.getIdentityLookup() != null)
             setPropertyRef(stmtToAssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
 
         // Add name id builders based on channel properties
