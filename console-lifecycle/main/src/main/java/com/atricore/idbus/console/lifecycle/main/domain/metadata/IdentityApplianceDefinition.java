@@ -71,6 +71,8 @@ public class IdentityApplianceDefinition implements Serializable {
 
     private Location uiLocation;
 
+    private EntitySelectionStrategy idpSelector;
+
     public long getId() {
         return id;
     }
@@ -236,6 +238,14 @@ public class IdentityApplianceDefinition implements Serializable {
 
     public void setUserDashboardBranding(UserDashboardBranding userDashboardBranding) {
         this.userDashboardBranding = userDashboardBranding;
+    }
+
+    public EntitySelectionStrategy getIdpSelector() {
+        return idpSelector;
+    }
+
+    public void setIdpSelector(EntitySelectionStrategy idpSelector) {
+        this.idpSelector = idpSelector;
     }
 
     @Override

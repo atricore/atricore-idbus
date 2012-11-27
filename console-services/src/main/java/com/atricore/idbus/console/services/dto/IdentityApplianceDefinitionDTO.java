@@ -65,6 +65,8 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     private UserDashboardBrandingDTO userDashboardBranding;
 
+    private EntitySelectionStrategyDTO idpSelector;
+
     public long getId() {
         return id;
     }
@@ -220,6 +222,14 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     public void setUserDashboardBranding(UserDashboardBrandingDTO userDashboardBranding) {
         this.userDashboardBranding = userDashboardBranding;
+    }
+
+    public EntitySelectionStrategyDTO getIdpSelector() {
+        return idpSelector;
+    }
+
+    public void setIdpSelector(EntitySelectionStrategyDTO idpSelector) {
+        this.idpSelector = idpSelector;
     }
 
     @Override

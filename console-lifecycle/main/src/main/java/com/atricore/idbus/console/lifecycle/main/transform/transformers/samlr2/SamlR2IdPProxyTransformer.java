@@ -20,7 +20,7 @@ import org.atricore.idbus.capabilities.sso.main.binding.logging.SSOLogMessageBui
 import org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSessionEventListener;
 import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
-import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
@@ -248,7 +248,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         // Service Provider Mediator
         // ----------------------------------------
         Bean spMediator = newBean(idpProxyBeans, spProxyName + "-samlr2-mediator",
-                SamlR2SPMediator.class.getName());
+                SSOSPMediator.class.getName());
 
         MetadataDefinition providerMd;
         try {

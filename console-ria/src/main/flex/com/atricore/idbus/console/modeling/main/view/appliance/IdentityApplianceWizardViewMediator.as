@@ -24,6 +24,7 @@ import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.main.controller.IdPSelectorsListCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
 import com.atricore.idbus.console.modeling.main.controller.UserDashboardBrandingsListCommand;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
@@ -55,6 +56,9 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
     [Bindable]
     public var _userDashboardBrandings:ArrayCollection;
 
+    [Bindable]
+    public var _idpSelectors:ArrayCollection;
+
     public function IdentityApplianceWizardViewMediator(name:String = null, viewComp:IdentityApplianceWizardView = null) {
         super(name, viewComp);
     }
@@ -75,6 +79,9 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
         BindingUtils.bindProperty(view.steps[0].userDashboardBrandingCombo, "dataProvider", this, "_userDashboardBrandings");
         sendNotification(ApplicationFacade.LIST_USER_DASHBOARD_BRANDINGS);
 
+        BindingUtils.bindProperty(view.steps[0].idpSelectorsCombo, "dataProvider", this, "_idpSelectors");
+        sendNotification(ApplicationFacade.LIST_IDP_SELECTORS);
+
         view.dataModel = _wizardDataModel;
         view.steps[0].applianceNamespace.text = "com.mycompany.myrealm";
         view.addEventListener(WizardEvent.WIZARD_COMPLETE, onIdentityApplianceWizardComplete);
@@ -85,7 +92,10 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
     override public function listNotificationInterests():Array {
         return [IdentityApplianceCreateCommand.SUCCESS,
             IdentityApplianceCreateCommand.FAILURE,
-            UserDashboardBrandingsListCommand.SUCCESS];
+            UserDashboardBrandingsListCommand.SUCCESS,
+            UserDashboardBrandingsListCommand.FAILURE,
+            IdPSelectorsListCommand.SUCCESS,
+            IdPSelectorsListCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -106,6 +116,17 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
                 break;
             case UserDashboardBrandingsListCommand.SUCCESS:
                 _userDashboardBrandings = projectProxy.userDashboardBrandings;
+                break;
+            case IdPSelectorsListCommand.SUCCESS:
+                _idpSelectors = projectProxy.idpSelectors;
+
+                for (var pj:int=0; pj < view.steps[0].idpSelectorsCombo.dataProvider.length; pj++) {
+                    if (view.steps[0].idpSelectorsCombo.dataProvider[pj].name == "preferred-idp-selector") {
+                        view.steps[0].idpSelectorsCombo.selectedIndex = pj;
+                        break;
+                    }
+                }
+
                 break;
         }
 

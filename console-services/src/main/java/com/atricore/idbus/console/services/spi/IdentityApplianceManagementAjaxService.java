@@ -81,6 +81,7 @@ public interface IdentityApplianceManagementAjaxService {
     ListSubjectNameIDPoliciesResponse listSubjectNameIDPolicies(ListSubjectNameIDPoliciesRequest req) throws IdentityServerException;
     ListImpersonateUserPoliciesResponse listImpersonateUserPolicies(ListImpersonateUserPoliciesRequest req)throws IdentityServerException;
     ListUserDashboardBrandingsResponse listUserDashboardBrandings(ListUserDashboardBrandingsRequest req)throws IdentityServerException;
+    ListIdPSelectorsResponse listIdPSelectors(ListIdPSelectorsRequest req)throws IdentityServerException;
 
     /****************************
      * Lookup methods

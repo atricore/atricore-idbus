@@ -17,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.logging.SSOLogMessageBuilder;
 import org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder;
-import org.atricore.idbus.capabilities.sso.main.sp.SamlR2SPMediator;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.XmlSecurityEncrypterImpl;
@@ -171,7 +171,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         // Service Provider Mediator
         // ----------------------------------------
         Bean spMediator = newBean(spBeans, sp.getName() + "-samlr2-mediator",
-                SamlR2SPMediator.class.getName());
+                SSOSPMediator.class.getName());
 
         /* TODO : How to se preferred IDP
         Collection<Bean> idpMds = getBeansOfType(idpBeans, ResourceCircleOfTrustMemberDescriptorImpl.class.getName());
@@ -193,7 +193,6 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
                 }
             }
         }
-
 
         //setPropertyValue(spMediator, "preferredIdpSSOBinding", SSOBinding.SAMLR2_POST.getValue());
         //setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_POST.getValue());

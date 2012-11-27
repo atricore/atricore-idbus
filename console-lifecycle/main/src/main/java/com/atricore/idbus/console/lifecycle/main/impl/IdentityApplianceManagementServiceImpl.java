@@ -56,6 +56,9 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.select.spi.SelectionStrategiesRegistry;
+import org.atricore.idbus.capabilities.sso.main.select.spi.SelectionStrategy;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
@@ -147,6 +150,8 @@ public class IdentityApplianceManagementServiceImpl implements
     private BrandManager brandManger;
 
     private SubjectNameIdentifierPolicyRegistry  subjectNameIdentifierPolicyRegistry;
+
+    private SelectionStrategiesRegistry selectionStrategiesRegistry;
 
     public void afterPropertiesSet() throws Exception {
         if (sampleKeystore.getStore() != null &&
@@ -1016,6 +1021,26 @@ public class IdentityApplianceManagementServiceImpl implements
         }
     }
 
+    public ListIdPSelectorsResponse listIdPSelectors(ListIdPSelectorsRequest beReq) throws IdentityServerException {
+        ListIdPSelectorsResponse res = new ListIdPSelectorsResponse();
+        try {
+
+            logger.debug("Listing all IdP Selection strategies");
+
+            // Add policies to response
+            Collection<SelectionStrategy> strategies = selectionStrategiesRegistry.listStrategies();
+
+            for (SelectionStrategy s : strategies) {
+                // Use the runtime ID here ...
+                res.getSelectionStrategies().add(new EntitySelectionStrategy(s.getName(), s.getDescription()));
+            }
+
+            return res;
+        } catch (SSOException e) {
+            throw new IdentityServerException(e);
+        }
+    }
+
     /***************************************************************
      * Lookup methods
      ***************************************************************/
@@ -1532,6 +1557,22 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setSubjectNameIdentifierPolicyRegistry(SubjectNameIdentifierPolicyRegistry subjectNameIdentifierPolicyRegistry) {
         this.subjectNameIdentifierPolicyRegistry = subjectNameIdentifierPolicyRegistry;
+    }
+
+    public boolean isAlreadySynchronizededAppliances() {
+        return alreadySynchronizededAppliances;
+    }
+
+    public void setAlreadySynchronizededAppliances(boolean alreadySynchronizededAppliances) {
+        this.alreadySynchronizededAppliances = alreadySynchronizededAppliances;
+    }
+
+    public SelectionStrategiesRegistry getSelectionStrategiesRegistry() {
+        return selectionStrategiesRegistry;
+    }
+
+    public void setSelectionStrategiesRegistry(SelectionStrategiesRegistry selectionStrategiesRegistry) {
+        this.selectionStrategiesRegistry = selectionStrategiesRegistry;
     }
 
     public IdentityMappingPoliciesRegistry getIdentityMappingPoliciesRegistry() {

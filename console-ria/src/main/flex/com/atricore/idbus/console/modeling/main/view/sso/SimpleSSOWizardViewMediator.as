@@ -28,6 +28,7 @@ import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
 import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdPSelectorsListCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.main.controller.UserDashboardBrandingsListCommand;
 import com.atricore.idbus.console.modeling.main.view.sso.event.SsoEvent;
@@ -105,6 +106,10 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     [Bindable]
     public var _userDashboardBrandings:ArrayCollection;
 
+    [Bindable]
+    public var _idpSelectors:ArrayCollection;
+
+
     public function get projectProxy():ProjectProxy {
         return _projectProxy;
     }
@@ -150,6 +155,10 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
         BindingUtils.bindProperty(view.steps[0].userDashboardBrandingCombo, "dataProvider", this, "_userDashboardBrandings");
         sendNotification(ApplicationFacade.LIST_USER_DASHBOARD_BRANDINGS);
+
+        BindingUtils.bindProperty(view.steps[0].idpSelectorsCombo, "dataProvider", this, "_idpSelectors");
+        sendNotification(ApplicationFacade.LIST_IDP_SELECTORS);
+
 
         // upload bindings
         view.steps[1].certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
@@ -211,6 +220,16 @@ public class SimpleSSOWizardViewMediator extends IocMediator
             case UserDashboardBrandingsListCommand.SUCCESS:
                 _userDashboardBrandings = projectProxy.userDashboardBrandings;
                 break;
+            case IdPSelectorsListCommand.SUCCESS:
+                _idpSelectors = projectProxy.idpSelectors;
+                for (var pj:int=0; pj < view.steps[0].idpSelectorsCombo.dataProvider.length; pj++) {
+                    if (view.steps[0].idpSelectorsCombo.dataProvider[pj].name == "preferred-idp-selector") {
+                        view.steps[0].idpSelectorsCombo.selectedIndex = pj;
+                        break;
+                    }
+                }
+                break;
+
         }
     }
 

@@ -64,6 +64,8 @@
 
                 idApplianceDef.userDashboardBranding = userDashboardBrandingCombo.selectedItem;
 
+                idApplianceDef.idpSelector = idpSelectorsCombo.selectedItem;
+
                 var identityAppliance:IdentityAppliance = new IdentityAppliance();
                 identityAppliance.namespace = applianceNamespace.text;
                 identityAppliance.idApplianceDefinition = idApplianceDef;
@@ -83,6 +85,10 @@
                 if (userDashboardBrandingCombo.dataProvider.length > 0) {
                     readableDecisionArray.push("Appliance branding: " + userDashboardBrandingCombo.selectedItem.name);
                 }
+
+                if (idpSelectorsCombo.dataProvider.length > 0) {
+                    readableDecisionArray.push("IDP Selection : " + idpSelectorsCombo.selectedItem.name);
+                }
                 return readableDecisionArray.join("\n").toString();
             }
 
@@ -96,6 +102,7 @@
                     //validators.push(pathValidator);
                     validators.push(namespaceValidator);
                 }
+
                 focusManager.setFocus(applianceName);
             }
 
@@ -156,6 +163,11 @@
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.branding')}:">
                 <s:DropDownList id="userDashboardBrandingCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" />
             </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.idpSelector')}:">
+                <s:DropDownList id="idpSelectorsCombo" width="200" labelField="description" selectedIndex="0" requireSelection="true" />
+            </mx:FormItem>
+
 
         </utils:ValidatingForm>
     </s:VGroup>

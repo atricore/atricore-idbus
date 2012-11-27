@@ -88,6 +88,7 @@ public interface IdentityApplianceManagementService {
     ListSubjectNameIDPoliciesResponse listSubjectNameIDPolicies(ListSubjectNameIDPoliciesRequest req) throws IdentityServerException;
     ListImpersonateUserPoliciesResponse listImpersonateUserPolicies(ListImpersonateUserPoliciesRequest req) throws IdentityServerException;
     ListUserDashboardBrandingsResponse listUserDashboardBrandings(ListUserDashboardBrandingsRequest req) throws IdentityServerException;
+    ListIdPSelectorsResponse listIdPSelectors(ListIdPSelectorsRequest beReq) throws IdentityServerException;
 
     /****************************
      * Lookup methods
@@ -106,4 +107,6 @@ public interface IdentityApplianceManagementService {
 
     GetMetadataInfoResponse getMetadataInfo(GetMetadataInfoRequest req) throws IdentityServerException;
     GetCertificateInfoResponse getCertificateInfo(GetCertificateInfoRequest req) throws IdentityServerException;
+
+
 }

@@ -33,6 +33,8 @@ import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand;
 import com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCommand;
 import com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdPSelectorsListCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdPSelectorsListCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPoliciesListCommand;
 import com.atricore.idbus.console.modeling.main.controller.ImpersonateUserPoliciesListCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
@@ -339,6 +341,9 @@ public class PropertySheetMediator extends IocMediator {
     public var _userDashboardBrandings:ArrayCollection;
 
     [Bindable]
+    public var _idpSelectors:ArrayCollection;
+
+    [Bindable]
     public var _impersonateUserPolicies:ArrayCollection;
 
     [Bindable]
@@ -425,6 +430,8 @@ public class PropertySheetMediator extends IocMediator {
             IdentityMappingPoliciesListCommand.FAILURE,
             UserDashboardBrandingsListCommand.SUCCESS,
             UserDashboardBrandingsListCommand.FAILURE,
+            IdPSelectorsListCommand.SUCCESS,
+            IdPSelectorsListCommand.FAILURE,
             SubjectNameIDPolicyListCommand.SUCCESS,
             SubjectNameIDPolicyListCommand.FAILURE,
             ImpersonateUserPoliciesListCommand.SUCCESS,
@@ -729,6 +736,38 @@ public class PropertySheetMediator extends IocMediator {
 
                 }
                 break;
+
+            case IdPSelectorsListCommand.SUCCESS:
+                if (_currentIdentityApplianceElement != null) {
+
+                    if (_currentIdentityApplianceElement is IdentityAppliance) {
+
+                        _idpSelectors = projectProxy.idpSelectors;
+
+                        var ida2:IdentityAppliance = _currentIdentityApplianceElement as IdentityAppliance;
+                        var idaDef2:IdentityApplianceDefinition = ida2.idApplianceDefinition;
+
+                        if (idaDef2.idpSelector != null) {
+                            for (var nj:int=0; nj < _iaCoreSection.idpSelectorsCombo.dataProvider.length; nj++) {
+                                if (_iaCoreSection.idpSelectorsCombo.dataProvider[nj].name == idaDef2.idpSelector.name) {
+                                    _iaCoreSection.idpSelectorsCombo.selectedIndex = nj;
+                                    break;
+                                }
+                            }
+                        } else {
+                            for (var pj:int=0; pj < _iaCoreSection.idpSelectorsCombo.dataProvider.length; pj++) {
+                                if (_iaCoreSection.idpSelectorsCombo.dataProvider[pj].name == "preferred-idp-selector") {
+                                    _iaCoreSection.idpSelectorsCombo.selectedIndex = pj;
+                                    break;
+                                }
+                            }
+                        }
+                        _iaCoreSection.idpSelectorsCombo.addEventListener(Event.CHANGE, handleSectionChange);
+
+                    }
+
+                }
+                break;
             case IdentityMappingPoliciesListCommand.SUCCESS:
                 if (_currentIdentityApplianceElement != null) {
                     if (_currentIdentityApplianceElement is InternalSaml2ServiceProvider && _spCoreSection != null) {
@@ -903,6 +942,9 @@ public class PropertySheetMediator extends IocMediator {
         BindingUtils.bindProperty(_iaCoreSection.userDashboardBrandingCombo, "dataProvider", this, "_userDashboardBrandings");
         sendNotification(ApplicationFacade.LIST_USER_DASHBOARD_BRANDINGS);
 
+        BindingUtils.bindProperty(_iaCoreSection.idpSelectorsCombo, "dataProvider", this, "_idpSelectors");
+        sendNotification(ApplicationFacade.LIST_IDP_SELECTORS);
+
         _iaCoreSection.applianceName.text = identityAppliance.idApplianceDefinition.name;
         _iaCoreSection.applianceDescription.text = identityAppliance.idApplianceDefinition.description;
         _iaCoreSection.applianceNamespace.text = identityAppliance.idApplianceDefinition.namespace;
@@ -929,6 +971,7 @@ public class PropertySheetMediator extends IocMediator {
         _iaCoreSection.applianceLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.userDashboardBrandingCombo.addEventListener(Event.CHANGE, handleSectionChange);
+        _iaCoreSection.idpSelectorsCombo.addEventListener(Event.CHANGE, handleSectionChange);
 
         _validators = [];
         _validators.push(_iaCoreSection.nameValidator);
@@ -959,6 +1002,7 @@ public class PropertySheetMediator extends IocMediator {
             identityAppliance.idApplianceDefinition.location.uri = _iaCoreSection.applianceLocationPath.text;
 
             identityAppliance.idApplianceDefinition.userDashboardBranding = _iaCoreSection.userDashboardBrandingCombo.selectedItem;
+            identityAppliance.idApplianceDefinition.idpSelector = _iaCoreSection.idpSelectorsCombo.selectedItem;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
