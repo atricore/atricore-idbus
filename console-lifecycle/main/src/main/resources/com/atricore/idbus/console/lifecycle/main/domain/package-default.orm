@@ -33,7 +33,8 @@
                 <column jdbc-type="CLOB" length="204800" />
             </field>
             <field name="idApplianceDeploymentBin">
-                <column jdbc-type="LONGVARCHAR" />
+                <!--column jdbc-type="LONGVARCHAR" /-->
+                <column jdbc-type="CLOB" length="204800" />
             </field>
         </class>
 
