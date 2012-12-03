@@ -452,7 +452,7 @@ public class EmbeddedIcons {
     public static var wikidAuthenticationServiceIcon:Class;
 
     [Bindable]
-    //[Embed(source="/assets/icons/notation/60x60/directory_authentication_service.png")]
+    [Embed(source="/assets/icons/notation/60x60/directory_authentication_service.png")]
     public static var directoryAuthenticationServiceIcon:Class;
 
     [Bindable]

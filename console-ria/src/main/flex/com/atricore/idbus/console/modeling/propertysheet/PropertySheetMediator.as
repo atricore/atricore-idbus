@@ -5293,6 +5293,7 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.idpChannelMessageTtl.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.idpChannelMessageTtlTolerance.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionIDPChannelSection.preferredIDPChannel.addEventListener(Event.CHANGE, handleSectionChange);
             
             //clear all existing validators and add idp channel section validators
             if (idpChannel.overrideProviderSetup) {
