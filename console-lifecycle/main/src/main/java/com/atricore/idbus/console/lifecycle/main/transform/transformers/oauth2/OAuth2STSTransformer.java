@@ -79,8 +79,12 @@ public class OAuth2STSTransformer extends AbstractTransformer {
 
         Bean mediatorBean = mediators.iterator().next();
 
+        Bean idMgr = getBean(idpBeans, idpBean.getName() + "-identity-manager");
+
         // Inject identity Manager
-        setPropertyRef(oauth2StsEmitter, "identityManager", idpBean.getName() + "-identity-manager");
+        if (idMgr != null) {
+            setPropertyRef(oauth2StsEmitter, "identityManager", idpBean.getName() + "-identity-manager");
+        }
 
         String oauth2Key = provider.getOauth2Key();
 
