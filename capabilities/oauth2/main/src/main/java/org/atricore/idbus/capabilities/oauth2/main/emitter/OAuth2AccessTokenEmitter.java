@@ -171,20 +171,25 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                 String username = sp.getName();
 
                 SSOIdentityManager idMgr = getIdentityManager();
-                if (idMgr == null)
-                    throw new IllegalStateException("SSOIdentityManager not configured for plan " + getClass().getSimpleName());
 
-                if (logger.isTraceEnabled())
-                    logger.trace("Resolving SSOUser for " + username);
+                // Obtain SSOUser principal
+                SSOUser ssoUser = null;
+                SSORole[] ssoRoles = null;
+                if (idMgr != null) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Resolving SSOUser for " + username);
+                    ssoUser = idMgr.findUser(username);
+                    ssoRoles = idMgr.findRolesByUsername(username);
+                } else {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Not resolving SSOUser for " + username);
+                    ssoUser = new BaseUserImpl(username);
+                    ssoRoles = new BaseRoleImpl[0];
+                }
 
                 Set<Principal> principals = new HashSet<Principal>();
 
-                // Find SSOUser principal
-                SSOUser ssoUser = idMgr.findUser(username);
                 principals.add(ssoUser);
-
-                // Find SSORole principals
-                SSORole[] ssoRoles = idMgr.findRolesByUsername(username);
                 principals.addAll(Arrays.asList(ssoRoles));
 
                 // Use existing SSOPolicyEnforcement principals

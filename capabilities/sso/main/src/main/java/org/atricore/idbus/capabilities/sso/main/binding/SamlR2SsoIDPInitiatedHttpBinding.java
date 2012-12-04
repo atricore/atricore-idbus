@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedAuthnRequestType;
+import org.atricore.idbus.common.sso._1_0.protocol.PreAuthenticatedIDPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -76,13 +77,24 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
             throw new IllegalArgumentException("Unknown message, no valid HTTP Method header found!");
         }
 
-        IDPInitiatedAuthnRequestType idpInitReq = new IDPInitiatedAuthnRequestType();
-        idpInitReq.setID(uuidGenerator.generateId());
-        idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
 
         // HTTP Request Parameters from HTTP Request body
         MediationState state = createMediationState(exchange);
         String relayState = state.getTransientVariable("RelayState");
+
+        String securityToken = state.getTransientVariable("atricore_security_token");
+
+        IDPInitiatedAuthnRequestType idpInitReq = null;
+        if (securityToken != null) {
+            idpInitReq = new PreAuthenticatedIDPInitiatedAuthnRequestType();
+            ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setSecurityToken(securityToken);
+            ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setAuthnCtxClass("urn:org:atricore:idbus:ac:classes:OAuth2");
+        } else {
+            idpInitReq = new IDPInitiatedAuthnRequestType();
+        }
+
+        idpInitReq.setID(uuidGenerator.generateId());
+        idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
 
         // We can send several attributes within the request.
         String spAlias = state.getTransientVariable("atricore_sp_alias");

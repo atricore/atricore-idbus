@@ -52,4 +52,6 @@ public interface ClaimsRequest extends Serializable {
     Set<SSOPolicyEnforcementStatement> getSsoPolicyEnforcements();
 
     String getSkin();
+    
+    String getPreauthenticationSecurityToken();
 }

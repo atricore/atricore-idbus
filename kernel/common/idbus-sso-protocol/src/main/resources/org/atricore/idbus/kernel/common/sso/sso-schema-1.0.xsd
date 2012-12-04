@@ -83,6 +83,16 @@
         </complexContent>
     </complexType>
 
+    <element name="PreAuthenticatedIDPInitiatedAuthnRequest" type="ssop:PreAuthenticatedIDPInitiatedAuthnRequestType"/>
+    <complexType name="PreAuthenticatedIDPInitiatedAuthnRequestType">
+        <complexContent>
+            <extension base="ssop:IDPInitiatedAuthnRequestType">
+                <attribute name="SecurityToken" type="string" use="required"/>
+                <attribute name="AuthnCtxClass" type="string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
     <element name="SPInitiatedLogoutRequest" type="ssop:SPInitiatedLogoutRequestType"/>
     <complexType name="SPInitiatedLogoutRequestType">
         <complexContent>

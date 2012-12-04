@@ -44,4 +44,13 @@
         </complexContent>
     </complexType>
 
+    <element name="PreAuthenticatedAuthnRequest" type="samli:PreAuthenticatedAuthnRequestType"/>
+    <complexType name="PreAuthenticatedAuthnRequestType">
+        <complexContent>
+            <extension base="samlp:AuthnRequestType">
+                <attribute name="SecurityToken" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
 </schema>

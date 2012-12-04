@@ -44,7 +44,8 @@ public class ClaimsRequestImpl implements ClaimsRequest {
     private String lastErrorMsg;
     private Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = new HashSet<SSOPolicyEnforcementStatement>();
     private String skin;
-
+    private String preauthenticationSecurityToken;
+    
     public ClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel) {
         this.id = id;
         this.issuerChannel = issuerChannel;
@@ -59,6 +60,16 @@ public class ClaimsRequestImpl implements ClaimsRequest {
         this.claimsChannel = claimsChannel;
         this.issuerEndpoint = issuerEndpoint;
         this.relayState = relayState;
+    }
+
+    public ClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel,
+                             String relayState, String preauthenticationSecurityToken) {
+        this.id = id;
+        this.issuerChannel = issuerChannel;
+        this.claimsChannel = claimsChannel;
+        this.issuerEndpoint = issuerEndpoint;
+        this.relayState = relayState;
+        this.preauthenticationSecurityToken = preauthenticationSecurityToken;
     }
 
     public String getId() {
@@ -127,6 +138,14 @@ public class ClaimsRequestImpl implements ClaimsRequest {
 
     public void setSkin(String skin) {
         this.skin = skin;
+    }
+
+    public String getPreauthenticationSecurityToken() {
+        return preauthenticationSecurityToken;
+    }
+
+    public void setPreauthenticationSecurityToken(String preauthenticationSecurityToken) {
+        this.preauthenticationSecurityToken = preauthenticationSecurityToken;
     }
 
     @Override

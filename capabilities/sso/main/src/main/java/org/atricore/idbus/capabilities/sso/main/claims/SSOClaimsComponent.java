@@ -27,10 +27,7 @@ import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
-import org.atricore.idbus.capabilities.sso.main.claims.endpoints.SpUsernamePasswordClaimsEndpoint;
-import org.atricore.idbus.capabilities.sso.main.claims.endpoints.OpenIDClaimsEndpoint;
-import org.atricore.idbus.capabilities.sso.main.claims.endpoints.UsernamePasscodeClaimsEndpoint;
-import org.atricore.idbus.capabilities.sso.main.claims.endpoints.UsernamePasswordClaimsEndpoint;
+import org.atricore.idbus.capabilities.sso.main.claims.endpoints.*;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 
@@ -73,6 +70,10 @@ public class SSOClaimsComponent extends DefaultComponent {
 
             case OPENID_AUTHN_CTX:
                 endpoint = new OpenIDClaimsEndpoint(uri, this, parameters);
+                break;
+
+            case OAUTH2_AUTHN_CTX:
+                endpoint = new PreAuthenticationSecurityTokenClaimsEndpoint(uri, this, parameters);
                 break;
 
             default:

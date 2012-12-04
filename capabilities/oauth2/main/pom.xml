@@ -44,6 +44,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.oauth2.rserver</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.atricore.idbus.capabilities.sts</groupId>
             <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
             <scope>provided</scope>
