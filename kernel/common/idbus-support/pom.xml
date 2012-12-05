@@ -125,6 +125,7 @@
                             javax.transaction.xa,
                             javax.management,
                             javax.crypto.spec,
+                            javax.crypto,
                             org.ietf.jgss,
                             *
                         </Import-Package>
