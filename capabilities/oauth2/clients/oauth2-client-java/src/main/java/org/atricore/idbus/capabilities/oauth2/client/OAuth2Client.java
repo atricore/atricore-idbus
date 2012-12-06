@@ -34,13 +34,13 @@ public class OAuth2Client {
                 config.getProperty("oauth2.username"),
                 config.getProperty("oauth2.password"));
 
-        String spId = config.getProperty("oauth2.serviceProviderId");
+        String spAlias = config.getProperty("oauth2.serviceProviderAlias");
         String resourceServerEndpoint = config.getProperty("oauth2.resourceServerEndpoint");
 
         String preauthUrl =
-                String.format("%s?atricore_sp_id=%s&atricore_security_token=%s",
+                String.format("%s?atricore_sp_alias=%s&atricore_security_token=%s",
                     resourceServerEndpoint,
-                    URLEncoder.encode(spId, "UTF-8"),
+                    spAlias,
                     URLEncoder.encode(accessToken, "UTF-8")
                 );
 
