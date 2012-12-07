@@ -112,6 +112,9 @@
     <bean name="dominoAuthnClaimsChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.claims.DominoAuthenticationClaimsChannelTransformer"/>
 
+    <bean name="oauth2AuthnClaimsChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.claims.OAuth2AuthenticationClaimsChannelTransformer"/>
+
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.STSTransformer"/>
 
@@ -135,6 +138,9 @@
 
     <bean name="jbosseppAuthenticationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.JBossEPPAuthenticationTransformer"/>
+
+    <bean name="oauth2AuthenticationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.OAuth2AuthenticationTransformer"/>
 
     <bean name="spLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.SPTransformer">
@@ -593,6 +599,7 @@
                                         <ref bean="2faAuthnClaimsChannelTransformer"/>
                                         <ref bean="wiaAuthnClaimsChannelTransformer"/>
                                         <ref bean="dominoAuthnClaimsChannelTransformer"/>
+                                        <ref bean="oauth2AuthenticationTransformer"/>
 
                                         <ref bean="stsTransformer"/>
                                         <ref bean="oauth2StsTransformer"/>
@@ -603,6 +610,7 @@
                                         <ref bean="windowsIntegratedAuthenticationTransformer"/>
                                         <ref bean="dominoAuthenticationTransformer"/>
                                         <ref bean="jbosseppAuthenticationTransformer"/>
+                                        <ref bean="oauth2AuthnClaimsChannelTransformer"/>
 
                                         <!-- SP Transformers -->
                                         <ref bean="spLocalTransformer"/>

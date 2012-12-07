@@ -181,8 +181,12 @@ public class AbstractOAuth2SPChannelTransformer extends AbstractTransformer {
         if (spChannel != null)
             setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
-        setPropertyRef(spChannelBean, "identityManager", idpBean.getName() + "-identity-manager");
         setPropertyRef(spChannelBean, "member", idpMd.getName());
+
+        Bean idMgr = getBean(idpBeans, idpBean.getName() + "-identity-manager");
+        if (idMgr != null) {
+            setPropertyRef(spChannelBean, "identityManager", idpBean.getName() + "-identity-manager");
+        }
 
         // identityMediator
         Bean identityMediatorBean = getBean(idpBeans, idpBean.getName() + "-oauth2-mediator");
