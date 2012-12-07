@@ -82,6 +82,12 @@
 
             <dependency>
                 <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
+                <artifactId>org.atricore.idbus.capabilities.oauth2.rserver</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
                 <artifactId>org.atricore.idbus.capabilities.oauth2.main</artifactId>
                 <version>${pom.version}</version>
             </dependency>

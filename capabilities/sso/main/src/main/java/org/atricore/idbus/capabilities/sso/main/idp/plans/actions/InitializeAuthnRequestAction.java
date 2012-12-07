@@ -22,9 +22,11 @@
 package org.atricore.idbus.capabilities.sso.main.idp.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
+import oasis.names.tc.saml._2_0.idbus.PreAuthenticatedAuthnRequestType;
 import oasis.names.tc.saml._2_0.metadata.*;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
+import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
@@ -34,6 +36,7 @@ import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedAuthnRequestType;
+import org.atricore.idbus.common.sso._1_0.protocol.PreAuthenticatedIDPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
@@ -60,9 +63,20 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
         if (in == null || out == null)
             return;
-
+        
         IDPInitiatedAuthnRequestType ssoAuthnReq = (IDPInitiatedAuthnRequestType) in.getContent();
+        RequestedAuthnContextType reqAuthnCtx = null;
 
+        String securityToken = null;
+        if (ssoAuthnReq instanceof PreAuthenticatedIDPInitiatedAuthnRequestType) {
+            PreAuthenticatedIDPInitiatedAuthnRequestType preAuthnReq = (PreAuthenticatedIDPInitiatedAuthnRequestType) ssoAuthnReq;
+            securityToken = preAuthnReq.getSecurityToken();
+            reqAuthnCtx = new RequestedAuthnContextType();
+            reqAuthnCtx.getAuthnContextClassRef().add(preAuthnReq.getAuthnCtxClass());
+            log.trace("Issuing SAML2 Authentication Request for Preauthenticated Token [" + securityToken  + "] and " +
+                      "Authentication Context Class " + preAuthnReq.getAuthnCtxClass());
+        }
+        
         AuthnRequestType authn = (AuthnRequestType) out.getContent();
 
         // The channel that recieved the request.
@@ -99,6 +113,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         // saml:Conditions [optional]
 
         // RequestedAuthnContext [optional]
+        authn.setRequestedAuthnContext(reqAuthnCtx);
 
         // Scoping [optional]
 
@@ -133,9 +148,15 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         authn.setAssertionConsumerServiceURL(acEndpoint.getLocation());
         authn.setProtocolBinding(acEndpoint.getBinding()); 
 
+        // Attach Security Token (in case any has been supplied)
+        if (securityToken != null) {
+            ((PreAuthenticatedAuthnRequestType) authn).setSecurityToken(securityToken);
+        }
+
         // AttributeConsumingServiceIndex [optional]
 
         // ProviderName [optional]
+
 
     }
 

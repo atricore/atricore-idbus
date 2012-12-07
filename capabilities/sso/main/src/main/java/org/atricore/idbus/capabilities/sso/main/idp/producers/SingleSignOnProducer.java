@@ -24,6 +24,7 @@ package org.atricore.idbus.capabilities.sso.main.idp.producers;
 import oasis.names.tc.saml._1_0.assertion.AudienceRestrictionConditionType;
 import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.assertion.SubjectType;
+import oasis.names.tc.saml._2_0.idbus.PreAuthenticatedAuthnRequestType;
 import oasis.names.tc.saml._2_0.idbus.SecTokenAuthnRequestType;
 import oasis.names.tc.saml._2_0.metadata.*;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
@@ -83,6 +84,7 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
@@ -124,16 +126,27 @@ public class SingleSignOnProducer extends SSOProducer {
 
             String thread = Thread.currentThread().getName();
 
+            if (content instanceof PreAuthenticatedIDPInitiatedAuthnRequestType) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessPreAuthenticatedIDPInitiatedSSO START");
+
+                // New Pre-authenticated IDP Initiated Single Sign-On
+                doProcessPreAuthenticatedIDPInitiantedSSO(exchange, (PreAuthenticatedIDPInitiatedAuthnRequestType) content);
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessPreAuthenticatedIDPInitiatedSSO END");
+            } else
             if (content instanceof IDPInitiatedAuthnRequestType) {
 
                 if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessIDPInitiantedSSO START");
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessIDPInitiatedSSO START");
 
                 // New IDP Initiated Single Sign-On
                 doProcessIDPInitiantedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
 
                 if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessIDPInitiantedSSO END");
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessIDPInitiatedSSO END");
             } else if (content instanceof SecTokenAuthnRequestType) {
 
                 if (logger.isTraceEnabled())
@@ -263,6 +276,76 @@ public class SingleSignOnProducer extends SSOProducer {
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                     authnRequest,
                     "AuthnRequest",
+                    relayState,
+                    ed,
+                    in.getMessage().getState()));
+
+            exchange.setOut(out);
+
+        } catch (Exception e) {
+            throw new SSOException(e);
+        }
+
+    }
+
+    /*
+    * This procedure will handle preauthenticated IdP-initiated (aka IdP unsolicited response) requests.
+    */
+    protected void doProcessPreAuthenticatedIDPInitiantedSSO(CamelMediationExchange exchange,
+                                                             PreAuthenticatedIDPInitiatedAuthnRequestType PreAuthIdpInitiatedAuthnRequest) throws SSOException {
+
+
+        logger.debug("Processing PreAuthenticated IDP Initiated Single Sign-On with " +
+                PreAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat() + " preferred Response Format"
+        );
+
+        try {
+
+            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+            String relayState = in.getMessage().getRelayState();
+
+            // ------------------------------------------------------
+            // Resolve target IDP for relaying the Authentication Request
+            // ------------------------------------------------------
+
+            logger.debug("Received Security Token [" + PreAuthIdpInitiatedAuthnRequest.getSecurityToken() + "]");
+
+            in.getMessage().getState().setLocalVariable(
+                    "urn:org:atricore:idbus:sso:protocol:responseMode", "unsolicited");
+
+            in.getMessage().getState().setLocalVariable(
+                    "urn:org:atricore:idbus:sso:protocol:responseFormat",
+                    PreAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat());
+
+            CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
+            logger.debug("Using IdP " + idp.getAlias());
+
+            // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
+            EndpointType idpSsoEndpoint = resolveIdpSsoEndpoint(idp);
+
+            EndpointDescriptor ed = new EndpointDescriptorImpl(
+                    "IDPSSOEndpoint",
+                    "SingleSignOnService",
+                    idpSsoEndpoint.getBinding(),
+                    idpSsoEndpoint.getLocation(),
+                    idpSsoEndpoint.getResponseLocation());
+
+            // ------------------------------------------------------
+            // Create PreAuthenticatedAuthnRequest using identity plan
+            // ------------------------------------------------------
+            PreAuthenticatedAuthnRequestType preauthAuthnRequest = buildPreAuthIdPInitiatedAuthnRequest(exchange, idp, ed, (FederationChannel) channel);
+
+            // ------------------------------------------------------
+            // Send Authn Request to IDP
+            // ------------------------------------------------------
+            in.getMessage().getState().setLocalVariable(
+                    SAMLR2Constants.SAML_PROTOCOL_NS + ":PreAuthenticatedAuthnRequest", preauthAuthnRequest);
+
+            // Send SAMLR2 Message back
+            CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                    preauthAuthnRequest,
+                    "PreAuthenticatedAuthnRequest",
                     relayState,
                     ed,
                     in.getMessage().getState()));
@@ -430,12 +513,26 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("Selected claims endpoint : " + claimEndpoint);
 
                 // Create Claims Request
-                SSOClaimsRequest claimsRequest = new SSOClaimsRequest(authnRequest.getID(),
-                        channel,
-                        endpoint,
-                        claimChannel,
-                        uuidGenerator.generateId());
-
+                SSOClaimsRequest claimsRequest = null;
+                
+                if ( authnRequest instanceof PreAuthenticatedAuthnRequestType) {
+                    PreAuthenticatedAuthnRequestType preAuthnRequest = (PreAuthenticatedAuthnRequestType) authnRequest;
+                    claimsRequest = new SSOClaimsRequest(
+                            authnRequest.getID(),
+                            channel,
+                            endpoint,
+                            claimChannel,
+                            uuidGenerator.generateId(),
+                            preAuthnRequest.getSecurityToken());
+                } else {
+                    claimsRequest = new SSOClaimsRequest(
+                            authnRequest.getID(),
+                            channel,
+                            endpoint,
+                            claimChannel,
+                            uuidGenerator.generateId());
+                }
+                
                 // Send our state ID as relay
                 claimsRequest.setRelayState(mediationState.getLocalState().getId());
 
@@ -1239,6 +1336,8 @@ public class SingleSignOnProducer extends SSOProducer {
         if (status.getAuthnRequest() != null && status.getAuthnRequest().getRequestedAuthnContext() != null) {
             reqAuthnCtx = status.getAuthnRequest().getRequestedAuthnContext();
         }
+        
+        logger.trace("Selecting Claims Endpoint preferently with authentication context " + reqAuthnCtx);
 
         // -------------------------------------------------------------------
         // Keep using current endpoint until we reach the MAX TRY COUNT for it
@@ -1744,6 +1843,55 @@ public class SingleSignOnProducer extends SSOProducer {
 
     }
 
+    /**
+     * Build an AuthnRequest for the target SP to which IDP's unsollicited response needs to be pushed to.
+     */
+    protected PreAuthenticatedAuthnRequestType buildPreAuthIdPInitiatedAuthnRequest(CamelMediationExchange exchange,
+                                                             CircleOfTrustMemberDescriptor idp,
+                                                             EndpointDescriptor ed,
+                                                             FederationChannel spChannel
+    ) throws IdentityPlanningException, SSOException {
+
+        IdentityPlan identityPlan = findIdentityPlanOfType(IDPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
+        IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
+
+        // Publish IdP Metadata
+        idPlanExchange.setProperty(VAR_DESTINATION_COT_MEMBER, idp);
+        idPlanExchange.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, ed);
+        idPlanExchange.setProperty(VAR_COT_MEMBER, spChannel.getMember());
+        idPlanExchange.setProperty(VAR_RESPONSE_CHANNEL, spChannel);
+
+        // Get SPInitiated authn request, if any!
+        PreAuthenticatedIDPInitiatedAuthnRequestType ssoAuthnRequest =
+                (PreAuthenticatedIDPInitiatedAuthnRequestType) ((CamelMediationMessage) exchange.getIn()).getMessage().getContent();
+
+                // Create in/out artifacts
+        IdentityArtifact in =
+                new IdentityArtifactImpl(new QName("urn:org:atricore:idbus:sso:protocol", "PreAuthenticatedIDPInitiatedAuthnRequest"), ssoAuthnRequest);
+        idPlanExchange.setIn(in);
+
+        IdentityArtifact<AuthnRequestType> out =
+                new IdentityArtifactImpl<AuthnRequestType>(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, "PreAuthenticatedAuthnRequest"),
+                        new PreAuthenticatedAuthnRequestType());
+        idPlanExchange.setOut(out);
+
+        // Prepare execution
+        identityPlan.prepare(idPlanExchange);
+
+        // Perform execution
+        identityPlan.perform(idPlanExchange);
+
+        if (!idPlanExchange.getStatus().equals(IdentityPlanExecutionStatus.SUCCESS)) {
+            throw new SecurityTokenEmissionException("Identity plan returned : " + idPlanExchange.getStatus());
+        }
+
+        if (idPlanExchange.getOut() == null)
+            throw new SecurityTokenEmissionException("Plan Exchange OUT must not be null!");
+
+        return (PreAuthenticatedAuthnRequestType) idPlanExchange.getOut().getContent();
+
+    }
+
     protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(FederatedProvider sp) {
 
         FederatedLocalProvider spl = (FederatedLocalProvider) sp;
@@ -2039,6 +2187,8 @@ public class SingleSignOnProducer extends SSOProducer {
                 rstRequest.getAny().add(ofwss.createUsernameToken((UsernameTokenType) claim.getValue()));
             } else if (claimObj instanceof BinarySecurityTokenType) {
                 rstRequest.getAny().add(ofwss.createBinarySecurityToken((BinarySecurityTokenType) claim.getValue()));
+            } else if (claimObj instanceof PasswordString) {
+                rstRequest.getAny().add(ofwss.createPassword((PasswordString) claim.getValue()));
             } else {
                 throw new SSOException("Claim type not supported " + claimObj.getClass().getName());
             }

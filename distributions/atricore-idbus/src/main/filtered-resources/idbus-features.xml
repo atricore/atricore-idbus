@@ -110,6 +110,7 @@
 
     <feature name="atricore-oauth2" version="${version}">
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.common/${idbus.cap.oauth2.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.rserver/${idbus.cap.oauth2.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.main/${idbus.cap.oauth2.version}</bundle>
     </feature>
 

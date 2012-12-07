@@ -1,0 +1,11 @@
+## OAuth2 sample client configuration
+
+oauth2.clientId=acme
+oauth2.clientSecret=acme123
+oauth2.username=testuser1
+oauth2.password=Te$tU$er1
+oauth2.authorizationServerEndpoint=http://localhost:8081/IDBUS/ACME/IDP1/OAUTH2/TOKEN/SOAP
+oauth2.serviceProviderAlias=http://localhost:8081/IDBUS/ACME/SP1/SAML2/MD
+oauth2.resourceServerEndpoint=http://localhost:8081/IDBUS/ACME/IDP1/SAML2/SSO/IDP_INITIATE
+
+

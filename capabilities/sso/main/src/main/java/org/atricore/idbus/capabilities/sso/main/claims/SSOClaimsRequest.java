@@ -45,6 +45,11 @@ public class SSOClaimsRequest extends ClaimsRequestImpl {
         super(id, issuer, endpoint, provider, relayState);
     }
 
+    public SSOClaimsRequest(String id, Channel issuer, IdentityMediationEndpoint endpoint, ClaimChannel provider,
+                            String relayState, String preauthenticationSecurityToken) {
+        super(id, issuer, endpoint, provider, relayState, preauthenticationSecurityToken);
+    }
+
     public String getTargetRelayState() {
         return targetRelayState;
     }

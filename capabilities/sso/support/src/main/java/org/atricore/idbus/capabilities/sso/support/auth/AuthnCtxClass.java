@@ -114,7 +114,10 @@ public enum AuthnCtxClass {
     // Non-normative authentication contexts
 
     /** URI for OpenID authentication context. */
-    OPENID_AUTHN_CTX("urn:org:atricore:idbus:ac:classes:OpenID", true);
+    OPENID_AUTHN_CTX("urn:org:atricore:idbus:ac:classes:OpenID", true),
+
+    /** URI for Preauthentication (OAuth2) authentication context. */
+    OAUTH2_AUTHN_CTX("urn:org:atricore:idbus:ac:classes:OAuth2", true);
 
     private String ac;
 

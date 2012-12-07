@@ -11,6 +11,7 @@ import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 import java.util.Collection;
@@ -159,6 +160,73 @@ public class OAuth2IdPMediator extends AbstractCamelMediator {
 
         };
     }
+
+    protected RouteBuilder createClaimRoutes(final ClaimChannel claimChannel) throws Exception {
+        logger.info("Creating OAuth2 Claim Routes");
+
+        return new RouteBuilder() {
+
+            @Override
+            public void configure() throws Exception {
+
+                // --------------------------------------------------
+                // Process configured endpoints for this channel
+                // --------------------------------------------------
+                Collection<IdentityMediationEndpoint> endpoints = claimChannel.getEndpoints();
+
+                if (endpoints == null)
+                    throw new IdentityMediationException("No endpoints defined for claims channel : " + claimChannel.getName());
+
+                for (IdentityMediationEndpoint endpoint : endpoints) {
+
+                    OAuth2Binding binding = OAuth2Binding.asEnum(endpoint.getBinding());
+                    EndpointDescriptor ed = resolveEndpoint(claimChannel, endpoint);
+
+                    switch (binding) {
+                        case SSO_ARTIFACT:
+                            // FROM idbus-http TO idbus-bind
+                            from("idbus-http:" + ed.getLocation()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("direct:" + ed.getName());
+
+                            // FROM idbus-bind TO domino (claim processing)
+                            from("idbus-bind:camel://direct:" + ed.getName() +
+                                    "?binding=" + ed.getBinding() +
+                                    "&channelRef=" + claimChannel.getName()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("domino:" + ed.getType() +
+                                            "?channelRef=" + claimChannel.getName() +
+                                            "&endpointRef=" + endpoint.getName());
+
+                            if (ed.getResponseLocation() != null) {
+
+                                // FROM idbus-http TO idbus-bind
+                                from("idbus-http:" + ed.getResponseLocation()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("direct:" + ed.getName() + "-response");
+
+                                // FROM idbus-bind TO domino (token negotiation)
+                                from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
+                                        "?binding=" + ed.getBinding() +
+                                        "&channelRef=" + claimChannel.getName()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("domino:" + ed.getType() +
+                                                "?channelRef=" + claimChannel.getName() +
+                                                "&endpointRef=" + endpoint.getName() +
+                                                "&response=true");
+                            }
+
+                            break;
+                        default:
+                            throw new OAuth2Exception("Unsupported OAuth2 Binding " + binding.getValue());
+                    }
+
+                }
+            }
+        };
+
+    }
+
 
     public EndpointDescriptor resolveEndpoint(Channel channel, IdentityMediationEndpoint endpoint) throws IdentityMediationException {
         // SAMLR2 Endpoint springmetadata definition
