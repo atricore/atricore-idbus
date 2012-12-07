@@ -47,6 +47,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
 import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
@@ -76,13 +77,15 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
         // DO Nothing!
     }
 
-    protected FederatedLocalProvider getProvider() {
+    protected StatefulProvider getProvider() {
         if (channel instanceof FederationChannel) {
             return ((FederationChannel) channel).getProvider();
         } else if (channel instanceof BindingChannel) {
             return ((BindingChannel) channel).getProvider();
         } else if (channel instanceof ClaimChannel) {
             return ((ClaimChannel) channel).getProvider();
+        } else if (channel instanceof SelectorChannel) {
+            return ((SelectorChannel) channel).getProvider();
         } else {
             throw new IllegalStateException("Configured channel does not support Federated Provider : " + channel);
         }
@@ -188,7 +191,7 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
 
         try {
 
-            CircleOfTrustManager cotMgr = getProvider().getCotManager();
+            CircleOfTrustManager cotMgr = ((FederatedLocalProvider)getProvider()).getCotManager();
 
             MetadataEntry md = cotMgr.findEntityRoleMetadata(spAlias,
                     "urn:oasis:names:tc:SAML:2.0:metadata:SPSSODescriptor");
@@ -234,7 +237,7 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
 
         try {
 
-            CircleOfTrustManager cotMgr = getProvider().getCotManager();
+            CircleOfTrustManager cotMgr = ((FederatedLocalProvider)getProvider()).getCotManager();
 
             MetadataEntry md = cotMgr.findEntityRoleMetadata(idpAlias,
                     "urn:oasis:names:tc:SAML:2.0:metadata:IDPSSODescriptor");

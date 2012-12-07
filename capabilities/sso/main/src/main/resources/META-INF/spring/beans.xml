@@ -43,7 +43,7 @@
             <list>
                 <bean id="preferred-idp-selection" class="org.atricore.idbus.capabilities.sso.main.select.spi.SelectionStrategy">
                     <property name="name" value="preferred-idp-selector"/>
-                    <property name="description" value="Preferred, then Default"/>
+                    <property name="description" value="Requested, then preferred"/>
                     <property name="selectors">
                         <list>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.RequestedIdPEntitySelector"/>
@@ -53,7 +53,7 @@
                 </bean>
                 <bean id="default-idp-selection" class="org.atricore.idbus.capabilities.sso.main.select.spi.SelectionStrategy">
                     <property name="name" value="default-idp-selector"/>
-                    <property name="description" value="Default Only"/>
+                    <property name="description" value="Preferred Only"/>
                     <property name="selectors">
                         <list>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreferredIdPEntitySelector"/>

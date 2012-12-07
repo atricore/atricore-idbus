@@ -11,7 +11,7 @@ import java.util.List;
 public interface EntitySelectorManager {
 
 
-    List<String> resolveAttributeEndpoints(String realmName, EntitySelectionContext ctx) throws SSOException;
+    List<String> resolveAttributeEndpoints(String realmName) throws SSOException;
 
     CircleOfTrustMemberDescriptor selectEntity(String realmName, EntitySelectionContext ctx) throws SSOException;
 

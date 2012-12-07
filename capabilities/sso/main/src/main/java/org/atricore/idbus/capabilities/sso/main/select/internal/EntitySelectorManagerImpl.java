@@ -16,7 +16,7 @@ public class EntitySelectorManagerImpl implements EntitySelectorManager {
     // Selectors by concern
     private SelectionStrategiesRegistry registry;
 
-    public List<String> resolveAttributeEndpoints(String strategyName, EntitySelectionContext ctx) throws SSOException {
+    public List<String> resolveAttributeEndpoints(String strategyName) throws SSOException {
 
         List<String> endpoints = new ArrayList<String>();
         SelectionStrategy strategy = registry.lookup(strategyName);

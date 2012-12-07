@@ -145,7 +145,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         validateRequest(sloRequest, in.getMessage().getRawContent());
 
-        CircleOfTrustMemberDescriptor idp = getProvider().getCotManager().lookupMemberByAlias(sloRequest.getIssuer().getValue());
+        CircleOfTrustMemberDescriptor idp = ((FederatedLocalProvider)getProvider()).getCotManager().lookupMemberByAlias(sloRequest.getIssuer().getValue());
         if (secCtx == null || !idp.getAlias().equals(secCtx.getIdpAlias())) {
             // We're gettingn an SLO from an IDP that is not the one that created the current session, reject the request.
             logger.warn("Unexpected SLO Request received from IDP " + sloRequest.getIssuer().getValue());
@@ -619,7 +619,7 @@ public class SingleLogoutProducer extends SSOProducer {
      */
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
-        FederatedLocalProvider sp = getProvider();
+        FederatedLocalProvider sp = (FederatedLocalProvider)getProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {

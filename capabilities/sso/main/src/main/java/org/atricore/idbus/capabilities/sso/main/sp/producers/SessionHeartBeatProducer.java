@@ -218,7 +218,7 @@ public class SessionHeartBeatProducer extends SSOProducer {
 
     protected SPChannel resolveSpChannel(CircleOfTrustMemberDescriptor idp) throws SSOException {
         // The channel might be a binding or federation channel, get the main channel from the provider.
-        CircleOfTrust cot = getProvider().getChannel().getCircleOfTrust();
+        CircleOfTrust cot = ((FederatedLocalProvider)getProvider()).getChannel().getCircleOfTrust();
 
         // The channel we need to send messages to
         SPChannel spChannel = null;
@@ -311,7 +311,7 @@ public class SessionHeartBeatProducer extends SSOProducer {
             logger.debug("Updating SP Security Context for " + secCtx.getSessionIndex());
 
         // Use the main SSO Session manager, this should the same for all channels !
-        IdPChannel idPChannel = (IdPChannel) getProvider().getChannel();
+        IdPChannel idPChannel = (IdPChannel) ((FederatedLocalProvider)getProvider()).getChannel();
         SSOSessionManager ssoSessionManager = idPChannel.getSessionManager();
         ssoSessionManager.accessSession(secCtx.getSessionIndex());
 
