@@ -129,6 +129,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 new PaletteEntry("PhpBB", EmbeddedIcons.phpbbResourceMiniIcon, "PhpBB Environment Entry", DiagramElementTypes.PHPBB_RESOURCE_ELEMENT_TYPE)
         );
 
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("JBoss EPP", EmbeddedIcons.jbosseppResourceMiniIcon, "JBoss EPP Environment Entry", DiagramElementTypes.JBOSSEPP_RESOURCE_ELEMENT_TYPE)
+        );
+
         pr.add(resourcesPaletteDrawer);
 
         // Execution Environments drawer

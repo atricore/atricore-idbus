@@ -39,6 +39,7 @@
         import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
         import com.atricore.idbus.console.services.dto.AlfrescoResource;
         import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.CaptiveExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.Channel;
         import com.atricore.idbus.console.services.dto.ColdfusionResource;
         import com.atricore.idbus.console.services.dto.DbIdentitySource;
@@ -56,6 +57,7 @@
         import com.atricore.idbus.console.services.dto.IdentitySource;
         import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
         import com.atricore.idbus.console.services.dto.JBossEPPAuthenticationService;
+        import com.atricore.idbus.console.services.dto.JBossEPPResource;
         import com.atricore.idbus.console.services.dto.JBossPortalResource;
         import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.JOSSO1Resource;
@@ -222,6 +224,8 @@
                     _linkIcon = EmbeddedIcons.alfrescoResourceIcon;
                 } else if (obj is PhpBBResource) {
                     _linkIcon = EmbeddedIcons.phpbbResourceIcon;
+                } else if (obj is JBossEPPResource) {
+                    _linkIcon = EmbeddedIcons.jbosseppResourceIcon;
                 }
             } else if (obj is IdentityApplianceUnit) {
                 var applianceUnit:IdentityApplianceUnit = obj as IdentityApplianceUnit;
@@ -232,7 +236,7 @@
                 } else if (type.equals(IdentityApplianceUnitType.PROVISIONING_UNIT)) {
                     _linkIcon = EmbeddedIcons.vaultIcon;
                 }
-            } else if (obj is ExecutionEnvironment) { //check execution environment
+            } else if (obj is ExecutionEnvironment && !(obj is CaptiveExecutionEnvironment)) { //check execution environment
                 var execEnvirnoment:ExecutionEnvironment = obj as ExecutionEnvironment;
                 _linkLabel = execEnvirnoment.name;
                 if (obj is JbossExecutionEnvironment) {

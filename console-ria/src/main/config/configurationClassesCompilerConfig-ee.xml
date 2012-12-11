@@ -143,6 +143,7 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.liferayportal.LiferayPortalResourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.alfresco.AlfrescoResourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.phpbb.PhpBBResourceCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.jbossepp.JBossEPPResourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator</symbol>

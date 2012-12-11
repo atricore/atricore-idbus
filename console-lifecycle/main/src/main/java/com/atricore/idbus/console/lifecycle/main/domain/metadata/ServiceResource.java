@@ -18,6 +18,8 @@ public abstract class ServiceResource implements Serializable {
 
     private ServiceConnection serviceConnection;
 
+    private boolean overwriteOriginalSetup;
+
     private Activation activation;
 
     private double x;
@@ -56,6 +58,14 @@ public abstract class ServiceResource implements Serializable {
         this.serviceConnection = serviceConnection;
     }
 
+    public boolean isOverwriteOriginalSetup() {
+        return overwriteOriginalSetup;
+    }
+
+    public void setOverwriteOriginalSetup(boolean overwriteOriginalSetup) {
+        this.overwriteOriginalSetup = overwriteOriginalSetup;
+    }
+
     @IgnoreChildren
     public Activation getActivation() {
         return activation;
@@ -80,6 +90,7 @@ public abstract class ServiceResource implements Serializable {
     public void setY(double y) {
         this.y = y;
     }
+
 
     @Override
     public boolean equals(Object o) {

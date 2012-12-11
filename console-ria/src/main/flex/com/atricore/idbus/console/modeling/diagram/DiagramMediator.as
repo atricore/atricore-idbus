@@ -51,6 +51,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityL
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateJBossEPPAuthenticationServiceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateJBossEPPResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateJosso1ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateJosso2ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdentitySourceElementRequest;
@@ -98,6 +99,8 @@ import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.Activation;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
+import com.atricore.idbus.console.services.dto.CaptiveExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.CaptiveExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
@@ -615,6 +618,14 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT, clpeenv);
                         break;
+                    case DiagramElementTypes.JBOSSEPP_RESOURCE_ELEMENT_TYPE:
+                        var cljbeer:CreateJBossEPPResourceElementRequest = new CreateJBossEPPResourceElementRequest(
+                            _identityAppliance, null);
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_JBOSSEPP_RESOURCE_ELEMENT, cljbeer);
+                        break;
                     case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                         var cwseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                 );
@@ -1075,10 +1086,14 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     var activation1:JOSSOActivation = element as JOSSOActivation;
                     var rNode:IVisualNode = findNodeElementBySemanticElement(activation1.resource);
                     var execEnvNode:IVisualNode = findNodeElementBySemanticElement(activation1.executionEnv);
-                    GraphDataManager.linkVNodes(_identityApplianceDiagram, execEnvNode, rNode,
-                            activation1, EmbeddedIcons.activationMiniIcon,
-                            resourceManager.getString(AtricoreConsole.BUNDLE, "activation.connection"));
+
+                    if (!(execEnvNode is CaptiveExecutionEnvironment)) {
+                        GraphDataManager.linkVNodes(_identityApplianceDiagram, execEnvNode, rNode,
+                                activation1, EmbeddedIcons.activationMiniIcon,
+                                resourceManager.getString(AtricoreConsole.BUNDLE, "activation.connection"));
+                    }
                     _identityApplianceDiagram.exitConnectionMode();
+
                 } else if (element is DelegatedAuthentication) {
                     var delegatedAuthentication1:DelegatedAuthentication = element as DelegatedAuthentication;
                     var idpNode:IVisualNode = findNodeElementBySemanticElement(delegatedAuthentication1.idp);
@@ -1172,8 +1187,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             var environmentNodes:ArrayCollection = new ArrayCollection();
             if (identityApplianceDefinition.executionEnvironments != null) {
                 for(var l:int=0; l < identityApplianceDefinition.executionEnvironments.length; l++){
-                    var execEnvGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.executionEnvironments[l], null, null, null, null, true, Constants.EXEC_ENVIRONMENT_DEEP);
-                    environmentNodes.addItem(execEnvGraphNode);
+                    if (!(identityApplianceDefinition.executionEnvironments[l] is CaptiveExecutionEnvironment)) {
+                        var execEnvGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.executionEnvironments[l], null, null, null, null, true, Constants.EXEC_ENVIRONMENT_DEEP);
+                        environmentNodes.addItem(execEnvGraphNode);
+                    }
                 }
             }
 
@@ -1184,9 +1201,11 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     serviceResourceNodes.addItem(serviceResourceGraphNode);
                     if (identityApplianceDefinition.serviceResources[r].activation != null) {
                         for each (var tmpExecEnvGraphNode:IVisualNode in environmentNodes) {
-                            if (tmpExecEnvGraphNode.data as ExecutionEnvironment == identityApplianceDefinition.serviceResources[r].activation.executionEnv) {
+                            var ee : ExecutionEnvironment = tmpExecEnvGraphNode.data as ExecutionEnvironment;
+                            var sr : ServiceResource = identityApplianceDefinition.serviceResources[r];
+                            if ((!(ee is CaptiveExecutionEnvironment)) && ee == sr.activation.executionEnv) {
                                 GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpExecEnvGraphNode, serviceResourceGraphNode,
-                                        identityApplianceDefinition.serviceResources[r].activation, EmbeddedIcons.activationIcon,
+                                        sr.activation, EmbeddedIcons.activationIcon,
                                         resourceManager.getString(AtricoreConsole.BUNDLE, "activation.connection"));
                                 break;
                             }
@@ -1370,7 +1389,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             if (identityApplianceDefinition.serviceResources != null) {
                 for each (var serviceResource:ServiceResource in identityApplianceDefinition.serviceResources) {
                     updateGraphNodeData(serviceResource);
-                    if (serviceResource.activation != null) {
+                    if (serviceResource.activation != null && serviceResource.activation.executionEnv != null &&
+                        (!(serviceResource.activation.executionEnv is CaptiveExecutionEnvironment))) {
                         updateGraphEdgeData(serviceResource.activation);
                     }
                 }

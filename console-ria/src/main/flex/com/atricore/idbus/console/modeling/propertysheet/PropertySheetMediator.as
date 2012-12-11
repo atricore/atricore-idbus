@@ -54,11 +54,13 @@ import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.E
 import com.atricore.idbus.console.modeling.propertysheet.view.delegatedauthentication.DelegatedAuthenticationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.ResourceActivationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.alfresco.AlfrescoResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.coldfusion.ColdfusionResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.javaee.JavaEEExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jboss.JBossExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.jbossepp.JBossEPPResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.jbossportal.JBossPortalResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.liferayportal.LiferayPortalResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.microstrategy.MicroStrategyResourceCoreSection;
@@ -140,6 +142,8 @@ import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.ImpersonateUserPolicy;
 import com.atricore.idbus.console.services.dto.ImpersonateUserPolicyType;
 import com.atricore.idbus.console.services.dto.JBossEPPAuthenticationService;
+import com.atricore.idbus.console.services.dto.JBossEPPExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.JBossEPPResource;
 import com.atricore.idbus.console.services.dto.JBossPortalResource;
 import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
@@ -244,6 +248,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _xmlIdentitySourceCoreSection:XmlIdentitySourceCoreSection;
     private var _josso1ResourceCoreSection:JOSSO1ResourceCoreSection;
     private var _josso2ResourceCoreSection:JOSSO2ResourceCoreSection;
+    private var _resourceActivateSection:ResourceActivationSection;
     private var _currentIdentityApplianceElement:Object;
     //private var _ipContractSection:IdentityProviderContractSection;
     private var _ipSaml2Section:IdentityProviderSaml2Section;
@@ -263,6 +268,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _weblogicExecEnvCoreSection:WeblogicExecEnvCoreSection;
     private var _jbossPortalResourceCoreSection:JBossPortalResourceCoreSection;
     private var _liferayResourceCoreSection:LiferayPortalResourceCoreSection;
+    private var _jbosseppResourceCoreSection:JBossEPPResourceCoreSection;
     private var _wasceExecEnvCoreSection:WASCEExecEnvCoreSection;
     private var _jbossExecEnvCoreSection:JBossExecEnvCoreSection;
     private var _apacheExecEnvCoreSection:ApacheExecEnvCoreSection;
@@ -421,6 +427,7 @@ public class PropertySheetMediator extends IocMediator {
             ApplicationFacade.APPLIANCE_SAVED,
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
             ApplicationFacade.RESET_EXEC_ENV_ACTIVATION,
+            ApplicationFacade.RESET_RESOURCE_ACTIVATION,
             FolderExistsCommand.FOLDER_EXISTS,
             FolderExistsCommand.FOLDER_DOESNT_EXISTS,
             FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED,
@@ -511,6 +518,8 @@ public class PropertySheetMediator extends IocMediator {
                         enableColdfusionExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is MicroStrategyResource) {
                         enableMicroStrategyExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is JBossEPPResource) {
+                        enableJBossEPPResourcePropertyTabs();
                     }
                 } else if (_currentIdentityApplianceElement is FederatedConnection) {
                     enableFederatedConnectionPropertyTabs();
@@ -637,6 +646,9 @@ public class PropertySheetMediator extends IocMediator {
                 break;
             case ApplicationFacade.RESET_EXEC_ENV_ACTIVATION:
                 _executionEnvironmentActivateSection.reactivate.selected = false;
+                break;
+            case ApplicationFacade.RESET_RESOURCE_ACTIVATION:
+                _resourceActivateSection.reactivate.selected = false;
                 break;
             case AccountLinkagePolicyListCommand.SUCCESS:
                 if (_currentIdentityApplianceElement != null) {
@@ -6112,6 +6124,145 @@ public class PropertySheetMediator extends IocMediator {
         _dirty = false;
     }
 
+    private function enableJBossEPPResourcePropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _jbosseppResourceCoreSection = new JBossEPPResourceCoreSection();
+        corePropertyTab.addElement(_jbosseppResourceCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _jbosseppResourceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleJBossEPPResourceCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleJBossEPPResourceCorePropertyTabRollOut);
+
+        // Activation Tab
+        var resourceActivationPropertyTab:Group = new Group();
+        resourceActivationPropertyTab.layoutDirection = LayoutDirection.LTR;
+        resourceActivationPropertyTab.id = "propertySheetActivationSection";
+        resourceActivationPropertyTab.name = "Activation";
+        resourceActivationPropertyTab.width = Number("100%");
+        resourceActivationPropertyTab.height = Number("100%");
+        resourceActivationPropertyTab.setStyle("borderStyle", "solid");
+
+        _resourceActivateSection = new ResourceActivationSection();
+        resourceActivationPropertyTab.addElement(_resourceActivateSection);
+        _propertySheetsViewStack.addNewChild(resourceActivationPropertyTab);
+        _resourceActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleResourceActivationPropertyTabCreationComplete);
+        resourceActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleResourceActivationPropertyTabRollOut);
+    }
+
+    private function handleJBossEPPResourceCorePropertyTabCreationComplete(event:Event):void {
+        var jbosseppResource:JBossEPPResource = projectProxy.currentIdentityApplianceElement as JBossEPPResource;
+        var jbosseppEE:JBossEPPExecutionEnvironment = jbosseppResource.activation.executionEnv as JBossEPPExecutionEnvironment;
+        
+        if (jbosseppResource != null) {
+            // bind view
+            _jbosseppResourceCoreSection.resourceName.text = jbosseppResource.name;
+            _jbosseppResourceCoreSection.resourceDescription.text = jbosseppResource.description;
+            _jbosseppResourceCoreSection.instance.text = jbosseppEE.instance;
+
+            for (var i:int=0; i < _jbosseppResourceCoreSection.selectedHost.dataProvider.length; i++) {
+                if (_jbosseppResourceCoreSection.selectedHost.dataProvider[i].data == jbosseppEE.type.toString()) {
+                    _jbosseppResourceCoreSection.selectedHost.selectedIndex = i;
+                    break;
+                }
+            }
+
+            if (_jbosseppResourceCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                _jbosseppResourceCoreSection.locationItem.includeInLayout = true;
+                _jbosseppResourceCoreSection.locationItem.visible = true;
+            }
+
+            _jbosseppResourceCoreSection.homeDirectory.text = jbosseppEE.installUri;
+            if (jbosseppEE.type.name == ExecEnvType.REMOTE.name)
+                _jbosseppResourceCoreSection.location.text = jbosseppEE.location;
+            _locationValidator = new URLValidator();
+            _locationValidator.required = true;
+
+            _jbosseppResourceCoreSection.resourceName.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppResourceCoreSection.resourceDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppResourceCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppResourceCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppResourceCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppResourceCoreSection.instance.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _jbosseppResourceCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+                handleHostChange(_jbosseppResourceCoreSection);
+            });
+
+            _validators = [];
+            _validators.push(_jbosseppResourceCoreSection.nameValidator);
+            _validators.push(_jbosseppResourceCoreSection.homeDirValidator);
+        }
+    }
+
+    private function handleJBossEPPResourceCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        _jbosseppResourceCoreSection.homeDirectory.errorString = "";
+        _jbosseppResourceCoreSection.location.errorString = "";
+        if (_dirty && validate(true)) {
+            var hvResult:ValidationResultEvent;
+            if ((hvResult = _jbosseppResourceCoreSection.homeDirValidator.validate(_jbosseppResourceCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
+                _jbosseppResourceCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
+                return;
+            }
+
+            if (_jbosseppResourceCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_jbosseppResourceCoreSection.location.text);
+                if (lvResult.type != ValidationResultEvent.VALID) {
+                    _jbosseppResourceCoreSection.location.errorString = lvResult.results[0].errorMessage;
+                    return;
+                }
+            }
+
+            _execEnvSaveFunction = jbosseppSave;
+
+            var cf:CheckFoldersRequest = new CheckFoldersRequest();
+            var folders:ArrayCollection = new ArrayCollection();
+
+            if (_jbosseppResourceCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
+                folders.addItem(_jbosseppResourceCoreSection.homeDirectory.text);
+            }
+
+            folders.addItem(_jbosseppResourceCoreSection.homeDirectory.text);
+            cf.folders = folders;
+            cf.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, cf);
+        }
+    }
+
+    private function jbosseppSave(): void {
+        // bind model
+        var jbosseppResource:JBossEPPResource = projectProxy.currentIdentityApplianceElement as JBossEPPResource;
+        var jbosseppEE:JBossEPPExecutionEnvironment = jbosseppResource.activation.executionEnv as JBossEPPExecutionEnvironment;
+
+        jbosseppResource.name = _jbosseppResourceCoreSection.resourceName.text;
+        jbosseppResource.description = _jbosseppResourceCoreSection.resourceDescription.text;
+
+        jbosseppEE.type = ExecEnvType.valueOf(_jbosseppResourceCoreSection.selectedHost.selectedItem.data);
+        jbosseppEE.installUri = _jbosseppResourceCoreSection.homeDirectory.text;
+        jbosseppEE.instance = _jbosseppResourceCoreSection.instance.text;
+
+        if (jbosseppEE.type.name == ExecEnvType.REMOTE.name) {
+            jbosseppEE.location = _jbosseppResourceCoreSection.location.text;
+        } else {
+            jbosseppEE.location = null;
+        }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
     private function enableWASCEExecEnvPropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();
 
@@ -7699,7 +7850,7 @@ public class PropertySheetMediator extends IocMediator {
             }
 
             //TODO add click handler for _executionEnvironmentActivateSection.activate checkbox
-            _executionEnvironmentActivateSection.reactivate.addEventListener(MouseEvent.CLICK, reactivateClickHandler);
+            _executionEnvironmentActivateSection.reactivate.addEventListener(MouseEvent.CLICK, executionEnvironmentReactivateClickHandler);
             _executionEnvironmentActivateSection.installSamples.addEventListener(Event.CHANGE, handleSectionChange);
             _executionEnvironmentActivateSection.replaceConfFiles.addEventListener(Event.CHANGE, handleSectionChange);
         }
@@ -7727,11 +7878,57 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function reactivateClickHandler(event:Event):void {
+    private function executionEnvironmentReactivateClickHandler(event:Event):void {
         if(!_applianceSaved){
             Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "activation.save.info"),
                     resourceManager.getString(AtricoreConsole.BUNDLE, "activation.save.title"), Alert.OK, null, null, null, Alert.OK);
             _executionEnvironmentActivateSection.reactivate.selected = false;
+        }
+    }
+
+    private function handleResourceActivationPropertyTabCreationComplete(event:Event):void {
+        var res:ServiceResource = projectProxy.currentIdentityApplianceElement as ServiceResource;
+        var ee:ExecutionEnvironment = res.activation.executionEnv;
+
+        if (res != null && ee != null) {
+            _resourceActivateSection.replaceConfFiles.selected = ee.overwriteOriginalSetup;
+
+            if (_applianceSaved) {
+                _resourceActivateSection.btnExportConfig.enabled = true;
+                _resourceActivateSection.btnExportConfig.addEventListener(MouseEvent.CLICK, handleExportAgentConfigClick);
+            }
+
+            _resourceActivateSection.reactivate.addEventListener(MouseEvent.CLICK, resourceReactivateClickHandler);
+            _resourceActivateSection.replaceConfFiles.addEventListener(Event.CHANGE, handleSectionChange);
+        }
+    }
+
+    private function handleResourceActivationPropertyTabRollOut(event:Event):void {
+        if (projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.toString()){
+            //activateExecutionEnvironment(event);
+            if (_resourceActivateSection.reactivate.selected && _applianceSaved) {
+                sendNotification(ApplicationFacade.DISPLAY_ACTIVATION_DIALOG,
+                        [_resourceActivateSection.reactivate.selected,
+                            _resourceActivateSection.replaceConfFiles.selected]);
+            }
+        }
+        if (_dirty){
+            var res:ServiceResource = projectProxy.currentIdentityApplianceElement as ServiceResource;
+            var ee:ExecutionEnvironment = res.activation.executionEnv;
+            ee.overwriteOriginalSetup = _resourceActivateSection.replaceConfFiles.selected;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }
+
+    private function resourceReactivateClickHandler(event:Event):void {
+        if(!_applianceSaved){
+            Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "activation.save.info"),
+                    resourceManager.getString(AtricoreConsole.BUNDLE, "activation.save.title"), Alert.OK, null, null, null, Alert.OK);
+            _resourceActivateSection.reactivate.selected = false;
         }
     }
 
