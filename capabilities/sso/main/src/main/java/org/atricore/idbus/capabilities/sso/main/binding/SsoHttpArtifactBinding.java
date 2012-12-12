@@ -34,8 +34,8 @@ import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsResponse;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsResponse;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
 import org.w3._1999.xhtml.Html;
@@ -121,10 +121,10 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
             java.lang.Object msgValue = null;
             boolean isResponse = false;
 
-            if (out.getContent() instanceof ClaimsRequest) {
+            if (out.getContent() instanceof CredentialClaimsRequest) {
                 msgValue = out.getContent();
 
-            } else if (out.getContent() instanceof ClaimsResponse) {
+            } else if (out.getContent() instanceof CredentialClaimsResponse) {
                 msgValue = out.getContent();
                 isResponse = true;
 

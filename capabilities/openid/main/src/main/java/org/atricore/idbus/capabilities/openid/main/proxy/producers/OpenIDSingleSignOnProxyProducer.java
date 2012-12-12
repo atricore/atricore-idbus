@@ -31,7 +31,8 @@ import org.atricore.idbus.capabilities.openid.main.messaging.OpenIDMessage;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV1AuthnRequest;
 import org.atricore.idbus.capabilities.openid.main.messaging.SubmitOpenIDV2AuthnRequest;
 import org.atricore.idbus.capabilities.openid.main.proxy.OpenIDProxyMediator;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
@@ -47,6 +48,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.claim.Claim;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaim;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
@@ -90,10 +92,10 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
 
                 doProcessSPInitiatedSSO(exchange, (SPInitiatedAuthnRequestType) content);
 
-            } else if (content instanceof SSOClaimsResponse) {
+            } else if (content instanceof SSOCredentialClaimsResponse) {
 
                 // Processing Claims to create authn resposne
-                doProcessClaimsResponse(exchange, (SSOClaimsResponse) content);
+                doProcessClaimsResponse(exchange, (SSOCredentialClaimsResponse) content);
 
             } else if (content instanceof OpenIDAuthnResponse) {
 
@@ -146,8 +148,8 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
         logger.debug("Selected claims endpoint : " + claimsEndpoint);
 
         // Create Claims Request
-        org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest claimsRequest =
-                new org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest(authnRequest.getID(),
+        SSOCredentialClaimsRequest claimsRequest =
+                new SSOCredentialClaimsRequest(authnRequest.getID(),
                         channel,
                         endpoint,
                         channel.getClaimProviders().iterator().next(),
@@ -173,7 +175,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
     }
 
     protected void doProcessClaimsResponse(CamelMediationExchange exchange,
-                                           SSOClaimsResponse claimsResponse) throws Exception {
+                                           SSOCredentialClaimsResponse claimsResponse) throws Exception {
         //------------------------------------------------------------
         // Process a claims response
         //------------------------------------------------------------
@@ -203,12 +205,13 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
 
         String openid = null;
         for (Claim claim : claimsResponse.getClaimSet().getClaims()) {
-            logger.debug("Received Claim : " + claim.getQualifier() + " of type " + claim.getValue().getClass().getName());
-            Object claimObj = claim.getValue();
+            CredentialClaim credentialClaim = (CredentialClaim) claim;
+            logger.debug("Received Claim : " + credentialClaim.getQualifier() + " of type " + credentialClaim.getValue().getClass().getName());
+            Object claimObj = credentialClaim.getValue();
 
             // a username is the closest match to an OpenID name identifier
             if (claimObj instanceof UsernameTokenType) {
-                openid = ((UsernameTokenType) claim.getValue()).getUsername().getValue();
+                openid = ((UsernameTokenType) credentialClaim.getValue()).getUsername().getValue();
             } else {
                 throw new OpenIDException("Claim type not supported " + claimObj.getClass().getName());
             }

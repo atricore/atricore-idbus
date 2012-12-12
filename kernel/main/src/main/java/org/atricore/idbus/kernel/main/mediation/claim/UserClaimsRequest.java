@@ -8,17 +8,10 @@ import java.util.Set;
 
 /**
  */
-public interface UserClaimsRequest {
-
-    String getId();
-
-    String getRelayState();
+public interface UserClaimsRequest extends ClaimsRequest{
 
     Channel getIssuerChannel();
 
     IdentityMediationEndpoint getIssuerEndpoint();
 
-    String getLastErrorId();
-
-    String getLastErrorMsg();
 }

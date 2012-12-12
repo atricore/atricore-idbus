@@ -23,9 +23,7 @@ package org.atricore.idbus.applications.server.ui.claims;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
-
-import javax.servlet.http.HttpServletRequest;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -35,7 +33,7 @@ public class CollectUsernamePasswordClaims implements java.io.Serializable {
 
     private static final Log logger = LogFactory.getLog(CollectUsernamePasswordClaims.class);
 
-    private ClaimsRequest claimsRequest;
+    private CredentialClaimsRequest credentialClaimsRequest;
     private String username;
     private String password;
     private boolean rememberMe;
@@ -68,12 +66,12 @@ public class CollectUsernamePasswordClaims implements java.io.Serializable {
         this.rememberMe = rememberMe;
     }
 
-    public ClaimsRequest getClaimsRequest() {
-        return claimsRequest;
+    public CredentialClaimsRequest getCredentialClaimsRequest() {
+        return credentialClaimsRequest;
     }
 
-    public void setClaimsRequest(ClaimsRequest request) {
-        this.claimsRequest = request;
+    public void setCredentialClaimsRequest(CredentialClaimsRequest requestCredential) {
+        this.credentialClaimsRequest = requestCredential;
     }
 
     @Override

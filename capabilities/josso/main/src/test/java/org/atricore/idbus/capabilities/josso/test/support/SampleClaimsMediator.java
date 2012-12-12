@@ -65,17 +65,17 @@ public class SampleClaimsMediator extends AbstractCamelMediator {
                                     Artifact artifact = ArtifactImpl.newInstance(artifactContent);
 
                                     if (artifactQueueManager != null) {
-                                        ClaimsRequest claimsRequest;
+                                        CredentialClaimsRequest credentialClaimsRequest;
 
-                                        claimsRequest = (ClaimsRequest)artifactQueueManager.pullMessage(artifact);
+                                        credentialClaimsRequest = (CredentialClaimsRequest)artifactQueueManager.pullMessage(artifact);
 
                                         ClaimSet cs = new ClaimSetImpl();
-                                        cs.addClaim(new ClaimImpl("username", "user1" ));
-                                        cs.addClaim(new ClaimImpl("password", "user1pwd"));
-                                        ClaimsResponse cr = new ClaimsResponseImpl(
+                                        cs.addClaim(new CredentialClaimImpl("username", "user1" ));
+                                        cs.addClaim(new CredentialClaimImpl("password", "user1pwd"));
+                                        CredentialClaimsResponse cr = new CredentialClaimsResponseImpl(
                                                 "FOO_ID",
                                                 claimChannel,
-                                                claimsRequest.getId(),
+                                                credentialClaimsRequest.getId(),
                                                 cs
                                         );
 
@@ -84,12 +84,12 @@ public class SampleClaimsMediator extends AbstractCamelMediator {
 
                                         me.getOut(true).setHeader(HttpProducer.HTTP_RESPONSE_CODE, "302");
                                         me.getOut(true).setHeader(
-                                                "Location", claimsRequest.getIssuerChannel().getLocation() +
+                                                "Location", credentialClaimsRequest.getIssuerChannel().getLocation() +
                                                 "?Artifact=" + crspArtifact.getContent()
                                         );
 
                                         log.debug("Providing Claim Response to Location [" +
-                                                  claimsRequest.getIssuerChannel().getLocation() + "] " +
+                                                  credentialClaimsRequest.getIssuerChannel().getLocation() + "] " +
                                                   "with Artifact [" + crspArtifact.getContent() + "]");
 
                                     }

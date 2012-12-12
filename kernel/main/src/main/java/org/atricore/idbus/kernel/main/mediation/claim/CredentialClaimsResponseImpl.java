@@ -28,21 +28,21 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Rev: 1278 $ $Date: 2009-06-14 03:14:41 -0300 (Sun, 14 Jun 2009) $
  */
-public class ClaimsResponseImpl implements ClaimsResponse {
+public class CredentialClaimsResponseImpl implements CredentialClaimsResponse {
     private String id;
     private String relayState;
     private Channel issuer;
     private String inResponseTo;
     private ClaimSet claimSet;
 
-    public ClaimsResponseImpl(String id, Channel issuer, String inResponseTo, ClaimSet claimSet) {
+    public CredentialClaimsResponseImpl(String id, Channel issuer, String inResponseTo, ClaimSet claimSet) {
         this.id = id;
         this.issuer = issuer;
         this.inResponseTo = inResponseTo;
         this.claimSet = claimSet;
     }
 
-    public ClaimsResponseImpl(String id, Channel issuer, String inResponseTo, ClaimSet claimSet, String relayState) {
+    public CredentialClaimsResponseImpl(String id, Channel issuer, String inResponseTo, ClaimSet claimSet, String relayState) {
         this.id = id;
         this.issuer = issuer;
         this.inResponseTo = inResponseTo;

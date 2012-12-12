@@ -6,7 +6,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -23,7 +23,7 @@ public class StrongLoginPage extends LoginPage {
         super(parameters);
     }
 
-    protected Panel prepareSignInPanel(String id, ClaimsRequest claimsRequest, MessageQueueManager artifactQueueManager,
+    protected Panel prepareSignInPanel(String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
                                        IdentityMediationUnitRegistry idsuRegistry) {
 
 

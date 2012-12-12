@@ -44,25 +44,25 @@ public class OpenIDClaimsController extends SimpleFormController {
             logger.debug("Creating form backing object for artifact " + artifactId);
 
         // Lookup for ClaimsRequest!
-        ClaimsRequest claimsRequest = (ClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
+        CredentialClaimsRequest credentialClaimsRequest = (CredentialClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
 
-        if (claimsRequest != null) {
+        if (credentialClaimsRequest != null) {
 
             if (logger.isDebugEnabled())
-                logger.debug("Received claims request " + claimsRequest.getId() +
-                        " from " + claimsRequest.getIssuerChannel() +
-                        " at " + claimsRequest.getIssuerEndpoint());
+                logger.debug("Received claims request " + credentialClaimsRequest.getId() +
+                        " from " + credentialClaimsRequest.getIssuerChannel() +
+                        " at " + credentialClaimsRequest.getIssuerEndpoint());
 
-            if (claimsRequest.getLastErrorId() != null) {
+            if (credentialClaimsRequest.getLastErrorId() != null) {
                 if (logger.isDebugEnabled())
                     logger.debug("Received last error ID : " +
-                        claimsRequest.getLastErrorId() +
-                        " ("+claimsRequest.getLastErrorMsg()+")");
+                        credentialClaimsRequest.getLastErrorId() +
+                        " ("+ credentialClaimsRequest.getLastErrorMsg()+")");
 
                 hreq.setAttribute("statusMessageKey", "claims.text.invalidCredentials");
             }
 
-            collectClaims.setClaimsRequest(claimsRequest);
+            collectClaims.setCredentialClaimsRequest(credentialClaimsRequest);
 
         } else {
             logger.debug("No claims request received!");
@@ -83,36 +83,36 @@ public class OpenIDClaimsController extends SimpleFormController {
         if (logger.isDebugEnabled())
             logger.debug("Received CMD" + cmd);
 
-        ClaimsRequest request = cmd.getClaimsRequest();
+        CredentialClaimsRequest requestCredential = cmd.getCredentialClaimsRequest();
         if (logger.isDebugEnabled())
             logger.debug("Collecting OpenID claim for request " +
-                    (request != null ? request.getId() : "NULL"));
+                    (requestCredential != null ? requestCredential.getId() : "NULL"));
 
         ClaimSet claims = new ClaimSetImpl();
-        claims.addClaim(new ClaimImpl("openid", cmd.getOpenid()));
-        claims.addClaim(new ClaimImpl("rememberMe", cmd.isRememberMe()));
+        claims.addClaim(new CredentialClaimImpl("openid", cmd.getOpenid()));
+        claims.addClaim(new CredentialClaimImpl("rememberMe", cmd.isRememberMe()));
 
-        ClaimsResponse response = new ClaimsResponseImpl(idGenerator.generateId(),
+        CredentialClaimsResponse responseCredential = new CredentialClaimsResponseImpl(idGenerator.generateId(),
                 null,
-                request.getId(),
+                requestCredential.getId(),
                 claims,
-                request.getRelayState());
+                requestCredential.getRelayState());
 
-        EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(request);
+        EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(requestCredential);
         if (claimsEndpoint == null) {
             logger.error("No claims endpoint found!");
             // TODO : Create error and redirect to error view using 'IDBusErrArt'
         }
 
         // We want the binding factory to use a binding component to build this URL, if possible
-        Channel claimsChannel = request.getClaimsChannel();
+        Channel claimsChannel = requestCredential.getClaimsChannel();
         claimsChannel = getNonSerializedChannel(claimsChannel);
 
         String claimsEndpointUrl = null;
         if (claimsChannel != null) {
 
             MediationBindingFactory f = claimsChannel.getIdentityMediator().getBindingFactory();
-            MediationBinding b = f.createBinding(SSOBinding.SSO_ARTIFACT.getValue(), request.getClaimsChannel());
+            MediationBinding b = f.createBinding(SSOBinding.SSO_ARTIFACT.getValue(), requestCredential.getClaimsChannel());
 
             claimsEndpointUrl = claimsEndpoint.getResponseLocation();
             if (claimsEndpointUrl == null)
@@ -130,7 +130,7 @@ public class OpenIDClaimsController extends SimpleFormController {
         } else {
 
             logger.warn("Cannot delegate URL construction to binding, valid definition of channel " +
-                    request.getClaimsChannel().getName() + " not foud ...");
+                    requestCredential.getClaimsChannel().getName() + " not foud ...");
             claimsEndpointUrl = claimsEndpoint.getResponseLocation() != null ?
                     claimsEndpoint.getResponseLocation() : claimsEndpoint.getLocation();
         }
@@ -138,7 +138,7 @@ public class OpenIDClaimsController extends SimpleFormController {
         if (logger.isDebugEnabled())
             logger.debug("Using claims endpoint URL ["+claimsEndpointUrl+"]");
 
-        Artifact a = getArtifactQueueManager().pushMessage(response);
+        Artifact a = getArtifactQueueManager().pushMessage(responseCredential);
         claimsEndpointUrl += "?SSOArt=" + a.getContent();
 
         if (logger.isDebugEnabled())
@@ -163,9 +163,9 @@ public class OpenIDClaimsController extends SimpleFormController {
         this.idauRegistry = idauRegistry;
     }
 
-    protected EndpointDescriptor resolveClaimsEndpoint(ClaimsRequest request) throws IdentityMediationException {
+    protected EndpointDescriptor resolveClaimsEndpoint(CredentialClaimsRequest requestCredential) throws IdentityMediationException {
 
-        for (IdentityMediationEndpoint endpoint : request.getClaimsChannel().getEndpoints()) {
+        for (IdentityMediationEndpoint endpoint : requestCredential.getClaimsChannel().getEndpoints()) {
             // Look for unspecified claim endpoint using Artifacc binding
             if (AuthnCtxClass.OPENID_AUTHN_CTX.getValue().equals(endpoint.getType()) &&
                     SSOBinding.SSO_ARTIFACT.getValue().equals(endpoint.getBinding())) {
@@ -176,9 +176,9 @@ public class OpenIDClaimsController extends SimpleFormController {
                 return new EndpointDescriptorImpl(endpoint.getName(),
                         endpoint.getType(),
                         endpoint.getBinding(),
-                        request.getClaimsChannel().getLocation() + endpoint.getLocation(),
+                        requestCredential.getClaimsChannel().getLocation() + endpoint.getLocation(),
                         endpoint.getResponseLocation() != null ?
-                                request.getClaimsChannel().getLocation() + endpoint.getResponseLocation() : null);
+                                requestCredential.getClaimsChannel().getLocation() + endpoint.getResponseLocation() : null);
 
             }
         }

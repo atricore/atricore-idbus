@@ -27,6 +27,7 @@ import oasis.names.tc.saml._2_0.metadata.*;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
 import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
@@ -87,16 +88,18 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
 
 
-        // saml:Subject [optional]
 
-        // NameIDPolicy [optional]
-        // TODO : This is deployment specific, every IDP and SP can provide / support different policies, check SAMLR2 MD
+
         SSOIDPMediator mediator = (SSOIDPMediator) spChannel.getIdentityMediator();
 
         CircleOfTrustMemberDescriptor spCotMember = resolveSpAlias(channel, ssoAuthnReq);
 
         assert spCotMember != null : "Destination SP for IDP Initiated SSO not found!";
 
+        // saml:Subject [optional]
+
+        // NameIDPolicy [optional]
+        // TODO : This is deployment specific, every IDP and SP can provide / support different policies, check SAMLR2 MD
         // Issuer is destination SP for IdP-initiated SSO
         NameIDType issuer = new NameIDType();
         issuer.setFormat(NameIDFormat.ENTITY.getValue());
@@ -290,7 +293,8 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
         SSOIDPMediator mediator = (SSOIDPMediator) spChannel.getIdentityMediator();
 
-        if (spChannel.getTargetProvider() != null) {
+        // When running proxy mode, we need to use the requested SP alias
+        if (spChannel.getTargetProvider() != null && !spChannel.isProxyModeEnabled()) {
 
             // This is the provider we're talking to, look for
             Provider sp = spChannel.getTargetProvider();
@@ -350,7 +354,10 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
                     }
 
                     if (a.getName().equals("atricore_sp_alias")) {
+                        String decodedAlias = new String(Base64.decodeBase64(a.getValue().getBytes()));
                         spDescr = cotManager.lookupMemberByAlias(a.getValue());
+                        if (spDescr == null)
+                            spDescr = cotManager.lookupMemberByAlias(decodedAlias);
                         break;
                     }
 

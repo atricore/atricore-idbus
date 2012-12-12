@@ -26,8 +26,8 @@ import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.LogMessageBuilder;
@@ -62,9 +62,9 @@ public class SamlR2LogMessageBuilder implements LogMessageBuilder {
             return true;
         } else if (content instanceof StatusResponseType) {
             return true;
-        } else if (content instanceof SSOClaimsRequest) {
+        } else if (content instanceof SSOCredentialClaimsRequest) {
             return true;
-        } else if (content instanceof SSOClaimsResponse) {
+        } else if (content instanceof SSOCredentialClaimsResponse) {
             return true;
         } else if (content instanceof oasis.names.tc.saml._1_0.protocol.ResponseType) {
             return true;
@@ -97,14 +97,14 @@ public class SamlR2LogMessageBuilder implements LogMessageBuilder {
             } else if (content instanceof StatusResponseType) {
                 logMsg.append(XmlUtils.marshalSamlR2Response((StatusResponseType) content, false));
 
-            } else if (content instanceof SSOClaimsRequest) {
+            } else if (content instanceof SSOCredentialClaimsRequest) {
 
                 logMsg.append("<SSOClaimsRequest>\n");
                 logMsg.append(content.toString());
                 logMsg.append("\n</SSOClaimsRequest>");
 
 
-            } else if (content instanceof SSOClaimsResponse) {
+            } else if (content instanceof SSOCredentialClaimsResponse) {
                 logMsg.append("<SSOClaimsResponse>\n");
                 logMsg.append(content.toString());
                 logMsg.append("\n</SSOClaimsResponse>");

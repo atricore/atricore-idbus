@@ -5,15 +5,8 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
 /**
  *
  */
-public interface UserClaimsResponse {
-
-    String getId();
-
-    String getRelayState();
+public interface UserClaimsResponse extends ClaimsResponse {
 
     Channel getIssuer();
 
-    String getInResponseTo();
-
-    UserClaimSet getAttributeSet();
 }

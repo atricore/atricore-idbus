@@ -70,7 +70,7 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
             try {
                 CollectUsernamePasswordClaims claims = (CollectUsernamePasswordClaims) hreq.getSession().getAttribute("CollectUsernamePasswordClaims");
 
-                if (claims == null || claims.getClaimsRequest() == null)
+                if (claims == null || claims.getCredentialClaimsRequest() == null)
                     return new ModelAndView(new RedirectView(fallbackUrl));
 
             } catch (Exception e) {
@@ -90,7 +90,7 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
             try {
                 CollectUsernamePasswordClaims claims = (CollectUsernamePasswordClaims) hreq.getSession().getAttribute("CollectUsernamePasswordClaims");
 
-                if (claims == null || claims.getClaimsRequest() == null)
+                if (claims == null || claims.getCredentialClaimsRequest() == null)
                     return new ModelAndView(new RedirectView(fallbackUrl));
 
             } catch (Exception e) {
@@ -124,20 +124,20 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
             logger.debug("Creating form backing object for artifact " + artifactId);                
 
         // Lookup for ClaimsRequest!
-        ClaimsRequest claimsRequest = (ClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
+        CredentialClaimsRequest credentialClaimsRequest = (CredentialClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
 
-        if (claimsRequest != null) {
+        if (credentialClaimsRequest != null) {
 
             if (logger.isDebugEnabled())
-                logger.debug("Received claims request " + claimsRequest.getId() +
-                        " from " + claimsRequest.getIssuerChannel() +
-                        " at " + claimsRequest.getIssuerEndpoint());
+                logger.debug("Received claims request " + credentialClaimsRequest.getId() +
+                        " from " + credentialClaimsRequest.getIssuerChannel() +
+                        " at " + credentialClaimsRequest.getIssuerEndpoint());
 
-            if (claimsRequest.getLastErrorId() != null) {
+            if (credentialClaimsRequest.getLastErrorId() != null) {
                 if (logger.isDebugEnabled())
                     logger.debug("Received last error ID : " +
-                        claimsRequest.getLastErrorId() +
-                        " ("+claimsRequest.getLastErrorMsg()+")");
+                        credentialClaimsRequest.getLastErrorId() +
+                        " ("+ credentialClaimsRequest.getLastErrorMsg()+")");
 
                 hreq.setAttribute("statusMessageKey", "claims.text.invalidCredentials");
             }
@@ -145,7 +145,7 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
             List<DashboardMessage> ssoPolicyMsgs = new ArrayList<DashboardMessage>();
 
             // Publish SSO Policies information to be displayed ...
-            for (SSOPolicyEnforcementStatement ssoPolicyEnforcement : claimsRequest.getSsoPolicyEnforcements()) {
+            for (SSOPolicyEnforcementStatement ssoPolicyEnforcement : credentialClaimsRequest.getSsoPolicyEnforcements()) {
                 List<Object> values = null;
                 if (ssoPolicyEnforcement.getValues().size() > 0) {
                     values = new ArrayList<Object>();
@@ -158,7 +158,7 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
             if (ssoPolicyMsgs.size() > 0)
                 hreq.setAttribute("ssoPolicyMessages", ssoPolicyMsgs);
 
-            collectClaims.setClaimsRequest(claimsRequest);
+            collectClaims.setCredentialClaimsRequest(credentialClaimsRequest);
 
         } else {
             // TODO : redirect User to configured fallback URL
@@ -167,9 +167,9 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
             CollectUsernamePasswordClaims oldClaims = (CollectUsernamePasswordClaims) hreq.getSession().getAttribute("CollectUsernamePasswordClaims");
             if (oldClaims != null) {
                 if (logger.isDebugEnabled())
-                    logger.debug("No claims request received, using old claims request : " + oldClaims.getClaimsRequest());
+                    logger.debug("No claims request received, using old claims request : " + oldClaims.getCredentialClaimsRequest());
 
-                collectClaims.setClaimsRequest(oldClaims.getClaimsRequest());
+                collectClaims.setCredentialClaimsRequest(oldClaims.getCredentialClaimsRequest());
             }
 
 
@@ -193,37 +193,37 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
         if (logger.isDebugEnabled())
             logger.debug("Received CMD" + cmd);
 
-        ClaimsRequest cRequest = cmd.getClaimsRequest();
+        CredentialClaimsRequest cRequestCredential = cmd.getCredentialClaimsRequest();
         if (logger.isDebugEnabled())
             logger.debug("Collecting usenrame/password claims for request " +
-                    (cRequest != null ? cRequest.getId() : "NULL"));
+                    (cRequestCredential != null ? cRequestCredential.getId() : "NULL"));
 
         ClaimSet claims = new ClaimSetImpl();
-        claims.addClaim(new ClaimImpl("username", cmd.getUsername()));
-        claims.addClaim(new ClaimImpl("password", cmd.getPassword()));
-        claims.addClaim(new ClaimImpl("rememberMe", cmd.isRememberMe()));
+        claims.addClaim(new CredentialClaimImpl("username", cmd.getUsername()));
+        claims.addClaim(new CredentialClaimImpl("password", cmd.getPassword()));
+        claims.addClaim(new CredentialClaimImpl("rememberMe", cmd.isRememberMe()));
 
-        ClaimsResponse response = new ClaimsResponseImpl(idGenerator.generateId(),
+        CredentialClaimsResponse responseCredential = new CredentialClaimsResponseImpl(idGenerator.generateId(),
                 null,
-                cRequest.getId(),
+                cRequestCredential.getId(),
                 claims,
-                cRequest.getRelayState());
+                cRequestCredential.getRelayState());
 
-        EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(cRequest);
+        EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(cRequestCredential);
         if (claimsEndpoint == null) {
             logger.error("No claims endpoint found!");
             // TODO : Create error and redirect to error view using 'IDBusErrArt'
         }
 
         // We want the binding factory to use a binding component to build this URL, if possible
-        Channel claimsChannel = cRequest.getClaimsChannel();
+        Channel claimsChannel = cRequestCredential.getClaimsChannel();
         claimsChannel = getNonSerializedChannel(claimsChannel);
 
         String claimsEndpointUrl = null;
         if (claimsChannel != null) {
 
             MediationBindingFactory f = claimsChannel.getIdentityMediator().getBindingFactory();
-            MediationBinding b = f.createBinding(SSOBinding.SSO_ARTIFACT.getValue(), cRequest.getClaimsChannel());
+            MediationBinding b = f.createBinding(SSOBinding.SSO_ARTIFACT.getValue(), cRequestCredential.getClaimsChannel());
 
             claimsEndpointUrl = claimsEndpoint.getResponseLocation();
             if (claimsEndpointUrl == null)
@@ -241,7 +241,7 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
         } else {
 
             logger.warn("Cannot delegate URL construction to binding, valid definition of channel " +
-                    cRequest.getClaimsChannel().getName() + " not foud ...");
+                    cRequestCredential.getClaimsChannel().getName() + " not foud ...");
             claimsEndpointUrl = claimsEndpoint.getResponseLocation() != null ?
                     claimsEndpoint.getResponseLocation() : claimsEndpoint.getLocation();
         }
@@ -249,7 +249,7 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
         if (logger.isDebugEnabled())
             logger.debug("Using claims endpoint URL ["+claimsEndpointUrl+"]");
 
-        Artifact a = getArtifactQueueManager().pushMessage(response);
+        Artifact a = getArtifactQueueManager().pushMessage(responseCredential);
         claimsEndpointUrl += "?SSOArt=" + a.getContent();
 
         if (logger.isDebugEnabled())
@@ -276,9 +276,9 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
         this.idauRegistry = idauRegistry;
     }
 
-    protected EndpointDescriptor resolveClaimsEndpoint(ClaimsRequest request) throws IdentityMediationException {
+    protected EndpointDescriptor resolveClaimsEndpoint(CredentialClaimsRequest requestCredential) throws IdentityMediationException {
 
-        for (IdentityMediationEndpoint endpoint : request.getClaimsChannel().getEndpoints()) {
+        for (IdentityMediationEndpoint endpoint : requestCredential.getClaimsChannel().getEndpoints()) {
             // Look for PWD endpoint using Artifacct binding
             if (AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue().equals(endpoint.getType()) &&
                     SSOBinding.SSO_ARTIFACT.getValue().equals(endpoint.getBinding())) {
@@ -289,9 +289,9 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
                 return new EndpointDescriptorImpl(endpoint.getName(),
                         endpoint.getType(),
                         endpoint.getBinding(),
-                        request.getClaimsChannel().getLocation() + endpoint.getLocation(),
+                        requestCredential.getClaimsChannel().getLocation() + endpoint.getLocation(),
                         endpoint.getResponseLocation() != null ?
-                                request.getClaimsChannel().getLocation() + endpoint.getResponseLocation() : null);
+                                requestCredential.getClaimsChannel().getLocation() + endpoint.getResponseLocation() : null);
 
             }
         }

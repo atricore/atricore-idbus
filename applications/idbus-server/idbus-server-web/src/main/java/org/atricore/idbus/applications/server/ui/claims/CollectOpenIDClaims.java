@@ -2,7 +2,7 @@ package org.atricore.idbus.applications.server.ui.claims;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 
 /**
@@ -12,7 +12,7 @@ public class CollectOpenIDClaims implements java.io.Serializable {
 
     private static final Log logger = LogFactory.getLog(CollectOpenIDClaims.class);
 
-    private ClaimsRequest claimsRequest;
+    private CredentialClaimsRequest credentialClaimsRequest;
     private String openid;
     private boolean rememberMe;
 
@@ -36,12 +36,12 @@ public class CollectOpenIDClaims implements java.io.Serializable {
         this.rememberMe = rememberMe;
     }
 
-    public ClaimsRequest getClaimsRequest() {
-        return claimsRequest;
+    public CredentialClaimsRequest getCredentialClaimsRequest() {
+        return credentialClaimsRequest;
     }
 
-    public void setClaimsRequest(ClaimsRequest request) {
-        this.claimsRequest = request;
+    public void setCredentialClaimsRequest(CredentialClaimsRequest requestCredential) {
+        this.credentialClaimsRequest = requestCredential;
     }
 
     @Override

@@ -19,19 +19,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.capabilities.sso.main.claims;
+package org.atricore.idbus.kernel.main.mediation.claim;
 
-import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsResponseImpl;
+import java.io.Serializable;
 
 /**
- * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id$
+ *
+ * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
+ * @version $Id: Claim.java 1278 2009-06-14 06:14:41Z sgonzalez $
  */
-public class SSOClaimsResponse extends ClaimsResponseImpl {
+public interface CredentialClaim extends Claim  {
 
-    public SSOClaimsResponse(String id, Channel issuer, String inResponseTo, ClaimSet claimSet, String relayState) {
-        super(id, issuer, inResponseTo, claimSet, relayState);
-    }
+    String getQualifier();
+
 }

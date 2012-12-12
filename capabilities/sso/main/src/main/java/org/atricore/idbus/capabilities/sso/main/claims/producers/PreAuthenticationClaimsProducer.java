@@ -25,8 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
 import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
@@ -69,7 +69,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
         // -------------------------------------------------------------------------
         if (logger.isDebugEnabled())
             logger.debug("Starting to collect security token claims");
-        SSOClaimsRequest claimsRequest = (SSOClaimsRequest) in.getMessage().getContent();
+        SSOCredentialClaimsRequest claimsRequest = (SSOCredentialClaimsRequest) in.getMessage().getContent();
 
         if (logger.isDebugEnabled()) {
             if (claimsRequest.getPreauthenticationSecurityToken() != null) {
@@ -92,7 +92,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
     }
 
     protected void doProcessReceivedSecurityTokenClaim(CamelMediationExchange exchange,
-                                           ClaimsRequest claimsRequest) throws Exception {
+                                           CredentialClaimsRequest credentialClaimsRequest) throws Exception {
 
         if (logger.isTraceEnabled())
             logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedSecurityTokenClaim STEP get claims");
@@ -102,13 +102,13 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
         // This is the binding we're using to send the response
         SSOBinding binding = SSOBinding.SSO_ARTIFACT;
-        Channel issuer = claimsRequest.getIssuerChannel();
+        Channel issuer = credentialClaimsRequest.getIssuerChannel();
 
         IdentityMediationEndpoint claimsProcessingEndpoint = null;
 
         // Look for an endpoint to send the response
         for (IdentityMediationEndpoint endpoint : issuer.getEndpoints()) {
-            if (endpoint.getType().equals(claimsRequest.getIssuerEndpoint().getType()) &&
+            if (endpoint.getType().equals(credentialClaimsRequest.getIssuerEndpoint().getType()) &&
                     endpoint.getBinding().equals(binding.getValue())) {
                 claimsProcessingEndpoint = endpoint;
                 break;
@@ -117,14 +117,14 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
         if (claimsProcessingEndpoint == null) {
             throw new SSOException("No endpoint supporting " + binding + " of type " +
-                    claimsRequest.getIssuerEndpoint().getType() + " found in channel " + claimsRequest.getIssuerChannel().getName());
+                    credentialClaimsRequest.getIssuerEndpoint().getType() + " found in channel " + credentialClaimsRequest.getIssuerChannel().getName());
         }
 
         if (logger.isTraceEnabled())
             logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedSecurityTokenClaim STEP resolve endpoint");
 
 
-        EndpointDescriptor ed = mediator.resolveEndpoint(claimsRequest.getIssuerChannel(),
+        EndpointDescriptor ed = mediator.resolveEndpoint(credentialClaimsRequest.getIssuerChannel(),
                 claimsProcessingEndpoint);
 
 
@@ -133,14 +133,14 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
 
         PasswordString token = new PasswordString();
-        token.setValue(claimsRequest.getPreauthenticationSecurityToken());
+        token.setValue(credentialClaimsRequest.getPreauthenticationSecurityToken());
 
-        Claim claim = new ClaimImpl(AuthnCtxClass.OAUTH2_AUTHN_CTX.getValue(), token);
+        CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.OAUTH2_AUTHN_CTX.getValue(), token);
         ClaimSet claims = new ClaimSetImpl();
-        claims.addClaim(claim);
+        claims.addClaim(credentialClaim);
 
-        SSOClaimsResponse claimsResponse = new SSOClaimsResponse(claimsRequest.getId() /* TODO : Generate new ID !*/,
-                channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
+        SSOCredentialClaimsResponse claimsResponse = new SSOCredentialClaimsResponse(credentialClaimsRequest.getId() /* TODO : Generate new ID !*/,
+                channel, credentialClaimsRequest.getId(), claims, credentialClaimsRequest.getRelayState());
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 

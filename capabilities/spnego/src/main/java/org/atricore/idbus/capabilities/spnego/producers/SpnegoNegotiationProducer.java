@@ -25,13 +25,11 @@ import org.apache.camel.Endpoint;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaimImpl;
-import org.atricore.idbus.kernel.main.mediation.claim.UserClaimSetImpl;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaimsResponseImpl;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaim;
-import org.atricore.idbus.kernel.main.mediation.claim.UserClaimSet;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaimsRequest;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaimsResponse;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
@@ -81,8 +79,8 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
             throw new SpnegoException("NULL message received by Spnego Capability " + content);
         }
 
-        if (content instanceof SSOClaimsRequest) {
-            doProcessClaimsRequest(exchange, (SSOClaimsRequest) content);
+        if (content instanceof SSOCredentialClaimsRequest) {
+            doProcessClaimsRequest(exchange, (SSOCredentialClaimsRequest) content);
 
 
         } else if (content instanceof UserClaimsRequest) {
@@ -126,12 +124,12 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
     }
 
-    protected void doProcessClaimsRequest(CamelMediationExchange exchange, ClaimsRequest claimsRequest) throws Exception {
+    protected void doProcessClaimsRequest(CamelMediationExchange exchange, CredentialClaimsRequest credentialClaimsRequest) throws Exception {
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", claimsRequest);
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", credentialClaimsRequest);
 
         EndpointDescriptor spnegoNegotiationEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_NEGOTIATION.getValue());
 
@@ -191,29 +189,29 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-        ClaimsRequest claimsRequest = (ClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:claims-request");
+        CredentialClaimsRequest credentialClaimsRequest = (CredentialClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:claims-request");
         UserClaimsRequest selectAttrsRequest = (UserClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:select-attrs-request");
 
-        if (claimsRequest == null && selectAttrsRequest == null)
+        if (credentialClaimsRequest == null && selectAttrsRequest == null)
             throw new IllegalStateException("Claims request not found!");
 
         if (logger.isDebugEnabled())
-            logger.debug("Recovered claims request from local variable, id:" + claimsRequest.getId());
+            logger.debug("Recovered claims request from local variable, id:" + credentialClaimsRequest.getId());
 
         SpnegoMediator mediator = ((SpnegoMediator) channel.getIdentityMediator());
 
-        if (claimsRequest != null) {
+        if (credentialClaimsRequest != null) {
 
             // This is the binding we're using to send the response
             SSOBinding binding = SSOBinding.SSO_ARTIFACT;
 
-            Channel issuer = claimsRequest.getIssuerChannel();
+            Channel issuer = credentialClaimsRequest.getIssuerChannel();
 
             IdentityMediationEndpoint claimsProcessingEndpoint = null;
 
             // Look for an endpoint to send the response
             for (IdentityMediationEndpoint endpoint : issuer.getEndpoints()) {
-                if (endpoint.getType().equals(claimsRequest.getIssuerEndpoint().getType()) &&
+                if (endpoint.getType().equals(credentialClaimsRequest.getIssuerEndpoint().getType()) &&
                         endpoint.getBinding().equals(binding.getValue())) {
                     claimsProcessingEndpoint = endpoint;
                     break;
@@ -222,10 +220,10 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
             if (claimsProcessingEndpoint == null) {
                 throw new SpnegoException("No endpoint supporting " + binding + " of type " +
-                        claimsRequest.getIssuerEndpoint().getType() + " found in channel " + claimsRequest.getIssuerChannel().getName());
+                        credentialClaimsRequest.getIssuerEndpoint().getType() + " found in channel " + credentialClaimsRequest.getIssuerChannel().getName());
             }
 
-            EndpointDescriptor ed = mediator.resolveEndpoint(claimsRequest.getIssuerChannel(),
+            EndpointDescriptor ed = mediator.resolveEndpoint(credentialClaimsRequest.getIssuerChannel(),
                     claimsProcessingEndpoint);
 
             String base64SpnegoToken = new String(Base64.encodeBase64(securityToken));
@@ -236,12 +234,12 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
             BinarySecurityTokenType binarySecurityToken = new BinarySecurityTokenType ();
             binarySecurityToken.getOtherAttributes().put(new QName(Constants.SPNEGO_NS), base64SpnegoToken);
 
-            Claim claim = new ClaimImpl(AuthnCtxClass.KERBEROS_AUTHN_CTX.getValue(), binarySecurityToken);
+            CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.KERBEROS_AUTHN_CTX.getValue(), binarySecurityToken);
             ClaimSet claims = new ClaimSetImpl();
-            claims.addClaim(claim);
+            claims.addClaim(credentialClaim);
 
-            SSOClaimsResponse claimsResponse = new SSOClaimsResponse(uuidGenerator.generateId(),
-                    channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
+            SSOCredentialClaimsResponse claimsResponse = new SSOCredentialClaimsResponse(uuidGenerator.generateId(),
+                    channel, credentialClaimsRequest.getId(), claims, credentialClaimsRequest.getRelayState());
 
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
@@ -265,7 +263,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
             // Look for an endpoint to send the response
             for (IdentityMediationEndpoint endpoint : issuer.getEndpoints()) {
-                if (endpoint.getType().equals(claimsRequest.getIssuerEndpoint().getType()) &&
+                if (endpoint.getType().equals(credentialClaimsRequest.getIssuerEndpoint().getType()) &&
                         endpoint.getBinding().equals(binding.getValue())) {
                     selectAttrsProcessingEndpoint = endpoint;
                     break;
@@ -289,8 +287,8 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
             binarySecurityToken.getOtherAttributes().put(new QName(Constants.SPNEGO_NS), base64SpnegoToken);
 
             UserClaim attr = new UserClaimImpl(AuthnCtxClass.KERBEROS_AUTHN_CTX.getValue(), binarySecurityToken);
-            UserClaimSet attrs = new UserClaimSetImpl();
-            attrs.addAttribute(attr);
+            ClaimSet attrs = new ClaimSetImpl();
+            attrs.addClaim(attr);
 
             UserClaimsResponse selectAttrsResponse = new UserClaimsResponseImpl(
                     uuidGenerator.generateId(),

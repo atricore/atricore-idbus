@@ -114,12 +114,12 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
      * @param id See Component constructor
      * @see org.apache.wicket.Component#Component(String)
      */
-    public UsernamePasswordSignInPanel(final String id, ClaimsRequest claimsRequest, MessageQueueManager artifactQueueManager,
+    public UsernamePasswordSignInPanel(final String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
                                        final IdentityMediationUnitRegistry idsuRegistry
     ) {
         super(id);
 
-        this.claimsRequest = claimsRequest;
+        this.credentialClaimsRequest = credentialClaimsRequest;
         this.artifactQueueManager = artifactQueueManager;
         this.idsuRegistry = idsuRegistry;
 
@@ -131,11 +131,11 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         feedback.setOutputMarkupId(true);
         feedbackBox.add(feedback);
 
-        if (claimsRequest.getLastErrorId() != null) {
+        if (credentialClaimsRequest.getLastErrorId() != null) {
             if (logger.isDebugEnabled())
                 logger.info("Received last error ID : " +
-                    claimsRequest.getLastErrorId() +
-                    " ("+claimsRequest.getLastErrorMsg()+")");
+                    credentialClaimsRequest.getLastErrorId() +
+                    " ("+ credentialClaimsRequest.getLastErrorMsg()+")");
 
             feedbackBox.setVisible(true);
 
@@ -218,35 +218,35 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
 
         UUIDGenerator idGenerator = new UUIDGenerator();
 
-        logger.info("Claims Request = " + claimsRequest);
+        logger.info("Claims Request = " + credentialClaimsRequest);
 
         ClaimSet claims = new ClaimSetImpl();
-        claims.addClaim(new ClaimImpl("username", username));
-        claims.addClaim(new ClaimImpl("password", password));
+        claims.addClaim(new CredentialClaimImpl("username", username));
+        claims.addClaim(new CredentialClaimImpl("password", password));
 
         //claims.addClaim(new ClaimImpl("rememberMe", cmd.isRememberMe()));
 
-        ClaimsResponse response = new ClaimsResponseImpl(idGenerator.generateId(),
+        CredentialClaimsResponse responseCredential = new CredentialClaimsResponseImpl(idGenerator.generateId(),
                 null,
-                claimsRequest.getId(),
+                credentialClaimsRequest.getId(),
                 claims,
-                claimsRequest.getRelayState());
+                credentialClaimsRequest.getRelayState());
 
-        EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(claimsRequest, AuthnCtxClass.PASSWORD_AUTHN_CTX);
+        EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(credentialClaimsRequest, AuthnCtxClass.PASSWORD_AUTHN_CTX);
         if (claimsEndpoint == null) {
             logger.error("No claims endpoint found!");
             // TODO : Create error and redirect to error view using 'IDBusErrArt'
         }
 
         // We want the binding factory to use a binding component to build this URL, if possible
-        Channel claimsChannel = claimsRequest.getClaimsChannel();
+        Channel claimsChannel = credentialClaimsRequest.getClaimsChannel();
         claimsChannel = getNonSerializedChannel(claimsChannel);
 
         String claimsEndpointUrl = null;
         if (claimsChannel != null) {
 
             MediationBindingFactory f = claimsChannel.getIdentityMediator().getBindingFactory();
-            MediationBinding b = f.createBinding(SSOBinding.SSO_ARTIFACT.getValue(), claimsRequest.getClaimsChannel());
+            MediationBinding b = f.createBinding(SSOBinding.SSO_ARTIFACT.getValue(), credentialClaimsRequest.getClaimsChannel());
 
             claimsEndpointUrl = claimsEndpoint.getResponseLocation();
             if (claimsEndpointUrl == null)
@@ -264,7 +264,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         } else {
 
             logger.warn("Cannot delegate URL construction to binding, valid definition of channel " +
-                    claimsRequest.getClaimsChannel().getName() + " not found ...");
+                    credentialClaimsRequest.getClaimsChannel().getName() + " not found ...");
             claimsEndpointUrl = claimsEndpoint.getResponseLocation() != null ?
                     claimsEndpoint.getResponseLocation() : claimsEndpoint.getLocation();
         }
@@ -272,7 +272,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         if (logger.isDebugEnabled())
             logger.debug("Using claims endpoint URL [" + claimsEndpointUrl + "]");
 
-        Artifact a = artifactQueueManager.pushMessage(response);
+        Artifact a = artifactQueueManager.pushMessage(responseCredential);
         claimsEndpointUrl += "?SSOArt=" + a.getContent();
 
         if (logger.isDebugEnabled())

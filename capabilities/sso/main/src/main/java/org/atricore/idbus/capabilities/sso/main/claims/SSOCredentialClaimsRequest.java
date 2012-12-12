@@ -24,7 +24,7 @@ package org.atricore.idbus.capabilities.sso.main.claims;
 import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequestImpl;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequestImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 /**
@@ -33,7 +33,7 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
  *
  * @version $Id$
  */
-public class SSOClaimsRequest extends ClaimsRequestImpl {
+public class SSOCredentialClaimsRequest extends CredentialClaimsRequestImpl {
 
     private RequestedAuthnContextType requestedAuthnCtxClass;
 
@@ -41,12 +41,12 @@ public class SSOClaimsRequest extends ClaimsRequestImpl {
 
     private String spAlias;
 
-    public SSOClaimsRequest(String id, Channel issuer, IdentityMediationEndpoint endpoint, ClaimChannel provider, String relayState) {
+    public SSOCredentialClaimsRequest(String id, Channel issuer, IdentityMediationEndpoint endpoint, ClaimChannel provider, String relayState) {
         super(id, issuer, endpoint, provider, relayState);
     }
 
-    public SSOClaimsRequest(String id, Channel issuer, IdentityMediationEndpoint endpoint, ClaimChannel provider,
-                            String relayState, String preauthenticationSecurityToken) {
+    public SSOCredentialClaimsRequest(String id, Channel issuer, IdentityMediationEndpoint endpoint, ClaimChannel provider,
+                                      String relayState, String preauthenticationSecurityToken) {
         super(id, issuer, endpoint, provider, relayState, preauthenticationSecurityToken);
     }
 

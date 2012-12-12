@@ -10,9 +10,9 @@ public class UserClaimsResponseImpl implements UserClaimsResponse {
     private String relayState;
     private Channel issuer;
     private String inResponseTo;
-    private UserClaimSet claimSet;
+    private ClaimSet claimSet;
 
-    public UserClaimsResponseImpl(String id, Channel issuer, String inResponseTo, UserClaimSet claimSet, String relayState) {
+    public UserClaimsResponseImpl(String id, Channel issuer, String inResponseTo, ClaimSet claimSet, String relayState) {
         this.id = id;
         this.relayState = relayState;
         this.issuer = issuer;
@@ -36,7 +36,7 @@ public class UserClaimsResponseImpl implements UserClaimsResponse {
         return inResponseTo;
     }
 
-    public UserClaimSet getAttributeSet() {
+    public ClaimSet getClaimSet() {
         return claimSet;
     }
 }

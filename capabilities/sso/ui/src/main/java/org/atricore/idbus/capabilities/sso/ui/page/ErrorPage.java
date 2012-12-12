@@ -33,8 +33,7 @@ import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
-import org.ops4j.pax.wicket.api.PaxWicketBean;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -57,7 +56,7 @@ public class ErrorPage extends BasePage {
 
     public ErrorPage(PageParameters parameters) throws Exception {
 
-        ClaimsRequest claimsRequest = null;
+        CredentialClaimsRequest credentialClaimsRequest = null;
 
         getSession().bind();
 

@@ -32,19 +32,19 @@ import java.util.List;
  * @version $Id: ClaimSetImpl.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
 public class ClaimSetImpl implements ClaimSet {
-    private List<Claim> claims = new ArrayList<Claim>();
+    private List<Claim> credentialClaims = new ArrayList<Claim>();
 
-    public void addClaim(Claim claim) {
-        claims.add(claim);
+    public void addClaim(Claim credentialClaim) {
+        credentialClaims.add(credentialClaim);
     }
 
     public Collection<Claim> getClaims() {
-        return Collections.unmodifiableCollection(claims);
+        return Collections.unmodifiableCollection(credentialClaims);
     }
 
     @Override
     public String toString() {
         return super.toString() +
-                "["+claims+"]";
+                "["+ credentialClaims +"]";
     }
 }

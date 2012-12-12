@@ -21,17 +21,18 @@
 
 package org.atricore.idbus.kernel.main.mediation.claim;
 
+import org.atricore.idbus.kernel.main.mediation.Channel;
+
 import java.io.Serializable;
-import java.util.Collection;
 
 /**
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
- * @version $Id: ClaimSet.java 1359 2009-07-19 16:57:57Z sgonzalez $
+ * @version $Rev: 1278 $ $Date: 2009-06-14 03:14:41 -0300 (Sun, 14 Jun 2009) $
  */
-public interface ClaimSet extends Serializable {
+public interface CredentialClaimsResponse extends ClaimsResponse {
 
-    void addClaim(Claim credentialClaim);
+    Channel getIssuer();
 
-    Collection<Claim> getClaims();
+
 }

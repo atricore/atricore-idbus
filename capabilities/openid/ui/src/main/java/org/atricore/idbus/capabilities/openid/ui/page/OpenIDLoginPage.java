@@ -28,7 +28,7 @@ import org.atricore.idbus.capabilities.openid.ui.panel.OpenIDSignInPanel;
 import org.atricore.idbus.capabilities.sso.ui.page.LoginPage;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 /**
  * Simple authentication page for collecting user's OpenID .
@@ -47,10 +47,10 @@ public class OpenIDLoginPage extends LoginPage {
         super(parameters);
     }
 
-    protected Panel prepareSignInPanel(String id, ClaimsRequest claimsRequest, MessageQueueManager artifactQueueManager,
+    protected Panel prepareSignInPanel(String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
                                        IdentityMediationUnitRegistry idsuRegistry) {
 
 
-        return new OpenIDSignInPanel(id, claimsRequest, artifactQueueManager, idsuRegistry);
+        return new OpenIDSignInPanel(id, credentialClaimsRequest, artifactQueueManager, idsuRegistry);
     }
 }

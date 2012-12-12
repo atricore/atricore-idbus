@@ -34,8 +34,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
@@ -62,7 +62,6 @@ import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.*;
-import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
@@ -75,11 +74,8 @@ import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequestI
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
-import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
-import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString;
@@ -167,13 +163,13 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 if (logger.isTraceEnabled())
                     logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessAuthnRequest END");
-            } else if (content instanceof SSOClaimsResponse) {
+            } else if (content instanceof SSOCredentialClaimsResponse) {
 
                 if (logger.isTraceEnabled())
                     logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessClaimsResponse START");
 
                 // Processing Claims to create authn resposne
-                doProcessClaimsResponse(exchange, (SSOClaimsResponse) content);
+                doProcessClaimsResponse(exchange, (SSOCredentialClaimsResponse) content);
                 if (logger.isTraceEnabled())
                     logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessClaimsResponse END");
             } else if (content instanceof PolicyEnforcementResponse) {
@@ -199,7 +195,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                         null,
                         StatusDetails.UNKNOWN_REQUEST.getValue(),
-                        content.getClass().getName(),
+                        content == null ? "<null>" : content.getClass().getName(),
                         null);
             }
         } catch (SSORequestException e) {
@@ -263,7 +259,12 @@ public class SingleSignOnProducer extends SSOProducer {
             // ------------------------------------------------------
             // Create AuthnRequest using identity plan
             // ------------------------------------------------------
-            AuthnRequestType authnRequest = buildIdPInitiatedAuthnRequest(exchange, idp, ed, (FederationChannel) channel);
+
+            // Get SPInitiated authn request, if any!
+            IDPInitiatedAuthnRequestType ssoAuthnRequest =
+                    (IDPInitiatedAuthnRequestType) ((CamelMediationMessage) exchange.getIn()).getMessage().getContent();
+
+            AuthnRequestType authnRequest = buildIdPInitiatedAuthnRequest(exchange, ssoAuthnRequest, idp, ed, (FederationChannel) channel);
 
             // ------------------------------------------------------
             // Send Authn Request to IDP
@@ -513,11 +514,11 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("Selected claims endpoint : " + claimEndpoint);
 
                 // Create Claims Request
-                SSOClaimsRequest claimsRequest = null;
+                SSOCredentialClaimsRequest claimsRequest = null;
                 
                 if ( authnRequest instanceof PreAuthenticatedAuthnRequestType) {
                     PreAuthenticatedAuthnRequestType preAuthnRequest = (PreAuthenticatedAuthnRequestType) authnRequest;
-                    claimsRequest = new SSOClaimsRequest(
+                    claimsRequest = new SSOCredentialClaimsRequest(
                             authnRequest.getID(),
                             channel,
                             endpoint,
@@ -525,7 +526,7 @@ public class SingleSignOnProducer extends SSOProducer {
                             uuidGenerator.generateId(),
                             preAuthnRequest.getSecurityToken());
                 } else {
-                    claimsRequest = new SSOClaimsRequest(
+                    claimsRequest = new SSOCredentialClaimsRequest(
                             authnRequest.getID(),
                             channel,
                             endpoint,
@@ -559,7 +560,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 SSOBinding edBinding = SSOBinding.asEnum(ed.getBinding());
                 if (!edBinding.isFrontChannel()) {
-                    SSOClaimsResponse cr = (SSOClaimsResponse) channel.getIdentityMediator().sendMessage(claimsRequest, ed, claimChannel);
+                    SSOCredentialClaimsResponse cr = (SSOCredentialClaimsResponse) channel.getIdentityMediator().sendMessage(claimsRequest, ed, claimChannel);
 
                     // TODO : in and out may not be what doProcessClaimsResponse is expecting!
                     doProcessClaimsResponse(exchange, cr);
@@ -667,9 +668,9 @@ public class SingleSignOnProducer extends SSOProducer {
         usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), authnRequest.getPassword());
         usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
 
-        Claim claim = new ClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+        CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
         ClaimSet claims = new ClaimSetImpl();
-        claims.addClaim(claim);
+        claims.addClaim(credentialClaim);
 
         SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange, securityTokenEmissionCtx, claims, sp);
         AssertionType assertion = cxt.getAssertion();
@@ -718,7 +719,7 @@ public class SingleSignOnProducer extends SSOProducer {
      * @throws Exception
      */
     protected void doProcessClaimsResponse(CamelMediationExchange exchange,
-                                           SSOClaimsResponse claimsResponse) throws Exception {
+                                           SSOCredentialClaimsResponse claimsResponse) throws Exception {
 
         //------------------------------------------------------------
         // Process a claims response
@@ -926,7 +927,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             // We have another Claim endpoint to try, let's send the request.
             logger.debug("Selecting claims endpoint : " + endpoint.getName());
-            SSOClaimsRequest claimsRequest = new SSOClaimsRequest(authnRequest.getID(),
+            SSOCredentialClaimsRequest claimsRequest = new SSOCredentialClaimsRequest(authnRequest.getID(),
                     channel,
                     endpoint,
                     claimChannel,
@@ -969,7 +970,7 @@ public class SingleSignOnProducer extends SSOProducer {
     /**
      * This will emit an assertion using the claims conveyed in the proxy response.  If the process is successful,
      * a SAML Response will be issued to the original SP.
-     * If an error occurs, the error condition will be notified back to the requesting SP.
+     * If an error occurs, the error condition will be notified back to the requesting IDP.
      *
      * @param exchange
      * @param proxyResponse
@@ -1000,7 +1001,21 @@ public class SingleSignOnProducer extends SSOProducer {
 
             CircleOfTrustMemberDescriptor idpProxy = spChannel.getMember();
             EndpointDescriptor destination = new EndpointDescriptorImpl(endpoint);
-            authnRequest = buildIdPInitiatedAuthnRequest(exchange, idpProxy, destination, spChannel);
+
+            IDPInitiatedAuthnRequestType idpInitReq = new IDPInitiatedAuthnRequestType();
+
+            idpInitReq.setID(uuidGenerator.generateId());
+            idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
+
+            //idpInitReq.setIssuer(sp.getId());
+
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("atricore_sp_alias");
+            a.setValue(sp.getAlias());
+            idpInitReq.getRequestAttribute().add(a);
+
+            // This builds an authn request type in behalf of the original SP
+            authnRequest = buildIdPInitiatedAuthnRequest(exchange, idpInitReq, idpProxy, destination, spChannel);
 
             authnState.setResponseMode("unsolicited");
             authnState.setAuthnRequest(authnRequest);
@@ -1077,8 +1092,8 @@ public class SingleSignOnProducer extends SSOProducer {
                         usernameToken.getOtherAttributes().put(new QName(Constants.PROXY_NS), "TRUE");
 
                         // TODO : We should honor the provided authn. context if any
-                        Claim claim = new ClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
-                        claims.addClaim(claim);
+                        CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                        claims.addClaim(credentialClaim);
                     }
 
                 }
@@ -1539,8 +1554,8 @@ public class SingleSignOnProducer extends SSOProducer {
                 usernameToken.getOtherAttributes().put(new QName(Constants.PREVIOUS_SESSION_NS), "TRUE");
 
                 // TODO : We should honor the provided authn. context if any
-                Claim claim = new ClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
-                claims.addClaim(claim);
+                CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                claims.addClaim(credentialClaim);
             }
 
         }
@@ -1798,6 +1813,7 @@ public class SingleSignOnProducer extends SSOProducer {
      * Build an AuthnRequest for the target SP to which IDP's unsollicited response needs to be pushed to.
      */
     protected AuthnRequestType buildIdPInitiatedAuthnRequest(CamelMediationExchange exchange,
+                                                             IDPInitiatedAuthnRequestType ssoAuthnRequest,
                                                              CircleOfTrustMemberDescriptor idp,
                                                              EndpointDescriptor ed,
                                                              FederationChannel spChannel
@@ -1811,10 +1827,6 @@ public class SingleSignOnProducer extends SSOProducer {
         idPlanExchange.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, ed);
         idPlanExchange.setProperty(VAR_COT_MEMBER, spChannel.getMember());
         idPlanExchange.setProperty(VAR_RESPONSE_CHANNEL, spChannel);
-
-        // Get SPInitiated authn request, if any!
-        IDPInitiatedAuthnRequestType ssoAuthnRequest =
-                (IDPInitiatedAuthnRequestType) ((CamelMediationMessage) exchange.getIn()).getMessage().getContent();
 
         // Create in/out artifacts
         IdentityArtifact in =
@@ -2179,16 +2191,18 @@ public class SingleSignOnProducer extends SSOProducer {
 
         org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory ofwss = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory();
 
-        for (Claim claim : claims.getClaims()) {
-            logger.debug("Adding Claim : " + claim.getQualifier() + " of type " + claim.getValue().getClass().getName());
-            Object claimObj = claim.getValue();
+        for (Claim c : claims.getClaims()) {
+
+            CredentialClaim credentialClaim = (CredentialClaim) c;
+            logger.debug("Adding Claim : " + credentialClaim.getQualifier() + " of type " + credentialClaim.getValue().getClass().getName());
+            Object claimObj = credentialClaim.getValue();
 
             if (claimObj instanceof UsernameTokenType) {
-                rstRequest.getAny().add(ofwss.createUsernameToken((UsernameTokenType) claim.getValue()));
+                rstRequest.getAny().add(ofwss.createUsernameToken((UsernameTokenType) credentialClaim.getValue()));
             } else if (claimObj instanceof BinarySecurityTokenType) {
-                rstRequest.getAny().add(ofwss.createBinarySecurityToken((BinarySecurityTokenType) claim.getValue()));
+                rstRequest.getAny().add(ofwss.createBinarySecurityToken((BinarySecurityTokenType) credentialClaim.getValue()));
             } else if (claimObj instanceof PasswordString) {
-                rstRequest.getAny().add(ofwss.createPassword((PasswordString) claim.getValue()));
+                rstRequest.getAny().add(ofwss.createPassword((PasswordString) credentialClaim.getValue()));
             } else {
                 throw new SSOException("Claim type not supported " + claimObj.getClass().getName());
             }

@@ -33,9 +33,7 @@ import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
-import org.ops4j.pax.wicket.api.PaxWicketBean;
-import org.osgi.framework.BundleContext;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 /**
  * Convenience login page meant to be extended for realizing authentication screens.
@@ -63,7 +61,7 @@ public abstract class LoginPage extends BasePage {
 
         super.onInitialize();
 
-        ClaimsRequest claimsRequest = null;
+        CredentialClaimsRequest credentialClaimsRequest = null;
         getSession().bind();
 
         if (artifactId != null) {
@@ -72,31 +70,31 @@ public abstract class LoginPage extends BasePage {
 
             // Lookup for ClaimsRequest!
             try {
-                claimsRequest = (ClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
+                credentialClaimsRequest = (CredentialClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
             } catch (Exception e) {
                 logger.error("Cannot resolve artifact id ["+artifactId+"] : " + e.getMessage(), e);
             }
 
-            if (claimsRequest != null) {
+            if (credentialClaimsRequest != null) {
 
-                ((SSOWebSession)getSession()).setClaimsRequest(claimsRequest);
+                ((SSOWebSession)getSession()).setCredentialClaimsRequest(credentialClaimsRequest);
 
                 if (logger.isDebugEnabled())
-                    logger.info("Received claims request " + claimsRequest.getId() +
-                            " from " + claimsRequest.getIssuerChannel() +
-                            " at " + claimsRequest.getIssuerEndpoint());
+                    logger.info("Received claims request " + credentialClaimsRequest.getId() +
+                            " from " + credentialClaimsRequest.getIssuerChannel() +
+                            " at " + credentialClaimsRequest.getIssuerEndpoint());
 
             } else {
                 logger.debug("No claims request received, try stored value");
-                claimsRequest = ((SSOWebSession)getSession()).getClaimsRequest();
+                credentialClaimsRequest = ((SSOWebSession)getSession()).getCredentialClaimsRequest();
             }
         } else {
-            claimsRequest = ((SSOWebSession)getSession()).getClaimsRequest();
+            credentialClaimsRequest = ((SSOWebSession)getSession()).getCredentialClaimsRequest();
         }
 
-        logger.info("claimsRequest = " + claimsRequest);
+        logger.info("claimsRequest = " + credentialClaimsRequest);
         
-        if (claimsRequest == null) {
+        if (credentialClaimsRequest == null) {
             // No way to process this page, fall-back
             WebBranding branding = ((BaseWebApplication) getApplication()).getBranding();
             if (branding.getFallbackUrl() != null) {
@@ -109,9 +107,9 @@ public abstract class LoginPage extends BasePage {
         }
 
         // Add signIn panel to page
-        add(prepareSignInPanel("signIn", claimsRequest, artifactQueueManager, idsuRegistry));
+        add(prepareSignInPanel("signIn", credentialClaimsRequest, artifactQueueManager, idsuRegistry));
     }
 
-    abstract protected Panel prepareSignInPanel(final String id, ClaimsRequest claimsRequest, MessageQueueManager artifactQueueManager,
+    abstract protected Panel prepareSignInPanel(final String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
                                                 final IdentityMediationUnitRegistry idsuRegistry);
 }

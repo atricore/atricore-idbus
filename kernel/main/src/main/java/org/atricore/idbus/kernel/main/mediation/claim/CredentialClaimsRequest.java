@@ -21,29 +21,29 @@
 
 package org.atricore.idbus.kernel.main.mediation.claim;
 
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.mediation.Channel;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+
+import java.io.Serializable;
+import java.util.Set;
+
 /**
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
- * @version $Id: ClaimImpl.java 1278 2009-06-14 06:14:41Z sgonzalez $
+ * @version $Rev: 1278 $ $Date: 2009-06-14 03:14:41 -0300 (Sun, 14 Jun 2009) $
  */
-public class ClaimImpl implements Claim {
-    private String qualifier;
-    private Object value;
+public interface CredentialClaimsRequest extends ClaimsRequest {
 
-    public ClaimImpl(String qualifier, Object value) {
-        this.qualifier = qualifier;
-        this.value = value;
-    }
+    Channel getIssuerChannel();
 
-    public String getQualifier() {
-        return qualifier;
-    }
+    IdentityMediationEndpoint getIssuerEndpoint();
 
-    public Object getValue() {
-        return value;
-    }
+    Channel getClaimsChannel();
 
-    public String toString() {
-        return "{" + qualifier + "}" + value;
-    }
+    Set<SSOPolicyEnforcementStatement> getSsoPolicyEnforcements();
+
+    String getSkin();
+    
+    String getPreauthenticationSecurityToken();
 }

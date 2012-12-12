@@ -4,8 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
 import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
@@ -53,7 +53,7 @@ public class OpenIDClaimsProducer extends SSOProducer
         // -------------------------------------------------------------------------
         if (logger.isDebugEnabled())
             logger.debug("Starting to collect OpenID claim");
-        SSOClaimsRequest claimsRequest = (SSOClaimsRequest) in.getMessage().getContent();
+        SSOCredentialClaimsRequest claimsRequest = (SSOCredentialClaimsRequest) in.getMessage().getContent();
 
         if (logger.isDebugEnabled())
             logger.debug("Storing claims request as local variable, id:" + claimsRequest.getId());
@@ -72,19 +72,19 @@ public class OpenIDClaimsProducer extends SSOProducer
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-        ClaimsResponse claimsResponse = (ClaimsResponse) in.getMessage().getContent();
-        ClaimsRequest claimsRequest = (ClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:claims-request");
-        if (claimsRequest == null)
+        CredentialClaimsResponse credentialClaimsResponse = (CredentialClaimsResponse) in.getMessage().getContent();
+        CredentialClaimsRequest credentialClaimsRequest = (CredentialClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:claims-request");
+        if (credentialClaimsRequest == null)
             throw new IllegalStateException("Claims request not found!");
 
         if (logger.isDebugEnabled())
-            logger.debug("Recovered claims request from local variable, id:" + claimsRequest.getId());
+            logger.debug("Recovered claims request from local variable, id:" + credentialClaimsRequest.getId());
 
-        doProcessReceivedClaims(exchange, claimsRequest, claimsResponse.getClaimSet());
+        doProcessReceivedClaims(exchange, credentialClaimsRequest, credentialClaimsResponse.getClaimSet());
 
     }
 
-    protected void doProcessClaimsRequest(CamelMediationExchange exchange, ClaimsRequest claimsRequest) throws IOException {
+    protected void doProcessClaimsRequest(CamelMediationExchange exchange, CredentialClaimsRequest credentialClaimsRequest) throws IOException {
 
         SSOClaimsMediator mediator = (SSOClaimsMediator)channel.getIdentityMediator();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
@@ -99,8 +99,8 @@ public class OpenIDClaimsProducer extends SSOProducer
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
         out.setMessage(
-                new MediationMessageImpl(claimsRequest.getId(),
-                        claimsRequest,
+                new MediationMessageImpl(credentialClaimsRequest.getId(),
+                        credentialClaimsRequest,
                         "ClaimsRequest",
                         null,
                         ed,
@@ -112,7 +112,7 @@ public class OpenIDClaimsProducer extends SSOProducer
     }
 
     protected void doProcessReceivedClaims(CamelMediationExchange exchange,
-                                           ClaimsRequest claimsRequest,
+                                           CredentialClaimsRequest credentialClaimsRequest,
                                            ClaimSet receivedClaims) throws Exception {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
@@ -120,13 +120,13 @@ public class OpenIDClaimsProducer extends SSOProducer
 
         // This is the binding we're using to send the response
         SSOBinding binding = SSOBinding.SSO_ARTIFACT;
-        Channel issuer = claimsRequest.getIssuerChannel();
+        Channel issuer = credentialClaimsRequest.getIssuerChannel();
 
         IdentityMediationEndpoint claimsProcessingEndpoint = null;
 
         // Look for an endpoint to send the response
         for (IdentityMediationEndpoint endpoint : issuer.getEndpoints()) {
-            if (endpoint.getType().equals(claimsRequest.getIssuerEndpoint().getType()) &&
+            if (endpoint.getType().equals(credentialClaimsRequest.getIssuerEndpoint().getType()) &&
                     endpoint.getBinding().equals(binding.getValue())) {
                 claimsProcessingEndpoint = endpoint;
                 break;
@@ -135,18 +135,18 @@ public class OpenIDClaimsProducer extends SSOProducer
 
         if (claimsProcessingEndpoint == null) {
             throw new SSOException("No endpoint supporting " + binding + " of type " +
-                    claimsRequest.getIssuerEndpoint().getType() + " found in channel " + claimsRequest.getIssuerChannel().getName());
+                    credentialClaimsRequest.getIssuerEndpoint().getType() + " found in channel " + credentialClaimsRequest.getIssuerChannel().getName());
         }
 
-        EndpointDescriptor ed = mediator.resolveEndpoint(claimsRequest.getIssuerChannel(),
+        EndpointDescriptor ed = mediator.resolveEndpoint(credentialClaimsRequest.getIssuerChannel(),
                 claimsProcessingEndpoint);
 
         String openid = null;
 
         // Addapt received simple claims to SAMLR Required token
         for (Claim c : receivedClaims.getClaims()) {
-
-            if (c.getQualifier().equalsIgnoreCase("openid"))
+            CredentialClaim credentialClaim = (CredentialClaim) c;
+            if (credentialClaim.getQualifier().equalsIgnoreCase("openid"))
                 openid = (String) c.getValue();
 
         }
@@ -158,12 +158,12 @@ public class OpenIDClaimsProducer extends SSOProducer
 
         openidToken.setUsername(openidString);
 
-        Claim claim = new ClaimImpl(AuthnCtxClass.UNSPECIFIED_AUTHN_CTX.getValue(), openidToken);
+        CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.UNSPECIFIED_AUTHN_CTX.getValue(), openidToken);
         ClaimSet claims = new ClaimSetImpl();
-        claims.addClaim(claim);
+        claims.addClaim(credentialClaim);
 
-        SSOClaimsResponse claimsResponse = new SSOClaimsResponse(claimsRequest.getId() /* TODO : Generate new ID !*/,
-                channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
+        SSOCredentialClaimsResponse claimsResponse = new SSOCredentialClaimsResponse(credentialClaimsRequest.getId() /* TODO : Generate new ID !*/,
+                channel, credentialClaimsRequest.getId(), claims, credentialClaimsRequest.getRelayState());
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 

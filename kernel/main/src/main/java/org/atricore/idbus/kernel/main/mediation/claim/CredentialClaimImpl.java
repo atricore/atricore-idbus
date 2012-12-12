@@ -21,17 +21,29 @@
 
 package org.atricore.idbus.kernel.main.mediation.claim;
 
-import java.io.Serializable;
-import java.util.Collection;
-
 /**
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
- * @version $Id: ClaimSet.java 1359 2009-07-19 16:57:57Z sgonzalez $
+ * @version $Id: ClaimImpl.java 1278 2009-06-14 06:14:41Z sgonzalez $
  */
-public interface ClaimSet extends Serializable {
+public class CredentialClaimImpl implements CredentialClaim {
+    private String qualifier;
+    private Object value;
 
-    void addClaim(Claim credentialClaim);
+    public CredentialClaimImpl(String qualifier, Object value) {
+        this.qualifier = qualifier;
+        this.value = value;
+    }
 
-    Collection<Claim> getClaims();
+    public String getQualifier() {
+        return qualifier;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public String toString() {
+        return "{" + qualifier + "}" + value;
+    }
 }

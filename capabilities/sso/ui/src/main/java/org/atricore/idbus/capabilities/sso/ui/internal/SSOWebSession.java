@@ -23,7 +23,7 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 import org.apache.wicket.Request;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 
 /**
@@ -33,7 +33,7 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
  */
 public class SSOWebSession extends WebSession {
 
-    private ClaimsRequest claimsRequest;
+    private CredentialClaimsRequest credentialClaimsRequest;
 
     private String lastAppErrorId;
 
@@ -49,12 +49,12 @@ public class SSOWebSession extends WebSession {
         return (SSOWebSession) Session.get();
     }
 
-    public void setClaimsRequest(ClaimsRequest claimsRequest) {
-        this.claimsRequest = claimsRequest;
+    public void setCredentialClaimsRequest(CredentialClaimsRequest credentialClaimsRequest) {
+        this.credentialClaimsRequest = credentialClaimsRequest;
     }
 
-    public ClaimsRequest getClaimsRequest() {
-        return claimsRequest;
+    public CredentialClaimsRequest getCredentialClaimsRequest() {
+        return credentialClaimsRequest;
     }
 
     public void setLastAppErrorId(String lastAppErrorId) {

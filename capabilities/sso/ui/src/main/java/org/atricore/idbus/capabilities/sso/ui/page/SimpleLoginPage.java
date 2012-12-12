@@ -27,7 +27,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.atricore.idbus.capabilities.sso.ui.panel.UsernamePasswordSignInPanel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 /**
  * Simple authentication page for collecting username and password credentials.
@@ -46,10 +46,10 @@ public class SimpleLoginPage extends LoginPage {
         super(parameters);
     }
 
-    protected Panel prepareSignInPanel(String id, ClaimsRequest claimsRequest, MessageQueueManager artifactQueueManager,
+    protected Panel prepareSignInPanel(String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
                                        IdentityMediationUnitRegistry idsuRegistry) {
 
 
-        return new UsernamePasswordSignInPanel(id, claimsRequest, artifactQueueManager, idsuRegistry);
+        return new UsernamePasswordSignInPanel(id, credentialClaimsRequest, artifactQueueManager, idsuRegistry);
     }
 }

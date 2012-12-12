@@ -2,10 +2,9 @@ package org.atricore.idbus.capabilities.sso.main.claims.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
 import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
@@ -55,7 +54,7 @@ public class SpUsernamePasswordClaimsProducer extends SSOProducer
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-        SSOClaimsRequest claimsRequest = (SSOClaimsRequest) in.getMessage().getContent();
+        SSOCredentialClaimsRequest claimsRequest = (SSOCredentialClaimsRequest) in.getMessage().getContent();
 
         SSOClaimsMediator mediator = ((SSOClaimsMediator ) channel.getIdentityMediator());
 
@@ -114,8 +113,8 @@ public class SpUsernamePasswordClaimsProducer extends SSOProducer
                     UsernameTokenType usernameToken = (UsernameTokenType) credential.getAny();
                     usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
 
-                    Claim claim = new ClaimImpl(AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue(), usernameToken);
-                    claims.addClaim(claim);
+                    CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.ATC_SP_PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                    claims.addClaim(credentialClaim);
 
                 } else {
                     logger.error("Unsupported token type " + credential.getAny());
@@ -127,7 +126,7 @@ public class SpUsernamePasswordClaimsProducer extends SSOProducer
             logger.error("No tokens found in local variable!");
         }
 
-        SSOClaimsResponse claimsResponse = new SSOClaimsResponse (claimsRequest.getId() /* TODO : Generate new ID !*/,
+        SSOCredentialClaimsResponse claimsResponse = new SSOCredentialClaimsResponse(claimsRequest.getId() /* TODO : Generate new ID !*/,
                 channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();

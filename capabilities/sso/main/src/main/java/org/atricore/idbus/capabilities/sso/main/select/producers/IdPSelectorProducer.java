@@ -94,7 +94,7 @@ public class IdPSelectorProducer extends SSOProducer {
 
         EntitySelectionState selectionState = new EntitySelectionState();
 
-        UserClaimSet attrSet = new UserClaimSetImpl();
+        ClaimSet attrSet = new ClaimSetImpl();
         state.setLocalVariable(getProvider().getName().toUpperCase() + "_ATTR_SET", attrSet);
 
         if (request.getRequestAttribute() != null) {
@@ -102,7 +102,7 @@ public class IdPSelectorProducer extends SSOProducer {
 
                 if (attrType.getValue() != null) {
                     UserClaim attr = new UserClaimImpl(attrType.getName(), attrType.getValue());
-                    attrSet.addAttribute(attr);
+                    attrSet.addClaim(attr);
                 }
             }
             selectionState.setAttributes(attrSet);
@@ -206,8 +206,8 @@ public class IdPSelectorProducer extends SSOProducer {
         EntitySelectorManager manager = mediator.getSelectorManager();
 
         EntitySelectionState selectionState = (EntitySelectionState) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
-        for (UserClaim attr : attrsResp.getAttributeSet().getAttributes()) {
-            selectionState.getAttributes().addAttribute(attr);
+        for (Claim c : attrsResp.getClaimSet().getClaims()) {
+            selectionState.getAttributes().addClaim(c);
         }
 
 

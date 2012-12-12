@@ -23,7 +23,7 @@ package org.atricore.idbus.capabilities.openid.ui.internal;
 import org.apache.wicket.Request;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 /**
  * SSO-specific implementation of the wicket web session. Used to persist the claim request.
@@ -32,7 +32,7 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
  */
 public class OpenIDWebSession extends WebSession {
 
-    private ClaimsRequest claimsRequest;
+    private CredentialClaimsRequest credentialClaimsRequest;
 
     public OpenIDWebSession(Request request) {
         super(request);
@@ -46,12 +46,12 @@ public class OpenIDWebSession extends WebSession {
         return (OpenIDWebSession) Session.get();
     }
 
-    public void setClaimsRequest(ClaimsRequest claimsRequest) {
-        this.claimsRequest = claimsRequest;
+    public void setCredentialClaimsRequest(CredentialClaimsRequest credentialClaimsRequest) {
+        this.credentialClaimsRequest = credentialClaimsRequest;
     }
 
-    public ClaimsRequest getClaimsRequest() {
-        return claimsRequest;
+    public CredentialClaimsRequest getCredentialClaimsRequest() {
+        return credentialClaimsRequest;
     }
 
 }

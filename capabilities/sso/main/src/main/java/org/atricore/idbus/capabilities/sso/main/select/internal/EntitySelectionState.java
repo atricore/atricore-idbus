@@ -1,6 +1,6 @@
 package org.atricore.idbus.capabilities.sso.main.select.internal;
 
-import org.atricore.idbus.kernel.main.mediation.claim.UserClaimSet;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet;
 import org.atricore.idbus.common.sso._1_0.protocol.SelectEntityRequestType;
 
 /**
@@ -12,17 +12,17 @@ import org.atricore.idbus.common.sso._1_0.protocol.SelectEntityRequestType;
  */
 public class EntitySelectionState implements java.io.Serializable {
 
-    private UserClaimSet attributes;
+    private ClaimSet attributes;
 
     private SelectEntityRequestType request;
 
     private Integer attributesEndpointIdx;
 
-    public UserClaimSet getAttributes() {
+    public ClaimSet getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(UserClaimSet attributes) {
+    public void setAttributes(ClaimSet attributes) {
         this.attributes = attributes;
     }
 

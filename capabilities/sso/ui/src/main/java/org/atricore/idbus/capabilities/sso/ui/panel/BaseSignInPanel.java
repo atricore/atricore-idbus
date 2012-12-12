@@ -30,7 +30,7 @@ import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
+import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 /**
@@ -42,7 +42,7 @@ public class BaseSignInPanel extends Panel {
 
     private static final Log logger = LogFactory.getLog(BaseSignInPanel.class);
 
-    protected ClaimsRequest claimsRequest;
+    protected CredentialClaimsRequest credentialClaimsRequest;
     protected MessageQueueManager artifactQueueManager;
     protected IdentityMediationUnitRegistry idsuRegistry;
 
@@ -64,9 +64,9 @@ public class BaseSignInPanel extends Panel {
         getRequestCycle().setRequestTarget(new RedirectRequestTarget(claimsConsumerUrl));
     }
 
-    protected EndpointDescriptor resolveClaimsEndpoint(ClaimsRequest request, AuthnCtxClass authnCtx) throws IdentityMediationException {
+    protected EndpointDescriptor resolveClaimsEndpoint(CredentialClaimsRequest requestCredential, AuthnCtxClass authnCtx) throws IdentityMediationException {
 
-        for (IdentityMediationEndpoint endpoint : request.getClaimsChannel().getEndpoints()) {
+        for (IdentityMediationEndpoint endpoint : requestCredential.getClaimsChannel().getEndpoints()) {
             // Look for unspecified claim endpoint using Artifacc binding
             if (authnCtx.getValue().equals(endpoint.getType()) &&
                     SSOBinding.SSO_ARTIFACT.getValue().equals(endpoint.getBinding())) {
@@ -77,9 +77,9 @@ public class BaseSignInPanel extends Panel {
                 return new EndpointDescriptorImpl(endpoint.getName(),
                         endpoint.getType(),
                         endpoint.getBinding(),
-                        request.getClaimsChannel().getLocation() + endpoint.getLocation(),
+                        requestCredential.getClaimsChannel().getLocation() + endpoint.getLocation(),
                         endpoint.getResponseLocation() != null ?
-                                request.getClaimsChannel().getLocation() + endpoint.getResponseLocation() : null);
+                                requestCredential.getClaimsChannel().getLocation() + endpoint.getResponseLocation() : null);
 
             }
         }

@@ -33,7 +33,7 @@ import java.util.Set;
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Rev: 1290 $ $Date: 2009-06-17 09:52:17 -0300 (Wed, 17 Jun 2009) $
  */
-public class ClaimsRequestImpl implements ClaimsRequest {
+public class CredentialClaimsRequestImpl implements CredentialClaimsRequest {
 
     private String id;
     private String relayState;
@@ -46,15 +46,15 @@ public class ClaimsRequestImpl implements ClaimsRequest {
     private String skin;
     private String preauthenticationSecurityToken;
     
-    public ClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel) {
+    public CredentialClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel) {
         this.id = id;
         this.issuerChannel = issuerChannel;
         this.claimsChannel = claimsChannel;
         this.issuerEndpoint = issuerEndpoint;
     }
 
-    public ClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel,
-                             String relayState) {
+    public CredentialClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel,
+                                       String relayState) {
         this.id = id;
         this.issuerChannel = issuerChannel;
         this.claimsChannel = claimsChannel;
@@ -62,8 +62,8 @@ public class ClaimsRequestImpl implements ClaimsRequest {
         this.relayState = relayState;
     }
 
-    public ClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel,
-                             String relayState, String preauthenticationSecurityToken) {
+    public CredentialClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel,
+                                       String relayState, String preauthenticationSecurityToken) {
         this.id = id;
         this.issuerChannel = issuerChannel;
         this.claimsChannel = claimsChannel;

@@ -6,7 +6,7 @@ import org.apache.camel.Message;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -14,7 +14,6 @@ import org.atricore.idbus.kernel.main.mediation.camel.CamelIdentityMediationUnit
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequestImpl;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 
@@ -101,12 +100,12 @@ public class SamlR2LocalBinding extends AbstractMediationBinding {
 
             return body;
 
-        } else if (in.getBody() instanceof SSOClaimsRequest) {
+        } else if (in.getBody() instanceof SSOCredentialClaimsRequest) {
             MediationState state = null;
             LocalState lState = null;
             MediationMessage body;
 
-            SSOClaimsRequest samlr2ClaimRequest = (SSOClaimsRequest) in.getBody();
+            SSOCredentialClaimsRequest samlr2ClaimRequest = (SSOCredentialClaimsRequest) in.getBody();
 
             ProviderStateContext ctx = createProviderStateContext();
             lState = ctx.retrieve(samlr2ClaimRequest.getTargetRelayState());
