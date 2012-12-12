@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -371,6 +372,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         setPropertyRef(idpChannelBean, "accountLinkEmitter", accountLinkEmitterName);
 
         // identityMapper
+
         Bean identityMapper = null;
         IdentityMappingPolicy im = sp.getIdentityMappingPolicy();
         String identityMapperName = spProxyBean.getName() + "-identity-mapper";
@@ -378,6 +380,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
             im = idpChannel.getIdentityMappingPolicy();
             identityMapperName = idpChannelBean.getName() + "-identity-mapper";
         }
+
         IdentityMappingType mappingType = im != null ? im.getMappingType() : IdentityMappingType.REMOTE;
         switch (mappingType) {
             case REMOTE:
@@ -460,6 +463,10 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         Bean samlArtToSamlArtResPlan = newBean(spBeans, idpChannelName + "-samlr2art-to-samlr2artresolve-plan", SamlR2ArtifactToSamlR2ArtifactResolvePlan.class);
         setPropertyRef(samlArtToSamlArtResPlan, "bpmsManager", "bpms-manager");
+
+        Bean samlr2IdpInitToSamlr2AuthnReqPlan = newBean(spBeans, idpChannelName + "-samlr2idpinitiatedauthnreq-to-samlr2authnreq-plan", IDPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
+        setPropertyRef(samlr2IdpInitToSamlr2AuthnReqPlan, "bpmsManager", "bpms-manager");
+
 
         // ---------------------------------------
         // IDP Channel Services
@@ -772,6 +779,8 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         setPropertyBean(idpMd, "metadataIntrospector", mdIntrospector);
 
 
+
+
         // -------------------------------------------------------
         // SP Channel
         // -------------------------------------------------------
@@ -785,11 +794,11 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         // The name of the local SP
         setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(localServiceProvider.getName()));
         setPropertyRef(spChannelBean, "sessionManager", idpProxyBean.getName() + "-session-manager");
-        setPropertyRef(spChannelBean, "identityManager", idpProxyBean.getName() + "-identity-manager");
+        //setPropertyRef(spChannelBean, "identityManager", idpProxyBean.getName() + "-identity-manager");
         setPropertyRef(spChannelBean, "member", idpMd.getName());
         // Set bellow, when creating binding channel : setPropertyRef(spChannelBean, "proxy", <binding-channel>);
         setPropertyValue(spChannelBean, "proxyModeEnabled", true);
-
+        setPropertyRef(spChannelBean, "securityTokenService", idpProxyBean.getName() + "-sts");
 
         // identityMediator
         Bean identityMediatorBean = getBean(idpBeans, idpProxyBean.getName() + "-samlr2-mediator");
@@ -851,7 +860,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         Bean stmtToAssertionPlan = newBean(idpBeans, spChannelName + "-samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
         setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
-        setPropertyRef(stmtToAssertionPlan, "identityManager", idpProxyBean.getName() + "-identity-manager");
+        //setPropertyRef(stmtToAssertionPlan, "identityManager", idpProxyBean.getName() + "-identity-manager");
 
         // Add name id builders based on channel properties
 
@@ -1170,6 +1179,9 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         // PROXY Endpoints:
         {
+
+            List<Ref> plansList = new ArrayList<Ref>();
+
             // ACSPROXY
             Bean acsPrxyArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
             acsPrxyArtifact.setName(spChannelBean.getName() + "-sso-acspxy-artifact");
@@ -1178,16 +1190,20 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
             setPropertyValue(acsPrxyArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
             setPropertyValue(acsPrxyArtifact, "location", "/SSO/ACSPROXY/ARTIFACT");
 
-            /*
-            List<Ref> plansList = new ArrayList<Ref>();
-            Ref plan = new Ref();
-            plan.setBean(sloToSamlPlan.getName());
-            plansList.add(plan);
+            Ref plan1 = new Ref();
+            plan1.setBean(stmtToAssertionPlan.getName());
+            plansList.add(plan1);
+
             Ref plan2 = new Ref();
-            plan2.setBean(sloToSamlSpSloPlan.getName());
+            plan2.setBean(samlr2IdpInitToSamlr2AuthnReqPlan.getName());
             plansList.add(plan2);
+
+            Ref plan3 = new Ref();
+            plan3.setBean(authnToSamlPlan.getName());
+            plansList.add(plan3);
+
             setPropertyRefs(acsPrxyArtifact, "identityPlans", plansList);
-            */
+
             endpoints.add(acsPrxyArtifact);
 
 

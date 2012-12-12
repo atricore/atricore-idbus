@@ -34,9 +34,12 @@ public class LogServiceConfigurationHandler extends OsgiServiceConfigurationHand
             int mode = LogServiceConfiguration.MODE_CUSTOM;
             if (modeStr != null) {
                 if (modeStr.equals("DEBUG"))
-                    mode = LogServiceConfiguration.MODE_DEV;
+                    mode = LogServiceConfiguration.MODE_DEBUG;
                 else if (modeStr.equals("PRODUCTION"))
                     mode = LogServiceConfiguration.MODE_PROD;
+                else if (modeStr.equals("DEVELOP")) {
+                    mode = LogServiceConfiguration.MODE_DEVELOP;
+                }
             }
 
             LogServiceConfiguration cfg = new LogServiceConfiguration();
@@ -72,13 +75,17 @@ public class LogServiceConfigurationHandler extends OsgiServiceConfigurationHand
     public boolean storeConfiguration(LogServiceConfiguration config) throws ServiceConfigurationException {
         try {
             switch (config.getServiceMode()) {
-                case LogServiceConfiguration.MODE_DEV:
+                case LogServiceConfiguration.MODE_DEBUG:
                     // Replace current log config with DEV config
-                    replaceConfig(LogServiceConfiguration.MODE_DEV);
+                    replaceConfig(LogServiceConfiguration.MODE_DEBUG);
                     break;
                 case LogServiceConfiguration.MODE_PROD:
                     // Replace current log config with PROD config
                     replaceConfig(LogServiceConfiguration.MODE_PROD);
+                    break;
+                case LogServiceConfiguration.MODE_DEVELOP:
+                    // Replace current log config with PROD config
+                    replaceConfig(LogServiceConfiguration.MODE_DEVELOP);
                     break;
                 default:
                     // CUSTOM MODE, Nothing to do !
@@ -103,12 +110,17 @@ public class LogServiceConfigurationHandler extends OsgiServiceConfigurationHand
             String newCfgFileName = null;
 
             switch (newMode) {
-                case LogServiceConfiguration.MODE_DEV:
+                case LogServiceConfiguration.MODE_DEBUG:
                     newCfgFileName = cfgFileName + ".debug";
                     break;
                 case LogServiceConfiguration.MODE_PROD:
                     newCfgFileName = cfgFileName + ".prod";
                     break;
+
+                case LogServiceConfiguration.MODE_DEVELOP:
+                    newCfgFileName = cfgFileName + ".dev";
+                    break;
+
                 default:
                     return;
             }

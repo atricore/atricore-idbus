@@ -47,7 +47,7 @@
     </bean>
 
     <bean name="oauth2IdpLocalTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.IdpTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2IdPTransformer">
     </bean>
 
     <bean name="samlr2IdPExternalTransformer"
@@ -64,6 +64,17 @@
         <property name="roleA" value="false"/>
         <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
+
+    <bean name="oauth2IdPRoleAProxyTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2IdPProxyTransformer">
+        <property name="roleA" value="true"/>
+    </bean>
+
+    <bean name="oauth2IdPRoleBProxyTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2IdPProxyTransformer">
+        <property name="roleA" value="false"/>
+    </bean>
+
 
     <bean name="samlr2IdpRoleAProxyFederatedConnectionTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.samlr2.SamlR2IdPProxyFederatedConnectionTransformer">
@@ -88,15 +99,15 @@
     </bean>
 
     <bean name="oauth2IdpDefaultSPChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.IdPDefaultSPChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2IdPDefaultSPChannelTransformer"/>
 
     <bean name="oauth2IdpFederatedConnectionATransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.IdpFederatedConnectionTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2IdpFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
     </bean>
 
     <bean name="oauth2IdpFederatedConnectionBTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.IdpFederatedConnectionTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2IdpFederatedConnectionTransformer">
         <property name="roleA" value="false"/>
     </bean>
 
@@ -588,12 +599,16 @@
 
                                         <ref bean="samlr2IdPRoleAProxyTransformer"/>
                                         <ref bean="samlr2IdPRoleBProxyTransformer"/>
+
                                         <ref bean="samlr2IdpRoleAProxyFederatedConnectionTransformer"/>
                                         <ref bean="samlr2IdpRoleBProxyFederatedConnectionTransformer"/>
 
                                         <ref bean="oauth2IdpDefaultSPChannelTransformer"/>
                                         <ref bean="oauth2IdpFederatedConnectionATransformer"/>
                                         <ref bean="oauth2IdpFederatedConnectionBTransformer"/>
+
+                                        <ref bean="oauth2IdPRoleAProxyTransformer"/>
+                                        <ref bean="oauth2IdPRoleBProxyTransformer"/>
 
                                         <ref bean="basicAuthnClaimsChannelTransformer"/>
                                         <ref bean="2faAuthnClaimsChannelTransformer"/>

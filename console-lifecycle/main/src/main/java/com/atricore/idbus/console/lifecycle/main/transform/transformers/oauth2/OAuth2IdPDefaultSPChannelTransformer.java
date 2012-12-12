@@ -14,11 +14,11 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class IdPDefaultSPChannelTransformer extends AbstractOAuth2SPChannelTransformer {
+public class OAuth2IdPDefaultSPChannelTransformer extends AbstractOAuth2SPChannelTransformer {
 
-    private static final Log logger = LogFactory.getLog(IdPDefaultSPChannelTransformer.class);
+    private static final Log logger = LogFactory.getLog(OAuth2IdPDefaultSPChannelTransformer.class);
 
-    public IdPDefaultSPChannelTransformer() {
+    public OAuth2IdPDefaultSPChannelTransformer() {
         super();
         setContextSpChannelBean("defaultOauth2SPChannelBean");
     }

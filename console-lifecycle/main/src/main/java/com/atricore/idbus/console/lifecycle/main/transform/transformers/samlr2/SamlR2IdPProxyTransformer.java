@@ -245,7 +245,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         setPropertyRef(spProxyBean, "stateManager", providerInternalSaml2.getIdentityAppliance().getName() + "-state-manager");
 
         // ----------------------------------------
-        // Service Provider Mediator
+        // IDP Proxy Provider Mediator
         // ----------------------------------------
         Bean spMediator = newBean(idpProxyBeans, spProxyName + "-samlr2-mediator",
                 SSOSPMediator.class.getName());
@@ -542,6 +542,8 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         // bindingFactory
         setPropertyBean(idpMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));
 
+        // TODO : setPropertyBean(idpMediator, "setPreferredSpAlias", ???????);
+
         // logger
         List<Bean> idpLogBuilders = new ArrayList<Bean>();
         idpLogBuilders.add(newAnonymousBean(SamlR2LogMessageBuilder.class));
@@ -706,12 +708,14 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
         // If no identity manager was defined yet, create a new one based on memory
 
-        // TODO : Support local stores ?!
+        //
+        /*
         Bean identityManager = newBean(idpProxyBeans, idpName + "-identity-manager", SSOIdentityManagerImpl.class);
         setPropertyRef(identityManager, "identityStore", idpName + "-identity-store");
         setPropertyBean(identityManager, "identityStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));
 
         Bean identityStore = newBean(idpProxyBeans, idpName + "-identity-store", "org.atricore.idbus.idojos.memoryidentitystore.MemoryIdentityStore");
+        */
 
         // generate IDP metadata for default SP channel
         IdProjectResource<EntityDescriptorType> idpMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
