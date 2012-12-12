@@ -4,8 +4,10 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecutionEnvironmentRequest;
+import com.atricore.idbus.console.services.dto.CaptiveExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.ServiceResource;
 
 import flash.events.MouseEvent;
 
@@ -50,7 +52,7 @@ public class ExecEnvActivationMediator extends IocFormMediator {
     }
 
     private function init():void {
-        var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
+        var currentExecEnv = getCurrentExecEnv();
 
         if (currentExecEnv.type.name == ExecEnvType.REMOTE.name) {
             view.userPassGroup.includeInLayout = true;
@@ -85,7 +87,7 @@ public class ExecEnvActivationMediator extends IocFormMediator {
 
     private function handleActivation(event:MouseEvent):void {
         if (validate(true)) {
-            var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
+            var currentExecEnv:ExecutionEnvironment = getCurrentExecEnv();
             var activateExecEnvReq:ActivateExecutionEnvironmentRequest = new ActivateExecutionEnvironmentRequest();
             activateExecEnvReq.reactivate = _reactivate;
             activateExecEnvReq.replaceConfFiles = _replaceConfFiles;
@@ -108,7 +110,11 @@ public class ExecEnvActivationMediator extends IocFormMediator {
     private function closeWindow():void {
         resetForm();
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
-        sendNotification(ApplicationFacade.RESET_EXEC_ENV_ACTIVATION);
+        if (getCurrentExecEnv() is CaptiveExecutionEnvironment) {
+            sendNotification(ApplicationFacade.RESET_RESOURCE_ACTIVATION);
+        } else {
+            sendNotification(ApplicationFacade.RESET_EXEC_ENV_ACTIVATION);
+        }
     }
 
     protected function get view():ExecEnvActivationView {
@@ -117,7 +123,7 @@ public class ExecEnvActivationMediator extends IocFormMediator {
 
 
     override public function registerValidators():void {
-        var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
+        var currentExecEnv = getCurrentExecEnv();
         if (currentExecEnv.type.name == ExecEnvType.REMOTE.name) {
             _validators.push(view.usernameValidator);
             _validators.push(view.passwordValidator);
@@ -137,6 +143,19 @@ public class ExecEnvActivationMediator extends IocFormMediator {
                 _installSamples = params[2];
                 break;
         }
+    }
+
+    private function getCurrentExecEnv():ExecutionEnvironment {
+        var currentExecEnv:ExecutionEnvironment;
+
+        if (projectProxy.currentIdentityApplianceElement is ExecutionEnvironment) {
+            currentExecEnv = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
+        } else
+        if (projectProxy.currentIdentityApplianceElement is ServiceResource) {
+            currentExecEnv = (projectProxy.currentIdentityApplianceElement as ServiceResource).activation.executionEnv;
+        }
+
+        return currentExecEnv;
     }
 }
 }

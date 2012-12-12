@@ -50,6 +50,7 @@ import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.JBossEPPAuthenticationService;
+import com.atricore.idbus.console.services.dto.JBossEPPResource;
 import com.atricore.idbus.console.services.dto.JBossPortalResource;
 import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
@@ -233,8 +234,9 @@ public class BrowserModelFactory {
                 resourceNode.icon = EmbeddedIcons.liferayResourceMiniIcon;
             } else if (serviceResource is JBossPortalResource) {
                 resourceNode.icon = EmbeddedIcons.jbossPortalResourceMiniIcon;
+            } else if (serviceResource is JBossEPPResource) {
+                resourceNode.icon = EmbeddedIcons.jbosseppResourceMiniIcon;
             }
-
 
             return resourceNode;
         }

@@ -40,6 +40,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _tomcatExecutionEnvironmentCreateMediator:IIocMediator;
     private var _jbossPortalResourceCreateMediator:IIocMediator;
     private var _liferayPortalResourceCreateMediator:IIocMediator;
+    private var _jbosseppResourceCreateMediator:IIocMediator;
     private var _wasceExecutionEnvironmentCreateMediator:IIocMediator;
     private var _apacheExecutionEnvironmentCreateMediator:IIocMediator;
     private var _alfrescoResourceCreateMediator:IIocMediator;
@@ -146,6 +147,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(tomcatExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(jbossPortalResourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(liferayPortalResourceCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(jbosseppResourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(wasceExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(apacheExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(alfrescoResourceCreateMediator.getConfigName());
@@ -426,6 +428,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set liferayPortalResourceCreateMediator(value:IIocMediator):void {
         _liferayPortalResourceCreateMediator = value;
+    }
+
+    public function get jbosseppResourceCreateMediator():IIocMediator {
+        return _jbosseppResourceCreateMediator;
+    }
+
+    public function set jbosseppResourceCreateMediator(value:IIocMediator):void {
+        _jbosseppResourceCreateMediator = value;
     }
 
     public function get wasceExecutionEnvironmentCreateMediator():IIocMediator {

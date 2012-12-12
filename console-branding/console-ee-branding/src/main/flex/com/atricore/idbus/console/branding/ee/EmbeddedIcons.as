@@ -159,6 +159,10 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/40x40/phpbb_resource.png")]
     public static var phpbbResourceMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/jbossepp_resource.png")]
+    public static var jbosseppResourceMiniIcon:Class;
+
     // Connections
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/federated_connection.png")]

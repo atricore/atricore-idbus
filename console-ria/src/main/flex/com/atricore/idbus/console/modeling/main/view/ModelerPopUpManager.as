@@ -52,6 +52,8 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jav
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.resources.jbossepp.JBossEPPResourceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.resources.jbossepp.JBossEPPResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.jbossportal.JBossPortalResourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.resources.jbossportal.JBossPortalResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.liferayportal.LiferayPortalResourceCreateForm;
@@ -159,6 +161,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _tomcatExecutionEnvironmentCreateMediator:TomcatExecutionEnvironmentCreateMediator;
     private var _jbossPortalResourceCreateMediator:JBossPortalResourceCreateMediator;
     private var _liferayPortalResourceCreateMediator:LiferayPortalResourceCreateMediator;
+    private var _jbosseppResourceCreateMediator:JBossEPPResourceCreateMediator;
     private var _wasceExecutionEnvironmentCreateMediator:WASCEExecutionEnvironmentCreateMediator;
     private var _apacheExecutionEnvironmentCreateMediator:ApacheExecutionEnvironmentCreateMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:WindowsIISExecutionEnvironmentCreateMediator;
@@ -211,6 +214,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _tomcatExecutionEnvironmentCreateForm:TomcatExecutionEnvironmentCreateForm;
     private var _jbossPortalResourceCreateForm:JBossPortalResourceCreateForm;
     private var _liferayPortalResourceCreateForm:LiferayPortalResourceCreateForm;
+    private var _jbosseppResourceCreateForm:JBossEPPResourceCreateForm;
     private var _wasceExecutionEnvironmentCreateForm:WASCEExecutionEnvironmentCreateForm;
     private var _apacheExecutionEnvironmentCreateForm:ApacheExecutionEnvironmentCreateForm;
     private var _windowsIISExecutionEnvironmentCreateForm:WindowsIISExecutionEnvironmentCreateForm;
@@ -465,6 +469,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _liferayPortalResourceCreateMediator = value;
     }
 
+    public function get jbosseppResourceCreateMediator():JBossEPPResourceCreateMediator {
+        return _jbosseppResourceCreateMediator;
+    }
+
+    public function set jbosseppResourceCreateMediator(value:JBossEPPResourceCreateMediator):void {
+        _jbosseppResourceCreateMediator = value;
+    }
+
     public function get wasceExecutionEnvironmentCreateMediator():WASCEExecutionEnvironmentCreateMediator {
         return _wasceExecutionEnvironmentCreateMediator;
     }
@@ -609,14 +621,6 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _clientCertCreateMediator = value;
     }
 
-    public function get jbosseppAuthenticationCreateMediator():JBossEPPAuthenticationServiceCreateMediator {
-        return _jbosseppAuthenticationCreateMediator;
-    }
-
-    public function set jbosseppAuthenticationCreateMediator(value:JBossEPPAuthenticationServiceCreateMediator):void {
-        _jbosseppAuthenticationCreateMediator = value;
-    }
-
     public function get directoryServiceCreateMediator():DirectoryServiceCreateMediator {
         return _directoryServiceCreateMediator;
     }
@@ -634,6 +638,13 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _windowsIntegratedAuthnCreateMediator = value;
     }
 
+    public function get jbosseppAuthenticationCreateMediator():JBossEPPAuthenticationServiceCreateMediator {
+        return _jbosseppAuthenticationCreateMediator;
+    }
+
+    public function set jbosseppAuthenticationCreateMediator(value:JBossEPPAuthenticationServiceCreateMediator):void {
+        _jbosseppAuthenticationCreateMediator = value;
+    }
 
     public function get sharepointResourceCreateMediator():SharepointResourceCreateMediator {
         return _sharepointResourceCreateMediator;
@@ -1117,6 +1128,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleLiferayPortalResourceCreateFormCreated(event:FlexEvent):void {
         liferayPortalResourceCreateMediator.setViewComponent(_liferayPortalResourceCreateForm);
         liferayPortalResourceCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateJBossEPPResourceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createJBossEPPResourceCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.jbosseppResource");
+        _popup.width = 800;
+        _popup.height = 310;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_jbosseppResourceCreateForm);
+    }
+
+    private function createJBossEPPResourceCreateForm():void {
+        _jbosseppResourceCreateForm = new JBossEPPResourceCreateForm();
+        _jbosseppResourceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleJBossEPPResourceCreateFormCreated);
+    }
+
+    private function handleJBossEPPResourceCreateFormCreated(event:FlexEvent):void {
+        jbosseppResourceCreateMediator.setViewComponent(_jbosseppResourceCreateForm);
+        jbosseppResourceCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateWASCEExecutionEnvironmentWindow(notification:INotification):void {

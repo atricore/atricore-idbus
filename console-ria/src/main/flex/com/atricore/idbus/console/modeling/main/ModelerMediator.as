@@ -366,6 +366,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT,
+            ApplicationFacade.CREATE_JBOSSEPP_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT,
@@ -591,6 +592,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateLiferayPortalResourceWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_JBOSSEPP_RESOURCE_ELEMENT:
+                popupManager.showCreateJBossEPPResourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateWASCEExecutionEnvironmentWindow(notification);

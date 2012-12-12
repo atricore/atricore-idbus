@@ -260,6 +260,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.jbossPortalResourceMiniIcon;
             case DiagramElementTypes.LIFERAY_RESOURCE_ELEMENT_TYPE:
                 return EmbeddedIcons.liferayResourceMiniIcon;
+            case DiagramElementTypes.JBOSSEPP_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.jbosseppResourceMiniIcon;
             case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.websphereEnvironmentMiniIcon;
             case DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:

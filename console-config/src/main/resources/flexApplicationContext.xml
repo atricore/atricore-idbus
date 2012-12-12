@@ -81,6 +81,7 @@
         <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />
         <property name="jbossPortalResourceCreateMediator" ref="jbossPortalResourceCreateMediator" />
         <property name="liferayPortalResourceCreateMediator" ref="liferayPortalResourceCreateMediator" />
+        <property name="jbosseppResourceCreateMediator" ref="jbosseppResourceCreateMediator" />
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
@@ -741,6 +742,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.resources.liferayportal.LiferayPortalResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="jbosseppResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.jbossepp.JBossEPPResourceCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="wasceExecutionEnvironmentCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -1069,6 +1074,8 @@
                   ref="jbossPortalResourceCreateMediator"/>
         <property name="liferayPortalResourceCreateMediator"
                   ref="liferayPortalResourceCreateMediator"/>
+        <property name="jbosseppResourceCreateMediator"
+                  ref="jbosseppResourceCreateMediator"/>
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator"/>
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator"/>
         <property name="windowsIISExecutionEnvironmentCreateMediator"

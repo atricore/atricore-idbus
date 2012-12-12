@@ -25,6 +25,7 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.browser.model.BrowserModelFactory;
 import com.atricore.idbus.console.modeling.browser.model.BrowserNode;
 import com.atricore.idbus.console.services.dto.Activation;
+import com.atricore.idbus.console.services.dto.CaptiveExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
@@ -289,13 +290,17 @@ public class BrowserMediator extends IocMediator implements IDisposable {
             }
             if (identityApplianceDefinition.executionEnvironments != null) {
                 for (var j:int = 0; j < identityApplianceDefinition.executionEnvironments.length; j++) {
-                    var executionNode2:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(identityApplianceDefinition.executionEnvironments[j], true, _applianceRootNode);
+                    var ee : ExecutionEnvironment = identityApplianceDefinition.executionEnvironments[j];
+
+                    if (ee is CaptiveExecutionEnvironment)
+                        continue;
+
+                    var executionNode2:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(ee, true, _applianceRootNode);
                     _applianceRootNode.addChild(executionNode2);
                     // set connections
-                    if (identityApplianceDefinition.executionEnvironments[j].activations != null &&
-                            identityApplianceDefinition.executionEnvironments[j].activations.length > 0) {
+                    if (ee.activations != null && ee.activations.length > 0) {
                         var execEnvConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false,executionNode2);
-                        for each (var activation:Activation in identityApplianceDefinition.executionEnvironments[j].activations) {
+                        for each (var activation:Activation in ee.activations) {
                             execEnvConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(activation, true, execEnvConnectionsNode));
                             // add activation to serviceResourceConnections map
                             var serviceResourceConnections2:ArrayCollection = serviceResourceConnections[activation.resource];

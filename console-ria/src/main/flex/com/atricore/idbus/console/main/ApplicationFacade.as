@@ -101,6 +101,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_DELEGATED_AUTHENTICATION:String = "createDelegatedAuthentication";
     public static const ACTIVATE_EXEC_ENVIRONMENT:String = "activateExecEnvironment";
     public static const RESET_EXEC_ENV_ACTIVATION:String = "resetExecEnvActivation";
+    public static const RESET_RESOURCE_ACTIVATION:String = "resetResourceActivation";
     public static const CHECK_INSTALL_FOLDER_EXISTENCE:String = "checkInstallFolderExistence";
     public static const CHECK_FOLDERS_EXISTENCE:String = "checkFoldersExistence";
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
@@ -223,6 +224,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT:String = "createTomcatExecutionEnvironmentElement";
     public static const CREATE_JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJBossPortalExecutionEnvironmentElement";
     public static const CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT:String = "createLiferayExecutionEnvironmentElement";
+    public static const CREATE_JBOSSEPP_RESOURCE_ELEMENT:String = "createJBossEPPResourceElement";
     public static const CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWebsphereExecutionEnvironmentElement";
     public static const CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createApacheExecutionEnvironmentElement";
     public static const CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWindowsIISExecutionEnvironmentElement";
@@ -234,6 +236,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT:String = "createSharepoint2010ExecutionEnvironmentElement";
     public static const CREATE_COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT:String = "createColdfusionExecutionEnvironmentElement";
     public static const CREATE_MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT:String = "createMicroStrategyExecutionEnvironmentElement";
+    public static const CREATE_JBOSSEPP_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJBossEPPExecutionEnvironmentElement";
     public static const REMOVE_ACTIVATION_ELEMENT:String = "removeActivationElement";
     public static const REMOVE_FEDERATED_CONNECTION_ELEMENT:String = "removeFederatedConnectionElement";
     public static const REMOVE_SERVICE_CONNECTION_ELEMENT:String = "removeServiceConnectionElement";
