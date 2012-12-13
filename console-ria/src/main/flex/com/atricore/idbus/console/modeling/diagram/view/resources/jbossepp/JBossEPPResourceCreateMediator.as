@@ -141,7 +141,7 @@ public class JBossEPPResourceCreateMediator extends IocFormMediator {
             jbosseppEE.location = view.location.text;
         jbosseppEE.overwriteOriginalSetup = view.replaceConfFiles.selected;
         jbosseppEE.installDemoApps = false;
-        jbosseppEE.platformId = "jbossepp5";
+        jbosseppEE.platformId = "gatein3";
         jbosseppEE.instance = view.instance.text;
 
         var jbosseppEEActivation : JOSSOActivation  = new JOSSOActivation();

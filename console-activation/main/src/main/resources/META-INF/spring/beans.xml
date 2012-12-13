@@ -59,6 +59,7 @@
                 <ref bean="wc21-installer"/>
                 <ref bean="liferay5-installer"/>
                 <ref bean="liferay6-installer"/>
+                <ref bean="gatein3-installer"/>
                 <ref bean="alfresco-installer"/>
                 <ref bean="iis-installer-32"/>
                 <ref bean="iis-installer-64"/>
@@ -444,6 +445,21 @@
         <property name="JOSSOConfDir" value="${target}/WEB-INF/classes"/>
     </bean>
 
+    <!-- GateIn 3 platform -->
+    <bean name="gatein3-installer" class="org.josso.tooling.gshell.install.installer.GateIn3Installer">
+        <constructor-arg index="0" ref="gatein3"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="gatein3" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="gatein3"/>
+        <property name="family" value="jee"/>
+        <property name="platformName" value="GateIn Portal"/>
+        <property name="version" value="3.x"/>
+        <property name="libDir" value="${target}/jboss-as/server/${instance}/deploy/gatein.ear/lib"/>
+        <property name="configDir" value="${target}/jboss-as/server/${instance}/deploy/gatein.ear/02portal.war/WEB-INF/classes"/>
+        <property name="JOSSOConfDir" value="${target}/jboss-as/server/${instance}/deploy/gatein.ear/02portal.war/WEB-INF/classes"/>
+    </bean>
 
     <!-- Alfresco 3.3 -->
     <bean name="alfresco-installer" class="org.josso.tooling.gshell.install.installer.AlfrescoInstaller">
