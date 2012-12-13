@@ -82,6 +82,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _oauth2ServiceProviderRemoveCommand:IIocCommand;
     private var _josso1ResourceRemoveCommand:IIocCommand;
     private var _josso2ResourceRemoveCommand:IIocCommand;
+    private var _jbosseppResourceRemoveCommand:IIocCommand;
     private var _lookupIdentityApplianceByIdCommand:IIocCommand;
     private var _identityApplianceUpdateCommand:IIocCommand;
     private var _identityVaultRemoveCommand:IIocCommand;
@@ -189,6 +190,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.OAUTH2_SERVICE_PROVIDER_REMOVE, oauth2ServiceProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.JOSSO1_RESOURCE_REMOVE, josso1ResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.JOSSO2_RESOURCE_REMOVE, josso2ResourceRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.JBOSSEPP_RESOURCE_REMOVE, jbosseppResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_SOURCE_REMOVE, identityVaultRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATION_REMOVE, activationRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_CONNECTION_REMOVE, serviceConnectionRemoveCommand.getConfigName());
@@ -750,6 +752,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set josso2ResourceRemoveCommand(value:IIocCommand):void {
         _josso2ResourceRemoveCommand = value;
+    }
+
+    public function get jbosseppResourceRemoveCommand():IIocCommand {
+        return _jbosseppResourceRemoveCommand;
+    }
+
+    public function set jbosseppResourceRemoveCommand(value:IIocCommand):void {
+        _jbosseppResourceRemoveCommand = value;
     }
 
     public function get lookupIdentityApplianceByIdCommand():IIocCommand {

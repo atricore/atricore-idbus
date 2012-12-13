@@ -80,6 +80,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityP
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveInternalSaml2ServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJBossEPPAuthenticationServiceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJBossEPPResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO1ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO2ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2IdentityProviderElementRequest;
@@ -118,6 +119,7 @@ import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JBossEPPAuthenticationService;
+import com.atricore.idbus.console.services.dto.JBossEPPResource;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
 import com.atricore.idbus.console.services.dto.JOSSO2Resource;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
@@ -981,6 +983,16 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_JOSSO2_RESOURCE_ELEMENT, rj2r);
                             break;
+                        case DiagramElementTypes.JBOSSEPP_RESOURCE_ELEMENT_TYPE:
+                            var jbosseppResource:JBossEPPResource = _currentlySelectedNode.data as JBossEPPResource;
+
+                            var rjbeppr:RemoveJBossEPPResourceElementRequest = new RemoveJBossEPPResourceElementRequest(jbosseppResource);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_JBOSSEPP_RESOURCE_ELEMENT, rjbeppr);
+                            break;
+
                         case DiagramElementTypes.EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                             var execEnv:ExecutionEnvironment = _currentlySelectedNode.data as ExecutionEnvironment;
 
@@ -1606,7 +1618,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.JOSSO2_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is ServiceResource) {
                 elementType = DiagramElementTypes.SERVICE_RESOURCE_ELEMENT_TYPE;
-
+            } else if (node.data is JBossEPPResource) {
+                elementType = DiagramElementTypes.JBOSSEPP_RESOURCE_ELEMENT_TYPE;
                 // Execution environments (all)
             } else if (node.data is ExecutionEnvironment) {
                 elementType = DiagramElementTypes.EXECUTION_ENVIRONMENT_ELEMENT_TYPE;

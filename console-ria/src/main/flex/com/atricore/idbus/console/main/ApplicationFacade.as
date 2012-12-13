@@ -61,6 +61,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const OAUTH2_SERVICE_PROVIDER_REMOVE:String = "oauth2ServiceProviderRemove";
     public static const JOSSO1_RESOURCE_REMOVE:String = "josso1ResourceRemove";
     public static const JOSSO2_RESOURCE_REMOVE:String = "josso2ResourceRemove";
+    public static const JBOSSEPP_RESOURCE_REMOVE:String = "jbosseppResourceRemove";
 //    public static const IDP_CHANNEL_REMOVE:String = "idpChannelRemove";
 //    public static const SP_CHANNEL_REMOVE:String = "spChannelRemove";
     public static const IDENTITY_SOURCE_REMOVE:String = "identitySourceRemove";
@@ -201,6 +202,7 @@ public class ApplicationFacade extends BaseAppFacade {
 //    public static const REMOVE_IDP_CHANNEL_ELEMENT:String = "removeIdpChannelElement";
 //    public static const CREATE_SP_CHANNEL_ELEMENT:String = "createSpChannelElement";
 //    public static const REMOVE_SP_CHANNEL_ELEMENT:String = "removeSpChannelElement";
+    public static const REMOVE_JBOSSEPP_RESOURCE_ELEMENT:String = "removeJBossEPPResourceElement";
     public static const CREATE_DB_IDENTITY_SOURCE_ELEMENT:String = "createDbIdentitySourceElement";
     public static const REMOVE_IDENTITY_SOURCE_ELEMENT:String = "removeIdentitySourceElement";
     public static const CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:String = "createLdapIdentitySourceElement";
