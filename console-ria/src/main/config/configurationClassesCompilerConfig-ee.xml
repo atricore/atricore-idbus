@@ -85,6 +85,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.OAuth2ServiceProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.JOSSO1ResourceRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.JOSSO2ResourceRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.JBossEPPResourceRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOSetupCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand</symbol>

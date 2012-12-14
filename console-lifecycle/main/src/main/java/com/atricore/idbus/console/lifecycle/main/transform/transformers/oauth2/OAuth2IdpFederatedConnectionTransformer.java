@@ -3,7 +3,6 @@ package com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.AbstractOAuth2SPChannelTransformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -14,9 +13,9 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class IdpFederatedConnectionTransformer extends AbstractOAuth2SPChannelTransformer {
+public class OAuth2IdpFederatedConnectionTransformer extends AbstractOAuth2SPChannelTransformer {
 
-    private static final Log logger = LogFactory.getLog(IdpFederatedConnectionTransformer.class);
+    private static final Log logger = LogFactory.getLog(OAuth2IdpFederatedConnectionTransformer.class);
 
     private boolean roleA;
 

@@ -128,6 +128,7 @@
         <property name="oauth2ServiceProviderRemoveCommand" ref="oauth2ServiceProviderRemoveCommand"/>
         <property name="josso1ResourceRemoveCommand" ref="josso1ResourceRemoveCommand"/>
         <property name="josso2ResourceRemoveCommand" ref="josso2ResourceRemoveCommand"/>
+        <property name="jbosseppResourceRemoveCommand" ref="jbosseppResourceRemoveCommand"/>
         <property name="createActivationCommand" ref="createActivationCommand" />
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
         <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
@@ -367,6 +368,10 @@
     </object>
     <object id="josso2ResourceRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.JOSSO2ResourceRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="jbosseppResourceRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.JBossEPPResourceRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="activationRemoveCommand"

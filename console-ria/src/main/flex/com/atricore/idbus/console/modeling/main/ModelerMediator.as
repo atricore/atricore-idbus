@@ -38,6 +38,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityL
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJBossEPPAuthenticationServiceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJBossEPPResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO1ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO2ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2IdentityProviderElementRequest;
@@ -577,6 +578,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case ApplicationFacade.REMOVE_JOSSO2_RESOURCE_ELEMENT:
                 var rj2r:RemoveJOSSO2ResourceElementRequest = RemoveJOSSO2ResourceElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.JOSSO2_RESOURCE_REMOVE, rj2r.resource);
+                break;
+            case ApplicationFacade.REMOVE_JBOSSEPP_RESOURCE_ELEMENT:
+                var rjbeppr:RemoveJBossEPPResourceElementRequest = RemoveJBossEPPResourceElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.JBOSSEPP_RESOURCE_REMOVE, rjbeppr.resource);
                 break;
             case ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateJBossExecutionEnvironmentWindow(notification);

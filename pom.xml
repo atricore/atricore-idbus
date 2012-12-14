@@ -1647,7 +1647,7 @@
 
             <modules>
                 <!-- TODO : Move this to other project -->
-                <module>console-tooling</module>
+                <!--module>console-tooling</module-->
                 <module>console-licensing</module>
                 <module>console-liveservices/liveupdate</module>
                 <module>console-settings</module>
@@ -1698,7 +1698,7 @@
 
             <modules>
                 <!-- TODO : Move this to other project -->
-                <module>console-tooling</module>
+                <!--module>console-tooling</module-->
                 <module>console-licensing</module>
                 <module>console-liveservices/liveupdate</module>
                 <module>console-settings</module>

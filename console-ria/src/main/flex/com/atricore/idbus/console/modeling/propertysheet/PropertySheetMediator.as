@@ -5305,6 +5305,7 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.wantAssertionSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.idpChannelMessageTtl.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.idpChannelMessageTtlTolerance.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionIDPChannelSection.preferredIDPChannel.addEventListener(Event.CHANGE, handleSectionChange);
             
             //clear all existing validators and add idp channel section validators
             if (idpChannel.overrideProviderSetup) {
@@ -6169,6 +6170,22 @@ public class PropertySheetMediator extends IocMediator {
             _jbosseppResourceCoreSection.resourceDescription.text = jbosseppResource.description;
             _jbosseppResourceCoreSection.instance.text = jbosseppEE.instance;
 
+            var location:Location = jbosseppResource.partnerAppLocation;
+            if (location == null)
+                location = new Location();
+
+            for (var i:int = 0; i < _jbosseppResourceCoreSection.resourceProtocol.dataProvider.length; i++) {
+                if (location != null && location.protocol == _jbosseppResourceCoreSection.resourceProtocol.dataProvider[i].label) {
+                    _jbosseppResourceCoreSection.resourceProtocol.selectedIndex = i;
+                    break;
+                }
+            }
+
+            _jbosseppResourceCoreSection.resourceDomain.text = location.host;
+            _jbosseppResourceCoreSection.resourcePort.text = location.port.toString() != "0" ? location.port.toString() : "";
+            _jbosseppResourceCoreSection.resourceContext.text = location.context;
+            _jbosseppResourceCoreSection.resourcePath.text = location.uri;
+
             for (var i:int=0; i < _jbosseppResourceCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_jbosseppResourceCoreSection.selectedHost.dataProvider[i].data == jbosseppEE.type.toString()) {
                     _jbosseppResourceCoreSection.selectedHost.selectedIndex = i;
@@ -6187,8 +6204,14 @@ public class PropertySheetMediator extends IocMediator {
             _locationValidator = new URLValidator();
             _locationValidator.required = true;
 
+
             _jbosseppResourceCoreSection.resourceName.addEventListener(Event.CHANGE, handleSectionChange);
             _jbosseppResourceCoreSection.resourceDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppResourceCoreSection.resourceProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppResourceCoreSection.resourcePort.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppResourceCoreSection.resourceDomain.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppResourceCoreSection.resourceContext.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbosseppResourceCoreSection.resourcePath.addEventListener(Event.CHANGE, handleSectionChange);
             _jbosseppResourceCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
             _jbosseppResourceCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _jbosseppResourceCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);

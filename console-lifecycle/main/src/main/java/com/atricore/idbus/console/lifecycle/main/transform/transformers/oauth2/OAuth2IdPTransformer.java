@@ -34,9 +34,9 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class IdpTransformer extends AbstractTransformer implements InitializingBean {
+public class OAuth2IdPTransformer extends AbstractTransformer implements InitializingBean {
 
-    private static final Log logger = LogFactory.getLog(IdpTransformer.class);
+    private static final Log logger = LogFactory.getLog(OAuth2IdPTransformer.class);
 
     public void afterPropertiesSet() throws Exception {
 
