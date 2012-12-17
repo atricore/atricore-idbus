@@ -1610,17 +1610,17 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             } else if (node.data is LdapIdentitySource) {
                 elementType = DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE;
             } else if (node.data is JBossEPPAuthenticationService) {
-                elementType = DiagramElementTypes.JBOSSEPP_AUTHENTICATION_ELEMENT_TYPE
+                elementType = DiagramElementTypes.JBOSSEPP_AUTHENTICATION_ELEMENT_TYPE;
                 // Resources
+            } else if (node.data is JBossEPPResource) {
+                elementType = DiagramElementTypes.JBOSSEPP_RESOURCE_ELEMENT_TYPE;
+                // Execution environments (all)
             } else if (node.data is JOSSO1Resource) {
                 elementType = DiagramElementTypes.JOSSO1_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is JOSSO2Resource) {
                 elementType = DiagramElementTypes.JOSSO2_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is ServiceResource) {
                 elementType = DiagramElementTypes.SERVICE_RESOURCE_ELEMENT_TYPE;
-            } else if (node.data is JBossEPPResource) {
-                elementType = DiagramElementTypes.JBOSSEPP_RESOURCE_ELEMENT_TYPE;
-                // Execution environments (all)
             } else if (node.data is ExecutionEnvironment) {
                 elementType = DiagramElementTypes.EXECUTION_ENVIRONMENT_ELEMENT_TYPE;
             }

@@ -279,10 +279,12 @@ public class JOSSO1ExecEnvransformer extends AbstractTransformer {
                 event.getContext().put("agentBean", agentBean);
 
                 setPropertyValue(agentBean, "sessionAccessMinInterval", "1000");
-                setPropertyValue(agentBean, "isStateOnClient", "true");
 
                 if (execEnvProps.isDisableJaas())
                     setPropertyValue(agentBean, "disableJaas", "true");
+
+                if (execEnvProps.isStateOnClient())
+                    setPropertyValue(agentBean, "isStateOnClient", "true");
 
                 if (execEnvProps.getLoginUri() != null)
                     setPropertyValue(agentBean, "jossoLoginUri", execEnvProps.getLoginUri());

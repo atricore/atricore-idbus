@@ -33,6 +33,7 @@ public class JBossEPPResourceRemoveCommand extends IocSimpleCommand {
         for (var i:int=identityAppliance.idApplianceDefinition.serviceResources.length-1; i>=0; i--) {
             if (identityAppliance.idApplianceDefinition.serviceResources[i] == jbosseppResource) {
                 identityAppliance.idApplianceDefinition.serviceResources.removeItemAt(i);
+
                 if (jbosseppResource.serviceConnection != null) {
                     jbosseppResource.serviceConnection.sp.serviceConnection = null;
                 }
@@ -40,10 +41,17 @@ public class JBossEPPResourceRemoveCommand extends IocSimpleCommand {
                     for (var j:int=jbosseppResource.activation.executionEnv.activations.length-1; j>=0; j--) {
                         if (jbosseppResource.activation.executionEnv.activations[i] == jbosseppResource.activation) {
                             jbosseppResource.activation.executionEnv.activations.removeItemAt(j);
+
+                            for (var k:int=identityAppliance.idApplianceDefinition.executionEnvironments.length-1; k>=0; k--) {
+                                if (identityAppliance.idApplianceDefinition.executionEnvironments[k] == jbosseppResource.activation.executionEnv) {
+                                    identityAppliance.idApplianceDefinition.executionEnvironments.removeItemAt(k);
+                                }
+                            }
                             break;
                         }
                     }
                 }
+
                 sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, jbosseppResource);
                 break;
             }

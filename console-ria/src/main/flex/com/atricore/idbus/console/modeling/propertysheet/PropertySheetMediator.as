@@ -508,7 +508,10 @@ public class PropertySheetMediator extends IocMediator {
                         enableXmlIdentitySourcePropertyTabs();
                     }
                 } else if (_currentIdentityApplianceElement is ServiceResource) {
-                    if (_currentIdentityApplianceElement is JOSSO1Resource) {
+
+                    if (_currentIdentityApplianceElement is JBossEPPResource) {
+                        enableJBossEPPResourcePropertyTabs();
+                    } else if (_currentIdentityApplianceElement is JOSSO1Resource) {
                         enableJOSSO1ResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is JOSSO2Resource) {
                         enableJOSSO2ResourcePropertyTabs();
@@ -518,8 +521,6 @@ public class PropertySheetMediator extends IocMediator {
                         enableColdfusionExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is MicroStrategyResource) {
                         enableMicroStrategyExecEnvPropertyTabs();
-                    } else if (_currentIdentityApplianceElement is JBossEPPResource) {
-                        enableJBossEPPResourcePropertyTabs();
                     }
                 } else if (_currentIdentityApplianceElement is FederatedConnection) {
                     enableFederatedConnectionPropertyTabs();
@@ -2158,11 +2159,21 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function handleExportAgentConfigClick(event:MouseEvent):void {
+    private function handleExecutionEnvironmentExportAgentConfigClick(event:MouseEvent):void {
         if (_currentIdentityApplianceElement is ExecutionEnvironment) {
             var applianceId:String = projectProxy.currentIdentityAppliance.id.toString();
             sendNotification(ApplicationFacade.EXPORT_AGENT_CONFIG, [applianceId, _currentIdentityApplianceElement.name,
                 (_currentIdentityApplianceElement as ExecutionEnvironment).platformId]);
+        }
+    }
+
+    private function handleResourceExportAgentConfigClick(event:MouseEvent):void {
+        if (_currentIdentityApplianceElement is ServiceResource) {
+            var res = _currentIdentityApplianceElement as ServiceResource;
+            var ee = res.activation.executionEnv;
+            var applianceId:String = projectProxy.currentIdentityAppliance.id.toString();
+            sendNotification(ApplicationFacade.EXPORT_AGENT_CONFIG, [applianceId, _currentIdentityApplianceElement.name,
+                ee.platformId]);
         }
     }
 
@@ -7869,7 +7880,7 @@ public class PropertySheetMediator extends IocMediator {
 
             if (_applianceSaved) {
                 _executionEnvironmentActivateSection.btnExportConfig.enabled = true;
-                _executionEnvironmentActivateSection.btnExportConfig.addEventListener(MouseEvent.CLICK, handleExportAgentConfigClick);
+                _executionEnvironmentActivateSection.btnExportConfig.addEventListener(MouseEvent.CLICK, handleExecutionEnvironmentExportAgentConfigClick);
             }
 
             //TODO add click handler for _executionEnvironmentActivateSection.activate checkbox
@@ -7918,7 +7929,7 @@ public class PropertySheetMediator extends IocMediator {
 
             if (_applianceSaved) {
                 _resourceActivateSection.btnExportConfig.enabled = true;
-                _resourceActivateSection.btnExportConfig.addEventListener(MouseEvent.CLICK, handleExportAgentConfigClick);
+                _resourceActivateSection.btnExportConfig.addEventListener(MouseEvent.CLICK, handleResourceExportAgentConfigClick);
             }
 
             _resourceActivateSection.reactivate.addEventListener(MouseEvent.CLICK, resourceReactivateClickHandler);

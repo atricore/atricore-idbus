@@ -410,6 +410,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.REMOVE_DIRECTORY_SERVICE_ELEMENT,
             ApplicationFacade.CREATE_WINDOWS_INTEGRATED_AUTHN_ELEMENT,
             ApplicationFacade.REMOVE_WINDOWS_INTEGRATED_AUTHN_ELEMENT,
+            ApplicationFacade.REMOVE_JBOSSEPP_RESOURCE_ELEMENT,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,

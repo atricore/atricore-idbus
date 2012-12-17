@@ -145,11 +145,20 @@ public class JBossEPPResourceCreateMediator extends IocFormMediator {
         jbosseppEE.instance = view.instance.text;
 
         var jbosseppEEActivation : JOSSOActivation  = new JOSSOActivation();
+        jbosseppEEActivation.name = jbosseppResource.name.toLowerCase().replace(/\s+/g, "-") +
+                "-" + jbosseppEE.name.toLowerCase().replace(/\s+/g, "-") + "-activation";
         jbosseppEEActivation.executionEnv = jbosseppEE;
         jbosseppEEActivation.resource = jbosseppResource;
 
         jbosseppResource.activation = jbosseppEEActivation;
-   
+
+        if(jbosseppEE.activations == null){
+            jbosseppEE.activations = new ArrayCollection();
+        }
+
+        jbosseppEE.activations.addItem(jbosseppEEActivation);
+        jbosseppResource.defaultResource = "/portal/private/classic";
+
         _newResource = jbosseppResource;
     }
 

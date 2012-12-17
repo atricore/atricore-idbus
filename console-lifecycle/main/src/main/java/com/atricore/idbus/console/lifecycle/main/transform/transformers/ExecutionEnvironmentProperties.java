@@ -21,6 +21,8 @@ public class ExecutionEnvironmentProperties {
     private String logoutUri;
     private String authenticationUri;
 
+    private boolean isStateOnClient = false;
+
     public String getPlatformId() {
         return platformId;
     }
@@ -100,5 +102,14 @@ public class ExecutionEnvironmentProperties {
     public void setAuthenticationUri(String authenticationUri) {
         this.authenticationUri = authenticationUri;
     }
+
+    public boolean isStateOnClient() {
+        return isStateOnClient;
+    }
+
+    public void setStateOnClient(boolean stateOnClient) {
+        isStateOnClient = stateOnClient;
+    }
+
 
 }

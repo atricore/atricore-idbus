@@ -454,6 +454,16 @@
                     </bean>
                 </entry>
 
+                <entry key="gatein3">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="gatein3"/>
+                        <property name="javaAgentClass" value="org.josso.gatein.agent.GateinSSOAgent"/>
+                        <property name="enableJaxws" value="false"/>
+                        <property name="disableJaas" value="true"/>
+                        <property name="isStateOnClient" value="false"/>
+                    </bean>
+                </entry>
+
                 <entry key="coldfusion">
                     <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
                         <property name="platformId" value="coldfusion"/>

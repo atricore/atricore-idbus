@@ -15,6 +15,8 @@ public class JOSSO1Resource extends ServiceResource {
 
     private Set<String> ignoredWebResources;
 
+    private String defaultResource;
+
     public Location getPartnerAppLocation() {
         return partnerAppLocation;
     }
@@ -33,4 +35,13 @@ public class JOSSO1Resource extends ServiceResource {
     public void setIgnoredWebResources(Set<String> ignoredWebResources) {
         this.ignoredWebResources = ignoredWebResources;
     }
+
+    public String getDefaultResource() {
+        return defaultResource;
+    }
+
+    public void setDefaultResource(String defaultResource) {
+        this.defaultResource = defaultResource;
+    }
+
 }

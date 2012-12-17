@@ -148,10 +148,13 @@ public class AgentConfigActivator extends ActivatorSupport {
         }
 
         // Install locally generated configuration
+        log.trace("JOSSO Agent Configuration URI for activation request is " + ar.getJossoAgentConfigUri());
+
         if (ar.getJossoAgentConfigUri() != null) {
             FileObject agentCfg = appliancesDir.resolveFile(ar.getJossoAgentConfigUri());
             if (agentCfg.exists()) {
 
+                log.debug("Installing automatically generated JOSSO Agent Configuration descriptor " + agentCfg);
                 // Rename file
                 String agentCfgFileName = "josso-agent-config.xml";
 

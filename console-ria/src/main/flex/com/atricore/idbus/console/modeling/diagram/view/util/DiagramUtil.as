@@ -4,11 +4,13 @@ import com.atricore.idbus.console.base.diagram.DiagramElementTypes;
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.services.dto.AlfrescoResource;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
+import com.atricore.idbus.console.services.dto.CaptiveExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.JBossEPPResource;
 import com.atricore.idbus.console.services.dto.JBossPortalResource;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
 import com.atricore.idbus.console.services.dto.JOSSO2Resource;
@@ -102,6 +104,12 @@ public class DiagramUtil {
             // ---------------------------------------------------
             // Now, check valid resource/exec.env. combinations
             // ---------------------------------------------------
+
+            // avoid associating an additional execution environment to a resource which already owns one with no
+            // representation
+            if (resource.activation != null && resource.activation.executionEnv is CaptiveExecutionEnvironment) {
+                return false;
+            }
 
             // JOSSO 1 Resources can be linked to any execution environment
             if (resource is JOSSO1Resource) {

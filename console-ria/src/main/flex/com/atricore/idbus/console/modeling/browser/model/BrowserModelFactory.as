@@ -214,6 +214,9 @@ public class BrowserModelFactory {
             resourceNode.data = serviceResource;
             resourceNode.selectable = selectable;
             resourceNode.parentNode = parentNode;
+            if (serviceResource is JBossEPPResource) {
+                resourceNode.icon = EmbeddedIcons.jbosseppResourceMiniIcon;
+            } else
             if (serviceResource is JOSSO1Resource) {
                 resourceNode.icon = EmbeddedIcons.josso1ResourceMiniIcon;
             } else if (serviceResource is JOSSO2Resource) {

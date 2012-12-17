@@ -24,20 +24,27 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof  JOSSO1Resource  &&
-               event.getContext().getParentNode() instanceof Activation;
+        logger.trace("JOSSO1ResourceBinding: " + event.getData() + ", " + event.getContext().getParentNode()  );
+
+        if (event.getData() instanceof Activation) {
+            logger.trace("JOSSO1ResourceBinding: activation resource = " + ((Activation)event.getData()).getResource());
+        }
+
+        return event.getData() instanceof Activation  &&
+               ((Activation)event.getData()).getResource() instanceof JOSSO1Resource;
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
+        logger.trace("Entered JOSSO1ResourceBindingTransformer::before");
         // Define partner apps in Binding provider
-        JOSSO1Resource josso1Resource = (JOSSO1Resource) event.getData();
+        JOSSO1Resource josso1Resource = (JOSSO1Resource) ((Activation)event.getData()).getResource();
         InternalSaml2ServiceProvider sp = josso1Resource.getServiceConnection().getSp();
 
         Beans bpBeans = (Beans) event.getContext().get("bpBeans");
         Collection<Bean> bpMediators = getBeansOfType(bpBeans, JossoMediator.class.getName());
         if (bpMediators.size() != 1) {
-            throw new TransformException("Too many/few Joss Mediators found for " + josso1Resource.getName());
+            throw new TransformException("Too many/few Josso Mediators found for " + josso1Resource.getName());
         }
 
         Bean bindingMediator = bpMediators.iterator().next();
@@ -97,6 +104,8 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
 
         addEntryToMap(bindingMediator, "partnerAppMappings", partnerappMapping);
 
+        logger.trace("JOSSO1ResourceBinding: agentBean = " + event.getContext().get("agentBean"));
+
         // Add Partner app config, if necessary
         if (event.getContext().get("agentBean") != null) {
 
@@ -110,6 +119,9 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
                     (!josso1Resource.getPartnerAppLocation().getContext().startsWith("/") ? "/" : "") +
                     josso1Resource.getPartnerAppLocation().getContext());
 
+            if (josso1Resource.getDefaultResource() != null) {
+                setPropertyValue(agentAppBean, "defaultResource", josso1Resource.getDefaultResource());
+            }
             // TODO : Support ignored web resources, remember me, disable auto-login, etc. ....
 
             addPropertyBean(cfgBean, "ssoPartnerApps", agentAppBean);
