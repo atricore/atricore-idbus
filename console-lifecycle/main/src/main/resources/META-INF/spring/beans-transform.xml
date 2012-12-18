@@ -460,7 +460,6 @@
                         <property name="javaAgentClass" value="org.josso.gatein.agent.GateinSSOAgent"/>
                         <property name="enableJaxws" value="false"/>
                         <property name="disableJaas" value="true"/>
-                        <property name="isStateOnClient" value="false"/>
                     </bean>
                 </entry>
 
