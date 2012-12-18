@@ -284,7 +284,7 @@ public class JOSSO1ExecEnvransformer extends AbstractTransformer {
                     setPropertyValue(agentBean, "disableJaas", "true");
 
                 if (execEnvProps.isStateOnClient())
-                    setPropertyValue(agentBean, "isStateOnClient", "true");
+                    setPropertyValue(agentBean, "stateOnClient", "true");
 
                 if (execEnvProps.getLoginUri() != null)
                     setPropertyValue(agentBean, "jossoLoginUri", execEnvProps.getLoginUri());
