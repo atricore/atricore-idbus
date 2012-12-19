@@ -6249,27 +6249,27 @@ public class PropertySheetMediator extends IocMediator {
                 return;
             }
 
-            if (_jbosseppResourceCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
-                var lvResult:ValidationResultEvent = _locationValidator.validate(_jbosseppResourceCoreSection.location.text);
-                if (lvResult.type != ValidationResultEvent.VALID) {
-                    _jbosseppResourceCoreSection.location.errorString = lvResult.results[0].errorMessage;
-                    return;
-                }
-            }
-
-            _execEnvSaveFunction = jbosseppSave;
-
-            var cf:CheckFoldersRequest = new CheckFoldersRequest();
-            var folders:ArrayCollection = new ArrayCollection();
-
             if (_jbosseppResourceCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
+                _execEnvSaveFunction = jbosseppSave;
+
+                var cf:CheckFoldersRequest = new CheckFoldersRequest();
+                var folders:ArrayCollection = new ArrayCollection();
+
                 folders.addItem(_jbosseppResourceCoreSection.homeDirectory.text);
+
+                cf.folders = folders;
+                cf.environmentName = "n/a";
+                sendNotification(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, cf);
+            } else {
+                var lvResult:ValidationResultEvent = _locationValidator.validate(_jbosseppResourceCoreSection.location.text);
+                if (lvResult.type == ValidationResultEvent.VALID) {
+                    jbosseppSave();
+                } else {
+                    _jbosseppResourceCoreSection.location.errorString = lvResult.results[0].errorMessage;
+                }
+
             }
 
-            folders.addItem(_jbosseppResourceCoreSection.homeDirectory.text);
-            cf.folders = folders;
-            cf.environmentName = "n/a";
-            sendNotification(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, cf);
         }
     }
 
