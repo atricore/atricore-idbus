@@ -158,7 +158,7 @@ public class JOSSO1ExecEnvransformer extends AbstractTransformer {
                 "org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl");
         setPropertyValue(bc, "name", bc.getName());
         setPropertyValue(bc, "description", execEnv.getDisplayName());
-        setPropertyRef(bc, "provider", bpBean.getName());
+        setPropertyRef(bc, "federatedProvider", bpBean.getName());
         setPropertyRef(bc, "unitContainer", applianceDef.getName() + "-container");
 
         String locationPath = resolveLocationPath(applianceDef.getLocation()) + "/" + execEnv.getName().toUpperCase();

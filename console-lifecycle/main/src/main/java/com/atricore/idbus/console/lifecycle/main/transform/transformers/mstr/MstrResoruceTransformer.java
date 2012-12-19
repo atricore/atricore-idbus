@@ -72,7 +72,7 @@ public class MstrResoruceTransformer extends AbstractTransformer {
 
         setPropertyRef(bc, "unitContainer", sp.getIdentityAppliance().getName() + "-container");
 
-        setPropertyRef(bc, "provider", spBean.getName());
+        setPropertyRef(bc, "federatedProvider", spBean.getName());
         setPropertyValue(bc, "location", resolveLocationUrl(sp));
 
         setPropertyRef(bc, "identityMediator", spBean.getName() + "-samlr2-mediator");

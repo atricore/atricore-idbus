@@ -321,7 +321,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         setPropertyValue(idpChannelBean, "description", (idpChannel != null ? idpChannel.getDisplayName() : sp.getName()));
 
         setPropertyValue(idpChannelBean, "location", idpChannelLocation.toString());
-        setPropertyRef(idpChannelBean, "provider", normalizeBeanName(sp.getName()));
+        setPropertyRef(idpChannelBean, "federatedProvider", normalizeBeanName(sp.getName()));
         if (idpChannel != null)
             setPropertyRef(idpChannelBean, "targetProvider", normalizeBeanName(target.getName()));
         setPropertyRef(idpChannelBean, "sessionManager", spProxyBean.getName() + "-session-manager");
@@ -790,7 +790,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         setPropertyValue(spChannelBean, "name", spChannelName);
         setPropertyValue(spChannelBean, "description", "SP Channel proxy " + spChannel.getName());
         setPropertyValue(spChannelBean, "location", spChannelLocation.toString());
-        setPropertyRef(spChannelBean, "provider", normalizeBeanName(idpProxyBean.getName()));
+        setPropertyRef(spChannelBean, "federatedProvider", normalizeBeanName(idpProxyBean.getName()));
         // The name of the local SP
         setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(localServiceProvider.getName()));
         setPropertyRef(spChannelBean, "sessionManager", idpProxyBean.getName() + "-session-manager");
@@ -1318,7 +1318,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
         setPropertyValue(bindingChannelBean, "name", bindingChannelName);
         setPropertyValue(bindingChannelBean, "description", "IdP Proxy biding channel");
-        setPropertyRef(bindingChannelBean, "provider", normalizeBeanName(spProxyBean.getName()));
+        setPropertyRef(bindingChannelBean, "federatedProvider", normalizeBeanName(spProxyBean.getName()));
 
 
         // Location

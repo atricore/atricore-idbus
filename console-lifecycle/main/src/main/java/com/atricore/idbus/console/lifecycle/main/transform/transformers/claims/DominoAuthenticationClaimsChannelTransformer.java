@@ -168,7 +168,7 @@ public class DominoAuthenticationClaimsChannelTransformer extends AbstractTransf
                 setPropertyRef(claimChannelBean, "identityMediator", ccMediator.getName());
 
                 // provider
-                setPropertyRef(claimChannelBean, "provider", idpBean.getName());
+                setPropertyRef(claimChannelBean, "federatedProvider", idpBean.getName());
 
                 // unitContainer
                 setPropertyRef(claimChannelBean, "unitContainer", provider.getIdentityAppliance().getName() + "-container");

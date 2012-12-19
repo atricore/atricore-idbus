@@ -171,7 +171,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         setPropertyValue(spChannelBean, "name", spChannelName);
         setPropertyValue(spChannelBean, "description", (spChannel != null ? spChannel.getDisplayName() : idpBean.getName()));
         setPropertyValue(spChannelBean, "location", resolveLocationUrl(idp, spChannel));
-        setPropertyRef(spChannelBean, "provider", normalizeBeanName(idpBean.getName()));
+        setPropertyRef(spChannelBean, "federatedProvider", normalizeBeanName(idpBean.getName()));
         if (spChannel != null)
             setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");

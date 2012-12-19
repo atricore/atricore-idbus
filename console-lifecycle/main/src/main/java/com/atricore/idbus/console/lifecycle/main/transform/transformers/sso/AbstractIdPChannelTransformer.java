@@ -151,7 +151,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
         setPropertyValue(idpChannelBean, "name", idpChannelName);
         setPropertyValue(idpChannelBean, "description", (idpChannel != null ? idpChannel.getDisplayName() : sp.getName()));
         setPropertyValue(idpChannelBean, "location", resolveLocationUrl(sp, idpChannel));
-        setPropertyRef(idpChannelBean, "provider", normalizeBeanName(sp.getName()));
+        setPropertyRef(idpChannelBean, "federatedProvider", normalizeBeanName(sp.getName()));
         if (idpChannel != null)
             setPropertyRef(idpChannelBean, "targetProvider", normalizeBeanName(target.getName()));
         setPropertyRef(idpChannelBean, "sessionManager", spBean.getName() + "-session-manager");

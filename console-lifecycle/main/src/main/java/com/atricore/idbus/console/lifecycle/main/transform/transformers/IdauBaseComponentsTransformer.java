@@ -20,8 +20,10 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.AuthenticationService;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication;
 import com.atricore.idbus.console.lifecycle.main.transform.*;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
