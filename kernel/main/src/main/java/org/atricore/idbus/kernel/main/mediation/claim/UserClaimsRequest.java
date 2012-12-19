@@ -8,7 +8,7 @@ import java.util.Set;
 
 /**
  */
-public interface UserClaimsRequest extends ClaimsRequest{
+public interface UserClaimsRequest extends ClaimsRequest {
 
     Channel getIssuerChannel();
 

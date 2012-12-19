@@ -319,7 +319,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
                     for (Channel c : spl.getChannels()) {
                         if (c instanceof FederationChannel) {
                             FederationChannel fc = (FederationChannel) c;
-                            if (fc.getTargetProvider() != null && fc.getTargetProvider().getName().equals(spChannel.getProvider().getName())) {
+                            if (fc.getTargetProvider() != null && fc.getTargetProvider().getName().equals(spChannel.getFederatedProvider().getName())) {
                                 if (logger.isTraceEnabled())
                                     logger.trace("Using SP Alias " + fc.getMember().getAlias() + " from channel " + fc.getName());
                                 spDescr = fc.getMember();
@@ -343,7 +343,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
             // Try to get SP Alias from request:
             String spAlias = mediator.getPreferredSpAlias();
-            CircleOfTrustManager cotManager = spChannel.getProvider().getCotManager();
+            CircleOfTrustManager cotManager = spChannel.getFederatedProvider().getCotManager();
 
             if (ssoAuthnReq != null) {
                 for (RequestAttributeType a : ssoAuthnReq.getRequestAttribute()) {

@@ -8,6 +8,7 @@ import org.atricore.idbus.capabilities.sso.main.select.spi.AbstractEntitySelecto
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaim;
 import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectionContext;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
+import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 
 /**
  *
@@ -21,13 +22,13 @@ public class RequestedIdPEntitySelector extends AbstractEntitySelector {
         return true;
     }
 
-    public CircleOfTrustMemberDescriptor selectCotMember(EntitySelectionContext ctx) throws SSOException {
+    public CircleOfTrustMemberDescriptor selectCotMember(EntitySelectionContext ctx, SelectorChannel channel) throws SSOException {
 
         CircleOfTrustMemberDescriptor idp = null;
 
         // Try with requested IDP alias first
         {
-            UserClaim idpAlias = (UserClaim) ctx.getAttribute(REQUESTED_IDP_ALIAS_ATTR);
+            UserClaim idpAlias = (UserClaim) ctx.getUserClaim(REQUESTED_IDP_ALIAS_ATTR);
             if (idpAlias != null) {
 
                 String idpAliasName = (String) idpAlias.getValue();
@@ -47,7 +48,7 @@ public class RequestedIdPEntitySelector extends AbstractEntitySelector {
 
         // Now try with requested IDP ID
         {
-            UserClaim idpId = (UserClaim) ctx.getAttribute(REQUESTED_IDP_ID_ATTR);
+            UserClaim idpId = (UserClaim) ctx.getUserClaim(REQUESTED_IDP_ID_ATTR);
             if (idpId != null && idp == null) {
 
                 String idpIdName = (String) idpId.getValue();

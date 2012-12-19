@@ -15,32 +15,32 @@ import java.util.Map;
  */
 public class EntitySelectionContext {
 
-    private ClaimSet attributes;
+    private ClaimSet userClaims;
 
-    private Map<String, UserClaim> attrsIdx = new HashMap<String, UserClaim>();
+    private Map<String, UserClaim> userClaimsIdx = new HashMap<String, UserClaim>();
 
     private SelectEntityRequestType request;
 
     private CircleOfTrustManager cotManager;
 
-    public EntitySelectionContext(CircleOfTrustManager cotManager, ClaimSet attributes, SelectEntityRequestType request) {
-        this.attributes = attributes;
+    public EntitySelectionContext(CircleOfTrustManager cotManager, ClaimSet userClaims, SelectEntityRequestType request) {
+        this.userClaims = userClaims;
         this.request = request;
         this.cotManager = cotManager;
-        if (attributes != null) {
-            for (Claim attr : attributes.getClaims()) {
+        if (userClaims != null) {
+            for (Claim attr : userClaims.getClaims()) {
                 UserClaim userAttr = (UserClaim) attr;
-                attrsIdx.put(userAttr.getName(), userAttr);
+                userClaimsIdx.put(userAttr.getName(), userAttr);
             }
         }
     }
 
-    public Object getAttribute(String name) {
-        return attrsIdx.get(name);
+    public UserClaim getUserClaim(String name) {
+        return userClaimsIdx.get(name);
     }
 
-    public Collection<String> getAttributeNames() {
-        return attrsIdx.keySet();
+    public Collection<String> getUserClaimNames() {
+        return userClaimsIdx.keySet();
     }
 
     public SelectEntityRequestType getRequest() {

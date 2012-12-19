@@ -53,6 +53,9 @@ public class SpnegoHttpInitiatorBinding extends AbstractMediationHttpBinding {
     }
 
     public void copyMessageToExchange(CamelMediationMessage spnegoOut, Exchange exchange) {
+
+        // TODO : Better error handling
+
         MediationMessage<SpnegoMessage> out = spnegoOut.getMessage();
         EndpointDescriptor ed = out.getDestination();
 

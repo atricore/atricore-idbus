@@ -38,4 +38,6 @@
             <cm:property name="encryption.encoding" value="hexadecimal"/>
         </cm:default-properties>
     </cm:property-placeholder>
+
+
 </blueprint>

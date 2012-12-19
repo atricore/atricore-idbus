@@ -84,7 +84,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
         if (logger.isDebugEnabled())
             logger.debug("Storing claims request as local variable, id:" + claimsRequest.getId());
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", claimsRequest);
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:credential-claims-request", claimsRequest);
 
 
         doProcessReceivedSecurityTokenClaim(exchange, claimsRequest);

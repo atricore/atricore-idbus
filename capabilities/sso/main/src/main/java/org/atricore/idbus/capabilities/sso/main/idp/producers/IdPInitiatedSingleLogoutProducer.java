@@ -47,7 +47,7 @@ public class IdPInitiatedSingleLogoutProducer extends SSOProducer {
 
             IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
             if (secCtx != null && secCtx.getSessionIndex() != null) {
-                IdentityProvider idp = (IdentityProvider) ((SPChannel)channel).getProvider();
+                IdentityProvider idp = (IdentityProvider) ((SPChannel)channel).getFederatedProvider();
                 triggerIdPInitiatedSLO(idp, secCtx);
             }
 

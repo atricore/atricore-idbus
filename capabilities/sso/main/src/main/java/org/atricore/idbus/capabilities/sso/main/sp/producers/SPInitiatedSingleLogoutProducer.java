@@ -252,7 +252,7 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
         BindingChannel bChannel = (BindingChannel) channel;
-        FederatedLocalProvider sp = bChannel.getProvider();
+        FederatedLocalProvider sp = bChannel.getFederatedProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {

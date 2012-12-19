@@ -432,12 +432,12 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
         if (channel instanceof FederationChannel) {
             // The binding is working with a FC
             FederationChannel fChannel = (FederationChannel) channel;
-            return fChannel.getProvider();
+            return fChannel.getFederatedProvider();
         }
 
         if (channel instanceof BindingChannel) {
             BindingChannel bChannel = (BindingChannel) channel;
-            FederatedLocalProvider provider = bChannel.getProvider();
+            FederatedLocalProvider provider = bChannel.getFederatedProvider();
             return provider;
         }
 

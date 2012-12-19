@@ -79,7 +79,7 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
 
         if (logger.isDebugEnabled())
             logger.debug("Storing claims request as local variable, id:" + claimsRequest.getId());
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", claimsRequest);
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:credential-claims-request", claimsRequest);
         doProcessClaimsRequest(exchange, claimsRequest);
 
     }
@@ -95,7 +95,7 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
         CredentialClaimsResponse credentialClaimsResponse = (CredentialClaimsResponse) in.getMessage().getContent();
-        CredentialClaimsRequest credentialClaimsRequest = (CredentialClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:claims-request");
+        CredentialClaimsRequest credentialClaimsRequest = (CredentialClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:credential-claims-request");
         if (credentialClaimsRequest == null)
             throw new IllegalStateException("Claims request not found!");
 

@@ -691,7 +691,7 @@ public class SingleSignOnProducer extends SSOProducer {
         ResponseType response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
 
         // Set the SSO Session var
-        // State not supported in SOAP yet in.getMessage().getState().setLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
+        // State not supported in SOAP yet in.getMessage().getState().setLocalVariable(channel.getFederatedProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
         // State not supported in SOAP yet in.getMessage().getState().getLocalState().addAlternativeId("ssoSessionId", secCtx.getSessionIndex());
 
         // --------------------------------------------------------------------
@@ -1911,7 +1911,7 @@ public class SingleSignOnProducer extends SSOProducer {
         for (FederationChannel fChannel : spl.getChannels()) {
             if (fChannel.getTargetProvider() != null) {
 
-                if ( fChannel.getTargetProvider().getName().equals(((SPChannel) channel).getProvider().getName())) {
+                if ( fChannel.getTargetProvider().getName().equals(((SPChannel) channel).getFederatedProvider().getName())) {
                     if (logger.isTraceEnabled())
                         logger.trace("Selected SP Channel " + fChannel.getName() + " from provider " + sp);
 
@@ -1951,7 +1951,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             CircleOfTrust cot = this.getCot();
             CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(authnRequest.getIssuer());
-            CircleOfTrustManager cotMgr = ((SPChannel) channel).getProvider().getCotManager();
+            CircleOfTrustManager cotMgr = ((SPChannel) channel).getFederatedProvider().getCotManager();
 
             MetadataEntry md = cotMgr.findEntityRoleMetadata(sp.getAlias(),
                     "urn:oasis:names:tc:SAML:2.0:metadata:SPSSODescriptor");
@@ -2088,7 +2088,7 @@ public class SingleSignOnProducer extends SSOProducer {
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
         SPChannel spChannel = (SPChannel) channel;
-        FederatedLocalProvider sp = spChannel.getProvider();
+        FederatedLocalProvider sp = spChannel.getFederatedProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {

@@ -8,13 +8,10 @@ import org.atricore.idbus.capabilities.oauth2.main.OAuth2AuthnContext;
 import org.atricore.idbus.capabilities.oauth2.main.OAuth2BPMediator;
 import org.atricore.idbus.capabilities.oauth2.main.OAuth2Exception;
 import org.atricore.idbus.capabilities.oauth2.main.ResourceServer;
-import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
-import org.atricore.idbus.common.sso._1_0.protocol.CredentialType;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
-import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
@@ -32,10 +29,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString;
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
-import javax.xml.namespace.QName;
 import java.net.URLDecoder;
 
 /**
@@ -173,7 +167,7 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
 
         String spAlias = ((OAuth2BPMediator)bChannel.getIdentityMediator()).getSpAlias();
 
-        CircleOfTrust cot = getProvider().getCircleOfTrust();
+        CircleOfTrust cot = getFederatedProvider().getCircleOfTrust();
 
         for (Provider p : cot.getProviders()) {
 
@@ -200,13 +194,13 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
 
     }
 
-    protected FederatedLocalProvider getProvider() {
+    protected FederatedLocalProvider getFederatedProvider() {
         if (channel instanceof FederationChannel) {
-            return ((FederationChannel) channel).getProvider();
+            return ((FederationChannel) channel).getFederatedProvider();
         } else if (channel instanceof BindingChannel) {
-            return ((BindingChannel) channel).getProvider();
+            return ((BindingChannel) channel).getFederatedProvider();
         } else if (channel instanceof ClaimChannel) {
-            return ((ClaimChannel) channel).getProvider();
+            return ((ClaimChannel) channel).getFederatedProvider();
         } else {
             throw new IllegalStateException("Configured channel does not support Federated Provider : " + channel);
         }

@@ -79,11 +79,11 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
 
     protected StatefulProvider getProvider() {
         if (channel instanceof FederationChannel) {
-            return ((FederationChannel) channel).getProvider();
+            return ((FederationChannel) channel).getFederatedProvider();
         } else if (channel instanceof BindingChannel) {
-            return ((BindingChannel) channel).getProvider();
+            return ((BindingChannel) channel).getFederatedProvider();
         } else if (channel instanceof ClaimChannel) {
-            return ((ClaimChannel) channel).getProvider();
+            return ((ClaimChannel) channel).getFederatedProvider();
         } else if (channel instanceof SelectorChannel) {
             return ((SelectorChannel) channel).getProvider();
         } else {
@@ -149,9 +149,9 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
 
     protected CircleOfTrustManager getCotManager() {
         if (this.channel instanceof FederationChannel) {
-            return ((FederationChannel) channel).getProvider().getCotManager();
+            return ((FederationChannel) channel).getFederatedProvider().getCotManager();
         } else if (this.channel instanceof BindingChannel) {
-            return ((BindingChannel) channel).getProvider().getCotManager();
+            return ((BindingChannel) channel).getFederatedProvider().getCotManager();
         } else if (this.channel instanceof SelectorChannel) {
             return ((SelectorChannel) channel).getProvider().getCotManager();
         }
@@ -353,7 +353,7 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
         BindingChannel bChannel = (BindingChannel) channel;
-        FederatedLocalProvider sp = bChannel.getProvider();
+        FederatedLocalProvider sp = bChannel.getFederatedProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {

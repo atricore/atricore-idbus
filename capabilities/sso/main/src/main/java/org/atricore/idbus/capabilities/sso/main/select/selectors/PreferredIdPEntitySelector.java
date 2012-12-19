@@ -7,6 +7,7 @@ import org.atricore.idbus.capabilities.sso.main.select.spi.AbstractEntitySelecto
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaim;
 import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectionContext;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
+import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 
 /**
  *
@@ -15,8 +16,8 @@ public class PreferredIdPEntitySelector extends AbstractEntitySelector {
 
     private static final Log logger = LogFactory.getLog(PreferredIdPEntitySelector .class);
 
-    public CircleOfTrustMemberDescriptor selectCotMember(EntitySelectionContext ctx) {
-        UserClaim idpAlias = (UserClaim) ctx.getAttribute(PREFERRED_IDP_ATTR);
+    public CircleOfTrustMemberDescriptor selectCotMember(EntitySelectionContext ctx, SelectorChannel channel) {
+        UserClaim idpAlias = (UserClaim) ctx.getUserClaim(PREFERRED_IDP_ATTR);
 
         CircleOfTrustMemberDescriptor idp = null;
 

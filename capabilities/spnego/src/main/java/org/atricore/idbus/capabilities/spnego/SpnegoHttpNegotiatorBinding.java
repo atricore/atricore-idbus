@@ -52,6 +52,9 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {
+
+        // TODO : Better error handling
+
         SpnegoMessage sm = null;
 
         Exchange exchange = message.getExchange().getExchange();
@@ -116,6 +119,9 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
     }
 
     public void copyMessageToExchange(CamelMediationMessage spnegoOut, Exchange exchange) {
+
+        // TODO : Better error handling
+
         MediationMessage<SpnegoMessage> out = spnegoOut.getMessage();
         EndpointDescriptor ed = out.getDestination();
 

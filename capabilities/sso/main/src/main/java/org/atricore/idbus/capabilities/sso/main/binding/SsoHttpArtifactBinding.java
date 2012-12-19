@@ -34,6 +34,8 @@ import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimsResponse;
 import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsResponse;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
@@ -114,17 +116,17 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
         // Create JOSOS Artifact for response body
         // ------------------------------------------------------------
         if (logger.isDebugEnabled())
-            logger.debug("Creating JOSSO Artifact for location " + ed.getLocation());
+            logger.debug("Creating SSO Artifact for location " + ed.getLocation());
 
         try {
             
             java.lang.Object msgValue = null;
             boolean isResponse = false;
 
-            if (out.getContent() instanceof CredentialClaimsRequest) {
+            if (out.getContent() instanceof ClaimsRequest) {
                 msgValue = out.getContent();
 
-            } else if (out.getContent() instanceof CredentialClaimsResponse) {
+            } else if (out.getContent() instanceof ClaimsResponse) {
                 msgValue = out.getContent();
                 isResponse = true;
 
@@ -142,7 +144,7 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
 
             } else if (msgValue != null) {
                 msgValue = out.getContent();
-                logger.warn("Unknown message content : " + msgValue.getClass().getName());
+                logger.warn("Unknown message content type : " + msgValue.getClass().getName());
                 // Try to guess if this is a response ...
                 if (msgValue.getClass().getSimpleName().contains("esponse"))
                     isResponse = true;
@@ -150,7 +152,6 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
 
             MessageQueueManager aqm = getArtifactQueueManager();
             Artifact contentArtifact = aqm.pushMessage(msgValue);
-
 
             Message httpOut = exchange.getOut();
             Message httpIn = exchange.getIn();
@@ -165,28 +166,11 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
             copyBackState(out.getState(), exchange);
 
-            if (!isEnableAjax()) {
-                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-                httpOut.getHeaders().put("Pragma", "no-cache");
-                httpOut.getHeaders().put("http.responseCode", 302);
-                httpOut.getHeaders().put("Content-Type", "text/html");
-                httpOut.getHeaders().put("Location", artifactLocation);
-            } else {
-
-                Html redir = this.createHtmlArtifactMessage(artifactLocation);
-
-                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
-                        new String[]{"org.w3._1999.xhtml"});
-
-                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-                httpOut.getHeaders().put("Pragma", "no-cache");
-                httpOut.getHeaders().put("http.responseCode", 200);
-                httpOut.getHeaders().put("Content-Type", "text/html");
-
-                ByteArrayInputStream baos = new ByteArrayInputStream(marshalledHttpResponseBody.getBytes());
-                httpOut.setBody(baos);
-            }
-
+            httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+            httpOut.getHeaders().put("Pragma", "no-cache");
+            httpOut.getHeaders().put("http.responseCode", 302);
+            httpOut.getHeaders().put("Content-Type", "text/html");
+            httpOut.getHeaders().put("Location", artifactLocation);
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
