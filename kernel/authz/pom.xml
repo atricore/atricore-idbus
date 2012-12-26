@@ -37,5 +37,6 @@
 
     <modules>
        <module>authz-core</module>
+       <module>authz-config</module>
     </modules>
 </project>
