@@ -156,9 +156,9 @@ public class SpUsernamePasswordClaimsProducer extends SSOProducer
     protected FederatedLocalProvider resolveSp(Channel c, String spAlias) {
         FederatedLocalProvider channelProvider = null;
         if (c instanceof ClaimChannel) {
-            channelProvider = ((ClaimChannel)c).getProvider();
+            channelProvider = ((ClaimChannel)c).getFederatedProvider();
         } else if (c instanceof IdPChannel) {
-            channelProvider = ((IdPChannel)c).getProvider();
+            channelProvider = ((IdPChannel)c).getFederatedProvider();
         } else {
             logger.error("Cannot resolve spAlias [" + spAlias + "] for channel [" + c.getName() + "], unknown channel type : " + c);
             return null;
@@ -230,7 +230,7 @@ public class SpUsernamePasswordClaimsProducer extends SSOProducer
         // Resolve IdP channel, then look for the ACS endpoint
         ClaimChannel cChannel = (ClaimChannel) channel;
 
-        FederatedLocalProvider idp = cChannel.getProvider();
+        FederatedLocalProvider idp = cChannel.getFederatedProvider();
 
         FederationChannel spChannel = idp.getChannel();
         for (FederationChannel fChannel : idp.getChannels()) {

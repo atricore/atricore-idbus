@@ -31,6 +31,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -44,7 +45,7 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
 
     private CircleOfTrust cot;
 
-    private Map<String, MetadataDefinition> definitions = new HashMap<String, MetadataDefinition>();
+    private Map<String, MetadataDefinition> definitions = new ConcurrentHashMap<String, MetadataDefinition>();
 
     boolean init = false;
 

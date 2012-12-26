@@ -150,31 +150,12 @@ public class JossoHttpArtifactBinding extends AbstractMediationHttpBinding {
             // Prepare HTTP Resposne
             // ------------------------------------------------------------
             copyBackState(out.getState(), exchange);
-            if (!isEnableAjax()) {
-                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-                httpOut.getHeaders().put("Pragma", "no-cache");
-                httpOut.getHeaders().put("http.responseCode", 302);
-                httpOut.getHeaders().put("Content-Type", "text/html");
-                httpOut.getHeaders().put("Location", artifactLocation);
-            } else {
 
-
-                Html redir = this.createHtmlArtifactMessage(artifactLocation);
-
-                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
-                        new String[]{"org.w3._1999.xhtml"});
-
-                // TODO : Work-around, should be taken care by marshaller
-                marshalledHttpResponseBody = marshalledHttpResponseBody.replace("&amp;josso_", "&josso_");
-
-                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-                httpOut.getHeaders().put("Pragma", "no-cache");
-                httpOut.getHeaders().put("http.responseCode", 200);
-                httpOut.getHeaders().put("Content-Type", "text/html");
-
-                ByteArrayInputStream baos = new ByteArrayInputStream (marshalledHttpResponseBody.getBytes());
-                httpOut.setBody(baos);
-            }
+            httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+            httpOut.getHeaders().put("Pragma", "no-cache");
+            httpOut.getHeaders().put("http.responseCode", 302);
+            httpOut.getHeaders().put("Content-Type", "text/html");
+            httpOut.getHeaders().put("Location", artifactLocation);
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);

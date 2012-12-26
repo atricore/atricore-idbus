@@ -19,10 +19,8 @@ import javax.xml.bind.*;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.*;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SamlR2MetadataDefinitionIntrospector implements MetadataDefinitionIntrospector, InitializingBean {
 
@@ -30,21 +28,21 @@ public class SamlR2MetadataDefinitionIntrospector implements MetadataDefinitionI
 
     private static final String SAMLR2_MD_LOCAL_NS = "md";
 
-    private static JAXBContext jaxbCtx;
+    // Use a private instance context insted:
+    // private static JAXBContext jaxbCtx;
+    private JAXBContext jaxbCtx;
+
+    private Map<String , Object> cache  = new ConcurrentHashMap<String, Object>();
 
     public void afterPropertiesSet() throws Exception {
         jaxbCtx = createJAXBContext();
+        cache.clear();
     }
 
     protected MetadataDefinition createMetadataDefinition(Provider provider, FederationChannel channel) {
-
-
         // TODO : Use planning to create MD artifact
-
         // Create MD Header
-
         // Create MD Roles
-
         return null;
 
     }
@@ -96,16 +94,36 @@ public class SamlR2MetadataDefinitionIntrospector implements MetadataDefinitionI
             if (logger.isDebugEnabled())
                 logger.debug("Looking entity descriptor using xpath: " + xpathExpr);
 
-            List<JAXBElement> elements = this.searchMetadata(doc, xpathExpr);
+            String key = def.getId() + ":" + entityId + ":" + xpathExpr;
 
-            if (elements.size() > 1)
-                throw new CircleOfTrustManagerException("Too many entity descriptors found for entity ID: " + entityId + " (Definition: " + def.getId() + ")");
+            // See if we have this cached
+            MetadataEntry e = (MetadataEntry) cache.get(key);
+            if (e != null) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Using entity descriptor from cache, key : " + key);
 
-            if (elements.size() < 1)
-                throw new CircleOfTrustManagerException("Entity descriptor not found for entityID: " + entityId + " (Definition: " + def.getId() + ")");
+                return e;
+            }
 
-            EntityDescriptorType descriptor = (EntityDescriptorType) elements.get(0).getValue();
-            return new MetadataEntryImpl<EntityDescriptorType>(descriptor.getEntityID(), descriptor);
+            synchronized (this) {
+
+                List<JAXBElement> elements = this.searchMetadata(doc, xpathExpr);
+
+                if (elements.size() > 1)
+                    throw new CircleOfTrustManagerException("Too many entity descriptors found for entity ID: " + entityId + " (Definition: " + def.getId() + ")");
+
+                if (elements.size() < 1)
+                    throw new CircleOfTrustManagerException("Entity descriptor not found for entityID: " + entityId + " (Definition: " + def.getId() + ")");
+
+                EntityDescriptorType descriptor = (EntityDescriptorType) elements.get(0).getValue();
+                e = new MetadataEntryImpl<EntityDescriptorType>(descriptor.getEntityID(), descriptor);
+            }
+
+            if (logger.isTraceEnabled())
+                logger.trace("Storing entity descriptor in cache, key : " + key);
+            cache.put(key, e);
+
+            return e;
 
         } catch (Exception e) {
             throw new CircleOfTrustManagerException(e);
@@ -124,19 +142,40 @@ public class SamlR2MetadataDefinitionIntrospector implements MetadataDefinitionI
             if (logger.isDebugEnabled())
                 logger.debug("Looking entity role descriptor using xpath: " + xpathExpr);
 
-            List<JAXBElement> elements = this.searchMetadata(doc, xpathExpr);
+            String key = def.getId() + ":" + entityId + ":" + xpathExpr;
 
-            if (elements.size() > 1)
-                throw new CircleOfTrustManagerException("Too many entity descriptors found for entity ID: " + entityId);
-
-            if (elements.size() < 1) {
-                logger.debug("No entity role definition found in entity " + entityId);
-                return null;
+            // See if we have this cached
+            MetadataEntry e = (MetadataEntry) cache.get(key);
+            if (e != null) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Using entity role descriptor from cache, key : " + key);
+                return e;
             }
 
-            RoleDescriptorType descriptor = (RoleDescriptorType) elements.get(0).getValue();
+            synchronized (this) {
 
-            return new MetadataEntryImpl<RoleDescriptorType>(descriptor.getID(), descriptor);
+                List<JAXBElement> elements = this.searchMetadata(doc, xpathExpr);
+
+                if (elements.size() > 1)
+                    throw new CircleOfTrustManagerException("Too many entity descriptors found for entity ID: " + entityId);
+
+                if (elements.size() < 1) {
+                    logger.debug("No entity role definition found in entity " + entityId);
+                    return null;
+                }
+
+                RoleDescriptorType descriptor = (RoleDescriptorType) elements.get(0).getValue();
+
+                e = new MetadataEntryImpl<RoleDescriptorType>(descriptor.getID(), descriptor);
+            }
+
+            if (logger.isTraceEnabled())
+                logger.trace("Storing entity role descriptor in cache, key : " + key);
+
+            cache.put(key, e);
+            return e;
+
+
 
 
         } catch (Exception e) {
@@ -158,15 +197,37 @@ public class SamlR2MetadataDefinitionIntrospector implements MetadataDefinitionI
                     SAMLR2_MD_LOCAL_NS + ":" + removePrefix(endpoint.getType()) +
                     "[@Binding='"+endpoint.getBinding()+"']";
 
-            List<JAXBElement> elements = this.searchMetadata(doc, xpathExpr);
+            String key = def.getId() + ":" + entityId + ":" + roleType + ":" + xpathExpr;
 
-            Collection<MetadataEntry> entries = new ArrayList<MetadataEntry>();
-            for (JAXBElement element : elements) {
-                EndpointType descriptor = (EndpointType) element.getValue();
-                entries.add(new MetadataEntryImpl<EndpointType>(descriptor.getLocation(), descriptor));
+            // See if we have this cached
+            Collection<MetadataEntry> e = (Collection<MetadataEntry>) cache.get(key);
+
+            if (e != null) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Using endpoint descriptor from cache, key : " + key);
+
+                return e;
             }
 
-            return entries;
+            synchronized (this) {
+
+                List<JAXBElement> elements = this.searchMetadata(doc, xpathExpr);
+
+                Collection<MetadataEntry> entries = new ArrayList<MetadataEntry>();
+                for (JAXBElement element : elements) {
+                    EndpointType descriptor = (EndpointType) element.getValue();
+                    entries.add(new MetadataEntryImpl<EndpointType>(descriptor.getLocation(), descriptor));
+                }
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Storing endpoint descriptor in cache, key : " + key);
+                cache.put(key, entries);
+
+                return entries;
+            }
+
+
 
         } catch (Exception e) {
             throw new CircleOfTrustManagerException(e);
@@ -184,20 +245,40 @@ public class SamlR2MetadataDefinitionIntrospector implements MetadataDefinitionI
                     SAMLR2_MD_LOCAL_NS + ":" + removePrefix(roleType) + "[1]/" +
                     SAMLR2_MD_LOCAL_NS + ":" + removePrefix(endpoint.getType()) +
                     "[@Binding='"+endpoint.getBinding()+"']";
-            List<JAXBElement> elements = this.searchMetadata(doc, xpathExpr);
 
-            if (elements.size() > 1)
-                throw new CircleOfTrustManagerException("Too many endpoint descriptors found for entity ID: " +
-                        entityId + " (" + roleType + "|" + endpoint + ")");
+            String key = def.getId() + ":" + entityId + ":" + roleType + ":" + endpoint + ":" + xpathExpr;
 
-            if (elements.size() < 1) {
-                logger.debug("Endpoint descriptor not found in entityID: " + entityId);
-                return null;
+            // See if we have this cached
+            MetadataEntry e = (MetadataEntry) cache.get(key);
+            if (e != null) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Using endpoint descriptor from cache, key : " + key);
+                return e;
             }
 
-            EndpointType descriptor = (EndpointType) elements.get(0).getValue();
+            synchronized (this) {
 
-            return new MetadataEntryImpl<EndpointType>(descriptor.getLocation(), descriptor);
+                List<JAXBElement> elements = this.searchMetadata(doc, xpathExpr);
+
+                if (elements.size() > 1)
+                    throw new CircleOfTrustManagerException("Too many endpoint descriptors found for entity ID: " +
+                            entityId + " (" + roleType + "|" + endpoint + ")");
+
+                if (elements.size() < 1) {
+                    logger.debug("Endpoint descriptor not found in entityID: " + entityId);
+                    return null;
+                }
+
+                EndpointType descriptor = (EndpointType) elements.get(0).getValue();
+
+                e = new MetadataEntryImpl<EndpointType>(descriptor.getLocation(), descriptor);
+            }
+
+            if (logger.isTraceEnabled())
+                logger.trace("Storing endpoint descriptor in cache, key : " + key);
+
+            cache.put(key, e);
+            return e;
 
         } catch (Exception e) {
             throw new CircleOfTrustManagerException(e);

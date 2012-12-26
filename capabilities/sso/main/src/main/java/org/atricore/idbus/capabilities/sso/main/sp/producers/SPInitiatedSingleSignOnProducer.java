@@ -29,7 +29,6 @@ import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
-import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
@@ -50,18 +49,14 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
-import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  *
@@ -174,7 +169,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
             // ------------------------------------------------------
             // TODO : Check select options ... do we have a select endpoint and multiple IdPs ?!
             BindingChannel bChannel = (BindingChannel) channel;
-            Collection<CircleOfTrustMemberDescriptor> availableIdPs = getCotManager().lookupMembersForProvider(bChannel.getProvider(),
+            Collection<CircleOfTrustMemberDescriptor> availableIdPs = getCotManager().lookupMembersForProvider(bChannel.getFederatedProvider(),
                     SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
 
             // Do we have to select an IdP
@@ -390,7 +385,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
         SelectEntityRequestType selectIdPRequest = new SelectEntityRequestType();
         selectIdPRequest.setID(uuidGenerator.generateId());
-        selectIdPRequest.setIssuer(bChannel.getProvider().getName());
+        selectIdPRequest.setIssuer(bChannel.getFederatedProvider().getName());
         for (IdentityMediationEndpoint ed : channel.getEndpoints()) {
             if (ed.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue()) &&
                     ed.getType().equals(endpoint.getType())) {
@@ -408,6 +403,14 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
             selectIdPRequest.getRequestAttribute().add(idpAttr);
         }
 
+        // Send the name of the SP asking for the selection
+        RequestAttributeType spAttr = new RequestAttributeType();
+        spAttr.setName(EntitySelectorConstants.ISSUER_SP_ATTR);
+        spAttr.setValue(((BindingChannel)channel).getProvider().getName());
+
+        selectIdPRequest.getRequestAttribute().add(spAttr);
+
+        // Send the preferred IDP alias
         RequestAttributeType preferredIdp = new RequestAttributeType();
         preferredIdp.setName(EntitySelectorConstants.PREFERRED_IDP_ATTR);
         preferredIdp.setValue(mediator.getPreferredIdpAlias());
@@ -449,7 +452,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
         BindingChannel bChannel = (BindingChannel) channel;
-        FederatedLocalProvider sp = bChannel.getProvider();
+        FederatedLocalProvider sp = bChannel.getFederatedProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {

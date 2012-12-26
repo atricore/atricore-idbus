@@ -196,7 +196,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
         manager.setAssociations(new InMemoryConsumerAssociationStore());
         manager.setNonceVerifier(new InMemoryNonceVerifier(5000));
 
-        String consumerManagerVarName = getProvider().getName().toUpperCase() + "_OPENID_CONSUMER_MANAGER";
+        String consumerManagerVarName = getFederatedProvider().getName().toUpperCase() + "_OPENID_CONSUMER_MANAGER";
         mediationState.setLocalVariable(consumerManagerVarName, consumerManager);
 
         SPInitiatedAuthnRequestType spInitiatedRequest =
@@ -235,7 +235,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
         DiscoveryInformation discovered = consumerManager.associate(discoveries);
 
         // store the discovery information in the provider's state
-        String discoveredVarName = getProvider().getName().toUpperCase() + "_OPENID_DISCO";
+        String discoveredVarName = getFederatedProvider().getName().toUpperCase() + "_OPENID_DISCO";
         mediationState.setLocalVariable(discoveredVarName, discovered);
 
         // obtain a AuthRequest message to be sent to the OpenID provider
@@ -291,11 +291,11 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
 
 
         // retrieve the previously stored consumer manager
-        String consumerManagerVarName = getProvider().getName().toUpperCase() + "_OPENID_CONSUMER_MANAGER";
+        String consumerManagerVarName = getFederatedProvider().getName().toUpperCase() + "_OPENID_CONSUMER_MANAGER";
         ConsumerManager consumerManager = (ConsumerManager) mediationState.getLocalVariable(consumerManagerVarName);
 
         // retrieve the previously stored discovery information
-        String discoveredVarName = getProvider().getName().toUpperCase() + "_OPENID_DISCO";
+        String discoveredVarName = getFederatedProvider().getName().toUpperCase() + "_OPENID_DISCO";
         DiscoveryInformation discovered = (DiscoveryInformation) mediationState.getLocalVariable(discoveredVarName);
 
         // --- processing the authentication response
@@ -329,7 +329,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
 
             SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
             ssoResponse.setID(uuidGenerator.generateId());
-            ssoResponse.setIssuer(getProvider().getName());
+            ssoResponse.setIssuer(getFederatedProvider().getName());
             SPInitiatedAuthnRequestType ssoRequest =
                     (SPInitiatedAuthnRequestType) in.getMessage().getState().
                             getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
@@ -344,8 +344,8 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
             a.setName(authSuccess.getIdentity());
             a.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:entity");
             a.setLocalName(authSuccess.getIdentity());
-            a.setNameQualifier(getProvider().getName().toUpperCase());
-            a.setLocalNameQualifier(getProvider().getName().toUpperCase());
+            a.setNameQualifier(getFederatedProvider().getName().toUpperCase());
+            a.setLocalNameQualifier(getFederatedProvider().getName().toUpperCase());
 
             st.getAbstractPrincipal().add(a);
 

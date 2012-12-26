@@ -1,13 +1,17 @@
 package org.atricore.idbus.capabilities.sso.main.select.spi;
 
-import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
+import org.atricore.idbus.capabilities.sso.main.select.internal.EntitySelectionState;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
+
+import java.util.List;
 
 /**
  *
  */
 public abstract class AbstractEntitySelector implements EntitySelector, EntitySelectorConstants {
 
-    private String selectorAttributesEndpoint;
+    private List<EndpointDescriptor> userClaimsEndpoints;
 
     public int getMode() {
         return 0;
@@ -17,12 +21,12 @@ public abstract class AbstractEntitySelector implements EntitySelector, EntitySe
         return true;
     }
 
-    public String getSelectorAttributesEndpoint() {
-        return selectorAttributesEndpoint;
+    public List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionState selectionState, SelectorChannel channel) {
+        return userClaimsEndpoints;
     }
 
-    public void setSelectorAttributesEndpoint(String selectorAttributesEndpoint) {
-        this.selectorAttributesEndpoint = selectorAttributesEndpoint;
+    public void setUserClaimsEndpoints(List<EndpointDescriptor> userClaimsEndpoints) {
+        this.userClaimsEndpoints = userClaimsEndpoints;
     }
 
 

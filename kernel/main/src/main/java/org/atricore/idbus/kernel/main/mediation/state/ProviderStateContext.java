@@ -22,9 +22,15 @@ public class ProviderStateContext {
     public ProviderStateContext(StatefulProvider provider, ClassLoader cl) {
         this.provider = provider;
         this.cl = cl;
+        if (provider == null)
+            throw new RuntimeException("No provider configured for context");
     }
 
     public ProviderStateManager getStateManager() {
+        if (provider == null) {
+            throw new RuntimeException("No provider configured for context");
+        }
+
         return provider.getStateManager();
     }
 

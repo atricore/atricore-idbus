@@ -98,11 +98,11 @@ public abstract class AbstractJossoProducer extends AbstractCamelProducer<CamelM
 
     protected FederatedLocalProvider getProvider() {
         if (channel instanceof FederationChannel) {
-            return ((FederationChannel) channel).getProvider();
+            return ((FederationChannel) channel).getFederatedProvider();
         } else if (channel instanceof BindingChannel) {
-            return ((BindingChannel) channel).getProvider();
+            return ((BindingChannel) channel).getFederatedProvider();
         } else if (channel instanceof ClaimChannel) {
-            return ((ClaimChannel) channel).getProvider();
+            return ((ClaimChannel) channel).getFederatedProvider();
         } else {
             throw new IllegalStateException("Configured channel does not support Federated Provider : " + channel);
         }

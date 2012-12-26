@@ -33,6 +33,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
+import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 import org.w3._1999.xhtml.*;
@@ -147,17 +148,22 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         }
 
         // Loca Variables are supported by Provider State Manage or HTTP Session
-
         StatefulProvider provider = null;
         if (channel instanceof FederationChannel) {
             FederationChannel fc = (FederationChannel) channel;
             provider = fc.getProvider();
         } else if (channel instanceof BindingChannel) {
             BindingChannel bc = (BindingChannel) channel;
-            provider = bc.getProvider();
+            provider = bc.getFederatedProvider();
         } else if (channel instanceof ClaimChannel) {
             ClaimChannel cc = (ClaimChannel) channel;
-            provider = cc.getProvider();
+            provider = cc.getFederatedProvider();
+        } else if (channel instanceof SelectorChannel) {
+            SelectorChannel sc = (SelectorChannel) channel;
+            provider = sc.getProvider();
+        } else {
+            if (logger.isDebugEnabled())
+                logger.debug("State support not enabled for channel type " + channel);
         }
 
         if (provider != null) {
@@ -509,91 +515,12 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         title.setContent("JOSSO 2 - Processing ..."); // TODO : i18n
         head.getContent().add(title);
 
-        if (isEnableAjax()) {
-
-            // Meta :
-            Meta m1 = new Meta();
-            m1.setHttpEquiv("X-UA-Compatible");
-            m1.setContent("IE=EmulateIE7,chrome=1");
-            head.getContent().add(m1);
-
-
-            // Style:
-            Link processingCss = new Link();
-            processingCss.setHref("/idbus-ui/resources/css/processing.css");
-            processingCss.getRel().add("stylesheet");
-            processingCss.setType("text/css");
-            //processingCss.setMedia("screen, projector");
-            head.getContent().add(processingCss);
-
-            Script processingJs = new Script();
-            processingJs.setSrc("/idbus-ui/resources/script/prototype.js");
-            processingJs.setType("text/javascript");
-            processingJs.setContent(" ");
-
-            head.getContent().add(processingJs);
-        }
-
         html.setHead(head);
 
         Body body = new Body();
 
         Div pageDiv = new Div();
         pageDiv.setId("page");
-
-        if (isEnableAjax()) {
-            // To brand this, we need to replace images in IDBUS UI Bundle , can be improved though.
-
-            Div div = new Div();
-            {
-
-                Div divFixedFull = new Div();
-                divFixedFull.getClazz().add("fixed full");
-                {
-                    Div waitContainer = new Div();
-                    waitContainer.setId("waitContainer");
-                    waitContainer.getClazz().add("clearit");
-                    {
-                        Img atcLogo = new Img();
-                        atcLogo.setId("waitLogo");
-                        atcLogo.setSrc("/idbus-ui/resources/img/content/atricore-logo-2.png");
-
-                        Div waitBox = new Div();
-                        waitBox.setId("waitBox");
-                        {
-
-                            Img spinner = new Img();
-                            spinner.setSrc("/idbus-ui/resources/img/processing-04.gif");
-                            spinner.setAlt("Wait ...");
-
-                            H1 h1 = new H1();
-                            h1.getContent().add(spinner);
-                            h1.getContent().add("Processing");
-
-                            P processingP = new P();
-                            Br br = new Br();
-                            processingP.getContent().add(br);
-                            processingP.getContent().add("You'll get redirected shortly, please wait ..."); // TODO : i18n
-                            processingP.getContent().add(br);
-                            processingP.getContent().add(br);
-
-                            waitBox.getContent().add(h1);
-                            waitBox.getContent().add(processingP);
-
-                            // TODO : Add form here
-
-                        }
-                        waitContainer.getContent().add(atcLogo);
-                        waitContainer.getContent().add(waitBox);
-
-                    }
-                    divFixedFull.getContent().add(waitContainer);
-                }
-                div.getContent().add(divFixedFull);
-            }
-            pageDiv.getContent().add(div);
-        }
-
 
         body.getPOrH1OrH2().add(pageDiv);
         html.setBody(body);
@@ -748,15 +675,6 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         }
         // Use our classloader to build JAXBContext so it can find binding classes.
         return JAXBContext.newInstance(packages.toString(), obj.getClass().getClassLoader());
-    }
-
-    protected boolean isEnableAjax() {
-        if (getConfigurationContext() == null) {
-            logger.warn("No Configuration context find in binding " + getBinding());
-            return false;
-        }
-
-        return Boolean.parseBoolean(getConfigurationContext().getProperty("binding.http.ajax"));
     }
 
     protected int getRetryCount() {

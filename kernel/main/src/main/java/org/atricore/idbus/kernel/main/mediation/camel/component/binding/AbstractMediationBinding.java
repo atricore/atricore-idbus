@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.channel.StatefulChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
@@ -78,19 +79,8 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
     protected StatefulProvider getProvider() {
 
         StatefulProvider p = null;
-        if (channel instanceof FederationChannel) {
-            FederationChannel fc = (FederationChannel) channel;
-            p = fc.getProvider();
-
-        } else if (channel instanceof BindingChannel) {
-            BindingChannel bc = (BindingChannel) channel;
-            p = bc.getProvider();
-
-        } else if (channel instanceof ClaimChannel) {
-            ClaimChannel cc = (ClaimChannel) channel;
-            p = cc.getProvider();
-        } else if (channel instanceof SelectorChannel) {
-            SelectorChannel sc = (SelectorChannel) channel;
+        if (channel instanceof StatefulChannel) {
+            StatefulChannel sc = (StatefulChannel) channel;
             p = sc.getProvider();
         }
 
@@ -117,16 +107,10 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
             return;
         }
 
-        FederatedLocalProvider p = null;
-        if (channel instanceof FederationChannel) {
-            FederationChannel fc = (FederationChannel) channel;
-            p = fc.getProvider();
-        } else if (channel instanceof BindingChannel) {
-            BindingChannel bc = (BindingChannel) channel;
-            p = bc.getProvider();
-        } else if (channel instanceof ClaimChannel) {
-            ClaimChannel cc = (ClaimChannel) channel;
-            p = cc.getProvider();
+        StatefulProvider p = null;
+        if (channel instanceof StatefulChannel) {
+            StatefulChannel sc = (StatefulChannel) channel;
+            p = sc.getProvider();
         }
 
         if (p != null) {
@@ -174,19 +158,10 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
         if (logger.isDebugEnabled())
             logger.debug("Creating Mediation State from Exchange " + exchange.getExchangeId());
 
-        FederatedLocalProvider p = null;
-        if (channel instanceof FederationChannel) {
-            FederationChannel fc = (FederationChannel) channel;
-            p = fc.getProvider();
-
-        } else if (channel instanceof BindingChannel) {
-            BindingChannel bc = (BindingChannel) channel;
-            p = bc.getProvider();
-
-        } else if (channel instanceof ClaimChannel) {
-            ClaimChannel cc = (ClaimChannel) channel;
-            p = cc.getProvider();
-
+        StatefulProvider p = null;
+        if (channel instanceof StatefulChannel) {
+            StatefulChannel sc = (StatefulChannel) channel;
+            p = sc.getProvider();
         }
 
         MediationStateImpl state = null;

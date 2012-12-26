@@ -23,7 +23,6 @@ package org.atricore.idbus.capabilities.openid.main.common.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openid.main.common.OpenIDException;
 import org.atricore.idbus.capabilities.openid.main.support.OpenIDConstants;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -32,11 +31,6 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
-import org.atricore.idbus.kernel.planning.IdentityPlan;
-import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
-import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchangeImpl;
-
-import java.util.Collection;
 
 /**
  * TODO: GB/Refactor - Factor out to kernel
@@ -57,13 +51,13 @@ public abstract class OpenIDProducer extends AbstractCamelProducer<CamelMediatio
         // DO Nothing!
     }
 
-    protected FederatedLocalProvider getProvider() {
+    protected FederatedLocalProvider getFederatedProvider() {
         if (channel instanceof FederationChannel) {
-            return ((FederationChannel) channel).getProvider();
+            return ((FederationChannel) channel).getFederatedProvider();
         } else if (channel instanceof BindingChannel) {
-            return ((BindingChannel) channel).getProvider();
+            return ((BindingChannel) channel).getFederatedProvider();
         } else if (channel instanceof ClaimChannel) {
-            return ((ClaimChannel) channel).getProvider();
+            return ((ClaimChannel) channel).getFederatedProvider();
         } else {
             throw new IllegalStateException("Configured channel does not support Federated Provider : " + channel);
         }

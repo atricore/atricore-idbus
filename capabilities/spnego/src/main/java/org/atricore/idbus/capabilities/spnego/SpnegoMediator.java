@@ -34,6 +34,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 
 import java.util.Collection;
 
@@ -222,7 +223,8 @@ public class SpnegoMediator extends AbstractCamelMediator {
                     binding.getValue(),
                     location,
                     responseLocation);
-        } if (channel instanceof SPChannel) {
+        } if (channel instanceof SPChannel ||
+              channel instanceof SelectorChannel) {
             String type = null;
             String location;
             String responseLocation;
@@ -271,7 +273,6 @@ public class SpnegoMediator extends AbstractCamelMediator {
                     binding.getValue(),
                     location,
                     responseLocation);
-
         } else {
             throw new IdentityMediationException("Unsupported channel type " +
                     channel.getName() + " " + channel.getClass().getName());

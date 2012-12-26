@@ -80,33 +80,12 @@ public class OAuth2RestfulBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
             copyBackState(out.getState(), exchange);
 
-            if (!isEnableAjax()) {
+            httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+            httpOut.getHeaders().put("Pragma", "no-cache");
+            httpOut.getHeaders().put("http.responseCode", 302);
+            httpOut.getHeaders().put("Content-Type", "text/html");
+            httpOut.getHeaders().put("Location", oauth2ResfulLocation);
 
-                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-                httpOut.getHeaders().put("Pragma", "no-cache");
-                httpOut.getHeaders().put("http.responseCode", 302);
-                httpOut.getHeaders().put("Content-Type", "text/html");
-                httpOut.getHeaders().put("Location", oauth2ResfulLocation);
-
-            } else {
-
-                logger.error("Do not use AJAX support with this binding, it BREAKS restful URLs !");
-                Html redir = this.createHtmlRedirectMessage(oauth2ResfulLocation);
-                String marshalledHttpResponseBody = XmlUtils.marshal(redir, "http://www.w3.org/1999/xhtml", "html",
-                        new String[]{"org.w3._1999.xhtml"});
-
-                // TODO : This breaks ... DO NOT USE AJAX BINDING HERE
-
-                marshalledHttpResponseBody = marshalledHttpResponseBody.replace("&amp;access_token", "&access_token");
-
-                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-                httpOut.getHeaders().put("Pragma", "no-cache");
-                httpOut.getHeaders().put("http.responseCode", 200);
-                httpOut.getHeaders().put("Content-Type", "text/html");
-
-                ByteArrayInputStream baos = new ByteArrayInputStream(marshalledHttpResponseBody.getBytes());
-                httpOut.setBody(baos);
-            }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }

@@ -32,6 +32,7 @@ import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
 
 /**
  *
@@ -95,12 +96,16 @@ public abstract class AbstractFederationChannel extends AbstractChannel implemen
         this.targetProvider = targetProvider;
     }
 
-    public FederatedLocalProvider getProvider() {
+    public StatefulProvider getProvider() {
         return provider;
     }
 
-    public void setProvider(FederatedLocalProvider provider) {
+    public void setFederatedProvider(FederatedLocalProvider provider) {
         this.provider = provider;
+    }
+
+    public FederatedLocalProvider getFederatedProvider() {
+        return provider;
     }
 
     public AccountLinkLifecycle getAccountLinkLifecycle() {

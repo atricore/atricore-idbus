@@ -31,13 +31,14 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
 
 /**
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id: FederationChannel.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public interface FederationChannel extends Channel {
+public interface FederationChannel extends StatefulChannel {
 
     String getServiceType();
 
@@ -57,7 +58,9 @@ public interface FederationChannel extends Channel {
 
     FederatedProvider getTargetProvider();
 
-    FederatedLocalProvider getProvider();
+    FederatedLocalProvider getFederatedProvider();
+
+    StatefulProvider getProvider();
 
 
 }

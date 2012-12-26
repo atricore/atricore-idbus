@@ -376,7 +376,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
         BindingChannel bChannel = (BindingChannel) channel;
-        FederatedLocalProvider sp = bChannel.getProvider();
+        FederatedLocalProvider sp = bChannel.getFederatedProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {
@@ -476,7 +476,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
 
         /*
         SPSecurityContext secCtx =
-                (SPSecurityContext) in.getMessage().getState().getLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+                (SPSecurityContext) in.getMessage().getState().getLocalVariable(channel.getFederatedProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
         if (secCtx != null) {
 
