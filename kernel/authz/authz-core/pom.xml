@@ -15,7 +15,7 @@
     <url>http://www.atricore.org</url>
     <name>Atricore IDBus :: Kernel : Authorization Core</name>
     <description>Authorization Core</description>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
 
     <dependencies>
 
@@ -89,6 +89,26 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>${project.artifactId};version=${project.version}</Export-Package>
+                        <Import-Package>
+                            !${project.artifactId},
+                            *
+                        </Import-Package>
+                        <Export-Package>
+                            org.atricore.idbus.kernel.authz.core.dsl,     
+                            org.atricore.idbus.kernel.authz.core.support,
+                            org.atricore.idbus.kernel.authz.core.util,
+                            org.atricore.idbus.kernel.authz.core.xacml2
+                        </Export-Package>
+                    </instructions>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.mmakowski</groupId>

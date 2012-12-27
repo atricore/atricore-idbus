@@ -2,15 +2,20 @@ package org.atricore.idbus.kernel.authz.config.impl
 
 import collection.mutable.ListBuffer
 import org.atricore.idbus.kernel.authz.config.PolicyConfig
-import org.atricore.idbus.kernel.authz.support.Precompiler
 import scala.Array._
 import java.io.File
+import org.apache.commons.logging.{LogFactory, Log}
+import org.atricore.idbus.kernel.authz.core.support.Precompiler
 
 class AuthorizationConfiguration {
+  private[this] val log: Log = LogFactory.getLog( this.getClass )
+
   private val policies = new ListBuffer[PolicyConfig]
 
   def init() {
-    val workingDirectory : String = System.getProperty("karaf.home")
+    log.debug("Precompiling [" + policies.size + "] Authorization Policies");
+
+    val workingDirectory = System.getProperty("karaf.home")
     val precompiler = new Precompiler()
 
     val policyFiles = policies.map( p => p.getPolicyResource().getFile).toArray
@@ -21,15 +26,17 @@ class AuthorizationConfiguration {
     precompiler.execute
   }
 
-  def register(policy: PolicyConfig, properties: java.util.Map[String, _]) = {
+  def register(policy: PolicyConfig, properties: java.util.Map[String, _]) {
     if (policy != null) {
       policies += policy;
+      log.debug("Registered Authorization Policy [" + policy.getPolicyResource().getFilename + "]")
     }
   }
 
-  def unregister(policy: PolicyConfig, properties: java.util.Map[String, _]) = {
+  def unregister(policy: PolicyConfig, properties: java.util.Map[String, _]) {
     if (policy != null) {
       policies -= policy;
+      log.debug("Unregistered Authorization Policy [" + policy.getPolicyResource().getFilename + "]")
     }
   }
 
