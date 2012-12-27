@@ -68,8 +68,18 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>org.atricore.idbus.bundles.scala-compiler-v2_9_1</Bundle-SymbolicName>
-                        <Export-Package>scala.*,ch.*
+                        <Export-Package>
+                           scala.*,
+                           ch.*
                         </Export-Package>
+                        <Import-Package>
+                           sun.misc*;resolution:=optional,
+                           javax.swing*;resolution:=optional,
+                           jline;resolution:=optional,
+                           scala.tools.jline*;resolution:=optional,
+                           org.apache.tools.ant*;resolution:=optional,
+                           *
+                        </Import-Package>
                         <_failok>true</_failok>
                     </instructions>
                     <unpackBundle>true</unpackBundle>

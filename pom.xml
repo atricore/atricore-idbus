@@ -55,7 +55,8 @@
         <module>bundles/pax-web-jetty-v0_7_3</module>
         <module>bundles/wadi-v2_1_2</module>
         <module>bundles/ini4j-v0_5_1</module>
-
+        <module>bundles/scala-library-v2_9_1</module>
+        <module>bundles/scala-compiler-v2_9_1</module>
         <module>capabilities/spmlr2</module>
         <module>capabilities/sso</module>
         <module>capabilities/josso</module>
