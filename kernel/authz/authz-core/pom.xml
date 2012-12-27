@@ -98,11 +98,12 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>${project.artifactId};version=${project.version}</Export-Package>
                         <Import-Package>
-                            !${project.artifactId},
                             *
                         </Import-Package>
                         <Export-Package>
+                            ${project.artifactId},
                             org.atricore.idbus.kernel.authz.core.dsl,     
+                            org.atricore.idbus.kernel.authz.core.dsl.directives,     
                             org.atricore.idbus.kernel.authz.core.support,
                             org.atricore.idbus.kernel.authz.core.util,
                             org.atricore.idbus.kernel.authz.core.xacml2

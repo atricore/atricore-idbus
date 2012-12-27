@@ -2,7 +2,7 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
     <bean id="config"
-          class="org.atricore.idbus.kernel.authz.config.AuthorizationConfiguration"
+          class="org.atricore.idbus.kernel.authz.config.impl.AuthorizationConfiguration"
           init-method="init"
           destroy-method="close"/>
 

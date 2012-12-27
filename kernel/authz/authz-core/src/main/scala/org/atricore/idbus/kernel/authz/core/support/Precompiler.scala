@@ -39,6 +39,7 @@ class Precompiler {
   var info: {def apply(v1: String): Unit} = (value: String) => println(value)
   var contextClass: String = _
   var bootClassName: String = _
+  var classpath: String = _
 
   def execute() = {
 
@@ -57,6 +58,8 @@ class Precompiler {
       }
     }
 
+    engine.classpath = classpath
+    engine.combinedClassPath = true
     engine.classLoader = Thread.currentThread.getContextClassLoader
 
     if (workingDirectory != null) {
