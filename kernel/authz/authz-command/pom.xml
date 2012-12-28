@@ -11,9 +11,9 @@
     </parent>
 
     <groupId>org.atricore.idbus.kernel.authz</groupId>
-    <artifactId>org.atricore.idbus.kernel.authz.config</artifactId>
-    <name>Atricore IDBus :: Kernel : Authorization Configuration</name>
-    <description>OSGi Configuration for Authorization</description>
+    <artifactId>org.atricore.idbus.kernel.authz.command</artifactId>
+    <name>Atricore IDBus :: Kernel : Authorization Commands</name>
+    <description>Atricore Commands for Managing Authorization</description>
     <packaging>bundle</packaging>
 
     <dependencies>
@@ -21,6 +21,32 @@
             <groupId>org.atricore.idbus.kernel.authz</groupId>
             <artifactId>org.atricore.idbus.kernel.authz.core</artifactId>
             <version>${pom.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.authz</groupId>
+            <artifactId>org.atricore.idbus.kernel.authz.config</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.webconsole</groupId>
+            <artifactId>org.apache.karaf.webconsole.gogo</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

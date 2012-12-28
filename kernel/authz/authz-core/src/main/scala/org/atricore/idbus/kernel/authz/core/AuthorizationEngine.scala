@@ -443,11 +443,20 @@ class AuthorizationEngine(var sourceDirectories: Traversable[File] = None, var m
 
   private def loadCompiledPolicy(className: String, from_cache: Boolean = true): Policy = {
     val cl = if (from_cache) {
-      new URLClassLoader(Array(bytecodeDirectory.toURI.toURL), classLoader)
+      //new URLClassLoader(Array(bytecodeDirectory.toURI.toURL), classLoader)
+      new URLClassLoader(
+        Array(
+          bytecodeDirectory.toURI.toURL
+//          new File(System.getProperty("karaf.home") + "/system/org/scala-lang/scala-library/2.9.1/scala-library-2.9.1.jar").toURI.toURL
+//          new File(System.getProperty("karaf.home") + "/system/org/atricore/idbus/kernel/authz/org.atricore.idbus.kernel.authz.core/1.4.0-SNAPSHOT/org.atricore.idbus.kernel.authz.core-1.4.0-SNAPSHOT.jar").toURI.toURL
+        ), Thread.currentThread.getContextClassLoader)
     } else {
       classLoader
     }
     val clazz = try {
+      debug("Policy class = " + Thread.currentThread.getContextClassLoader.loadClass("org.atricore.idbus.kernel.authz.core.Policy"))
+      debug("Using classloader to load policy : " + cl)
+      debug("Context classloader is  : " + Thread.currentThread.getContextClassLoader)
       cl.loadClass(className)
     } catch {
       case e: ClassNotFoundException =>
