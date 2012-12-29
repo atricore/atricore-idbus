@@ -4,7 +4,7 @@
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
 
         <command name="authz/listpolicies">
-            <action class="org.atricore.idbus.capabilities.authz.command.ListPoliciesCommand">
+            <action class="org.atricore.idbus.kernel.authz.command.ListPoliciesCommand">
                 <property name="authorizationConfiguration" ref="config"/>
             </action>
         </command>
