@@ -10,6 +10,6 @@
         </command>
     </command-bundle>
 
-    <reference id="config" cardinality="1..1" timeout="60" interface="org.atricore.idbus.kernel.authz.config.AuthorizationConfiguration"/>
+    <reference id="config" interface="org.atricore.idbus.kernel.authz.config.AuthorizationConfiguration"/>
 
 </blueprint>
