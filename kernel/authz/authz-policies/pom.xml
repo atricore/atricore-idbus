@@ -32,9 +32,9 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Require-Bundle>
-				org.atricore.idbus.kernel.authz.core,
-                                org.atricore.idbus.bundles.scala-library-v2_9_1
-			</Require-Bundle>
+                            org.atricore.idbus.kernel.authz.core,
+                            org.atricore.idbus.bundles.scala-library-v2_9_1
+                        </Require-Bundle>
                         <Export-Package>
                             .
                         </Export-Package>

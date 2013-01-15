@@ -154,6 +154,9 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Require-Bundle>
+                            org.atricore.idbus.kernel.authz.core
+                        </Require-Bundle>
                         <Export-Package>${project.artifactId};version=${project.version}</Export-Package>
                         <Import-Package>
                             !${project.artifactId},

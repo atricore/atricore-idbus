@@ -8,6 +8,12 @@
                 <property name="authorizationConfiguration" ref="config"/>
             </action>
         </command>
+        <command name="authz/testpolicy">
+            <action class="org.atricore.idbus.kernel.authz.command.TestPolicyCommand">
+                <property name="authorizationConfiguration" ref="config"/>
+            </action>
+        </command>
+
     </command-bundle>
 
     <reference id="config" interface="org.atricore.idbus.kernel.authz.config.AuthorizationConfiguration"/>
