@@ -11,7 +11,7 @@ public class OAuth2Client {
 
     protected Properties config;
 
-    protected AccesssTokenRequestor requestor;
+    protected AccessTokenRequestor requestor;
 
     public static void main(String args[]) throws Exception {
         OAuth2Client client = new OAuth2Client();
@@ -23,7 +23,7 @@ public class OAuth2Client {
         config = new Properties();
         config.load(getClass().getResourceAsStream("/oauth2.properties"));
 
-        requestor = new AccesssTokenRequestor(
+        requestor = new AccessTokenRequestor(
                 config.getProperty("oauth2.clientId"),
                 config.getProperty("oauth2.clientSecret"),
                 config.getProperty("oauth2.authorizationServerEndpoint"));

@@ -11,13 +11,71 @@
     </parent>
 
     <groupId>org.atricore.idbus.kernel.authz</groupId>
-    <artifactId>org.atricore.idbus.kernel.authz.core</artifactId>
-    <url>http://www.atricore.org</url>
-    <name>Atricore IDBus :: Kernel : Authorization Core</name>
-    <description>Authorization Core</description>
+    <artifactId>org.atricore.idbus.kernel.authz.command</artifactId>
+    <name>Atricore IDBus :: Kernel : Authorization Commands</name>
+    <description>Atricore Commands for Managing Authorization</description>
     <packaging>bundle</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.authz</groupId>
+            <artifactId>org.atricore.idbus.kernel.authz.core</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.authz</groupId>
+            <artifactId>org.atricore.idbus.kernel.authz.config</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.webconsole</groupId>
+            <artifactId>org.apache.karaf.webconsole.gogo</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.osgi</groupId>
+            <artifactId>spring-osgi-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -96,18 +154,21 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Require-Bundle>
+                            org.atricore.idbus.kernel.authz.core
+                        </Require-Bundle>
                         <Export-Package>${project.artifactId};version=${project.version}</Export-Package>
                         <Import-Package>
+                            !${project.artifactId},
+                            org.apache.aries.blueprint,
+                            org.osgi.service.blueprint.container,
+                            org.osgi.service.blueprint.reflect,
+                            org.atricore.idbus.kernel.authz.core,
                             *
                         </Import-Package>
-                        <Export-Package>
-                            ${project.artifactId},
-                            org.atricore.idbus.kernel.authz.core.dsl,     
-                            org.atricore.idbus.kernel.authz.core.dsl.directives,     
-                            org.atricore.idbus.kernel.authz.core.support,
-                            org.atricore.idbus.kernel.authz.core.util,
-                            org.atricore.idbus.kernel.authz.core.xacml2
-                        </Export-Package>
+                        <Private-Package>
+                            ${project.artifactId}.impl
+                        </Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

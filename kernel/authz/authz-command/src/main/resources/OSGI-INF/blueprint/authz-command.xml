@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+
+        <command name="authz/listpolicies">
+            <action class="org.atricore.idbus.kernel.authz.command.ListPoliciesCommand">
+                <property name="authorizationConfiguration" ref="config"/>
+            </action>
+        </command>
+        <command name="authz/testpolicy">
+            <action class="org.atricore.idbus.kernel.authz.command.TestPolicyCommand">
+                <property name="authorizationConfiguration" ref="config"/>
+            </action>
+        </command>
+
+    </command-bundle>
+
+    <reference id="config" interface="org.atricore.idbus.kernel.authz.config.AuthorizationConfiguration"/>
+
+</blueprint>
