@@ -179,7 +179,7 @@ public class ActiveMQMessageQueueManager implements MessageQueueManager, BundleC
             content = getObject(amqMsg);
             
         } finally {
-            if (consumer != null ) {
+            if (consumer != null) {
                 consumer.close();
             }
         }

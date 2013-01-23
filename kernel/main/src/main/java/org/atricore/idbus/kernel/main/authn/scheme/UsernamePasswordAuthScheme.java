@@ -295,6 +295,8 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
 
         }
 
+        // TODO : Support other LDAP prefixes !!!!
+
         byte[] passBytes;
         String passwordHash = null;
 
