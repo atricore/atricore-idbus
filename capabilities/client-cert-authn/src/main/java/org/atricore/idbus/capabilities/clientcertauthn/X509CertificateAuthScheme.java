@@ -18,24 +18,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.atricore.idbus.idojos.strongauthscheme;
+package org.atricore.idbus.capabilities.clientcertauthn;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.clientcertauthn.validation.X509CertificateValidationException;
+import org.atricore.idbus.capabilities.clientcertauthn.validation.X509CertificateValidator;
 import org.atricore.idbus.kernel.main.authn.scheme.AbstractAuthenticationScheme;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.atricore.idbus.kernel.main.authn.CredentialProvider;
 import org.atricore.idbus.kernel.main.authn.Credential;
-import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
 import sun.security.util.DerValue;
 
+import javax.security.auth.x500.X500Principal;
 import java.io.ByteArrayInputStream;
 import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Certificate-based Authentication Scheme.
@@ -45,15 +46,20 @@ import java.util.StringTokenizer;
  *
  * @org.apache.xbean.XBean element="strong-auth-scheme"
  */
-
 public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
     private static final Log logger = LogFactory.getLog(X509CertificateAuthScheme.class);
 
     /* Component Properties */
     private String _uidOID;
 
+    /* User UID */
+    private String _uid;
+
+    /* X509 Certificate validators */
+    private List<X509CertificateValidator> _validators;
+
     public X509CertificateAuthScheme() {
-        this.setName("strong-authentication");
+        this.setName("client-cert-authentication");
     }
 
     /**
@@ -77,31 +83,65 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
             return false;
         }
 
-        //String knownUsername = getUsername(getKnownCredentials());
-        X509Certificate knownX509Certificate = getX509Certificate(getKnownCredentials());
+        // validate certificate
+        if (_validators != null) {
+            for (X509CertificateValidator validator : _validators) {
+                try {
+                    validator.validate(x509Certificate);
+                } catch (X509CertificateValidationException e) {
+                    logger.error("Certificate is not valid!", e);
+                    return false;
+                }
+            }
+        }
+
+        // TODO STRONG-AUTH: Local certificate storage should be optional
+        List<X509Certificate> knownX509Certificates = getX509Certificates(getKnownCredentials());
 
         StringBuffer buf = new StringBuffer("\n\tSupplied Credential: ");
         buf.append(x509Certificate.getSerialNumber().toString(16));
         buf.append("\n\t\t");
-        buf.append(x509Certificate.getSubjectDN().getName());
-        buf.append("\n\n\tExisting Credential: ");
-        if (knownX509Certificate != null) {
+        buf.append(x509Certificate.getSubjectX500Principal().getName());
+        buf.append("\n\n\tExisting Credentials: ");
+        for (int i=0; i<knownX509Certificates.size(); i++) {
+            X509Certificate knownX509Certificate = knownX509Certificates.get(i);
+            buf.append(i+1);
+            buf.append("\n\t\t");
             buf.append(knownX509Certificate.getSerialNumber().toString(16));
             buf.append("\n\t\t");
-            buf.append(knownX509Certificate.getSubjectDN().getName());
+            buf.append(knownX509Certificate.getSubjectX500Principal().getName());
             buf.append("\n");
         }
 
         logger.debug(buf.toString());
 
         // Validate user identity ...
-        if (!validateX509Certificate(x509Certificate, knownX509Certificate)) {
+        boolean valid = false;
+        X509Certificate validCertificate = null;
+        for (X509Certificate knownX509Certificate : knownX509Certificates) {
+            if (validateX509Certificate(x509Certificate, knownX509Certificate)) {
+                validCertificate = knownX509Certificate;
+                break;
+            }
+        }
+
+        if (validCertificate == null) {
+            return false;
+        }
+
+        // TODO STRONG-AUTH resolve User ID, take it from the certificate ..
+
+        // Find UID
+        // (We could just use getUID() to authenticate user
+        // without previous validation against known certificates?)
+        _uid = resolveUID(validCertificate);
+        if (_uid == null) {
             return false;
         }
 
         if (logger.isDebugEnabled())
             logger.debug("[authenticate()], Principal authenticated : " +
-                    x509Certificate.getSubjectDN()
+                    x509Certificate.getSubjectX500Principal()
             );
 
         // We have successfully authenticated this user.
@@ -180,7 +220,11 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
      * @return the Principal associated with the input credentials.
      */
     public Principal getPrincipal() {
-        return getPrincipal(_inputCredentials);
+        if (_uid != null) {
+            return new CertificatePrincipal(_uid, getX509Certificate(_inputCredentials));
+        } else {
+            return getPrincipal(_inputCredentials);
+        }
     }
 
     /**
@@ -191,8 +235,9 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
      * @return the Principal associated with the input credentials.
      */
     public Principal getPrincipal(Credential[] credentials) {
-        Principal p = getX509Certificate(credentials).getSubjectDN();
-        SimplePrincipal targetPrincipal = null;
+        X509Certificate certificate = getX509Certificate(credentials);
+        X500Principal p = certificate.getSubjectX500Principal();
+        CertificatePrincipal targetPrincipal = null;
 
         if (_uidOID == null) {
             HashMap compoundName = parseCompoundName(p.getName());
@@ -207,10 +252,10 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
                         p.getName()
                 );
 
-            targetPrincipal = new SimplePrincipal(cn);
+            targetPrincipal = new CertificatePrincipal(cn, certificate);
         } else {
             try {
-                byte[] oidValue = getOIDBitStringValueFromCert(getX509Certificate(credentials), _uidOID);
+                byte[] oidValue = getOIDBitStringValueFromCert(certificate, _uidOID);
 
                 if (oidValue == null)
                     logger.error("No value obtained for OID " + _uidOID + ". Cannot create Principal : " +
@@ -218,7 +263,7 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
                     );
 
                 // TODO: what if the OID is a compound value?
-                targetPrincipal = new SimplePrincipal(new String(oidValue));
+                targetPrincipal = new CertificatePrincipal(new String(oidValue), certificate);
             } catch (Exception e) {
                 logger.error("Fatal error obtaining UID value using OID " + _uidOID +
                         ". Cannot create Principal : " + p.getName(), e);
@@ -243,6 +288,19 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
     }
 
     /**
+     * Gets the list of credentials that represent X.509 Certificates.
+     */
+    protected List<X509CertificateCredential> getX509CertificateCredentials(Credential[] credentials) {
+        List<X509CertificateCredential> certCredentials = new ArrayList<X509CertificateCredential>();
+        for (int i = 0; i < credentials.length; i++) {
+            if (credentials[i] instanceof X509CertificateCredential) {
+                certCredentials.add((X509CertificateCredential) credentials[i]);
+            }
+        }
+        return certCredentials;
+    }
+
+    /**
      * Gets the X.509 certificate from the supplied credentials
      *
      * @param credentials
@@ -253,6 +311,20 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
             return null;
 
         return (X509Certificate) c.getValue();
+    }
+
+    /**
+     * Gets the list of X.509 certificates from the supplied credentials
+     *
+     * @param credentials
+     */
+    protected List<X509Certificate> getX509Certificates(Credential[] credentials) {
+        List<X509Certificate> certs = new ArrayList<X509Certificate>();
+        List<X509CertificateCredential> certCredentials = getX509CertificateCredentials(credentials);
+        for (X509CertificateCredential c : certCredentials) {
+            certs.add((X509Certificate) c.getValue());
+        }
+        return certs;
     }
 
     /**
@@ -290,20 +362,77 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
             throw new IllegalArgumentException();
         }
         HashMap hm = new HashMap();
-        StringBuffer sb = new StringBuffer();
-        StringTokenizer st = new StringTokenizer(s, ",");
-        while (st.hasMoreTokens()) {
-            String pair = (String) st.nextToken();
-            int pos = pair.indexOf('=');
-            if (pos == -1) {
-                // XXX
-                // should give more detail about the illegal argument
-                throw new IllegalArgumentException();
+
+        // Escape characters noticed, so use "extended/escaped parser"
+        if ((s.indexOf("\"") > 0) || (s.indexOf("\\") > 0)) {
+            StringBuffer sb = new StringBuffer(s);
+            boolean escaped = false;
+            StringBuffer buff = new StringBuffer();
+            String key = "";
+            String value = "";
+            for (int i = 0; i < sb.length(); i++) {
+                // Quotes are begin/end, so keep a flag of escape-state
+                if ('"' == sb.charAt(i)) {
+                    if (escaped) {
+                        escaped = false;
+                        continue;
+                    } else {
+                        escaped = true;
+                        continue;
+                    }
+
+                    // Single-character escape/advance
+                    // but check the length, too.
+                } else if ('\\' == sb.charAt(i)) {
+                    i++;
+                    if (i >= sb.length()) {
+                        break;
+                    }
+
+                    // Split on '=' between key/value
+                } else if ('=' == sb.charAt(i)) {
+                    key = buff.toString();
+                    buff = new StringBuffer();
+                    continue;
+
+                    // We've reached a valid delimiter, as long as we're not
+                    // still reading 'escaped' data
+                } else if ((',' == sb.charAt(i)) && (!escaped)) {
+                    value = buff.toString();
+                    buff = new StringBuffer();
+
+                    key = key.trim().toLowerCase();
+                    value = value.trim();
+                    hm.put(key, value);
+
+                    continue;
+                }
+                buff.append(sb.charAt(i));
+            }// for...
+
+            // And the last one...
+            value = buff.toString();
+            key = key.trim().toLowerCase();
+            value = value.trim();
+            hm.put(key, value);
+
+        } else { // Otherwise, no (known) escape characters, so continue on with
+            // the faster parse.
+            StringTokenizer st = new StringTokenizer(s, ",");
+            while (st.hasMoreTokens()) {
+                String pair = (String) st.nextToken();
+                int pos = pair.indexOf('=');
+                if (pos == -1) {
+                    // XXX
+                    // should give more detail about the illegal argument
+                    throw new IllegalArgumentException();
+                }
+                String key = pair.substring(0, pos).trim().toLowerCase();
+                String val = pair.substring(pos + 1, pair.length()).trim();
+                hm.put(key, val);
             }
-            String key = pair.substring(0, pos).trim().toLowerCase();
-            String val = pair.substring(pos + 1, pair.length()).trim();
-            hm.put(key, val);
         }
+
         return hm;
     }
 
@@ -318,7 +447,7 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
             throw new IllegalArgumentException("extension not found for OID : " + oid);
         }
         if (dervalue.tag != DerValue.tag_BitString) {
-            throw new IllegalArgumentException("extension vaue for OID not of type BIT_STRING: " + oid);
+            throw new IllegalArgumentException("extension value for OID not of type BIT_STRING: " + oid);
         }
 
         extensionValue = dervalue.getBitString();
@@ -328,6 +457,32 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
         System.arraycopy(extensionValue, 2, extensionValueBytes, 0, extensionValueBytes.length);
 
         return extensionValueBytes;
+    }
+
+    protected String resolveUID(X509Certificate cert) throws SSOAuthenticationException {
+        try {
+
+            // If CN is used, UID is CN
+
+            // If DN is used, we need to resolve it using the credentials store
+
+            // If Certificate is used, we need to resolve it using the credential store
+
+            // If Email is used, we need to resolve it using the credential store
+
+            Principal dn = cert.getSubjectDN();
+
+            java.util.Collection an = (java.util.Collection) cert.getSubjectAlternativeNames();
+
+            X500Principal x500 = cert.getSubjectX500Principal();
+
+            return null;
+        } catch (Exception e) {
+            throw new SSOAuthenticationException(e);
+        }
+
+
+
     }
 
     /*------------------------------------------------------------ Properties
@@ -346,5 +501,12 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
         return _uidOID;
     }
 
+    public List<X509CertificateValidator> getValidators() {
+        return _validators;
+    }
+
+    public void setValidators(List<X509CertificateValidator> validators) {
+        _validators = validators;
+    }
 
 }

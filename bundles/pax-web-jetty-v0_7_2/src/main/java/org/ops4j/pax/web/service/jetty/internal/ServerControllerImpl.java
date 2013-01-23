@@ -9,6 +9,7 @@ import javax.servlet.Servlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.security.SslSocketConnector;
 import org.osgi.service.http.HttpContext;
 import org.ops4j.pax.web.service.spi.Configuration;
 import org.ops4j.pax.web.service.spi.ServerController;
@@ -323,6 +324,7 @@ class ServerControllerImpl
 
                 java.lang.Integer maxHeaderBuffSize = null;
                 try {
+                    // Since we can't extend the interface, use reflection as a hack.
                     Method m = m_configuration.getClass().getMethod("getHeaderBufferSize");
                     maxHeaderBuffSize = (Integer) m.invoke(m_configuration);
                     if (maxHeaderBuffSize != null)
@@ -335,6 +337,36 @@ class ServerControllerImpl
                 } catch (Exception e) {
                     LOG.error("Configuration does not support max header buffer size configuraiton");
                 }
+
+                String trustStore = "";
+                String trustPassword = "";
+                String trustStoreType = "";
+
+                try {
+                    // Since we can't extend the interface, use reflection as a hack.
+                    Method m1 = m_configuration.getClass().getMethod("getTrustStore");
+                    trustStore = (String) m1.invoke(m_configuration);
+                    if (trustStore == null || "".equals(trustStore))
+                        trustStore = defaultTrustStore;
+
+                    Method m2 = m_configuration.getClass().getMethod("getTrustPassword");
+                    trustPassword = (String) m2.invoke(m_configuration);
+                    if (trustPassword == null || "".equals(trustPassword))
+                        trustPassword = defaultTrustPassword;
+
+                    Method m3 = m_configuration.getClass().getMethod("getTrustStoreType");
+                    trustStoreType = (String) m3.invoke(m_configuration);
+                    if (trustStoreType == null || "".equals(trustStoreType))
+                        trustStoreType = defaultTrustStoreType;
+
+                    LOG.debug("Setting HTTPS trust store to " + trustStore + "("+trustStoreType+")");
+
+                } catch (NoSuchMethodException e) {
+                    LOG.warn("Configuration does not support HTTPS trust store configuration properties");
+                } catch (Exception e) {
+                    LOG.error("Configuration does not support HTTPS trust store configuration properties");
+                }
+
 
                 if( m_configuration.isHttpEnabled() )
                 {
@@ -376,6 +408,17 @@ class ServerControllerImpl
                         {
                             m_httpSecureConnector = secureConnector;
                         }
+
+                        //
+                        if (secureConnector instanceof SslSocketConnector) {
+                            LOG.debug("Configuring HTTPS trust store to " + trustStore + "("+trustStoreType+") for SSL Connector " + secureConnector.getName());
+                            SslSocketConnector sslConnector = (SslSocketConnector) secureConnector;
+                            sslConnector.setTruststore(trustStore);
+                            sslConnector.setTruststoreType(trustStoreType);
+                            sslConnector.setTrustPassword(trustPassword);
+
+                        }
+
                         if (maxHeaderBuffSize != null)
                             secureConnector.setHeaderBufferSize(maxHeaderBuffSize);
 

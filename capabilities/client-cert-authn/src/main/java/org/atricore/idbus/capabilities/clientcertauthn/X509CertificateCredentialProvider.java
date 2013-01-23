@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.idojos.strongauthscheme;
+package org.atricore.idbus.capabilities.clientcertauthn;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

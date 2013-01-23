@@ -139,7 +139,7 @@ public class SingleSignOnProducer extends SSOProducer {
                     logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessIDPInitiatedSSO START");
 
                 // New IDP Initiated Single Sign-On
-                doProcessIDPInitiantedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
+                doProcessIDPInitiatedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
 
                 if (logger.isTraceEnabled())
                     logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessIDPInitiatedSSO END");
@@ -221,7 +221,7 @@ public class SingleSignOnProducer extends SSOProducer {
     /**
      * This procedure will handle an IdP-initiated (aka IdP unsolicited response) request.
      */
-    protected void doProcessIDPInitiantedSSO(CamelMediationExchange exchange, IDPInitiatedAuthnRequestType idpInitiatedAuthnRequest) throws SSOException {
+    protected void doProcessIDPInitiatedSSO(CamelMediationExchange exchange, IDPInitiatedAuthnRequestType idpInitiatedAuthnRequest) throws SSOException {
 
 
         logger.debug("Processing IDP Initiated Single Sign-On with " +

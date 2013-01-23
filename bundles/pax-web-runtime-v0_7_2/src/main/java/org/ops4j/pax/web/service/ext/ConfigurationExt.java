@@ -9,4 +9,10 @@ public interface ConfigurationExt extends Configuration {
 
     Integer getHeaderBufferSize();
 
+    String getTrustStore();
+
+    String getTrustPassword();
+
+    String getTrustStoreType();
+
 }

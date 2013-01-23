@@ -93,7 +93,6 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         if (logger.isDebugEnabled())
             logger.debug("Using appId :" + appId);
 
-
         // Create destination with back/to and HTTP-Redirect binding
         EndpointDescriptor destination = new EndpointDescriptorImpl("JOSSO11BackToUrl",
                 "AssertionConsumerService",
