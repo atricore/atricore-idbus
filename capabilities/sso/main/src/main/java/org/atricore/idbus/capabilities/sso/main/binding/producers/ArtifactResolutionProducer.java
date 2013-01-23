@@ -86,12 +86,6 @@ public class ArtifactResolutionProducer extends SSOProducer {
         // Recover original SAML Msg
         MessageQueueManager aqm = getArtifactQueueManager();
         SamlMessageWrapper wrapper = (SamlMessageWrapper) aqm.pullMessage(new ArtifactImpl(samlArt.getMessageHandle()));
-        if (wrapper ==null) {
-            synchronized (this) {
-                wait(100);
-                wrapper = (SamlMessageWrapper) aqm.pullMessage(new ArtifactImpl(samlArt.getMessageHandle()));
-            }
-        }
         Object samlMsg = wrapper.getMsg();
         String samlType = wrapper.getType();
 
