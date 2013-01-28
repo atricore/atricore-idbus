@@ -55,6 +55,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
         <property name="jmsProviderDestinationName" value="Queue/IDBUS/Artifact"/>
         <property name="receiveTimeout" value="${aqm.receiveTimeout}"/>
+        <property name="artifactTTL" value="${aqm.artifactTTL}"/>
 
         <property name="artifactGenerator">
             <bean class="org.atricore.idbus.kernel.main.mediation.ArtifactGeneratorImpl"/>

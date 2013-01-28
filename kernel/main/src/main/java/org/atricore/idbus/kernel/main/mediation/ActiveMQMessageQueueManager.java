@@ -40,6 +40,8 @@ public class ActiveMQMessageQueueManager implements MessageQueueManager, BundleC
 
     private long receiveTimeout = 30000L;
 
+    private long artifactTTL = 600L;
+
     public void afterPropertiesSet() throws Exception {
         init();
     }
@@ -101,6 +103,7 @@ public class ActiveMQMessageQueueManager implements MessageQueueManager, BundleC
             connection.start();
 
             log.trace("ReceiveTimeout:" + receiveTimeout);
+            log.trace("Artifact time to live: " + artifactTTL);
 
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             queue = session.createQueue(jmsProviderDestinationName);
@@ -250,6 +253,7 @@ public class ActiveMQMessageQueueManager implements MessageQueueManager, BundleC
             log.debug("Push Message "+content.getClass().getName()+" for artifact " + artifact.getContent());
 
         message.setStringProperty("artifact", artifact.getContent());
+        producer.setTimeToLive(artifactTTL);
         producer.send(message);
 
         return artifact;
@@ -304,4 +308,11 @@ public class ActiveMQMessageQueueManager implements MessageQueueManager, BundleC
         this.receiveTimeout = receiveTimeout;
     }
 
+    public long getArtifactTTL() {
+        return artifactTTL;
+    }
+
+    public void setArtifactTTL(long artifactTTL) {
+        this.artifactTTL = artifactTTL;
+    }
 }
