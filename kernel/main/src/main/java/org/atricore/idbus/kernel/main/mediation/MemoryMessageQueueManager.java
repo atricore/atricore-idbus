@@ -26,7 +26,6 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
 
     private Thread monitorThread;
 
-    // TODO : Purge old artifacts!
     private Map<String, Message> msgs = new HashMap<String, Message>();
 
     public ConnectionFactory getConnectionFactory() {

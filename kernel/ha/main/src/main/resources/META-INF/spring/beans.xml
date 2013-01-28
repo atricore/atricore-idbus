@@ -46,6 +46,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <property name="deleteAllMessagesOnStartup" value="false"/>
         <property name="useJmx" value="true"/>
         <property name="advisorySupport" value="true"/>
+        <property name="persistent" value="false"/>
 
         <property name="plugins">
             <bean class="org.apache.activemq.broker.util.LoggingBrokerPlugin">
@@ -91,8 +92,11 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <!-- Persistence Adapter                   -->
         <!-- ===================================== -->
         <!-- If we need to store messages so that they're not lost on startups (Recommended) -->
+
+        <!--
         <property name="persistenceAdapter">
             <bean class="org.apache.activemq.store.memory.MemoryPersistenceAdapter"/>
+        -->
             <!--
             <bean id="store" class="org.apache.activemq.store.kahadb.KahaDBStore" >
                 <property name="directory" value="${karaf.base}/data/activemq-idbus/kahadb"/>
@@ -111,7 +115,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
                 <property name="dataSource" ref="aqmDs"/>
             </bean>
               -->
+        <!--
         </property>
+        -->
+
         <!--
         <bean id="aqmDs" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
            <osgix:managed-properties persistent-id="org.atricore.idbus.kernel.main.aqm.ds"/>
@@ -147,6 +154,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="aqm.networkUri">multicast://224.1.2.6:6123</prop>
         <prop key="aqm.sendTimeout">30000</prop>
         <prop key="aqm.receiveTimeout">30000</prop>
+        <prop key="aqm.artifactTTL">6000</prop>
         <prop key="aqm.useCompression">false</prop>
         <!-- EHCache properties -->
         <prop key="ehcache.config">file:${karaf.base}/etc/ehcache-ha.xml</prop>
