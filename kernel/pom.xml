@@ -104,6 +104,7 @@
         <module>main</module>
         <module>ha</module>
         <module>web</module>
+        <module>monitoring</module>
         <!--
         <module>agent</module>
         -->
