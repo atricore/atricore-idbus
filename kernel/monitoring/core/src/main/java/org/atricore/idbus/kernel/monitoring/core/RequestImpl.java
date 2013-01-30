@@ -42,7 +42,7 @@ public class RequestImpl implements Request {
         return Collections.unmodifiableSet(parameters.keySet());
     }
 
-    public Collection<String> getParameterValues(String paramString) {
+    public Collection<String> getParameterValues(String key) {
         return Collections.unmodifiableCollection(parameters.values());
     }
 
