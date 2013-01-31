@@ -38,6 +38,7 @@
 
     <modules>
         <module>core</module>
+        <module>builtin</module>
         <module>command</module>
     </modules>
 

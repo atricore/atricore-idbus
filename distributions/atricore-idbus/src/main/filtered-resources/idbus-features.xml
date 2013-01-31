@@ -17,6 +17,20 @@
         <feature version="${version}">atricore-openid</feature>
         <feature version="${version}">atricore-oauth2</feature>
         <feature version="${version}">atricore-idbus-ui</feature>
+        <feature version="${version}">atricore-monitoring</feature>
+    </feature>
+
+    <feature name="atricore-monitoring" version="${version}">
+        <feature version="${version}">atricore-monitoring-core</feature>
+    </feature>
+
+    <feature name="atricore-monitoring-core" version="${version}">
+        <bundle>mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.core/${idbus.kernel.version}</bundle>
+    </feature>
+
+    <feature name="atricore-monitoring-builtin" version="${version}">
+        <bundle>mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.builtin/${idbus.kernel.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.command/${idbus.kernel.version}</bundle>
     </feature>
 
     <feature name="atricore-ha" version="${version}">
@@ -60,6 +74,7 @@
         <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.main/${idbus.kernel.version}</bundle>
         <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.planning/${idbus.kernel.version}</bundle>
         <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.web/${idbus.kernel.version}/war</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.main/${idbus.kernel.version}</bundle>
     </feature>
 
     <feature name="atricore-connectors" version="${version}">
