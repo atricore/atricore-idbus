@@ -50,4 +50,9 @@
                     cardinality="1..1"
                     timeout="60"/>
 
+    <osgi:reference id="monitoring"
+                    interface="org.atricore.idbus.kernel.monitoring.core.MonitoringServer"
+                    cardinality="1..1"
+                    timeout="60"/>
+
 </beans>

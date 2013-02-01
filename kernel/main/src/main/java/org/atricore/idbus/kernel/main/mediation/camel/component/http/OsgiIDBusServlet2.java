@@ -27,12 +27,14 @@ import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.camel.CamelIdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
+import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.mortbay.util.ajax.Continuation;
 import org.mortbay.util.ajax.ContinuationSupport;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.service.importer.ServiceProxyDestroyedException;
+import org.springframework.util.StopWatch;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 
@@ -59,6 +61,8 @@ import java.util.*;
 public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
     private static final Log logger = LogFactory.getLog(OsgiIDBusServlet2.class);
+
+    private static final String ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME = "AtricoreWebProcessingTimeMs";
 
     private IdentityMediationUnitRegistry registry;
 
@@ -122,11 +126,16 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             }
 
             // Do we actually service this request or we proxy it ?
+            StopWatch sw = new StopWatch("http-request-processing-time-ms");
+            sw.start();
             if (!followRedirects || !internalProcessingPolicy.match(req)) {
                 doService(req, res);
             } else {
                 doProxyInternally(req, res);
             }
+            sw.stop();
+            lookupMonitoring().recordResponseTimeMetric(ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME,
+                    sw.getTotalTimeMillis());
         } finally {
             if (logger.isTraceEnabled()) {
 
@@ -737,6 +746,20 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             logger.debug("Found Identity Mediation Unit Registry " + r);
         return r;
 
+    }
+
+    protected MonitoringServer lookupMonitoring() throws ServletException {
+
+        org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext wac =
+                (org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext)
+                        WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+
+        if (wac == null) {
+            logger.error("Spring application context not found in servlet context");
+            throw new ServletException("Spring application context not found in servlet context");
+        }
+
+        return (MonitoringServer)wac.getBean("monitoring");
     }
 
     protected class WHttpServletResponse extends HttpServletResponseWrapper {
