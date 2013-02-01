@@ -126,16 +126,16 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             }
 
             // Do we actually service this request or we proxy it ?
-            StopWatch sw = new StopWatch("http-request-processing-time-ms");
-            sw.start();
             if (!followRedirects || !internalProcessingPolicy.match(req)) {
                 doService(req, res);
             } else {
+                StopWatch sw = new StopWatch("http-request-processing-time-ms");
+                sw.start();
                 doProxyInternally(req, res);
+                sw.stop();
+                lookupMonitoring().recordResponseTimeMetric(ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME,
+                        sw.getTotalTimeMillis());
             }
-            sw.stop();
-            lookupMonitoring().recordResponseTimeMetric(ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME,
-                    sw.getTotalTimeMillis());
         } finally {
             if (logger.isTraceEnabled()) {
 
