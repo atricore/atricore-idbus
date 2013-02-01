@@ -181,7 +181,6 @@
                             org.atricore.idbus.kernel.main.mediation; version=${pom.version},
                             org.atricore.idbus.kernel.main.mediation.osgi; version=${pom.version},
                             org.atricore.idbus.kernel.main.mediation.camel.component.http; version=${pom.version},
-                            org.atricore.idbus.kernel.monitoring.core; version=${pom.version},
                             *
                         </Import-Package>
                         <Spring-Context>*;publish-context:=true;wait-for-dependencies:=false;create-asynchronously:=true;timeout:=none</Spring-Context>
