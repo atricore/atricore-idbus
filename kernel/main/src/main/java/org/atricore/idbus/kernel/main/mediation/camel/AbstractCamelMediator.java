@@ -38,6 +38,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
@@ -75,6 +76,8 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     ApplicationContext applicationContext;
 
+    private MonitoringServer mServer;
+
     public String getIdBusNode() {
         return kernelConfigCtx.getProperty("idbus.node");
     }
@@ -93,12 +96,22 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
         context = container.getContext();
         registry = (JndiRegistry) context.getRegistry();
 
+        // Get the application context for this mediator
         ApplicationContext applicationContext = registry.lookup( "applicationContext", ApplicationContext.class );
+
+        // Get Kernel configuration
         Map<String, ConfigurationContext> kernelCfgCtxs = applicationContext.getBeansOfType(ConfigurationContext.class);
         assert !kernelCfgCtxs.isEmpty() : "No Kernel Configuration context found";
         assert kernelCfgCtxs.values().size() == 1 : "Too many Kernel Context configurations found " + kernelCfgCtxs.values().size();
-
         kernelConfigCtx = kernelCfgCtxs.values().iterator().next();
+
+        // Get Monitoring server
+        Map<String, MonitoringServer> mServers = applicationContext.getBeansOfType(MonitoringServer.class);
+        if (!mServers.isEmpty()) {
+            // We found a monitoring server, but it should be only one
+            assert mServers.values().size() == 1 : "Too many Monitoring Servers found " + kernelCfgCtxs.values().size();
+            mServer = mServers.values().iterator().next();
+        }
 
         logger.info("Initialized Camel Mediator " + this.getClass().getName() + " with unitContainer " +
                 (unitContainer != null ? unitContainer.getClass().getName() : "null") + " for IDBus Node : " + getIdBusNode());
@@ -140,6 +153,14 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     public void setBindingFactory(MediationBindingFactory bindingFactory) {
         this.bindingFactory = bindingFactory;
+    }
+
+    public MonitoringServer getMonitoringServer() {
+        return mServer;
+    }
+
+    public void setMonitoringServer(MonitoringServer mServer) {
+        this.mServer = mServer;
     }
 
     protected void setupIdentityProviderEndpoints(SPChannel SPChannel) throws

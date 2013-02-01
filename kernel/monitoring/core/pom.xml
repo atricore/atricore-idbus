@@ -39,13 +39,10 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>${project.artifactId};version=${project.version}</Export-Package>
+                        <Export-Package>org.atricore.idbus.kernel.monitoring.core.*;version=${pom.version}</Export-Package>
                         <Import-Package>
                             *
                         </Import-Package>
-                        <Export-Package>
-                            ${project.artifactId}
-                        </Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -62,6 +59,7 @@
                         <include>**/*Test.*</include>
                         <include>**/*Suite.*</include>
                     </includes>
+                    org.atricore.idbus.kernel.monitoring.core
                 </configuration>
             </plugin>
         </plugins>

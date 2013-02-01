@@ -76,6 +76,7 @@ import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.atricore.idbus.kernel.planning.*;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
@@ -116,69 +117,50 @@ public class SingleSignOnProducer extends SSOProducer {
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
 
+        long s = System.currentTimeMillis();
+        String metric = getClass().getName();
         try {
 
             String thread = Thread.currentThread().getName();
 
             if (content instanceof IDPInitiatedAuthnRequestType) {
-
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessIDPInitiatedSSO START");
-
                 // New IDP Initiated Single Sign-On
+                metric += "doProcessIDPInitiatedSSO";
                 doProcessIDPInitiatedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
-
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessIDPInitiatedSSO END");
             } else if (content instanceof SecTokenAuthnRequestType) {
 
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessAssertIdentityWithBasicAuth START");
 
                 // New Assert Identity with Basic authentication
+                metric += "doProcessAssertIdentityWithBasicAuth";
                 doProcessAssertIdentityWithBasicAuth(exchange, (SecTokenAuthnRequestType) content);
 
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessAssertIdentityWithBasicAuth END");
+
             } else if (content instanceof AuthnRequestType) {
 
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessAuthnRequest START");
+                metric += "doProcessAuthnRequest";
 
                 // New SP Initiated Single SignOn
                 doProcessAuthnRequest(exchange, (AuthnRequestType) content, in.getMessage().getRelayState());
 
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessAuthnRequest END");
             } else if (content instanceof SSOClaimsResponse) {
 
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessClaimsResponse START");
-
+                metric += "doProcessClaimsResponse";
                 // Processing Claims to create authn resposne
                 doProcessClaimsResponse(exchange, (SSOClaimsResponse) content);
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessClaimsResponse END");
             } else if (content instanceof PolicyEnforcementResponse) {
 
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessPolicyEnforcementResponse START");
-
+                metric += "doProcessPolicyEnforcementResponse";
                 // Process policy enforcement response
                 doProcessPolicyEnforcementResponse(exchange, (PolicyEnforcementResponse) content);
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessPolicyEnforcementResponse END");
             } else if (content instanceof SPAuthnResponseType) {
 
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessProxyResponse START");
-
+                metric += "doProcessProxyResponse";
                 // Process proxy responses
                 doProcessProxyResponse(exchange, (SPAuthnResponseType) content);
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessProxyResponse END");
 
             } else {
+                metric += "Unknonw";
+
                 throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                         null,
                         StatusDetails.UNKNOWN_REQUEST.getValue(),
@@ -201,6 +183,11 @@ public class SingleSignOnProducer extends SSOProducer {
                     StatusDetails.UNKNOWN_REQUEST.getValue(),
                     content.getClass().getName(),
                     e);
+        } finally {
+            MonitoringServer mServer = mediator.getMonitoringServer();
+            long e = System.currentTimeMillis();
+            mServer.recordResponseTimeMetric(metric, e - s);
+
         }
     }
 

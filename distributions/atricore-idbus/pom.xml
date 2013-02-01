@@ -1231,7 +1231,12 @@
             <version>${idbus.kernel.version}</version>
             <type>pom</type>
         </dependency>
-
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.monitoring</groupId>
+            <artifactId>monitoring</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.monitoring</groupId>
             <artifactId>org.atricore.idbus.kernel.monitoring.core</artifactId>

@@ -46,9 +46,7 @@
                         <Import-Package>
                             *
                         </Import-Package>
-                        <Export-Package>
-                            ${project.artifactId}
-                        </Export-Package>
+                        <Export-Package>org.atricore.idbus.kernel.monitoring.builtin.*;version=${pom.version}</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

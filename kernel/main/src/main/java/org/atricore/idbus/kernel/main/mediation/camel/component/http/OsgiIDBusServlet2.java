@@ -64,6 +64,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
     private static final String ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME = "AtricoreWebProcessingTimeMs";
 
+    private static final String ATRICORE_WEB_BROWSER_PROCESSING_TIME_MS_METRIC_NAME = "AtricoreWebBrowserProcessingTimeMs";
+
     private IdentityMediationUnitRegistry registry;
 
     private boolean followRedirects;
@@ -91,7 +93,11 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         String thread = Thread.currentThread().getName();
         String pathInfo = req.getPathInfo();
 
+        MonitoringServer mServer = lookupMonitoring();
+
         try {
+
+
 
             if (logger.isTraceEnabled()) {
                 String parentThread = req.getHeader("IDBUS-PROXIED-REQUEST");
@@ -133,16 +139,15 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                 sw.start();
                 doProxyInternally(req, res);
                 sw.stop();
-                lookupMonitoring().recordResponseTimeMetric(ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME,
+                mServer.recordResponseTimeMetric(ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME,
                         sw.getTotalTimeMillis());
             }
         } finally {
             if (logger.isTraceEnabled()) {
-
                 String parentThread = req.getHeader("IDBUS-PROXIED-REQUEST");
                 String proxied = parentThread != null ? "PROXIED" : "BROWSER";
-
                 long ended = System.currentTimeMillis();
+                mServer.recordResponseTimeMetric(ATRICORE_WEB_BROWSER_PROCESSING_TIME_MS_METRIC_NAME, ended - started);
                 logger.trace("IDBUS-PERF " + proxied + " ["+thread+"] "+ (parentThread != null ? "{"+parentThread+"}" : "")+ " " + pathInfo + " END: " + (ended - started) + " ms");
             }
 
