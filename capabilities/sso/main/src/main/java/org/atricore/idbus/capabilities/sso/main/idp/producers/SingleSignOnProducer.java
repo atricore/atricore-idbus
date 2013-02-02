@@ -118,7 +118,7 @@ public class SingleSignOnProducer extends SSOProducer {
         in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
 
         long s = System.currentTimeMillis();
-        String metric = getClass().getName();
+        String metric = "ssoIdP";
         try {
 
             String thread = Thread.currentThread().getName();
