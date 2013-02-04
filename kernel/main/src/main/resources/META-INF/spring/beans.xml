@@ -58,11 +58,18 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     <!-- For some reason, we can't export this using Spring-DM,
     therefore we created a convininece Factory located in the EHCache bundle -->
+    <!--
     <bean id="cacheManager" scope="singleton"
             factory-bean="cacheManagerFactory"
             factory-method="getCacheManager"
             class="net.sf.ehcache.CacheManager"
             depends-on="aqmBroker"/>
+    -->
+    <bean id="cacheManager" scope="singleton"
+            factory-bean="cacheManagerFactory"
+            factory-method="getCacheManager"
+            class="net.sf.ehcache.CacheManager" />
+
 
     <osgi:service id="cacheManagerFactoryExporter" ref="cacheManagerFactory"
                   interface="org.atricore.idbus.bundles.ehcache.CacheManagerFactory"/>
@@ -71,19 +78,12 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- Atricore IDBus JMS Broker definition -->
     <!-- =================================================================== -->
 
+    <!--
     <bean name="aqmBroker" class="org.apache.activemq.xbean.XBeanBrokerService">
         <property name="brokerName" value="${aqm.brokerName}"/>
         <property name="dataDirectory" value="data/activemq-idbus"/>
         <property name="deleteAllMessagesOnStartup" value="true"/>
         <property name="useJmx" value="false"/>
-
-        <!--
-        <property name="managementContext">
-            <bean class="org.apache.activemq.broker.jmx.ManagementContext">
-                <constructor-arg ref="mBeanServer"/>
-            </bean>
-        </property>
-        -->
 
         <property name="transportConnectors">
             <list>
@@ -96,6 +96,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         </property>
 
     </bean>
+    -->
+
 
     <!-- =================================================================== -->
     <!-- Mediation Engine setup                                              -->
