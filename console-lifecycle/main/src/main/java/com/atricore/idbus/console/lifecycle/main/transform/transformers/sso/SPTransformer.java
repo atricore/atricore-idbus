@@ -399,6 +399,8 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         setPropertyRef(sessionStore, "cacheManager", providerInternalSaml2.getIdentityAppliance().getName() + "-cache-manager");
         setPropertyValue(sessionStore, "cacheName", providerInternalSaml2.getIdentityAppliance().getName() +
                 "-" + sp.getName() + "-sessionsCache");
+
+        setPropertyValue(sessionManager, "metricPrefix", appliance.getName() + ":" + sp.getName());
         
         // Wiring
         setPropertyBean(sessionManager, "sessionIdGenerator", sessionIdGenerator);
