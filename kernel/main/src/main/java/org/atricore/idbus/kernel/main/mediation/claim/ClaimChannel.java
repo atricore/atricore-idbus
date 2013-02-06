@@ -34,6 +34,6 @@ public interface ClaimChannel extends StatefulChannel {
 
     int getPriority();
 
-    FederatedLocalProvider getProvider();
+    FederatedLocalProvider getFederatedProvider();
 
 }

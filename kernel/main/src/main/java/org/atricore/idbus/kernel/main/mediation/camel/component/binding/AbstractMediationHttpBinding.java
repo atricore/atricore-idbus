@@ -157,7 +157,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             provider = bc.getFederatedProvider();
         } else if (channel instanceof ClaimChannel) {
             ClaimChannel cc = (ClaimChannel) channel;
-            provider = cc.getProvider();
+            provider = cc.getFederatedProvider();
         } else if (channel instanceof SelectorChannel) {
             SelectorChannel sc = (SelectorChannel) channel;
             provider = sc.getProvider();

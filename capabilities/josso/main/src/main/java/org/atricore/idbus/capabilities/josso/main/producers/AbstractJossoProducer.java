@@ -102,7 +102,7 @@ public abstract class AbstractJossoProducer extends AbstractCamelProducer<CamelM
         } else if (channel instanceof BindingChannel) {
             return ((BindingChannel) channel).getFederatedProvider();
         } else if (channel instanceof ClaimChannel) {
-            return ((ClaimChannel) channel).getProvider();
+            return ((ClaimChannel) channel).getFederatedProvider();
         } else {
             throw new IllegalStateException("Configured channel does not support Federated Provider : " + channel);
         }

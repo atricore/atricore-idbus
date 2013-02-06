@@ -23,6 +23,7 @@ package org.atricore.idbus.kernel.main.mediation.claim;
 
 import org.atricore.idbus.kernel.main.mediation.AbstractChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
 
 /**
  *
@@ -35,11 +36,15 @@ public class AbstractClaimChannel extends AbstractChannel implements ClaimChanne
 
     private FederatedLocalProvider provider;
 
-    public FederatedLocalProvider getProvider() {
+    public FederatedLocalProvider getFederatedProvider() {
         return provider;
     }
 
-    public void setProvider(FederatedLocalProvider provider) {
+    public StatefulProvider getProvider() {
+        return provider;
+    }
+
+    public void setFederatedProvider(FederatedLocalProvider provider) {
         this.provider = provider;
     }
 
