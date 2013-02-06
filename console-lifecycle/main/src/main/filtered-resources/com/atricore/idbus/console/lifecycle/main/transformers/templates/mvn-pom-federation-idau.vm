@@ -292,7 +292,7 @@
 
         <dependency>
             <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket</artifactId>
+            <artifactId>wicket-core</artifactId>
             <version>${apache-wicket.version}</version>
             <scope>provided</scope>
             <exclusions>
