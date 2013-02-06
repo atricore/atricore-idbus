@@ -32,6 +32,7 @@ import org.atricore.idbus.kernel.main.session.exceptions.TooManyOpenSessionsExce
 import org.atricore.idbus.kernel.main.store.session.SessionStore;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.atricore.idbus.kernel.main.util.IDBusConfigurationConstants;
+import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -78,6 +79,10 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
     private long _statsCurrentSessions;
 
+    private String _metricPrefix;
+
+    private MonitoringServer _mServer;
+
     /**
      * This implementation uses a MemoryStore and a defaylt Session Id generator.
      */
@@ -108,6 +113,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
     private SessionStore _store;
     private SessionIdGenerator _idGen;
+
+    // SSO Sessions monitor
     private SessionMonitor _monitor;
 
     private ScheduledThreadPoolExecutor stpe;
@@ -143,6 +150,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         logger.info("[initialize()] : InvalidateExceedingSessions.=" + _invalidateExceedingSessions);
         logger.info("[initialize()] : SesisonMonitorInteval.......=" + _sessionMonitorInterval);
         logger.info("[initialize()] : Node........................=" + _node);
+        logger.info("[initialize()] : Monitoring Server...........=" + (_mServer != null ? "FOUND" : "NOT FOUND"));
 
         // Start session monitor.
 
@@ -228,19 +236,19 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         _store.save(session);
 
         // Update statistics:
-        synchronized (this) {
-            // Number of created sessions
-            _statsCreatedSessions ++;
 
-            // Number of valid sessions (should match the store count!)
-            _statsCurrentSessions ++;
+        // Number of created sessions
+        _statsCreatedSessions ++;
 
-            // Max number of concurrent sessions
-            if (_statsMaxSessions < _statsCurrentSessions) {
-                _statsMaxSessions = _statsCurrentSessions;
-                logger.info("Max concurrent SSO Sessions " + _statsMaxSessions);
-            }
+        // Number of valid sessions (should match the store count!)
+        _statsCurrentSessions ++;
+        if (_mServer != null)
+            _mServer.recordMetric(_metricPrefix + ":ssoSessions", _statsCurrentSessions);
 
+        // Max number of concurrent sessions
+        if (_statsMaxSessions < _statsCurrentSessions) {
+            _statsMaxSessions = _statsCurrentSessions;
+            logger.info("Max concurrent SSO Sessions ["+_metricPrefix+"] " + _statsMaxSessions);
         }
 
         session.fireSessionEvent(BaseSession.SESSION_CREATED_EVENT, null);
@@ -369,19 +377,18 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
         // Remove it from the store
         try {
+
+
             _store.remove(sessionId);
 
-        // Update statistics:
-        synchronized (this) {
+            // Update statistics:
             // Number of created sessions
             _statsDestroyedSessions ++;
 
             // Number of valid sessions (should match the store count!)
             _statsCurrentSessions --;
-
-
-        }
-
+            if (_mServer != null)
+                _mServer.recordMetric(_metricPrefix + "/ssoSessions", _statsCurrentSessions);
 
         } catch (SSOSessionException e) {
             logger.warn("Can't remove session from store: " + e.getMessage(), e);
@@ -449,6 +456,15 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
                 if (!session.isValid()) {
                     // Remove invalid session from the store.
                     _store.remove(session.getId());
+
+                    // Update statistics:
+                    // Number of created sessions
+                    _statsDestroyedSessions ++;
+
+                    // Number of valid sessions (should match the store count!)
+                    _statsCurrentSessions --;
+                    if (_mServer != null)
+                        _mServer.recordMetric(_metricPrefix + "/ssoSessions", _statsCurrentSessions);
 
                     if (logger.isTraceEnabled())
                         logger.trace("[checkValidSessions()] Session expired : " + session.getId());
@@ -529,6 +545,23 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
             _monitor.setInterval(_sessionMonitorInterval);
         }
 
+    }
+
+    public MonitoringServer getMonitoringServer() {
+        return _mServer;
+    }
+
+    public void setMonitoringServer(MonitoringServer mServer) {
+        this._mServer = mServer;
+    }
+
+
+    public String getMetricPrefix() {
+        return _metricPrefix;
+    }
+
+    public void setMetricPrefix(String metricPrefix) {
+        this._metricPrefix = metricPrefix;
     }
 
 
