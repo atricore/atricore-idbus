@@ -20,12 +20,12 @@
  */
 package org.atricore.idbus.capabilities.sso.ui.internal;
 
-import org.apache.wicket.Request;
-import org.apache.wicket.ResourceReference;
-import org.apache.wicket.Response;
+import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Response;
 import org.atricore.idbus.capabilities.sso.ui.page.*;
 
 /**
@@ -57,14 +57,14 @@ public class SSOUIApplication extends BaseWebApplication {
     @Override
     protected void mountPages() {
         // SSO Authentication pages: SIMPLE (usr/pwd), STRONG (x509 cert, SSL), 2FA (2 factor pass code)
-        mountBookmarkablePage("/LOGIN/SIMPLE", SimpleLoginPage.class);
-        mountBookmarkablePage("/LOGIN/STRONG", StrongLoginPage.class);
-        mountBookmarkablePage("/LOGIN/2FA", TwoFactorLoginPage.class);
+        mountPage("LOGIN/SIMPLE", SimpleLoginPage.class);
+        mountPage("LOGIN/STRONG", StrongLoginPage.class);
+        mountPage("LOGIN/2FA", TwoFactorLoginPage.class);
 
-        mountBookmarkablePage("/ERROR", ErrorPage.class);
-        mountBookmarkablePage("/ERROR/401", AccessDeniedPage.class);
-        mountBookmarkablePage("/ERROR/404", PageExpiredErrorPage.class);
-        mountBookmarkablePage("/ERROR/SESSION", SessionExpiredPage.class);
+        mountPage("ERROR", ErrorPage.class);
+        mountPage("ERROR/401", AccessDeniedPage.class);
+        mountPage("ERROR/404", PageExpiredErrorPage.class);
+        mountPage("ERROR/SESSION", SessionExpiredPage.class);
 
         getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
         getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
@@ -74,7 +74,7 @@ public class SSOUIApplication extends BaseWebApplication {
      * @see org.apache.wicket.Application#getHomePage()
      */
     @Override
-    public Class<SimpleLoginPage> getHomePage() {
+    public Class getHomePage() {
         return SimpleLoginPage.class;
     }
 

@@ -1,7 +1,7 @@
 package org.atricore.idbus.capabilities.sso.ui.page;
 
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.request.target.basic.RedirectRequestTarget;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.atricore.idbus.capabilities.sso.ui.BasePage;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
@@ -34,7 +34,7 @@ public class SessionExpiredPage extends BasePage {
             if (branding.getFallbackUrl() != null) {
                 // Store ERROR in session
                 ((SSOWebSession)getSession()).setLastAppErrorId("claims.text.sessionExpired");
-                getRequestCycle().setRequestTarget(new RedirectRequestTarget(branding.getFallbackUrl()));
+                getRequestCycle().scheduleRequestHandlerAfterCurrent(new RedirectRequestHandler(branding.getFallbackUrl()));
             }
         }
     }

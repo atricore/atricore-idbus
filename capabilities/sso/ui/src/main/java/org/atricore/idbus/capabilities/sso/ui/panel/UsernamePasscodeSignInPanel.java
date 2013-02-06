@@ -138,7 +138,7 @@ public class UsernamePasscodeSignInPanel extends BaseSignInPanel {
     public final void forgetMe() {
         // Remove persisted user data. Search for child component
         // of type UsernamePasswordSignInForm and remove its related persistence values.
-        getPage().removePersistedFormData(UsernamePasswordSignInForm.class, true);
+        // getPage().removePersistedFormData(UsernamePasswordSignInForm.class, true);
     }
 
     /**
@@ -165,8 +165,8 @@ public class UsernamePasscodeSignInPanel extends BaseSignInPanel {
      * @param enable Whether the fields should be persistent
      */
     public void setPersistent(final boolean enable) {
-        username.setPersistent(enable);
-        passcode.setPersistent(enable);
+        //username.setPersistent(enable);
+        //passcode.setPersistent(enable);
     }
 
     /**

@@ -1,6 +1,6 @@
 package org.atricore.idbus.capabilities.sso.ui.internal;
 
-import org.apache.wicket.markup.IMarkupParserFactory;
+import org.apache.wicket.markup.MarkupFactory;
 import org.apache.wicket.markup.MarkupParser;
 import org.apache.wicket.markup.MarkupResourceStream;
 import org.apache.wicket.markup.parser.XmlPullParser;
@@ -13,7 +13,7 @@ import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class IdBusMarkupParserFactory implements IMarkupParserFactory {
+public class IdBusMarkupParserFactory extends MarkupFactory {
 
     private WebAppConfig cfg;
 
@@ -21,10 +21,10 @@ public class IdBusMarkupParserFactory implements IMarkupParserFactory {
         cfg = appConfig;
     }
 
+    @Override
     public MarkupParser newMarkupParser(final MarkupResourceStream resource) {
-        
-        MarkupParser p = new MarkupParser(new XmlPullParser(), resource);
-        p.appendMarkupFilter(new IdBusRelativePathPrefixHandler(cfg.getMountPoint()), EnclosureHandler.class);
+        MarkupParser p = super.newMarkupParser(resource);
+        p.getMarkupFilters().add(new IdBusRelativePathPrefixHandler(cfg.getMountPoint()), EnclosureHandler.class);
         return p;
     }
 

@@ -20,12 +20,12 @@
  */
 package org.atricore.idbus.capabilities.openid.ui.internal;
 
-import org.apache.wicket.Request;
-import org.apache.wicket.Response;
 import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Response;
 import org.atricore.idbus.capabilities.openid.ui.page.OpenIDLoginPage;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 
@@ -41,9 +41,9 @@ public class OpenIDUIApplication extends BaseWebApplication {
     @Override
     protected void mountPages() {
 
-        mountBookmarkablePage("/LOGIN", OpenIDLoginPage.class);
-        mountBookmarkablePage("/ERROR/401", AccessDeniedPage.class);
-        mountBookmarkablePage("/ERROR/404", PageExpiredErrorPage.class);
+        mountPage("/LOGIN", OpenIDLoginPage.class);
+        mountPage("/ERROR/401", AccessDeniedPage.class);
+        mountPage("/ERROR/404", PageExpiredErrorPage.class);
 
         getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
         getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
