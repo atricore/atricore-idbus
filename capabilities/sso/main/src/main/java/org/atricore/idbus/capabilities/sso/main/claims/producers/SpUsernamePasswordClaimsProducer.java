@@ -156,7 +156,7 @@ public class SpUsernamePasswordClaimsProducer extends SSOProducer
     protected FederatedLocalProvider resolveSp(Channel c, String spAlias) {
         FederatedLocalProvider channelProvider = null;
         if (c instanceof ClaimChannel) {
-            channelProvider = ((ClaimChannel)c).getFederatedProvider();
+            channelProvider = ((ClaimChannel)c).getProvider();
         } else if (c instanceof IdPChannel) {
             channelProvider = ((IdPChannel)c).getFederatedProvider();
         } else {
@@ -230,7 +230,7 @@ public class SpUsernamePasswordClaimsProducer extends SSOProducer
         // Resolve IdP channel, then look for the ACS endpoint
         ClaimChannel cChannel = (ClaimChannel) channel;
 
-        FederatedLocalProvider idp = cChannel.getFederatedProvider();
+        FederatedLocalProvider idp = cChannel.getProvider();
 
         FederationChannel spChannel = idp.getChannel();
         for (FederationChannel fChannel : idp.getChannels()) {

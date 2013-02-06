@@ -83,7 +83,7 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
         } else if (channel instanceof BindingChannel) {
             return ((BindingChannel) channel).getFederatedProvider();
         } else if (channel instanceof ClaimChannel) {
-            return ((ClaimChannel) channel).getFederatedProvider();
+            return ((ClaimChannel) channel).getProvider();
         } else if (channel instanceof SelectorChannel) {
             return ((SelectorChannel) channel).getProvider();
         } else {
