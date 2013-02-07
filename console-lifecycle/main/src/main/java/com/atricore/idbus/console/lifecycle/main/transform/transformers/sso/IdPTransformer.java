@@ -326,7 +326,7 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         setPropertyBean(sessionManager, "sessionStore", sessionStore);
 
         setPropertyRef(sessionManager, "monitoringServer", "monitoring-server");
-        setPropertyValue(sessionManager, "metricPrefix", appliance.getName() + idpBean.getName());
+        setPropertyValue(sessionManager, "metricPrefix", appliance.getName() + "." + idpBean.getName());
 
     }
 
