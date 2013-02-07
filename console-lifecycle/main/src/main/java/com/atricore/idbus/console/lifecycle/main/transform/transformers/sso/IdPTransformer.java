@@ -136,6 +136,7 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         Bean idpMediator = newBean(idpBeans, idpBean.getName() + "-samlr2-mediator",
                 SSOIDPMediator.class.getName());
         setPropertyValue(idpMediator, "logMessages", true);
+        setPropertyValue(idpMediator, "metricsPrefix", appliance.getName() + "." + idpBean.getName());
 
         // artifactQueueManager
         // setPropertyRef(idpMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");

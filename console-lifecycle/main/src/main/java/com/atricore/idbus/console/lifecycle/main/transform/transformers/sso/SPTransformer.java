@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -210,6 +211,9 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         String bpLocationPath = resolveLocationPath(applianceDef.getLocation()) + "/" +
                 (execEnv != null ? execEnv.getName().toUpperCase() : svcResource.getName().toUpperCase());
 
+        setPropertyValue(spMediator, "metricsPrefix", appliance.getName() + "." + sp.getName());
+
+        String bpLocationPath = resolveLocationPath(applianceDef.getLocation()) + "/" + execEnv.getName().toUpperCase();
         String bpLocation = resolveLocationBaseUrl(applianceDef.getLocation()) + bpLocationPath;
 
         setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
