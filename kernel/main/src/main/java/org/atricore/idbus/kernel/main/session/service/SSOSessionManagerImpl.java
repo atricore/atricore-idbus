@@ -242,8 +242,10 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
         // Number of valid sessions (should match the store count!)
         _statsCurrentSessions ++;
-        if (_mServer != null)
+        if (_mServer != null) {
             _mServer.recordMetric(_metricPrefix + ".SsoSessions", _statsCurrentSessions);
+            _mServer.incrementCounter(_metricPrefix + ".SsoSessionsCreated");
+        }
 
         // Max number of concurrent sessions
         if (_statsMaxSessions < _statsCurrentSessions) {
@@ -387,8 +389,10 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
             // Number of valid sessions (should match the store count!)
             _statsCurrentSessions --;
-            if (_mServer != null)
+            if (_mServer != null) {
                 _mServer.recordMetric(_metricPrefix + ".SsoSessions", _statsCurrentSessions);
+                _mServer.incrementCounter(_metricPrefix + ".SsoSessionsDestroyed");
+            }
 
         } catch (SSOSessionException e) {
             logger.warn("Can't remove session from store: " + e.getMessage(), e);
@@ -463,8 +467,10 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
                     // Number of valid sessions (should match the store count!)
                     _statsCurrentSessions --;
-                    if (_mServer != null)
+                    if (_mServer != null) {
                         _mServer.recordMetric(_metricPrefix + ".SsoSessions", _statsCurrentSessions);
+                        _mServer.incrementCounter(_metricPrefix + ".SsoSessionsDestroyed");
+                    }
 
                     if (logger.isTraceEnabled())
                         logger.trace("[checkValidSessions()] Session expired : " + session.getId());
