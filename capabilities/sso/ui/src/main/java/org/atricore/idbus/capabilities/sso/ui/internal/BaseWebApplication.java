@@ -156,6 +156,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         getPageSettings().getComponentResolvers().clear();
         getPageSettings().getComponentResolvers().addAll(newComponentsList);
 
+        getResourceSettings().setEncodeJSessionId(false);
+
         getMarkupSettings().setMarkupFactory(new IdBusMarkupParserFactory(getAppConfig()));
     }
 

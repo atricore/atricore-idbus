@@ -115,10 +115,11 @@ public class SingleSignOnProducer extends SSOProducer {
 
         // May be used later by HTTP-Redirect binding!
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+        String metricPrefix = mediator.getMetricsPrefix();
         in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
 
         long s = System.currentTimeMillis();
-        String metric = "ssoIdP";
+        String metric = metricPrefix + ".SsoIdP";
         try {
 
             String thread = Thread.currentThread().getName();
