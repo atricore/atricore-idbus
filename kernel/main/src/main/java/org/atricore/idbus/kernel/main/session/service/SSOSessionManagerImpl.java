@@ -243,7 +243,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         // Number of valid sessions (should match the store count!)
         _statsCurrentSessions ++;
         if (_mServer != null)
-            _mServer.recordMetric(_metricPrefix + ":ssoSessions", _statsCurrentSessions);
+            _mServer.recordMetric(_metricPrefix + "SsoSessions", _statsCurrentSessions);
 
         // Max number of concurrent sessions
         if (_statsMaxSessions < _statsCurrentSessions) {
@@ -388,7 +388,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
             // Number of valid sessions (should match the store count!)
             _statsCurrentSessions --;
             if (_mServer != null)
-                _mServer.recordMetric(_metricPrefix + "/ssoSessions", _statsCurrentSessions);
+                _mServer.recordMetric(_metricPrefix + "SsoSessions", _statsCurrentSessions);
 
         } catch (SSOSessionException e) {
             logger.warn("Can't remove session from store: " + e.getMessage(), e);
