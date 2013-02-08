@@ -1,9 +1,12 @@
 package org.atricore.idbus.capabilities.sso.ui.internal;
 
-import org.apache.wicket.Response;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebRequestCycle;
+import org.apache.wicket.request.Response;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.cycle.RequestCycleContext;
+import org.apache.wicket.request.http.WebRequest;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * This is a work-around to a problem between IE 9 and Jetty 6.
@@ -13,23 +16,21 @@ import org.apache.wicket.protocol.http.WebRequestCycle;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class CssWebRequestCycle extends WebRequestCycle {
+public class CssWebRequestCycle extends RequestCycle {
 
-    public CssWebRequestCycle(WebApplication application,
-            WebRequest request,
-            Response response) {
+    public CssWebRequestCycle(RequestCycleContext ctx) {
 
-        super(application, request, response);
+        super(ctx);
         
-        String path = request.getPath();
-        if (path == null) return;
+        String url = ctx.getRequest().getUrl().toString();
+        if (url == null) return;
 
-        int mid = path.lastIndexOf('.');
+        int mid = url.lastIndexOf('.');
         if (mid < 0) return;
         
-        String type = path.substring(mid + 1, path.length());
+        String type = url.substring(mid + 1, url.length());
         if (type.equalsIgnoreCase("css")) {
-            response.setContentType("text/css");
+            ((HttpServletResponse)ctx.getResponse().getContainerResponse()).setContentType("text/css");
         }
 
     }

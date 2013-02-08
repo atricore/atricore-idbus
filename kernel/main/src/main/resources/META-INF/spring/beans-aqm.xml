@@ -41,7 +41,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     <bean name="aqm"
           class="org.atricore.idbus.kernel.main.mediation.MemoryMessageQueueManager"
-          depends-on="aqmBroker"
           init-method="init"
           destroy-method="shutDown">
     </bean>

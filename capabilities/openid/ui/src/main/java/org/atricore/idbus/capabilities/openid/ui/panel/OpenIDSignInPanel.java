@@ -31,7 +31,7 @@ import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.target.basic.RedirectRequestTarget;
+import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.apache.wicket.util.time.Duration;
 import org.apache.wicket.util.value.ValueMap;
 import org.apache.wicket.validation.validator.UrlValidator;
@@ -167,7 +167,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
     public final void forgetMe() {
         // Remove persisted user data. Search for child component
         // of type OpenIDSignInForm and remove its related persistence values.
-        getPage().removePersistedFormData(OpenIDSignInForm.class, true);
+//        getPage().removePersistedFormData(OpenIDSignInForm.class, true);
     }
 
     /**
@@ -185,7 +185,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
      * @param enable Whether the fields should be persistent
      */
     public void setPersistent(final boolean enable) {
-        openid.setPersistent(enable);
+        // openid.setPersistent(enable);
     }
 
     /**
@@ -266,7 +266,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
     }
 
     protected void onSignInSucceeded(String claimsConsumerUrl) {
-        getRequestCycle().setRequestTarget(new RedirectRequestTarget(claimsConsumerUrl));
+        getRequestCycle().scheduleRequestHandlerAfterCurrent(new RedirectRequestHandler(claimsConsumerUrl));
     }
 
 

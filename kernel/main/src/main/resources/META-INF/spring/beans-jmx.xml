@@ -52,7 +52,9 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <property name="beans">
             <map>
                 <entry key="org.atricore.idbus.kernel.main:type=CacheManager,name=idbusCacheManager" value-ref="cacheManager" />
+                <!---
                 <entry key="org.atricore.idbus.kernel.main:type=XBeanBrokerService,name=idbusJMSBroker" value-ref="aqmBroker" />
+                -->
 
                 <entry key="org.atricore.idbus.kernel.main:type=MessageQueueManager,name=idbusArtifactQueueManager" value-ref="aqm" />
                 <entry key="org.atricore.idbus.kernel.main:type=IdentityMediationUnitRegistry,name=idbusIdsuRegistry" value-ref="idsuRegistry" />

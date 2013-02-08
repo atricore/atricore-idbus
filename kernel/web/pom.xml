@@ -46,6 +46,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.atricore.idbus.kernel.monitoring</groupId>
+            <artifactId>org.atricore.idbus.kernel.monitoring.core</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
@@ -144,7 +151,8 @@
                         </Bundle-ClassPath>
                         <Require-Bundle>
                             org.atricore.idbus.kernel.common.support,
-                            org.atricore.idbus.kernel.main
+                            org.atricore.idbus.kernel.main,
+                            org.atricore.idbus.kernel.monitoring.core
                         </Require-Bundle>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,

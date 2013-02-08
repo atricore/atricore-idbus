@@ -40,8 +40,9 @@
 
     <properties>
         <idbus.cap.sso.version>1.4.0-SNAPSHOT</idbus.cap.sso.version>
-        <ops4j.paxwicket.version>0.8.2</ops4j.paxwicket.version>
-        <apache-wicket.version>1.4.18</apache-wicket.version>
+        <ops4j.paxwicket.version>1.2.0</ops4j.paxwicket.version>
+        <!--apache-wicket.version>1.4.19</apache-wicket.version-->
+        <apache-wicket.version>1.5.9</apache-wicket.version>
     </properties>
 
     <dependencies>
@@ -55,7 +56,7 @@
         <!-- WICKET DEPENDENCIES -->
         <dependency>
             <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket</artifactId>
+            <artifactId>wicket-core</artifactId>
             <version>${apache-wicket.version}</version>
             <scope>provided</scope>
         </dependency>

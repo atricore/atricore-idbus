@@ -14,62 +14,16 @@
 
         <div class="message error">
             <p>
-
             <div>
                 <ul>
                     <li>
-                        <wicket:message key="error.title"/>
+                        <wicket:message key="error.session.expired"/>
                     </li>
                 </ul>
             </div>
             </p>
         </div>
 
-        <!--
-        <div>
-            <p>
-                <strong>
-                    <span wicket:id="status"/>
-                </strong>
-                <br/><span wicket:id="secStatus"/>
-                <br/><span wicket:id="details"/>
-            </p>
-
-            <div class="footer"></div>
-        </div>
-        -->
-
-        <div>
-            `
-            <h3>
-                <wicket:message key="error.debug.title"/>
-            </h3>
-
-            <ul>
-                <li>
-                    <span wicket:id="status"/>
-                </li>
-                <li>
-                    <span wicket:id="secStatus"/>
-                </li>
-                <li>
-                    <span wicket:id="details"/>
-                </li>
-            </ul>
-
-            <h4>
-                <wicket:message key="error.message.label"/>
-            </h4>
-
-            <span wicket:id="causes">
-                <h5>
-                    <wicket:message key="error.causedBy.label"/>
-                </h5>
-                <p style="font-size:10px;">
-                    <span wicket:id="cause"/>
-                </p>
-            </span>
-        </div>
     </div>
 </wicket:extend>
 </body>

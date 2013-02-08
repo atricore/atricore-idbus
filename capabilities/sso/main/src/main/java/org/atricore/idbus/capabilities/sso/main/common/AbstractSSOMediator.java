@@ -59,6 +59,8 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
 
     private SamlR2Encrypter encrypter;
 
+    private String metricsPrefix = "";
+
     protected AbstractSSOMediator() {
 
     }
@@ -264,5 +266,13 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
 
     public void setTimestampValidationTolerance(long timestampValidationTolerance) {
         this.timestampValidationTolerance = timestampValidationTolerance;
+    }
+
+    public String getMetricsPrefix() {
+        return metricsPrefix;
+    }
+
+    public void setMetricsPrefix(String metricsPrefix) {
+        this.metricsPrefix = metricsPrefix;
     }
 }

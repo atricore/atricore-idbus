@@ -72,6 +72,7 @@ set LOCAL_CLASSPATH=%CLASSPATH%
 set DEFAULT_JAVA_OPTS=-server -Xmx1024M -XX:MaxPermSize=512M -Dderby.system.home="%KARAF_DATA%\derby" -Dderby.storage.fileSyncTransactionLog=true -Dcom.sun.management.jmxremote
 set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\conf
 set DEFAULT_JAVA_DEBUG_OPTS=-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
+set DEFAULT_IDBUS_MONITORING_OPTS=-Dnewrelic.bootstrap_classpath=true -javaagent:"%KARAF_HOME%\newrelic\newrelic.jar"
 
 if "%LOCAL_CLASSPATH%" == "" goto :KARAF_CLASSPATH_EMPTY
     set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\conf
@@ -175,6 +176,14 @@ if "%KARAF_DEBUG%" == "" goto :KARAF_DEBUG_END
     set "JAVA_OPTS=%JAVA_DEBUG_OPTS% %JAVA_OPTS%"
     call :warn Enabling Java debug options: %JAVA_DEBUG_OPTS%
 :KARAF_DEBUG_END
+
+if "%IDBUS_MONITORING%" == "" goto :IDBUS_MONITORING_END
+    rem Use the defaults if IDBUS_MOINTORING_OPTS was not set
+    if "%IDBUS_MONITORING_OPTS%" == "" set IDBUS_MONITORING_OPTS=%DEFAULT_IDBUS_MONITORING_OPTS%
+    
+    set "JAVA_OPTS=%IDBUS_MONITORING_OPTS% %JAVA_OPTS%"
+    call :warn Enabling IDBus Monitoring options: %IDBUS_MONITORING_OPTS%
+:IDBUS_MONITORING_END
 
 if "%KARAF_PROFILER%" == "" goto :KARAF_PROFILER_END
     set KARAF_PROFILER_SCRIPT=%KARAF_HOME%\conf\profiler\%KARAF_PROFILER%.cmd
