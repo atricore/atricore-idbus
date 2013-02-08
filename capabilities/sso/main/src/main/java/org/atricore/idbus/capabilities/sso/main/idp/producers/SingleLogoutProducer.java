@@ -64,6 +64,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
+import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
@@ -90,16 +91,23 @@ public class SingleLogoutProducer extends SSOProducer {
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
 
+        long s = System.currentTimeMillis();
+        String metric = mediator.getMetricsPrefix() + "/Sso/Transactions/";
+
         try {
             if (content instanceof LogoutRequestType) {
                 // Process and exit
+                metric += "doProcessLogoutRequest";
                 doProcessLogoutRequest(exchange, (LogoutRequestType) content);
                 return;
 
             } else if (content instanceof IDPInitiatedLogoutRequestType) {
                 // Process and exit
+                metric += "doProcessIdPInitiatedLogoutRequest";
                 doProcessIdPInitiatedLogoutRequest(exchange, (IDPInitiatedLogoutRequestType) content);
                 return;
+            } else {
+                metric += "Unknonw";
             }
 
         } catch (SSORequestException e) {
@@ -118,7 +126,12 @@ public class SingleLogoutProducer extends SSOProducer {
                     StatusDetails.UNKNOWN_REQUEST.getValue(),
                     content.getClass().getName(),
                     e);
+        } finally {
+            MonitoringServer mServer = mediator.getMonitoringServer();
+            long e = System.currentTimeMillis();
+            mServer.recordResponseTimeMetric(metric, e - s);
         }
+
 
         // We couldn't handle the message ...
         throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),

@@ -115,11 +115,10 @@ public class SingleSignOnProducer extends SSOProducer {
 
         // May be used later by HTTP-Redirect binding!
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
-        String metricPrefix = mediator.getMetricsPrefix();
         in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
 
         long s = System.currentTimeMillis();
-        String metric = metricPrefix + ".SsoIdP";
+        String metric = mediator.getMetricsPrefix() + "/Sso/Transactions/";
         try {
 
             String thread = Thread.currentThread().getName();
@@ -188,7 +187,6 @@ public class SingleSignOnProducer extends SSOProducer {
             MonitoringServer mServer = mediator.getMonitoringServer();
             long e = System.currentTimeMillis();
             mServer.recordResponseTimeMetric(metric, e - s);
-
         }
     }
 
