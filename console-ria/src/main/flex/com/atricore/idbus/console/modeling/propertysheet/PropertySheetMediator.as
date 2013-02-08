@@ -6274,12 +6274,19 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function jbosseppSave(): void {
+        trace("host = " + _jbosseppResourceCoreSection.resourceDomain.text);
         // bind model
         var jbosseppResource:JBossEPPResource = projectProxy.currentIdentityApplianceElement as JBossEPPResource;
         var jbosseppEE:JBossEPPExecutionEnvironment = jbosseppResource.activation.executionEnv as JBossEPPExecutionEnvironment;
 
         jbosseppResource.name = _jbosseppResourceCoreSection.resourceName.text;
         jbosseppResource.description = _jbosseppResourceCoreSection.resourceDescription.text;
+
+        jbosseppResource.partnerAppLocation.protocol = _jbosseppResourceCoreSection.resourceProtocol.selectedItem.label;
+        jbosseppResource.partnerAppLocation.host = _jbosseppResourceCoreSection.resourceDomain.text;
+        jbosseppResource.partnerAppLocation.port = parseInt(_jbosseppResourceCoreSection.resourcePort.text);
+        jbosseppResource.partnerAppLocation.context = _jbosseppResourceCoreSection.resourceContext.text;
+        jbosseppResource.partnerAppLocation.uri = _jbosseppResourceCoreSection.resourcePath.text;
 
         jbosseppEE.type = ExecEnvType.valueOf(_jbosseppResourceCoreSection.selectedHost.selectedItem.data);
         jbosseppEE.installUri = _jbosseppResourceCoreSection.homeDirectory.text;
