@@ -213,7 +213,6 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         setPropertyValue(spMediator, "metricsPrefix", appliance.getName() + "/" + sp.getName());
 
-        String bpLocationPath = resolveLocationPath(applianceDef.getLocation()) + "/" + execEnv.getName().toUpperCase();
         String bpLocation = resolveLocationBaseUrl(applianceDef.getLocation()) + bpLocationPath;
 
         setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
@@ -404,11 +403,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         setPropertyValue(sessionStore, "cacheName", providerInternalSaml2.getIdentityAppliance().getName() +
                 "-" + sp.getName() + "-sessionsCache");
 
-<<<<<<< HEAD:console-lifecycle/main/src/main/java/com/atricore/idbus/console/lifecycle/main/transform/transformers/sso/SPTransformer.java
-        setPropertyValue(sessionManager, "metricPrefix", appliance.getName() + "." + sp.getName());
-=======
-        setPropertyValue(sessionManager, "metricsPrefix", appliance.getName() + "." + sp.getName());
->>>>>>> 6839e78... * Improved metrics categories:console-lifecycle/main/src/main/java/com/atricore/idbus/console/lifecycle/main/transform/transformers/SPLocalTransformer.java
+        setPropertyValue(sessionManager, "metricsPrefix", appliance.getName() + "/" + sp.getName());
         
         // Wiring
         setPropertyBean(sessionManager, "sessionIdGenerator", sessionIdGenerator);

@@ -1647,11 +1647,7 @@
             </distributionManagement>
 
             <modules>
-                <!-- TODO : Move this to other project -->
-<<<<<<< HEAD
                 <!--module>console-tooling</module-->
-=======
->>>>>>> 842a4cb... * Removed tooling module from main build (does not work with maven 2.2), tool must be built manualy before the project
                 <module>console-licensing</module>
                 <module>console-liveservices/liveupdate</module>
                 <module>console-settings</module>
@@ -1702,10 +1698,8 @@
 
             <modules>
                 <!-- TODO : Move this to other project -->
-<<<<<<< HEAD
+
                 <!--module>console-tooling</module-->
-=======
->>>>>>> 842a4cb... * Removed tooling module from main build (does not work with maven 2.2), tool must be built manualy before the project
                 <module>console-licensing</module>
                 <module>console-liveservices/liveupdate</module>
                 <module>console-settings</module>
