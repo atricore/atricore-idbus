@@ -1397,14 +1397,14 @@
         <!-- Java.net -->
         <repository>
             <id>java.net</id>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
+            <url>http://download.java.net/maven/2</url>
+            <layout>default</layout>
         </repository>
 
         <!-- JBoss -->
         <repository>
             <id>jboss</id>
-            <url>http://repository.jboss.com/maven2</url>
+            <url>https://repository.jboss.org/nexus/content/repositories/deprecated</url>
         </repository>
 
         <!-- OPS4J -->
@@ -1505,12 +1505,6 @@
         </pluginRepository>
 
         <pluginRepository>
-            <id>java.net M1</id>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
-        </pluginRepository>
-
-        <pluginRepository>
             <!-- JOSSO -->
             <id>josso-m2-repo</id>
             <name>JOSSO Maven2 Repository</name>
@@ -1572,19 +1566,8 @@
             <url>http://repository.josso.org/</url>
         </pluginRepository>
         <pluginRepository>
-            <id>DataNucleus_1</id>
-            <url>http://www.datanucleus.org/downloads/maven/</url>
-        </pluginRepository>
-        <pluginRepository>
             <id>DataNucleus_2</id>
             <url>http://www.datanucleus.org/downloads/maven2/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>java.net</id>
-            <name>java.net Maven Repository</name>
-            <!-- url>https://maven-repository.dev.java.net/nonav/repository</url-->
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
         </pluginRepository>
 
     </pluginRepositories>
