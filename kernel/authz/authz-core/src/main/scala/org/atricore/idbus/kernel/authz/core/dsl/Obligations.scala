@@ -22,6 +22,7 @@ package org.atricore.idbus.kernel.authz.core.dsl
  */
 
 import collection.mutable.{Stack, ListBuffer}
+import org.atricore.idbus.kernel.authz.core.Obligation
 
 
 /**
@@ -167,3 +168,52 @@ case class ObligationNode(obligationProperties: List[ObligationPropertyNode], at
 case class ObligationPropertyNode(name: String, value: String)
 
 case class AttributeAssignmentNode(properties: List[ObligationPropertyNode])
+
+/**
+ * Obligations walker intended to be used within a PEP (Policy Enforcement Point)
+ */
+class ObligationFulfillment(val obls : List[Obligation]) {
+
+  def fulfill(props : Map[String, String]) : Boolean = {
+
+    /*
+    obls.map(
+     obl => {
+      val obligationProperties = Map(obl.obligationProperties.map(op => (op.name, op.value)): _*)
+
+      val attributeAssignments =
+        Map(
+          obl.attributeAssignments.flatMap(
+            _.properties.map( oblprop => (oblprop.name, props.get(oblprop.name)))): _*
+        )
+       
+        obligationProperties.get("id") match {
+          case Some("urn:oasis:names:tc:xacml:example:obligation:email") =>
+            val mailTo  = attributeAssignments.getOrElse("urn:oasis:names:tc:xacml:2.0:example:attribute:mailto", None)
+            val text = attributeAssignments.getOrElse("urn:oasis:names:tc:xacml:2.0:example:attribute:text", None);
+
+            (for {
+              mt <- mailTo
+              txt <- text
+            } yield sendEmail(mt, txt)).getOrElse(false)
+
+        }
+     }
+    )
+    */
+    true
+  }
+
+  private def sendEmail(mailTo : String, text : String) : Boolean = {
+      // send email
+      true
+  }
+
+}
+
+object ObligationFulfillment {
+  def fullfil( obls : List[Obligation], props : Map[String, String]) = new ObligationFulfillment(obls).fulfill(props)
+}
+
+
+

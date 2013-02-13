@@ -234,11 +234,6 @@
         </repository>
 
         <repository>
-            <id>apache.incubating</id>
-            <name>Apache Incubating Repository</name>
-            <url>http://people.apache.org/repo/m2-incubating-repository</url>
-        </repository>
-        <repository>
             <id>apache-snapshots</id>
             <name>Apache Snapshots Repository</name>
             <url>http://repository.apache.org/content/groups/snapshots-group</url>
@@ -510,7 +505,7 @@
 -->
 
         <pluginRepository>
-            <id>apache-releases</id>
+            <id>apache-plugin-releases</id>
             <name>Apache Releases Repository</name>
             <url>https://repository.apache.org/content/repositories/releases</url>
             <releases>

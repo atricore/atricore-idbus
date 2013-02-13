@@ -47,9 +47,9 @@ private[dsl] trait BasicAccessControlDirectives {
   def filter4[A, B, C, D](filter: AccessControlRouteFilter[(A, B, C, D)]) = new PolicyDecisionPointRoute4(filter)
 
   def filter5[A, B, C, D, E](filter: AccessControlRouteFilter[(A, B, C, D, E)]) = new PolicyDecisionPointRoute5(filter)
-  
+
   def filter6[A, B, C, D, E, F](filter: AccessControlRouteFilter[(A, B, C, D, E, F)]) = new PolicyDecisionPointRoute6(filter)
-  
+
   def filter7[A, B, C, D, E, F, G](filter: AccessControlRouteFilter[(A, B, C, D, E, F, G)]) = new PolicyDecisionPointRoute7(filter)
 
   def filter8[A, B, C, D, E, F, G, H](filter: AccessControlRouteFilter[(A, B, C, D, E, F, G, H)]) = new PolicyDecisionPointRoute8(filter)
@@ -75,82 +75,65 @@ private[dsl] trait BasicAccessControlDirectives {
   /**
    * Dispatches an access control route and evalutes the result using the supplied result evaluation strategy.
    */
-  protected def dispatchAndCollect(route : AccessControlRoute, obligations : Option[Obligations])
-                                  (f : List[AccessControlAction] => AccessControlAction ): AccessControlRoute = {
+  protected def dispatchAndCollect(route: AccessControlRoute, obligations: Option[Obligations])
+                                  (f: List[AccessControlAction] => AccessControlAction): AccessControlRoute = {
     ctx =>
       val results = new ListBuffer[AccessControlAction]()
-  
+
       route(ctx.withResponse {
         result => results += result
       })
-  
+
       val decision = f(results.toList) match {
         case DoPermit => PermitDecision
         case DoDeny => DenyDecision
       }
-      
+
       ctx.response = Response(decision, None, Some(responseObligations(obligations)))
   }
 
   /**
    * Transforms the obligations DSL-specific objects to domain model objects.
    */
-  def responseObligations(obligations : Option[Obligations]): List[Obligation] = {
+  def responseObligations(obligations: Option[Obligations]): List[Obligation] = {
     obligations match {
       case Some(obs) =>
-        obs.toAST.obligations map { o =>
-          val obligationId = o.obligationProperties.find( _.name == "id").map( _.value )
-          val fulfillOn = o.obligationProperties.find( _.name == "fulfillOn").map( _.value )
+        obs.toAST.obligations.map(
+          obls => {
+            val obligationProperties = Map(obls.obligationProperties.map(op => (op.name, op.value)): _*)
 
-          val aa = o.attributeAssignments.map { aa =>
-            val id = aa.properties.find ( _.name == "id").map( _.value)
-            val category = aa.properties.find ( _.name == "category" ).map ( _.value )
-            val issuer = aa.properties.find ( _.name == "issuer" ).map ( _.value )
-            val dataType = aa.properties.find ( _.name == "dataType" ).map ( _.value)
-            val attributeValue = aa.properties.find ( _.name == "attributeValue" ).map ( _.value)
+            val mappedAttributeAssignments = obls.attributeAssignments.map(
+              attrasg => {
+                val props =
+                  Map(attrasg.properties.map(oblprop => (oblprop.name, oblprop.value)): _*)
 
-            id match {
-              case Some(idVal) =>
-                category match {
-                  case Some(categoryVal) =>
-                    issuer match {
-                      case Some(issuerVal) =>
-                        dataType match {
-                          case Some(dataTypeVal) =>
-                            attributeValue match {
-                              case Some(aaValue) =>
-                                Some(AttributeAssignment(idVal, categoryVal, issuerVal, dataTypeVal, aaValue))
-                              case _ => None
-                            }
-                          case _ => None
-                        }
-                      case _ => None
-                    }
+                (for {
+                  id <- props.get("id")
+                  category <- props.get("category")
+                  issuer <- props.get("issuer")
+                  dataType <- props.get("dataType")
+                  attributeValue <- props.get("attributeValue")
+                } yield AttributeAssignment(id, category, issuer, dataType, attributeValue))
+              }
+            ).filter(_.isDefined).map (_.get)
+
+            obligationProperties.get("id") match {
+              case Some(oid) =>
+                obligationProperties.get("fulfillOn") match {
+                  case Some(oeffect) =>
+                    Some(Obligation(oid, mappedAttributeAssignments,
+                      oeffect match {
+                        case "Permit" => Effects.Permit
+                        case "Deny" => Effects.Deny
+                        case unknownEffect => throw new IllegalArgumentException("Invalid effect : " + unknownEffect)
+                      }))
                   case _ => None
                 }
               case _ => None
             }
-          }.filter { _.isDefined }.map { _.get }
-
-          obligationId match {
-            case Some(oid) =>
-              fulfillOn match {
-                case Some(oeffect) =>
-                  Some(Obligation(oid, aa,
-                    oeffect match {
-                      case "Permit" => Effects.Permit
-                      case "Deny" => Effects.Deny
-                      case unknownEffect => throw new IllegalArgumentException("Invalid effect : " + unknownEffect)
-                    }))
-                case _ => None
-              }
-            case _ => None
-          }
-
-        } filter { _.isDefined } map { _.get }
+          }).filter(_.isDefined).map(_.get)
       case _ => Nil
     }
-
   }
 
 }
