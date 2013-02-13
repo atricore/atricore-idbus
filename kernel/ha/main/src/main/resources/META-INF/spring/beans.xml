@@ -40,7 +40,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- =================================================================== -->
 
     <!-- replace original aqmBroker for standalone deployments -->
-    <bean name="aqmBroker" class="org.apache.activemq.xbean.XBeanBrokerService" >
+    <!--<bean name="aqmBroker" class="org.apache.activemq.xbean.XBeanBrokerService" >
         <property name="brokerName" value="${aqm.brokerName}"/>
         <property name="dataDirectory" value="${karaf.base}/data/activemq-idbus"/>
         <property name="deleteAllMessagesOnStartup" value="false"/>
@@ -62,42 +62,42 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
             </bean>
         </property>
 
-        <!-- ######################################################################################## -->
-        <!--                                                                                          -->
-        <!-- WARNING !!!!! Order of construction of networks/persistence/transports IS important !!!! -->
-        <!--                                                                                          -->
-        <!-- ######################################################################################## -->
+        &lt;!&ndash; ######################################################################################## &ndash;&gt;
+        &lt;!&ndash;                                                                                          &ndash;&gt;
+        &lt;!&ndash; WARNING !!!!! Order of construction of networks/persistence/transports IS important !!!! &ndash;&gt;
+        &lt;!&ndash;                                                                                          &ndash;&gt;
+        &lt;!&ndash; ######################################################################################## &ndash;&gt;
 
-        <!-- ===================================== -->
-        <!--  Network Connectors                   -->
-        <!-- ===================================== -->
+        &lt;!&ndash; ===================================== &ndash;&gt;
+        &lt;!&ndash;  Network Connectors                   &ndash;&gt;
+        &lt;!&ndash; ===================================== &ndash;&gt;
         <property name="networkConnectors">
             <list>
                 <bean class="org.apache.activemq.network.DiscoveryNetworkConnector">
                     <property name="uri" value="${aqm.networkUri}"/>
                     <property name="duplex" value="false"/>
 
-                    <!-- Added for HA support -->
+                    &lt;!&ndash; Added for HA support &ndash;&gt;
                     <property name="prefetchSize" value="1"/>
                     <property name="dynamicOnly" value="true"/>
                     <property name="conduitSubscriptions" value="true"/>
                     <property name="suppressDuplicateQueueSubscriptions" value="true"/>
-                    <!--property name="networkTTL" value="3"/-->
+                    &lt;!&ndash;property name="networkTTL" value="3"/&ndash;&gt;
                 </bean>
             </list>
         </property>
 
 
-        <!-- ===================================== -->
-        <!-- Persistence Adapter                   -->
-        <!-- ===================================== -->
-        <!-- If we need to store messages so that they're not lost on startups (Recommended) -->
+        &lt;!&ndash; ===================================== &ndash;&gt;
+        &lt;!&ndash; Persistence Adapter                   &ndash;&gt;
+        &lt;!&ndash; ===================================== &ndash;&gt;
+        &lt;!&ndash; If we need to store messages so that they're not lost on startups (Recommended) &ndash;&gt;
 
-        <!--
+        &lt;!&ndash;
         <property name="persistenceAdapter">
             <bean class="org.apache.activemq.store.memory.MemoryPersistenceAdapter"/>
-        -->
-            <!--
+        &ndash;&gt;
+            &lt;!&ndash;
             <bean id="store" class="org.apache.activemq.store.kahadb.KahaDBStore" >
                 <property name="directory" value="${karaf.base}/data/activemq-idbus/kahadb"/>
                 <property name="journalMaxFileLength" value="1000000" />
@@ -106,28 +106,28 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
                 <property name="indexWriteBatchSize" value="100" />
                 <property name="enableIndexWriteAsync" value="true" />
             </bean>
-            -->
-            <!--
+            &ndash;&gt;
+            &lt;!&ndash;
             <bean class="org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter">
                 <property name="directory" value="${karaf.base}/data/activemq-idbus/kahadb"/>
             </bean>
             <bean class="org.apache.activemq.store.jdbc.JDBCPersistenceAdapter">
                 <property name="dataSource" ref="aqmDs"/>
             </bean>
-              -->
-        <!--
+              &ndash;&gt;
+        &lt;!&ndash;
         </property>
-        -->
+        &ndash;&gt;
 
-        <!--
+        &lt;!&ndash;
         <bean id="aqmDs" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
            <osgix:managed-properties persistent-id="org.atricore.idbus.kernel.main.aqm.ds"/>
         </bean>
-        -->
+        &ndash;&gt;
 
-        <!-- ===================================== -->
-        <!-- Transport Connector                   -->
-        <!-- ===================================== -->
+        &lt;!&ndash; ===================================== &ndash;&gt;
+        &lt;!&ndash; Transport Connector                   &ndash;&gt;
+        &lt;!&ndash; ===================================== &ndash;&gt;
         <property name="transportConnectors">
             <list>
                 <bean class="org.apache.activemq.broker.TransportConnector">
@@ -137,7 +137,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
             </list>
         </property>
 
-    </bean>
+    </bean>-->
 
     <!-- =================================================================== -->
     <!-- Configuration Admin entry                                           -->

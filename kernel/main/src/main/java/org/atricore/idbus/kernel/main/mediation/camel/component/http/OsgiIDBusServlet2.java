@@ -27,12 +27,14 @@ import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.camel.CamelIdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
+import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.mortbay.util.ajax.Continuation;
 import org.mortbay.util.ajax.ContinuationSupport;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.service.importer.ServiceProxyDestroyedException;
+import org.springframework.util.StopWatch;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 
@@ -60,6 +62,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
     private static final Log logger = LogFactory.getLog(OsgiIDBusServlet2.class);
 
+    private static final String ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME = "AtricoreWebProcessingTimeMs";
+
+    private static final String ATRICORE_WEB_BROWSER_PROCESSING_TIME_MS_METRIC_NAME = "AtricoreWebBrowserProcessingTimeMs";
+
     private IdentityMediationUnitRegistry registry;
 
     private boolean followRedirects;
@@ -84,17 +90,12 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             throws ServletException, IOException {
 
         long started = 0;
-        String thread = Thread.currentThread().getName();
-        String pathInfo = req.getPathInfo();
+
+        MonitoringServer mServer = lookupMonitoring();
 
         try {
 
-            if (logger.isTraceEnabled()) {
-                String parentThread = req.getHeader("IDBUS-PROXIED-REQUEST");
-                String proxied = parentThread != null ? "PROXIED" : "BROWSER";
-                started = System.currentTimeMillis();
-                logger.trace("IDBUS-PERF " + proxied + " ["+thread+"] "+ (parentThread != null ? "{"+parentThread+"}" : "")+ " " + pathInfo + " START");
-            }
+            started = System.currentTimeMillis();
 
             if (kernelConfig == null) {
 
@@ -125,16 +126,18 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             if (!followRedirects || !internalProcessingPolicy.match(req)) {
                 doService(req, res);
             } else {
+                StopWatch sw = new StopWatch("http-request-processing-time-ms");
+                sw.start();
                 doProxyInternally(req, res);
+                sw.stop();
+                mServer.recordResponseTimeMetric(ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME,
+                        sw.getTotalTimeMillis());
             }
         } finally {
-            if (logger.isTraceEnabled()) {
-
-                String parentThread = req.getHeader("IDBUS-PROXIED-REQUEST");
-                String proxied = parentThread != null ? "PROXIED" : "BROWSER";
-
-                long ended = System.currentTimeMillis();
-                logger.trace("IDBUS-PERF " + proxied + " ["+thread+"] "+ (parentThread != null ? "{"+parentThread+"}" : "")+ " " + pathInfo + " END: " + (ended - started) + " ms");
+            long ended = System.currentTimeMillis();
+            String parentThread = req.getHeader("IDBUS-PROXIED-REQUEST");
+            if (parentThread == null) {
+                mServer.recordResponseTimeMetric(ATRICORE_WEB_BROWSER_PROCESSING_TIME_MS_METRIC_NAME, ended - started);
             }
 
         }
@@ -736,6 +739,20 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             logger.debug("Found Identity Mediation Unit Registry " + r);
         return r;
 
+    }
+
+    protected MonitoringServer lookupMonitoring() throws ServletException {
+
+        org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext wac =
+                (org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext)
+                        WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+
+        if (wac == null) {
+            logger.error("Spring application context not found in servlet context");
+            throw new ServletException("Spring application context not found in servlet context");
+        }
+
+        return (MonitoringServer)wac.getBean("monitoring");
     }
 
     protected class WHttpServletResponse extends HttpServletResponseWrapper {

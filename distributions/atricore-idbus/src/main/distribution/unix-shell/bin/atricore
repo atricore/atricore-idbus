@@ -244,6 +244,25 @@ setupDebugOptions() {
     fi
 }
 
+setupMonitoringOptions() {
+    if [ "x$JAVA_OPTS" = "x" ]; then
+        JAVA_OPTS="$DEFAULT_JAVA_OPTS"
+    fi
+    export JAVA_OPTS
+
+    # Set Monitorin options if enabled
+    if [ "x$IDBUS_MONITORING" != "x" ]; then
+        # Use the defaults if IDBUS_MONITORING_OPTS was not set
+        if [ "x$IDBUS_MONITORING_OPTS" = "x" ]; then
+            IDBUS_MONITORING_OPTS="$DEFAULT_IDBUS_MONITORING_OPTS"
+        fi
+
+        JAVA_OPTS="$IDBUS_MONITORING_OPTS $JAVA_OPTS"
+        warn "Enabling IDBus monitoring options: $IDBUS_MONITORING_OPTS"
+    fi
+}
+
+
 setupDefaults() {
     DEFAULT_JAVA_OPTS="-Xms$JAVA_MIN_MEM -Xmx$JAVA_MAX_MEM -XX:MaxPermSize=$JAVA_MAX_PERM_SIZE "
 
@@ -270,7 +289,7 @@ setupDefaults() {
         fi
     done
     DEFAULT_JAVA_DEBUG_OPTS="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
-
+    DEFAULT_IDBUS_MONITORING_OPTS="-Dnewrelic.bootstrap_classpath=true -javaagent:$KARAF_HOME/newrelic/newrelic.jar"
     ##
     ## TODO: Move to conf/profiler/yourkit.{sh|cmd}
     ##
@@ -314,6 +333,9 @@ init() {
 
     # Install debug options
     setupDebugOptions
+
+    # Install Monitoring options
+    setupMonitoringOptions
 
     # Clean up state from previous runs
     cleanUp

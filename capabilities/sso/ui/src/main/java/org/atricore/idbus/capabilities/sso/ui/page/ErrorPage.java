@@ -22,7 +22,7 @@ package org.atricore.idbus.capabilities.sso.ui.page;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -62,7 +62,7 @@ public class ErrorPage extends BasePage {
 
         if (parameters != null) {
 
-            String artifactId = parameters.getString("IDBusErrArt");
+            String artifactId = parameters.get("IDBusErrArt").toString();
 
             try {
                 MediationMessage fault = artifactId != null ? getFault(artifactId) : null;

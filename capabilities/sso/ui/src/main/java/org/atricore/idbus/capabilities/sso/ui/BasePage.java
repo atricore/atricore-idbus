@@ -22,7 +22,7 @@ package org.atricore.idbus.capabilities.sso.ui;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.*;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOUIApplication;
@@ -89,7 +89,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
         
         // Handle internationalization
         if (parameters != null) {
-            String lang = parameters.getString("lang");
+            String lang = parameters.get("lang").toString();
             if (lang != null) {
                 getSession().setLocale(new Locale(lang));
             }

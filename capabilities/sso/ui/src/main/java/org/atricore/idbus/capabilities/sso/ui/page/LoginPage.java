@@ -22,9 +22,9 @@ package org.atricore.idbus.capabilities.sso.ui.page;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.ui.BasePage;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
@@ -53,7 +53,7 @@ public abstract class LoginPage extends BasePage {
     public LoginPage(PageParameters parameters) throws Exception {
         super(parameters);
         if (parameters != null)
-            artifactId = parameters.getString(SsoHttpArtifactBinding.SSO_ARTIFACT_ID);
+            artifactId = parameters.get(SsoHttpArtifactBinding.SSO_ARTIFACT_ID).toString();
     }
 
     @Override
