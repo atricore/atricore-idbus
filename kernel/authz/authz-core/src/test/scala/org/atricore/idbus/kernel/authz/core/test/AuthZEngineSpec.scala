@@ -135,7 +135,7 @@ class AuthZEngineSpec extends Specification with AccessControlDirectives with Lo
 
         (denyOverrides(Some(new Obligations {
           obligation is {
-            id := "obligation-1"
+            id := "urn:oasis:names:tc:xacml:example:obligation:email"
             fulfillOn := "Permit"
 
             attributeAssignment is {
@@ -143,15 +143,15 @@ class AuthZEngineSpec extends Specification with AccessControlDirectives with Lo
               category := "category-1"
               issuer := "issuer-1"
               dataType := "http://www.w3.org/2001/XMLSchema#string"
-              attributeValue := "Your medical record has been accessed by:"
+              attributeValue := "Sample text"
             }
 
             attributeAssignment is {
-              id := "urn:oasis:names:tc:xacml:2.0:example:attribute:text2"
+              id := "urn:oasis:names:tc:xacml:2.0:example:attribute:mailto"
               category := "category-2"
               issuer := "issuer-2"
               dataType := "http://www.w3.org/2001/XMLSchema#string"
-              attributeValue := "Your medical record has been accessed by:"
+              attributeValue := "foo@acme.com"
             }
 
           }
@@ -225,6 +225,8 @@ class AuthZEngineSpec extends Specification with AccessControlDirectives with Lo
         debug("Decision is = " + simpleRequestContext.response)
 
         simpleRequestContext.response.decision mustEqual PermitDecision
+
+        //ObligationFulfillment.fullfil(simpleRequestContext.response.obligations)
 
       }
     }
