@@ -8,6 +8,16 @@
         <property name="id" value="josso2-default-branding"/>
         <property name="skin" value="josso2"/>
 
+        <!-- Add additional static resource extensions if necessary, the main ones are already configured (js, css, gif, etc)
+        <property name="allowedResourcesPatterns">
+            <set>
+                <value>+*.eot</value>
+                <value>+*.ttf</value>
+            </set>
+        </property>
+        -->
+
+
         <property name="resources">
             <list>
 
