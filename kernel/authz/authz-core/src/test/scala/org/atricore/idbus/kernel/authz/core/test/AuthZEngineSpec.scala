@@ -224,9 +224,26 @@ class AuthZEngineSpec extends Specification with AccessControlDirectives with Lo
 
         debug("Decision is = " + simpleRequestContext.response)
 
-        simpleRequestContext.response.decision mustEqual PermitDecision
+        simpleRequestContext.response.obligations.isDefined mustEqual true
 
-        //ObligationFulfillment.fullfil(simpleRequestContext.response.obligations)
+        simpleRequestContext.response.obligations mustNotEqual None
+
+        simpleRequestContext.response.obligations.map(_.size mustNotEqual 0)
+
+        simpleRequestContext.response.obligations foreach (obl => {
+            val fulFillmentRes = ObligationFulfillment.fullfil(obl)
+
+            fulFillmentRes.size mustNotEqual 0
+
+            fulFillmentRes foreach (
+              oblfres => {
+                oblfres mustEqual Right(ObligationFulfillmentSuccess(obl.head))
+              }
+            )
+          }
+        )
+
+        simpleRequestContext.response.decision mustEqual PermitDecision
 
       }
     }
