@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
+import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaimImpl;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaimsResponseImpl;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaim;
@@ -72,6 +73,8 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
         Object content = in.getMessage().getContent();
 
+        MediationState state = in.getMessage().getState();
+
         if (logger.isDebugEnabled())
             logger.info("doProcess() - Received SPNEGO Message = " + content);
 
@@ -103,7 +106,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:user-claims-request", request);
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", request);
 
         EndpointDescriptor spnegoNegotiationEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_NEGOTIATION.getValue());
 
@@ -129,7 +132,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:credential-claims-request", credentialClaimsRequest);
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", credentialClaimsRequest);
 
         EndpointDescriptor spnegoNegotiationEndpoint = resolveSpnegoEndpoint(SpnegoBinding.SPNEGO_HTTP_NEGOTIATION.getValue());
 
@@ -189,8 +192,13 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-        CredentialClaimsRequest credentialClaimsReq = (CredentialClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:credential-claims-request");
-        UserClaimsRequest userClaimsReq = (UserClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:user-claims-request");
+        ClaimsRequest cr = (ClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:claims-request");
+
+        CredentialClaimsRequest credentialClaimsReq = (CredentialClaimsRequest) (cr instanceof CredentialClaimsRequest ? cr : null);
+        UserClaimsRequest userClaimsReq = (UserClaimsRequest) (cr instanceof UserClaimsRequest ? cr : null);
+
+        // Remove state
+        in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:claims-request");
 
         if (credentialClaimsReq == null && userClaimsReq == null)
             throw new IllegalStateException("No Claims request not found!");
@@ -245,7 +253,7 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
             out.setMessage(new MediationMessageImpl(claimsResponse.getId(),
                     claimsResponse,
-                    "ClaimsResponse",
+                    "SSOCredentialClaimsResponse",
                     null,
                     ed,
                     in.getMessage().getState()));
@@ -302,13 +310,12 @@ public class SpnegoNegotiationProducer extends AbstractCamelProducer<CamelMediat
 
             out.setMessage(new MediationMessageImpl(selectAttrsResponse.getId(),
                     selectAttrsResponse,
-                    "SelectAttributesResponseResponse",
+                    "UserClaimsResponse",
                     null,
                     ed,
                     in.getMessage().getState()));
 
             exchange.setOut(out);
-
 
         }
 
