@@ -35,7 +35,7 @@
 
     <feature name="atricore-ha" version="${version}">
         <feature version="${version}">atricore-ha-main</feature>
-        <feature version="${version}">atricore-ha-web</feature>
+        <!--feature version="${version}">atricore-ha-web</feature-->
         <feature version="${version}">atricore</feature>
     </feature>
 

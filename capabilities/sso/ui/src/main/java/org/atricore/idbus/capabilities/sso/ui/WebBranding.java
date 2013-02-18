@@ -8,6 +8,7 @@ import org.springframework.osgi.context.BundleContextAware;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -28,6 +29,8 @@ public class WebBranding implements IClusterable, BundleContextAware {
     private String defaultLocale;
     
     private String fallbackUrl;
+
+    private Set<String> allowedResourcePatterns;
 
     private transient BundleContext bundleContext;
     
@@ -130,6 +133,14 @@ public class WebBranding implements IClusterable, BundleContextAware {
 
     public void setResourceBundles(List<ResourcesBundle> resourceBundles) {
         this.resourceBundles = resourceBundles;
+    }
+
+    public Set<String> getAllowedResourcePatterns() {
+        return allowedResourcePatterns;
+    }
+
+    public void setAllowedResourcePatterns(Set<String> allowedResourcesPatterns) {
+        this.allowedResourcePatterns = allowedResourcesPatterns;
     }
 
     public class ResourcesBundle {
