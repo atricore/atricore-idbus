@@ -174,45 +174,46 @@ case class AttributeAssignmentNode(properties: List[ObligationPropertyNode])
  */
 class ObligationFulfillment(val obls : List[Obligation]) {
 
-  def fulfill(props : Map[String, String]) : Boolean = {
+  def fulfill : List[Either[ObligationFulfillmentError, ObligationFulfillmentSuccess]] = {
 
-    /*
     obls.map(
      obl => {
-      val obligationProperties = Map(obl.obligationProperties.map(op => (op.name, op.value)): _*)
-
-      val attributeAssignments =
-        Map(
-          obl.attributeAssignments.flatMap(
-            _.properties.map( oblprop => (oblprop.name, props.get(oblprop.name)))): _*
-        )
-       
-        obligationProperties.get("id") match {
-          case Some("urn:oasis:names:tc:xacml:example:obligation:email") =>
-            val mailTo  = attributeAssignments.getOrElse("urn:oasis:names:tc:xacml:2.0:example:attribute:mailto", None)
-            val text = attributeAssignments.getOrElse("urn:oasis:names:tc:xacml:2.0:example:attribute:text", None);
+        obl.id match {
+          case "urn:oasis:names:tc:xacml:example:obligation:email" =>
+            val mailTo  = obl.attributeAssignments.find( _.id == "urn:oasis:names:tc:xacml:2.0:example:attribute:mailto")
+            val text = obl.attributeAssignments.find( _.id == "urn:oasis:names:tc:xacml:2.0:example:attribute:text");
 
             (for {
               mt <- mailTo
               txt <- text
-            } yield sendEmail(mt, txt)).getOrElse(false)
-
+            } yield {
+              if (sendEmail(mt.value, txt.value)) {
+                Right(ObligationFulfillmentSuccess(obl))
+              } else
+                Left(ObligationFulfillmentError(obl))
+            }).getOrElse(
+              Left(ObligationFulfillmentError(obl))
+            )
         }
      }
     )
-    */
-    true
   }
 
   private def sendEmail(mailTo : String, text : String) : Boolean = {
-      // send email
-      true
+    println("Sending email : " + mailTo + ", " + text)
+    true
   }
 
 }
 
+trait ObligationFulfilmentResult
+
+case class ObligationFulfillmentSuccess(obligation : Obligation) extends ObligationFulfilmentResult
+
+case class ObligationFulfillmentError(obligation : Obligation) extends ObligationFulfilmentResult
+
 object ObligationFulfillment {
-  def fullfil( obls : List[Obligation], props : Map[String, String]) = new ObligationFulfillment(obls).fulfill(props)
+  def fullfil( obls : List[Obligation]) = new ObligationFulfillment(obls).fulfill
 }
 
 
