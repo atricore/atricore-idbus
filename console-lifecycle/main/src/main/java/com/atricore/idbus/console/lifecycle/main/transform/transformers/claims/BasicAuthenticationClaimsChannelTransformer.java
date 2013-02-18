@@ -108,6 +108,12 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
             if (authnMechanism instanceof BasicAuthentication ||
                 authnMechanism instanceof BindAuthentication) {
 
+                if (authnMechanism instanceof BasicAuthentication) {
+                    BasicAuthentication a = (BasicAuthentication) authnMechanism;
+                    if (!a.isEnabled())
+                        continue;
+                }
+
                 if (claimChannelBean != null) {
                     int currentPriority = Integer.parseInt(getPropertyValue(claimChannelBean, "priority"));
                     if (authnMechanism.getPriority() < currentPriority)
