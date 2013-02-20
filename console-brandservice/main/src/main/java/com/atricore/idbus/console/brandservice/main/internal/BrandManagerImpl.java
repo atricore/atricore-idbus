@@ -40,6 +40,10 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
     private List<BuiltInBrandingDefinition> builtInBrandings;
 
     private BrandingStore store;
+
+    private long refreshPackagesDelay = 5000;
+
+    private boolean disableHotDeploy = false;
     
     // TODO : Move to installers ?!
     private BundleContext bundleContext;
@@ -70,6 +74,7 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
 
     protected boolean syncBrandingDefinitions() {
         try {
+
             Collection<BrandingDefinition> brandings = store.list();
             
             if (brandings == null || brandings.size() < 1)
@@ -194,7 +199,28 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
 
     }
 
+    public boolean isDisableHotDeploy() {
+        return disableHotDeploy;
+    }
+
+    public void setDisableHotDeploy(boolean disableHotDeploy) {
+        this.disableHotDeploy = disableHotDeploy;
+    }
+
+    public long getRefreshPackagesDelay() {
+        return refreshPackagesDelay;
+    }
+
+    public void setRefreshPackagesDelay(long refreshPackagesDelay) {
+        this.refreshPackagesDelay = refreshPackagesDelay;
+    }
+
     public void publish() throws BrandingServiceException {
+
+        if (disableHotDeploy) {
+            logger.info("Branding hot deploy disabled");
+            return;
+        }
         
         ServiceReference ref = getBundleContext().getServiceReference(PackageAdmin.class.getName());
         if (ref == null) {
@@ -262,9 +288,14 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
             }
 
             // Wait for refresh ...
-            synchronized (this) {
-                try { wait(5000); } catch (InterruptedException e) {/**/}
-            }
+
+            if (refreshPackagesDelay > 0)
+                synchronized (this) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Waiting for packages " + refreshPackagesDelay + " ms");
+
+                    try { wait(refreshPackagesDelay); } catch (InterruptedException e) {/**/}
+                }
 
             if (logger.isTraceEnabled())
                 logger.trace("Starting UI bundles");
@@ -280,6 +311,7 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
                         logger.trace("Starting UI bundle " + uiBundle.getSymbolicName());
 
                     uiBundle.start();
+
                 } catch (BundleException e) {
                     logger.error("Cannot start UI bundle " + uiBundle.getSymbolicName());
                 }

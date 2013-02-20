@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -209,6 +210,8 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         // TODO [IDP-PXY]: Use either service resource or execution environment !!!!
         String bpLocationPath = resolveLocationPath(applianceDef.getLocation()) + "/" +
                 (execEnv != null ? execEnv.getName().toUpperCase() : svcResource.getName().toUpperCase());
+
+        setPropertyValue(spMediator, "metricsPrefix", appliance.getName() + "/" + sp.getName());
 
         String bpLocation = resolveLocationBaseUrl(applianceDef.getLocation()) + bpLocationPath;
 
@@ -399,6 +402,8 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         setPropertyRef(sessionStore, "cacheManager", providerInternalSaml2.getIdentityAppliance().getName() + "-cache-manager");
         setPropertyValue(sessionStore, "cacheName", providerInternalSaml2.getIdentityAppliance().getName() +
                 "-" + sp.getName() + "-sessionsCache");
+
+        setPropertyValue(sessionManager, "metricsPrefix", appliance.getName() + "/" + sp.getName());
         
         // Wiring
         setPropertyBean(sessionManager, "sessionIdGenerator", sessionIdGenerator);

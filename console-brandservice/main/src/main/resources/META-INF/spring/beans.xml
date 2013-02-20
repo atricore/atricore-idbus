@@ -21,6 +21,10 @@
         <property name="store">
             <ref bean="brandingStore"/>
         </property>
+
+        <property name="refreshPackagesDelay" value="${brandManager.refreshPackagesDelay}" />
+
+        <property name="disableHotDeploy" value="${brandManager.disableHotDeploy}" />
         <property name="installers">
             <list>
                 <ref bean="customBrandingInstaller"/>
@@ -50,6 +54,25 @@
     
     <!-- Installers -->
     <bean id="customBrandingInstaller" class="com.atricore.idbus.console.brandservice.main.internal.installer.CustomBrandingInstaller"/>
+
+    <!-- Use spring bean setup, to allow multiple config sources -->
+    <!--ctx:property-placeholder properties-ref="lifecycleProps" /-->
+    <bean id="myBundleConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="propertiesArray">
+            <list>
+                <ref bean="brandsvcProps"/>
+                <ref bean="brandsvcJdoProps"/>
+            </list>
+        </property>
+    </bean>
+
+    <osgix:cm-properties id="brandsvcProps"
+                         persistent-id="com.atricore.idbus.console.brandservice">
+        <prop key="brandManager.refreshPackagesDelay">7000</prop>
+        <prop key="brandManager.disableHotDeploy">false</prop>
+    </osgix:cm-properties>
 
     <osgix:cm-properties id="brandsvcJdoProps"
                          persistent-id="com.atricore.idbus.console.db">

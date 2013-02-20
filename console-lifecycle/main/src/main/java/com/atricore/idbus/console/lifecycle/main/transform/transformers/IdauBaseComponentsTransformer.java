@@ -365,6 +365,17 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         idauBeansOsgi.getImportsAndAliasAndBeen().add(selectionStrategyRegistry);
 
         // ----------------------------------------
+        // Monitoring Server
+        // ----------------------------------------
+        Reference monitoringServer = new Reference();
+        monitoringServer.setId("monitoring-server");
+        monitoringServer.setCardinality("1..1");
+        monitoringServer.setTimeout(60L);
+        monitoringServer.setInterface("org.atricore.idbus.kernel.monitoring.core.MonitoringServer");
+
+        idauBeansOsgi.getImportsAndAliasAndBeen().add(monitoringServer);
+
+        // ----------------------------------------
         // Store beans as module resources
         // ----------------------------------------
 
