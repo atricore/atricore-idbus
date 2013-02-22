@@ -283,6 +283,9 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         if (fontExtensions.contains(extension))
             return BrandingResourceType.FONT;
 
+        if (extension.equalsIgnoreCase("html"))
+            return BrandingResourceType.HTML;
+
         return BrandingResourceType.OTHER;
     }
     

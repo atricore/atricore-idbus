@@ -21,6 +21,58 @@
     <!--[if IE 6]><link href="ie6.css" rel="stylesheet" type="text/css" media="screen, projector" /><![endif]-->
     <!--[if IE 7]><link href="ie7.css" rel="stylesheet" type="text/css" media="screen, projector" /><![endif]-->
 
+    <style type="text/css">
+        #bysy_indicator {
+            display: none;
+            float: right;
+            background: rgb(255,241,168);
+            margin-top: 5px;
+            z-index: 1000;
+            width: 200;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1em;
+        }
+    </style>
+
+    <script type="text/javascript">
+        window.onload = setupFunc;
+
+        function saveForm(btn) {
+            eForm = btn.form;
+            btn.disabled=true;
+            btn.value='Processing ...';
+
+            eForm.submit();
+            return;
+
+        }
+
+        function setupFunc() {
+            document.getElementsByTagName('body')[0].onclick = clickFunc;
+            hideBusysign();
+            Wicket.Ajax.registerPreCallHandler(showBusysign);
+            Wicket.Ajax.registerPostCallHandler(hideBusysign);
+            Wicket.Ajax.registerFailureHandler(hideBusysign);
+        }
+
+        function hideBusysign() {
+            document.getElementById('bysy_indicator').style.display ='none';
+        }
+
+        function showBusysign() {
+            document.getElementById('bysy_indicator').style.display ='inline';
+        }
+
+        function clickFunc(eventData) {
+            var clickedElement = (window.event) ? event.srcElement : eventData.target;
+            if (clickedElement.tagName.toUpperCase() == 'BUTTON' || clickedElement.tagName.toUpperCase() == 'A' || clickedElement.parentNode.tagName.toUpperCase() == 'A'
+                    || (clickedElement.tagName.toUpperCase() == 'INPUT' && (clickedElement.type.toUpperCase() == 'BUTTON' || clickedElement.type.toUpperCase() == 'SUBMIT'))) {
+                showBusysign();
+            }
+        }
+    </script>
+
 </head>
 
 <body>
@@ -62,4 +114,5 @@
 </div>
 </body>
 </html>
+
 
