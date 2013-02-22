@@ -77,6 +77,8 @@ public class SingleLogoutProducer extends SSOProducer {
 
     private static final Log logger = LogFactory.getLog( SingleLogoutProducer.class );
 
+    private static SSOBinding[] sloSpBindings = new SSOBinding[] { SSOBinding.SAMLR2_ARTIFACT, SSOBinding.SAMLR2_POST, SSOBinding.SAMLR2_REDIRECT};
+
     public SingleLogoutProducer( AbstractCamelEndpoint<CamelMediationExchange> endpoint ) throws Exception {
         super( endpoint );
     }
@@ -176,18 +178,24 @@ public class SingleLogoutProducer extends SSOProducer {
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
 
+        String ssoSessionId = secCtx != null ? secCtx.getSessionIndex() : "<NONE>";
+
         validateRequest(sloRequest, in.getMessage().getRawContent(), in.getMessage().getState());
 
         boolean partialLogout = performSlo(exchange, secCtx, sloRequest);
 
-        SSOBinding binding = SSOBinding.asEnum(endpoint.getBinding());
+        // We can send the response using any front-channel binding
+        // SSOBinding binding = SSOBinding.asEnum(endpoint.getBinding());
+
         // Send status response!
         if (logger.isDebugEnabled())
-            logger.debug("Building SLO Response for SSO Session "  + (secCtx != null ? secCtx.getSessionIndex() : "<NONE>"));
+            logger.debug("Building SLO Response for SSO Session "  + ssoSessionId);
 
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(sloRequest.getIssuer());
 
-        EndpointDescriptor ed = resolveSpSloEndpoint(sloRequest.getIssuer(), new SSOBinding[] { binding } , true);
+        EndpointDescriptor ed = resolveSpSloEndpoint(sloRequest.getIssuer(),
+                sloSpBindings ,
+                true);
 
         // TODO : Send partialLogout status code if required
         StatusResponseType response = buildSamlSloResponse(exchange, sloRequest, sp, ed);
