@@ -221,10 +221,19 @@
         <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.javax-jstl-v1_2/${idbus.bundle.javax-jstl-v1_2.version}</bundle>
     </feature>
 
+    <feature name="apache-wicket" version="${apache-wicket.version}}">
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-util/6.5.0</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-request/6.5.0</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-core/6.5.0</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-auth-roles/6.5.0</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-extensions/6.5.0</bundle>
+    </feature>
+
     <feature name="web" version="${version}">
         <feature version="${karaf.version}">eventadmin</feature>
         <feature version="${version}">web-core</feature>
         <feature version="${spring.osgi.version}">spring-dm-web</feature>
+        <feature version="${apache-wicket.version}">apache-wicket</feature>
         <bundle start-level="40">mvn:org.ops4j.pax.wicket/org.ops4j.pax.wicket.service/${pax.wicket.service.version}</bundle>
     </feature>
 
@@ -337,6 +346,7 @@
         <bundle start-level="34">mvn:org.codehaus.jackson/jackson-core-asl/1.9.1</bundle>
         <bundle start-level="34">mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.1</bundle>
         <bundle start-level="34">mvn:org.codehaus.jackson/jackson-jaxrs/1.9.1</bundle>
+        <bundle start-level="34">mvn:org.ops4j.base/ops4j-base/${ops4j.base.version}}</bundle>
     </feature>
 
     <feature name="mysql-connector-java" version="5.1.10">

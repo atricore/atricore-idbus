@@ -92,7 +92,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
                     submit.setEnabled(true);
-                    target.addComponent(submit);
+                    target.add(submit);
                 }
             });
 
@@ -134,7 +134,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
 				// repaint the feedback panel so that it is hidden
-				target.addComponent(feedback);
+				target.add(feedback);
 
 
                 try {
@@ -151,7 +151,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
 			protected void onError(AjaxRequestTarget target, Form<?> form)
 			{
 				// repaint the feedback panel so errors are shown
-				target.addComponent(feedback);
+				target.add(feedback);
 			}
 		};
 

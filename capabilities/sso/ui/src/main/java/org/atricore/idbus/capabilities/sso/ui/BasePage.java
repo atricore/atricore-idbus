@@ -22,6 +22,7 @@ package org.atricore.idbus.capabilities.sso.ui;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.*;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
@@ -133,7 +134,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
 
     }
 
-    public void renderHead(IHeaderResponse response) {
+    public void render(HeaderItem item) {
         if ( ((BaseWebApplication)getApplication()).getBranding() == null)
             return;
 
@@ -145,7 +146,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
             return;
 
         for (IPageHeaderContributor c : branding.getPageHeaderContributors()) {
-            c.renderHead(response, this);
+            c.render(item, this);
         }
 
 

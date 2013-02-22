@@ -11,7 +11,7 @@ import org.apache.wicket.markup.html.TransparentWebMarkupContainer;
 import org.apache.wicket.markup.parser.AbstractMarkupFilter;
 import org.apache.wicket.markup.parser.filter.RelativePathPrefixHandler;
 import org.apache.wicket.markup.resolver.IComponentResolver;
-import org.apache.wicket.util.string.UrlUtils;
+import org.apache.wicket.request.UrlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -40,9 +40,9 @@
 
     <properties>
         <!--apache-wicket.version>1.4.18</apache-wicket.version-->
-        <apache-wicket.version>1.5.9</apache-wicket.version>
+        <apache-wicket.version>6.5.0</apache-wicket.version>
         <idbus.cap.sso.version>1.4.0-SNAPSHOT</idbus.cap.sso.version>
-        <ops4j.paxwicket.version>1.2.0</ops4j.paxwicket.version>
+        <ops4j.paxwicket.version>2.1.0</ops4j.paxwicket.version>
         <osgi.version>4.0.1</osgi.version>
         <pax.web.version>0.7.2</pax.web.version>
     </properties>

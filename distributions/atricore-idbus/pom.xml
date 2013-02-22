@@ -166,7 +166,7 @@
 
         <abdera.version>0.4.0-incubating_1</abdera.version>
         <!--apache-wicket.version>1.4.19</apache-wicket.version-->
-        <apache-wicket.version>1.5.9</apache-wicket.version>
+        <apache-wicket.version>6.5.0</apache-wicket.version>
         <asm.version>3.3_2</asm.version>
         <activemq.version>5.3.2</activemq.version>
         <antlr.version>2.7.7_3</antlr.version>
@@ -210,10 +210,11 @@
         <jettison.version>1.1</jettison.version>
         <jetty.bundle.version>6.1.22_2</jetty.bundle.version>
         <neethi.version>2.0.4_1</neethi.version>
+        <ops4j.base.version>1.4.0</ops4j.base.version>
         <pax.web.extender.version>0.7.2</pax.web.extender.version>
         <!--pax.wicket.service.version>0.8.0-SNAPSHOT</pax.wicket.service.version-->
         <!--pax.wicket.service.version>0.8.2</pax.wicket.service.version-->
-        <pax.wicket.service.version>1.2.0</pax.wicket.service.version>
+        <pax.wicket.service.version>2.1.0</pax.wicket.service.version>
         <saaj.impl.version>1.3_1</saaj.impl.version>
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <velocity.version>1.6.2</velocity.version>

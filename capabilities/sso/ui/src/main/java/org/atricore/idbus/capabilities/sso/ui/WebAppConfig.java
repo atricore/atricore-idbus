@@ -1,6 +1,6 @@
 package org.atricore.idbus.capabilities.sso.ui;
 
-import org.apache.wicket.IClusterable;
+import org.apache.wicket.util.io.IClusterable;
 
 import java.util.Properties;
 

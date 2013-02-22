@@ -1,6 +1,6 @@
 package org.atricore.idbus.capabilities.sso.ui.spi;
 
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.HeaderItem;
 import org.atricore.idbus.capabilities.sso.ui.BasePage;
 
 /**
@@ -8,5 +8,5 @@ import org.atricore.idbus.capabilities.sso.ui.BasePage;
  */
 public interface IPageHeaderContributor {
 
-    void renderHead(IHeaderResponse response, BasePage page);
+    void render(HeaderItem response, BasePage page);
 }
