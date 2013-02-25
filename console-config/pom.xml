@@ -72,13 +72,6 @@
                             <appendAssemblyId/>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
                     <execution>
                         <id>make shared resources</id>
                         <goals>
@@ -92,8 +85,10 @@
                             <appendAssemblyId/>
                         </configuration>
                     </execution>
+
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 

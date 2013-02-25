@@ -34,18 +34,18 @@
     <artifactId>com.atricore.idbus.console.liveservices.liveupdate.tests.services</artifactId>
     <version>1.0.0</version>
     <packaging>bundle</packaging>
-    <name>Atricore Console :: Tests : LiveUpdate Sample ${pom.version} Services</name>
+    <name>Atricore Console :: Tests : LiveUpdate Sample ${project.version} Services</name>
 
     <build>
         <resources>
             <resource>
-                <directory>${pom.basedir}/src/main/resources</directory>
+                <directory>${project.basedir}/src/main/resources</directory>
                 <includes>
                     <include>**/*</include>
                 </includes>
             </resource>
             <resource>
-                <directory>${pom.basedir}/src/main/filtered-resources</directory>
+                <directory>${project.basedir}/src/main/filtered-resources</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>**/*</include>
@@ -59,8 +59,8 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>com.atricore.idbus.console.liveservices.liveupdate.tests.services.spi.*;version=${pom.version}</Export-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>com.atricore.idbus.console.liveservices.liveupdate.tests.services.spi.*;version=${project.version}</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

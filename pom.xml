@@ -247,7 +247,7 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-config</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
                 <type>zip</type>
                 <classifier>resources-${console.distribution}</classifier>
             </dependency>
@@ -255,28 +255,28 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-lib</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
                 <type>swc</type>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-ria-base</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
                 <type>swc</type>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-ce-branding</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
                 <type>swc</type>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-ee-branding</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
                 <type>swc</type>
             </dependency>
 
@@ -284,7 +284,7 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-ria</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
                 <classifier>${console.distribution}</classifier>
                 <type>swf</type>
             </dependency>
@@ -292,79 +292,79 @@
             <dependency>
                 <groupId>com.atricore.idbus.console.activation</groupId>
                 <artifactId>com.atricore.idbus.console.activation.protocol</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.settings</groupId>
                 <artifactId>com.atricore.idbus.console.settings.main</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.lifecycle</groupId>
                 <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.activation</groupId>
                 <artifactId>com.atricore.idbus.console.activation.main</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.brandservice</groupId>
                 <artifactId>com.atricore.idbus.console.brandservice.main</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.licensing</groupId>
                 <artifactId>com.atricore.idbus.console.licensing.josso2-license-v1_0</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.licensing</groupId>
                 <artifactId>com.atricore.idbus.console.licensing.main</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.licensing</groupId>
                 <artifactId>com.atricore.idbus.console.licensing.command</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
                 <artifactId>com.atricore.idbus.console.liveservices.liveupdate.atricore-liveupdate-v1_0</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
                 <artifactId>com.atricore.idbus.console.liveservices.liveupdate.main</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
                 <artifactId>com.atricore.idbus.console.liveservices.liveupdate.command</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-services</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.lifecycle</groupId>
                 <artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
@@ -393,7 +393,7 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>com.atricore.idbus.console.web</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
@@ -418,25 +418,6 @@
                 <groupId>org.hsqldb</groupId>
                 <artifactId>com.springsource.org.hsqldb</artifactId>
                 <version>${hsqldb.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>${felix.osgi.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
-                <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>console-lib</artifactId>
-                <version>${project.version}</version>
-                <type>swc</type>
             </dependency>
 
             <dependency>
@@ -1094,12 +1075,12 @@
                             </property>
                             <property>
                                 <name>derby.system.home</name>
-                                <value>${build.directory}/derby</value>
+                                <value>${project.build.directory}/derby</value>
                             </property>
 
                             <property>
                                 <name>buildDir</name>
-                                <value>${build.directory}</value>
+                                <value>${project.build.directory}</value>
                             </property>
 
                             <property>

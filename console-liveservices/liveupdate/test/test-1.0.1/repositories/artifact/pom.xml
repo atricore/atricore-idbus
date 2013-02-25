@@ -34,28 +34,28 @@
     <artifactId>liveupdate-test-artifact-repo</artifactId>
     <version>1.0.1</version>
     <packaging>pom</packaging>
-    <name>Atricore Console :: Tests : LiveUpdate Sample ${pom.version} Artifacts</name>
+    <name>Atricore Console :: Tests : LiveUpdate Sample ${project.version} Artifacts</name>
 
     <dependencies>
 
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>com.atricore.idbus.console.liveservices.liveupdate.tests.installer</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>liveupdate-test</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
             <classifier>liveupdate</classifier>
         </dependency>
 
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>liveupdate-test</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <type>tar.gz</type>
             <classifier>liveupdate</classifier>
         </dependency>
@@ -65,13 +65,13 @@
     <build>
         <resources>
             <resource>
-                <directory>${pom.basedir}/src/main/resources</directory>
+                <directory>${project.basedir}/src/main/resources</directory>
                 <includes>
                     <include>**/*</include>
                 </includes>
             </resource>
             <resource>
-                <directory>${pom.basedir}/src/main/filtered-resources</directory>
+                <directory>${project.basedir}/src/main/filtered-resources</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>**/*</include>
@@ -139,7 +139,7 @@
                             <descriptors>
                                 <descriptor>src/main/descriptors/artifact-repo.xml</descriptor>
                             </descriptors>
-                            <finalName>${pom.artifactId}-${pom.version}</finalName>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
                             <tarLongFileMode>gnu</tarLongFileMode>
                         </configuration>
                     </execution>

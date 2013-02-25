@@ -129,13 +129,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.josso</groupId>
-            <artifactId>org.atricore.idbus.capabilities.josso.main</artifactId>
-            <version>${idbus.cap.josso.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
             <version>${idbus.cap.sso.version}</version>
@@ -269,10 +262,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Private-Package>!*</Private-Package>
                         <Export-Package>
-                            org.atricore.idbus.examples.simplefederation.idau; version="${pom.version}"
+                            org.atricore.idbus.examples.simplefederation.idau; version="${project.version}"
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,

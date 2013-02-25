@@ -60,12 +60,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.kernel.common</groupId>
-            <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
             <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
             <scope>provided</scope>
@@ -249,8 +243,8 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>com.atricore.idbus.console.liveservices.liveupdate.main.*;version=${pom.version}</Export-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>com.atricore.idbus.console.liveservices.liveupdate.main.*;version=${project.version}</Export-Package>
                         <Spring-Context>*;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
                         <Require-Bundle>
                             org.apache.servicemix.bundles.javax.mail
