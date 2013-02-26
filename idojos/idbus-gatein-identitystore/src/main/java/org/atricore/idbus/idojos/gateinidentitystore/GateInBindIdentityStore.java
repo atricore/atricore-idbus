@@ -22,8 +22,10 @@
  ******************************************************************************/
 package org.atricore.idbus.idojos.gateinidentitystore;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.Credential;
@@ -89,10 +91,14 @@ public class GateInBindIdentityStore implements BindableCredentialStore {
             log.debug("Username: " + username);
             log.debug("Password: " + password);
 
+            String authnPath = URIUtil.encodePath(
+                            (!gateInContext.isEmpty() ? "/" + gateInContext : "") +
+                            "/rest/sso/authcallback/auth/" + new String(Base64.encodeBase64(username.getBytes())) +
+                            "/"  + new String(Base64.encodeBase64(password.getBytes()))
+                          );
             StringBuilder urlBuffer = new StringBuilder();
-            urlBuffer.append("http://" + gateInHost + ":" + gateInPort +
-                    (!gateInContext.isEmpty() ? "/" + gateInContext : "") +
-                    "/rest/sso/authcallback/auth/" + username + "/"  + password);
+
+            urlBuffer.append("http://" + gateInHost + ":" + gateInPort + authnPath);
 
             boolean success = this.executeRemoteCall(urlBuffer.toString());
 
