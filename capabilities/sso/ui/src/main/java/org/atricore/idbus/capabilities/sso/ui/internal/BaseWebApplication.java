@@ -3,6 +3,8 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.*;
+import org.apache.wicket.markup.html.IPackageResourceGuard;
+import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.parser.filter.RelativePathPrefixHandler;
 import org.apache.wicket.markup.resolver.IComponentResolver;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -107,6 +109,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     protected void init() {
         super.init();
         preInit();
+        initResourceGuards();
         mountPages();
     }
 
@@ -121,6 +124,38 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                     logger.trace(e.getMessage(), e);
             }
         }
+    }
+
+    protected void initResourceGuards() {
+
+        WebBranding branding = getBranding();
+        if (branding != null) {
+
+            if (branding.getAllowedResourcePatterns() != null && branding.getAllowedResourcePatterns().size() > 0) {
+
+                IPackageResourceGuard guard = getResourceSettings().getPackageResourceGuard();
+                if (guard instanceof SecurePackageResourceGuard) {
+
+                    SecurePackageResourceGuard secureGuard = (SecurePackageResourceGuard) guard;
+                    for (String pattern : branding.getAllowedResourcePatterns()) {
+                        secureGuard.addPattern(pattern);
+                    }
+                    if (logger.isTraceEnabled())
+                        logger.trace("Initialized resource guards for application " + getName() + ", " +
+                                "'variant' "+branding.getSkin()+" based on " + branding.getId());
+                } else {
+                    logger.error("Cannot add resource pattern to IPackageResourceGuard of type " + guard.getClass());
+                }
+
+            } else {
+                logger.trace("No configured resource guards for application " + getName() + ", " +
+                        "'variant' "+branding.getSkin()+" based on " + branding.getId());
+            }
+
+        } else {
+            logger.error("No Branding found for application : " + getName());
+        }
+
     }
 
     protected void mountPages() {

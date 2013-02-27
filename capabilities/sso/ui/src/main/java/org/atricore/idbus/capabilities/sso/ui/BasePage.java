@@ -111,23 +111,6 @@ public class BasePage extends WebPage implements IHeaderContributor {
             if (branding.getSkin() != null)
                 setVariation(branding.getSkin());
 
-            if (branding.getAllowedResourcePatterns() != null && branding.getAllowedResourcePatterns().size() > 0) {
-
-                IPackageResourceGuard guard = app.getResourceSettings().getPackageResourceGuard();
-                if (guard instanceof SecurePackageResourceGuard) {
-
-                    SecurePackageResourceGuard secureGuard = (SecurePackageResourceGuard) guard;
-                    for (String pattern : branding.getAllowedResourcePatterns()) {
-                        secureGuard.addPattern(pattern);
-                    }
-
-                } else {
-                    logger.error("Cannot add resource pattern to IPackageResourceGuard of type " + guard.getClass());
-                }
-
-
-            }
-
         } else {
             logger.error("No Branding found for application : " + app.getName());
         }
