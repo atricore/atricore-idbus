@@ -20,9 +20,9 @@
  */
 package org.atricore.idbus.capabilities.openid.ui.internal;
 
-import org.apache.wicket.Request;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
+import org.apache.wicket.request.Request;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
 
 /**

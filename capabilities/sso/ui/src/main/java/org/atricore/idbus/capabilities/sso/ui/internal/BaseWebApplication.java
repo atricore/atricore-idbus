@@ -8,8 +8,11 @@ import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.parser.filter.RelativePathPrefixHandler;
 import org.apache.wicket.markup.resolver.IComponentResolver;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.cycle.RequestCycleContext;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.atricore.idbus.capabilities.sso.ui.*;
+import org.atricore.idbus.capabilities.sso.ui.page.HomePage;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
 import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
@@ -71,10 +74,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         super();
     }
 
-    @Override
-    public RequestCycle newRequestCycle(Request request, Response response) {
-        return new CssWebRequestCycle(this, (WebRequest) request, response);
-    }
+
+
 
     public BundleContext getBundleContext() {
         return bundleContext;
@@ -113,7 +114,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     }
 
     @Override
-    protected void internalDestroy() {
+    public void internalDestroy() {
         super.internalDestroy();
         if (brandingService != null) {
             try {
@@ -162,7 +163,13 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     }
 
     protected void preInit() {
-
+        setRequestCycleProvider(new IRequestCycleProvider()
+        {
+            public RequestCycle get(RequestCycleContext context)
+            {
+                return new CssWebRequestCycle(context);
+            }
+        });
     }
 
     /**
@@ -184,7 +191,9 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         getPageSettings().getComponentResolvers().clear();
         getPageSettings().getComponentResolvers().addAll(newComponentsList);
 
-        getMarkupSettings().setMarkupParserFactory(new IdBusMarkupParserFactory(getAppConfig()));
+        getResourceSettings().setEncodeJSessionId(false);
+
+        getMarkupSettings().setMarkupFactory(new IdBusMarkupParserFactory(getAppConfig()));
     }
 
     public WebBranding getBranding() {
@@ -239,9 +248,9 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                 // All shared resource MUST be scoped to AppResourceLocator
                 if (resource.isShared()) {
 
-                    ResourceReference ref = new ResourceReference(AppResourceLocator.class, resource.getPath());
+                    PackageResourceReference ref = new PackageResourceReference(AppResourceLocator.class, resource.getPath());
                     this.appResources.add(new AppResource(resource, ref));
-                    mountSharedResource("/" + resource.getPath(), ref.getSharedResourceKey());
+                    mountResource("/" + resource.getPath(), ref);
                     resourcePaths.add(resource.getPath());
                     if (logger.isTraceEnabled())
                         logger.trace("Mounting EXPLICITY shared resource ["+resource.getId()+"] at /" + resource.getPath());
@@ -276,10 +285,10 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                     logger.trace("Mounting DISCOVERED shared resource ["+id+"] at /" + mountPath);
                 
                 BrandingResource resource = new BrandingResource(id, mountPath, null, type);
-                
-                ResourceReference ref = new ResourceReference(AppResourceLocator.class, resource.getPath());
+
+                PackageResourceReference ref = new PackageResourceReference(AppResourceLocator.class, resource.getPath());
                 this.appResources.add(new AppResource(resource, ref));
-                mountSharedResource("/" + resource.getPath(), ref.getSharedResourceKey());
+                mountResource("/" + resource.getPath(), ref);
                 resourcePaths.add(resource.getPath());
                 if (logger.isTraceEnabled())
                     logger.trace("Mounting shared resource ["+resource.getId()+"] at /" + resource.getPath());
@@ -308,6 +317,9 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
         if (fontExtensions.contains(extension))
             return BrandingResourceType.FONT;
+
+        if (extension.equalsIgnoreCase("html"))
+            return BrandingResourceType.HTML;
 
         return BrandingResourceType.OTHER;
     }
@@ -347,9 +359,9 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
         private BrandingResource resource;
 
-        private ResourceReference ref;
+        private PackageResourceReference ref;
 
-        public AppResource(BrandingResource resource, ResourceReference ref) {
+        public AppResource(BrandingResource resource, PackageResourceReference ref) {
             this.resource = resource;
             this.ref = ref;
         }
@@ -358,7 +370,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
             return resource;
         }
 
-        public ResourceReference getRef() {
+        public PackageResourceReference getRef() {
             return ref;
         }
     }

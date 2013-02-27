@@ -13,6 +13,7 @@ public enum BrandingResourceType {
     LABEL,
     LINK,
     FONT,
+    HTML,
     OTHER;
 
 }

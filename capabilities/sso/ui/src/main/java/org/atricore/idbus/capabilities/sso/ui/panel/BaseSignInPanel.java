@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.target.basic.RedirectRequestTarget;
+import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -61,7 +61,7 @@ public class BaseSignInPanel extends Panel {
     }
 
     protected void onSignInSucceeded(String claimsConsumerUrl) {
-        getRequestCycle().setRequestTarget(new RedirectRequestTarget(claimsConsumerUrl));
+        getRequestCycle().scheduleRequestHandlerAfterCurrent(new RedirectRequestHandler(claimsConsumerUrl));
     }
 
     protected EndpointDescriptor resolveClaimsEndpoint(ClaimsRequest request, AuthnCtxClass authnCtx) throws IdentityMediationException {

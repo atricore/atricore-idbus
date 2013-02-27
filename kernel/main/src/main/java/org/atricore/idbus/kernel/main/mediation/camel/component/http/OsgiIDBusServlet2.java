@@ -90,21 +90,12 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             throws ServletException, IOException {
 
         long started = 0;
-        String thread = Thread.currentThread().getName();
-        String pathInfo = req.getPathInfo();
 
         MonitoringServer mServer = lookupMonitoring();
 
         try {
 
-
-
-            if (logger.isTraceEnabled()) {
-                String parentThread = req.getHeader("IDBUS-PROXIED-REQUEST");
-                String proxied = parentThread != null ? "PROXIED" : "BROWSER";
-                started = System.currentTimeMillis();
-                logger.trace("IDBUS-PERF " + proxied + " ["+thread+"] "+ (parentThread != null ? "{"+parentThread+"}" : "")+ " " + pathInfo + " START");
-            }
+            started = System.currentTimeMillis();
 
             if (kernelConfig == null) {
 
@@ -143,12 +134,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                         sw.getTotalTimeMillis());
             }
         } finally {
-            if (logger.isTraceEnabled()) {
-                String parentThread = req.getHeader("IDBUS-PROXIED-REQUEST");
-                String proxied = parentThread != null ? "PROXIED" : "BROWSER";
-                long ended = System.currentTimeMillis();
+            long ended = System.currentTimeMillis();
+            String parentThread = req.getHeader("IDBUS-PROXIED-REQUEST");
+            if (parentThread == null) {
                 mServer.recordResponseTimeMetric(ATRICORE_WEB_BROWSER_PROCESSING_TIME_MS_METRIC_NAME, ended - started);
-                logger.trace("IDBUS-PERF " + proxied + " ["+thread+"] "+ (parentThread != null ? "{"+parentThread+"}" : "")+ " " + pathInfo + " END: " + (ended - started) + " ms");
             }
 
         }
