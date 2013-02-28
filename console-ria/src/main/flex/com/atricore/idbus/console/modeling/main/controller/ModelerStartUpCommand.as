@@ -41,6 +41,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _jbossPortalResourceCreateMediator:IIocMediator;
     private var _liferayPortalResourceCreateMediator:IIocMediator;
     private var _jbosseppResourceCreateMediator:IIocMediator;
+    private var _selfServicesResourceCreateMediator:IIocMediator;
     private var _wasceExecutionEnvironmentCreateMediator:IIocMediator;
     private var _apacheExecutionEnvironmentCreateMediator:IIocMediator;
     private var _alfrescoResourceCreateMediator:IIocMediator;
@@ -83,6 +84,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _josso1ResourceRemoveCommand:IIocCommand;
     private var _josso2ResourceRemoveCommand:IIocCommand;
     private var _jbosseppResourceRemoveCommand:IIocCommand;
+    private var _selfServicesResourceRemoveCommand:IIocCommand;
     private var _lookupIdentityApplianceByIdCommand:IIocCommand;
     private var _identityApplianceUpdateCommand:IIocCommand;
     private var _identityVaultRemoveCommand:IIocCommand;
@@ -191,6 +193,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.JOSSO1_RESOURCE_REMOVE, josso1ResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.JOSSO2_RESOURCE_REMOVE, josso2ResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.JBOSSEPP_RESOURCE_REMOVE, jbosseppResourceRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SELFSERVICES_RESOURCE_REMOVE, selfServicesResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_SOURCE_REMOVE, identityVaultRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATION_REMOVE, activationRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_CONNECTION_REMOVE, serviceConnectionRemoveCommand.getConfigName());
@@ -398,6 +401,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set jbossExecutionEnvironmentCreateMediator(value:IIocMediator):void {
         _jbossExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get selfServicesResourceCreateMediator():IIocMediator {
+        return _selfServicesResourceCreateMediator;
+    }
+
+    public function set selfServicesResourceCreateMediator(value:IIocMediator):void {
+        _selfServicesResourceCreateMediator = value;
     }
 
     public function get weblogicExecutionEnvironmentCreateMediator():IIocMediator {
@@ -760,6 +771,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set jbosseppResourceRemoveCommand(value:IIocCommand):void {
         _jbosseppResourceRemoveCommand = value;
+    }
+
+    public function get selfServicesResourceRemoveCommand():IIocCommand {
+        return _selfServicesResourceRemoveCommand;
+    }
+
+    public function set selfServicesResourceRemoveCommand(value:IIocCommand):void {
+        _selfServicesResourceRemoveCommand = value;
     }
 
     public function get lookupIdentityApplianceByIdCommand():IIocCommand {

@@ -1,20 +1,24 @@
+/**
+ * @author: sgonzalez@atriocore.com
+ * @date: 2/26/13
+ */
 package com.atricore.idbus.console.modeling.main.controller {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
-import com.atricore.idbus.console.services.dto.JBossEPPResource;
+import com.atricore.idbus.console.services.dto.SelfServicesResource;
 import com.atricore.idbus.console.services.dto.JOSSO1Resource;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class JBossEPPResourceRemoveCommand extends IocSimpleCommand {
+public class SelfServicesResourceRemoveCommand extends IocSimpleCommand {
 
-    public static const SUCCESS : String = "JBossEPPResourceRemoveCommand.SUCCESS";
+    public static const SUCCESS : String = "SelfServicesResourceRemoveCommand.SUCCESS";
 
     private var _projectProxy:ProjectProxy;
 
-    public function JBossEPPResourceRemoveCommand() {
+    public function SelfServicesResourceRemoveCommand() {
     }
 
     public function get projectProxy():ProjectProxy {
@@ -26,24 +30,24 @@ public class JBossEPPResourceRemoveCommand extends IocSimpleCommand {
     }
 
     override public function execute(notification:INotification):void {
-        var jbosseppResource:JBossEPPResource = notification.getBody() as JBossEPPResource;
+        var selfServicesResource:SelfServicesResource = notification.getBody() as SelfServicesResource;
 
         var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
 
         for (var i:int=identityAppliance.idApplianceDefinition.serviceResources.length-1; i>=0; i--) {
-            if (identityAppliance.idApplianceDefinition.serviceResources[i] == jbosseppResource) {
+            if (identityAppliance.idApplianceDefinition.serviceResources[i] == selfServicesResource) {
                 identityAppliance.idApplianceDefinition.serviceResources.removeItemAt(i);
 
-                if (jbosseppResource.serviceConnection != null) {
-                    jbosseppResource.serviceConnection.sp.serviceConnection = null;
+                if (selfServicesResource.serviceConnection != null) {
+                    selfServicesResource.serviceConnection.sp.serviceConnection = null;
                 }
-                if (jbosseppResource.activation != null) {
-                    for (var j:int=jbosseppResource.activation.executionEnv.activations.length-1; j>=0; j--) {
-                        if (jbosseppResource.activation.executionEnv.activations[j] == jbosseppResource.activation) {
-                            jbosseppResource.activation.executionEnv.activations.removeItemAt(j);
+                if (selfServicesResource.activation != null) {
+                    for (var j:int=selfServicesResource.activation.executionEnv.activations.length-1; j>=0; j--) {
+                        if (selfServicesResource.activation.executionEnv.activations[j] == selfServicesResource.activation) {
+                            selfServicesResource.activation.executionEnv.activations.removeItemAt(j);
 
                             for (var k:int=identityAppliance.idApplianceDefinition.executionEnvironments.length-1; k>=0; k--) {
-                                if (identityAppliance.idApplianceDefinition.executionEnvironments[k] == jbosseppResource.activation.executionEnv) {
+                                if (identityAppliance.idApplianceDefinition.executionEnvironments[k] == selfServicesResource.activation.executionEnv) {
                                     identityAppliance.idApplianceDefinition.executionEnvironments.removeItemAt(k);
                                 }
                             }
@@ -52,7 +56,7 @@ public class JBossEPPResourceRemoveCommand extends IocSimpleCommand {
                     }
                 }
 
-                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, jbosseppResource);
+                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, selfServicesResource);
                 break;
             }
         }

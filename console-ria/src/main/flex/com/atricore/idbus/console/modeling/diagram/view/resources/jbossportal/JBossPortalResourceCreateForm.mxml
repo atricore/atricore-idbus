@@ -33,11 +33,11 @@
                         triggerEvent="click"/>
     </fx:Declarations>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.name')}:" required="true">
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.name')}:" required="true">
         <s:TextInput id="executionEnvironmentName" width="300"/>
     </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.description')}:">
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.description')}:">
         <s:TextInput id="executionEnvironmentDescription" width="300"/>
     </mx:FormItem>
 

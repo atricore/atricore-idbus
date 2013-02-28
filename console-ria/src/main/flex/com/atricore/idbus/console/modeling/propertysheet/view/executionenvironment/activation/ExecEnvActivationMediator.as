@@ -52,7 +52,7 @@ public class ExecEnvActivationMediator extends IocFormMediator {
     }
 
     private function init():void {
-        var currentExecEnv = getCurrentExecEnv();
+        var currentExecEnv:ExecutionEnvironment = getCurrentExecEnv();
 
         if (currentExecEnv.type.name == ExecEnvType.REMOTE.name) {
             view.userPassGroup.includeInLayout = true;

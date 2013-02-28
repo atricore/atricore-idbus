@@ -96,8 +96,6 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
 
 
         Bean claimChannelBean = null;
-        boolean overrideBrinding = provider.getUserDashboardBranding() != null &&
-                !provider.getUserDashboardBranding().equals(appliance.getIdApplianceDefinition().getUserDashboardBranding().getId());
 
         for (AuthenticationMechanism authnMechanism : provider.getAuthenticationMechanisms()) {
             // Bind authn is a variant of basic authn
@@ -162,8 +160,7 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
                 // 2faAuthnUILocation
                 // setPropertyValue(ccMediator, "twoFactorAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-passcode.do");
                 setPropertyValue(ccMediator, "twoFactorAuthnUILocation",
-                        resolveUiLocationPath(appliance) +
-                                (overrideBrinding ? "/" + provider.getName().toUpperCase() : "" ) + "/SSO/LOGIN/2FA");
+                        resolveUiLocationPath(appliance) + "/" + provider.getName().toUpperCase() + "/SSO/LOGIN/2FA");
 
                 // artifactQueueManager
                 // setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");

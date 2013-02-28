@@ -65,6 +65,8 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.php.PHPExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.phpbb.PhpBBResourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.resources.phpbb.PhpBBResourceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.resources.selfservices.SelfServicesResourceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.resources.selfservices.SelfServicesResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.sharepoint.SharepointResourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.resources.sharepoint.SharepointResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateForm;
@@ -162,6 +164,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _jbossPortalResourceCreateMediator:JBossPortalResourceCreateMediator;
     private var _liferayPortalResourceCreateMediator:LiferayPortalResourceCreateMediator;
     private var _jbosseppResourceCreateMediator:JBossEPPResourceCreateMediator;
+    private var _selfServicesResourceCreateMediator:SelfServicesResourceCreateMediator;
     private var _wasceExecutionEnvironmentCreateMediator:WASCEExecutionEnvironmentCreateMediator;
     private var _apacheExecutionEnvironmentCreateMediator:ApacheExecutionEnvironmentCreateMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:WindowsIISExecutionEnvironmentCreateMediator;
@@ -215,6 +218,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _jbossPortalResourceCreateForm:JBossPortalResourceCreateForm;
     private var _liferayPortalResourceCreateForm:LiferayPortalResourceCreateForm;
     private var _jbosseppResourceCreateForm:JBossEPPResourceCreateForm;
+    private var _selfServicesResourceCreateForm:SelfServicesResourceCreateForm;
     private var _wasceExecutionEnvironmentCreateForm:WASCEExecutionEnvironmentCreateForm;
     private var _apacheExecutionEnvironmentCreateForm:ApacheExecutionEnvironmentCreateForm;
     private var _windowsIISExecutionEnvironmentCreateForm:WindowsIISExecutionEnvironmentCreateForm;
@@ -475,6 +479,15 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set jbosseppResourceCreateMediator(value:JBossEPPResourceCreateMediator):void {
         _jbosseppResourceCreateMediator = value;
+    }
+
+
+    public function get selfServicesResourceCreateMediator():SelfServicesResourceCreateMediator {
+        return _selfServicesResourceCreateMediator;
+    }
+
+    public function set selfServicesResourceCreateMediator(value:SelfServicesResourceCreateMediator):void {
+        _selfServicesResourceCreateMediator = value;
     }
 
     public function get wasceExecutionEnvironmentCreateMediator():WASCEExecutionEnvironmentCreateMediator {
@@ -1150,6 +1163,28 @@ public class ModelerPopUpManager extends BasePopUpManager {
         jbosseppResourceCreateMediator.setViewComponent(_jbosseppResourceCreateForm);
         jbosseppResourceCreateMediator.handleNotification(_lastWindowNotification);
     }
+
+    public function showCreateSelfServicesResourceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createSelfServicesResourceCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.selfServicesResource");
+        _popup.width = 800;
+        _popup.height = 260;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_selfServicesResourceCreateForm);
+    }
+
+    private function createSelfServicesResourceCreateForm():void {
+        _selfServicesResourceCreateForm = new SelfServicesResourceCreateForm();
+        _selfServicesResourceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleSelfServicesResourceCreateFormCreated);
+    }
+
+    private function handleSelfServicesResourceCreateFormCreated(event:FlexEvent):void {
+        selfServicesResourceCreateMediator.setViewComponent(_selfServicesResourceCreateForm);
+        selfServicesResourceCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
 
     public function showCreateWASCEExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;

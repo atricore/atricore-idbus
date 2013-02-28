@@ -20,6 +20,19 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;  
     }
 
+    public void arrive(SelfServices node) throws Exception {
+
+    }
+
+    public Object[] leave(SelfServices node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(SelfServices node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+
     public void arrive(InternalSaml2ServiceProvider node) throws Exception {
         
     }

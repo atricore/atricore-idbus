@@ -66,6 +66,7 @@ import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.SasResource;
+import com.atricore.idbus.console.services.dto.SelfServicesResource;
 import com.atricore.idbus.console.services.dto.ServiceConnection;
 import com.atricore.idbus.console.services.dto.ServiceResource;
 import com.atricore.idbus.console.services.dto.SharepointResource;
@@ -216,8 +217,9 @@ public class BrowserModelFactory {
             resourceNode.parentNode = parentNode;
             if (serviceResource is JBossEPPResource) {
                 resourceNode.icon = EmbeddedIcons.jbosseppResourceMiniIcon;
-            } else
-            if (serviceResource is JOSSO1Resource) {
+            } else if (serviceResource is SelfServicesResource) {
+                resourceNode.icon = EmbeddedIcons.selfServicesResourceIcon;
+            } else if (serviceResource is JOSSO1Resource) {
                 resourceNode.icon = EmbeddedIcons.josso1ResourceMiniIcon;
             } else if (serviceResource is JOSSO2Resource) {
                 resourceNode.icon = EmbeddedIcons.josso2ResourceMiniIcon;
@@ -237,8 +239,6 @@ public class BrowserModelFactory {
                 resourceNode.icon = EmbeddedIcons.liferayResourceMiniIcon;
             } else if (serviceResource is JBossPortalResource) {
                 resourceNode.icon = EmbeddedIcons.jbossPortalResourceMiniIcon;
-            } else if (serviceResource is JBossEPPResource) {
-                resourceNode.icon = EmbeddedIcons.jbosseppResourceMiniIcon;
             }
 
             return resourceNode;

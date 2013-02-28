@@ -91,6 +91,11 @@ public class CEPaletteItemProvider implements PaletteItemProvider {
                 new PaletteEntry("PhpBB", EmbeddedIcons.phpbbResourceMiniIcon, "PhpBB Environment Entry", DiagramElementTypes.PHPBB_RESOURCE_ELEMENT_TYPE)
         );
 
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("Self Services", EmbeddedIcons.selfServicesResourceMiniIcon, "Self Services Resource Entry", DiagramElementTypes.SELFSERVICES_RESOURCE_ELEMENT_TYPE)
+        );
+
+
         pr.add(resourcesPaletteDrawer);
 
         // Execution Environments drawer

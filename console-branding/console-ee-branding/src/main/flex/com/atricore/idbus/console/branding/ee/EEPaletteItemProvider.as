@@ -133,6 +133,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 new PaletteEntry("JBoss EPP", EmbeddedIcons.jbosseppResourceMiniIcon, "JBoss EPP Environment Entry", DiagramElementTypes.JBOSSEPP_RESOURCE_ELEMENT_TYPE)
         );
 
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("Self Services", EmbeddedIcons.selfServicesResourceMiniIcon, "Self Services Resource Entry", DiagramElementTypes.SELFSERVICES_RESOURCE_ELEMENT_TYPE)
+        );
+
         pr.add(resourcesPaletteDrawer);
 
         // Execution Environments drawer

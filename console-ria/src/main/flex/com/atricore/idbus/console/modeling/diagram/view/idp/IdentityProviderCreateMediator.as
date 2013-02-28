@@ -119,8 +119,6 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.certificateManagementType.addEventListener(ItemClickEvent.ITEM_CLICK, handleManagementTypeClicked);
         view.identityProviderName.addEventListener(Event.CHANGE, handleProviderNameChange);
 
-
-
         // upload bindings
         view.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
         //view.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);

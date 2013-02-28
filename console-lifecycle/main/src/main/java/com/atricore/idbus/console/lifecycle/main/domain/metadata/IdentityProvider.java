@@ -242,4 +242,5 @@ public class IdentityProvider extends FederatedProvider {
     public void setUserDashboardBranding(String userDashboardBranding) {
         this.userDashboardBranding = userDashboardBranding;
     }
+
 }

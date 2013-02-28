@@ -163,6 +163,10 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/40x40/jbossepp_resource.png")]
     public static var jbosseppResourceMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/selfservices_resource.png")]
+    public static var selfServicesResourceMiniIcon:Class;
+
     // Connections
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/federated_connection.png")]

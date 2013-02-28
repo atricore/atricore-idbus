@@ -73,6 +73,7 @@
         import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
         import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
         import com.atricore.idbus.console.services.dto.SasResource;
+        import com.atricore.idbus.console.services.dto.SelfServicesResource;
         import com.atricore.idbus.console.services.dto.ServiceResource;
         import com.atricore.idbus.console.services.dto.SharepointResource;
         import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
@@ -206,8 +207,9 @@
                 _linkLabel = (obj as ServiceResource).name;
                 if (obj is JBossEPPResource) {
                     _linkIcon = EmbeddedIcons.jbosseppResourceIcon;
-                } else
-                if (obj is JOSSO1Resource) {
+                } else if (obj is SelfServicesResource) {
+                    _linkIcon = EmbeddedIcons.selfServicesResourceIcon;
+                } else if (obj is JOSSO1Resource) {
                     _linkIcon = EmbeddedIcons.josso1ResourceIcon;
                 } else if (obj is JOSSO2Resource) {
                     _linkIcon = EmbeddedIcons.josso2ResourceIcon;

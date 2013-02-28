@@ -1,10 +1,12 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
-public class MicroStrategyResource extends ServiceResource {
+/**
+ * @author: sgonzalez@atriocore.com
+ * @date: 2/25/13
+ */
+public class SelfServicesResource extends ServiceResource {
 
     // TODO : Maybe we need a parent OAUTH resource, instead of JOSSO 2 ?!
-
-    private static final long serialVersionUID = -7991824895038241799L;
 
     private String secret;
 

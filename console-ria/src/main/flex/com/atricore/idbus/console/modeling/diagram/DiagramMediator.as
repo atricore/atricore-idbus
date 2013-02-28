@@ -52,6 +52,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityP
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateJBossEPPAuthenticationServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateJBossEPPResourceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateSelfServicesResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateJosso1ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateJosso2ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdentitySourceElementRequest;
@@ -89,6 +90,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalO
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2ServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSelfServicesResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSugarCRMElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWikidElementRequest;
@@ -130,6 +132,7 @@ import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
+import com.atricore.idbus.console.services.dto.SelfServicesResource;
 import com.atricore.idbus.console.services.dto.ServiceConnection;
 import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceResource;
@@ -628,6 +631,14 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_JBOSSEPP_RESOURCE_ELEMENT, cljbeer);
                         break;
+                    case DiagramElementTypes.SELFSERVICES_RESOURCE_ELEMENT_TYPE:
+                        var cslfsvcs:CreateSelfServicesResourceElementRequest = new CreateSelfServicesResourceElementRequest(
+                                _identityAppliance, null);
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_SELFSERVICES_RESOURCE_ELEMENT, cslfsvcs);
+                        break;
                     case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                         var cwseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                 );
@@ -991,6 +1002,16 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_JBOSSEPP_RESOURCE_ELEMENT, rjbeppr);
+                            break;
+
+                        case DiagramElementTypes.SELFSERVICES_RESOURCE_ELEMENT_TYPE:
+                            var selfServicesResource:SelfServicesResource = _currentlySelectedNode.data as SelfServicesResource;
+
+                            var rslfsvcsr:RemoveSelfServicesResourceElementRequest = new RemoveSelfServicesResourceElementRequest(selfServicesResource);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_SELFSERVICES_RESOURCE_ELEMENT, rslfsvcsr);
                             break;
 
                         case DiagramElementTypes.EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
@@ -1615,6 +1636,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             } else if (node.data is JBossEPPResource) {
                 elementType = DiagramElementTypes.JBOSSEPP_RESOURCE_ELEMENT_TYPE;
                 // Execution environments (all)
+            } else if (node.data is SelfServicesResource) {
+                elementType = DiagramElementTypes.SELFSERVICES_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is JOSSO1Resource) {
                 elementType = DiagramElementTypes.JOSSO1_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is JOSSO2Resource) {

@@ -53,7 +53,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
@@ -664,6 +663,7 @@ public class IdentityApplianceManagementServiceImpl implements
                 appliance.setIdApplianceDeployment(null);
             }
 
+            // Validate AFTER we add built-in SPs, to avoid invalid appliances
             validateAppliance(appliance, ApplianceValidator.Operation.ADD);
             debugAppliance(appliance, ApplianceValidator.Operation.ADD);
 

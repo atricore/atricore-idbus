@@ -27,6 +27,7 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckFoldersRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSelfServicesResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.response.CheckFoldersResponse;
 import com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
@@ -66,6 +67,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.resources.liferayp
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.microstrategy.MicroStrategyResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.php.PHPExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.phpbb.PhpBBResourceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.selfservices.SelfServicesResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.sharepoint.Sharepoint2010ResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.tomcat.TomcatExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.wasce.WASCEExecEnvCoreSection;
@@ -131,6 +133,8 @@ import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.GoogleAppsServiceProvider;
+import com.atricore.idbus.console.services.dto.IdBusExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.IdBusExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentityApplianceState;
@@ -165,6 +169,7 @@ import com.atricore.idbus.console.services.dto.Resource;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
+import com.atricore.idbus.console.services.dto.SelfServicesResource;
 import com.atricore.idbus.console.services.dto.ServiceConnection;
 import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderChannel;
@@ -269,6 +274,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _jbossPortalResourceCoreSection:JBossPortalResourceCoreSection;
     private var _liferayResourceCoreSection:LiferayPortalResourceCoreSection;
     private var _jbosseppResourceCoreSection:JBossEPPResourceCoreSection;
+    private var _selfServicesResourceCoreSection:SelfServicesResourceCoreSection;
     private var _wasceExecEnvCoreSection:WASCEExecEnvCoreSection;
     private var _jbossExecEnvCoreSection:JBossExecEnvCoreSection;
     private var _apacheExecEnvCoreSection:ApacheExecEnvCoreSection;
@@ -511,6 +517,8 @@ public class PropertySheetMediator extends IocMediator {
 
                     if (_currentIdentityApplianceElement is JBossEPPResource) {
                         enableJBossEPPResourcePropertyTabs();
+                    } else if (_currentIdentityApplianceElement is SelfServicesResource) {
+                        enableSelfServicesResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is JOSSO1Resource) {
                         enableJOSSO1ResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is JOSSO2Resource) {
@@ -6277,7 +6285,6 @@ public class PropertySheetMediator extends IocMediator {
         trace("host = " + _jbosseppResourceCoreSection.resourceDomain.text);
         // bind model
         var jbosseppResource:JBossEPPResource = projectProxy.currentIdentityApplianceElement as JBossEPPResource;
-        var jbosseppEE:JBossEPPExecutionEnvironment = jbosseppResource.activation.executionEnv as JBossEPPExecutionEnvironment;
 
         jbosseppResource.name = _jbosseppResourceCoreSection.resourceName.text;
         jbosseppResource.description = _jbosseppResourceCoreSection.resourceDescription.text;
@@ -6288,15 +6295,115 @@ public class PropertySheetMediator extends IocMediator {
         jbosseppResource.partnerAppLocation.context = _jbosseppResourceCoreSection.resourceContext.text;
         jbosseppResource.partnerAppLocation.uri = _jbosseppResourceCoreSection.resourcePath.text;
 
-        jbosseppEE.type = ExecEnvType.valueOf(_jbosseppResourceCoreSection.selectedHost.selectedItem.data);
-        jbosseppEE.installUri = _jbosseppResourceCoreSection.homeDirectory.text;
-        jbosseppEE.instance = _jbosseppResourceCoreSection.instance.text;
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
 
-        if (jbosseppEE.type.name == ExecEnvType.REMOTE.name) {
-            jbosseppEE.location = _jbosseppResourceCoreSection.location.text;
-        } else {
-            jbosseppEE.location = null;
+
+    private function enableSelfServicesResourcePropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _selfServicesResourceCoreSection = new SelfServicesResourceCoreSection();
+        corePropertyTab.addElement(_selfServicesResourceCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _selfServicesResourceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSelfServicesResourceCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSelfServicesResourceCorePropertyTabRollOut);
+
+        // No Activation Tab
+
+    }
+
+    private function handleSelfServicesResourceCorePropertyTabCreationComplete(event:Event):void {
+        var selfServicesResource:SelfServicesResource = projectProxy.currentIdentityApplianceElement as SelfServicesResource;
+        var selfServicesEE:IdBusExecutionEnvironment = selfServicesResource.activation.executionEnv as IdBusExecutionEnvironment;
+
+        if (selfServicesResource != null) {
+            // bind view
+            _selfServicesResourceCoreSection.resourceName.text = selfServicesResource.name;
+            _selfServicesResourceCoreSection.resourceDescription.text = selfServicesResource.description;
+
+            selfServicesEE.name = selfServicesResource.name + "-captive-ee";
+            selfServicesEE.description = selfServicesResource.description +
+                    "Captive IdBus execution environment owned by Service Resource " + selfServicesResource.name
+
+            selfServicesEE.overwriteOriginalSetup = false;
+            selfServicesEE.installDemoApps = false;
+            selfServicesEE.platformId = "idbus";
+
+            selfServicesResource.activation.name = selfServicesResource.name.toLowerCase().replace(/\s+/g, "-") +
+                    "-" + selfServicesEE.name.toLowerCase().replace(/\s+/g, "-") + "-activation";
+
+
+            /*
+
+            var location:Location = selfServicesResource.location;
+            if (location == null)
+                location = new Location();
+
+            for (var i:int = 0; i < _selfServicesResourceCoreSection.resourceProtocol.dataProvider.length; i++) {
+                if (location != null && location.protocol == _selfServicesResourceCoreSection.resourceProtocol.dataProvider[i].label) {
+                    _selfServicesResourceCoreSection.resourceProtocol.selectedIndex = i;
+                    break;
+                }
+            }
+
+            _selfServicesResourceCoreSection.resourceDomain.text = location.host;
+            _selfServicesResourceCoreSection.resourcePort.text = location.port.toString() != "0" ? location.port.toString() : "";
+            _selfServicesResourceCoreSection.resourceContext.text = location.context;
+            _selfServicesResourceCoreSection.resourcePath.text = location.uri;
+            */
+
+            _selfServicesResourceCoreSection.resourceName.addEventListener(Event.CHANGE, handleSectionChange);
+            _selfServicesResourceCoreSection.resourceDescription.addEventListener(Event.CHANGE, handleSectionChange);
+
+            /*
+            _selfServicesResourceCoreSection.resourceProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+            _selfServicesResourceCoreSection.resourcePort.addEventListener(Event.CHANGE, handleSectionChange);
+            _selfServicesResourceCoreSection.resourceDomain.addEventListener(Event.CHANGE, handleSectionChange);
+            _selfServicesResourceCoreSection.resourceContext.addEventListener(Event.CHANGE, handleSectionChange);
+            _selfServicesResourceCoreSection.resourcePath.addEventListener(Event.CHANGE, handleSectionChange);
+            */
+
+            _validators = [];
+            _validators.push(_selfServicesResourceCoreSection.nameValidator);
         }
+    }
+
+    private function handleSelfServicesResourceCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        if (_dirty && validate(true)) {
+            selfServicesSave();
+
+        }
+    }
+
+    private function selfServicesSave(): void {
+
+        // bind model
+        var selfServicesResource:SelfServicesResource = projectProxy.currentIdentityApplianceElement as SelfServicesResource;
+
+        selfServicesResource.name = _selfServicesResourceCoreSection.resourceName.text;
+        selfServicesResource.description = _selfServicesResourceCoreSection.resourceDescription.text;
+
+        /*
+        selfServicesResource.location.protocol = _selfServicesResourceCoreSection.resourceProtocol.selectedItem.label;
+        selfServicesResource.location.host = _selfServicesResourceCoreSection.resourceDomain.text;
+        selfServicesResource.location.port = parseInt(_selfServicesResourceCoreSection.resourcePort.text);
+        selfServicesResource.location.context = _selfServicesResourceCoreSection.resourceContext.text;
+        selfServicesResource.location.uri = _selfServicesResourceCoreSection.resourcePath.text;
+        */
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

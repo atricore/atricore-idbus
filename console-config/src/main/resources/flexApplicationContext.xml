@@ -82,6 +82,7 @@
         <property name="jbossPortalResourceCreateMediator" ref="jbossPortalResourceCreateMediator" />
         <property name="liferayPortalResourceCreateMediator" ref="liferayPortalResourceCreateMediator" />
         <property name="jbosseppResourceCreateMediator" ref="jbosseppResourceCreateMediator" />
+        <property name="selfServicesResourceCreateMediator" ref="selfServicesResourceCreateMediator" />
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
@@ -129,6 +130,7 @@
         <property name="josso1ResourceRemoveCommand" ref="josso1ResourceRemoveCommand"/>
         <property name="josso2ResourceRemoveCommand" ref="josso2ResourceRemoveCommand"/>
         <property name="jbosseppResourceRemoveCommand" ref="jbosseppResourceRemoveCommand"/>
+        <property name="selfServicesResourceRemoveCommand" ref="selfServicesResourceRemoveCommand"/>
         <property name="createActivationCommand" ref="createActivationCommand" />
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
         <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
@@ -372,6 +374,10 @@
     </object>
     <object id="jbosseppResourceRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.JBossEPPResourceRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="selfServicesResourceRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.SelfServicesResourceRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="activationRemoveCommand"
@@ -751,6 +757,11 @@
             class="com.atricore.idbus.console.modeling.diagram.view.resources.jbossepp.JBossEPPResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="selfServicesResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.selfservices.SelfServicesResourceCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
     <object id="wasceExecutionEnvironmentCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -1075,16 +1086,13 @@
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator"/>
         <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator"/>
-        <property name="jbossPortalResourceCreateMediator"
-                  ref="jbossPortalResourceCreateMediator"/>
-        <property name="liferayPortalResourceCreateMediator"
-                  ref="liferayPortalResourceCreateMediator"/>
-        <property name="jbosseppResourceCreateMediator"
-                  ref="jbosseppResourceCreateMediator"/>
+        <property name="jbossPortalResourceCreateMediator" ref="jbossPortalResourceCreateMediator"/>
+        <property name="liferayPortalResourceCreateMediator" ref="liferayPortalResourceCreateMediator"/>
+        <property name="jbosseppResourceCreateMediator" ref="jbosseppResourceCreateMediator"/>
+        <property name="selfServicesResourceCreateMediator" ref="selfServicesResourceCreateMediator"/>
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator"/>
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator"/>
-        <property name="windowsIISExecutionEnvironmentCreateMediator"
-                  ref="windowsIISExecutionEnvironmentCreateMediator"/>
+        <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator"/>
         <property name="alfrescoResourceCreateMediator" ref="alfrescoResourceCreateMediator"/>
         <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator"/>
         <property name="phpExecutionEnvironmentCreateMediator" ref="phpExecutionEnvironmentCreateMediator"/>

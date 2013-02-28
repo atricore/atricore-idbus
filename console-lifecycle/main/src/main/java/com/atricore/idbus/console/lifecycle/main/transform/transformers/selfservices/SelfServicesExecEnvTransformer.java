@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.lifecycle.main.transform.transformers.mstr;
+package com.atricore.idbus.console.lifecycle.main.transform.transformers.selfservices;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
@@ -32,18 +32,14 @@ import org.atricore.idbus.kernel.main.mediation.provider.BindingProviderImpl;
 import java.util.*;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyBean;
 
 /**
- * Created with IntelliJ IDEA.
- * User: sgonzalez
- * Date: 9/24/12
- * Time: 2:11 PM
- * To change this template use File | Settings | File Templates.
+ * @author: sgonzalez@atriocore.com
+ * @date: 2/28/13
  */
-public class MstrExecEnvTransformer extends AbstractTransformer {
+public class SelfServicesExecEnvTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(MstrExecEnvTransformer.class);
+    private static final Log logger = LogFactory.getLog(SelfServicesExecEnvTransformer.class);
 
     private Map<String, ExecutionEnvironmentProperties> execEnvProperties =
             new HashMap<String, ExecutionEnvironmentProperties>();
@@ -59,17 +55,15 @@ public class MstrExecEnvTransformer extends AbstractTransformer {
 
         ExecutionEnvironment ex = (ExecutionEnvironment) event.getData();
 
-
-
-        boolean hasMstrResource = false;
+        boolean hasSelfServicesResource = false;
         for (Activation activation : ex.getActivations()) {
-            if (activation.getResource() instanceof MicroStrategyResource) {
-                hasMstrResource = true;
+            if (activation.getResource() instanceof SelfServicesResource) {
+                hasSelfServicesResource = true;
                 break;
             }
         }
 
-        return hasMstrResource;
+        return hasSelfServicesResource;
 
     }
 
@@ -77,9 +71,9 @@ public class MstrExecEnvTransformer extends AbstractTransformer {
     public void before(TransformEvent event) throws TransformException {
         ExecutionEnvironment execEnv = (ExecutionEnvironment) event.getData();
 
-        // MSTR has
-        assert execEnv.getActivations().size() == 1 : "MSTR Resources must have an exclusive execution environment";
-        MicroStrategyResource mstrResource = (MicroStrategyResource) execEnv.getActivations().iterator().next().getResource();
+        // Self Services has
+        assert execEnv.getActivations().size() == 1 : "Self-Services Resources must have an exclusive execution environment";
+        SelfServicesResource selfServicesResource = (SelfServicesResource) execEnv.getActivations().iterator().next().getResource();
 
         IdentityApplianceDefinition applianceDef = (IdentityApplianceDefinition) event.getContext().getParentNode();
         IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
@@ -143,8 +137,8 @@ public class MstrExecEnvTransformer extends AbstractTransformer {
 
         addEntryToMap(mBeanExporter, "beans", mBeanEntry);
 
-        // MSTR Binding Channel (Uses OAuth2 Protocol)
-        Bean bc = newBean(bpBeans, normalizeBeanName(execEnv.getName()) + "-mstr-binding-channel",
+        // Self-Services Binding Channel (Uses OAuth2 Protocol)
+        Bean bc = newBean(bpBeans, normalizeBeanName(execEnv.getName()) + "-selfsvcs-binding-channel",
                 "org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl");
         setPropertyValue(bc, "name", bc.getName());
         setPropertyValue(bc, "description", execEnv.getDescription());
@@ -211,10 +205,27 @@ public class MstrExecEnvTransformer extends AbstractTransformer {
         setPropertyBean(bindingMediator, "logger", bpLogger);
 
         // Resource Server information
+        String uiBasePath = "IDBUS-UI";
+        Location uiLocation = applianceDef.getUiLocation();
+        if (uiLocation != null) {
+            uiBasePath = resolveLocationPath(uiLocation);
+        }
+
+        InternalSaml2ServiceProvider sp = selfServicesResource.getServiceConnection().getSp();
+        IdentityProvider idp = null;
+        if (sp.getFederatedConnectionsA() != null && sp.getFederatedConnectionsA().size() > 0)
+            idp = (IdentityProvider) sp.getFederatedConnectionsA().iterator().next().getRoleB();
+        if (sp.getFederatedConnectionsB() != null && sp.getFederatedConnectionsB().size() > 0)
+            idp = (IdentityProvider) sp.getFederatedConnectionsB().iterator().next().getRoleA();
+
+        if (idp == null) {
+            throw new TransformException("Cannot find an IDP for resource " + selfServicesResource.getName());
+        }
+
         Bean rServerBean = newAnonymousBean(org.atricore.idbus.capabilities.oauth2.main.ResourceServer.class);
-        setPropertyValue(rServerBean, "resourceLocation", mstrResource.getLocation().toString());
+        setPropertyValue(rServerBean, "resourceLocation", uiBasePath + "/" + applianceDef.getName().toUpperCase() + "/" + idp.getName().toUpperCase() + "/SSO");
         setPropertyValue(rServerBean, "name", execEnv.getName());
-        setPropertyValue(rServerBean, "sharedSecret", mstrResource.getSecret());
+        setPropertyValue(rServerBean, "sharedSecret", selfServicesResource.getSecret());
         setPropertyValue(rServerBean, "accessTokenParam", "access_token");
 
         setPropertyBean(bindingMediator, "resourceServer", rServerBean);

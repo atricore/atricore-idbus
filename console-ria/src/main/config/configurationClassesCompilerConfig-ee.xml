@@ -86,6 +86,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.JOSSO1ResourceRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.JOSSO2ResourceRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.JBossEPPResourceRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.SelfServicesResourceRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOSetupCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand</symbol>
@@ -145,6 +146,7 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.alfresco.AlfrescoResourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.phpbb.PhpBBResourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.jbossepp.JBossEPPResourceCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.selfservices.SelfServicesResourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator</symbol>

@@ -37,7 +37,7 @@ public class JOSSO2ResourceRemoveCommand extends IocSimpleCommand {
                 }
                 if (josso2Resource.activation != null) {
                     for (var j:int=josso2Resource.activation.executionEnv.activations.length-1; j>=0; j--) {
-                        if (josso2Resource.activation.executionEnv.activations[i] == josso2Resource.activation) {
+                        if (josso2Resource.activation.executionEnv.activations[j] == josso2Resource.activation) {
                             josso2Resource.activation.executionEnv.activations.removeItemAt(j);
                             break;
                         }

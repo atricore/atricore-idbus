@@ -154,35 +154,51 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
                             ExecutionEnvironment execEnv = r.getActivation().getExecutionEnv();
                             sb.append("\n");
                             sb.append("            ");
-                            sb.append(getNameString(execEnv.getName(), 10));
-
-                            // SP and App ID MUST match
-                            sb.append(getNameString(sp.getName()));
-                            sb.append(" JOSSO 1.x");
+                            sb.append(getNameString(execEnv.getName(), 12));
+                            sb.append(" JOSSO 1.x (");
                             sb.append(execEnv.getPlatformId());
-                            sb.append(" ");
+                            sb.append(") -> ");
+                            sb.append(r.getName());
+                            sb.append(":");
                             sb.append(getLocationString(r.getPartnerAppLocation()));
                             sb.append(" [");
                             sb.append(execEnv.isActive() ? "\u001B[32mACTIVATED\u001B[0m" : "\u001B[31mNOT ACTIVATED\u001B[0m");
                             sb.append("] ");
         
                         } else if (sp.getServiceConnection().getResource() instanceof JOSSO2Resource) {
-                            // TODO [JOSSO-370] FIX Print-out
                             JOSSO2Resource r = (JOSSO2Resource) sp.getServiceConnection().getResource();
-                            sb.append(r.getPartnerAppLocation());
-                            sb.append(" [");
-                            //sb.append(r.isActive() ? "\u001B[32mACTIVATED\u001B[0m" : "\u001B[31mNOT ACTIVATED\u001B[0m");
-                            sb.append("]");
 
-                        
+                            sb.append("\n");
+                            sb.append("            ");
+                            sb.append(getNameString("no-exec-env", 12));
+                            sb.append(" JOSSO 2.x -> (web)");
+                            sb.append(r.getName());
+                            sb.append(":");
+                            sb.append(getLocationString(r.getPartnerAppLocation()));
+
                         } else {
-                            // TODO [JOSSO-370] FIX Print-out
-                            ServiceResource svcR = sp.getServiceConnection().getResource(); 
-                            sb.append(svcR.getId());
-                            sb.append(" [");
+                            ServiceResource svcR = sp.getServiceConnection().getResource();
+
+                            ExecutionEnvironment execEnv = null;
+                            if (svcR.getActivation() != null && svcR.getActivation().getExecutionEnv() != null)
+                                execEnv = svcR.getActivation().getExecutionEnv();
+
+                            sb.append("\n");
+                            sb.append("            ");
+                            sb.append(getNameString(execEnv != null ? execEnv.getName() : "no-exec-env", 12));
+
+                            if (execEnv != null) {
+                                sb.append(" ").append(svcR.getClass().getSimpleName()).append(" (");
+                                sb.append(execEnv.getPlatformId() != null ? execEnv.getPlatformId() : execEnv.getName());
+                                sb.append(")");
+                            }
+                            sb.append(" -> ");
                             sb.append(svcR.getName());
-                            sb.append("]");
-                            
+                            sb.append(": unknown");
+
+
+
+
                         }
                     }
 

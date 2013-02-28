@@ -62,6 +62,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const JOSSO1_RESOURCE_REMOVE:String = "josso1ResourceRemove";
     public static const JOSSO2_RESOURCE_REMOVE:String = "josso2ResourceRemove";
     public static const JBOSSEPP_RESOURCE_REMOVE:String = "jbosseppResourceRemove";
+    public static const SELFSERVICES_RESOURCE_REMOVE:String = "selfServicesResourceRemove";
 //    public static const IDP_CHANNEL_REMOVE:String = "idpChannelRemove";
 //    public static const SP_CHANNEL_REMOVE:String = "spChannelRemove";
     public static const IDENTITY_SOURCE_REMOVE:String = "identitySourceRemove";
@@ -203,6 +204,7 @@ public class ApplicationFacade extends BaseAppFacade {
 //    public static const CREATE_SP_CHANNEL_ELEMENT:String = "createSpChannelElement";
 //    public static const REMOVE_SP_CHANNEL_ELEMENT:String = "removeSpChannelElement";
     public static const REMOVE_JBOSSEPP_RESOURCE_ELEMENT:String = "removeJBossEPPResourceElement";
+    public static const REMOVE_SELFSERVICES_RESOURCE_ELEMENT:String = "removeSelfServicesResourceElement";
     public static const CREATE_DB_IDENTITY_SOURCE_ELEMENT:String = "createDbIdentitySourceElement";
     public static const REMOVE_IDENTITY_SOURCE_ELEMENT:String = "removeIdentitySourceElement";
     public static const CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:String = "createLdapIdentitySourceElement";
@@ -227,6 +229,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJBossPortalExecutionEnvironmentElement";
     public static const CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT:String = "createLiferayExecutionEnvironmentElement";
     public static const CREATE_JBOSSEPP_RESOURCE_ELEMENT:String = "createJBossEPPResourceElement";
+    public static const CREATE_SELFSERVICES_RESOURCE_ELEMENT:String = "createSelfServicesResourceElement"
     public static const CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWebsphereExecutionEnvironmentElement";
     public static const CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createApacheExecutionEnvironmentElement";
     public static const CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWindowsIISExecutionEnvironmentElement";
@@ -238,7 +241,6 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_SHAREPOINT2010_EXECUTION_ENVIRONMENT_ELEMENT:String = "createSharepoint2010ExecutionEnvironmentElement";
     public static const CREATE_COLDFUSION_EXECUTION_ENVIRONMENT_ELEMENT:String = "createColdfusionExecutionEnvironmentElement";
     public static const CREATE_MICROSTRATEGY_EXECUTION_ENVIRONMENT_ELEMENT:String = "createMicroStrategyExecutionEnvironmentElement";
-    public static const CREATE_JBOSSEPP_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJBossEPPExecutionEnvironmentElement";
     public static const REMOVE_ACTIVATION_ELEMENT:String = "removeActivationElement";
     public static const REMOVE_FEDERATED_CONNECTION_ELEMENT:String = "removeFederatedConnectionElement";
     public static const REMOVE_SERVICE_CONNECTION_ELEMENT:String = "removeServiceConnectionElement";

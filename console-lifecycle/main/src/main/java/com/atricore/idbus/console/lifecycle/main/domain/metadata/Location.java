@@ -24,6 +24,14 @@ public class Location implements Serializable {
 
     private static final long serialVersionUID = -2122107248713729110L;
 
+    public Location(Location l) {
+        protocol = l.getProtocol();
+        host = l.getHost();
+        port = l.getPort();
+        context = l.getContext();
+        uri = l.getUri();
+    }
+
     public Location(){
         protocol = "";
         host = "";

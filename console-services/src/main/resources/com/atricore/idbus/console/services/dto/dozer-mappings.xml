@@ -115,7 +115,8 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SharepointResource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ColdfusionResource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.MicroStrategyResource,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPResource
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPResource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.SelfServicesResource
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.JOSSO1ResourceDTO,
@@ -127,7 +128,8 @@
                 com.atricore.idbus.console.services.dto.SharepointResourceDTO,
                 com.atricore.idbus.console.services.dto.ColdfusionResourceDTO,
                 com.atricore.idbus.console.services.dto.MicroStrategyResourceDTO,
-                com.atricore.idbus.console.services.dto.JBossEPPResourceDTO
+                com.atricore.idbus.console.services.dto.JBossEPPResourceDTO,
+                com.atricore.idbus.console.services.dto.SelfServicesResourceDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -143,7 +145,8 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.PHPExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JEEExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WebserverExecutionEnvironment,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPExecutionEnvironment
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPExecutionEnvironment,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.IdBusExecutionEnvironment
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.ApacheExecutionEnvironmentDTO,
@@ -155,7 +158,8 @@
                 com.atricore.idbus.console.services.dto.PHPExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.JEEExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.WebserverExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.JBossEPPExecutionEnvironmentDTO
+                com.atricore.idbus.console.services.dto.JBossEPPExecutionEnvironmentDTO,
+                com.atricore.idbus.console.services.dto.IdBusExecutionEnvironmentDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -662,6 +666,11 @@
     </mapping>
 
     <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.IdBusExecutionEnvironment</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.IdBusExecutionEnvironmentDTO</class-b>
+    </mapping>
+
+    <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.SharepointResource</class-a>
         <class-b>com.atricore.idbus.console.services.dto.SharepointResourceDTO</class-b>
     </mapping>
@@ -679,6 +688,11 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPResource</class-a>
         <class-b>com.atricore.idbus.console.services.dto.JBossEPPResourceDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.SelfServicesResource</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.SelfServicesResourceDTO</class-b>
     </mapping>
 
     <mapping>
@@ -1082,7 +1096,8 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SharepointResource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ColdfusionResource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.MicroStrategyResource,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPResource
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPResource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.SelfServicesResource
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.JOSSO1ResourceDTO,
@@ -1094,7 +1109,8 @@
                 com.atricore.idbus.console.services.dto.SharepointResourceDTO,
                 com.atricore.idbus.console.services.dto.ColdfusionResourceDTO,
                 com.atricore.idbus.console.services.dto.MicroStrategyResourceDTO,
-                com.atricore.idbus.console.services.dto.JBossEPPResourceDTO
+                com.atricore.idbus.console.services.dto.JBossEPPResourceDTO,
+                com.atricore.idbus.console.services.dto.SelfServicesResourceDTO
             </b-hint>
         </field>
     </mapping>
