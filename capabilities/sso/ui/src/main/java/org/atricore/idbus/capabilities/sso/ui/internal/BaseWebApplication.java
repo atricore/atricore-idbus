@@ -109,7 +109,6 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     protected void init() {
         super.init();
         preInit();
-        initResourceGuards();
         mountPages();
     }
 
@@ -194,6 +193,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         getResourceSettings().setEncodeJSessionId(false);
 
         getMarkupSettings().setMarkupFactory(new IdBusMarkupParserFactory(getAppConfig()));
+
+        initResourceGuards();
     }
 
     public WebBranding getBranding() {
