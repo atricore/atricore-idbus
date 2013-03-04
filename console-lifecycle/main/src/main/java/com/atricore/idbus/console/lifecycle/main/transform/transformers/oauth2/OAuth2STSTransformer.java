@@ -81,7 +81,10 @@ public class OAuth2STSTransformer extends AbstractTransformer {
 
         Beans idpBeans = isProxy ? (Beans) event.getContext().get("idpProxyBeans") : (Beans) event.getContext().get("idpBeans");
 
-        //provider = (IdentityProvider) event.getData();
+        IdentityProvider localIdp = null;
+        if (provider instanceof IdentityProvider) {
+            localIdp = (IdentityProvider) provider;
+        }
 
         if (logger.isTraceEnabled())
             logger.trace("Generating OAUTH2 STS Beans for IdP " + provider.getName());
@@ -127,7 +130,7 @@ public class OAuth2STSTransformer extends AbstractTransformer {
             setPropertyRef(oauth2StsEmitter, "identityManager", idpBean.getName() + "-identity-manager");
         }
 
-        String oauth2Key = "@WSX3edc";// TODO !!!!! provider.getOauth2Key();
+        String oauth2Key = localIdp != null ? localIdp.getOauth2Key()  : "@WSX3edc"; // TODO : Get key when working with proxy idp !!!!! provider.getOauth2Key();
 
         /* Configure AES encryption */
         Bean aesEncrypter = newAnonymousBean(AESTokenEncrypter.class);

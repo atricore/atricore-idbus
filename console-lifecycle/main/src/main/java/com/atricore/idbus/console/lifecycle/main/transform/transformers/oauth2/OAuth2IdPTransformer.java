@@ -1,7 +1,10 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.FederatedConnection;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.InternalSaml2ServiceProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.SelfServicesResource;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
@@ -104,10 +107,10 @@ public class OAuth2IdPTransformer extends AbstractTransformer implements Initial
             setPropertyBean(idpMediator, "logger", idpLogger);
 
             // errorUrl
-            setPropertyValue(idpMediator, "errorUrl", resolveUiErrorLocation(appliance));
+            setPropertyValue(idpMediator, "errorUrl", resolveUiErrorLocation(appliance, provider));
 
             // warningUrl
-            setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance));
+            setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance, provider));
 
             // we need to create OAuth2 Client definitions, for now use Client Config string as JSON serialization
 
@@ -125,10 +128,46 @@ public class OAuth2IdPTransformer extends AbstractTransformer implements Initial
                             addPropertyBean(idpMediator, "clients", oauth2ClientBean);
                         }
                     }
+
                 } catch (IOException e) {
                     throw new TransactionSuspensionNotSupportedException(e.getMessage(), e);
                 }
             }
+
+            // Do we have self-services ? Automatically add them as oauth2 clients
+
+            for (FederatedConnection fc : provider.getFederatedConnectionsB()) {
+                if (fc.getRoleA() instanceof InternalSaml2ServiceProvider) {
+                    InternalSaml2ServiceProvider localSp = (InternalSaml2ServiceProvider) fc.getRoleA();
+                    if (localSp.getServiceConnection().getResource() instanceof SelfServicesResource) {
+
+                        SelfServicesResource selfServicesResource = (SelfServicesResource) localSp.getServiceConnection().getResource();
+                        Bean oauth2ClientBean = newAnonymousBean(OAuth2Client.class);
+                        setPropertyValue(oauth2ClientBean, "id", localSp.getServiceConnection().getResource().getName());
+                        setPropertyValue(oauth2ClientBean, "secret", selfServicesResource.getSecret());
+
+                        addPropertyBean(idpMediator, "clients", oauth2ClientBean);
+
+                    }
+                }
+            }
+
+            for (FederatedConnection fc : provider.getFederatedConnectionsA()) {
+                if (fc.getRoleB() instanceof InternalSaml2ServiceProvider) {
+                    InternalSaml2ServiceProvider localSp = (InternalSaml2ServiceProvider) fc.getRoleB();
+                    if (localSp.getServiceConnection().getResource() instanceof SelfServicesResource) {
+
+                        SelfServicesResource selfServicesResource = (SelfServicesResource) localSp.getServiceConnection().getResource();
+                        Bean oauth2ClientBean = newAnonymousBean(OAuth2Client.class);
+                        setPropertyValue(oauth2ClientBean, "id", localSp.getServiceConnection().getResource().getName());
+                        setPropertyValue(oauth2ClientBean, "secret", selfServicesResource.getSecret());
+
+                        addPropertyBean(idpMediator, "clients", oauth2ClientBean);
+
+                    }
+                }
+            }
+
 
         }
 

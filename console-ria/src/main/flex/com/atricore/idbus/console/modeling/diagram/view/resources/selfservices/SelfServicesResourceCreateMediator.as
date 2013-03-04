@@ -25,6 +25,7 @@ import mx.events.CloseEvent;
 import mx.events.ValidationResultEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
+import mx.utils.UIDUtil;
 import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -113,9 +114,14 @@ public class SelfServicesResourceCreateMediator extends IocFormMediator {
         resource.name = view.resourceName.text;
         resource.description = view.resourceDescription.text;
 
+        // Generate password
+        resource.secret = UIDUtil.createUID();
+
         resourceEE.name = resource.name + "-captive-ee";
         resourceEE.description = resource.description +
                 "Captive IdBus execution environment owned by Service Resource " + resource.name
+
+
 
         //resourceEE.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
         //resourceEE.installUri = view.homeDirectory.text;

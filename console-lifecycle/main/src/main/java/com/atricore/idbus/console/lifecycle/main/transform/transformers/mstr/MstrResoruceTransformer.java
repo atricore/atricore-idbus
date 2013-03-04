@@ -67,7 +67,7 @@ public class MstrResoruceTransformer extends AbstractTransformer {
                 "org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl");
 
         setPropertyValue(bc, "name", bc.getName());
-        setPropertyValue(bc, "description", "JOSSO 1 Resource binding channel for " + sp.getName() + " :  " +
+        setPropertyValue(bc, "description", "MicroStrategy Resource binding channel for " + sp.getName() + " :  " +
                 mstrResource.getName() + "[appId:"+sp.getName()+"]");
 
         setPropertyRef(bc, "unitContainer", sp.getIdentityAppliance().getName() + "-container");

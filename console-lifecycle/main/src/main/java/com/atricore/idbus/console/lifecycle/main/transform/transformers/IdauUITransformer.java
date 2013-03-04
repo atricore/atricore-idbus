@@ -46,10 +46,6 @@ public class IdauUITransformer extends AbstractTransformer {
         Date now = new Date();
 
         // ----------------------------------------
-
-        // ----------------------------------------
-
-        // ----------------------------------------
         // UI Beans
         // ----------------------------------------
 
@@ -60,44 +56,37 @@ public class IdauUITransformer extends AbstractTransformer {
             uiBasePath = resolveLocationPath(uiLocation);
         }
 
-        /* TODO : There are JDO issues to resolve !!!
-        BrandingDefinition branding = null;
-        if (ida.getUserDashboardBranding() != null) {
-
-            try {
-                branding = brandManager.lookupByName(ida.getUserDashboardBranding().getId());
-            } catch (BrandingServiceException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        */
-
         // ----------------------------------------
-        // SSO Capability application(s)
+        // SSO Capability application
+        //
+        // General purpose appliance application class
         // ----------------------------------------
         {
 
             String path = module.getPath();
             String pkg = module.getPackage();
-            String clazz = "SSOUIApplication";
+            String ssoAppClazz = "SSOUIApplication";
             String parentClazz = "org.atricore.idbus.capabilities.sso.ui.internal.SSOUIApplication";
 
-            IdProjectSource s = new IdProjectSource(clazz, path, clazz, "java", "extends");
-            s.setExtension("java");
-            s.setClassifier("velocity");
 
-            java.util.Map<String, Object> params = new HashMap<String, Object>();
-            params.put("package", pkg);
-            params.put("clazz", clazz);
-            params.put("parentClazz", parentClazz);
-            s.setParams(params);
-            module.addSource(s);
+            {
+                IdProjectSource s = new IdProjectSource(ssoAppClazz, path, ssoAppClazz, "java", "extends");
+                s.setExtension("java");
+                s.setClassifier("velocity");
 
-            /* Each IDP must have its own application (do we need a main application as user dashboard ? )
+                java.util.Map<String, Object> params = new HashMap<String, Object>();
+                params.put("package", pkg);
+                params.put("clazz", ssoAppClazz);
+                params.put("parentClazz", parentClazz);
+                s.setParams(params);
+                module.addSource(s);
+            }
+
+            // Each IDP must have its own application. but we also need some generic pages for non-idp error display
             Application ssoUiApp = new Application();
             ssoUiApp.setId(normalizeBeanName(ida.getName() + "-sso-ui"));
             ssoUiApp.setApplicationName(ida.getName().toLowerCase() + "-sso-ui");
-            ssoUiApp.setClazz(pkg + "." + clazz);
+            ssoUiApp.setClazz(pkg + "." + ssoAppClazz);
             ssoUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/SSO");
             ssoUiApp.setInjectionSource("spring");
 
@@ -119,104 +108,28 @@ public class IdauUITransformer extends AbstractTransformer {
             appCfgBeanOsgi.setInterface("org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
 
             idauBeansUi.getImportsAndAliasAndBeen().add(appCfgBeanOsgi);
-            */
 
-            // Now, do we need special apps for an IDP ?
-            for (Provider p : ida.getProviders()) {
-
-                // Configure an application for each IDP
-                if (p instanceof IdentityProvider) {
-
-                    // Look for the SP that has a self-services resource:
-                    IdentityProvider idp = (IdentityProvider) p;
-                    InternalSaml2ServiceProvider sp = null;
-
-                    // There should be one and only one SP for self-services!
-                    if (idp.getFederatedConnectionsA() != null) {
-
-                        for (FederatedConnection fc : idp.getFederatedConnectionsA()) {
-                            if (fc.getRoleB() instanceof InternalSaml2ServiceProvider) {
-                                InternalSaml2ServiceProvider spTmp = (InternalSaml2ServiceProvider) fc.getRoleB();
-
-                                if (spTmp.getServiceConnection().getResource() instanceof SelfServicesResource) {
-                                    sp = spTmp;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    if (idp.getFederatedConnectionsB() != null) {
-
-                        for (FederatedConnection fc : idp.getFederatedConnectionsB()) {
-                            if (fc.getRoleA() instanceof InternalSaml2ServiceProvider) {
-                                InternalSaml2ServiceProvider spTmp = (InternalSaml2ServiceProvider) fc.getRoleB();
-
-                                if (spTmp.getServiceConnection().getResource() instanceof SelfServicesResource) {
-                                    sp = spTmp;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-
-                    String brandingId = idp.getUserDashboardBranding() != null ? idp.getUserDashboardBranding() : ida.getUserDashboardBranding().getId();
-
-                    // If the IdP uses a different branding, create an application for it
-                    // TODO : This should now consider different self-services options for each IdP
-                    Application idpUiApp = new Application();
-                    idpUiApp.setId(normalizeBeanName(ida.getName() + "-" + idp.getName() + "-sso-ui"));
-                    idpUiApp.setApplicationName(ida.getName().toLowerCase() + "-" + idp.getName().toLowerCase() + "-sso-ui");
-                    idpUiApp.setClazz(pkg + "." + clazz);
-                    idpUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/" + idp.getName().toUpperCase() + "/SSO");
-                    idpUiApp.setInjectionSource("spring");
-
-                    idauBeansUi.getImportsAndAliasAndBeen().add(idpUiApp);
-
-                    // App Configuration
-                    Bean idpAppCfgBean = newBean(idauBeansUi, idpUiApp.getId() + "-cfg", "org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
-                    setPropertyValue(idpAppCfgBean, "appName", idpUiApp.getId());
-                    setPropertyValue(idpAppCfgBean, "mountPoint", idpUiApp.getMountPoint());
-                    setPropertyValue(idpAppCfgBean, "brandingId", brandingId);
-
-                    setPropertyValue(idpAppCfgBean, "unitName", ida.getName());
-                    setPropertyValue(idpAppCfgBean, "idpName", idp.getName());
-                    if (logger.isDebugEnabled())
-                        logger.debug("Self-Services SP " + (sp == null ? "NOT Availabe" : "Avaiable: " + sp.getName()));
-                    if (sp != null)
-                        setPropertyValue(idpAppCfgBean, "selfServicesSpName", sp.getName());
-
-                    // Export App Configuration
-                    Service idpAppCfgBeanOsgi = new Service();
-                    idpAppCfgBeanOsgi.setId(idpAppCfgBean.getName() + "-osgi");
-                    idpAppCfgBeanOsgi.setRef(idpAppCfgBean.getName());
-                    idpAppCfgBeanOsgi.setInterface("org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
-
-                    idauBeansUi.getImportsAndAliasAndBeen().add(idpAppCfgBeanOsgi);
-                }
-            }
 
         }
 
         // ----------------------------------------
         // OpenID Capability application
         // ----------------------------------------
-        // TODO Create per-idp application
+        // TODO Create per-idp application (Move this to OPENID IDP UI TRANSFOMER !)
         {
 
             String path = module.getPath();
             String pkg = module.getPackage();
-            String clazz = "OpenIDUIApplication";
-            String parentClazz = "org.atricore.idbus.capabilities.openid.ui.internal.OpenIDUIApplication";
+            String idpAppClazz = "OpenIDIdPApplication";
+            String parentClazz = "org.atricore.idbus.capabilities.openid.ui.internal.OpenIDIdPApplication";
 
-            IdProjectSource s = new IdProjectSource(clazz, path, clazz, "java", "extends");
+            IdProjectSource s = new IdProjectSource(idpAppClazz, path, idpAppClazz, "java", "extends");
             s.setExtension("java");
             s.setClassifier("velocity");
 
             java.util.Map<String, Object> params = new HashMap<String, Object>();
             params.put("package", pkg);
-            params.put("clazz", clazz);
+            params.put("clazz", idpAppClazz);
             params.put("parentClazz", parentClazz);
             s.setParams(params);
             module.addSource(s);
@@ -224,7 +137,7 @@ public class IdauUITransformer extends AbstractTransformer {
             Application openIdUiApp = new Application();
             openIdUiApp.setId(ida.getName().toLowerCase() + "-openid-ui");
             openIdUiApp.setApplicationName(ida.getName().toLowerCase() + "-openid-ui");
-            openIdUiApp.setClazz(pkg + "." + clazz);
+            openIdUiApp.setClazz(pkg + "." + idpAppClazz);
             openIdUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/OPENID");
             openIdUiApp.setInjectionSource("spring");
 

@@ -46,6 +46,9 @@
         <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
 
+    <bean name="idpUiLocalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdPUITransformer"/>
+
     <bean name="oauth2IdpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2IdPTransformer">
     </bean>
@@ -464,6 +467,7 @@
 
                                         <!-- IDP Transformers -->
                                         <ref bean="idpLocalTransformer"/>
+                                        <ref bean="idpUiLocalTransformer"/>
                                         <ref bean="oauth2IdpLocalTransformer"/>
                                         <ref bean="samlr2IdPExternalTransformer"/>
                                         <ref bean="samlr2IdPTransformer"/>

@@ -48,7 +48,7 @@ public class SelfServicesResourceTransformer extends AbstractTransformer {
         InternalSaml2ServiceProvider sp = selfServicesResource.getServiceConnection().getSp();
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating Beans for MicroStrategy Resources " + selfServicesResource.getName()  + " of SP " + sp.getName());
+            logger.trace("Generating Beans for SelfServices Resources " + selfServicesResource.getName()  + " of SP " + sp.getName());
 
         Bean spBean = null;
         Collection<Bean> b = getBeansOfType(spBeans, ServiceProviderImpl.class.getName());
@@ -63,7 +63,7 @@ public class SelfServicesResourceTransformer extends AbstractTransformer {
                 "org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl");
 
         setPropertyValue(bc, "name", bc.getName());
-        setPropertyValue(bc, "description", "JOSSO 1 Resource binding channel for " + sp.getName() + " :  " +
+        setPropertyValue(bc, "description", "SelfServices Resource binding channel for " + sp.getName() + " :  " +
                 selfServicesResource.getName() + "[appId:"+sp.getName()+"]");
 
         setPropertyRef(bc, "unitContainer", sp.getIdentityAppliance().getName() + "-container");

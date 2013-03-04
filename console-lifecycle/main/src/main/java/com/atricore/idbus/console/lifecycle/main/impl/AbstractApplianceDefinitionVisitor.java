@@ -273,6 +273,19 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;
     }
 
+    public void arrive(SelfServicesResource node) throws Exception {
+
+    }
+
+    public Object[] leave(SelfServicesResource  node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(SelfServicesResource  node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+
     public void arrive(ServiceConnection node) throws Exception {
 
     }

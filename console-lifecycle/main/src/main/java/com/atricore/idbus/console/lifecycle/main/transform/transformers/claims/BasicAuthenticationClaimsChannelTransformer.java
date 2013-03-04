@@ -210,10 +210,10 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 setPropertyBean(ccMediator, "logger", ccLogger);
 
                 // errorUrl
-                setPropertyValue(ccMediator, "errorUrl", resolveUiErrorLocation(appliance));
+                setPropertyValue(ccMediator, "errorUrl", resolveUiErrorLocation(appliance, provider));
 
                 // warningUrl
-                setPropertyValue(ccMediator, "warningUrl", resolveUiWarningLocation(appliance));
+                setPropertyValue(ccMediator, "warningUrl", resolveUiWarningLocation(appliance, provider));
 
                 // identityMediator
                 setPropertyRef(claimChannelBean, "identityMediator", ccMediator.getName());

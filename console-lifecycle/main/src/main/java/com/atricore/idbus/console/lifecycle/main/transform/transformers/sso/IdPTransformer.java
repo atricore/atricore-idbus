@@ -159,10 +159,10 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         setPropertyBean(idpMediator, "logger", idpLogger);
 
         // errorUrl
-        setPropertyValue(idpMediator, "errorUrl", resolveUiErrorLocation(appliance));
+        setPropertyValue(idpMediator, "errorUrl", resolveUiErrorLocation(appliance, provider));
 
         // warningUrl
-        setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance));
+        setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance, provider));
 
         // dashboardUrl
         setPropertyValue(idpMediator, "dashboardUrl", provider.getDashboardUrl());
