@@ -46,15 +46,15 @@ import java.util.List;
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-public class ErrorPage extends BasePage {
+public class IdBusErrorPage extends BasePage {
 
-    private static final Log logger = LogFactory.getLog(ErrorPage.class);
+    private static final Log logger = LogFactory.getLog(IdBusErrorPage.class);
 
-    public ErrorPage() throws Exception {
+    public IdBusErrorPage() throws Exception {
         this(null);
     }
 
-    public ErrorPage(PageParameters parameters) throws Exception {
+    public IdBusErrorPage(PageParameters parameters) throws Exception {
 
         CredentialClaimsRequest credentialClaimsRequest = null;
 

@@ -34,7 +34,7 @@ public class OAuth2PrintATEnvelope {
         this.tokenStr = tokenStr;
 
         Properties config = new Properties();
-        config.setProperty(SecureAccessTokenResolverFactory.SHARED_SECRECT_PROPERTY, "@WSX3edc");
+        config.setProperty(SecureAccessTokenResolverFactory.SHARED_SECRECT_PROPERTY, this.secret);
 
         r = (SecureAccessTokenResolverImpl) SecureAccessTokenResolverFactory.newInstance(config).newResolver();
     }

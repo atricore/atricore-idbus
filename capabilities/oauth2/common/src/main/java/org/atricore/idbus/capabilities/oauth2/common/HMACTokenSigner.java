@@ -36,7 +36,8 @@ public class HMACTokenSigner implements TokenSigner {
     }
 
     public boolean isValid(String tokenValue, String tokenSignature) throws OAuth2SignatureException {
-        return tokenSignature.equals(signToken(tokenValue));
+        String expectedSignature = signToken(tokenValue);
+        return tokenSignature.equals(expectedSignature);
     }
 
     public String getKey() {

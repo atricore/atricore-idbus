@@ -50,7 +50,7 @@ public class OAuth2RestfulBinding extends AbstractMediationHttpBinding {
 
             String token = (String) out.getContent();
             if (out.getContentType().equals("AccessToken")) {
-                restfulQueryStr += "&";
+                restfulQueryStr += (restfulQueryStr.contains("?") ? "&" : "?");
                 try {
                     restfulQueryStr += "access_token=" + URLEncoder.encode(token, "UTF-8");
                 } catch (UnsupportedEncodingException e) {

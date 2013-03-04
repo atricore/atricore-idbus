@@ -2,7 +2,7 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:wicket="http://www.ops4j.org/schema/wicket">
 
     <wicket:application id="openIDWebUI"
-        class="org.atricore.idbus.capabilities.openid.ui.internal.OpenIDUIApplication"
+        class="org.atricore.idbus.capabilities.openid.ui.internal.OpenIDIdPApplication"
         applicationName="openIdWebUI" mountPoint="IDBUS/SIMPLE-OPENID/UI" />
 
     <reference id="artifactQueueManager" timeout="60"

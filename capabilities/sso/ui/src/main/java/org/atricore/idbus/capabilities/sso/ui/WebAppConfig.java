@@ -14,8 +14,14 @@ public class WebAppConfig implements IClusterable {
     private String brandingId;
 
     private String mountPoint;
-    
+
+    private String idpName;
+
+    private String selfServicesSpName;
+
     private Properties properties = new Properties();
+    private String unitName;
+    private String selfServicesSharedSecret;
 
     public String getAppName() {
         return appName;
@@ -51,5 +57,37 @@ public class WebAppConfig implements IClusterable {
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public String getIdpName() {
+        return idpName;
+    }
+
+    public void setIdpName(String idpName) {
+        this.idpName = idpName;
+    }
+
+    public String getUnitName() {
+        return unitName;
+    }
+
+    public void setUnitName(String unitName) {
+        this.unitName = unitName;
+    }
+
+    public String getSelfServicesSpName() {
+        return selfServicesSpName;
+    }
+
+    public void setSelfServicesSpName(String selfServicesSpName) {
+        this.selfServicesSpName = selfServicesSpName;
+    }
+
+    public String getSelfServicesSharedSecret() {
+        return selfServicesSharedSecret;
+    }
+
+    public void setSelfServicesSharedSecret(String selfServicesSharedSecret) {
+        this.selfServicesSharedSecret = selfServicesSharedSecret;
     }
 }

@@ -3,6 +3,8 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.*;
+import org.apache.wicket.markup.html.IPackageResourceGuard;
+import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.parser.filter.RelativePathPrefixHandler;
 import org.apache.wicket.markup.resolver.IComponentResolver;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -10,12 +12,19 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.atricore.idbus.capabilities.sso.ui.*;
-import org.atricore.idbus.capabilities.sso.ui.page.HomePage;
+import org.atricore.idbus.capabilities.sso.ui.authn.JossoAuthorizationStrategy;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
 import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEventListener;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
+import org.atricore.idbus.kernel.main.mediation.Channel;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnit;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
+import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
+import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
+import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -33,9 +42,10 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     private static final Log logger = LogFactory.getLog(BaseWebApplication.class);
     
     private static final Set<String> imageExtensions = new HashSet<String>();
+
     private static final Set<String> fontExtensions = new HashSet<String>();
 
-    private boolean ready;
+    protected boolean ready;
 
     // Dependency injection does not work for application objects (pax-wicket)!
     
@@ -47,8 +57,15 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
     protected WebBranding branding;
 
+    protected IdentityProvider identityProvider;
+
+    protected ServiceProvider selfServicesSP;
+
     protected List<AppResource> appResources = new ArrayList<AppResource>();
-    
+
+    protected IdentityMediationUnitRegistry idsuRegistry;
+
+
     static {
 
         fontExtensions.add("ttf"); // TrueType font
@@ -72,8 +89,26 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         super();
     }
 
+    public IdentityProvider getIdentityProvider() {
+        if (identityProvider == null)
+            resolveProviders();
+        return identityProvider;
+    }
 
+    public void setIdentityProvider(IdentityProvider identityProvider) {
+        this.identityProvider = identityProvider;
+    }
 
+    public ServiceProvider getSelfServicesSP() {
+        if (selfServicesSP == null)
+            resolveProviders();
+
+        return selfServicesSP;
+    }
+
+    public void setSelfServicesSP(ServiceProvider selfServicesSP) {
+        this.selfServicesSP = selfServicesSP;
+    }
 
     public BundleContext getBundleContext() {
         return bundleContext;
@@ -108,6 +143,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         super.init();
         preInit();
         mountPages();
+
     }
 
     @Override
@@ -135,16 +171,18 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                 return new CssWebRequestCycle(context);
             }
         });
+
     }
 
     /**
      * Injected services are available here
      */
-    protected void postInit() {
+    protected void postConfig() {
 
         List<IComponentResolver> currentList = getPageSettings().getComponentResolvers();
         List<IComponentResolver> newComponentsList = new ArrayList<IComponentResolver>(currentList.size());
 
+        // Alter prefix handling
         for (IComponentResolver iComponentResolver : currentList) {
             if (iComponentResolver instanceof RelativePathPrefixHandler) {
                 newComponentsList.add(new IdBusRelativePathPrefixHandler(getAppConfig().getMountPoint()));
@@ -153,12 +191,41 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
             }
         }
 
+        //Security settings
+        getSecuritySettings().setAuthorizationStrategy(new JossoAuthorizationStrategy());
+
+        // Page settings
         getPageSettings().getComponentResolvers().clear();
         getPageSettings().getComponentResolvers().addAll(newComponentsList);
 
+        // Resource settings
         getResourceSettings().setEncodeJSessionId(false);
+        if (branding.getAllowedResourcePatterns() != null && branding.getAllowedResourcePatterns().size() > 0) {
+            IPackageResourceGuard guard = this.getResourceSettings().getPackageResourceGuard();
+            if (guard instanceof SecurePackageResourceGuard) {
 
+                SecurePackageResourceGuard secureGuard = (SecurePackageResourceGuard) guard;
+                for (String pattern : branding.getAllowedResourcePatterns()) {
+                    secureGuard.addPattern(pattern);
+                }
+
+            } else {
+                logger.error("Cannot add resource pattern to IPackageResourceGuard of type " + guard.getClass());
+            }
+        }
+
+        // Markup settings
         getMarkupSettings().setMarkupFactory(new IdBusMarkupParserFactory(getAppConfig()));
+
+        // Authn settings
+
+        // Do we have an IDP ? Resolve SSO endpoint
+
+        // Trigger automatic login
+
+        // Create security context, if available
+
+        // Session keep alive / validate (accessSession)
     }
 
     public WebBranding getBranding() {
@@ -166,6 +233,13 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     }
 
     public WebAppConfig getAppConfig() {
+
+        if (!this.ready)
+            throw new IllegalStateException("Application has not been configured yet !");
+
+        if (appConfigRegistry == null)
+            throw new IllegalStateException("Application Configuration registry not found !");
+
         WebAppConfig cfg = appConfigRegistry.lookupConfig(getApplicationKey());
         if (cfg == null)
             logger.error("No configuration found for Wicket application " + getApplicationKey());
@@ -177,11 +251,17 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         return appResources;
     }
 
-    public final void config(BundleContext bundleContext, ApplicationRegistry appConfigRegistry, WebBrandingService brandingService) {
+    public final synchronized void config(BundleContext bundleContext, ApplicationRegistry appConfigRegistry, WebBrandingService brandingService, IdentityMediationUnitRegistry idsuRegistry) {
+
+        // We're ready
+        this.ready = true;
+
         this.bundleContext = bundleContext;
         this.appConfigRegistry = appConfigRegistry;
         this.brandingService = brandingService;
+        this.idsuRegistry = idsuRegistry;
 
+        // Register the application to the branding service
         String brandingId = getAppConfig().getBrandingId();
         branding = brandingService.lookup(brandingId);
         if (branding != null) {
@@ -194,9 +274,9 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         } else {
             logger.error("No branding configured for " + getAppConfig().getAppName() + " using ID : " + brandingId);
         }
-        postInit();
+
+        postConfig();
         refreshBranding();
-        this.ready = true;
     }
     
     public void refreshBranding() {
@@ -338,6 +418,53 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         public PackageResourceReference getRef() {
             return ref;
         }
+    }
+
+    // This method must be invoked when the appliance is up and running
+    protected void resolveProviders() {
+
+        if (!ready)
+            throw new IllegalStateException("Application not configured yet !");
+
+        // Resolve identity provider
+        String unitName = getAppConfig().getUnitName();
+        String idpName = getAppConfig().getIdpName();
+
+        if (idpName == null)
+            logger.error("IDP Name must be provided for application " + getAppConfig().getAppName());
+
+        String spName = getAppConfig().getSelfServicesSpName();
+
+        if(unitName != null) {
+
+            IdentityMediationUnit unit =  idsuRegistry.lookupUnit(unitName);
+
+            for (Channel c : unit.getChannels()) {
+                // Look for the IDP
+                if (idpName != null && c instanceof SPChannel) {
+                    SPChannel spChannel = (SPChannel) c;
+
+                    if (spChannel.getProvider().getName().equals(idpName)) {
+                        identityProvider = (IdentityProvider) spChannel.getProvider();
+                        break;
+                    }
+
+                } else if (spName != null && c instanceof IdPChannel) {
+                    IdPChannel idpChannel = (IdPChannel) c;
+                    if (idpChannel.getProvider().getName().equals(spName))
+                        selfServicesSP = (ServiceProvider) idpChannel.getProvider();
+                }
+            }
+
+            if (idpName != null && identityProvider == null) {
+                logger.error("No IDP found with name " + idpName + " in Mediation Unit " + unitName);
+            }
+
+            if (spName != null && selfServicesSP == null) {
+                logger.error("No SP found with name " + spName + " in Mediation Unit " + unitName);
+            }
+        }
+
     }
 
 

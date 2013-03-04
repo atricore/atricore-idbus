@@ -38,12 +38,12 @@ public abstract class AbstractBindingChannel extends AbstractChannel implements 
         return provider;
     }
 
-    public StatefulProvider getProvider() {
-        return provider;
-    }
-
     public void setFederatedProvider(FederatedLocalProvider provider) {
         this.provider = provider;
+    }
+
+    public StatefulProvider getProvider() {
+        return provider;
     }
 
 }

@@ -32,9 +32,9 @@ import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 /**
  * Entry point for the Wicket-based OpenID front-end.
  */
-public class OpenIDUIApplication extends BaseWebApplication {
+public class OpenIDIdPApplication extends BaseWebApplication {
 
-    public OpenIDUIApplication() {
+    public OpenIDIdPApplication() {
         super();
     }
 

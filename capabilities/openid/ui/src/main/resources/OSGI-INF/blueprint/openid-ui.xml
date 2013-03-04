@@ -3,7 +3,7 @@
 
     <!--
     <wicket:application id="openIDWebUI"
-        class="org.atricore.idbus.capabilities.openid.ui.internal.OpenIDUIApplication"
+        class="org.atricore.idbus.capabilities.openid.ui.internal.OpenIDIdPApplicationn"
         applicationName="openIdWebUI" mountPoint="IDBUS-UI/OPENID" />
     -->
 

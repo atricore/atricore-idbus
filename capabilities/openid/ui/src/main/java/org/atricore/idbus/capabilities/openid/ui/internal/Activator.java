@@ -36,7 +36,7 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         /*
         applicationFactory =
-            new DefaultWebApplicationFactory(context, OpenIDUIApplication.class, "openid", "openid");
+            new DefaultWebApplicationFactory(context, OpenIDIdPApplication.class, "openid", "openid");
         applicationFactory.register();
         */
     }

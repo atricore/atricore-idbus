@@ -26,7 +26,7 @@ import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.*;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
-import org.atricore.idbus.capabilities.sso.ui.internal.SSOUIApplication;
+
 import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
 import org.atricore.idbus.capabilities.sso.ui.spi.IPageHeaderContributor;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
@@ -60,7 +60,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
 
     @PaxWicketBean(name = "webBrandingService", injectionSource = "spring")
     protected WebBrandingService brandingService;
-    
+
     private IPageHeaderContributor headerContributors;
 
     private String variant;
@@ -80,7 +80,10 @@ public class BasePage extends WebPage implements IHeaderContributor {
         // -------------------------------------------------------------------
         BaseWebApplication app = (BaseWebApplication) getApplication();
         if (!app.isReady()) {
-            app.config(bundleContext, appConfigRegistry, brandingService);
+            app.config(bundleContext,
+                      appConfigRegistry,
+                      brandingService,
+                      idsuRegistry);
 
             // Set default locale if configured.
             String defaultLocale = app.getBranding().getDefaultLocale();
@@ -111,23 +114,6 @@ public class BasePage extends WebPage implements IHeaderContributor {
             if (branding.getSkin() != null)
                 setVariation(branding.getSkin());
 
-            if (branding.getAllowedResourcePatterns() != null && branding.getAllowedResourcePatterns().size() > 0) {
-
-                IPackageResourceGuard guard = app.getResourceSettings().getPackageResourceGuard();
-                if (guard instanceof SecurePackageResourceGuard) {
-
-                    SecurePackageResourceGuard secureGuard = (SecurePackageResourceGuard) guard;
-                    for (String pattern : branding.getAllowedResourcePatterns()) {
-                        secureGuard.addPattern(pattern);
-                    }
-
-                } else {
-                    logger.error("Cannot add resource pattern to IPackageResourceGuard of type " + guard.getClass());
-                }
-
-
-            }
-
         } else {
             logger.error("No Branding found for application : " + app.getName());
         }
@@ -138,7 +124,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
         if ( ((BaseWebApplication)getApplication()).getBranding() == null)
             return;
 
-        SSOUIApplication app = (SSOUIApplication) getApplication();
+        BaseWebApplication app = (BaseWebApplication) getApplication();
         
         WebBranding branding = app.getBranding();
         
