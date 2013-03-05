@@ -115,7 +115,7 @@
     </bean>
 
     <bean name="idstore-default" class="org.atricore.idbus.connectors.jdoidentityvault.JDOIdentityStore">
-        <property name="idPartition" ref="idpart-default"/>
+        <property name="partition" ref="idpart-default"/>
     </bean>
 
     <bean name="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">

@@ -60,7 +60,7 @@ public class OAuth2STSTransformer extends AbstractTransformer {
     }
 
     @Override
-    public void before(TransformEvent event) throws TransformException {
+    public Object after(TransformEvent event) throws TransformException {
         boolean isProxy = false;
 
         FederatedProvider provider = null;
@@ -102,10 +102,10 @@ public class OAuth2STSTransformer extends AbstractTransformer {
 
         // ----------------------------------------
         // STS, must be already created
-        // ----------------------------------------
+        // ----------------------------------------                                                                                oauth2StsTransformer
         Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
 
-        // ----------------------------------------
+        // ----------------------------------------                                                                                oauth2StsTransformer
         // Emitters
         // ----------------------------------------
         Bean oauth2StsEmitter = newBean(idpBeans,
@@ -145,6 +145,8 @@ public class OAuth2STSTransformer extends AbstractTransformer {
 
         // Add emitter to STS : the emitter MUST be the first in the list (or run before SAML2) // TODO : Mange dependencies ?
         insertPropertyBean(sts, "emitters", oauth2StsEmitter);
+
+        return null;
     }
 
 }

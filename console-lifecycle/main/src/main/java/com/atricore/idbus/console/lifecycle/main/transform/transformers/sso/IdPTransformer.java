@@ -31,6 +31,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerIm
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
+import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
 import org.springframework.beans.factory.InitializingBean;
@@ -340,6 +341,16 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
 
         Bean idpBean = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName()).iterator().next();
+
+        Bean idMgr = getBean(idpBeans, idpBean.getName() + "-identity-manager");
+        if (idMgr != null) {
+            Collection<Bean> channels = getBeansOfType(idpBeans, SPChannelImpl.class.getName());
+            for (Bean b : channels) {
+                setPropertyRef(b, "identityManager", idMgr.getName());
+            }
+
+        }
+
 
         // Wire provider to COT
         Collection<Bean> cots = getBeansOfType(baseBeans, CircleOfTrustImpl.class.getName());

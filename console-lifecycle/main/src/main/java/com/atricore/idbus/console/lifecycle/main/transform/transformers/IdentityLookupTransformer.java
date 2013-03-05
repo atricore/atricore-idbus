@@ -10,8 +10,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
-import org.atricore.idbus.kernel.main.store.AbstractStore;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManagerImpl;
+import org.atricore.idbus.kernel.main.store.identity.IdentityPartitionStore;
 import org.atricore.idbus.kernel.main.store.identity.SimpleIdentityStoreKeyAdapter;
 
 import java.util.Collection;
@@ -125,7 +125,7 @@ public class IdentityLookupTransformer extends AbstractTransformer {
 
                 Reference identityStoreOsgi = new Reference();
                 identityStoreOsgi.setId(providerBean.getName() + "-identity-store");
-                identityStoreOsgi.setInterface(AbstractStore.class.getName());
+                identityStoreOsgi.setInterface(IdentityPartitionStore.class.getName());
                 identityStoreOsgi.setCardinality("1..1");
                 identityStoreOsgi.setTimeout(60L);
 

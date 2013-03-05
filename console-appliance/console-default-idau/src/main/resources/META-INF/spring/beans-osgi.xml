@@ -25,7 +25,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     <osgi:service id="osgi-idstore-default"
                   ref="idstore-default"
-                  interface="org.atricore.idbus.kernel.main.store.AbstractStore"/>
+                  interface="org.atricore.idbus.kernel.main.store.identity.IdentityPartitionStore"/>
 
     <!-- Export Default JDBC DS as OSGi service -->
     <osgi:service id="osgi-default-ds" ref="josso-ds"

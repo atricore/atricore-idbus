@@ -139,12 +139,12 @@ public class IdPUITransformer extends AbstractTransformer {
         setPropertyValue(idpAppCfgBean, "mountPoint", idpUiApp.getMountPoint());
         setPropertyValue(idpAppCfgBean, "brandingId", brandingId);
 
-        setPropertyValue(idpAppCfgBean, "unitName", ida.getName());
-        setPropertyValue(idpAppCfgBean, "idpName", idp.getName());
+        setPropertyValue(idpAppCfgBean, "unitName", ida.getName() + "-mediation-unit");
+        setPropertyValue(idpAppCfgBean, "idpName", normalizeBeanName(idp.getName()));
         if (logger.isDebugEnabled())
             logger.debug("Self-Services SP " + (sp == null ? "NOT Availabe" : "Avaiable: " + sp.getName()));
         if (sp != null) {
-            setPropertyValue(idpAppCfgBean, "selfServicesSpName", sp.getName());
+            setPropertyValue(idpAppCfgBean, "selfServicesSpName", normalizeBeanName(sp.getName()));
             setPropertyValue(idpAppCfgBean, "selfServicesSharedSecret", idp.getOauth2Key());
         }
 
