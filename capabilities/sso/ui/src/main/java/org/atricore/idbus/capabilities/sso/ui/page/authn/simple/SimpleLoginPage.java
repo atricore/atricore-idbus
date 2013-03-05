@@ -18,32 +18,31 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.atricore.idbus.capabilities.openid.ui.page;
+package org.atricore.idbus.capabilities.sso.ui.page.authn.simple;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.atricore.idbus.capabilities.openid.ui.panel.OpenIDSignInPanel;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.LoginPage;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 /**
- * Simple authentication page for collecting user's OpenID .
+ * Simple authentication page for collecting username and password credentials.
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-public class OpenIDLoginPage extends LoginPage {
+public class SimpleLoginPage extends LoginPage {
 
-    private static final Log logger = LogFactory.getLog(OpenIDLoginPage.class);
+    private static final Log logger = LogFactory.getLog(SimpleLoginPage.class);
 
-    public OpenIDLoginPage() throws Exception {
+    public SimpleLoginPage() throws Exception {
         super();
     }
 
-    public OpenIDLoginPage(PageParameters parameters) throws Exception {
+    public SimpleLoginPage(PageParameters parameters) throws Exception {
         super(parameters);
     }
 
@@ -51,6 +50,6 @@ public class OpenIDLoginPage extends LoginPage {
                                        IdentityMediationUnitRegistry idsuRegistry) {
 
 
-        return new OpenIDSignInPanel(id, credentialClaimsRequest, artifactQueueManager, idsuRegistry);
+        return new UsernamePasswordSignInPanel(id, credentialClaimsRequest, artifactQueueManager, idsuRegistry);
     }
 }

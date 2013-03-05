@@ -25,7 +25,9 @@ import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
-import org.atricore.idbus.capabilities.sso.ui.page.*;
+import org.atricore.idbus.capabilities.sso.ui.page.authn.simple.SimpleLoginPage;
+import org.atricore.idbus.capabilities.sso.ui.page.error.IdBusErrorPage;
+import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
 
 /**
  * Entry point for the Wicket-based SSO front-end.

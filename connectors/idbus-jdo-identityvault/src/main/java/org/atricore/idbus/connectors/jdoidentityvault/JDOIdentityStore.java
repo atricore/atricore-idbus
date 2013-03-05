@@ -11,24 +11,25 @@ import org.atricore.idbus.kernel.main.store.AbstractStore;
 import org.atricore.idbus.kernel.main.store.UserKey;
 import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
+import org.atricore.idbus.kernel.main.store.identity.IdentityPartitionStore;
 
 import java.util.Collection;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class JDOIdentityStore extends AbstractStore
+public class JDOIdentityStore extends AbstractStore implements IdentityPartitionStore
 {
 
-    private IdentityPartition idPartition;
+    private IdentityPartition partition;
 
 
-    public IdentityPartition getIdPartition() {
-        return idPartition;
+    public IdentityPartition getPartition() {
+        return partition;
     }
 
-    public void setIdPartition(IdentityPartition idPartition) {
-        this.idPartition = idPartition;
+    public void setPartition(IdentityPartition partition) {
+        this.partition = partition;
     }
 
     public Credential[] loadCredentials(CredentialKey key, CredentialProvider cp) throws SSOIdentityException {
@@ -36,7 +37,7 @@ public class JDOIdentityStore extends AbstractStore
         try {
 
 
-            User user = idPartition.findUserByUserName(key.toString());
+            User user = partition.findUserByUserName(key.toString());
             // TODO : Support other type of credentials !
 
             Credential usrCred = cp.newCredential("username", user.getUserName());
@@ -53,7 +54,7 @@ public class JDOIdentityStore extends AbstractStore
     public BaseUser loadUser(UserKey key) throws NoSuchUserException, SSOIdentityException {
 
         try {
-            User jdoUser = idPartition.findUserByUserName(key.toString());
+            User jdoUser = partition.findUserByUserName(key.toString());
             return toSSOUser(jdoUser);
         } catch (UserNotFoundException e) {
             throw new NoSuchUserException(key.toString());
@@ -65,7 +66,7 @@ public class JDOIdentityStore extends AbstractStore
     public BaseRole[] findRolesByUserKey(UserKey key) throws SSOIdentityException {
 
         try {
-            Collection<Group> groups = idPartition.findGroupsByUserName(key.toString());
+            Collection<Group> groups = partition.findGroupsByUserName(key.toString());
             return toSSORoles(groups);
         } catch (UserNotFoundException e) {
             throw new NoSuchUserException(key.toString());
@@ -77,7 +78,7 @@ public class JDOIdentityStore extends AbstractStore
 
     public boolean userExists(UserKey key) throws SSOIdentityException {
         try {
-            idPartition.findUserByUserName(key.toString());
+            partition.findUserByUserName(key.toString());
             return true;
         } catch (ProvisioningException e) {
             // Ingore this
@@ -155,4 +156,5 @@ public class JDOIdentityStore extends AbstractStore
         return ssoRoles;
 
     }
+
 }

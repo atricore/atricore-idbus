@@ -89,9 +89,22 @@ public interface SSOIdentityManager {
     void setIdentityStore(IdentityStore is);
 
     /**
+     * Spring friendly getter
+     */
+    IdentityStore getIdentityStore();
+
+    /**
      * Spring friendly setter
      */
     void setIdentityStoreKeyAdapter(IdentityStoreKeyAdapter a);
+
+
+    /**
+     * Spring friendly getter
+     */
+    IdentityStoreKeyAdapter getIdentityStoreKeyAdapter();
+
+
 
 
 

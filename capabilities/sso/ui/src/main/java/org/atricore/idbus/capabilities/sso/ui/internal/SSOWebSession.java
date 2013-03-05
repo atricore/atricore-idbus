@@ -22,7 +22,7 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
-import org.atricore.idbus.capabilities.sso.ui.authn.SecurityContext;
+import org.atricore.idbus.capabilities.sso.ui.agent.SecurityContext;
 import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 import org.apache.wicket.request.Request;
 

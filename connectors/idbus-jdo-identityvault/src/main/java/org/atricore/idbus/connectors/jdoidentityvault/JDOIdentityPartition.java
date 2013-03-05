@@ -94,7 +94,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
         if (getIdentityStore() == null) {
             JDOIdentityStore store = new JDOIdentityStore();
-            store.setIdPartition(this);
+            store.setPartition(this);
             setIdentityStore(store);
         }
 

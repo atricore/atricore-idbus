@@ -135,9 +135,11 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ROLE.toString(), ssoRole.getName()));
         }
 
-        // Create some randon information, to make every token different!
+        // User properties
+        // TODO:
+
+        // Create some random information, to make every token unique!
         at.setTimeStamp(System.currentTimeMillis());
-        // is this thread-safe ?!
         at.setRnd(randomGenerator.nextInt());
 
         return at;
@@ -151,7 +153,6 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
      */
     protected Subject resolveSubject(Subject subject) {
         OAuth2AccessToken at = new OAuth2AccessToken();
-
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
         Set<SimplePrincipal> simplePrincipals = subject.getPrincipals(SimplePrincipal.class);
 

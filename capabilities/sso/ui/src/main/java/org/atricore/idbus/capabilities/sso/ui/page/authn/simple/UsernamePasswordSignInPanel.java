@@ -18,25 +18,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.atricore.idbus.capabilities.openid.ui.panel;
+package org.atricore.idbus.capabilities.sso.ui.page.authn.simple;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.form.AjaxFormValidatingBehavior;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.http.handler.RedirectRequestHandler;
-import org.apache.wicket.util.time.Duration;
 import org.apache.wicket.util.value.ValueMap;
-import org.apache.wicket.validation.validator.UrlValidator;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.BaseSignInPanel;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -46,25 +41,29 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 
 /**
- * Sign-in panel for OpenID authentication for collecting user's OpenID.
+ * Sign-in panel for simple authentication for collecting username and password credentials.
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-public class OpenIDSignInPanel extends BaseSignInPanel {
-    private static final Log logger = LogFactory.getLog(OpenIDSignInPanel.class);
+public class UsernamePasswordSignInPanel extends BaseSignInPanel {
+    private static final Log logger = LogFactory.getLog(UsernamePasswordSignInPanel.class);
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Field for user name.
      */
-    private RequiredTextField<String> openid;
+    private RequiredTextField<String> username;
 
-    private AjaxButton submit;
+    /**
+     * Field for password.
+     */
+    private PasswordTextField password;
+
     /**
      * Sign in form.
      */
-    public final class OpenIDSignInForm extends StatelessForm<Void> {
+    public final class UsernamePasswordSignInForm extends StatelessForm<Void> {
         private static final long serialVersionUID = 1L;
 
         /**
@@ -77,29 +76,38 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
          *
          * @param id id of the form component
          */
-        public OpenIDSignInForm(final String id) {
+        public UsernamePasswordSignInForm(final String id) {
             super(id);
 
             // Attach textfield components that edit properties map
             // in lieu of a formal beans model
-            add(openid = new RequiredTextField<String>("openid", new PropertyModel<String>(properties,
-                    "openid")));
-            openid.setType(String.class);
-            openid.add(new UrlValidator());
+            add(username = new RequiredTextField<String>("username", new PropertyModel<String>(properties,
+                    "username")));
+            username.setType(String.class);
+            username.setOutputMarkupId(true);
+            username.setRequired(false);
 
-            openid.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-
-                @Override
-                protected void onUpdate(AjaxRequestTarget target) {
-                    submit.setEnabled(true);
-                    target.add(submit);
-                }
-            });
-
-            openid.setOutputMarkupId(true);
+            add(password = new PasswordTextField("password", new PropertyModel<String>(properties,
+                    "password")));
+            password.setType(String.class);
+            password.setRequired(false);
 
         }
 
+        /**
+         * @see org.apache.wicket.markup.html.form.Form#onSubmit()
+         */
+        @Override
+        public final void onSubmit() {
+
+            try {
+                String claimsConsumerUrl = signIn(getUsername(), getPassword());
+                onSignInSucceeded(claimsConsumerUrl);
+            } catch (Exception e) {
+                logger.error("Fatal error during signIn : " + e.getMessage(), e);
+                onSignInFailed();
+            }
+        }
 
     }
 
@@ -107,8 +115,8 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
      * @param id See Component constructor
      * @see org.apache.wicket.Component#Component(String)
      */
-    public OpenIDSignInPanel(final String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
-                             final IdentityMediationUnitRegistry idsuRegistry
+    public UsernamePasswordSignInPanel(final String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
+                                       final IdentityMediationUnitRegistry idsuRegistry
     ) {
         super(id);
 
@@ -116,47 +124,50 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
         this.artifactQueueManager = artifactQueueManager;
         this.idsuRegistry = idsuRegistry;
 
-        // Create feedback panel and add to page
+        // Create feedback panel and add it to page
+        final WebMarkupContainer feedbackBox = new WebMarkupContainer("feedbackBox");
+        add(feedbackBox);
+
         final FeedbackPanel feedback = new FeedbackPanel("feedback");
         feedback.setOutputMarkupId(true);
-        add(feedback);
+        feedbackBox.add(feedback);
+
+        if (credentialClaimsRequest.getLastErrorId() != null) {
+            if (logger.isDebugEnabled())
+                logger.info("Received last error ID : " +
+                    credentialClaimsRequest.getLastErrorId() +
+                    " ("+ credentialClaimsRequest.getLastErrorMsg()+")");
+
+            feedbackBox.setVisible(true);
+
+            String errmsg = getString("claims.text.invalidCredentials", null, "Unable to sign you in");
+            feedback.error(errmsg);
+            feedback.setVisible(true);
+
+        } else if (((SSOWebSession)getSession()).getLastAppErrorId() != null){
+            
+            String lastAppErrorID = ((SSOWebSession)getSession()).getLastAppErrorId();
+
+            if (logger.isDebugEnabled())
+                logger.info("Found last app error ID : " +
+                    lastAppErrorID +
+                    " ("+lastAppErrorID+")");
+
+            feedbackBox.setVisible(true);
+
+            String errmsg = getString(lastAppErrorID, null, "Your session has expired, please try again");
+            feedback.error(errmsg);
+            feedback.setVisible(true);
+            
+        } else {
+            feedbackBox.setVisible(false);
+            feedback.setVisible(false);
+        }
+
 
         // Add sign-in form to page, passing feedback panel as
         // validation error handler
-        OpenIDSignInForm form = new OpenIDSignInForm("signInForm");
-        AjaxFormValidatingBehavior.addToAllFormComponents(form, "onkeyup", Duration.ONE_SECOND);
-        form.setOutputMarkupId(true);
-
-		// add a button that can be used to submit the form via ajax
-		submit = new AjaxButton("apply", form)
-		{
-			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
-			{
-				// repaint the feedback panel so that it is hidden
-				target.add(feedback);
-
-
-                try {
-                    String claimsConsumerUrl = signIn(getOpenid());
-                    onSignInSucceeded(claimsConsumerUrl);
-                } catch (Exception e) {
-                    logger.error("Fatal error during signIn : " + e.getMessage(), e);
-                    onSignInFailed();
-                }
-
-			}
-
-			@Override
-			protected void onError(AjaxRequestTarget target, Form<?> form)
-			{
-				// repaint the feedback panel so errors are shown
-				target.add(feedback);
-			}
-		};
-
-        submit.setEnabled(false);
-        form.add(submit);
+        UsernamePasswordSignInForm form = new UsernamePasswordSignInForm("signInForm");
         add(form);
 
     }
@@ -166,42 +177,54 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
      */
     public final void forgetMe() {
         // Remove persisted user data. Search for child component
-        // of type OpenIDSignInForm and remove its related persistence values.
-//        getPage().removePersistedFormData(OpenIDSignInForm.class, true);
+        // of type UsernamePasswordSignInForm and remove its related persistence values.
+        // getPage().removePersistedFormData(UsernamePasswordSignInForm.class, true);
     }
 
     /**
-     * Convenience method to access the openid.
+     * Convenience method to access the username.
      *
      * @return The user name
      */
-    public String getOpenid() {
-        return openid.getDefaultModelObjectAsString();
+    public String getUsername() {
+        return username.getDefaultModelObjectAsString();
     }
 
     /**
-     * Convenience method set persistence for openid and password.
+     * Convenience method to access the password.
+     *
+     * @return The password
+     */
+    public String getPassword() {
+        return password.getDefaultModelObjectAsString();
+    }
+
+    /**
+     * Convenience method set persistence for username and password.
      *
      * @param enable Whether the fields should be persistent
      */
     public void setPersistent(final boolean enable) {
-        // openid.setPersistent(enable);
+//        username.setPersistent(enable);
+//        password.setPersistent(enable);
     }
 
     /**
      * Sign in user if possible.
      *
-     * @param openid The openid
-     * @return True if signin was successful
+     * @param username The username
+     * @return True if sign-in was successful (doesn't imply that the credentials are valid!)
      */
-    public String signIn(String openid) throws Exception {
+    public String signIn(String username, String password) throws Exception {
 
         UUIDGenerator idGenerator = new UUIDGenerator();
 
         logger.info("Claims Request = " + credentialClaimsRequest);
 
         ClaimSet claims = new ClaimSetImpl();
-        claims.addClaim(new CredentialClaimImpl("openid", openid));
+        claims.addClaim(new CredentialClaimImpl("username", username));
+        claims.addClaim(new CredentialClaimImpl("password", password));
+
         //claims.addClaim(new ClaimImpl("rememberMe", cmd.isRememberMe()));
 
         CredentialClaimsResponse responseCredential = new CredentialClaimsResponseImpl(idGenerator.generateId(),
@@ -210,7 +233,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
                 claims,
                 credentialClaimsRequest.getRelayState());
 
-        EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(credentialClaimsRequest, AuthnCtxClass.OPENID_AUTHN_CTX);
+        EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(credentialClaimsRequest, AuthnCtxClass.PASSWORD_AUTHN_CTX);
         if (claimsEndpoint == null) {
             logger.error("No claims endpoint found!");
             // TODO : Create error and redirect to error view using 'IDBusErrArt'
@@ -258,17 +281,5 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
 
         return claimsEndpointUrl;
     }
-
-    protected void onSignInFailed() {
-        // Try the component based localizer first. If not found try the
-        // application localizer. Else use the default
-        error(getLocalizer().getString("signInFailed", this, "Sign in failed"));
-    }
-
-    protected void onSignInSucceeded(String claimsConsumerUrl) {
-        getRequestCycle().scheduleRequestHandlerAfterCurrent(new RedirectRequestHandler(claimsConsumerUrl));
-    }
-
-
 
 }

@@ -168,15 +168,11 @@ public class SSOIdentityManagerImpl implements SSOIdentityManager {
 
     }
 
-    // --------------------------------------------------------------------
-    // Protected utils
-    // --------------------------------------------------------------------
-
-    protected IdentityStore getIdentityStore() {
+    public IdentityStore getIdentityStore() {
         return _store;
     }
 
-    protected IdentityStoreKeyAdapter getIdentityStoreKeyAdapter() {
+    public IdentityStoreKeyAdapter getIdentityStoreKeyAdapter() {
         return _keyAdapter;
     }
 

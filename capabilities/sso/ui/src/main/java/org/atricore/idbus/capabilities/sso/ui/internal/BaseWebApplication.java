@@ -12,7 +12,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.atricore.idbus.capabilities.sso.ui.*;
-import org.atricore.idbus.capabilities.sso.ui.authn.JossoAuthorizationStrategy;
+import org.atricore.idbus.capabilities.sso.ui.agent.JossoAuthorizationStrategy;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
 import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
@@ -172,12 +172,23 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
             }
         });
 
+        //Security settings
+        getSecuritySettings().setAuthorizationStrategy(new JossoAuthorizationStrategy());
+
+
+        // Resource settings
+        getResourceSettings().setEncodeJSessionId(false);
+
+
     }
 
     /**
      * Injected services are available here
      */
     protected void postConfig() {
+
+        // Markup settings
+        getMarkupSettings().setMarkupFactory(new IdBusMarkupParserFactory(getAppConfig()));
 
         List<IComponentResolver> currentList = getPageSettings().getComponentResolvers();
         List<IComponentResolver> newComponentsList = new ArrayList<IComponentResolver>(currentList.size());
@@ -191,15 +202,11 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
             }
         }
 
-        //Security settings
-        getSecuritySettings().setAuthorizationStrategy(new JossoAuthorizationStrategy());
-
         // Page settings
         getPageSettings().getComponentResolvers().clear();
         getPageSettings().getComponentResolvers().addAll(newComponentsList);
 
-        // Resource settings
-        getResourceSettings().setEncodeJSessionId(false);
+
         if (branding.getAllowedResourcePatterns() != null && branding.getAllowedResourcePatterns().size() > 0) {
             IPackageResourceGuard guard = this.getResourceSettings().getPackageResourceGuard();
             if (guard instanceof SecurePackageResourceGuard) {
@@ -214,8 +221,6 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
             }
         }
 
-        // Markup settings
-        getMarkupSettings().setMarkupFactory(new IdBusMarkupParserFactory(getAppConfig()));
 
         // Authn settings
 
@@ -226,6 +231,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         // Create security context, if available
 
         // Session keep alive / validate (accessSession)
+
     }
 
     public WebBranding getBranding() {
@@ -444,14 +450,14 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                 if (idpName != null && c instanceof SPChannel) {
                     SPChannel spChannel = (SPChannel) c;
 
-                    if (spChannel.getProvider().getName().equals(idpName)) {
+                    if (spChannel.getProvider().getName().equalsIgnoreCase(idpName)) {
                         identityProvider = (IdentityProvider) spChannel.getProvider();
                         break;
                     }
 
                 } else if (spName != null && c instanceof IdPChannel) {
                     IdPChannel idpChannel = (IdPChannel) c;
-                    if (idpChannel.getProvider().getName().equals(spName))
+                    if (idpChannel.getProvider().getName().equalsIgnoreCase(spName))
                         selfServicesSP = (ServiceProvider) idpChannel.getProvider();
                 }
             }

@@ -5,14 +5,19 @@ import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
-import org.atricore.idbus.capabilities.sso.ui.authn.JossoLoginPage;
-import org.atricore.idbus.capabilities.sso.ui.authn.JossoLogoutPage;
-import org.atricore.idbus.capabilities.sso.ui.authn.JossoSecurityCheckPage;
-import org.atricore.idbus.capabilities.sso.ui.page.*;
-import org.atricore.idbus.capabilities.sso.ui.selfsvcs.profile.ProfilePage;
-import org.atricore.idbus.capabilities.sso.ui.selfsvcs.pwdrecovery.PwdRecoveryPage;
-import org.atricore.idbus.capabilities.sso.ui.selfsvcs.pwdreset.PwdResetPage;
-import org.atricore.idbus.capabilities.sso.ui.selfsvcs.register.RegisterPage;
+import org.atricore.idbus.capabilities.sso.ui.agent.JossoLoginPage;
+import org.atricore.idbus.capabilities.sso.ui.agent.JossoLogoutPage;
+import org.atricore.idbus.capabilities.sso.ui.agent.JossoSecurityCheckPage;
+import org.atricore.idbus.capabilities.sso.ui.page.authn.simple.SimpleLoginPage;
+import org.atricore.idbus.capabilities.sso.ui.page.authn.strong.StrongLoginPage;
+import org.atricore.idbus.capabilities.sso.ui.page.authn.twofactor.TwoFactorLoginPage;
+import org.atricore.idbus.capabilities.sso.ui.page.error.AppErrorPage;
+import org.atricore.idbus.capabilities.sso.ui.page.error.IdBusErrorPage;
+import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdrecovery.PwdRecoveryPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdreset.PwdResetPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.register.RegisterPage;
 
 /**
  * IdP Specific application, it provides front-end for claim channels, self-services, saml2, etc.
