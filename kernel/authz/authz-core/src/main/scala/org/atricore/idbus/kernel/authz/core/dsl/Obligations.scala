@@ -23,6 +23,7 @@ package org.atricore.idbus.kernel.authz.core.dsl
 
 import collection.mutable.{Stack, ListBuffer}
 import org.atricore.idbus.kernel.authz.core.{AttributeAssignment, Obligation}
+import org.scala_tools.subcut.inject.{Injectable, BindingModule, NewBindingModule, MutableBindingModule}
 
 
 /**
@@ -172,7 +173,7 @@ case class AttributeAssignmentNode(properties: List[ObligationPropertyNode])
 /**
  * Obligations walker intended to be used within a PEP (Policy Enforcement Point)
  */
-class ObligationFulfillment(val obls: List[Obligation]) {
+class ObligationFulfillment(val obls: List[Obligation], val configuration: ObligationFulfillmentConfig) {
 
   def fulfill: List[Either[ObligationFulfillmentError, ObligationFulfillmentSuccess]] = {
 
@@ -231,7 +232,7 @@ class ObligationFulfillment(val obls: List[Obligation]) {
   }
 
   private def sendEmail(mailTo: String, text: String): Either[ObligationActionError, ObligationActionSuccess] = {
-    println("Sending email : " + mailTo + ", " + text)
+    println("Sending email : " + mailTo + ", " + text + ", " + configuration.smtpServer)
     Right(ObligationActionSuccess())
   }
 
@@ -249,9 +250,16 @@ case class ObligationActionSuccess() extends ObligationActionResult
 
 case class ObligationActionError() extends ObligationActionResult
 
+class ObligationFulfillmentModule(f: MutableBindingModule => Unit) extends NewBindingModule(f)
+
+class ObligationFulfillmentConfig(implicit val bindingModule: BindingModule) extends Injectable {
+  val smtpServer = inject [String] ('smtpServer)
+}
+
 
 object ObligationFulfillment {
-  def fullfil(obls: List[Obligation]) = new ObligationFulfillment(obls).fulfill
+  def fullfil(obls: List[Obligation], configuration : ObligationFulfillmentConfig ) =
+    new ObligationFulfillment(obls, configuration).fulfill
 }
 
 

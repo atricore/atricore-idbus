@@ -230,8 +230,12 @@ class AuthZEngineSpec extends Specification with AccessControlDirectives with Lo
 
         simpleRequestContext.response.obligations.map(_.size mustNotEqual 0)
 
+        implicit val module = MockObligationFulfillmentModule
+
+        val config = new ObligationFulfillmentConfig
+
         simpleRequestContext.response.obligations foreach (obl => {
-            val fulFillmentRes = ObligationFulfillment.fullfil(obl)
+            val fulFillmentRes = ObligationFulfillment.fullfil(obl, config)
 
             fulFillmentRes.size mustNotEqual 0
 
@@ -249,6 +253,13 @@ class AuthZEngineSpec extends Specification with AccessControlDirectives with Lo
     }
 
   }
+}
 
+object MockObligationFulfillmentModule extends ObligationFulfillmentModule(
+{
+  implicit configModule =>
+    configModule.bind [String] identifiedBy('smtpServer) toSingle "localhost"
 
 }
+)
+
