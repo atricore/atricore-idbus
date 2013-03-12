@@ -2,16 +2,16 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.ui.BrandingResource;
-import org.atricore.idbus.capabilities.sso.ui.BrandingResourceType;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEventListener;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingServiceException;
 
-import javax.servlet.jsp.tagext.TryCatchFinally;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

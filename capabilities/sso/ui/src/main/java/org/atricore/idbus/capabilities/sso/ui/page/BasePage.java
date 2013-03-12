@@ -22,16 +22,26 @@ package org.atricore.idbus.capabilities.sso.ui.page;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.HeaderItem;
+import org.apache.wicket.markup.html.IHeaderContributor;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.markup.html.*;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
+import org.atricore.idbus.capabilities.sso.ui.agent.JossoLogoutPage;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
-
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.DashboardPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdchange.PwdChangePage;
 import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
 import org.atricore.idbus.capabilities.sso.ui.spi.IPageHeaderContributor;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
+import org.atricore.idbus.kernel.main.mail.MailService;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.ops4j.pax.wicket.api.PaxWicketBean;
@@ -63,10 +73,13 @@ public class BasePage extends WebPage implements IHeaderContributor {
     @PaxWicketBean(name = "webBrandingService", injectionSource = "spring")
     protected WebBrandingService brandingService;
 
+    @PaxWicketBean(name = "mailService", injectionSource = "spring")
+    protected MailService mailService;
+
     private IPageHeaderContributor headerContributors;
 
     private String variant;
-    
+
     @SuppressWarnings("serial")
     public BasePage() throws Exception {
         this(null);
@@ -77,7 +90,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
         
         // -------------------------------------------------------------------
         // The very first thing to do is set the application ready if it's not
-        //
+        //                                WebMarkupContainer
         // Pax-wicket does not support dependency injection in the app. object.
         // -------------------------------------------------------------------
         BaseWebApplication app = (BaseWebApplication) getApplication();
@@ -85,7 +98,8 @@ public class BasePage extends WebPage implements IHeaderContributor {
             app.config(bundleContext,
                       appConfigRegistry,
                       brandingService,
-                      idsuRegistry);
+                      idsuRegistry,
+                    mailService);
 
             // Set default locale if configured.
             String defaultLocale = app.getBranding().getDefaultLocale();
@@ -105,7 +119,11 @@ public class BasePage extends WebPage implements IHeaderContributor {
     @Override
     protected void onInitialize() {
         super.onInitialize();
+        getSession().bind();
 
+        // ---------------------------------------------------------------------
+        // Resolve variation (branding)
+        // ---------------------------------------------------------------------
         BaseWebApplication app = (BaseWebApplication) getApplication();
         WebBranding branding = app.getBranding();
         if (branding != null) {
@@ -119,6 +137,65 @@ public class BasePage extends WebPage implements IHeaderContributor {
         } else {
             logger.error("No Branding found for application : " + app.getName());
         }
+
+        final SSOWebSession session = (SSOWebSession)getSession();
+
+        // ---------------------------------------------------------------------
+        // Utility box (current user, logout)
+        // ---------------------------------------------------------------------
+        WebMarkupContainer utilityBox = new WebMarkupContainer("utilityBox") {
+            @Override
+            public boolean isVisible() {
+                return (session).isAuthenticated();
+            };
+        };
+
+        if (session.isAuthenticated())
+            utilityBox.add(new Label("username", session.getPrincipal()));
+
+        add(utilityBox);
+
+        // ---------------------------------------------------------------------
+        // Navigation Bar
+        // ---------------------------------------------------------------------
+        // Do not display the menu for the IdBus ERROR PAGE
+        WebMarkupContainer navBar = new WebMarkupContainer("navbar") {
+            @Override
+            public boolean isVisible() {
+                return session.isAuthenticated();
+            };
+        };
+
+
+        if (navBar.isVisible()) {
+            // Select the proper section on the navbar (alter css class)
+
+            // Dashboard
+            if (this instanceof DashboardPage)
+                navBar.add(new BookmarkablePageLink<Void>("dashboard", DashboardPage.class).add(new AttributeAppender("class", "gt-active")));
+            else
+                navBar.add(new BookmarkablePageLink<Void>("dashboard", DashboardPage.class));
+
+            // Profile
+            if (this instanceof  ProfilePage)
+                navBar.add(new BookmarkablePageLink<Void>("profile", ProfilePage.class).add(new AttributeAppender("class", "gt-active")));
+            else
+                navBar.add(new BookmarkablePageLink<Void>("profile", ProfilePage.class));
+
+
+            // Change Password
+            if (this  instanceof PwdChangePage)
+                navBar.add(new BookmarkablePageLink<Void>("pwdChange", PwdChangePage.class).add(new AttributeAppender("class", "gt-active")));
+            else
+                navBar.add(new BookmarkablePageLink<Void>("pwdChange", PwdChangePage.class));
+
+            // Logout 1
+            navBar.add(new BookmarkablePageLink<Void>("logout", JossoLogoutPage.class));
+
+            // Logout 2
+        }
+
+        add(navBar);
 
     }
 
@@ -157,6 +234,5 @@ public class BasePage extends WebPage implements IHeaderContributor {
 
         return cfg;
     }
-
 
 }

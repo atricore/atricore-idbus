@@ -29,5 +29,7 @@ package org.atricore.idbus.kernel.main.mediation.provider;
  * @version $Id$
  */
 public interface FederatedRemoteProvider extends FederatedProvider {
+
+    String getResourceType();
     
 }

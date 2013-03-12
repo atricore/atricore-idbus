@@ -22,12 +22,12 @@ package org.atricore.idbus.capabilities.sso.ui.page.error;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
@@ -57,7 +57,6 @@ public class IdBusErrorPage extends BasePage {
     public IdBusErrorPage(PageParameters parameters) throws Exception {
 
         CredentialClaimsRequest credentialClaimsRequest = null;
-
         getSession().bind();
 
         if (parameters != null) {
@@ -72,9 +71,9 @@ public class IdBusErrorPage extends BasePage {
                     IdentityMediationFault err = fault.getFault();
                     List<String> causes = buildCauses(err);
 
-                    add(new Label("status", getString(err.getFaultCode(), null, "")));
+                    add(new Label("status", getString(err.getFaultCode(), null, "N/A")));
                     add(new Label("secStatus", getString(err.getSecFaultCode(), null, "")));
-                    add(new Label("details", getString(err.getStatusDetails(), null, "")));
+                    add(new Label("details", getString(err.getStatusDetails(), null, "N/A")));
                     fillCausesList(new CausesModel(causes));
                 }
 

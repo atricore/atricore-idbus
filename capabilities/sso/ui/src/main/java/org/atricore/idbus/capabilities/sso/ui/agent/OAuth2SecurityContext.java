@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.sso.ui.agent;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessToken;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2Claim;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Set;
  * @author: sgonzalez@atriocore.com
  * @date: 2/28/13
  */
-public class OAuth2SecurityContext implements SecurityContext {
+public class OAuth2SecurityContext implements SecurityContext, Serializable {
 
     private static final String PRINCIPAL_NAME_CLAIM_TYPE = "USERID";
 

@@ -10,6 +10,9 @@
     <osgi:reference timeout="60" cardinality="1..1"
                    interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry"
                    id="idsuRegistry"/>
+    <osgi:reference id="mailService"
+                    timeout="60" cardinality="1..1"
+                    interface="org.atricore.idbus.kernel.main.mail.MailService"/>
     <osgi:reference id="webContainer"
                     interface="org.ops4j.pax.web.service.WebContainer"/>
 

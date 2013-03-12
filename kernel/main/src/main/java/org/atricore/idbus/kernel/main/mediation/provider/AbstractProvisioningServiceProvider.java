@@ -17,6 +17,8 @@ public class AbstractProvisioningServiceProvider implements ProvisioningServiceP
 
     private String description;
 
+    private String displayName;
+
     private String role;
 
     private ProvisioningChannel channel;
@@ -49,6 +51,14 @@ public class AbstractProvisioningServiceProvider implements ProvisioningServiceP
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getDescription() {

@@ -2,11 +2,10 @@ package org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.ui.agent.AuthenticatedWebPage;
-import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.SelfServicesPage;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
 /**
  * @author: sgonzalez@atriocore.com
@@ -17,7 +16,7 @@ public class ProfilePage extends SelfServicesPage implements AuthenticatedWebPag
     private static final Log logger = LogFactory.getLog(ProfilePage.class);
 
     public ProfilePage() throws Exception {
-        super();
+        this(null);
     }
 
     public ProfilePage(PageParameters parameters) throws Exception {
@@ -27,16 +26,11 @@ public class ProfilePage extends SelfServicesPage implements AuthenticatedWebPag
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        getSession().bind();
 
         // Add profilePanel to the page
-        add(prepareProfilePanel("profile"));
-
         User u = lookupUser();
-    }
+        add(new ProfilePanel("selfServices", u));
 
-    protected Panel prepareProfilePanel(String id) {
-        return new ProfilePanel(id);
     }
 
 }

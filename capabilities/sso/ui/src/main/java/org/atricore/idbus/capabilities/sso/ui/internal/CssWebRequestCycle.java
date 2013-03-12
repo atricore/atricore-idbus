@@ -1,10 +1,7 @@
 package org.atricore.idbus.capabilities.sso.ui.internal;
 
-import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
-import org.apache.wicket.request.http.WebRequest;
 
 import javax.servlet.http.HttpServletResponse;
 

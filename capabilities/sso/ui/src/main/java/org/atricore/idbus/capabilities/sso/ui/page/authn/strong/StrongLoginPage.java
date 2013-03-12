@@ -2,8 +2,8 @@ package org.atricore.idbus.capabilities.sso.ui.page.authn.strong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.LoginPage;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.simple.SimpleLoginPage;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;

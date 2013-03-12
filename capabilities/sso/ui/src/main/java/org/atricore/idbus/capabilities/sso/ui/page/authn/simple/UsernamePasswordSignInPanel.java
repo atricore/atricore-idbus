@@ -26,11 +26,11 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.value.ValueMap;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.ui.components.GtFeedbackPanel;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.BaseSignInPanel;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -128,7 +128,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         final WebMarkupContainer feedbackBox = new WebMarkupContainer("feedbackBox");
         add(feedbackBox);
 
-        final FeedbackPanel feedback = new FeedbackPanel("feedback");
+        final GtFeedbackPanel feedback = new GtFeedbackPanel ("feedback");
         feedback.setOutputMarkupId(true);
         feedbackBox.add(feedback);
 

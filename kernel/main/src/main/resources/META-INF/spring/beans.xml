@@ -74,6 +74,27 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <osgi:service id="cacheManagerFactoryExporter" ref="cacheManagerFactory"
                   interface="org.atricore.idbus.bundles.ehcache.CacheManagerFactory"/>
 
+
+    <!-- =================================================================== -->
+    <!-- Mail Service with default configuration -->
+    <!-- =================================================================== -->
+
+    <bean name="mailService" class="org.atricore.idbus.kernel.main.mail.MailServiceImpl">
+        <property name="senders">
+            <list>
+                <bean class="org.atricore.idbus.kernel.main.mail.MailSender" init-method="init">
+                    <property name="name" value="default"/>
+                    <property name="host" value="${mail.smtp.host}"/>
+                    <property name="username" value="${mail.username}"/>
+                    <property name="password" value="${mail.password}"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <osgi:service id="mailServiceExporter" ref="mailService"
+                  interface="org.atricore.idbus.kernel.main.mail.MailService"/>
+
     <!-- =================================================================== -->
     <!-- Atricore IDBus JMS Broker definition -->
     <!-- =================================================================== -->
@@ -88,7 +109,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <property name="transportConnectors">
             <list>
 
-                <bean class="org.apache.activemq.broker.TransportConnector">
+                <bean class="org.apache.activemq.broker.TransportComail.smtp.hostnnector">
                     <property name="uri" value="${aqm.transportUri}"/>
                 </bean>
 
@@ -151,6 +172,11 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="binding.http.ajax">false</prop>
         <prop key="binding.http.followRedirects">true</prop>
         <prop key="binding.http.localTargetBaseUrl">http://localhost:8081</prop>
+
+        <!-- Mail properties -->
+        <prop key="mail.smtp.host">localhost</prop>
+        <prop key="mail.user">admin</prop>
+        <prop key="mail.password">admin</prop>
     </osgix:cm-properties>
 
     <ctx:property-placeholder properties-ref="kernelProps" />

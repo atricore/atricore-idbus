@@ -26,10 +26,10 @@ import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
-import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
+import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
@@ -61,9 +61,7 @@ public abstract class LoginPage extends BasePage {
     protected void onInitialize()  {
 
         super.onInitialize();
-
         CredentialClaimsRequest credentialClaimsRequest = null;
-        getSession().bind();
 
         if (artifactId != null) {
 

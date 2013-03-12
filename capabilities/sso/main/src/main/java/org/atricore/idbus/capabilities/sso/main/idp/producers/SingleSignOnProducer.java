@@ -135,23 +135,20 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 if (logger.isTraceEnabled())
                     logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessPreAuthenticatedIDPInitiatedSSO END");
-            } else
-            if (content instanceof IDPInitiatedAuthnRequestType) {
+            } else if (content instanceof IDPInitiatedAuthnRequestType) {
                 // New IDP Initiated Single Sign-On
                 metric += "doProcessIDPInitiatedSSO";
                 doProcessIDPInitiatedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
-            } else if (content instanceof SecTokenAuthnRequestType) {
 
+            } else if (content instanceof SecTokenAuthnRequestType) {
 
                 // New Assert Identity with Basic authentication
                 metric += "doProcessAssertIdentityWithBasicAuth";
                 doProcessAssertIdentityWithBasicAuth(exchange, (SecTokenAuthnRequestType) content);
 
-
             } else if (content instanceof AuthnRequestType) {
 
                 metric += "doProcessAuthnRequest";
-
                 // New SP Initiated Single SignOn
                 doProcessAuthnRequest(exchange, (AuthnRequestType) content, in.getMessage().getRelayState());
 
@@ -165,6 +162,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 metric += "doProcessPolicyEnforcementResponse";
                 // Process policy enforcement response
                 doProcessPolicyEnforcementResponse(exchange, (PolicyEnforcementResponse) content);
+
             } else if (content instanceof SPAuthnResponseType) {
 
                 metric += "doProcessProxyResponse";
@@ -193,7 +191,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
-                    StatusDetails.UNKNOWN_REQUEST.getValue(),
+                    StatusDetails.INTERNAL_ERROR.getValue(),
                     content.getClass().getName(),
                     e);
         } finally {

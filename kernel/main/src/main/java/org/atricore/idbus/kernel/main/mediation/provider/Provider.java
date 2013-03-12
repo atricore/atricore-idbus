@@ -38,6 +38,13 @@ public interface Provider extends java.io.Serializable {
      */
     String getName();
 
+
+    /**
+     * Returns this provider display-name.
+     * @return
+     */
+    String getDisplayName();
+
     /**
      * Returns this provider description
      * @return

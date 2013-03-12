@@ -15,6 +15,8 @@ public class EntitySelectorProviderImpl implements EntitySelectorProvider, Bundl
 
     private String description;
 
+    private String displayName;
+
     private String role;
 
     private transient CircleOfTrustManager cotManager;
@@ -41,6 +43,14 @@ public class EntitySelectorProviderImpl implements EntitySelectorProvider, Bundl
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getDescription() {

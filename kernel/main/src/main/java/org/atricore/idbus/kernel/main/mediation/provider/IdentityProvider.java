@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.mediation.provider;
 
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
+
 /**
  * Identity Provider (IDP)
  *
@@ -28,5 +30,7 @@ package org.atricore.idbus.kernel.main.mediation.provider;
  * @version $Id$
  */
 public interface IdentityProvider extends FederatedLocalProvider {
+
+    ProvisioningTarget getProvisioningTarget();
 
 }

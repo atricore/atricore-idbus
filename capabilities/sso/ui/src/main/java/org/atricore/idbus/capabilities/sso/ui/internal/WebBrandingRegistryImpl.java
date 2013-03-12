@@ -6,8 +6,6 @@ import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingRegistry;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingServiceException;
-import org.osgi.framework.BundleContext;
-import org.springframework.osgi.context.BundleContextAware;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>

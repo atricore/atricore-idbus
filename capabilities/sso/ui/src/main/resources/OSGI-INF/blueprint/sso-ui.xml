@@ -14,7 +14,11 @@
         availability="mandatory" />
 
     <reference id="idsuRegistry" timeout="60"
-                  interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry"
-            availability="mandatory"/>
+               interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry"
+               availability="mandatory"/>
+
+    <reference id="mailService" timeout="60"
+               interface="org.atricore.idbus.kernel.main.mail.MailService"
+               availability="mandatory"/>
 
 </blueprint>

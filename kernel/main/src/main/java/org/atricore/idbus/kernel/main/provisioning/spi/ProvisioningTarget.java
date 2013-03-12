@@ -42,11 +42,18 @@ public interface ProvisioningTarget {
     AddUserResponse addUser(AddUserRequest userRequest)
             throws ProvisioningException;
 
+    PrepareAddUserResponse prepareAddUser(AddUserRequest userRequest)
+            throws ProvisioningException;
+
+    AddUserResponse confirAddUser(ConfirmAddUserRequest userRequest)
+            throws ProvisioningException;
+
     FindUserByIdResponse findUserById(FindUserByIdRequest userRequest)
             throws ProvisioningException;
 
     FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest)
             throws ProvisioningException;
+
 
     ListUsersResponse listUsers(ListUsersRequest userRequest)
             throws ProvisioningException;
@@ -62,6 +69,12 @@ public interface ProvisioningTarget {
 
     SetPasswordResponse setPassword(SetPasswordRequest setPwdRequest)
             throws ProvisioningException;
+
+    ResetPasswordResponse resetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException;
+
+    PrepareResetPasswordResponse prepareResetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException;
+
+    ResetPasswordResponse confirmResetPassword(ConfirmResetPasswordRequest resetPwdRequest) throws ProvisioningException;
 
     //<--------------- Schema -------------------->
 

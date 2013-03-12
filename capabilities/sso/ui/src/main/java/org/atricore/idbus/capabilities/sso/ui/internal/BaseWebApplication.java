@@ -2,7 +2,7 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.wicket.*;
+import org.apache.wicket.IRequestCycleProvider;
 import org.apache.wicket.markup.html.IPackageResourceGuard;
 import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.parser.filter.RelativePathPrefixHandler;
@@ -11,13 +11,18 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.atricore.idbus.capabilities.sso.ui.*;
+import org.apache.wicket.response.filter.AjaxServerAndClientTimeFilter;
+import org.atricore.idbus.capabilities.sso.ui.BrandingResource;
+import org.atricore.idbus.capabilities.sso.ui.BrandingResourceType;
+import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
+import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.agent.JossoAuthorizationStrategy;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
 import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEventListener;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
+import org.atricore.idbus.kernel.main.mail.MailService;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
@@ -54,6 +59,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     protected ApplicationRegistry appConfigRegistry;
 
     protected WebBrandingService brandingService;
+
+    protected MailService mailService;
 
     protected WebBranding branding;
 
@@ -134,6 +141,14 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         this.brandingService = brandingService;
     }
 
+    public MailService getMailService() {
+        return mailService;
+    }
+
+    public void setMailService(MailService mailService) {
+        this.mailService = mailService;
+    }
+
     public boolean isReady() {
         return ready;
     }
@@ -172,9 +187,11 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
             }
         });
 
+        getRequestCycleSettings().addResponseFilter(new AjaxServerAndClientTimeFilter());
+        getDebugSettings().setAjaxDebugModeEnabled(false);
+
         //Security settings
         getSecuritySettings().setAuthorizationStrategy(new JossoAuthorizationStrategy());
-
 
         // Resource settings
         getResourceSettings().setEncodeJSessionId(false);
@@ -257,7 +274,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         return appResources;
     }
 
-    public final synchronized void config(BundleContext bundleContext, ApplicationRegistry appConfigRegistry, WebBrandingService brandingService, IdentityMediationUnitRegistry idsuRegistry) {
+    public final synchronized void config(BundleContext bundleContext, ApplicationRegistry appConfigRegistry, WebBrandingService brandingService, IdentityMediationUnitRegistry idsuRegistry, MailService mailService) {
 
         // We're ready
         this.ready = true;
@@ -266,6 +283,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         this.appConfigRegistry = appConfigRegistry;
         this.brandingService = brandingService;
         this.idsuRegistry = idsuRegistry;
+        this.mailService = mailService;
 
         // Register the application to the branding service
         String brandingId = getAppConfig().getBrandingId();

@@ -420,6 +420,7 @@
                             org.xml.sax,
                             net.sf.ehcache,
                             net.sf.ehcache.distribution,
+                            sun.security.util;resolution:=optional,
                             *
                         </Import-Package>
 

@@ -3,9 +3,7 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 import org.apache.wicket.markup.MarkupFactory;
 import org.apache.wicket.markup.MarkupParser;
 import org.apache.wicket.markup.MarkupResourceStream;
-import org.apache.wicket.markup.parser.XmlPullParser;
 import org.apache.wicket.markup.parser.filter.EnclosureHandler;
-import org.apache.wicket.markup.parser.filter.RelativePathPrefixHandler;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 
 /**

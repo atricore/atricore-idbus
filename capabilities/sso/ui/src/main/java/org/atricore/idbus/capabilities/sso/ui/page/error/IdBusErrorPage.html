@@ -9,66 +9,31 @@
 
 <body>
 <wicket:extend>
-
-    <div id="idbus-error">
-
-        <div class="message error">
-            <p>
-
+    <div id="idbus-error" class="gt-bd clearfix">
+        <div class="gt-content">
+            <div>
+                <h2 class="gt-table-head"><wicket:message key="error.title"/></h2>
+            </div>
             <div>
                 <ul>
                     <li>
-                        <wicket:message key="error.title"/>
+                        <h6><wicket:message key="error.status.title"/> <span wicket:id="status"/>&nbsp;<span wicket:id="secStatus"/></h6>
+                    </li>
+                    <li>
+                        <h6><wicket:message key="error.status.details"/> <span wicket:id="details"/></h6>
                     </li>
                 </ul>
+
+                <h3>
+                    <wicket:message key="error.debug.title"/>
+                </h3>
+
+                <span wicket:id="causes">
+                    <p class="gt-notice-box">
+                        <span wicket:id="cause"/>
+                    </p>
+                </span>
             </div>
-            </p>
-        </div>
-
-        <!--
-        <div>
-            <p>
-                <strong>
-                    <span wicket:id="status"/>
-                </strong>
-                <br/><span wicket:id="secStatus"/>
-                <br/><span wicket:id="details"/>
-            </p>
-
-            <div class="footer"></div>
-        </div>
-        -->
-
-        <div>
-            `
-            <h3>
-                <wicket:message key="error.debug.title"/>
-            </h3>
-
-            <ul>
-                <li>
-                    <span wicket:id="status"/>
-                </li>
-                <li>
-                    <span wicket:id="secStatus"/>
-                </li>
-                <li>
-                    <span wicket:id="details"/>
-                </li>
-            </ul>
-
-            <h4>
-                <wicket:message key="error.message.label"/>
-            </h4>
-
-            <span wicket:id="causes">
-                <h5>
-                    <wicket:message key="error.causedBy.label"/>
-                </h5>
-                <p style="font-size:10px;">
-                    <span wicket:id="cause"/>
-                </p>
-            </span>
         </div>
     </div>
 </wicket:extend>

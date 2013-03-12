@@ -1,11 +1,12 @@
 package org.atricore.idbus.capabilities.oauth2.common;
 
+import java.io.Serializable;
 import java.io.StringWriter;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class OAuth2Claim {
+public class OAuth2Claim  implements Serializable {
 
     private String type;
 

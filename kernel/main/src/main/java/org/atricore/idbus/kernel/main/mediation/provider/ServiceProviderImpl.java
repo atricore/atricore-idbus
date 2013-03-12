@@ -27,6 +27,13 @@ package org.atricore.idbus.kernel.main.mediation.provider;
  */
 public class ServiceProviderImpl extends AbstractFederatedLocalProvider implements ServiceProvider {
 
+    private String resourceType;
 
+    public String getResourceType() {
+        return resourceType;
+    }
 
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
 }

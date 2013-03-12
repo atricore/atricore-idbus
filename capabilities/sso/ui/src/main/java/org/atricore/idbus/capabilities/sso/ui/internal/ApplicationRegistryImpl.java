@@ -1,7 +1,7 @@
 package org.atricore.idbus.capabilities.sso.ui.internal;
 
-import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
+import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
 
 import java.util.Map;
 import java.util.Set;

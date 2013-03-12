@@ -21,10 +21,21 @@
 
 package org.atricore.idbus.kernel.main.mediation.provider;
 
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
+
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
 public class IdentityProviderImpl extends AbstractFederatedLocalProvider implements IdentityProvider {
 
+    private transient ProvisioningTarget provisioningTarget;
+
+    public ProvisioningTarget getProvisioningTarget() {
+        return provisioningTarget;
+    }
+
+    public void setProvisioningTarget(ProvisioningTarget provisioningTarget) {
+        this.provisioningTarget = provisioningTarget;
+    }
 }

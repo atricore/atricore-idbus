@@ -1,5 +1,7 @@
 package org.atricore.idbus.capabilities.sso.ui.internal;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
@@ -14,10 +16,13 @@ import org.atricore.idbus.capabilities.sso.ui.page.authn.twofactor.TwoFactorLogi
 import org.atricore.idbus.capabilities.sso.ui.page.error.AppErrorPage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.IdBusErrorPage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.DashboardPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdrecovery.PwdRecoveryPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdchange.PwdChangePage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdreset.PwdResetPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdreset.ReqPwdResetPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.register.RegisterPage;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 
 /**
  * IdP Specific application, it provides front-end for claim channels, self-services, saml2, etc.
@@ -26,6 +31,8 @@ import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.register.RegisterPag
  * @date: 3/1/13
  */
 public class SSOIdPApplication extends BaseWebApplication {
+
+    private static final Log logger = LogFactory.getLog(SSOIdPApplication.class);
 
     public SSOIdPApplication() {
         super();
@@ -62,10 +69,12 @@ public class SSOIdPApplication extends BaseWebApplication {
         mountPage("ERROR/SESSION", SessionExpiredPage.class);
 
         // TODO : Only mount Self-Services pages if an SP is configured (we need the app. configured by now)
+        mountPage("SS/HOME", DashboardPage.class);
         mountPage("SS/PROFILE", ProfilePage.class);
         mountPage("SS/REGISTER", RegisterPage.class);
+        mountPage("SS/PWDCHANGE", PwdChangePage.class);
+        mountPage("SS/REQPWDRESET", ReqPwdResetPage.class);
         mountPage("SS/PWDRESET", PwdResetPage.class);
-        mountPage("SS/PWDRECOVERY", PwdRecoveryPage.class);
 
         mountPage("AGENT/LOGIN", JossoLoginPage.class);
         mountPage("AGENT/LOGOUT", JossoLogoutPage.class);
@@ -80,12 +89,17 @@ public class SSOIdPApplication extends BaseWebApplication {
      */
     @Override
     public Class getHomePage() {
-        return SimpleLoginPage.class;
+        return DashboardPage.class;
     }
 
     @Override
     public Session newSession(Request request, Response response) {
         return new SSOWebSession(request);
     }
+
+    public ProvisioningTarget getProvisioningTarget() {
+        return getIdentityProvider().getProvisioningTarget();
+    }
+
 }
 

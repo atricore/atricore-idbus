@@ -10,9 +10,9 @@ import org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolver;
 import org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolverFactory;
 import org.atricore.idbus.capabilities.oauth2.rserver.OAuth2RServerException;
 import org.atricore.idbus.capabilities.oauth2.rserver.SecureAccessTokenResolverFactory;
-import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
+import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.AppErrorPage;
 
 import java.util.Properties;

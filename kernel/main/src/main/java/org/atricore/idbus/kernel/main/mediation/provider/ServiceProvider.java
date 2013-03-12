@@ -30,5 +30,6 @@ package org.atricore.idbus.kernel.main.mediation.provider;
 
 public interface ServiceProvider extends FederatedLocalProvider {
 
+    String getResourceType();
 
 }

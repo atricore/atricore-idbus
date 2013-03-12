@@ -2,7 +2,6 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ops4j.pax.web.service.SharedWebContainerContext;
 import org.ops4j.pax.web.service.WebContainer;
 
 /**

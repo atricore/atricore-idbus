@@ -43,6 +43,16 @@ public class FederatedRemoteProviderImpl extends AbstractFederatedProvider imple
 
     private List<CircleOfTrustMemberDescriptor > members = new ArrayList<CircleOfTrustMemberDescriptor>();
 
+    private String resourceType;
+
+    public String getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
+
     public CircleOfTrustMemberDescriptor getMember() {
         return member;
     }

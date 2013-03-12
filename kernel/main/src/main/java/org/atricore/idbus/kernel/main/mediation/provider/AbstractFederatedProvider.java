@@ -41,6 +41,8 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
 
     private String description;
 
+    private String displayName;
+
     private String role;
 
     // Main channel and specializations ...
@@ -68,6 +70,14 @@ public abstract class AbstractFederatedProvider implements FederatedProvider {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getRole() {

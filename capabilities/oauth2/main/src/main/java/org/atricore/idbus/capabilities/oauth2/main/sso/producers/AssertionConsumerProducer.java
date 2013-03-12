@@ -68,6 +68,9 @@ public class AssertionConsumerProducer extends AbstractCamelProducer<CamelMediat
         out.setMessage(new MediationMessageImpl(response.getID(),
                 accessToken, "AccessToken", null, destination, state));
 
+        // Clear authn-ctx once we're done
+        state.removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+
         exchange.setOut(out);
 
     }

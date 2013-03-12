@@ -1,5 +1,6 @@
 package org.atricore.idbus.kernel.main.provisioning.impl;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
@@ -13,14 +14,14 @@ import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.SchemaManager;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.BeanUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -28,6 +29,8 @@ import java.util.List;
 public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     private static final Log logger = LogFactory.getLog(ProvisioningTargetImpl.class);
+
+    private UUIDGenerator uuid = new UUIDGenerator();
 
     private String name;
 
@@ -44,6 +47,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     private IdentityPartition identityPartition;
 
     private SchemaManager schemaManager;
+
+    // TODO : Make it persistente, expire old transactinos !!!!!
+    private Map<String, PendingTransaction> pendingTransactions = new ConcurrentHashMap<String, PendingTransaction>();
+
+    //private Map<String, >
 
     public String getName() {
         return name;
@@ -272,7 +280,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+    public PrepareAddUserResponse prepareAddUser(AddUserRequest userRequest) throws ProvisioningException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    public AddUserResponse confirAddUser(ConfirmAddUserRequest userRequest) throws ProvisioningException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
     public FindUserByIdResponse findUserById(FindUserByIdRequest userRequest) throws ProvisioningException {
         try {
             User user = identityPartition.findUserById(userRequest.getId());
@@ -325,17 +340,12 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             
             User user = userRequest.getUser();
-
             User oldUser = identityPartition.findUserById(user.getId());
-
 
             BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "userPassword", "id"});
             oldUser.setGroups(user.getGroups());
 
-            if (user.getUserPassword() != null && !"".equals(user.getUserPassword())) {
-                // TODO : Apply password validation rules
-                oldUser.setUserPassword(createPasswordHash(user.getUserPassword()));
-            }
+            // DO NOT UPDATE USER PASSWORD HERE : oldUser.setUserPassword(createPasswordHash(user.getUserPassword()));
 
             user = identityPartition.updateUser(oldUser);
 
@@ -361,15 +371,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             User user = identityPartition.findUserById(setPwdRequest.getUserId());
 
-
             String currentPwd = createPasswordHash(setPwdRequest.getCurrentPassword());
             if (!user.getUserPassword().equals(currentPwd)) {
                 throw new ProvisioningException("Provided password is invalid");
             }
 
             // TODO : Apply password validation rules
-            String newPwd = createPasswordHash(setPwdRequest.getNewPassword());
-            user.setUserPassword(newPwd);
+            String newPwdHash = createPasswordHash(setPwdRequest.getNewPassword());
+            user.setUserPassword(newPwdHash);
             identityPartition.updateUser(user);
             SetPasswordResponse setPwdResponse = new SetPasswordResponse();
             
@@ -378,6 +387,72 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         } catch (Exception e) {
             throw new ProvisioningException("Cannot update user password", e);
         }
+    }
+
+    public ResetPasswordResponse  resetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException {
+        try {
+            User user = identityPartition.findUserById(resetPwdRequest.getUser().getId());
+
+            // Generate a password (TODO : improve ?!)
+            // Passwords with alphabetic and numeric characters.
+            String pwd = RandomStringUtils.randomAlphanumeric(8);
+            String pwdHash = createPasswordHash(pwd);
+            user.setUserPassword(pwdHash);
+
+            identityPartition.updateUser(user);
+
+            ResetPasswordResponse resetPwdResponse = new ResetPasswordResponse();
+            resetPwdResponse.setNewPassword(pwd);
+
+            return resetPwdResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException("Cannot reset user password", e);
+        }
+    }
+
+    public PrepareResetPasswordResponse prepareResetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException {
+        String transactionId = uuid.generateId();
+        String pwd = RandomStringUtils.randomAlphanumeric(8);
+
+        ResetPasswordResponse resetPwdResp = new ResetPasswordResponse();
+        resetPwdResp.setNewPassword(pwd);
+
+        PendingTransaction t = new PendingTransaction(transactionId, 1000L * 60L * 30L, resetPwdRequest, resetPwdResp);
+
+        storePendingTransaction(t);
+
+        return new PrepareResetPasswordResponse(t.getId(), pwd);
+    }
+
+    public ResetPasswordResponse confirmResetPassword(ConfirmResetPasswordRequest resetPwdRequest) throws ProvisioningException {
+        PendingTransaction t = consumePendingTransaction(resetPwdRequest.getTransactionId());
+
+        boolean usedGeneratedPwd = resetPwdRequest.getNewPassword() == null;
+
+        if (t == null || t.expiresOn > System.currentTimeMillis()) {
+            throw new TransactionExpiredExcxeption(resetPwdRequest.getTransactionId());
+        }
+
+        ResetPasswordRequest req = (ResetPasswordRequest) t.getRequest();
+        ResetPasswordResponse resp = (ResetPasswordResponse) t.getResponse();
+
+        // Either the user provides a new password, or we use the one we created.
+        String newPwd = usedGeneratedPwd ? resp.getNewPassword() : resetPwdRequest.getNewPassword();
+
+        String pwdHash = createPasswordHash(newPwd);
+        resp.setNewPassword(newPwd);
+
+        // Set user's password
+        User user = identityPartition.findUserById(req.getUser().getId());
+        user.setUserPassword(pwdHash);
+
+        user = identityPartition.updateUser(user);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Password has been updated using " + (usedGeneratedPwd ? "GENERATED" : "USER PROVIDED") + " password");
+
+        return resp;
+
     }
 
     public AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest) throws ProvisioningException {
@@ -630,6 +705,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         return passwordHash;
 
     }
+
+    protected void storePendingTransaction(PendingTransaction t) {
+        this.pendingTransactions.put(t.getId(), t);
+    }
+
+    protected PendingTransaction consumePendingTransaction(String id) {
+        return this.pendingTransactions.remove(id);
+    }
     
     /**
      * Only invoke this if algorithm is set.
@@ -653,5 +736,39 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         return digest;
 
     }
-    
+
+    protected class PendingTransaction {
+
+        private String id;
+
+        private long expiresOn;
+
+        private AbstractProvisioningRequest request;
+
+        private AbstractProvisioningResponse response;
+
+        public PendingTransaction(String id, long expiresOn, AbstractProvisioningRequest request, AbstractProvisioningResponse response) {
+            this.id = id;
+            this.expiresOn = expiresOn;
+            this.request = request;
+            this.response = response;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public long getExpiresOn() {
+            return expiresOn;
+        }
+
+        public AbstractProvisioningRequest getRequest() {
+            return request;
+        }
+
+        public AbstractProvisioningResponse getResponse() {
+            return response;
+        }
+    }
+
 }

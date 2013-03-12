@@ -5,7 +5,67 @@
 <body>
 <wicket:panel>
 
-    <p>Hello, World!</p>
+    <!-- Add / Edit User Form -->
+    <!-- This form can be used to add/edit a user -->
+    <h2 class="gt-form-head"><wicket:message key="title"/></h2>
+    <div class="gt-form gt-content-box">
+
+        <div wicket:id="feedbackBox">
+            <span wicket:id="feedback"/>
+        </div>
+
+        <form wicket:id="profileForm">
+            <fieldset>
+                <div class="clearfix">
+                    <!-- left column -->
+                    <div class="gt-left-col">
+                        <div class="gt-form-row gt-width-66">
+                            <label for="username"><wicket:message key="claims.label.username"/></label>
+                            <input wicket:id="username" class="gt-form-text" path="username" readonly="true" />
+                        </div>
+                        <div class="gt-form-row gt-width-99">
+                            <label for="email"><wicket:message key="claims.label.email"/></label>
+                            <input wicket:id="email" type="email" class="gt-form-text" path="email"  />
+                        </div>
+                        <div class="gt-form-row gt-width-99 clearfix">
+                            <label for="name"><wicket:message key="claims.label.name"/></label>
+                            <input wicket:id="name" class="gt-form-text" path="name"   />
+                        </div>
+                        <div class="gt-form-row gt-width-99 clearfix">
+                            <label for="lastName"><wicket:message key="claims.label.lastName"/></label>
+                            <input wicket:id="lastName" class="gt-form-text" path="lastName"  />
+                        </div>
+
+                    </div>
+
+                    <!-- right column -->
+                    <div class="gt-right-col">
+                        <div class="gt-form-row gt-width-66 clearfix">
+                            <label>Language</label>
+                            <select disabled="true" >
+                                <option>English</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!--
+                    <div class="gt-right-col" >
+                        <input wicket:id="unlock" type="submit" class="gt-btn-blue-medium" value="Unlock"/>
+                    </div>
+                    -->
+                </div>
+                <!-- form row -->
+                <div class="gt-form-row">
+                    <input class="gt-btn-gray-medium" type="submit" value="Update" wicket:id="doSave" />
+                </div>
+                <!-- /form row -->
+
+
+
+            </fieldset>
+
+        </form>
+    </div>
 
 </wicket:panel>
 </body>
