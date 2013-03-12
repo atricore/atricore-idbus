@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManagerImpl;
 import org.atricore.idbus.kernel.main.store.identity.IdentityPartitionStore;
 import org.atricore.idbus.kernel.main.store.identity.SimpleIdentityStoreKeyAdapter;
@@ -128,8 +129,17 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 identityStoreOsgi.setInterface(IdentityPartitionStore.class.getName());
                 identityStoreOsgi.setCardinality("1..1");
                 identityStoreOsgi.setTimeout(60L);
-
                 providerBeans.getImportsAndAliasAndBeen().add(identityStoreOsgi);
+
+                Reference provisioningTargetOsgi = new Reference();
+                provisioningTargetOsgi.setId(providerBean.getName() + "-provisioning-target");
+                provisioningTargetOsgi.setInterface(ProvisioningTarget.class.getName());
+                provisioningTargetOsgi.setCardinality("1..1");
+                identityStoreOsgi.setTimeout(60L);
+                providerBeans.getImportsAndAliasAndBeen().add(provisioningTargetOsgi);
+
+                setPropertyRef(providerBean, "provisioningTarget", providerBean.getName() + "-provisioning-target");
+
 
             } else if (identitySource instanceof XmlIdentitySource) {
                 throw new UnsupportedOperationException("XML Identity Source support not implemented !!!");

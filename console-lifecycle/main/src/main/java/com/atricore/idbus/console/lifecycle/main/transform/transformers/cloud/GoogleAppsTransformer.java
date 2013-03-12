@@ -71,9 +71,14 @@ public class GoogleAppsTransformer extends AbstractTransformer {
 
         // Name
         setPropertyValue(sp, "name", sp.getName());
+        setPropertyValue(sp, "displayName", provider.getDisplayName());
+        setPropertyValue(sp, "description", provider.getDescription());
+        setPropertyValue(sp, "resourceType", "GoogleApps");
 
         // Role
-        setPropertyValue(sp, "role", SSOMetadataConstants.SPSSODescriptor_QNAME.toString());
+        setPropertyValue(sp, "role",
+                SSOMetadataConstants.SPSSODescriptor_QNAME.getNamespaceURI() +":"+
+                SSOMetadataConstants.SPSSODescriptor_QNAME.getLocalPart());
 
         // Wire provider to COT
         Collection<Bean> cots = getBeansOfType(baseBeans, CircleOfTrustImpl.class.getName());

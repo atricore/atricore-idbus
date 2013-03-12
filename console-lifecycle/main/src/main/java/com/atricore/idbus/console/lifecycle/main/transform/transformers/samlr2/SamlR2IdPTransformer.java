@@ -76,6 +76,9 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
 
         // Name
         setPropertyValue(idp, "name", idp.getName());
+        setPropertyValue(idp, "displayName", provider.getDisplayName());
+        setPropertyValue(idp, "description", provider.getDescription());
+
 
         // Role
         setPropertyValue(idp, "role", SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());

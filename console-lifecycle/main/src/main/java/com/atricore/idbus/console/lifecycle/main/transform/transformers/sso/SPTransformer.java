@@ -146,8 +146,11 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         Bean sp = newBean(spBeans, normalizeBeanName(providerInternalSaml2.getName()),
                 ServiceProviderImpl.class.getName());
 
-        // Name
+        // Name & Description
         setPropertyValue(sp, "name", sp.getName());
+        setPropertyValue(sp, "description", providerInternalSaml2.getDescription());
+        setPropertyValue(sp, "displayName", providerInternalSaml2.getDisplayName());
+        setPropertyValue(sp, "resourceType", providerInternalSaml2.getServiceConnection().getResource().getClass().getSimpleName());
 
         // Role
         if (!providerInternalSaml2.getRole().equals(ProviderRole.SSOServiceProvider)) {

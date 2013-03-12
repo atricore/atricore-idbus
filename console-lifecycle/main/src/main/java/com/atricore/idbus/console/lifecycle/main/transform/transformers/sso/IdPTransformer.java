@@ -108,7 +108,8 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
 
         // Name
         setPropertyValue(idpBean, "name", idpBean.getName());
-        setPropertyValue(idpBean, "description", provider.getDisplayName());
+        setPropertyValue(idpBean, "description", provider.getDescription());
+        setPropertyValue(idpBean, "displayName", provider.getDisplayName());
 
         // Role
         if (!provider.getRole().equals(ProviderRole.SSOIdentityProvider)) {

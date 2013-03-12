@@ -36,9 +36,13 @@ public class SamlR2SPTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof ExternalSaml2ServiceProvider ||
-               event.getData() instanceof GoogleAppsServiceProvider ||
-               event.getData() instanceof SugarCRMServiceProvider;
+        // Do not try to process other SPs
+        return event.getData() instanceof ExternalSaml2ServiceProvider &&
+               (
+                       !(event.getData() instanceof GoogleAppsServiceProvider) &&
+                       !(event.getData() instanceof SugarCRMServiceProvider) &&
+                       !(event.getData() instanceof SalesforceServiceProvider)
+               );
     }
 
     @Override
@@ -76,6 +80,9 @@ public class SamlR2SPTransformer extends AbstractTransformer {
 
         // Name
         setPropertyValue(sp, "name", sp.getName());
+        setPropertyValue(sp, "displayName", provider.getDisplayName());
+        setPropertyValue(sp, "description", provider.getDescription());
+        setPropertyValue(sp, "resourceType", "SAML2SP");
 
         // Role
         setPropertyValue(sp, "role", SSOMetadataConstants.SPSSODescriptor_QNAME.toString());
