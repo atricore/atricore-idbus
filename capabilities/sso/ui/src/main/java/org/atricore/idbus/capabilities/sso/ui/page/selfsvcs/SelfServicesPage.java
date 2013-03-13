@@ -5,7 +5,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
@@ -155,7 +157,10 @@ public abstract class SelfServicesPage extends BasePage {
                 FederatedRemoteProvider rp = (FederatedRemoteProvider) p;
 
                 if (rp.getRole() != null &&
-                    rp.getRole().equals("urn:oasis:names:tc:SAML:2.0:metadata:SPSSODescriptor")) {
+                    (rp.getRole().equals(SSOMetadataConstants.SPSSODescriptor_QNAME.getNamespaceURI() +":"+
+                            SSOMetadataConstants.SPSSODescriptor_QNAME.getLocalPart()) ||
+                    rp.getRole().equals("{" + SSOMetadataConstants.SPSSODescriptor_QNAME.getNamespaceURI() +"}"+
+                            SSOMetadataConstants.SPSSODescriptor_QNAME.getLocalPart()))) {
 
                     // For remote providers, there's only one member !
                     CircleOfTrustMemberDescriptor descr = rp.getMembers().iterator().next();
