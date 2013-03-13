@@ -272,6 +272,7 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.8.0</version>
                 <configuration>
                     <extension>true</extension>
                     <schemaIncludes>
@@ -340,8 +341,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>com.atricore.idbus.console.lifecycle.support.springmetadata.*;version=${pom.version}
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>com.atricore.idbus.console.lifecycle.support.springmetadata.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
@@ -365,6 +366,7 @@
                     <plugin>
                         <groupId>org.jvnet.jaxb2.maven2</groupId>
                         <artifactId>maven-jaxb2-plugin</artifactId>
+                        <version>0.8.0</version>
                         <configuration>
                             <extension>true</extension>
                             <schemaIncludes>
@@ -389,12 +391,6 @@
     </profiles>
     <repositories>
         <repository>
-            <id>DataNucleus_Repos</id>
-            <name>DataNucleus Repository</name>
-            <url>http://www.datanucleus.org/downloads/maven</url>
-            <layout>legacy</layout>
-        </repository>
-        <repository>
             <id>DataNucleus_Repos2</id>
             <name>DataNucleus Repository</name>
             <url>http://www.datanucleus.org/downloads/maven2</url>
@@ -409,20 +405,8 @@
         </pluginRepository>
 
         <pluginRepository>
-            <id>DataNucleus_1</id>
-            <url>http://www.datanucleus.org/downloads/maven/</url>
-        </pluginRepository>
-        <pluginRepository>
             <id>DataNucleus_2</id>
             <url>http://www.datanucleus.org/downloads/maven2/</url>
         </pluginRepository>
-        <pluginRepository>
-            <id>java.net</id>
-            <name>java.net Maven Repository</name>
-            <!--url>https://maven-repository.dev.java.net/nonav/repository</url-->
-            <url>http://download.java.net/maven/1/</url>
-            <layout>legacy</layout>
-        </pluginRepository>
-
     </pluginRepositories>
 </project>

@@ -34,7 +34,7 @@
     <artifactId>liveupdate-test</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>Atricore Console :: Tests : LiveUpdate Sample ${pom.version} Distribution</name>
+    <name>Atricore Console :: Tests : LiveUpdate Sample ${project.version} Distribution</name>
 
     <properties>
         <karaf.version>2.2.3</karaf.version>
@@ -44,15 +44,15 @@
     <dependencies>
 
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>com.atricore.idbus.console.liveservices.liveupdate.tests.services</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>com.atricore.idbus.console.liveservices.liveupdate.tests.command</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         
         
@@ -61,13 +61,13 @@
     <build>
         <resources>
             <resource>
-                <directory>${pom.basedir}/src/main/resources</directory>
+                <directory>${project.basedir}/src/main/resources</directory>
                 <includes>
                     <include>**/*</include>
                 </includes>
             </resource>
             <resource>
-                <directory>${pom.basedir}/src/main/filtered-resources</directory>
+                <directory>${project.basedir}/src/main/filtered-resources</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>**/*</include>
@@ -134,7 +134,7 @@
                             <descriptors>
                                 <descriptor>src/main/descriptors/unix-liveupdate.xml</descriptor>
                             </descriptors>
-                            <finalName>${pom.artifactId}-${pom.version}-liveupdate</finalName>
+                            <finalName>${project.artifactId}-${project.version}-liveupdate</finalName>
                             <tarLongFileMode>gnu</tarLongFileMode>
                         </configuration>
                     </execution>
@@ -149,7 +149,7 @@
                             <descriptors>
                                 <descriptor>src/main/descriptors/windows-liveupdate.xml</descriptor>
                             </descriptors>
-                            <finalName>${pom.artifactId}-${pom.version}-liveupdate</finalName>
+                            <finalName>${project.artifactId}-${project.version}-liveupdate</finalName>
                         </configuration>
                     </execution>
                 </executions>

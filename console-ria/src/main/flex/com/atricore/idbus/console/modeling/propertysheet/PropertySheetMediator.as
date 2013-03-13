@@ -6282,7 +6282,6 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function jbosseppSave(): void {
-        trace("host = " + _jbosseppResourceCoreSection.resourceDomain.text);
         // bind model
         var jbosseppResource:JBossEPPResource = projectProxy.currentIdentityApplianceElement as JBossEPPResource;
 

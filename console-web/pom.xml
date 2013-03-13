@@ -125,7 +125,7 @@
                         <groupId>org.mortbay.jetty</groupId>
                         <artifactId>jsp-2.1-jetty</artifactId>
                         <version>6.1.21</version>
-                        <scope>provided</scope>
+                        <scope>compile</scope>
                         <exclusions>
                             <exclusion>
                                 <groupId>org.eclipse.jdt</groupId>
@@ -192,7 +192,7 @@
                         <supportedProjectType>war</supportedProjectType>
                     </supportedProjectTypes>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-ClassPath>
                             .,
                             WEB-INF,
@@ -202,7 +202,7 @@
                             WEB-INF/lib/blazeds-core-${blazeds.version}.jar,
                             WEB-INF/lib/blazeds-remoting-${blazeds.version}.jar,
                             WEB-INF/lib/dozer-${dozer.version}.jar,
-                            WEB-INF/lib/console-services-${pom.version}.jar,
+                            WEB-INF/lib/console-services-${project.version}.jar,
                         </Bundle-ClassPath>
                         <Require-Bundle>
                             com.atricore.idbus.console.settings.main,
@@ -718,7 +718,7 @@
                                 <supportedProjectType>war</supportedProjectType>
                             </supportedProjectTypes>
                             <instructions>
-                                <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                                <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                                 <Bundle-ClassPath>
                                     .,
                                     WEB-INF,

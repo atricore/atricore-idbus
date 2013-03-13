@@ -34,7 +34,7 @@
     <artifactId>test-1.0.2</artifactId>
     <version>1.0.2</version>
     <packaging>pom</packaging>
-    <name>Atricore Console :: Tests : LiveUpdate Sample ${pom.version} POM</name>
+    <name>Atricore Console :: Tests : LiveUpdate Sample ${project.version} POM</name>
 
     <properties>
         <update.id>id-v1_0_2-</update.id>

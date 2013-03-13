@@ -81,8 +81,8 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>com.atricore.idbus.console.liveservices.liveupdate.main.*;version=${pom.version}</Export-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>com.atricore.idbus.console.liveservices.liveupdate.main.*;version=${project.version}</Export-Package>
                         <Spring-Context>*;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
                         <Import-Package>
                             org.springframework.context.support,

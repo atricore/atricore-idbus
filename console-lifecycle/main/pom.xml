@@ -110,17 +110,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.oauth2.common</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.oauth2.main</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.apache-maven-v3_0</artifactId>
             <scope>provided</scope>
@@ -232,7 +221,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -362,9 +351,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
-                            com.atricore.idbus.console.lifecycle.main.*; version="${pom.version}",
+                            com.atricore.idbus.console.lifecycle.main.*; version="${project.version}",
                         </Export-Package>
                         <Embed-Dependency>*;scope=compile</Embed-Dependency>
                         <Private-Package>!*</Private-Package>

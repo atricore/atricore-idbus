@@ -148,13 +148,13 @@
             <dependency>
                 <groupId>com.atricore.idbus.console.lifecycle</groupId>
                 <artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.atricore.idbus.console.lifecycle</groupId>
                 <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
 
@@ -162,12 +162,6 @@
                 <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
                 <version>${idbus.bundle.datanucleus-v2_1_2.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
-                <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
             </dependency>
 
             <dependency>
@@ -517,21 +511,9 @@
             <url>http://repository.josso.org/</url>
         </pluginRepository>
         <pluginRepository>
-            <id>DataNucleus_1</id>
-            <url>http://www.datanucleus.org/downloads/maven/</url>
-        </pluginRepository>
-        <pluginRepository>
             <id>DataNucleus_2</id>
             <url>http://www.datanucleus.org/downloads/maven2/</url>
         </pluginRepository>
-        <pluginRepository>
-            <id>java.net</id>
-            <name>java.net Maven Repository</name>
-            <!-- url>https://maven-repository.dev.java.net/nonav/repository</url-->
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
-        </pluginRepository>
-
     </pluginRepositories>
 
 

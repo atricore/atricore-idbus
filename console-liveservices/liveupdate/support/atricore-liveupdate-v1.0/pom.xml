@@ -178,8 +178,8 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>com.atricore.liveservices.liveupdate._1_0.*;version=${pom.version}</Export-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>com.atricore.liveservices.liveupdate._1_0.*;version=${project.version}</Export-Package>
                         <Import-Package>
                             org.jcp.xml.dsig.internal.dom,
                             *

@@ -127,8 +127,8 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>com.atricore.idbus.console.licensing.generation.main.*;version=${pom.version}</Export-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>com.atricore.idbus.console.licensing.generation.main.*;version=${project.version}</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>             
