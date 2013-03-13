@@ -35,6 +35,7 @@ import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -71,7 +72,7 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         }
 
         SPInitiatedAuthnRequestType req = authnCtx.getAuthnRequest();
-        // This request has been used, remove it from context
+        // This request has been used, remove it from context                 increaseUnresolvedAssertionsCount
         authnCtx.setAuthnRequest(null);
 
         if (req == null) {
@@ -108,8 +109,8 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
 
             if (req == null || !req.isPassive()) {
                 // Error!
-                logger.error("No Session Index recieved but passive authentication was not requested!");
-                throw new JossoException("No Session Index recieved but passive authentication was not requested!");
+                logger.error("No Session Index received but passive authentication was not requested!");
+                throw new JossoException("No Session Index received but passive authentication was not requested!");
             }
 
         } else {
@@ -121,11 +122,25 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
             state.getLocalState().addAlternativeId("ssoSessionId", response.getSessionIndex());
             state.getLocalState().addAlternativeId("assertionId", aa.getId());
 
+            // We've issued a new assertion, record some stats
+            mediator.increaseUnresolvedAssertionsCount();
+            if (mediator.getMaxUnresolvedAssertionsCount() == 0) {
+                long maxUnresovedAssertions = Long.parseLong(mediator.getKernelConfigCtx().getProperty("binding.josso.maxUnresolvedAssertions", "99"));
+                mediator.setMaxUnresolvedAssertionsCount(maxUnresovedAssertions);
+            }
+
+            if (mediator.getUnresolvedAssertionsCount() > mediator.getMaxUnresolvedAssertionsCount()) {
+                MonitoringServer mServer = mediator.getMonitoringServer();
+                mServer.noticeError("Binding channel " + channel.getName() + " error: " + mediator.getMaxUnresolvedAssertionsCount() + " unresolved assertions (resetting counter) !");
+                logger.error("Binding channel " + channel.getName() + " error: " + mediator.getMaxUnresolvedAssertionsCount() + " unresolved assertions (resetting counter) !");
+                mediator.setUnresolvedAssertionsCount(0);
+            }
+
+
         }
 
         // Store Authentication Assertion :
         authnCtx.setAuthnAssertion(aa);
-
         state.setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId, authnCtx);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
@@ -133,7 +148,6 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
                 aa, "AuthenticationAssertion", null, destination, state));
 
         exchange.setOut(out);
-        
 
     }
 

@@ -53,6 +53,34 @@ public class JossoMediator extends AbstractCamelMediator {
 
     private SSOIdentityManager identityManager;
 
+    // Some stats
+    private long unresolvedAssertionsCount = 0;
+    private long maxUnresolvedAssertionsCount = 0;
+
+    public long getMaxUnresolvedAssertionsCount() {
+        return maxUnresolvedAssertionsCount;
+    }
+
+    public void setMaxUnresolvedAssertionsCount(long maxUnresolvedAssertionsCount) {
+        this.maxUnresolvedAssertionsCount = maxUnresolvedAssertionsCount;
+    }
+
+    public long getUnresolvedAssertionsCount() {
+        return unresolvedAssertionsCount;
+    }
+
+    public void setUnresolvedAssertionsCount(long unresolvedAssertionsCount) {
+        this.unresolvedAssertionsCount = unresolvedAssertionsCount;
+    }
+
+    public void increaseUnresolvedAssertionsCount() {
+        unresolvedAssertionsCount ++;
+    }
+
+    public void decreaseUnresolvedAssertionsCount() {
+        unresolvedAssertionsCount --;
+    }
+
     @Override
     protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) throws Exception {
         // Create routes based on endpoints!
