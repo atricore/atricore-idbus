@@ -79,6 +79,10 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
             response = resolveAuthenticationAssertion((ResolveAuthenticationAssertionRequestType) request, in.getMessage().getState());
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                     response, "ResolveAuthenticationAssertionResponse", null, destination, in.getMessage().getState()));
+
+            JossoMediator m = (JossoMediator) channel.getIdentityMediator();
+            m.decreaseUnresolvedAssertionsCount();
+
         } else if (request instanceof AssertIdentityWithSimpleAuthenticationRequestType) {
             response = assertIdentityWithSimpleAuthentication(in, (AssertIdentityWithSimpleAuthenticationRequestType) request);
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
