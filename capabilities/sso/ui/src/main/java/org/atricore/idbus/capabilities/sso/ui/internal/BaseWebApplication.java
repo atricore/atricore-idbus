@@ -465,19 +465,18 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
             IdentityMediationUnit unit =  idsuRegistry.lookupUnit(unitName);
 
             for (Channel c : unit.getChannels()) {
+
                 // Look for the IDP
                 if (idpName != null && c instanceof SPChannel) {
                     SPChannel spChannel = (SPChannel) c;
-
-                    if (spChannel.getProvider().getName().equalsIgnoreCase(idpName)) {
+                    if (spChannel.getProvider().getName().equalsIgnoreCase(idpName))
                         identityProvider = (IdentityProvider) spChannel.getProvider();
-                        break;
-                    }
 
                 } else if (spName != null && c instanceof IdPChannel) {
                     IdPChannel idpChannel = (IdPChannel) c;
                     if (idpChannel.getProvider().getName().equalsIgnoreCase(spName))
                         selfServicesSP = (ServiceProvider) idpChannel.getProvider();
+
                 }
             }
 

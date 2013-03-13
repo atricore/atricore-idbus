@@ -93,6 +93,7 @@ public abstract class SelfServicesPage extends BasePage {
 
         IdentityProvider idp = app.getIdentityProvider();
 
+
         String defaultIdpInitiatedSsoLoation = "";
         for (IdentityMediationEndpoint e : idp.getChannel().getEndpoints()) {
             if (e.getType().equals(SSOService.SingleSignOnService.toString()) &&
