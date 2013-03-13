@@ -772,6 +772,7 @@ public class LDAPIdentityStore extends AbstractStore  {
         }
 
         String authType = env.getProperty(Context.SECURITY_AUTHENTICATION);
+
         if (authType == null)
             env.setProperty(Context.SECURITY_AUTHENTICATION, "simple");
 
@@ -796,6 +797,9 @@ public class LDAPIdentityStore extends AbstractStore  {
 
         if (securityCredential != null && !"".equals(securityCredential))
             env.put(Context.SECURITY_CREDENTIALS, securityCredential);
+
+        // always follow referrals transparently
+        env.put(Context.REFERRAL, "follow");
 
         // Logon into LDAP server
         if (logger.isDebugEnabled())
