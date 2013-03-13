@@ -249,6 +249,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
         // Session keep alive / validate (accessSession)
 
+
     }
 
     public WebBranding getBranding() {

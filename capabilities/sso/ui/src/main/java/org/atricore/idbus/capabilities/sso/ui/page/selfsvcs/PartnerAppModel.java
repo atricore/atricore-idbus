@@ -16,6 +16,7 @@ public class PartnerAppModel implements Serializable {
     private String description;
 
     private String ssoEndpoint;
+
     private String resourceType;
 
     // TODO : Icon !

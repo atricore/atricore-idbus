@@ -51,7 +51,7 @@
         <idbus.bundle.josso-ws-v1_2.version>1.4.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
         
         <!-- local party -->
-        <josso.version>1.8.3</josso.version>
+        <josso1.version>1.8.8-SNAPSHOT</josso1.version>
 
         <!-- some standards -->
         <servlet.version>2.3</servlet.version>
@@ -330,35 +330,35 @@
         <dependency>
             <groupId>org.josso</groupId>
             <artifactId>josso-ws-v1_2</artifactId>
-            <version>${josso.version}</version>
+            <version>${josso1.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.josso</groupId>
             <artifactId>josso-db-assertionstore</artifactId>
-            <version>${josso.version}</version>
+            <version>${josso1.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.josso</groupId>
             <artifactId>josso-default-assertionidgen</artifactId>
-            <version>${josso.version}</version>
+            <version>${josso1.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.josso</groupId>
             <artifactId>josso-memory-assertionstore</artifactId>
-            <version>${josso.version}</version>
+            <version>${josso1.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.josso</groupId>
             <artifactId>josso-default-assertionmgr</artifactId>
-            <version>${josso.version}</version>
+            <version>${josso1.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -393,7 +393,7 @@
         <dependency>
             <groupId>org.josso</groupId>
             <artifactId>josso-default-identityprovider</artifactId>
-            <version>${josso.version}</version>
+            <version>${josso1.version}</version>
             <scope>test</scope>
         </dependency>
 

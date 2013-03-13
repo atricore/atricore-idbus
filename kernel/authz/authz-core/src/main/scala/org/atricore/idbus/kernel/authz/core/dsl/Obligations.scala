@@ -22,7 +22,8 @@ package org.atricore.idbus.kernel.authz.core.dsl
  */
 
 import collection.mutable.{Stack, ListBuffer}
-import org.atricore.idbus.kernel.authz.core.Obligation
+import org.atricore.idbus.kernel.authz.core.{AttributeAssignment, Obligation}
+import org.scala_tools.subcut.inject.{Injectable, BindingModule, NewBindingModule, MutableBindingModule}
 
 
 /**
@@ -172,48 +173,93 @@ case class AttributeAssignmentNode(properties: List[ObligationPropertyNode])
 /**
  * Obligations walker intended to be used within a PEP (Policy Enforcement Point)
  */
-class ObligationFulfillment(val obls : List[Obligation]) {
+class ObligationFulfillment(val obls: List[Obligation], val configuration: ObligationFulfillmentConfig) {
 
-  def fulfill : List[Either[ObligationFulfillmentError, ObligationFulfillmentSuccess]] = {
+  def fulfill: List[Either[ObligationFulfillmentError, ObligationFulfillmentSuccess]] = {
 
     obls.map(
-     obl => {
+      obl => {
         obl.id match {
           case "urn:oasis:names:tc:xacml:example:obligation:email" =>
-            val mailTo  = obl.attributeAssignments.find( _.id == "urn:oasis:names:tc:xacml:2.0:example:attribute:mailto")
-            val text = obl.attributeAssignments.find( _.id == "urn:oasis:names:tc:xacml:2.0:example:attribute:text");
-
-            (for {
-              mt <- mailTo
-              txt <- text
-            } yield {
-              if (sendEmail(mt.value, txt.value)) {
-                Right(ObligationFulfillmentSuccess(obl))
-              } else
-                Left(ObligationFulfillmentError(obl))
-            }).getOrElse(
-              Left(ObligationFulfillmentError(obl))
+            runObligation2(
+              obl,
+              ("urn:oasis:names:tc:xacml:2.0:example:attribute:mailto","urn:oasis:names:tc:xacml:2.0:example:attribute:text"),
+              sendEmail _
             )
         }
-     }
+      }
     )
   }
 
-  private def sendEmail(mailTo : String, text : String) : Boolean = {
-    println("Sending email : " + mailTo + ", " + text)
-    true
+  private def runObligation2( obl : Obligation, attrs : Product2[String,String], f : Function2[String,String, Any] ) = {
+
+    val a1: Option[AttributeAssignment] = obl.attributeAssignments.find(_.id == attrs._1)
+    val a2: Option[AttributeAssignment] = obl.attributeAssignments.find(_.id == attrs._2)
+
+    (for {
+      a1v <- a1
+      a2v <- a2
+    } yield {
+      f.apply(a1v.value, a2v.value) match {
+        case Right(outcome) => Right(ObligationFulfillmentSuccess(obl))
+        case Left(outcome) => Left(ObligationFulfillmentError(obl))
+      }
+    }).getOrElse(
+      Left(ObligationFulfillmentError(obl))
+    )
+
+  }
+
+  private def runObligation3( obl : Obligation, attrs : Product3[String,String, String], f : Function3[String,String,String, Any] ) = {
+
+    val a1: Option[AttributeAssignment] = obl.attributeAssignments.find(_.id == attrs._1)
+    val a2: Option[AttributeAssignment] = obl.attributeAssignments.find(_.id == attrs._2)
+    val a3: Option[AttributeAssignment] = obl.attributeAssignments.find(_.id == attrs._3)
+
+    (for {
+      a1v <- a1
+      a2v <- a2
+      a3v <- a3
+    } yield {
+      f.apply(a1v.value, a2v.value, a3v.value) match {
+        case Right(outcome) => Right(ObligationFulfillmentSuccess(obl))
+        case Left(outcome) => Left(ObligationFulfillmentError(obl))
+      }
+    }).getOrElse(
+      Left(ObligationFulfillmentError(obl))
+    )
+
+  }
+
+  private def sendEmail(mailTo: String, text: String): Either[ObligationActionError, ObligationActionSuccess] = {
+    println("Sending email : " + mailTo + ", " + text + ", " + configuration.smtpServer)
+    Right(ObligationActionSuccess())
   }
 
 }
 
 trait ObligationFulfilmentResult
 
-case class ObligationFulfillmentSuccess(obligation : Obligation) extends ObligationFulfilmentResult
+case class ObligationFulfillmentSuccess(obligation: Obligation) extends ObligationFulfilmentResult
 
-case class ObligationFulfillmentError(obligation : Obligation) extends ObligationFulfilmentResult
+case class ObligationFulfillmentError(obligation: Obligation) extends ObligationFulfilmentResult
+
+trait ObligationActionResult
+
+case class ObligationActionSuccess() extends ObligationActionResult
+
+case class ObligationActionError() extends ObligationActionResult
+
+class ObligationFulfillmentModule(f: MutableBindingModule => Unit) extends NewBindingModule(f)
+
+class ObligationFulfillmentConfig(implicit val bindingModule: BindingModule) extends Injectable {
+  val smtpServer = inject [String] ('smtpServer)
+}
+
 
 object ObligationFulfillment {
-  def fullfil( obls : List[Obligation]) = new ObligationFulfillment(obls).fulfill
+  def fullfil(obls: List[Obligation], configuration : ObligationFulfillmentConfig ) =
+    new ObligationFulfillment(obls, configuration).fulfill
 }
 
 
