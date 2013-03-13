@@ -151,6 +151,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="binding.http.ajax">false</prop>
         <prop key="binding.http.followRedirects">true</prop>
         <prop key="binding.http.localTargetBaseUrl">http://localhost:8081</prop>
+        <prop key="binding.josso.maxUnresolvedAssertions">100</prop>
     </osgix:cm-properties>
 
     <ctx:property-placeholder properties-ref="kernelProps" />
