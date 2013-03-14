@@ -218,7 +218,7 @@ public class BrowserModelFactory {
             if (serviceResource is JBossEPPResource) {
                 resourceNode.icon = EmbeddedIcons.jbosseppResourceMiniIcon;
             } else if (serviceResource is SelfServicesResource) {
-                resourceNode.icon = EmbeddedIcons.selfServicesResourceIcon;
+                resourceNode.icon = EmbeddedIcons.selfServicesResourceMiniIcon;
             } else if (serviceResource is JOSSO1Resource) {
                 resourceNode.icon = EmbeddedIcons.josso1ResourceMiniIcon;
             } else if (serviceResource is JOSSO2Resource) {
