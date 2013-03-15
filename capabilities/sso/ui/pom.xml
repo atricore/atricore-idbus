@@ -448,6 +448,7 @@
                             org.apache.wicket.ajax,
                             org.apache.wicket.markup.html.link,
                             org.apache.wicket.protocol.http,
+                            org.apache.wicket.event,
 
                             <!-- then wicket stuff -->
                             org.ops4j.pax.wicket.api,
@@ -468,6 +469,14 @@
                             javax.jms,
                             org.apache.activemq
                         </Import-Package>
+                        <Require-Bundle>
+                            org.ops4j.pax.wicket.service,
+                            org.apache.wicket.util,
+                            org.apache.wicket.request,
+                            org.apache.wicket.core,
+                            org.apache.wicket.auth-roles,
+                            org.apache.wicket.extensions
+                        </Require-Bundle>
                         <Embed-Transitive>true</Embed-Transitive>
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
                         <IdBus-UI>true</IdBus-UI>

@@ -242,11 +242,11 @@ public class CamelIdentityMediationUnitContainer implements IdentityMediationUni
         try {
             for (IdentityMediator mediator : getMediators()) {
                 if (logger.isDebugEnabled())
-                    logger.debug("Stopping mediationr " + mediator);
+                    logger.debug("Stopping mediator " + mediator);
                 try {
                     mediator.stop();
                 } catch (Exception e) {
-                    logger.error("Error stoppig mediator " + e.getMessage(), e);
+                    logger.error("Error stopping mediator " + e.getMessage(), e);
                 }
             }
 

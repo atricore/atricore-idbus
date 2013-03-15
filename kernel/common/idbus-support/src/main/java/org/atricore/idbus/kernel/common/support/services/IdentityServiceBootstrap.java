@@ -59,9 +59,8 @@ public class IdentityServiceBootstrap implements OsgiBundleApplicationContextLis
         } else if (event instanceof OsgiBundleContextFailedEvent) {
 
             OsgiBundleContextFailedEvent e = (OsgiBundleContextFailedEvent) event;
-            if (logger.isDebugEnabled())
-                logger.debug("Spring Application context in Bundle (" +
-                    e.getBundle().getBundleId() + ") " + e.getBundle().getSymbolicName() + " : FAILED");
+            logger.error("Spring Application context in Bundle (" +
+                e.getBundle().getBundleId() + ") " + e.getBundle().getSymbolicName() + " : FAILED");
 
         } else if (event instanceof OsgiBundleContextClosedEvent) {
 
