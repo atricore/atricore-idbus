@@ -175,7 +175,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
         <!-- Default Mail properties -->
         <prop key="mail.smtp.host">localhost</prop>
-        <prop key="mail.user">admin</prop>
+        <prop key="mail.username">admin</prop>
         <prop key="mail.password">admin</prop>
 
         <prop key="binding.josso.maxUnresolvedAssertions">100</prop>
