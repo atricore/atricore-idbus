@@ -37,8 +37,7 @@ public class JossoAuthorizationStrategy implements IAuthorizationStrategy {
             // continue with the target remembered.
 
             // Trigger authentication
-            //getRequestCycle().scheduleRequestHandlerAfterCurrent(new RedirectRequestHandler(claimsConsumerUrl));
-            // TODO : This will not work, we need to redirect to IdP
+            // We need to redirect to IdP
             throw new RestartResponseAtInterceptPageException(JossoLoginPage.class);
         }
 

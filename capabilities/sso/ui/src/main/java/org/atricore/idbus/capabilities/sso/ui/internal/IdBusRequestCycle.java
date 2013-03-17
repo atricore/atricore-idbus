@@ -2,6 +2,7 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
+import org.apache.wicket.request.http.WebResponse;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,9 +14,9 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class CssWebRequestCycle extends RequestCycle {
+public class IdBusRequestCycle extends RequestCycle {
 
-    public CssWebRequestCycle(RequestCycleContext ctx) {
+    public IdBusRequestCycle(RequestCycleContext ctx) {
 
         super(ctx);
         
@@ -31,7 +32,10 @@ public class CssWebRequestCycle extends RequestCycle {
         }
 
     }
-    
-    
 
+    @Override
+    protected void onEndRequest() {
+        super.onEndRequest();
+        ((WebResponse) getResponse()).setHeader("X-FollowRedirect", "FALSE" );
+    }
 }

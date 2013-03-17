@@ -218,6 +218,13 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                     continue;
                 }
 
+                if (header.getName().equals("X-FollowRedirect")) {
+                    // Set 'followTargetUrl' to false
+                    followTargetUrl = false;
+                    continue;
+                }
+
+
                 storedHeaders.add(header);
 
             }

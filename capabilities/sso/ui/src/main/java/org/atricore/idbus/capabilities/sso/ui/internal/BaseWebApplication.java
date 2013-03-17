@@ -11,7 +11,6 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.response.filter.AjaxServerAndClientTimeFilter;
 import org.atricore.idbus.capabilities.sso.ui.BrandingResource;
 import org.atricore.idbus.capabilities.sso.ui.BrandingResourceType;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
@@ -183,11 +182,11 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         {
             public RequestCycle get(RequestCycleContext context)
             {
-                return new CssWebRequestCycle(context);
+                return new IdBusRequestCycle(context);
             }
         });
 
-        getRequestCycleSettings().addResponseFilter(new AjaxServerAndClientTimeFilter());
+        //getRequestCycleSettings().addResponseFilter(new AjaxServerAndClientTimeFilter());
         getDebugSettings().setAjaxDebugModeEnabled(false);
 
         //Security settings
