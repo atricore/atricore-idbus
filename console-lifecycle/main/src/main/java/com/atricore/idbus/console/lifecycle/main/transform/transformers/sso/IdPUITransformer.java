@@ -127,7 +127,7 @@ public class IdPUITransformer extends AbstractTransformer {
         Application idpUiApp = new Application();
         idpUiApp.setId(normalizeBeanName(ida.getName() + "-" + idp.getName() + "-sso-ui"));
         idpUiApp.setApplicationName(ida.getName().toLowerCase() + "-" + idp.getName().toLowerCase() + "-sso-ui");
-        //idpUiApp.setClazz(pkg + "." + idpAppClazz);
+        //idpUiApp.setClazz(pkg + "." + idpAppClazz); // DO NOT USE THE GENERATED CLASS WITH WICKET 6.X
         idpUiApp.setClazz(parentClazz);
         idpUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/" + idp.getName().toUpperCase() + "/SSO");
         idpUiApp.setInjectionSource("spring");

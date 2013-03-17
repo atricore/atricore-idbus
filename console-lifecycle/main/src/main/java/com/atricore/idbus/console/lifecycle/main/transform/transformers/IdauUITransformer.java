@@ -86,7 +86,7 @@ public class IdauUITransformer extends AbstractTransformer {
             Application ssoUiApp = new Application();
             ssoUiApp.setId(normalizeBeanName(ida.getName() + "-sso-ui"));
             ssoUiApp.setApplicationName(ida.getName().toLowerCase() + "-sso-ui");
-            //ssoUiApp.setClazz(pkg + "." + ssoAppClazz);
+            //ssoUiApp.setClazz(pkg + "." + ssoAppClazz); // DO NOT USE THE GENERATED CLASS WITH WICKET 6.X
             ssoUiApp.setClazz(parentClazz);
             ssoUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/SSO");
             ssoUiApp.setInjectionSource("spring");
@@ -138,7 +138,7 @@ public class IdauUITransformer extends AbstractTransformer {
             Application openIdUiApp = new Application();
             openIdUiApp.setId(ida.getName().toLowerCase() + "-openid-ui");
             openIdUiApp.setApplicationName(ida.getName().toLowerCase() + "-openid-ui");
-            //openIdUiApp.setClazz(pkg + "." + idpAppClazz);
+            //openIdUiApp.setClazz(pkg + "." + idpAppClazz);  // DO NOT USE THE GENERATED CLASS WITH WICKET 6.X
             openIdUiApp.setClazz(parentClazz);
             openIdUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/OPENID");
             openIdUiApp.setInjectionSource("spring");
