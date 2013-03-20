@@ -11,6 +11,7 @@ import org.atricore.idbus.capabilities.josso.main.JossoMediator;
 import org.atricore.idbus.capabilities.josso.main.PartnerAppMapping;
 import org.atricore.idbus.kernel.main.mediation.provider.BindingProviderImpl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
@@ -122,7 +123,16 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
             if (josso1Resource.getDefaultResource() != null) {
                 setPropertyValue(agentAppBean, "defaultResource", josso1Resource.getDefaultResource());
             }
-            // TODO : Support ignored web resources, remember me, disable auto-login, etc. ....
+            // TODO : Remember me, disable auto-login, etc. ....
+
+            // Ignored web resources (for JEE)
+            if (josso1Resource.getIgnoredWebResources() != null && josso1Resource.getIgnoredWebResources().size() > 0) {
+                java.util.List<String> wr = new ArrayList<String>();
+                wr.addAll(josso1Resource.getIgnoredWebResources());
+                setPropertyAsValues(agentAppBean, "ignoredWebResources", wr);
+            }
+
+            // TODO : Ignored URL Patters
 
             addPropertyBean(cfgBean, "ssoPartnerApps", agentAppBean);
 
