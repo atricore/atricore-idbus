@@ -107,7 +107,7 @@ public class IdentityManagerProducer extends AbstractJossoProducer {
         if (logger.isDebugEnabled())
             logger.debug("Find user in requester/session " + request.getRequester()+ "/" + ssoSessionId);
 
-        String appId = request.getRequester();
+        String appId = request.getRequester().toLowerCase(); // App-id is case-insensitive
 
         JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
         JossoAuthenticationAssertion aa = authnCtx != null ? authnCtx.getAuthnAssertion() : null;
@@ -133,7 +133,7 @@ public class IdentityManagerProducer extends AbstractJossoProducer {
 
     protected FindRolesBySSOSessionIdResponseType findRolesBySSOSessionIdRequest(MediationState state, FindRolesBySSOSessionIdRequestType request) {
         String ssoSessionId = request.getSsoSessionId();
-        String appId = request.getRequester();
+        String appId = request.getRequester().toLowerCase(); // App ID is case-insensitive
 
         if (logger.isDebugEnabled())
             logger.debug("Find user in session " + ssoSessionId);

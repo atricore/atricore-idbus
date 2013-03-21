@@ -58,7 +58,7 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         MediationState state = in.getMessage().getState();
         SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
-        String appId = response.getIssuer();
+        String appId = response.getIssuer().toLowerCase(); // App ID is case-insensitive
 
         // Current authentication context
         JossoAuthnContext authnCtx = (JossoAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);

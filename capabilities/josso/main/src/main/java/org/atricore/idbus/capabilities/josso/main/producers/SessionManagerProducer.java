@@ -82,7 +82,7 @@ public class SessionManagerProducer extends AbstractJossoProducer {
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
-            String appId = request.getRequester();
+            String appId = request.getRequester().toLowerCase();
 
             // Send SP SSO Access Session, using SOAP Binding
             BindingChannel spBindingChannel = resolveSpBindingChannel((BindingChannel)channel, request.getRequester());
