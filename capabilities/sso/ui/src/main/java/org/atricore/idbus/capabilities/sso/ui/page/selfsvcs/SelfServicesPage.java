@@ -132,9 +132,10 @@ public abstract class SelfServicesPage extends BasePage {
 
                 IdPChannel idpChannel = (IdPChannel) sp.getChannel();
                 for (FederationChannel c : idp.getChannels()) {
-                    if (c.getTargetProvider().getName().equals(idp.getName()))
+                    if (c.getTargetProvider().getName().equals(idp.getName())) {
                         idpChannel = (IdPChannel) c;
-                    break;
+                        break;
+                    }
                 }
 
                 String spAlias = idpChannel.getMember().getAlias();
@@ -165,7 +166,7 @@ public abstract class SelfServicesPage extends BasePage {
 
                     // For remote providers, there's only one member !
                     CircleOfTrustMemberDescriptor descr = rp.getMembers().iterator().next();
-                    String spAlias = descr.getAlias();
+                    String spAlias = new String(Base64.encodeBase64(descr.getAlias().getBytes()));
                     idpInitiatedSsoEndpoint += "?atricore_sp_alias=" + spAlias;
 
                     apps.add(new PartnerAppModel(rp.getName(),
