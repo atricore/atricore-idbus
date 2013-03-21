@@ -156,8 +156,8 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
         }
 
         // Store Authentication Assertion :
-        String appId = request.getRequester();
-        JossoAuthnContext ctx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);;
+        String appId = request.getRequester().toLowerCase(); // App-id is case-insensitive
+        JossoAuthnContext ctx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
         ctx.setAuthnAssertion(aa);
 
         in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId, ctx);
@@ -174,7 +174,7 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
     protected ResolveAuthenticationAssertionResponseType resolveAuthenticationAssertion(ResolveAuthenticationAssertionRequestType request, MediationState state) throws Exception {
 
         String assertionId = request.getAssertionId();
-        String appId = request.getRequester();
+        String appId = request.getRequester().toLowerCase(); // App-id is case-insensitive
 
         if (appId == null)
             logger.error("No requester received in assertion resolution for " + request.getAssertionId());

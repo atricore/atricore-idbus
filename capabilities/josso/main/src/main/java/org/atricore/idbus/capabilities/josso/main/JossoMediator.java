@@ -359,7 +359,18 @@ public class JossoMediator extends AbstractCamelMediator {
     }
 
     public PartnerAppMapping getPartnerAppMapping(String appId) {
-        return partnerAppMappings.get(appId);
+        PartnerAppMapping m = partnerAppMappings.get(appId);
+
+        // Add support for case insensitive searches :
+        if (m == null) {
+            for (String k : partnerAppMappings.keySet()) {
+                if (k.equalsIgnoreCase(appId)) {
+                    m = partnerAppMappings.get(k);
+                    break;
+                }
+            }
+        }
+        return m;
     }
 
     public Map<String, PartnerAppMapping> getPartnerAppMappings() {

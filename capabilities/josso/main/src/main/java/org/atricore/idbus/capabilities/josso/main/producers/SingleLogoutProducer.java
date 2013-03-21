@@ -81,7 +81,7 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         // TODO : Validate destination, inReplyTo, etc
-        String appId = sloResponse.getIssuer();
+        String appId = sloResponse.getIssuer().toLowerCase(); // App-id is case-insensitive;
 
         // Process response
         PartnerAppMapping mapping = resolveAppMapping((BindingChannel) channel, appId);
@@ -113,7 +113,7 @@ public class SingleLogoutProducer extends AbstractJossoProducer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         BindingChannel bChannel = (BindingChannel) channel;
 
-        String appId = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_APPID_VAR);
+        String appId = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_APPID_VAR).toLowerCase(); // App-id is case-insensitive
         String backTo = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_BACK_TO_VAR);
 
         // This producer just redirects the user to the configured target IDP.
