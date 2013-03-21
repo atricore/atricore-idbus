@@ -73,7 +73,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
 
             // HTTP Request Parameters from HTTP Request body
             MediationState state = createMediationState(exchange);
-
+                                                                                HttpR
             // HTTP Redirect SSOBinding supports the following parameters
             String base64SAMLRequest = state.getTransientVariable("SAMLRequest");
             String base64SAMLResponse = state.getTransientVariable("SAMLResponse");
@@ -113,7 +113,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
 
                 return new MediationMessageImpl<RequestAbstractType>(httpMsg.getMessageId(),
                         samlRequest,
-                        XmlUtils.decode(base64SAMLRequest),
+                        base64SAMLRequest,
                         null,
                         relayState,
                         null,
@@ -133,7 +133,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
 
                 return new MediationMessageImpl<StatusResponseType>(httpMsg.getMessageId(),
                         samlResponse,
-                        XmlUtils.decode(base64SAMLResponse),
+                        base64SAMLResponse,
                         null,
                         relayState,
                         null,
