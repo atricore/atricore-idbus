@@ -113,7 +113,7 @@ private[dsl] trait BasicAccessControlDirectives {
                   issuer <- props.get("issuer")
                   dataType <- props.get("dataType")
                   attributeValue <- props.get("attributeValue")
-                } yield AttributeAssignment(id, category, issuer, dataType, attributeValue))
+                } yield AttributeAssignment(Symbol(id), category, issuer, dataType, attributeValue))
               }
             ).filter(_.isDefined).map (_.get)
 
@@ -121,7 +121,7 @@ private[dsl] trait BasicAccessControlDirectives {
               case Some(oid) =>
                 obligationProperties.get("fulfillOn") match {
                   case Some(oeffect) =>
-                    Some(Obligation(oid, mappedAttributeAssignments,
+                    Some(Obligation(Symbol(oid), mappedAttributeAssignments,
                       oeffect match {
                         case "Permit" => Effects.Permit
                         case "Deny" => Effects.Deny

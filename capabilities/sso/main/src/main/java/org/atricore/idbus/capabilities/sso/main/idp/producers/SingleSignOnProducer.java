@@ -1336,7 +1336,7 @@ public class SingleSignOnProducer extends SSOProducer {
             reqAuthnCtx = status.getAuthnRequest().getRequestedAuthnContext();
         }
         
-        logger.trace("Selecting Claims Endpoint preferently with authentication context " + reqAuthnCtx);
+        logger.trace("Selecting Claims Endpoint preferentially with authentication context " + reqAuthnCtx);
 
         // -------------------------------------------------------------------
         // Keep using current endpoint until we reach the MAX TRY COUNT for it

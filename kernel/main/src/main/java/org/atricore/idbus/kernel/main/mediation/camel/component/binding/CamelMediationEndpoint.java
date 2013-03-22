@@ -103,6 +103,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
         // TODO : PASS HEADERS ?!
         CamelMediationMessage in = new CamelMediationMessage();
         camelMediationExchange.setIn(in);
+        camelMediationExchange.setIn(in);
 
         return camelMediationExchange;
     }

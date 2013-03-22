@@ -274,5 +274,6 @@
         <module>main</module>
         <module>ui</module>
         <module>management</module>
+        <module>dsl</module>
     </modules>
 </project>
