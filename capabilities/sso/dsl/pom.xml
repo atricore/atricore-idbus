@@ -74,11 +74,13 @@
             <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sts</groupId>
             <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
             <scope>provided</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.planning</artifactId>

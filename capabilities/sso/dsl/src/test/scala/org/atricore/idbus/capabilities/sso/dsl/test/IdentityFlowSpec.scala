@@ -41,9 +41,11 @@ class IdentityFlowSpec extends Specification with IdentityFlowDSLTestSupport wit
     "handle correctly" in {
 
       val r1 =
-        withNoSession {
-          selectClaimChannel {
-              redirect(_, _)
+        logRequestResponse("") {
+          withNoSession {
+            selectClaimChannel {
+                redirect(_, _)
+            }
           }
         }
 

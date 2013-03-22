@@ -18,9 +18,7 @@
     </appender>
     -->
 
-    <logger name="akka" level="INFO" />
-    <logger name="org.eclipse.jetty" level="INFO" />
-    <logger name="org.atricore.proxy" level="DEBUG" />
+    <logger name="org.atricore.idbus.capabilities.sso.dsl" level="TRACE" />
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>
     </root>

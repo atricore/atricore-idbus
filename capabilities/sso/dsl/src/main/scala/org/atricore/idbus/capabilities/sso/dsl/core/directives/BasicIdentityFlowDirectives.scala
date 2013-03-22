@@ -51,6 +51,13 @@ private[dsl] trait BasicIdentityFlowDirectives {
 
   def filter9[A, B, C, D, E, F, G, H, I](filter: IdentityFlowRouteFilter[(A, B, C, D, E, F, G, H, I)]) = new IdentityRoute9(filter)
 
+  /**
+   * Creates an identity flow route that accepts all requests but applies the given transformation function to
+   * the IdentityFlowRequestContext.
+   */
+  def transformRequestContext(f: IdentityFlowRequestContext => IdentityFlowRequestContext) =
+    new IdentityRoute0(_ => new Pass(Product0, transform = f))
+
   implicit def pimpRouteWithConcatenation(route: IdentityFlowRoute) = new IdentityFlowRouteConcatenation(route: IdentityFlowRoute)
 
   class IdentityFlowRouteConcatenation(route: IdentityFlowRoute) {

@@ -29,6 +29,7 @@ package org.atricore.idbus.capabilities.sso.dsl.core.directives
 trait IdentityFlowDirectives
   extends MediationDirectives
   with BasicIdentityFlowDirectives
+  with DebuggingDirectives
 
 object IdentityFlowDirectives {
   def apply(): IdentityFlowDirectives = new IdentityFlowDirectives() { }

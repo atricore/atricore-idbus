@@ -47,6 +47,22 @@ case class IdentityFlowRequestContext(
 
   def withReject(f: Set[Rejection] => Unit) = copy(onReject = f)
 
+  /**
+   * Returns a copy of this context with the on response handler transformed by the given function.
+   */
+  def withOnResponseTransformed(f: (IdentityFlowResponse => Unit) => (IdentityFlowResponse => Unit)) = {
+    val transformed = f(onResponse)
+    if (transformed eq onResponse) this else copy(onResponse = transformed)
+  }
+
+  /**
+   * Returns a copy of this context with the on reject handler transformed by the given function.
+   */
+  def withOnRejectTransformed(f: (Set[Rejection] => Unit) => (Set[Rejection] => Unit)) = {
+    val transformed = f(onReject)
+    if (transformed eq onReject) this else copy(onReject = transformed)
+  }
+
 }
 
 
