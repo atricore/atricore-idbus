@@ -11,65 +11,56 @@
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.sso</groupId>
-    <artifactId>org.atricore.idbus.capabilities.sso.dsl</artifactId>
+    <artifactId>org.atricore.idbus.capabilities.sso.component.builtin</artifactId>
     <version>1.4.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Atricore IDBus :: Capability : SSO DSL</name>
+    <name>Atricore IDBus :: Capability : SSO Builtin Components</name>
 
     <dependencies>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.dsl</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.component.container</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-core</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.atricore.idbus.kernel</groupId>
-            <artifactId>org.atricore.idbus.kernel.main</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.atricore.idbus.kernel.common</groupId>
-            <artifactId>org.atricore.idbus.kernel.common.xmldsig</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.atricore.idbus.kernel.common</groupId>
-            <artifactId>org.atricore.idbus.kernel.common.samlr2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.atricore.idbus.kernel.common</groupId>
-            <artifactId>org.atricore.idbus.kernel.common.samlr11</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.atricore.idbus.kernel.common</groupId>
-            <artifactId>org.atricore.idbus.kernel.common.sso</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.atricore.idbus.kernel.common</groupId>
-            <artifactId>org.atricore.idbus.kernel.common.html</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.atricore.idbus.kernel.common</groupId>
-            <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.atricore.idbus.capabilities.sso</groupId>
-            <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>org.atricore.idbus.capabilities.sts</groupId>
-            <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>org.atricore.idbus.kernel</groupId>
-            <artifactId>org.atricore.idbus.kernel.planning</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -107,12 +98,6 @@
             <version>1.0.0</version>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core</artifactId>
-            <version>${camel.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2_2.9.1</artifactId>
@@ -154,15 +139,20 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>${project.artifactId};version=${project.version}</Export-Package>
+                        <Require-Bundle>
+                            org.atricore.idbus.capabilities.sso.dsl,
+                            org.atricore.idbus.bundles.scala-library-v2_9_1
+                        </Require-Bundle>
                         <Import-Package>
+                            !${project.artifactId},
+                            org.apache.aries.blueprint,
+                            org.osgi.service.blueprint.container,
+                            org.osgi.service.blueprint.reflect,
                             *
                         </Import-Package>
-                        <Export-Package>
-                            ${project.artifactId},
-                            org.atricore.idbus.capabilities.sso.dsl.core,
-                            org.atricore.idbus.capabilities.sso.dsl.core.directives,
-                            org.atricore.idbus.capabilities.sso.dsl.util
-                        </Export-Package>
+                        <Private-Package>
+                            ${project.artifactId}.impl
+                        </Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

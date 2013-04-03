@@ -18,7 +18,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.atricore.idbus.capabilities.sso.dsl.test
+package org.atricore.idbus.capabilities.sso.component.builtin.test
 
 import org.specs2.mutable._
 import org.atricore.idbus.capabilities.sso.dsl.core.directives.IdentityFlowDirectives
@@ -31,11 +31,17 @@ import org.atricore.idbus.capabilities.sso.dsl.{Redirect, IdentityFlowResponse, 
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState
+import org.atricore.idbus.capabilities.sso.component.builtin.MediationDirectives
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass
 
 /**
  * Simple identity flow route tester.
  */
-class IdentityFlowSpec extends Specification with IdentityFlowDSLTestSupport with IdentityFlowDirectives with Logging {
+class IdentityFlowSpec extends Specification
+  with IdentityFlowDSLTestSupport
+  with IdentityFlowDirectives
+  with MediationDirectives
+  with Logging {
 
   "The identity flow definition" should {
     "handle correctly" in {
@@ -43,8 +49,11 @@ class IdentityFlowSpec extends Specification with IdentityFlowDSLTestSupport wit
       val r1 =
         logRequestResponse("") {
           withNoSession {
-            selectClaimChannel {
-                redirect(_, _)
+            pendingRetries(2) {
+              retryToCollectClaimsOnSameClaimChannel
+            } ~
+            pickClaimChannel {
+              collectClaims(_, _)
             }
           }
         }
@@ -56,8 +65,8 @@ class IdentityFlowSpec extends Specification with IdentityFlowDSLTestSupport wit
 
         // claim channel and endpoints
         val claimChannel1 = newClaimChannel("cc-1")
-        val claimCh1Ep1 = newIdentityMediationEndpoint("cc-1-ep1", SSOBinding.SSO_LOCAL.getValue)
-        val claimCh1Ep2 = newIdentityMediationEndpoint("cc-1-ep2", SSOBinding.SSO_LOCAL.getValue)
+        val claimCh1Ep1 = newIdentityMediationEndpoint("cc-1-ep1", SSOBinding.SSO_LOCAL, AuthnCtxClass.UNSPECIFIED_AUTHN_CTX)
+        val claimCh1Ep2 = newIdentityMediationEndpoint("cc-1-ep2", SSOBinding.SSO_LOCAL, AuthnCtxClass.PASSWORD_AUTHN_CTX)
         claimChannel1.getEndpoints.add(claimCh1Ep1)
         claimChannel1.getEndpoints.add(claimCh1Ep2)
 
@@ -87,10 +96,26 @@ class IdentityFlowSpec extends Specification with IdentityFlowDSLTestSupport wit
       response2.response.get.statusCode.asInstanceOf[Redirect].endpoint.getName mustEqual "cc-1-ep2"
 
       val response3 = test(ctx, r1, newExchange( newSecurityContext("sp1"),as))
+      response3.response.get.statusCode.isSuccess must beTrue
+      response3.response.get.statusCode.value mustEqual 1
+      response3.response.get.statusCode.asInstanceOf[Redirect].channel.getName mustEqual "cc-1"
+      response3.response.get.statusCode.asInstanceOf[Redirect].endpoint.getName mustEqual "cc-1-ep2"
 
-      response3.response must beNone
-      response3.rejections must beSome
-      response3.rejections must beSome(Set(NoMoreClaimEndpoints))
+      val response4 = test(ctx, r1, newExchange( newSecurityContext("sp1"),as))
+      response4.response.get.statusCode.isSuccess must beTrue
+      response4.response.get.statusCode.value mustEqual 1
+      response4.response.get.statusCode.asInstanceOf[Redirect].channel.getName mustEqual "cc-1"
+      response4.response.get.statusCode.asInstanceOf[Redirect].endpoint.getName mustEqual "cc-1-ep2"
+
+      val response5 = test(ctx, r1, newExchange( newSecurityContext("sp1"),as))
+      response5.response.get.statusCode.isSuccess must beTrue
+      response5.response.get.statusCode.value mustEqual 1
+      response5.response.get.statusCode.asInstanceOf[Redirect].channel.getName mustEqual "cc-1"
+      response5.response.get.statusCode.asInstanceOf[Redirect].endpoint.getName mustEqual "cc-1-ep2"
+
+      val response6 = test(ctx, r1, newExchange( newSecurityContext("sp1"),as))
+      response6.rejections must beSome
+      response6.rejections must beSome(Set(NoMoreClaimEndpoints))
 
     }
 

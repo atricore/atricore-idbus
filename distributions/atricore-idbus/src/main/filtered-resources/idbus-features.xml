@@ -103,6 +103,10 @@
     </feature>
 
     <feature name="atricore-saml2" version="${version}">
+        <feature version="${version}">scala</feature>
+        <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.dsl/${idbus.cap.sso.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.component.container/${idbus.cap.sso.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.component.builtin/${idbus.cap.sso.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.main/${idbus.cap.sso.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.support/${idbus.cap.sso.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.management/${idbus.cap.sso.version}</bundle>
@@ -349,9 +353,15 @@
         <bundle start-level="34">mvn:org.ops4j.base/ops4j-base/${ops4j.base.version}</bundle>
     </feature>
 
+    <feature name="scala" version="${version}">
+        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-library-v2_9_1/${idbus.bundle.scala-library-v2_9_1.version}</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-compiler-v2_9_1/${idbus.bundle.scala-compiler-v2_9_1.version}</bundle>
+    </feature>
+
     <feature name="mysql-connector-java" version="5.1.10">
         <bundle start-level="40">mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.fragment.mysql-connector-java_v5_1_10/${idbus.fragment.mysql-connector-java_v5_1_10.version}</bundle>
     </feature>
+
 
 </features>
 

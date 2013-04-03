@@ -41,11 +41,11 @@ private[dsl] trait DebuggingDirectives extends Logging {
     transformRequestContext {
       ctx =>
         val request2Show = showRequest(ctx.request)
-        log.debug("Request: %s".format(request2Show))
+        log.debug("Request%s %s".format(mark, request2Show))
         ctx.withOnResponseTransformed {
           f: (IdentityFlowResponse => Unit) =>
             response =>
-              log.debug("Completed %s with %s".format(request2Show,showResponse(response)))
+              log.debug("Completed%s %s with %s".format(mark, request2Show,showResponse(response)))
               f(response)
         }.withOnRejectTransformed {
           f: (Set[Rejection] => Unit) =>

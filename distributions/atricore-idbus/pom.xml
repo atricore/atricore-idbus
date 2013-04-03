@@ -140,7 +140,8 @@
         <idbus.bundle.wadi-v2_1_2.version>1.4.0-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
         <idbus.bundle.apacheds-v1_5_7.server.version>1.4.0-SNAPSHOT</idbus.bundle.apacheds-v1_5_7.server.version>
         <idbus.bundle.ini4j-v0_5_1.version>1.4.0-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
-
+        <idbus.bundle.scala-library-v2_9_1.version>1.4.0-SNAPSHOT</idbus.bundle.scala-library-v2_9_1.version>
+        <idbus.bundle.scala-compiler-v2_9_1.version>1.4.0-SNAPSHOT</idbus.bundle.scala-compiler-v2_9_1.version>
 
         <idbus.fragment.mysql-connector-java_v5_1_10.version>1.4.0-SNAPSHOT</idbus.fragment.mysql-connector-java_v5_1_10.version>
         <idbus.connectors.jdoidentityvault.version>1.4.0-SNAPSHOT</idbus.connectors.jdoidentityvault.version>
@@ -1525,7 +1526,28 @@
             <version>${idbus.bundle.ini4j-v0_5_1.version}</version>
             <type>pom</type>
         </dependency>
-
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.scala-library-v2_9_1</artifactId>
+            <version>${idbus.bundle.scala-library-v2_9_1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.scala-library-v2_9_1</artifactId>
+            <version>${idbus.bundle.scala-library-v2_9_1.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.scala-compiler-v2_9_1</artifactId>
+            <version>${idbus.bundle.scala-compiler-v2_9_1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.scala-compiler-v2_9_1</artifactId>
+            <version>${idbus.bundle.scala-compiler-v2_9_1.version}</version>
+            <type>pom</type>
+        </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.josso</groupId>
             <artifactId>org.atricore.idbus.capabilities.josso.main</artifactId>
@@ -1640,11 +1662,49 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.dsl</artifactId>
+            <version>${idbus.cap.sso.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.dsl</artifactId>
+            <version>${idbus.cap.sso.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.component.container</artifactId>
+            <version>${idbus.cap.sso.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.component.container</artifactId>
+            <version>${idbus.cap.sso.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.component.builtin</artifactId>
+            <version>${idbus.cap.sso.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.component.builtin</artifactId>
+            <version>${idbus.cap.sso.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.component</artifactId>
+            <version>${idbus.cap.sso.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>sso</artifactId>
             <version>${idbus.cap.sso.version}</version>
             <type>pom</type>
         </dependency>
-
         <dependency>
             <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
             <artifactId>org.atricore.idbus.capabilities.spmlr2.main</artifactId>

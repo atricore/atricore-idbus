@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.atricore.idbus.capabilities.sso</groupId>
+        <artifactId>sso</artifactId>
+        <version>1.4.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.atricore.idbus.capabilities.sso</groupId>
+    <artifactId>org.atricore.idbus.capabilities.sso.component</artifactId>
+    <version>1.4.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Atricore IDBus :: Capability : SSO Component POM</name>
+
+    <modules>
+      <module>container</module>
+      <module>builtin</module>
+    </modules>
+</project>

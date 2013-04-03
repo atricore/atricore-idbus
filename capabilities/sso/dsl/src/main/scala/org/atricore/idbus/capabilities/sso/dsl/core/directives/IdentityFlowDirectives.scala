@@ -27,8 +27,7 @@ package org.atricore.idbus.capabilities.sso.dsl.core.directives
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
 trait IdentityFlowDirectives
-  extends MediationDirectives
-  with BasicIdentityFlowDirectives
+  extends BasicIdentityFlowDirectives
   with DebuggingDirectives
 
 object IdentityFlowDirectives {

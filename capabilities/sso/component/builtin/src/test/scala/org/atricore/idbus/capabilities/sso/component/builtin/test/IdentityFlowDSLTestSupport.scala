@@ -18,7 +18,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.atricore.idbus.capabilities.sso.dsl.test
+package org.atricore.idbus.capabilities.sso.component.builtin.test
 
 import org.atricore.idbus.kernel.main.mediation.{MediationMessageImpl, MediationStateImpl}
 import org.atricore.idbus.kernel.main.mediation.state.LocalStateImpl
@@ -35,6 +35,8 @@ import org.apache.camel.{Message, CamelContext, Exchange, Endpoint}
 import org.atricore.idbus.capabilities.sso.dsl.IdentityFlowResponse
 import org.atricore.idbus.capabilities.sso.dsl.core._
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 
 /**
  * Base class for identity flow testers
@@ -104,11 +106,12 @@ private[test] trait IdentityFlowDSLTestSupport {
     claimChannel
   }
 
-  protected def newIdentityMediationEndpoint(name: String, binding: String) = {
+  protected def newIdentityMediationEndpoint(name: String, binding: SSOBinding, epType : AuthnCtxClass ) = {
 
     val endpoint = new IdentityMediationEndpointImpl
     endpoint.setName(name)
-    endpoint.setBinding(binding)
+    endpoint.setBinding(binding.getValue)
+    endpoint.setType(epType.getValue)
     endpoint
   }
 

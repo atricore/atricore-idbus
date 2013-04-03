@@ -19,9 +19,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.capabilities.sso.dsl.core.directives
+package org.atricore.idbus.capabilities.sso.component.builtin
 
 import org.atricore.idbus.capabilities.sso.dsl.core._
+import directives.BasicIdentityFlowDirectives
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.{CamelMediationMessage, CamelMediationExchange}
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel
@@ -42,7 +43,7 @@ import org.atricore.idbus.capabilities.sso.dsl.{Redirect, IdentityFlowSuccess, I
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-private[dsl] trait MediationDirectives {
+private[builtin] trait MediationDirectives {
   this: BasicIdentityFlowDirectives =>
 
   def mediationState =
@@ -114,13 +115,15 @@ private[dsl] trait MediationDirectives {
   def withNoSession = {
     filter {
       ctx =>
-        securityContext.filter(ctx).flatMap(
-          secCtx =>
-            Option(secCtx._1.getSessionIndex) match {
+        securityContext.filter(ctx) match {
+          case Pass(values, transform) =>
+            Option(values._1.getSessionIndex) match {
               case Some(_) => Reject(SessionExists)
               case _ => Pass
             }
-        )
+          case Reject(_) =>
+            Pass
+        }
     }
   }
 
@@ -145,12 +148,58 @@ private[dsl] trait MediationDirectives {
     }
   }
 
-  def selectClaimChannel = {
+  def pendingRetries(maxRetries : Int = 50) = {
+    filter {
+      ctx =>
+        withAuthenticationState.filter(ctx) match {
+          case Pass(values, transform) =>
+            val as = values._1
+            Option(as.getCurrentClaimsEndpoint) match {
+              case Some(currentClaimsEndpoint) =>
+                val authnCtxClass = AuthnCtxClass.asEnum(currentClaimsEndpoint.getType)
+                if (!authnCtxClass.isPassive && as.getCurrentClaimsEndpointTryCount <= maxRetries) {
+                  Pass
+                } else {
+                  as.getUsedClaimsEndpoints.add(currentClaimsEndpoint.getName)
+                  as.setCurrentClaimsEndpoint(null)
+                  as.setCurrentClaimsEndpointTryCount(0)
+                  Reject()
+                }
+              case None =>
+                Reject()
+            }
+        }
+    }
+  }
+
+  def retryToCollectClaimsOnSameClaimChannel : IdentityFlowRoute = {
+    ctx =>
+      withAuthenticationState.filter(ctx) match {
+        case Pass(values, transform) =>
+          val as = values._1
+          val spChannel = ctx.request.channel.asInstanceOf[SPChannel]
+          val claimChannels = spChannel.getClaimProviders
+
+          for (claimChannel <- claimChannels) {
+            for (claimEndpoint <- claimChannel.getEndpoints) {
+              if (claimEndpoint.getName == as.getCurrentClaimsEndpoint.getName) {
+                as.setCurrentClaimsEndpointTryCount(as.getCurrentClaimsEndpointTryCount + 1)
+                ctx.respond(IdentityFlowResponse(Redirect(claimChannel, claimEndpoint)))
+              }
+            }
+          }
+          Reject()
+        case Reject(_) => Reject(NoAuthenticationStateAvailable)
+      }
+  }
+
+  def pickClaimChannel = {
     filter2 {
       ctx =>
         withAuthenticationState.filter(ctx) match {
           case Pass(values, transform) =>
             val as = values._1
+
             Option(as.getAuthnRequest) match {
               case Some(authnRequest) =>
                 val selectedEndpoint =
@@ -196,10 +245,16 @@ private[dsl] trait MediationDirectives {
 
   }
 
-  def redirect(channel : Channel, endpoint : IdentityMediationEndpoint) : IdentityFlowRoute = {
+  def collectClaims(channel: Channel, endpoint: IdentityMediationEndpoint): IdentityFlowRoute = {
     ctx =>
-      ctx.respond(IdentityFlowResponse( Redirect(channel, endpoint) ))
-
+      withAuthenticationState.filter(ctx) match {
+        case Pass(values, transform) =>
+          val as = values._1
+          as.setCurrentClaimsEndpoint(endpoint)
+          as.setCurrentClaimsEndpointTryCount(0);
+          ctx.respond(IdentityFlowResponse(Redirect(channel, endpoint)))
+        case Reject(_) => Reject(NoAuthenticationStateAvailable)
+      }
   }
 
 }
