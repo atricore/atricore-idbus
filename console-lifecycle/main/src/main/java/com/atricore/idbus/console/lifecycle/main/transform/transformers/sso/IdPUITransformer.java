@@ -107,7 +107,8 @@ public class IdPUITransformer extends AbstractTransformer {
 
             for (FederatedConnection fc : idp.getFederatedConnectionsB()) {
                 if (fc.getRoleA() instanceof InternalSaml2ServiceProvider) {
-                    InternalSaml2ServiceProvider spTmp = (InternalSaml2ServiceProvider) fc.getRoleB();
+                    //InternalSaml2ServiceProvider spTmp = (InternalSaml2ServiceProvider) fc.getRoleB();
+                    InternalSaml2ServiceProvider spTmp = (InternalSaml2ServiceProvider) fc.getRoleA();
 
                     if (spTmp.getServiceConnection().getResource() instanceof SelfServicesResource) {
                         sp = spTmp;

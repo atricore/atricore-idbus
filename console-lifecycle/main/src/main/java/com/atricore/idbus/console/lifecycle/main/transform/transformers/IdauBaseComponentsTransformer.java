@@ -376,6 +376,17 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         idauBeansOsgi.getImportsAndAliasAndBeen().add(monitoringServer);
 
         // ----------------------------------------
+        // Container for Identity Flow Components
+        // ----------------------------------------
+        Reference identityFlowContainer = new Reference();
+        identityFlowContainer.setId("identity-flow-container");
+        identityFlowContainer.setCardinality("1..1");
+        identityFlowContainer.setTimeout(60L);
+        identityFlowContainer.setInterface("org.atricore.idbus.capabilities.sso.component.container.IdentityFlowContainer");
+
+        idauBeansOsgi.getImportsAndAliasAndBeen().add(identityFlowContainer);
+
+        // ----------------------------------------
         // Store beans as module resources
         // ----------------------------------------
 
