@@ -37,13 +37,14 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
 import org.atricore.idbus.kernel.main.mediation.{Channel, MediationState}
 import org.atricore.idbus.capabilities.sso.dsl.{Redirect, IdentityFlowSuccess, IdentityFlowResponse}
+import org.atricore.idbus.capabilities.sso.dsl.util.Logging
 
 /**
  * Identity Flow directives for handling
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-private[builtin] trait MediationDirectives {
+private[builtin] trait MediationDirectives extends Logging {
   this: BasicIdentityFlowDirectives =>
 
   def mediationState =
@@ -183,6 +184,9 @@ private[builtin] trait MediationDirectives {
           for (claimChannel <- claimChannels) {
             for (claimEndpoint <- claimChannel.getEndpoints) {
               if (claimEndpoint.getName == as.getCurrentClaimsEndpoint.getName) {
+                log.debug(
+                  "Retrying claim endpoint " + claimEndpoint.getName + ". Already tried " +
+                    as.getCurrentClaimsEndpointTryCount + " times")
                 as.setCurrentClaimsEndpointTryCount(as.getCurrentClaimsEndpointTryCount + 1)
                 ctx.respond(IdentityFlowResponse(Redirect(claimChannel, claimEndpoint)))
               }
@@ -233,6 +237,7 @@ private[builtin] trait MediationDirectives {
                 selectedEndpoint match {
                   case Some((ch, ep)) =>
                     as.getUsedClaimsEndpoints.add(ep.getName)
+                    log.debug("Picked claim channel " + ch.getName + ", endpoint " + ep.getName)
                     Pass(ch, ep)
                   case _ => Reject(NoMoreClaimEndpoints)
                 }
