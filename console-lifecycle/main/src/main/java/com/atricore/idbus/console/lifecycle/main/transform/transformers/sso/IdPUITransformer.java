@@ -135,7 +135,7 @@ public class IdPUITransformer extends AbstractTransformer {
 
         idpUiBeans.getImportsAndAliasAndBeen().add(idpUiApp);
 
-        // App Configuration
+        // SSO UI App Configuration
         Bean idpAppCfgBean = newBean(idpUiBeans, idpUiApp.getId() + "-cfg", "org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
         setPropertyValue(idpAppCfgBean, "appName", idpUiApp.getId());
         setPropertyValue(idpAppCfgBean, "mountPoint", idpUiApp.getMountPoint());
@@ -150,13 +150,40 @@ public class IdPUITransformer extends AbstractTransformer {
             setPropertyValue(idpAppCfgBean, "selfServicesSharedSecret", idp.getOauth2Key());
         }
 
-        // Export App Configuration
+        // Export SSO UI App Configuration
         Service idpAppCfgBeanOsgi = new Service();
         idpAppCfgBeanOsgi.setId(idpAppCfgBean.getName() + "-osgi");
         idpAppCfgBeanOsgi.setRef(idpAppCfgBean.getName());
         idpAppCfgBeanOsgi.setInterface("org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
 
         idpUiBeans.getImportsAndAliasAndBeen().add(idpAppCfgBeanOsgi);
+
+        // Identity Confirmation UI
+        Application idpIdConfUiApp = new Application();
+        idpIdConfUiApp.setId(normalizeBeanName(ida.getName() + "-" + idp.getName() + "-idconf-ui"));
+        idpIdConfUiApp.setApplicationName(ida.getName().toLowerCase() + "-" + idp.getName().toLowerCase() + "-idconf-ui");
+        idpIdConfUiApp.setClazz("org.atricore.idbus.capabilities.idconfirmation.ui.internal.IdentityConfirmationApplication");
+        idpIdConfUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/" + idp.getName().toUpperCase() + "/IDCONF");
+        idpIdConfUiApp.setInjectionSource("spring");
+
+        idpUiBeans.getImportsAndAliasAndBeen().add(idpIdConfUiApp);
+
+        // Identity Confirmation UI App Configuration
+        Bean idpIdConfCfgBean = newBean(idpUiBeans, idpIdConfUiApp.getId() + "-cfg", "org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
+        setPropertyValue(idpIdConfCfgBean, "appName", idpIdConfUiApp.getId());
+        setPropertyValue(idpIdConfCfgBean, "mountPoint", idpIdConfUiApp.getMountPoint());
+        setPropertyValue(idpIdConfCfgBean, "brandingId", brandingId);
+
+        setPropertyValue(idpIdConfCfgBean, "unitName", ida.getName() + "-mediation-unit");
+        setPropertyValue(idpIdConfCfgBean, "idpName", normalizeBeanName(idp.getName()));
+
+        // Export Identity Confirmation UI App Configuration
+        Service idpIdConfCfgBeanOsgi = new Service();
+        idpIdConfCfgBeanOsgi.setId(idpIdConfCfgBean.getName() + "-osgi");
+        idpIdConfCfgBeanOsgi.setRef(idpIdConfCfgBean.getName());
+        idpIdConfCfgBeanOsgi.setInterface("org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
+
+        idpUiBeans.getImportsAndAliasAndBeen().add(idpIdConfCfgBeanOsgi);
 
     }
 

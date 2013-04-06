@@ -487,6 +487,8 @@
                            org.atricore.idbus.capabilities.openid.main,
                            org.atricore.idbus.capabilities.openid.ui,
                            org.atricore.idbus.capabilities.domino.main,
+                           org.atricore.idbus.capabilities.idconfirmation.main,
+                           org.atricore.idbus.capabilities.idconfirmation.ui,
                            org.atricore.idbus.connectors.jdoidentityvault,
                            org.atricore.idbus.idojos.dbidentitystore,
                            org.atricore.idbus.idojos.memorysessionstore,
