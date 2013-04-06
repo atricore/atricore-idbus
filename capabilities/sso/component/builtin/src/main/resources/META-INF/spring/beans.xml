@@ -7,8 +7,8 @@
         <constructor-arg type="java.lang.String" index="0">
             <value>simple-claim-channel-selection</value>
         </constructor-arg>
-        <constructor-arg type="java.lang.String" index="1">
-            <value>:</value>
+        <constructor-arg type="int" index="1">
+            <value>50</value>
         </constructor-arg>
     </bean>
 </beans>

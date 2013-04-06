@@ -67,6 +67,7 @@
         <module>capabilities/atricoreid</module>
 
         <module>capabilities/client-cert-authn</module>
+        <module>capabilities/idconfirmation</module>
 
         <module>idojos/idbus-db-identitystore</module>
         <module>idojos/idbus-db-sessionstore</module>

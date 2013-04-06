@@ -43,6 +43,7 @@
         <ops4j.paxwicket.version>2.1.0</ops4j.paxwicket.version>
         <!--apache-wicket.version>1.4.19</apache-wicket.version-->
         <apache-wicket.version>6.5.0</apache-wicket.version>
+        <pax.web.version>0.7.2</pax.web.version>
     </properties>
 
     <dependencies>
@@ -228,6 +229,13 @@
             
         </dependency>
 
+        <!-- PAX WEB Dependencies -->
+        <dependency>
+            <groupId>org.ops4j.pax.web</groupId>
+            <artifactId>pax-web-api</artifactId>
+            <version>${pax.web.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
