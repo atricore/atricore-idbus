@@ -438,7 +438,7 @@
         <property name="id" value="liferay6"/>
         <property name="family" value="liferay"/>
         <property name="platformName" value="Liferay Portal"/>
-        <property name="version" value="5.2.x"/>
+        <property name="version" value="6.x"/>
 
         <property name="libDir" value="${target}/WEB-INF/lib"/>
         <property name="configDir" value="${target}/WEB-INF/classes"/>

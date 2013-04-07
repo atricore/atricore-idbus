@@ -62,6 +62,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const JOSSO1_RESOURCE_REMOVE:String = "josso1ResourceRemove";
     public static const JOSSO2_RESOURCE_REMOVE:String = "josso2ResourceRemove";
     public static const JBOSSEPP_RESOURCE_REMOVE:String = "jbosseppResourceRemove";
+    public static const LIFERAY_RESOURCE_REMOVE:String = "liferayResourceRemove";
     public static const SELFSERVICES_RESOURCE_REMOVE:String = "selfServicesResourceRemove";
 //    public static const IDP_CHANNEL_REMOVE:String = "idpChannelRemove";
 //    public static const SP_CHANNEL_REMOVE:String = "spChannelRemove";
@@ -204,6 +205,7 @@ public class ApplicationFacade extends BaseAppFacade {
 //    public static const CREATE_SP_CHANNEL_ELEMENT:String = "createSpChannelElement";
 //    public static const REMOVE_SP_CHANNEL_ELEMENT:String = "removeSpChannelElement";
     public static const REMOVE_JBOSSEPP_RESOURCE_ELEMENT:String = "removeJBossEPPResourceElement";
+    public static const REMOVE_LIFERAY_RESOURCE_ELEMENT:String = "removeLiferayResourceElement";
     public static const REMOVE_SELFSERVICES_RESOURCE_ELEMENT:String = "removeSelfServicesResourceElement";
     public static const CREATE_DB_IDENTITY_SOURCE_ELEMENT:String = "createDbIdentitySourceElement";
     public static const REMOVE_IDENTITY_SOURCE_ELEMENT:String = "removeIdentitySourceElement";
@@ -227,7 +229,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWeblogicExecutionEnvironmentElement";
     public static const CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT:String = "createTomcatExecutionEnvironmentElement";
     public static const CREATE_JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJBossPortalExecutionEnvironmentElement";
-    public static const CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT:String = "createLiferayExecutionEnvironmentElement";
+    public static const CREATE_LIFERAY_RESOURCE_ELEMENT:String = "createLiferayResourceElement";
     public static const CREATE_JBOSSEPP_RESOURCE_ELEMENT:String = "createJBossEPPResourceElement";
     public static const CREATE_SELFSERVICES_RESOURCE_ELEMENT:String = "createSelfServicesResourceElement"
     public static const CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWebsphereExecutionEnvironmentElement";

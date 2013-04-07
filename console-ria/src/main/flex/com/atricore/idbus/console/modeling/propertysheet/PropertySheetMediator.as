@@ -156,6 +156,7 @@ import com.atricore.idbus.console.services.dto.JOSSOActivation;
 import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
+import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.LiferayResource;
 import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.MicroStrategyResource;
@@ -519,8 +520,6 @@ public class PropertySheetMediator extends IocMediator {
                         enableJBossEPPResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is SelfServicesResource) {
                         enableSelfServicesResourcePropertyTabs();
-                    } else if (_currentIdentityApplianceElement is JOSSO1Resource) {
-                        enableJOSSO1ResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is JOSSO2Resource) {
                         enableJOSSO2ResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is SharepointResource) {
@@ -529,6 +528,10 @@ public class PropertySheetMediator extends IocMediator {
                         enableColdfusionExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is MicroStrategyResource) {
                         enableMicroStrategyExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is LiferayResource) {
+                        enableLiferayResourcePropertyTabs();
+                    } else if (_currentIdentityApplianceElement is JOSSO1Resource) {
+                        enableJOSSO1ResourcePropertyTabs();
                     }
                 } else if (_currentIdentityApplianceElement is FederatedConnection) {
                     enableFederatedConnectionPropertyTabs();
@@ -548,7 +551,7 @@ public class PropertySheetMediator extends IocMediator {
                     } else if (_currentIdentityApplianceElement is JBossPortalResource) {
                         enableJBossPortalExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is LiferayResource) {
-                        enableLiferayExecEnvPropertyTabs();
+                        enableLiferayResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is WASCEExecutionEnvironment) {
                         enableWASCEExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is JbossExecutionEnvironment){
@@ -2177,8 +2180,8 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleResourceExportAgentConfigClick(event:MouseEvent):void {
         if (_currentIdentityApplianceElement is ServiceResource) {
-            var res = _currentIdentityApplianceElement as ServiceResource;
-            var ee = res.activation.executionEnv;
+            var res:ServiceResource = _currentIdentityApplianceElement as ServiceResource;
+            var ee:ExecutionEnvironment = res.activation.executionEnv;
             var applianceId:String = projectProxy.currentIdentityAppliance.id.toString();
             sendNotification(ApplicationFacade.EXPORT_AGENT_CONFIG, [applianceId, _currentIdentityApplianceElement.name,
                 ee.platformId]);
@@ -4792,9 +4795,11 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
             _josso1ResourceCoreSection.partnerAppLocationDomain.text = location.host;
-            _josso1ResourceCoreSection.partnerAppLocationPort.text = location.port.toString() != "0" ? location.port.toString() : "";
-            _josso1ResourceCoreSection.partnerAppLocationContext.text = location.context;
-            _josso1ResourceCoreSection.partnerAppLocationPath.text = location.uri;
+            if (location != null) {
+                _josso1ResourceCoreSection.partnerAppLocationPort.text = location.port.toString() != "0" ? location.port.toString() : "";
+                _josso1ResourceCoreSection.partnerAppLocationContext.text = location.context;
+                _josso1ResourceCoreSection.partnerAppLocationPath.text = location.uri;
+            }
 
             var ignoredWebResources:String = "";
             if (josso1Resource.ignoredWebResources != null) {
@@ -5994,7 +5999,7 @@ public class PropertySheetMediator extends IocMediator {
         _dirty = false;
     }
 
-    private function enableLiferayExecEnvPropertyTabs():void {
+    private function enableLiferayResourcePropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();
 
         var corePropertyTab:Group = new Group();
@@ -6010,37 +6015,55 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
-        _liferayResourceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleLiferayExecEnvCorePropertyTabCreationComplete);
-        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleLiferayExecEnvCorePropertyTabRollOut);
+        _liferayResourceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleLiferayResourceCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleLiferayResourceCorePropertyTabRollOut);
 
-        // Exec.Environment Activation Tab
-        var execEnvActivationPropertyTab:Group = new Group();
-        execEnvActivationPropertyTab.layoutDirection = LayoutDirection.LTR;
-        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
-        execEnvActivationPropertyTab.name = "Activation";
-        execEnvActivationPropertyTab.width = Number("100%");
-        execEnvActivationPropertyTab.height = Number("100%");
-        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+        // Activation Tab
+        var resourceActivationTab:Group = new Group();
+        resourceActivationTab.layoutDirection = LayoutDirection.LTR;
+        resourceActivationTab.id = "propertySheetActivationSection";
+        resourceActivationTab.name = "Activation";
+        resourceActivationTab.width = Number("100%");
+        resourceActivationTab.height = Number("100%");
+        resourceActivationTab.setStyle("borderStyle", "solid");
 
-        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
-        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
-        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
-        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
-
+        _resourceActivateSection = new ResourceActivationSection();
+        resourceActivationTab.addElement(_resourceActivateSection);
+        _propertySheetsViewStack.addNewChild(resourceActivationTab);
+        _resourceActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleResourceActivationPropertyTabCreationComplete);
+        resourceActivationTab.addEventListener(MouseEvent.ROLL_OUT, handleResourceActivationPropertyTabRollOut);
     }
 
-    private function handleLiferayExecEnvCorePropertyTabCreationComplete(event:Event):void {
+    private function handleLiferayResourceCorePropertyTabCreationComplete(event:Event):void {
         var liferayResource:LiferayResource = projectProxy.currentIdentityApplianceElement as LiferayResource;
+        var liferayEE:LiferayExecutionEnvironment = liferayResource.activation.executionEnv as LiferayExecutionEnvironment ;
 
         if (liferayResource != null) {
             // bind view
             _liferayResourceCoreSection.executionEnvironmentName.text = liferayResource.name;
             _liferayResourceCoreSection.executionEnvironmentDescription.text = liferayResource.description;
 
-            for (var i:int=0; i < _liferayResourceCoreSection.selectedHost.dataProvider.length; i++) {
-                if (_liferayResourceCoreSection.selectedHost.dataProvider[i].data == liferayResource.type.toString()) {
-                    _liferayResourceCoreSection.selectedHost.selectedIndex = i;
+
+            var location:Location = liferayResource.partnerAppLocation;
+            if (location == null)
+                location = new Location();
+
+            for (var i:int = 0; i < _liferayResourceCoreSection.resourceProtocol.dataProvider.length; i++) {
+                if (location != null && location.protocol == _liferayResourceCoreSection.resourceProtocol.dataProvider[i].label) {
+                    _liferayResourceCoreSection.resourceProtocol.selectedIndex = i;
+                    break;
+                }
+            }
+
+            _liferayResourceCoreSection.resourceDomain.text = location.host;
+            _liferayResourceCoreSection.resourcePort.text = location.port.toString() != "0" ? location.port.toString() : "";
+            _liferayResourceCoreSection.resourceContext.text = location.context;
+            _liferayResourceCoreSection.resourcePath.text = location.uri;
+
+
+            for (var j:int=0; j < _liferayResourceCoreSection.selectedHost.dataProvider.length; j++) {
+                if (_liferayResourceCoreSection.selectedHost.dataProvider[j].data == liferayEE.type.toString()) {
+                    _liferayResourceCoreSection.selectedHost.selectedIndex = j;
                     break;
                 }
             }
@@ -6051,19 +6074,19 @@ public class PropertySheetMediator extends IocMediator {
             }
 
 
-            _liferayResourceCoreSection.homeDirectory.text = liferayResource.installUri;
-            if (liferayResource.type.name == ExecEnvType.REMOTE.name)
-                _liferayResourceCoreSection.location.text = liferayResource.location;
+            _liferayResourceCoreSection.homeDirectory.text = liferayEE.installUri;
+            if (liferayEE.type.name == ExecEnvType.REMOTE.name)
+                _liferayResourceCoreSection.location.text = liferayEE.location;
             _locationValidator = new URLValidator();
             _locationValidator.required = true;
 
-            for (var j:int=0; j < _liferayResourceCoreSection.containerType.dataProvider.length; j++){
-                if (_liferayResourceCoreSection.containerType.dataProvider[j].data == liferayResource.containerType) {
-                    _liferayResourceCoreSection.containerType.selectedIndex = j;
+            for (var k:int=0; k < _liferayResourceCoreSection.containerType.dataProvider.length; k++){
+                if (_liferayResourceCoreSection.containerType.dataProvider[k].data == liferayEE.containerType) {
+                    _liferayResourceCoreSection.containerType.selectedIndex = k;
                     break;
                 }
             }
-            _liferayResourceCoreSection.containerPath.text = liferayResource.containerPath;
+            _liferayResourceCoreSection.containerPath.text = liferayEE.containerPath;
 
             _liferayResourceCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _liferayResourceCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -6084,7 +6107,7 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function handleLiferayExecEnvCorePropertyTabRollOut(e:Event):void {
+    private function handleLiferayResourceCorePropertyTabRollOut(e:Event):void {
         trace(e);
         _liferayResourceCoreSection.homeDirectory.errorString = "";
         _liferayResourceCoreSection.location.errorString = "";
@@ -6123,20 +6146,40 @@ public class PropertySheetMediator extends IocMediator {
     private function liferaySave(): void {
          // bind model
         var liferayResource:LiferayResource = projectProxy.currentIdentityApplianceElement as LiferayResource;
+        var liferayEE:LiferayExecutionEnvironment = liferayResource.activation.executionEnv as LiferayExecutionEnvironment;
         liferayResource.name = _liferayResourceCoreSection.executionEnvironmentName.text;
         liferayResource.description = _liferayResourceCoreSection.executionEnvironmentDescription.text;
-        liferayResource.platformId = "liferay";
 
-        liferayResource.type = ExecEnvType.valueOf(_liferayResourceCoreSection.selectedHost.selectedItem.data);
-        liferayResource.installUri = _liferayResourceCoreSection.homeDirectory.text;
-        if (liferayResource.type.name == ExecEnvType.REMOTE.name) {
-            liferayResource.location = _liferayResourceCoreSection.location.text;
+
+
+        liferayEE.type = ExecEnvType.valueOf(_liferayResourceCoreSection.selectedHost.selectedItem.data);
+        liferayEE.installUri = _liferayResourceCoreSection.homeDirectory.text;
+        if (liferayEE.type.name == ExecEnvType.REMOTE.name) {
+            liferayEE.location = _liferayResourceCoreSection.location.text;
         } else {
-            liferayResource.location = null;
+            liferayEE.location = null;
         }
 
-        liferayResource.containerType = _liferayResourceCoreSection.containerType.selectedItem.data;
-        liferayResource.containerPath = _liferayResourceCoreSection.containerPath.text;
+        liferayEE.containerType = _liferayResourceCoreSection.containerType.selectedItem.data;
+        liferayEE.containerPath = _liferayResourceCoreSection.containerPath.text;
+
+        // UPDATE EXEC ENV
+
+        liferayEE.type = ExecEnvType.valueOf(_liferayResourceCoreSection.selectedHost.selectedItem.data);
+        liferayEE.name = liferayResource.name + "-ee";
+        liferayEE.description = liferayResource.description +
+                "Captive Liferay execution environment owned by Service Resource " + liferayResource.name
+
+        liferayEE.installUri = _liferayResourceCoreSection.homeDirectory.text;
+        if (liferayEE.type.name == ExecEnvType.REMOTE.name)
+            liferayEE.location = _liferayResourceCoreSection.location.text;
+        liferayEE.overwriteOriginalSetup = false; // TODO : _liferayResourceCoreSection.replaceConfFiles.selected;
+        liferayEE.installDemoApps = false;
+        //liferayEE.platformId = "liferay";
+        // TODO : For now liferay 6 only
+        liferayEE.platformId = "liferay6";
+
+
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -6284,6 +6327,7 @@ public class PropertySheetMediator extends IocMediator {
     private function jbosseppSave(): void {
         // bind model
         var jbosseppResource:JBossEPPResource = projectProxy.currentIdentityApplianceElement as JBossEPPResource;
+        var jbosseppEE:JBossEPPExecutionEnvironment = jbosseppResource.activation.executionEnv as JBossEPPExecutionEnvironment;
 
         jbosseppResource.name = _jbosseppResourceCoreSection.resourceName.text;
         jbosseppResource.description = _jbosseppResourceCoreSection.resourceDescription.text;
@@ -6293,6 +6337,21 @@ public class PropertySheetMediator extends IocMediator {
         jbosseppResource.partnerAppLocation.port = parseInt(_jbosseppResourceCoreSection.resourcePort.text);
         jbosseppResource.partnerAppLocation.context = _jbosseppResourceCoreSection.resourceContext.text;
         jbosseppResource.partnerAppLocation.uri = _jbosseppResourceCoreSection.resourcePath.text;
+
+        // UPDATE EXEC ENV
+
+        jbosseppEE.name = jbosseppResource.name + "-ee";
+        jbosseppEE.description = jbosseppResource.description +
+                "Captive JBossEPP execution environment owned by Service Resource " + jbosseppResource.name
+
+        jbosseppEE.type = ExecEnvType.valueOf(_jbosseppResourceCoreSection.selectedHost.selectedItem.data);
+        jbosseppEE.installUri = _jbosseppResourceCoreSection.homeDirectory.text;
+        if (jbosseppEE.type.name == ExecEnvType.REMOTE.name)
+            jbosseppEE.location = _jbosseppResourceCoreSection.location.text;
+        jbosseppEE.overwriteOriginalSetup = _jbosseppResourceCoreSection.replaceConfFiles.selected;
+        jbosseppEE.installDemoApps = false;
+        jbosseppEE.platformId = "gatein3";
+        jbosseppEE.instance = _jbosseppResourceCoreSection.instance.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -6333,7 +6392,7 @@ public class PropertySheetMediator extends IocMediator {
             _selfServicesResourceCoreSection.resourceName.text = selfServicesResource.name;
             _selfServicesResourceCoreSection.resourceDescription.text = selfServicesResource.description;
 
-            selfServicesEE.name = selfServicesResource.name + "-captive-ee";
+            selfServicesEE.name = selfServicesResource.name + "-ee";
             selfServicesEE.description = selfServicesResource.description +
                     "Captive IdBus execution environment owned by Service Resource " + selfServicesResource.name
 

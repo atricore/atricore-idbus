@@ -18,7 +18,7 @@ public class CommonsLoggingTarget extends AbstractTarget {
     
     public void logEvent(LogEvent event) {
 
-        Log logger = LogFactory.getLog(event.logger.getCategory());
+        Log logger = LogFactory.getLog("com.atricore.idbus.console.web.eventlog." + event.logger.getCategory());
 
         if (event.level >= LogEvent.ERROR)
             logger.error(event.message, event.throwable);

@@ -93,7 +93,8 @@ public class PaletteMediator extends IocMediator {
                 if (projectProxy.currentIdentityAppliance != null) {
                     var selectedPaletteEntry:PaletteEntry = event.data as PaletteEntry;
                     //sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
-                    sendNotification(ApplicationFacade.PALETTE_ELEMENT_SELECTED, selectedPaletteEntry.elementType);
+                    if (selectedPaletteEntry != null)
+                        sendNotification(ApplicationFacade.PALETTE_ELEMENT_SELECTED, selectedPaletteEntry.elementType);
                 }
                 break;
         }

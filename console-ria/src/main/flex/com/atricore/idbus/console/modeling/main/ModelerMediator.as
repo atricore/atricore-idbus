@@ -41,6 +41,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJBossEPPA
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJBossEPPResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO1ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO2ResourceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveLiferayResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2ServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalOpenIDIdentityProviderElementRequest;
@@ -367,7 +368,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT,
-            ApplicationFacade.CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT,
+            ApplicationFacade.CREATE_LIFERAY_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_JBOSSEPP_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_SELFSERVICES_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT,
@@ -413,6 +414,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_WINDOWS_INTEGRATED_AUTHN_ELEMENT,
             ApplicationFacade.REMOVE_WINDOWS_INTEGRATED_AUTHN_ELEMENT,
             ApplicationFacade.REMOVE_JBOSSEPP_RESOURCE_ELEMENT,
+            ApplicationFacade.REMOVE_LIFERAY_RESOURCE_ELEMENT,
             ApplicationFacade.REMOVE_SELFSERVICES_RESOURCE_ELEMENT,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
@@ -587,6 +589,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 var rjbeppr:RemoveJBossEPPResourceElementRequest = RemoveJBossEPPResourceElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.JBOSSEPP_RESOURCE_REMOVE, rjbeppr.resource);
                 break;
+            case ApplicationFacade.REMOVE_LIFERAY_RESOURCE_ELEMENT:
+                var rliferayr:RemoveLiferayResourceElementRequest = RemoveLiferayResourceElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.LIFERAY_RESOURCE_REMOVE, rliferayr.resource);
+                break;
             case ApplicationFacade.REMOVE_SELFSERVICES_RESOURCE_ELEMENT:
                 var rslfsvcsr:RemoveSelfServicesResourceElementRequest = RemoveSelfServicesResourceElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.SELFSERVICES_RESOURCE_REMOVE, rslfsvcsr.resource);
@@ -603,7 +609,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case ApplicationFacade.CREATE_JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateJBossPortalResourceWindow(notification);
                 break;
-            case ApplicationFacade.CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT:
+            case ApplicationFacade.CREATE_LIFERAY_RESOURCE_ELEMENT:
                 popupManager.showCreateLiferayPortalResourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_JBOSSEPP_RESOURCE_ELEMENT:

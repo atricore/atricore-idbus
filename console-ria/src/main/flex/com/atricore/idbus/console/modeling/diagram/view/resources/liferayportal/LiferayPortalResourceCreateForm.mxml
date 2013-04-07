@@ -27,7 +27,7 @@
          defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8" labelWidth="145">
 
     <fx:Declarations>
-        <utils:NameValidator id="nameValidator" source="{executionEnvironmentName}" required="true" property="text" trigger="{btnOk}"
+        <utils:NameValidator id="nameValidator" source="{resourceName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
         <mx:StringValidator id="containerPathValidator" source="{containerPath}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
@@ -36,12 +36,33 @@
     </fx:Declarations>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.name')}:" required="true">
-        <s:TextInput id="executionEnvironmentName" width="300"/>
+        <s:TextInput id="resourceName" width="300"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.description')}:">
-        <s:TextInput id="executionEnvironmentDescription" width="300"/>
+        <s:TextInput id="resourceDescription" width="300"/>
     </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'resource.location')}:" required="true"
+                 direction="horizontal" >
+        <s:DropDownList id="resourceProtocol" width="70" selectedIndex="0">
+            <s:dataProvider>
+                <mx:ArrayCollection>
+                    <fx:Object label="http" data="http"/>
+                    <fx:Object label="https" data="https"/>
+                </mx:ArrayCollection>
+            </s:dataProvider>
+        </s:DropDownList>
+        <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="resourceDomain" width="150"/>
+        <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="resourcePort" width="40" text="8080"/>
+        <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="resourceContext" width="100"/>
+        <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="resourcePath" width="140"/>
+    </mx:FormItem>
+
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.selectedhost')}:"
             direction="horizontal">

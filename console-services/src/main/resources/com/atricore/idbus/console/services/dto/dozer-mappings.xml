@@ -146,6 +146,7 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JEEExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WebserverExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPExecutionEnvironment,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.LiferayExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.IdBusExecutionEnvironment
             </a-hint>
             <b-hint>
@@ -159,6 +160,7 @@
                 com.atricore.idbus.console.services.dto.JEEExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.WebserverExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.JBossEPPExecutionEnvironmentDTO,
+                com.atricore.idbus.console.services.dto.LiferayExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.IdBusExecutionEnvironmentDTO
             </b-hint>
         </field>
@@ -663,6 +665,11 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPExecutionEnvironment</class-a>
         <class-b>com.atricore.idbus.console.services.dto.JBossEPPExecutionEnvironmentDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.LiferayExecutionEnvironment</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.LiferayExecutionEnvironmentDTO</class-b>
     </mapping>
 
     <mapping>

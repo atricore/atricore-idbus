@@ -219,8 +219,6 @@ public class BrowserModelFactory {
                 resourceNode.icon = EmbeddedIcons.jbosseppResourceMiniIcon;
             } else if (serviceResource is SelfServicesResource) {
                 resourceNode.icon = EmbeddedIcons.selfServicesResourceMiniIcon;
-            } else if (serviceResource is JOSSO1Resource) {
-                resourceNode.icon = EmbeddedIcons.josso1ResourceMiniIcon;
             } else if (serviceResource is JOSSO2Resource) {
                 resourceNode.icon = EmbeddedIcons.josso2ResourceMiniIcon;
             } else if (serviceResource is MicroStrategyResource) {
@@ -239,6 +237,8 @@ public class BrowserModelFactory {
                 resourceNode.icon = EmbeddedIcons.liferayResourceMiniIcon;
             } else if (serviceResource is JBossPortalResource) {
                 resourceNode.icon = EmbeddedIcons.jbossPortalResourceMiniIcon;
+            } else if (serviceResource is JOSSO1Resource) { // This should be the last on the list since some of the others are extending it
+                resourceNode.icon = EmbeddedIcons.josso1ResourceMiniIcon;
             }
 
             return resourceNode;

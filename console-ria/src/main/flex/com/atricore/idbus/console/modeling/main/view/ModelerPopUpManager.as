@@ -1126,8 +1126,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createLiferayPortalResourceCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.liferay");
-        _popup.width = 500;
-        _popup.height = 310;
+        _popup.width = 800;
+        _popup.height = 360;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_liferayPortalResourceCreateForm);

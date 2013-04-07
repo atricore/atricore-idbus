@@ -131,7 +131,7 @@ public class JBossEPPResourceCreateMediator extends IocFormMediator {
         loc.uri = view.resourcePath.text;
         jbosseppResource.partnerAppLocation = loc;
 
-        jbosseppEE.name = jbosseppResource.name + "-captive-ee";
+        jbosseppEE.name = jbosseppResource.name + "-ee";
         jbosseppEE.description = jbosseppResource.description +
                 "Captive JBossEPP execution environment owned by Service Resource " + jbosseppResource.name
 

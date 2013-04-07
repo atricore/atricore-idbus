@@ -81,9 +81,11 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityP
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveInternalSaml2ServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJBossEPPAuthenticationServiceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveLiferayResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJBossEPPResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO1ResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveJOSSO2ResourceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveLiferayResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveOAuth2ServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalOpenIDIdentityProviderElementRequest;
@@ -126,6 +128,7 @@ import com.atricore.idbus.console.services.dto.JOSSO1Resource;
 import com.atricore.idbus.console.services.dto.JOSSO2Resource;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
+import com.atricore.idbus.console.services.dto.LiferayResource;
 import com.atricore.idbus.console.services.dto.OAuth2IdentityProvider;
 import com.atricore.idbus.console.services.dto.OAuth2ServiceProvider;
 import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
@@ -621,7 +624,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         _projectProxy.currentIdentityAppliance = _identityAppliance;
                         // this notification will be grabbed by the modeler mediator which will open
                         // the corresponding form
-                        sendNotification(ApplicationFacade.CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT, clpeenv);
+                        sendNotification(ApplicationFacade.CREATE_LIFERAY_RESOURCE_ELEMENT, clpeenv);
                         break;
                     case DiagramElementTypes.JBOSSEPP_RESOURCE_ELEMENT_TYPE:
                         var cljbeer:CreateJBossEPPResourceElementRequest = new CreateJBossEPPResourceElementRequest(
@@ -1002,6 +1005,15 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_JBOSSEPP_RESOURCE_ELEMENT, rjbeppr);
+                            break;
+                        case DiagramElementTypes.LIFERAY_RESOURCE_ELEMENT_TYPE:
+                            var liferayResource:LiferayResource = _currentlySelectedNode.data as LiferayResource;
+
+                            var liferayr:RemoveLiferayResourceElementRequest = new RemoveLiferayResourceElementRequest(liferayResource);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_LIFERAY_RESOURCE_ELEMENT, liferayr);
                             break;
 
                         case DiagramElementTypes.SELFSERVICES_RESOURCE_ELEMENT_TYPE:
@@ -1635,7 +1647,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 // Resources
             } else if (node.data is JBossEPPResource) {
                 elementType = DiagramElementTypes.JBOSSEPP_RESOURCE_ELEMENT_TYPE;
-                // Execution environments (all)
+            } else if (node.data is LiferayResource) {
+                elementType = DiagramElementTypes.LIFERAY_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is SelfServicesResource) {
                 elementType = DiagramElementTypes.SELFSERVICES_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is JOSSO1Resource) {

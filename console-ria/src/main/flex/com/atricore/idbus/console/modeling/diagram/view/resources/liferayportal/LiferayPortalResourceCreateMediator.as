@@ -30,7 +30,10 @@ import com.atricore.idbus.console.modeling.diagram.model.response.CheckFoldersRe
 import com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
+import com.atricore.idbus.console.services.dto.JOSSOActivation;
+import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.LiferayResource;
+import com.atricore.idbus.console.services.dto.Location;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -89,12 +92,18 @@ public class LiferayPortalResourceCreateMediator extends IocFormMediator {
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.containerType.selectedIndex = 0;
-        view.focusManager.setFocus(view.executionEnvironmentName);
+        view.focusManager.setFocus(view.resourceName);
     }
 
     private function resetForm():void {
-        view.executionEnvironmentName.text = "";
-        view.executionEnvironmentDescription.text = "";
+        view.resourceName.text = "";
+        view.resourceDescription.text = "";
+        view.resourceProtocol.selectedIndex = 0;
+        view.resourceDomain.text = "";
+        view.resourcePort.text = "8080";
+        view.resourceContext.text = "";
+        view.resourcePath.text = "";
+
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
         view.location.text = "";
@@ -110,17 +119,61 @@ public class LiferayPortalResourceCreateMediator extends IocFormMediator {
 
     override public function bindModel():void {
         var liferayResource:LiferayResource = new LiferayResource();
-        liferayResource.name = view.executionEnvironmentName.text;
-        liferayResource.description = view.executionEnvironmentDescription.text;
-        liferayResource.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
-        liferayResource.installUri = view.homeDirectory.text;
-        if (liferayResource.type.name == ExecEnvType.REMOTE.name)
-            liferayResource.location = view.location.text;
-        liferayResource.containerType = view.containerType.selectedItem.data;
-        liferayResource.containerPath = view.containerPath.text;
-        liferayResource.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        liferayResource.installDemoApps = view.installSamples.selected;
-        liferayResource.platformId = "liferay";
+        var liferayEE:LiferayExecutionEnvironment = new LiferayExecutionEnvironment();
+
+        liferayResource.name = view.resourceName.text;
+        liferayResource.description = view.resourceDescription.text;
+
+        //location
+        var loc:Location = new Location();
+        loc.protocol = view.resourceProtocol.labelDisplay.text;
+        loc.host = view.resourceDomain.text;
+        loc.port = parseInt(view.resourcePort.text);
+        loc.context = view.resourceContext.text;
+        loc.uri = view.resourcePath.text;
+        liferayResource.partnerAppLocation = loc;
+
+        // EE
+
+        liferayEE.containerType = view.containerType.selectedItem.data;
+        liferayEE.containerPath = view.containerPath.text;
+        liferayEE.overwriteOriginalSetup = view.replaceConfFiles.selected;
+        liferayEE.installDemoApps = view.installSamples.selected;
+        liferayEE.platformId = "liferay";
+
+        liferayEE.installUri = view.homeDirectory.text;
+        liferayEE.type = ExecEnvType.valueOf(view.selectedHost.selectedItem.data);
+        if (liferayEE.type.name == ExecEnvType.REMOTE.name)
+            liferayEE.location = view.location.text;
+
+        liferayEE.name = liferayResource.name + "-ee";
+        liferayEE.description = liferayResource.description +
+                "Captive Liferay execution environment owned by Service Resource " + liferayResource.name
+
+        liferayEE.installUri = view.homeDirectory.text;
+        if (liferayEE.type.name == ExecEnvType.REMOTE.name)
+            liferayEE.location = view.location.text;
+        liferayEE.overwriteOriginalSetup = view.replaceConfFiles.selected;
+        liferayEE.installDemoApps = false;
+        liferayEE.platformId = "liferay6";
+
+        // liferayEE.instance = view.instance.text;
+
+        var liferayEEActivation : JOSSOActivation  = new JOSSOActivation();
+        liferayEEActivation.name = liferayResource.name.toLowerCase().replace(/\s+/g, "-") +
+                "-" + liferayEE.name.toLowerCase().replace(/\s+/g, "-") + "-activation";
+        liferayEEActivation.executionEnv = liferayEE;
+        liferayEEActivation.resource = liferayResource;
+
+        liferayResource.activation = liferayEEActivation;
+
+        if(liferayEE.activations == null){
+            liferayEE.activations = new ArrayCollection();
+        }
+
+        liferayEE.activations.addItem(liferayEEActivation);
+        // liferayResource.defaultResource = "/portal/private/classic";
+
         _newResource = liferayResource;
     }
 
@@ -158,6 +211,12 @@ public class LiferayPortalResourceCreateMediator extends IocFormMediator {
 
     private function save():void {
         bindModel();
+
+        if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null){
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
+        }
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newResource.activation.executionEnv);
+
         if (_projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources == null) {
             _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources = new ArrayCollection();
         }

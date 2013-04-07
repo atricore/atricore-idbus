@@ -123,7 +123,7 @@ public class ExecEnvActivationMediator extends IocFormMediator {
 
 
     override public function registerValidators():void {
-        var currentExecEnv = getCurrentExecEnv();
+        var currentExecEnv:ExecutionEnvironment = getCurrentExecEnv();
         if (currentExecEnv.type.name == ExecEnvType.REMOTE.name) {
             _validators.push(view.usernameValidator);
             _validators.push(view.passwordValidator);

@@ -111,11 +111,6 @@ public class DiagramUtil {
                 return false;
             }
 
-            // JOSSO 1 Resources can be linked to any execution environment
-            if (resource is JOSSO1Resource) {
-                return true;
-            }
-
             // JOSSO 2 Resources cannot be linked to execution environments (for now)
             if (resource is JOSSO2Resource) {
                 return false;
@@ -159,6 +154,14 @@ public class DiagramUtil {
             if (resource is MicroStrategyResource) {
                 return execEnv is TomcatExecutionEnvironment;
             }
+
+            // JOSSO 1 Resources can be linked to any execution environment
+            // (This should be the last on the list since some of the others extend it)
+            if (resource is JOSSO1Resource) {
+                return true;
+            }
+
+
 
             // unknown resource type ?!?!?
             return false;

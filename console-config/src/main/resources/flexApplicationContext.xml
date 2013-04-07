@@ -130,6 +130,7 @@
         <property name="josso1ResourceRemoveCommand" ref="josso1ResourceRemoveCommand"/>
         <property name="josso2ResourceRemoveCommand" ref="josso2ResourceRemoveCommand"/>
         <property name="jbosseppResourceRemoveCommand" ref="jbosseppResourceRemoveCommand"/>
+        <property name="liferayResourceRemoveCommand" ref="liferayResourceRemoveCommand"/>
         <property name="selfServicesResourceRemoveCommand" ref="selfServicesResourceRemoveCommand"/>
         <property name="createActivationCommand" ref="createActivationCommand" />
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
@@ -374,6 +375,10 @@
     </object>
     <object id="jbosseppResourceRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.JBossEPPResourceRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="liferayResourceRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.LiferayResourceRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="selfServicesResourceRemoveCommand"
