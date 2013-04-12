@@ -2,12 +2,12 @@ package org.atricore.idbus.capabilities.idconfirmation.main.producers
 
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.{CamelMediationMessage, CamelMediationExchange}
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer
-import org.apache.camel.{Exchange, Endpoint}
-import org.atricore.idbus.kernel.main.mediation.MediationState
-import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest
-import org.atricore.idbus.kernel.main.mediation.claim.UserClaimsRequest
+import org.apache.camel.Endpoint
 
-class IdentityConfirmationNegotiationProducer(endpoint : Endpoint[CamelMediationExchange])
+/**
+ * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
+ */
+private[main] class IdentityConfirmationNegotiationProducer(endpoint : Endpoint[CamelMediationExchange])
   extends AbstractCamelProducer[CamelMediationExchange](endpoint) {
 
   protected def doProcess(exchange: CamelMediationExchange) {

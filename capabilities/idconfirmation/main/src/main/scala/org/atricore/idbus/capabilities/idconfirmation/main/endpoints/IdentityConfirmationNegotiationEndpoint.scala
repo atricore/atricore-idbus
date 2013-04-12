@@ -9,7 +9,7 @@ import org.atricore.idbus.capabilities.idconfirmation.main.producers.IdentityCon
 /**
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-class IdentityConfirmationNegotiationEndpoint(uri: String, component: Component[_ <: Exchange], parameters: util.Map[_, _])
+private[main] class IdentityConfirmationNegotiationEndpoint(uri: String, component: Component[_ <: Exchange], parameters: util.Map[_, _])
   extends AbstractCamelEndpoint[CamelMediationExchange](uri, component, parameters) {
 
   override def createProducer: Producer[CamelMediationExchange] = new IdentityConfirmationNegotiationProducer(this)
