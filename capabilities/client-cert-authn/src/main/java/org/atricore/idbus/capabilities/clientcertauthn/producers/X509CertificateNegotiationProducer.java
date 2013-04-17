@@ -5,8 +5,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.clientcertauthn.*;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsRequest;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsResponse;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.authn.Constants;
@@ -55,8 +53,8 @@ public class X509CertificateNegotiationProducer extends AbstractCamelProducer<Ca
             throw new ClientCertAuthnException("NULL message received by Spnego Capability " + content);
         }
 
-        if (content instanceof SSOClaimsRequest) {
-            doProcessClaimsRequest(exchange, (SSOClaimsRequest) content);
+        if (content instanceof CredentialClaimsRequest) {
+            doProcessClaimsRequest(exchange, (CredentialClaimsRequest) content);
 
         } else if (content instanceof AuthenticatedRequest) {
             doProcessAuthenticatedRequest(exchange, (AuthenticatedRequest) content);
@@ -108,7 +106,7 @@ public class X509CertificateNegotiationProducer extends AbstractCamelProducer<Ca
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-        ClaimsRequest claimsRequest = (ClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:claims-request");
+        CredentialClaimsRequest claimsRequest = (CredentialClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:claims-request");
         if (claimsRequest == null)
             throw new IllegalStateException("Claims request not found!");
 
@@ -145,12 +143,11 @@ public class X509CertificateNegotiationProducer extends AbstractCamelProducer<Ca
         BinarySecurityTokenType binarySecurityToken = new BinarySecurityTokenType ();
         binarySecurityToken.getOtherAttributes().put(new QName(Constants.SPNEGO_NS), base64SpnegoToken);
 
-        Claim claim = new ClaimImpl(AuthnCtxClass.KERBEROS_AUTHN_CTX.getValue(), binarySecurityToken);
+        Claim claim = new CredentialClaimImpl(AuthnCtxClass.KERBEROS_AUTHN_CTX.getValue(), binarySecurityToken);
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(claim);
 
-        SSOClaimsResponse claimsResponse = new SSOClaimsResponse(uuidGenerator.generateId(),
-                channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
+        CredentialClaimsResponse claimsResponse = null;  // TODO : !!! new CredentialClaimsRequestImpl(uuidGenerator.generateId(), channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
