@@ -62,7 +62,7 @@
 
     <osgi:list id="webBrandings" interface="org.atricore.idbus.capabilities.sso.ui.WebBranding"
                cardinality="0..N" >
-        <osgi:listener ref="osgiWebBrandingRegitry" bind-method="register" unbind-method="unregister" />
+        <osgi:listener ref="osgiWebBrandingRegitry" bind-method="registration" unbind-method="unregister" />
     </osgi:list>
     -->
 

@@ -19,18 +19,18 @@
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
-        <!--
+<!--
 <!DOCTYPE orm PUBLIC
-        "-//Sun Microsystems, Inc.//DTD Java Data Objects ORM Metadata 2.0//EN"
-        "http://java.sun.com/dtd/orm_2_0.dtd">
+"-//Sun Microsystems, Inc.//DTD Java Data Objects ORM Metadata 2.0//EN"
+"http://java.sun.com/dtd/orm_2_0.dtd">
 
 <orm>
-    -->
+-->
 <orm xmlns="http://java.sun.com/xml/ns/jdo/orm"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://java.sun.com/xml/ns/jdo/orm
         http://java.sun.com/xml/ns/jdo/orm_2_3.xsd">
-        
+
 
     <package name="org.atricore.idbus.connectors.jdoidentityvault.domain">
 
@@ -153,10 +153,10 @@
                 <column name="PREVENTNEWSESSION" />
             </field>
             <field name="allowUserToChangePassword">
-                    <column name="ALLOWUSERTOCHANGEPASSWORD" />
+                <column name="ALLOWUSERTOCHANGEPASSWORD" />
             </field>
             <field name="forcePeriodicPasswordChanges">
-                    <column name="FORCEPERIODICPASSWORDCHANGES" />
+                <column name="FORCEPERIODICPASSWORDCHANGES" />
             </field>
             <field name="daysBetweenChanges">
                 <column name="DAYSBETWEENCHANGES" jdbc-type="INTEGER"/>
@@ -209,6 +209,47 @@
                 <foreign-key name="USER_ATTRS_FK" delete-action="cascade"/>
             </field>
 
+            <field name="securityQuestions"  >
+                <element column="USER_ID"/>
+            </field>
+
+        </class>
+
+        <class name="JDOUserSecurityQuestion" table="ATC_USER_SEC_QUESTION">
+
+            <field name="answer" >
+                <column allows-null="false" length="512" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="hashing">
+                <column length="64" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="encryption">
+                <column length="64" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="customMessage" >
+                <column name="CUSTOM_MESSAGE" allows-null="true" length="512" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="question" >
+                <element>
+                    <column name="QUESTION_ID"/>
+                </element>
+            </field>
+
+        </class>
+
+        <class name="JDOSecurityQuestion" table="ATC_SEC_QUESTION">
+
+            <field name="messageKey" >
+                <column name="MESSAGE_KEY"/>
+            </field>
+
+            <field name="defaultMessage">
+                <column name="DEFAULT_MESSAGE"/>
+            </field>
         </class>
 
         <class name="JDOUserAttributeDefinition" table="ATC_USER_ATTRIBUTE" >
@@ -232,7 +273,7 @@
             <field name="multivalued">
                 <column name="MULTIVALUED"/>
             </field>
-            
+
         </class>
 
         <class name="JDOGroupAttributeDefinition" table="ATC_GROUP_ATTRIBUTE" >

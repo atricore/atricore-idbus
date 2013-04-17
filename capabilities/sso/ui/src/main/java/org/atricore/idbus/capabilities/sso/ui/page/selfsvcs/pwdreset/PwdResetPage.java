@@ -18,7 +18,7 @@ public class PwdResetPage extends BasePage {
 
     public PwdResetPage(PageParameters parameters) throws Exception {
         super(parameters);
-        PwdResetPanel pwdResetPanel = new PwdResetPanel("pwdReset", parameters.get("transactionId").toString());
+        PwdResetPanel pwdResetPanel = new PwdResetPanel("pwdReset", parameters.get("username").toString());
         add(pwdResetPanel);
     }
 

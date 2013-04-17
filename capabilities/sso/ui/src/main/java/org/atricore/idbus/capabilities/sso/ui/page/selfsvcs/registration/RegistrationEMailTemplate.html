@@ -3,15 +3,19 @@
       xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.3-strict.dtd">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>User Authentication</title>
+    <title>A template based on a page</title>
 </head>
 
 <body>
-<wicket:extend>
-    <div wicket:id="register" id="wrapper" class="gt-bd clearfix">
-        Here will be the register form
-    </div>
-</wicket:extend>
+
+<p>
+    <wicket:message key="claims.label.newPassword"/><span wicket:id="password">Password</span>
+    <br/>
+</p>
+
+<p>
+    <a wicket:id="registrationLink">Complete your registration</a>
+</p>
 </body>
+
 </html>

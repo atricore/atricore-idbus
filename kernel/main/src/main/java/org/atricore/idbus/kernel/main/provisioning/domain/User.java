@@ -42,10 +42,13 @@ public class User implements Serializable {
 //<--- Groups Membership ---->
     private Group[] groups;
 
+//<--- Life Questions ---->
+    private UserSecurityQuestion[] securityQuestions;
+
 //<--- Security Account---->
     private Boolean accountDisabled;
     private Boolean accountExpires;
-    // private Date accountExpirationDate;
+    private Long accountExpirationDate;
     private Boolean limitSimultaneousLogin;
     private Integer maximunLogins;
     private Boolean terminatePreviousSession;
@@ -55,7 +58,7 @@ public class User implements Serializable {
     private Boolean allowUserToChangePassword;
     private Boolean forcePeriodicPasswordChanges;
     private Integer daysBetweenChanges;
-    //private Date passwordExpirationDate;
+    private Long passwordExpirationDate;
     private Boolean notifyPasswordExpiration;
     private Integer daysBeforeExpiration;
 
@@ -267,6 +270,14 @@ public class User implements Serializable {
         this.groups = groups;
     }
 
+    public UserSecurityQuestion[] getSecurityQuestions() {
+        return securityQuestions;
+    }
+
+    public void setSecurityQuestions(UserSecurityQuestion[] securityQuestions) {
+        this.securityQuestions = securityQuestions;
+    }
+
     public UserAttributeValue[] getAttrs() {
         return attrs;
     }
@@ -299,13 +310,13 @@ public class User implements Serializable {
         this.accountExpires = accountExpires;
     }
 
-//    public Date getAccountExpirationDate() {
-//        return accountExpirationDate;
-//    }
+    public Long getAccountExpirationDate() {
+        return accountExpirationDate;
+    }
 
-//    public void setAccountExpirationDate(Date accountExpirationDate) {
-//        this.accountExpirationDate = accountExpirationDate;
-//    }
+    public void setAccountExpirationDate(Long accountExpirationDate) {
+        this.accountExpirationDate = accountExpirationDate;
+    }
 
     public Boolean isLimitSimultaneousLogin() {
         return limitSimultaneousLogin;
@@ -383,13 +394,13 @@ public class User implements Serializable {
         this.daysBetweenChanges = daysBetweenChanges;
     }
 
-//    public Date getPasswordExpirationDate() {
-//        return passwordExpirationDate;
-//    }
+    public Long getPasswordExpirationDate() {
+        return passwordExpirationDate;
+    }
 
-//    public void setPasswordExpirationDate(Date passwordExpirationDate) {
-//        this.passwordExpirationDate = passwordExpirationDate;
-//    }
+    public void setPasswordExpirationDate(Long passwordExpirationDate) {
+        this.passwordExpirationDate = passwordExpirationDate;
+    }
 
     public Boolean isNotifyPasswordExpiration() {
         return notifyPasswordExpiration;

@@ -116,7 +116,7 @@ public class OsgiPluginRegistry implements PluginRegistry {
     }
 
     /**
-     * Look for Bundles/Plugins and register them. Register also ExtensionPoints and Extensions declared in /plugin.xml
+     * Look for Bundles/Plugins and registration them. Register also ExtensionPoints and Extensions declared in /plugin.xml
      * files
      */
     public void registerExtensionPoints()
@@ -155,7 +155,7 @@ public class OsgiPluginRegistry implements PluginRegistry {
     }
 
     /**
-     * Look for Bundles/Plugins and register them.
+     * Look for Bundles/Plugins and registration them.
      * Register also ExtensionPoints and Extensions declared in "/plugin.xml" files.
      */
     public void registerExtensions()

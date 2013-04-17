@@ -14,6 +14,9 @@ import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.ConfirmResetPasswordRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.FindUserByUsernameRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.ResetPasswordRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.FindUserByUsernameResponse;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.ResetPasswordResponse;
 
 /**
@@ -26,15 +29,12 @@ public class PwdResetPanel extends Panel {
 
     private Form form;
 
-    private User newUser;
+    private String username;
 
-    private String transactionId;
-
-
-
-    public PwdResetPanel(String id, String transactionId) {
+    public PwdResetPanel(String id, String username) {
         super(id);
-        this.transactionId = transactionId;
+
+        this.username = username;
 
         form = new Form<PwdResetModel>("pwdResetForm", new CompoundPropertyModel<PwdResetModel>(new PwdResetModel()));
 
@@ -93,11 +93,15 @@ public class PwdResetPanel extends Panel {
 
         PwdResetModel pwdReset = getPwdResetModel();
 
-        ConfirmResetPasswordRequest req = new ConfirmResetPasswordRequest();
-        req.setTransactionId(transactionId);
+        FindUserByUsernameRequest fu = new FindUserByUsernameRequest();
+        fu.setUsername(username);
+        FindUserByUsernameResponse fur = app.getProvisioningTarget().findUserByUsername(fu);
+        User user = fur.getUser();
+
+        ResetPasswordRequest req = new ResetPasswordRequest(user);
         req.setNewPassword(pwdReset.getNewPassword());
 
-        ResetPasswordResponse resp = app.getProvisioningTarget().confirmResetPassword(req);
+        ResetPasswordResponse resp = app.getProvisioningTarget().resetPassword(req);
 
     }
 

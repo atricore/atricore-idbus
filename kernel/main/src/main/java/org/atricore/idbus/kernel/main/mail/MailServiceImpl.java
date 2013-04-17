@@ -29,8 +29,7 @@ public class MailServiceImpl implements MailService {
     }
 
     public void send(String config, String from, String to, String subject, String message, String contentType) {
-        for (int i = 0; i < senders.size(); i++) {
-            MailSender mailSender = senders.get(i);
+        for (MailSender mailSender : senders) {
             if (mailSender.getName().equals(config)) {
                 mailSender.send(from, to, subject, message, contentType);
                 break;
@@ -45,16 +44,20 @@ public class MailServiceImpl implements MailService {
     // ---------------------------------------------------------------------------------------
 
     public void send(String from, String to, String subject, String message, String contentType) {
-        if (senders.size() > 0)
+        if (senders.size() > 0) {
             senders.get(0).send(from, to, subject, message, contentType);
+            return;
+        }
 
         logger.error("No senders configured !");
 
     }
 
     public void sendAsync(String from, String to, String subject, String message, String contentType) {
-        if (senders.size() > 0)
+        if (senders.size() > 0) {
             sendAsync(senders.get(0).getName(), from, to, subject, message, contentType);
+            return;
+        }
 
         logger.error("No senders configured !");
     }

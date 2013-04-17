@@ -10,6 +10,8 @@ public class ResetPasswordRequest extends  AbstractProvisioningRequest {
 
     private User user;
 
+    private String newPassword;
+
     public ResetPasswordRequest(User user) {
         this.user = user;
     }
@@ -20,5 +22,13 @@ public class ResetPasswordRequest extends  AbstractProvisioningRequest {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
     }
 }

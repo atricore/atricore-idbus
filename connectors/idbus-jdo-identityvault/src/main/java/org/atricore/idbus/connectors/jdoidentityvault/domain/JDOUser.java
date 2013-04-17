@@ -43,6 +43,10 @@ public class JDOUser implements Serializable {
 //<--- Groups Membership ---->
     private JDOGroup[] groups;
 
+//<--- Life Questions Membership ---->
+    private JDOUserSecurityQuestion[] securityQuestions;
+
+
 //<--- Security Account---->
     private Boolean accountDisabled;
     private Boolean accountExpires;
@@ -267,6 +271,14 @@ public class JDOUser implements Serializable {
 
     public void setGroups(JDOGroup[] groups) {
         this.groups = groups;
+    }
+
+    public JDOUserSecurityQuestion[] getSecurityQuestions() {
+        return securityQuestions;
+    }
+
+    public void setSecurityQuestions(JDOUserSecurityQuestion[] securityQuestions) {
+        this.securityQuestions = securityQuestions;
     }
 
     public JDOUserAttributeValue[] getAttrs() {

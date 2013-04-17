@@ -11,6 +11,16 @@ public interface ProvisioningTarget {
 
     String getName();
 
+    void init();
+
+    void shutDown();
+
+    //<--------------- Transactions -------------------->
+
+    void purgeOldTransactions();
+
+    boolean isTransactionValid(String transactionId);
+
     //<--------------- Groups -------------------->
 
     RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest)
@@ -76,6 +86,8 @@ public interface ProvisioningTarget {
 
     ResetPasswordResponse confirmResetPassword(ConfirmResetPasswordRequest resetPwdRequest) throws ProvisioningException;
 
+    ListSecurityQuestionsResponse listSecurityQuestions(ListSecurityQuestionsRequest request) throws ProvisioningException;
+
     //<--------------- Schema -------------------->
 
     AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest)
@@ -113,4 +125,7 @@ public interface ProvisioningTarget {
 
     ListGroupAttributesResponse listGroupAttributes(ListGroupAttributesRequest groupAttributeRequest)
             throws ProvisioningException;
+
+
+
 }

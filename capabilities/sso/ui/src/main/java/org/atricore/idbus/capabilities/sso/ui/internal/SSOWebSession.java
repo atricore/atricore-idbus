@@ -25,6 +25,7 @@ import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
 import org.atricore.idbus.capabilities.sso.ui.agent.SecurityContext;
 import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
+import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
 
 
 /**
@@ -39,6 +40,8 @@ public class SSOWebSession extends WebSession {
     private String lastAppErrorId;
 
     private SecurityContext securityContext;
+
+    private UserSecurityQuestion[] securityQuestions;
 
     public SSOWebSession(Request request) {
         super(request);
@@ -82,5 +85,13 @@ public class SSOWebSession extends WebSession {
 
     public SecurityContext getSecurityContext() {
         return securityContext;
+    }
+
+    public UserSecurityQuestion[] getSecurityQuestions() {
+        return securityQuestions;
+    }
+
+    public void setSecurityQuestions(UserSecurityQuestion[] securityQuestions) {
+        this.securityQuestions = securityQuestions;
     }
 }

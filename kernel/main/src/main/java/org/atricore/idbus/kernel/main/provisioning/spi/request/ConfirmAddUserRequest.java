@@ -4,7 +4,7 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  * @author: sgonzalez@atriocore.com
  * @date: 3/8/13
  */
-public class ConfirmAddUserRequest extends AbstractProvisioningRequest {
+public class ConfirmAddUserRequest extends AddUserRequest {
 
     private String transactionId;
 

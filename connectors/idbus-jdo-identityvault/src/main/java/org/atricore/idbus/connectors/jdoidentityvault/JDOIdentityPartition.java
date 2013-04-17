@@ -1,18 +1,12 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
-import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroup;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroupAttributeValue;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUserAttributeValue;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupAttributeValueDAO;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserAttributeValueDAO;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.*;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.*;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOSecurityQuestionDAOImpl;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
-import org.atricore.idbus.kernel.main.provisioning.domain.Group;
-import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeValue;
-import org.atricore.idbus.kernel.main.provisioning.domain.User;
-import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeValue;
+import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
@@ -39,10 +33,12 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         DisposableBean,
         IdentityServiceLifecycle {
 
-    private JDOUserDAOImpl userDao;
-    private JDOGroupDAOImpl groupDao;
+    private JDOUserDAO userDao;
+    private JDOGroupDAO groupDao;
+    private JDOSecurityQuestionDAO securityQuestionDAO;
     private JDOUserAttributeValueDAO usrAttrValDao;
     private JDOGroupAttributeValueDAO grpAttrValDao;
+    private JDOUserSecurityQuestionDAO usrSecQuestionDao;
 
     private JDOSchemaManager schemaManager;
 
@@ -54,19 +50,35 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         this.schemaManager = schemaManager;
     }
 
-    public void setUserDao(JDOUserDAOImpl userDao) {
+    public void setUserDao(JDOUserDAO userDao) {
         this.userDao = userDao;
     }
 
-    public JDOUserDAOImpl getUserDao() {
+    public JDOUserDAO getUserDao() {
         return userDao;
     }
 
-    public void setGroupDao(JDOGroupDAOImpl groupDao) {
+    public void setGroupDao(JDOGroupDAO groupDao) {
         this.groupDao = groupDao;
     }
 
-    public JDOGroupDAOImpl getGroupDao() {
+    public JDOSecurityQuestionDAO getSecurityQuestionDAO() {
+        return securityQuestionDAO;
+    }
+
+    public void setSecurityQuestionDAO(JDOSecurityQuestionDAO securityQuestionDAO) {
+        this.securityQuestionDAO = securityQuestionDAO;
+    }
+
+    public JDOUserSecurityQuestionDAO getUsrSecQuestionDao() {
+        return usrSecQuestionDao;
+    }
+
+    public void setUsrSecQuestionDao(JDOUserSecurityQuestionDAO usrSecQuestionDao) {
+        this.usrSecQuestionDao = usrSecQuestionDao;
+    }
+
+    public JDOGroupDAO getGroupDao() {
         return groupDao;
     }
 
@@ -386,6 +398,18 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         }
     }
 
+    // -------------------------------------------< SecurityQuestion >
+    @Transactional
+    public Collection<SecurityQuestion> findAllSecurityQuestions() throws ProvisioningException {
+        try {
+            Collection<JDOSecurityQuestion> securityQuestions = securityQuestionDAO.findAll();
+            return toSecurityQuestion(securityQuestions);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+
     // -------------------------------------------< Utils >
 
     protected JDOGroup toJDOGroup(Group group) {
@@ -475,6 +499,28 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     }
 
+    protected SecurityQuestion toSecurityQuestion(JDOSecurityQuestion jdoSecurityQuestion) {
+        SecurityQuestion group = new SecurityQuestion();
+
+        group.setId(jdoSecurityQuestion.getId());
+        group.setMessageKey(jdoSecurityQuestion.getMessageKey());
+
+
+        return group;
+    }
+
+
+    protected Collection<SecurityQuestion> toSecurityQuestion(Collection<JDOSecurityQuestion> jdoSecurityQuestions) {
+        List<SecurityQuestion> securityQuestions = new ArrayList<SecurityQuestion>(jdoSecurityQuestions.size());
+        for (JDOSecurityQuestion jdoSecurityQuestion : jdoSecurityQuestions) {
+            securityQuestions.add(toSecurityQuestion(jdoSecurityQuestion));
+        }
+
+        return securityQuestions;
+
+    }
+
+
     protected JDOUser toJDOUser(User user, boolean keepUserPassword) {
         JDOUser jdoUser = new JDOUser();
         jdoUser.setId(user.getId());
@@ -486,7 +532,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
         String pwd = jdoUser.getUserPassword();
 
-        BeanUtils.copyProperties(user, jdoUser, new String[] {"id", "groups", "attrs"});
+        BeanUtils.copyProperties(user, jdoUser, new String[] {"id", "groups", "attrs", "securityQuestions"});
 
         if (keepUserPassword)
             jdoUser.setUserPassword(pwd);
@@ -522,12 +568,37 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             jdoUser.setAttrs(jdoAttrs);
         }
 
+        if (user.getSecurityQuestions() != null) {
+            JDOUserSecurityQuestion[] jdoSecurityQuestions = new JDOUserSecurityQuestion[user.getSecurityQuestions().length];
+
+            for (int i = 0 ; i < user.getSecurityQuestions().length ; i++ ) {
+                UserSecurityQuestion securityQuestion = user.getSecurityQuestions()[i];
+                JDOUserSecurityQuestion jdoSecurityQuestion = null;
+                if (securityQuestion.getId() > 0) {
+                    jdoSecurityQuestion = usrSecQuestionDao.findById(securityQuestion.getId());
+                }
+                if (jdoSecurityQuestion == null) {
+                    jdoSecurityQuestion = new JDOUserSecurityQuestion();
+                }
+                jdoSecurityQuestion.setAnswer(securityQuestion.getAnswer());
+                jdoSecurityQuestion.setCustomMessage(securityQuestion.getCustomMessage());
+                jdoSecurityQuestion.setEncryption(securityQuestion.getEncryption());
+                jdoSecurityQuestion.setHashing(securityQuestion.getHashing());
+                jdoSecurityQuestion.setQuestion(securityQuestionDAO.findById(securityQuestion.getQuestion().getId()));
+
+                jdoSecurityQuestions[i] = jdoSecurityQuestion;
+
+            }
+
+            jdoUser.setSecurityQuestions(jdoSecurityQuestions);
+        }
+
         return jdoUser;
     }
 
     protected User toUser(JDOUser jdoUser, boolean retrieveUserPassword) {
         User user = new User();
-        BeanUtils.copyProperties(jdoUser, user, new String[] {"groups", "attrs"});
+        BeanUtils.copyProperties(jdoUser, user, new String[] {"groups", "securityQuestions", "attrs"});
 
         if (!retrieveUserPassword)
             user.setUserPassword(null);
@@ -564,7 +635,31 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             }
 
             if (attrs.size() > 0) {
-                user.setAttrs(attrs.toArray(new UserAttributeValue[]{}));
+                user.setAttrs(attrs.toArray(new UserAttributeValue[attrs.size()]));
+            }
+        }
+
+        if (jdoUser.getSecurityQuestions() != null) {
+            List<UserSecurityQuestion> securityQuestions = new ArrayList<UserSecurityQuestion>(jdoUser.getSecurityQuestions().length);
+
+            for (int i = 0 ; i < jdoUser.getSecurityQuestions().length ; i++) {
+                JDOUserSecurityQuestion jdoUserSecurityQuestion = jdoUser.getSecurityQuestions()[i];
+                if (jdoUserSecurityQuestion.getId() > 0) {
+
+                    UserSecurityQuestion userSecurityQuestion = new UserSecurityQuestion();
+                    userSecurityQuestion.setId(jdoUserSecurityQuestion.getId());
+                    userSecurityQuestion.setAnswer(jdoUserSecurityQuestion.getAnswer());
+                    userSecurityQuestion.setCustomMessage(jdoUserSecurityQuestion.getCustomMessage());
+                    userSecurityQuestion.setQuestion(toSecurityQuestion(jdoUserSecurityQuestion.getQuestion()));
+                    userSecurityQuestion.setHashing(jdoUserSecurityQuestion.getHashing());
+                    userSecurityQuestion.setEncryption(jdoUserSecurityQuestion.getEncryption());
+                    securityQuestions.add(userSecurityQuestion);
+                }
+            }
+
+
+            if (securityQuestions.size() > 0) {
+                user.setSecurityQuestions(securityQuestions.toArray(new UserSecurityQuestion[securityQuestions.size()]));
             }
         }
 

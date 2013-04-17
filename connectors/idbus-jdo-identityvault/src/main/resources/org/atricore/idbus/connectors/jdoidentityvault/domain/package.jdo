@@ -48,7 +48,28 @@
                 <array dependent-element="false" />
                 <join delete-action="null"/>
             </field>
+            <field name="securityQuestions" default-fetch-group="true" persistence-modifier="persistent" delete-action="cascade">
+                <array dependent-element="false" />
+            </field>
         </class>
+
+        <class name="JDOUserSecurityQuestion">
+            <inheritance strategy="new-table"/>
+            <field name="id" primary-key="true" value-strategy="native"/>
+            <field name="answer" />
+            <field name="hashing"/>
+            <field name="encryption"/>
+            <field name="customMessage"/>
+            <field name="question" persistence-modifier="persistent" default-fetch-group="true" delete-action="null"/>
+        </class>
+
+        <class name="JDOSecurityQuestion">
+            <inheritance strategy="new-table"/>
+            <field name="id" primary-key="true" value-strategy="native"/>
+            <field name="messageKey" />
+            <field name="defaultMessage"/>
+        </class>
+
 
         <class name="JDOUserAttributeDefinition">
             <inheritance strategy="new-table"/>

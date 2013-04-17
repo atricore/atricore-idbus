@@ -37,7 +37,7 @@
     <osgi:list id="identityMediationUnits" interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnit"
                cardinality="1..N" >
 
-        <osgi:listener ref="osgiIdsuRegistry" bind-method="register" unbind-method="unregister" />
+        <osgi:listener ref="osgiIdsuRegistry" bind-method="registration" unbind-method="unregister" />
     </osgi:list>
     -->
     <osgi:reference id="idsuRegistry"

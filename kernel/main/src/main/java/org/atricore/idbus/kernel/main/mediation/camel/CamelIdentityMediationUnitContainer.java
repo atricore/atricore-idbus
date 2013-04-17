@@ -116,7 +116,7 @@ public class CamelIdentityMediationUnitContainer implements IdentityMediationUni
             camelTransportFactory.setCamelContext(context);
             camelTransportFactory.setBus(bus);
 
-            // register the conduit initiator
+            // registration the conduit initiator
             ConduitInitiatorManager cim = bus.getExtension(ConduitInitiatorManager.class);
             cim.registerConduitInitiator(CamelTransportFactory.TRANSPORT_ID, camelTransportFactory);
 
@@ -131,7 +131,7 @@ public class CamelIdentityMediationUnitContainer implements IdentityMediationUni
 
              */
 
-            // register the destination factory
+            // registration the destination factory
             DestinationFactoryManager dfm = bus.getExtension(DestinationFactoryManager.class);
             dfm.registerDestinationFactory(CamelTransportFactory.TRANSPORT_ID, camelTransportFactory);
 

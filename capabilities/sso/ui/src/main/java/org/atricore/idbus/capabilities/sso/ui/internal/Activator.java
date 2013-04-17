@@ -38,7 +38,7 @@ public class Activator implements BundleActivator {
         /* programmatic startup - not needed when using blueprint/spring dm
         applicationFactory =
             new DefaultWebApplicationFactory(context, SSOUIApplication.class, "sso", "sso");
-        applicationFactory.register();
+        applicationFactory.registration();
         */
     }
 

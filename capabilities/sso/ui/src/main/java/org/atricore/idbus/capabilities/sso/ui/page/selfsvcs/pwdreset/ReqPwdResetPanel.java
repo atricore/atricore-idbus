@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdreset;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.Page;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -20,6 +21,7 @@ import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.handler.render.PageRenderer;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationStartedPage;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
@@ -43,6 +45,8 @@ public class ReqPwdResetPanel extends Panel {
 
     private SubmitLink submit;
 
+    private User user;
+
     public ReqPwdResetPanel(String id) {
         super(id);
 
@@ -57,14 +61,17 @@ public class ReqPwdResetPanel extends Panel {
             public void onSubmit() {
                 try {
                     reqPwdReset();
-                    onReqPwdResetSucceeded();
+
                 } catch (UserNotFoundException e) {
                     // Hide the fact that the user does not exist
-                    onReqPwdResetSucceeded();
+                    onReqPwdResetFailed();
+                    return;
                 } catch (Exception e) {
                     logger.error("Fatal error during password reset request : " + e.getMessage(), e);
                     onReqPwdResetFailed();
+                    return;
                 }
+                onReqPwdResetSucceeded();
             }
         };
 
@@ -98,8 +105,9 @@ public class ReqPwdResetPanel extends Panel {
         userReq.setUsername(username);
 
         FindUserByUsernameResponse userResp = app.getProvisioningTarget().findUserByUsername(userReq);
-        User user = userResp.getUser();
+        user = userResp.getUser();
 
+        /*
         // Start request process
         ResetPasswordRequest req = new ResetPasswordRequest(user);
         PrepareResetPasswordResponse resp = app.getProvisioningTarget().prepareResetPassword(req);
@@ -111,12 +119,16 @@ public class ReqPwdResetPanel extends Panel {
                 user.getEmail(),
                 "Password Reset", buildEMailText(user, t).toString(),
                 "text/html");
-
+          */
     }
 
     protected void onReqPwdResetSucceeded() {
-        submit.setEnabled(false);
-        error(getLocalizer().getString("reqPwdResetSucceeded", this, "Operation succeeded"));
+        //submit.setEnabled(false);
+        //error(getLocalizer().getString("reqPwdResetSucceeded", this, "Operation succeeded"));
+        PageParameters params = new PageParameters();
+        params.add("username", user.getUserName());
+        throw new RestartResponseAtInterceptPageException(VerifyPwdResetPage.class, params);
+
     }
 
     protected void onReqPwdResetFailed() {

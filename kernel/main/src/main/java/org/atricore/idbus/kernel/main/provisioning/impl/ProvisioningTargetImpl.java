@@ -4,10 +4,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
-import org.atricore.idbus.kernel.main.provisioning.domain.Group;
-import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeDefinition;
-import org.atricore.idbus.kernel.main.provisioning.domain.User;
-import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeDefinition;
+import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
@@ -48,10 +45,52 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     private SchemaManager schemaManager;
 
+    private int maxTimeToLive = 600; // seconds
+
+    private OldTransactionsMonitor monitor;
+
+    private Thread monitorThread;
+
     // TODO : Make it persistente, expire old transactinos !!!!!
     private Map<String, PendingTransaction> pendingTransactions = new ConcurrentHashMap<String, PendingTransaction>();
 
     //private Map<String, >
+
+    public void init() {
+        // Start session monitor.
+        monitor = new OldTransactionsMonitor(this);
+
+        monitorThread = new Thread(monitor);
+        monitorThread.setDaemon(true);
+        monitorThread.setName("ProvisioningTargetMonitor-" + name);
+        monitorThread.start();
+
+    }
+
+    public void shutDown() {
+        pendingTransactions.clear();
+        monitor.stop = true;
+    }
+
+    public void purgeOldTransactions() {
+        List<String> expiredKeys = new ArrayList<String>();
+        long now = System.currentTimeMillis();
+
+        for (String key : pendingTransactions.keySet()) {
+            PendingTransaction t = pendingTransactions.get(key);
+            if (t.getExpiresOn() < now)
+                expiredKeys.add(key);
+        }
+
+        for (String key : expiredKeys) {
+            pendingTransactions.remove(key);
+        }
+    }
+
+
+    public boolean isTransactionValid(String transactionId) {
+        return pendingTransactions.get(transactionId) != null;
+    }
 
     public String getName() {
         return name;
@@ -262,13 +301,16 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             
             User user = new User();
 
-            BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "userPassword"});
+            BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "securityQuestions", "userPassword"});
 
             // TODO : Apply password validation rules
             user.setUserPassword(createPasswordHash(userRequest.getUserPassword()));
                 
             Group[] groups = userRequest.getGroups();
             user.setGroups(groups);
+
+            UserSecurityQuestion[] securityQuestions = userRequest.getSecurityQuestions();
+            user.setSecurityQuestions(securityQuestions);
             
             user = identityPartition.addUser(user);
             AddUserResponse userResponse = new AddUserResponse();
@@ -281,11 +323,70 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     public PrepareAddUserResponse prepareAddUser(AddUserRequest userRequest) throws ProvisioningException {
-        throw new UnsupportedOperationException("Not implemented");
+
+        // TODO : We should be able to use different authentication mechanisms and let the IDP handle the authn ....
+        String transactionId = uuid.generateId();
+
+        AddUserResponse userResponse = new AddUserResponse();
+
+        User u = new User();
+        BeanUtils.copyProperties(userRequest, u, new String[] {"groups", "securityQuestions", "userPassword"});
+
+        // Random password
+        String tmpPassword = RandomStringUtils.randomAlphanumeric(6);
+        u.setUserPassword(createPasswordHash(tmpPassword));
+        u.setAccountDisabled(true);
+
+        u = identityPartition.addUser(u);
+
+        userResponse.setUser(u);
+
+        PendingTransaction t = new PendingTransaction(transactionId, 1000L * 60L * 30L, userRequest, userResponse);
+        storePendingTransaction(t);
+
+        return new PrepareAddUserResponse(t.getId(), u, tmpPassword);
     }
 
-    public AddUserResponse confirAddUser(ConfirmAddUserRequest userRequest) throws ProvisioningException {
-        throw new UnsupportedOperationException("Not implemented");
+    public AddUserResponse confirAddUser(ConfirmAddUserRequest confirmReq) throws ProvisioningException {
+        String transactionId = confirmReq.getTransactionId();
+        PendingTransaction t = this.consumePendingTransaction(transactionId);
+
+        // Retrieve the user from the partition
+        AddUserResponse response = (AddUserResponse) t.getResponse();
+        Long uid = response.getUser().getId();
+        User tmpUser = identityPartition.findUserById(uid);
+
+        // New user information
+
+        // Get remaining user information from confirmation
+        // BeanUtils.copyProperties(confirmReq, tmpUser, new String[] {"id", "groups", "securityQuestions", "userPassword"});
+
+        // Password
+        tmpUser.setUserPassword(createPasswordHash(confirmReq.getUserPassword()));
+
+        // Groups
+        // tmpUser.setGroups(confirmReq.getGroups());
+
+        // Security Questions
+        if (confirmReq.getSecurityQuestions() != null) {
+            if (getHashAlgorithm() != null) {
+                for (UserSecurityQuestion usq : confirmReq.getSecurityQuestions()) {
+                    usq.setAnswer(createPasswordHash(usq.getAnswer()));
+                }
+            }
+            tmpUser.setSecurityQuestions(confirmReq.getSecurityQuestions());
+        }
+
+        // Enable account
+        tmpUser.setAccountDisabled(false);
+
+        // Store user information
+        User newUser = identityPartition.updateUser(tmpUser);
+
+        // Send response message
+        response.setUser(newUser);
+
+        return response;
     }
 
     public FindUserByIdResponse findUserById(FindUserByIdRequest userRequest) throws ProvisioningException {
@@ -342,10 +443,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             User user = userRequest.getUser();
             User oldUser = identityPartition.findUserById(user.getId());
 
-            BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "userPassword", "id"});
+            // DO NOT UPDATE USER PASSWORD OR LIFE QUESTIONS HERE
+            BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "securityQuestions", "userPassword"});
             oldUser.setGroups(user.getGroups());
-
-            // DO NOT UPDATE USER PASSWORD HERE : oldUser.setUserPassword(createPasswordHash(user.getUserPassword()));
 
             user = identityPartition.updateUser(oldUser);
 
@@ -395,7 +495,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             // Generate a password (TODO : improve ?!)
             // Passwords with alphabetic and numeric characters.
-            String pwd = RandomStringUtils.randomAlphanumeric(8);
+            String pwd = resetPwdRequest.getNewPassword();
             String pwdHash = createPasswordHash(pwd);
             user.setUserPassword(pwdHash);
 
@@ -411,6 +511,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     public PrepareResetPasswordResponse prepareResetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException {
+
         String transactionId = uuid.generateId();
         String pwd = RandomStringUtils.randomAlphanumeric(8);
 
@@ -425,6 +526,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     public ResetPasswordResponse confirmResetPassword(ConfirmResetPasswordRequest resetPwdRequest) throws ProvisioningException {
+
         PendingTransaction t = consumePendingTransaction(resetPwdRequest.getTransactionId());
 
         boolean usedGeneratedPwd = resetPwdRequest.getNewPassword() == null;
@@ -481,7 +583,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             UserAttributeDefinition oldUserAttribute = schemaManager.findUserAttributeById(userAttribute.getId());
 
-            BeanUtils.copyProperties(userAttribute, oldUserAttribute, new String[] {"id"});
+            BeanUtils.copyProperties(userAttribute, oldUserAttribute, new String[]{"id"});
             
             userAttribute = schemaManager.updateUserAttribute(oldUserAttribute);
 
@@ -572,7 +674,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             GroupAttributeDefinition oldGroupAttribute = schemaManager.findGroupAttributeById(groupAttribute.getId());
 
-            BeanUtils.copyProperties(groupAttribute, oldGroupAttribute, new String[] {"id"});
+            BeanUtils.copyProperties(groupAttribute, oldGroupAttribute, new String[]{"id"});
 
             groupAttribute = schemaManager.updateGroupAttribute(oldGroupAttribute);
 
@@ -632,6 +734,19 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             groupAttributeResponse.setGroupAttributes(groupAttributes.toArray(new GroupAttributeDefinition[groupAttributes.size()]));
 
             return groupAttributeResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+
+    public ListSecurityQuestionsResponse listSecurityQuestions(ListSecurityQuestionsRequest request) throws ProvisioningException {
+        try {
+            Collection<SecurityQuestion> securityQuestions = identityPartition.findAllSecurityQuestions();
+            ListSecurityQuestionsResponse response = new ListSecurityQuestionsResponse();
+            response.setSecurityQuestions(securityQuestions.toArray(new SecurityQuestion[securityQuestions.size()]));
+
+            return response;
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -770,5 +885,49 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             return response;
         }
     }
+
+    public class OldTransactionsMonitor implements  Runnable {
+
+        protected boolean stop = false;
+
+        protected int interval = 1000 * 60 * 10; // Ten minutes interval
+
+        private ProvisioningTarget provisioningTarget;
+
+        public OldTransactionsMonitor(ProvisioningTarget provisioningTarget) {
+            this.provisioningTarget = provisioningTarget;
+        }
+
+        public void run() {
+            stop = false;
+            do {
+                try {
+
+                    provisioningTarget.purgeOldTransactions();
+
+                    synchronized (this) {
+                        try {
+
+                            wait(interval);
+
+                        } catch (InterruptedException e) { /**/ }
+                    }
+
+                } catch (Exception e) {
+                    logger.warn("Exception received : " + e.getMessage() != null ? e.getMessage() : e.toString(), e);
+                }
+
+            } while (!stop);
+        }
+    }
+
+    public int getMaxTimeToLive() {
+        return maxTimeToLive;
+    }
+
+    public void setMaxTimeToLive(int maxTimeToLive) {
+        this.maxTimeToLive = maxTimeToLive;
+    }
+
 
 }

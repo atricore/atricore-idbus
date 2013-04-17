@@ -28,7 +28,7 @@ import java.util.Collection;
 /**
  * This component manages circle of trust members' springmetadata information.
  *
- * // TODO : create operations to register / unregister / verify MD
+ * // TODO : create operations to registration / unregister / verify MD
  *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: CircleOfTrustManager.java 1259 2009-06-09 20:08:04Z sgonzalez $

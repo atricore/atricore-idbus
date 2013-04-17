@@ -229,7 +229,7 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
      * If driver is found in the drivers directory, its class is not accessible
      * in this class's ClassLoader. DriverManager will not allow this class to create
      * connections using such driver. To solve the problem, we create a wrapper Driver in
-     * our class loader, and register it with DriverManager
+     * our class loader, and registration it with DriverManager
      *
      * @param driverDescriptor
      * @param refreshClassLoader
@@ -248,7 +248,7 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
                     DriverManager.registerDriver(new WrappedDriver(driver, driverDescriptor.getDriverclassName()));
                 } catch (SQLException e) {
                     // This shouldn't happen
-                    logger.error("Failed to register wrapped driver instance: " + e.getMessage(), e);
+                    logger.error("Failed to registration wrapped driver instance: " + e.getMessage(), e);
                 }
             }
 

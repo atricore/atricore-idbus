@@ -126,14 +126,45 @@ public class JDOIdentityStore extends AbstractStore implements IdentityPartition
             ssoUser.addProperty(language);
         }
 
+        // -----------------------------------------------------------
+        // Security properties
+        // -----------------------------------------------------------
+
+        if (jdoUser.getAccountDisabled() != null) {
+            SSONameValuePair p = new SSONameValuePair("accountDisabled", jdoUser.getAccountDisabled().toString());
+            ssoUser.addProperty(p);
+        }
+
+        if (jdoUser.getAccountExpires() != null) {
+            SSONameValuePair p = new SSONameValuePair("accountExpires", jdoUser.getAccountExpires().toString());
+            ssoUser.addProperty(p);
+        }
+
+        if (jdoUser.getAccountExpirationDate() != null) {
+            SSONameValuePair p = new SSONameValuePair("accountExpirationDate", jdoUser.getAccountExpirationDate().toString());
+            ssoUser.addProperty(p);
+        }
+
+        if (jdoUser.getPasswordExpirationDate() != null) {
+            SSONameValuePair p = new SSONameValuePair("passwordExpirationDate", jdoUser.getPasswordExpirationDate().toString());
+            ssoUser.addProperty(p);
+        }
+
+        if (jdoUser.getPreventNewSession() != null) {
+            SSONameValuePair p = new SSONameValuePair("preventNewSession", jdoUser.getPreventNewSession().toString());
+            ssoUser.addProperty(p);
+        }
+
+
+        // -----------------------------------------------------------
+        // Custom attributes
+        // -----------------------------------------------------------
         if (jdoUser.getAttrs() != null) {
             for (UserAttributeValue userAttribute : jdoUser.getAttrs()) {
                 SSONameValuePair attr = new SSONameValuePair(userAttribute.getName(), userAttribute.getValue());
                 ssoUser.addProperty(attr);
             }
         }
-
-        // TODO : Use configuraiton/reflexion to add more properties.
 
         return ssoUser;
 

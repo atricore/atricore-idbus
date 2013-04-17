@@ -21,7 +21,10 @@ import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdchange.PwdChangePage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdreset.PwdResetPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdreset.ReqPwdResetPage;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.register.RegisterPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdreset.VerifyPwdResetPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationStartedPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.ReqRegistrationPage;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 
 /**
@@ -71,9 +74,14 @@ public class SSOIdPApplication extends BaseWebApplication {
         // TODO : Only mount Self-Services pages if an SP is configured (we need the app. configured by now)
         mountPage("SS/HOME", DashboardPage.class);
         mountPage("SS/PROFILE", ProfilePage.class);
-        mountPage("SS/REGISTER", RegisterPage.class);
+        mountPage("SS/REGISTER", ReqRegistrationPage.class);
+        mountPage("SS/REIGSTERED", RegistrationStartedPage.class);
+
+        mountPage("SS/CONFIRM", RegistrationPage.class);
+
         mountPage("SS/PWDCHANGE", PwdChangePage.class);
         mountPage("SS/REQPWDRESET", ReqPwdResetPage.class);
+        mountPage("SS/VFYPWDRESET", VerifyPwdResetPage.class);
         mountPage("SS/PWDRESET", PwdResetPage.class);
 
         mountPage("AGENT/LOGIN", JossoLoginPage.class);

@@ -37,7 +37,7 @@ public class Activator implements BundleActivator {
         /*
         applicationFactory =
             new DefaultWebApplicationFactory(context, OpenIDIdPApplication.class, "openid", "openid");
-        applicationFactory.register();
+        applicationFactory.registration();
         */
     }
 

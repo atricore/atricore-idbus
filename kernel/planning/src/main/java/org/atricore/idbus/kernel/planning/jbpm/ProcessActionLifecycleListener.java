@@ -31,7 +31,7 @@ import org.atricore.idbus.kernel.planning.IdentityPlanningException;
 import java.util.Map;
 
 /**
- * Convinience class to register process actions in an OSGi environment
+ * Convinience class to registration process actions in an OSGi environment
  * 
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  * @version $Rev: 212 $ $Date: 2008-12-05 14:53:51 -0300 (Fri, 05 Dec 2008) $
@@ -78,7 +78,7 @@ public class ProcessActionLifecycleListener implements BundleContextAware {
         }
         if (!found) {
             throw new IdentityPlanningException("Bundle not found in context ["+
-                    bundleSymbolicName + ":" + bundleVersion + "], can't register process action " + 
+                    bundleSymbolicName + ":" + bundleVersion + "], can't registration process action " +
                     processAction.getQualifiedClassName());
         }
     }

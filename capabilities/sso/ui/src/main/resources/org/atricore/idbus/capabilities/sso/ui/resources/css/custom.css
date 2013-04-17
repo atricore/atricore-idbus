@@ -20,3 +20,11 @@ If you add styles to this template, be sure to include it in your template files
     color: #365b6d;
     text-decoration: none!important;
 }
+
+.gt-hr hr {
+    display: block;
+    height: 1px;
+    border: 0 #ccc;
+    border-top: 1px solid;
+    margin: 1em 0; padding: 0;
+}
