@@ -175,6 +175,7 @@ import com.atricore.idbus.console.services.dto.ServiceConnection;
 import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProvider;
 import com.atricore.idbus.console.services.dto.InternalSaml2ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.ServiceResource;
+import com.atricore.idbus.console.services.dto.SharepointExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.SharepointResource;
 import com.atricore.idbus.console.services.dto.SubjectNameIDPolicyType;
 import com.atricore.idbus.console.services.dto.SugarCRMServiceProvider;
@@ -6147,6 +6148,7 @@ public class PropertySheetMediator extends IocMediator {
          // bind model
         var liferayResource:LiferayResource = projectProxy.currentIdentityApplianceElement as LiferayResource;
         var liferayEE:LiferayExecutionEnvironment = liferayResource.activation.executionEnv as LiferayExecutionEnvironment;
+
         liferayResource.name = _liferayResourceCoreSection.executionEnvironmentName.text;
         liferayResource.description = _liferayResourceCoreSection.executionEnvironmentDescription.text;
 
@@ -6248,9 +6250,9 @@ public class PropertySheetMediator extends IocMediator {
             _jbosseppResourceCoreSection.resourceContext.text = location.context;
             _jbosseppResourceCoreSection.resourcePath.text = location.uri;
 
-            for (var i:int=0; i < _jbosseppResourceCoreSection.selectedHost.dataProvider.length; i++) {
-                if (_jbosseppResourceCoreSection.selectedHost.dataProvider[i].data == jbosseppEE.type.toString()) {
-                    _jbosseppResourceCoreSection.selectedHost.selectedIndex = i;
+            for (var j:int=0; j < _jbosseppResourceCoreSection.selectedHost.dataProvider.length; j++) {
+                if (_jbosseppResourceCoreSection.selectedHost.dataProvider[j].data == jbosseppEE.type.toString()) {
+                    _jbosseppResourceCoreSection.selectedHost.selectedIndex = j;
                     break;
                 }
             }
@@ -7670,6 +7672,7 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleSharepoint2010ExecEnvCorePropertyTabCreationComplete(event:Event):void {
         var sharepointResource:SharepointResource = projectProxy.currentIdentityApplianceElement as SharepointResource;
+        var sharepointEE:SharepointExecutionEnvironment = sharepointResource.activation.executionEnv as SharepointExecutionEnvironment;
 
         if (sharepointResource != null) {
             // bind view
@@ -7691,7 +7694,7 @@ public class PropertySheetMediator extends IocMediator {
                 _sharepoint2010ResourceCoreSection.resourcePath.text = sharepointResource.stsLocation.uri;
             }
 
-            if (sharepointResource.appLocation != null) {
+            if (sharepointResource.partnerAppLocation != null) {
 
                 for (var ij:int = 0; ij < _sharepoint2010ResourceCoreSection.appResourceProtocol.dataProvider.length; ij++) {
                     if (sharepointResource.stsLocation.protocol == _sharepoint2010ResourceCoreSection.appResourceProtocol.dataProvider[ij].label) {
@@ -7699,10 +7702,10 @@ public class PropertySheetMediator extends IocMediator {
                         break;
                     }
                 }
-                        _sharepoint2010ResourceCoreSection.appResourceDomain.text = sharepointResource.appLocation.host;
-                _sharepoint2010ResourceCoreSection.appResourcePort.text = sharepointResource.appLocation.port.toString();
-                _sharepoint2010ResourceCoreSection.appResourceContext.text = sharepointResource.appLocation.context;
-                _sharepoint2010ResourceCoreSection.appResourcePath.text = sharepointResource.appLocation.uri;
+                        _sharepoint2010ResourceCoreSection.appResourceDomain.text = sharepointResource.partnerAppLocation.host;
+                _sharepoint2010ResourceCoreSection.appResourcePort.text = sharepointResource.partnerAppLocation.port.toString();
+                _sharepoint2010ResourceCoreSection.appResourceContext.text = sharepointResource.partnerAppLocation.context;
+                _sharepoint2010ResourceCoreSection.appResourcePath.text = sharepointResource.partnerAppLocation.uri;
 
             }
 
@@ -7755,14 +7758,14 @@ public class PropertySheetMediator extends IocMediator {
             sharepointResource.stsLocation.context = _sharepoint2010ResourceCoreSection.resourceContext.text;
             sharepointResource.stsLocation.uri = _sharepoint2010ResourceCoreSection.resourcePath.text;
 
-            if (sharepointResource.appLocation == null)
-                sharepointResource.appLocation = new Location();
+            if (sharepointResource.partnerAppLocation == null)
+                sharepointResource.partnerAppLocation = new Location();
 
-            sharepointResource.appLocation.protocol = _sharepoint2010ResourceCoreSection.appResourceProtocol.labelDisplay.text;
-            sharepointResource.appLocation.host = _sharepoint2010ResourceCoreSection.appResourceDomain.text;
-            sharepointResource.appLocation.port = parseInt(_sharepoint2010ResourceCoreSection.appResourcePort.text);
-            sharepointResource.appLocation.context = _sharepoint2010ResourceCoreSection.appResourceContext.text;
-            sharepointResource.appLocation.uri = _sharepoint2010ResourceCoreSection.appResourcePath.text;
+            sharepointResource.partnerAppLocation.protocol = _sharepoint2010ResourceCoreSection.appResourceProtocol.labelDisplay.text;
+            sharepointResource.partnerAppLocation.host = _sharepoint2010ResourceCoreSection.appResourceDomain.text;
+            sharepointResource.partnerAppLocation.port = parseInt(_sharepoint2010ResourceCoreSection.appResourcePort.text);
+            sharepointResource.partnerAppLocation.context = _sharepoint2010ResourceCoreSection.appResourceContext.text;
+            sharepointResource.partnerAppLocation.uri = _sharepoint2010ResourceCoreSection.appResourcePath.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -7775,6 +7778,8 @@ public class PropertySheetMediator extends IocMediator {
     private function sharepoint2010Save(): void {
          // bind model
         var sharepointResource:SharepointResource = projectProxy.currentIdentityApplianceElement as SharepointResource;
+        var sharepointEE:SharepointExecutionEnvironment = sharepointResource.activation.executionEnv as SharepointExecutionEnvironment;
+
         sharepointResource.name = _sharepoint2010ResourceCoreSection.resourceName.text;
         sharepointResource.description = _sharepoint2010ResourceCoreSection.resourceDescription.text;
 
@@ -7793,13 +7798,26 @@ public class PropertySheetMediator extends IocMediator {
 
         // App location
         var appLocation:Location = new Location();
-        appLocation.protocol = _sharepoint2010ResourceCoreSection.resourceProtocol.labelDisplay.text;
-        appLocation.host = _sharepoint2010ResourceCoreSection.resourceDomain.text;
-        appLocation.port = parseInt(_sharepoint2010ResourceCoreSection.resourcePort.text);
-        appLocation.context = _sharepoint2010ResourceCoreSection.resourceContext.text;
-        appLocation.uri = _sharepoint2010ResourceCoreSection.resourcePath.text;
+        appLocation.protocol = _sharepoint2010ResourceCoreSection.appResourceProtocol.labelDisplay.text;
+        appLocation.host = _sharepoint2010ResourceCoreSection.appResourceDomain.text;
+        appLocation.port = parseInt(_sharepoint2010ResourceCoreSection.appResourcePort.text);
+        appLocation.context = _sharepoint2010ResourceCoreSection.appResourceContext.text;
+        appLocation.uri = _sharepoint2010ResourceCoreSection.appResourcePath.text;
 
-        sharepointResource.appLocation = appLocation;
+        sharepointResource.partnerAppLocation = appLocation;
+
+        //EE
+        sharepointEE.platformId = "sharepoint-2010";
+        sharepointEE.installUri = "C:\\inetPub"; // TODO !!!!
+        sharepointEE.type = ExecEnvType.REMOTE;
+
+        sharepointEE.name = sharepointResource.name + "-ee";
+
+        sharepointEE.description = sharepointResource.description +
+                "Captive Sharepoint execution environment owned by Service Resource " + sharepointResource.name
+
+        sharepointEE.overwriteOriginalSetup = false;
+        sharepointEE.installDemoApps = false;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

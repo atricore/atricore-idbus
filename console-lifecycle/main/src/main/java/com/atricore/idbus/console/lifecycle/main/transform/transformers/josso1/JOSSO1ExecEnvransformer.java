@@ -175,6 +175,8 @@ public class JOSSO1ExecEnvransformer extends AbstractTransformer {
         Bean sloArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
         sloArtifact.setName(bpBean.getName() + "-binding-ssop-slo-artifact");
         setPropertyValue(sloArtifact, "name", sloArtifact.getName());
+        setPropertyValue(sloArtifact, "name", sloArtifact.getName());
+        setPropertyValue(sloArtifact, "name", sloArtifact.getName());
         setPropertyValue(sloArtifact, "type", "{urn:org:atricore:idbus:sso:metadata}SingleLogoutService");
         setPropertyValue(sloArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
         setPropertyValue(sloArtifact, "location", "/SSO/SLO/ARTIFACT");

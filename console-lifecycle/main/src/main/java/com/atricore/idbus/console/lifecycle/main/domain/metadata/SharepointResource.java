@@ -6,11 +6,9 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class SharepointResource extends ServiceResource {
+public class SharepointResource extends JOSSO1Resource {
 
     private static final long serialVersionUID = 873640871223858432L;
-
-    private Location appLocation;
 
     private Location stsLocation;
 
@@ -19,14 +17,6 @@ public class SharepointResource extends ServiceResource {
     private String stsEncryptingCertSubject;
 
     private Resource stsMetadata;
-
-    public Location getAppLocation() {
-        return appLocation;
-    }
-
-    public void setAppLocation(Location appLocation) {
-        this.appLocation = appLocation;
-    }
 
     public Location getStsLocation() {
         return stsLocation;

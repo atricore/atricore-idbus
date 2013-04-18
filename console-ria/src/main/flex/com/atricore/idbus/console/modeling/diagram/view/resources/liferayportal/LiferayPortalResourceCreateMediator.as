@@ -138,7 +138,8 @@ public class LiferayPortalResourceCreateMediator extends IocFormMediator {
         liferayEE.containerType = view.containerType.selectedItem.data;
         liferayEE.containerPath = view.containerPath.text;
         liferayEE.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        liferayEE.installDemoApps = view.installSamples.selected;
+        liferayEE.installDemoApps = false;
+
         liferayEE.platformId = "liferay";
 
         liferayEE.installUri = view.homeDirectory.text;
@@ -153,9 +154,6 @@ public class LiferayPortalResourceCreateMediator extends IocFormMediator {
         liferayEE.installUri = view.homeDirectory.text;
         if (liferayEE.type.name == ExecEnvType.REMOTE.name)
             liferayEE.location = view.location.text;
-        liferayEE.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        liferayEE.installDemoApps = false;
-        liferayEE.platformId = "liferay6";
 
         // liferayEE.instance = view.instance.text;
 
@@ -212,15 +210,19 @@ public class LiferayPortalResourceCreateMediator extends IocFormMediator {
     private function save():void {
         bindModel();
 
+        // Add exec env to appliance definition
         if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null){
             _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
         }
         _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newResource.activation.executionEnv);
 
+        // Add resource to appliance definition
         if (_projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources == null) {
             _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources = new ArrayCollection();
         }
         _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.addItem(_newResource);
+
+
         _projectProxy.currentIdentityApplianceElement = _newResource;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);

@@ -118,7 +118,7 @@ public class DiagramUtil {
 
             // Sharepoint resources can only be linked to IIS
             if (resource is SharepointResource) {
-                return execEnv is WindowsIISExecutionEnvironment;
+                return false;
             }
 
             // Microstrategy only supports Tomcat
@@ -148,7 +148,7 @@ public class DiagramUtil {
 
             // Liferay runs only in JBoss
             if (resource is LiferayResource) {
-                return execEnv is JbossExecutionEnvironment;
+                return false;
             }
 
             if (resource is MicroStrategyResource) {

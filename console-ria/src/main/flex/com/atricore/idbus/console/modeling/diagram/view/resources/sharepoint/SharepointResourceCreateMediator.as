@@ -29,7 +29,9 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFol
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
+import com.atricore.idbus.console.services.dto.JOSSOActivation;
 import com.atricore.idbus.console.services.dto.Location;
+import com.atricore.idbus.console.services.dto.SharepointExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.SharepointResource;
 
 import flash.events.Event;
@@ -142,6 +144,7 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
     override public function bindModel():void {
 
         var sharepointResource:SharepointResource = new SharepointResource();
+        var sharepointEE:SharepointExecutionEnvironment = new SharepointExecutionEnvironment();
 
         sharepointResource.name = view.resourceName.text;
         sharepointResource.description = view.resourceDescription.text;
@@ -161,13 +164,42 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
 
         // App location
         var appLocation:Location = new Location();
-        appLocation.protocol = view.resourceProtocol.labelDisplay.text;
-        appLocation.host = view.resourceDomain.text;
-        appLocation.port = parseInt(view.resourcePort.text);
-        appLocation.context = view.resourceContext.text;
-        appLocation.uri = view.resourcePath.text;
+        appLocation.protocol = view.appResourceProtocol.labelDisplay.text;
+        appLocation.host = view.appResourceDomain.text;
+        appLocation.port = parseInt(view.appResourcePort.text);
+        appLocation.context = view.appResourceContext.text;
+        appLocation.uri = view.appResourcePath.text;
 
-        sharepointResource.appLocation = appLocation;
+        sharepointResource.partnerAppLocation = appLocation;
+
+        //EE
+        sharepointEE.platformId = "sharepoint-2010";
+        sharepointEE.installUri = "C:\\inetPub"; // TODO !!!!
+        sharepointEE.type = ExecEnvType.REMOTE;
+
+        sharepointEE.name = sharepointResource.name + "-ee";
+
+        sharepointEE.description = sharepointResource.description +
+                "Captive Sharepoint execution environment owned by Service Resource " + sharepointResource.name
+
+        sharepointEE.overwriteOriginalSetup = false;
+        sharepointEE.installDemoApps = false;
+
+
+        var sharepointEEActivation : JOSSOActivation  = new JOSSOActivation();
+        sharepointEEActivation.name = sharepointResource.name.toLowerCase().replace(/\s+/g, "-") +
+                "-" + sharepointEE.name.toLowerCase().replace(/\s+/g, "-") + "-activation";
+        sharepointEEActivation.executionEnv = sharepointEE;
+        sharepointEEActivation.resource = sharepointResource;
+
+        sharepointResource.activation = sharepointEEActivation;
+
+        if(sharepointEE.activations == null){
+            sharepointEE.activations = new ArrayCollection();
+        }
+
+        sharepointEE.activations.addItem(sharepointEEActivation);
+
 
 
         /* TODO: where do we place execution environment-specific attributes ?
@@ -188,7 +220,16 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
 
         if (validate(true)) {
             bindModel();
+
+            // Add resource to appliance definition
             _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.addItem(_newResource);
+
+            // Add exec env to appliance definition
+            if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null){
+                _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
+            }
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newResource.activation.executionEnv);
+
             _projectProxy.currentIdentityApplianceElement = _newResource;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
@@ -239,10 +280,19 @@ public class SharepointResourceCreateMediator extends IocFormMediator {
 
     private function save():void {
         bindModel();
+
+        // Add exec env to appliance definition
+        if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null){
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
+        }
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newResource.activation.executionEnv);
+
+        // Add resource to appliance definition
         if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources == null){
             _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources = new ArrayCollection();
         }
         _projectProxy.currentIdentityAppliance.idApplianceDefinition.serviceResources.addItem(_newResource);
+
         _projectProxy.currentIdentityApplianceElement = _newResource;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);

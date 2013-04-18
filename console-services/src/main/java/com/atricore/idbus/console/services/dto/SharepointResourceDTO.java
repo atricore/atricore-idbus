@@ -3,10 +3,9 @@ package com.atricore.idbus.console.services.dto;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class SharepointResourceDTO extends ServiceResourceDTO {
-    private static final long serialVersionUID = 475740871227635432L;
+public class SharepointResourceDTO extends JOSSO1ResourceDTO {
 
-    private LocationDTO appLocation;
+    private static final long serialVersionUID = 475740871227635432L;
 
     private LocationDTO stsLocation;
 
@@ -15,14 +14,6 @@ public class SharepointResourceDTO extends ServiceResourceDTO {
     private String stsEncryptingCertSubject;
 
     private ResourceDTO stsMetadata;
-
-    public LocationDTO getAppLocation() {
-        return appLocation;
-    }
-
-    public void setAppLocation(LocationDTO appLocation) {
-        this.appLocation = appLocation;
-    }
 
     public LocationDTO getStsLocation() {
         return stsLocation;
