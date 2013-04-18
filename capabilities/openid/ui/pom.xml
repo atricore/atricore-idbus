@@ -411,6 +411,7 @@
                         </Import-Package>
                         <Require-Bundle>
                             org.atricore.idbus.capabilities.sso.ui,
+                            org.atricore.idbus.kernel.main,
                             org.ops4j.pax.wicket.service,
                             org.apache.wicket.util,
                             org.apache.wicket.request,
