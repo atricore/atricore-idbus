@@ -362,12 +362,12 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
+        <!--dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.strongauthscheme</artifactId>
             <version>${pom.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency-->
 
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
