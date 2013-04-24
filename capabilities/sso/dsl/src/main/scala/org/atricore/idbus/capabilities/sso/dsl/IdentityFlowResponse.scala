@@ -22,6 +22,7 @@ package org.atricore.idbus.capabilities.sso.dsl
 
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
 import org.atricore.idbus.kernel.main.mediation.Channel
+import java.net.URL
 
 /**
  * Encapsulate the outcome of executing an identity flow route.
@@ -62,6 +63,13 @@ case class Redirect(channel : Channel, endpoint : IdentityMediationEndpoint) ext
 
   def defaultMessage: String =
     "The user should be redirected to endpoint %s of channel %s".format(endpoint.getName, channel.getName)
+}
+
+case class RedirectToUrl(url : URL) extends IdentityFlowSuccess {
+  def value: Int = 2
+
+  def defaultMessage: String =
+    "The user should be redirected to url %s".format(url.toExternalForm)
 }
 
 

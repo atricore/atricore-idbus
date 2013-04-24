@@ -33,6 +33,12 @@
             <version>${pom.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.sso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sso.test</artifactId>
+            <version>${pom.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <scope>provided</scope>

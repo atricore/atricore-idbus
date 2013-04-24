@@ -44,7 +44,7 @@ import org.atricore.idbus.capabilities.sso.dsl.util.Logging
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-private[builtin] trait MediationDirectives extends Logging {
+trait MediationDirectives extends Logging {
   this: BasicIdentityFlowDirectives =>
 
   def mediationState =

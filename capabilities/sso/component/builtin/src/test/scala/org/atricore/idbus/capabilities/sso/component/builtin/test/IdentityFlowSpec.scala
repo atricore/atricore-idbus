@@ -33,6 +33,7 @@ import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState
 import org.atricore.idbus.capabilities.sso.component.builtin.MediationDirectives
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass
+import org.atricore.idbus.capabilities.sso.test.dsl.IdentityFlowDSLTestSupport
 
 /**
  * Simple identity flow route tester.

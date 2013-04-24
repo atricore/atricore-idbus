@@ -43,6 +43,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
+            <artifactId>org.atricore.idbus.capabilities.idconfirmation.component.builtin</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.atricore.idbus.capabilities.sts</groupId>
             <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
             <scope>provided</scope>
@@ -88,7 +94,7 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
-            <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
+            <artifactId>org.atricore.idbus.capabilities.sso.dsl</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -221,7 +227,7 @@
                             org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
                             org.apache.aries.blueprint.ext,
                             *
-                        </Import-Package>                        
+                        </Import-Package>
                         <Export-Package>
                             ${project.artifactId}.*;version=${project.version}
                         </Export-Package>

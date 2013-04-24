@@ -28,7 +28,7 @@ import org.atricore.idbus.capabilities.sso.dsl.core._
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-private[sso] trait BasicIdentityFlowDirectives {
+trait BasicIdentityFlowDirectives {
 
   def filter(filter: IdentityFlowRouteFilter[Product0]) = new IdentityRoute0(filter)
 

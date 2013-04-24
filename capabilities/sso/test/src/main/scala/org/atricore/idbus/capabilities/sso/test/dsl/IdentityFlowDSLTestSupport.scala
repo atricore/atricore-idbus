@@ -18,13 +18,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.atricore.idbus.capabilities.sso.component.builtin.test
+package org.atricore.idbus.capabilities.sso.test.dsl
 
 import org.atricore.idbus.kernel.main.mediation.{MediationMessageImpl, MediationStateImpl}
 import org.atricore.idbus.kernel.main.mediation.state.LocalStateImpl
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType
-import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl
+import org.atricore.idbus.kernel.main.mediation.provider.{IdentityConfirmationProviderImpl, ServiceProviderImpl}
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl
 import java.util
 import org.atricore.idbus.kernel.main.mediation.claim.{ClaimChannelImpl, ClaimChannel}
@@ -37,13 +37,14 @@ import org.atricore.idbus.capabilities.sso.dsl.core._
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannelImpl
 
 /**
  * Base class for identity flow testers
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-private[test] trait IdentityFlowDSLTestSupport {
+trait IdentityFlowDSLTestSupport {
 
   type ContextBuilder = Exchange => IdentityFlowRequestContext
 
@@ -92,6 +93,12 @@ private[test] trait IdentityFlowDSLTestSupport {
     provider
   }
 
+  protected def newIdentityConfirmationProvider(name: String) = {
+    val provider = new IdentityConfirmationProviderImpl
+    provider.setName(name)
+    provider
+  }
+
   protected def newSpChannel(name: String) = {
     val spChannel = new SPChannelImpl
     spChannel.setName(name)
@@ -106,9 +113,15 @@ private[test] trait IdentityFlowDSLTestSupport {
     claimChannel
   }
 
-  protected def newIdentityMediationEndpoint(name: String, binding: SSOBinding, epType : AuthnCtxClass ) = {
+  protected def newIdentityConfirmationChannel(name: String) = {
+    val idConfChannel = new IdentityConfirmationChannelImpl
+    idConfChannel.setName("idconf-1")
+    idConfChannel.setEndpoints(new util.ArrayList[IdentityMediationEndpoint]())
+    idConfChannel
+  }
 
-    val endpoint = new IdentityMediationEndpointImpl
+  protected def newIdentityMediationEndpoint(name: String, binding: SSOBinding, epType : AuthnCtxClass ) = {
+   val endpoint = new IdentityMediationEndpointImpl
     endpoint.setName(name)
     endpoint.setBinding(binding.getValue)
     endpoint.setType(epType.getValue)

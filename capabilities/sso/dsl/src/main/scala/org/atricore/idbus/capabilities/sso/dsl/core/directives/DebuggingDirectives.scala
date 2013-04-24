@@ -32,7 +32,7 @@ import org.atricore.idbus.capabilities.sso.dsl.core.{Rejection, Reject}
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-private[dsl] trait DebuggingDirectives extends Logging {
+trait DebuggingDirectives extends Logging {
   this: BasicIdentityFlowDirectives =>
 
   def logRequestResponse(mark : String = "",
