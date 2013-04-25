@@ -32,7 +32,7 @@
         <mx:NumberValidator id="portValidator" source="{partnerAppLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{partnerAppLocationDomain}" required="true" property="text"/>
-        <utils:URLPartValidator id="contextValidator" source="{partnerAppLocationContext}" required="true" property="text"/>
+        <utils:URLPartValidator id="contextValidator" source="{partnerAppLocationContext}" required="false" property="text"/>
         <utils:URLMultipartValidator id="pathValidator" source="{partnerAppLocationPath}" required="false" property="text"/>
     </fx:Declarations>
 

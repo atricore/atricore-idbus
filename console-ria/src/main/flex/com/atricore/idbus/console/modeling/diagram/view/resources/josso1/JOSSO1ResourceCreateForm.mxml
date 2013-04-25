@@ -34,7 +34,7 @@
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{resourceDomain}" required="true" property="text"
                                 trigger="{btnOk}" triggerEvent="click"/>
-        <utils:URLPartValidator id="contextValidator" source="{resourceContext}" required="true" property="text"
+        <utils:URLPartValidator id="contextValidator" source="{resourceContext}" required="false" property="text"
                                 trigger="{btnOk}" triggerEvent="click"/>
         <utils:URLMultipartValidator id="pathValidator" source="{resourcePath}" required="false" property="text"
                                      trigger="{btnOk}" triggerEvent="click"/>
