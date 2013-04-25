@@ -25,6 +25,7 @@ import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.*;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * <p>
@@ -134,12 +135,30 @@ public interface SamlR2Signer {
     void validateDom(RoleDescriptorType md, String domStr) throws SamlR2SignatureException;
 
     /**
+     * @param md     The signer SAML 2.0 Metadata
+     * @param domStr The signed SAML 2.0 element, serialized
+     * @param elementId The dom element's ID
+     * @throws SamlR2SignatureValidationException
+     *          if the assertion signature is invalid
+     */
+    void validateDom(RoleDescriptorType md, String domStr, String elementId) throws SamlR2SignatureException;
+
+    /**
      * @param md  The signer SAML 2.0 Metadata
      * @param dom The signed SAML 2.0 element, DOM.
      * @throws SamlR2SignatureValidationException
      *          if the assertion signature is invalid
      */
     void validate(RoleDescriptorType md, Document dom) throws SamlR2SignatureException;
+
+    /**
+     * @param md  The signer SAML 2.0 Metadata
+     * @param dom The signed SAML 2.0 element, DOM.
+     * @param root The signed SAML 2.0 element, DOM.
+     * @throws SamlR2SignatureValidationException
+     *          if the assertion signature is invalid
+     */
+    void validate(RoleDescriptorType md, Document dom, Node root) throws SamlR2SignatureException;
 
     /**
      * @param manageNameIDRequest the Manager Name ID Request

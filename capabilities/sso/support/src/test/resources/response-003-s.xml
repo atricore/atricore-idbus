@@ -1,0 +1,61 @@
+<samlp:Response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns7="urn:oasis:names:tc:SAML:2.0:idbus"
+                xmlns:ns6="urn:org:atricore:idbus:common:sso:1.0:protocol"
+                xmlns:ns5="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                xmlns:enc="http://www.w3.org/2001/04/xmlenc#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                Destination="http://localhost:8081/IDBUS/IDA-3/SP-1/SAML2/ACS/POST" IssueInstant="2013-04-24T19:36:14Z"
+                Version="2.0" InResponseTo="id7CBAC0104EF859CE" ID="s2879168f450fa44bac1ac3bdb7c435492b5bc871a">
+    <saml:Issuer>http://localhost:8080/openam_10.0.0</saml:Issuer>
+    <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+    </samlp:Status>
+    <saml:Assertion IssueInstant="2013-04-24T19:36:14Z" ID="s2e94a47b8f2a0425fff2df25f93f189d0e104754e" Version="2.0">
+        <saml:Issuer>http://localhost:8080/openam_10.0.0</saml:Issuer>
+        <ds:Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+            <SignedInfo>
+                <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                <Reference URI="#s2e94a47b8f2a0425fff2df25f93f189d0e104754e">
+                    <Transforms>
+                        <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                        <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                    </Transforms>
+                    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                    <DigestValue>AuWQpyRsUSo6WBTxUVGPXHqMpq0=</DigestValue>
+                </Reference>
+            </SignedInfo>
+            <SignatureValue>
+                DE31SfPX3WubGMxeFNYphDmN4vfCfHiUu0FHjUD0eIvHg93JHtiSA/ivG8Q6qmZzBaPZKHPDetEaiiLMCmMH5dj+lCtvadHv9mCbI03BN1VqjfJQNFOmWj4gMS2l0/losT4oDOEWjHMaXo/gryfXJISDCuWuXBolHRqdzzqQ6+U=
+            </SignatureValue>
+            <KeyInfo>
+                <X509Data>
+                    <X509Certificate>
+                        MIICQDCCAakCBEeNB0swDQYJKoZIhvcNAQEEBQAwZzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFDASBgNVBAcTC1NhbnRhIENsYXJhMQwwCgYDVQQKEwNTdW4xEDAOBgNVBAsTB09wZW5TU08xDTALBgNVBAMTBHRlc3QwHhcNMDgwMTE1MTkxOTM5WhcNMTgwMTEyMTkxOTM5WjBnMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEUMBIGA1UEBxMLU2FudGEgQ2xhcmExDDAKBgNVBAoTA1N1bjEQMA4GA1UECxMHT3BlblNTTzENMAsGA1UEAxMEdGVzdDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArSQc/U75GB2AtKhbGS5piiLkmJzqEsp64rDxbMJ+xDrye0EN/q1U5Of+RkDsaN/igkAvV1cuXEgTL6RlafFPcUX7QxDhZBhsYF9pbwtMzi4A4su9hnxIhURebGEmxKW9qJNYJs0Vo5+IgjxuEWnjnnVgHTs1+mq5QYTA7E6ZyL8CAwEAATANBgkqhkiG9w0BAQQFAAOBgQB3Pw/UQzPKTPTYi9upbFXlrAKMwtFf2OW4yvGWWvlcwcNSZJmTJ8ARvVYOMEVNbsT4OFcfu2/PeYoAdiDAcGy/F2Zuj8XJJpuQRSE6PtQqBuDEHjjmOQJ0rV/r8mO1ZCtHRhpZ5zYRjhRC9eCbjx9VrFax0JDC/FfwWigmrW0Y0Q==
+                    </X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </ds:Signature>
+        <saml:Subject>
+            <saml:NameID NameQualifier="http://localhost:8080/openam_10.0.0"
+                         Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient">vSaSe1haDXL0fh4xJ08YdJa3f5CH
+            </saml:NameID>
+            <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                <saml:SubjectConfirmationData InResponseTo="id7CBAC0104EF859CE"
+                                              Recipient="http://localhost:8081/IDBUS/IDA-3/SP-1/SAML2/ACS/POST"
+                                              NotOnOrAfter="2013-04-24T19:46:14Z"/>
+            </saml:SubjectConfirmation>
+        </saml:Subject>
+        <saml:Conditions NotOnOrAfter="2013-04-24T19:46:14Z" NotBefore="2013-04-24T19:26:14Z">
+            <saml:AudienceRestriction>
+                <saml:Audience>http://localhost:8081/IDBUS/IDA-3/SP-1/SAML2/MD</saml:Audience>
+            </saml:AudienceRestriction>
+        </saml:Conditions>
+        <saml:AuthnStatement SessionIndex="s2072bd9e4d3926b80478ad24fe8412e3ee4a91801"
+                             AuthnInstant="2013-04-24T19:36:14Z">
+            <saml:AuthnContext>
+                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+                </saml:AuthnContextClassRef>
+            </saml:AuthnContext>
+        </saml:AuthnStatement>
+    </saml:Assertion>
+</samlp:Response>

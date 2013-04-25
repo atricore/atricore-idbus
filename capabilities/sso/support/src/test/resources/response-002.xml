@@ -1,0 +1,84 @@
+<samlp:Response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns7="urn:oasis:names:tc:SAML:2.0:idbus"
+                xmlns:ns6="urn:org:atricore:idbus:common:sso:1.0:protocol"
+                xmlns:ns5="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:enc="http://www.w3.org/2001/04/xmlenc#"
+                xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                Destination="http://gsdevsso.rnsolutions.com:8081/IDBUS/GSDEVSSO-IDAPL/GSDEVSSO-SP/SAML2/ACS/POST"
+                IssueInstant="2013-04-23T16:23:58Z" Version="2.0" InResponseTo="id571C522BC37BCF4D"
+                ID="s2dd1aadca7bc436eff200c10fa453fca04c3a4cc7">
+    <saml:Issuer>AMS_IDP_STAGE</saml:Issuer>
+    <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+    </samlp:Status>
+    <saml:Assertion IssueInstant="2013-04-23T16:23:58Z" ID="s27b027b84d7d058d9f351a4b17afe3eb9fe8f579c" Version="2.0">
+        <saml:Issuer>AMS_IDP_STAGE</saml:Issuer>
+        <ds:Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+            <SignedInfo>
+                <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                <Reference URI="#s27b027b84d7d058d9f351a4b17afe3eb9fe8f579c">
+                    <Transforms>
+                        <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                        <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                    </Transforms>
+                    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                    <DigestValue>6SNYjrC05tfA8rFBw28WK79YKIU=</DigestValue>
+                </Reference>
+            </SignedInfo>
+            <SignatureValue>
+                N7/yfOouEQ3gOQPg2qP6wjVL7qVLYsjMBoI3cj46lPA/HegggvwRW7p67+eMiVDbdX5GEnXCWDeEMomzum2aF929PMqE8sKk800yXQW2D9PRW+34+sQGa5/3pSnWqqsNKXzoEWTpVXkC0fSHPBHQHJBWbZx0yjWfYO7KXI/edm8/BYUXZpR3AtfIKGCiy2BunDeXff+Ol0GdiNhKnIEMbKXLlZhnLCYIJzyn/kP2I7zy/BzlwVJ3vJu9h97LZw26kp6Gmurr8X8dW+Yl5xBYomQ9GwoXuN7urYDffhflPmIcHkH44A/6sEe2VLM3nfoBjsbKUolhQa73DhCP2Rv4Tg==
+            </SignatureValue>
+            <KeyInfo>
+                <X509Data>
+                    <X509Certificate>
+                        MIIFcTCCBFmgAwIBAgICbJswDQYJKoZIhvcNAQELBQAwazETMBEGCgmSJomT8ixkARkWA2NvbTEaMBgGCgmSJomT8ixkARkWCmN5YmVydHJ1c3QxETAPBgNVBAsTCFNlcnZpY2VzMQwwCgYDVQQLEwNQS0kxFzAVBgNVBAMTDkRFTU8tU1NQLUNBLUExMB4XDTExMDcwNjIzMDI0MFoXDTE0MDcwNjIzMDI0MFowfzELMAkGA1UEBhMCVVMxETAPBgNVBAgTCE1hcnlsYW5kMREwDwYDVQQHEwhCZXRoZXNkYTEMMAoGA1UEChMDSEhTMRQwEgYDVQQLEwtoaHNpZGVudGl0eTEmMCQGA1UEAxMdc3NvLXN0YWdlLmhoc2lkZW50aXR5Lmhocy5nb3YwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC5njvN3ZShT3ulrhyUeWaE5/2zJLOV3rcsKgEwxHAGiLFAnMP9nPngmFVhWDCWz2FAL5YFLRiLgAQFAMIaM4P6hxzgcpMa8juo+dbJQqtPUBizOOYcvqTysbQwswQS5twGcY5gtqYu/8sI3oSqJM+R97+FxFMCRXfzVN1grZBC4AxBzdlYgK0x0B/HKnvc3xUTEkbL47Y97MIBLJoHuTtX2yCnyflb1Dh4ZYJ9H4KefGPbw8eiJ9duSZr/5r1LG4QprlijbF+YHD/l5BrZhI8vjsWOzOtU2USi2Ye8zf8wa1hw/VGPeZ3kQ4vabj5Tr0JsM8UONnKkdzLdLwB3ssjBAgMBAAGjggIJMIICBTAaBgNVHREEEzARgQ9hbXNoZWxwQGhocy5nb3YwFwYDVR0gBBAwDjAMBgpghkgBZQMCAQMIMIIBAAYIKwYBBQUHAQEEgfMwgfAwPwYIKwYBBQUHMAKGM2h0dHA6Ly9haWExLnNzcC1zdHJvbmctaWQubmV0L0NBL0RFTU8tU1NQLUNBLUExLnA3YzBxBggrBgEFBQcwAoZlbGRhcDovL2RpcjEuc3NwLXN0cm9uZy1pZC5uZXQvY249REVNTy1TU1AtQ0EtQTEsb3U9UEtJLG91PVNlcnZpY2VzLGRjPUN5YmVydHJ1c3QsZGM9Y29tP2NBQ2VydGlmaWNhdGUwOgYIKwYBBQUHMAGGLmh0dHA6Ly9vY3NwMS5zc3Atc3Ryb25nLWlkLm5ldC9ERU1PLVNTUC1DQS1BMS8wDgYDVR0PAQH/BAQDAgWgMC0GA1UdJQQmMCQGBFUdJQAGCCsGAQUFBwMBBggrBgEFBQcDAgYIKwYBBQUIAgIwHwYDVR0jBBgwFoAUR3AC/67v4p22HTtVbGdI2kHq4fwwSwYDVR0fBEQwQjBAoD6gPIY6aHR0cDovL3RzdHdlYjEuaWRtcHAuY3liZXJ0cnVzdC5jb20vQ0RQL0RFTU8tU1NQLUNBLUExLmNybDAdBgNVHQ4EFgQURNZrUCLWA1U2Rdf6Lq0L3ZtL/0AwDQYJKoZIhvcNAQELBQADggEBANbcm7+tmnUaj9XTpSwPAWFM/AKHXVt1ulMJ3i2CFYNsyKBjhquXD1+MI/CVn6n9PJbJGt68qeV0ONP1jHzRTKkaHuktvLQjNoyS32z5Qc8jGPc/QcBonYMz9QVmEOC2MYqE2pMBtsp48aRmA5eF/ISpdvE2+IGqmy9C/CDMInFCR8Y3Tk+ZPOku7f8ycvARe62dDLg04Qu9lJDFTdLrvnOL36bpuGdepzxvjtawmJcMgd+TJk8bF+qMzggbLPzed4/51m0zv9FwDc7gpeQS99GhvXBIMwlsd1FQ7zGpQG83I8HLMhrgykM8HV4+xKygcSgs5NpQJJHBa0k42ZOmQzg=
+                    </X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </ds:Signature>
+        <saml:Subject>
+            <saml:NameID NameQualifier="AMS_IDP_STAGE" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient">
+                2000208179
+            </saml:NameID>
+            <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                <saml:SubjectConfirmationData InResponseTo="id571C522BC37BCF4D"
+                                              Recipient="http://gsdevsso.rnsolutions.com:8081/IDBUS/GSDEVSSO-IDAPL/GSDEVSSO-SP/SAML2/ACS/POST"
+                                              NotOnOrAfter="2013-04-23T16:33:58Z"/>
+            </saml:SubjectConfirmation>
+        </saml:Subject>
+        <saml:Conditions NotOnOrAfter="2013-04-23T16:33:58Z" NotBefore="2013-04-23T16:13:58Z">
+            <saml:AudienceRestriction>
+                <saml:Audience>http://gsdevsso.rnsolutions.com:8081/IDBUS/GSDEVSSO-IDAPL/GSDEVSSO-SP/SAML2/MD
+                </saml:Audience>
+            </saml:AudienceRestriction>
+        </saml:Conditions>
+        <saml:AuthnStatement SessionIndex="s21b378c5d41ea2cd07429e0c5e812d8b847133404"
+                             AuthnInstant="2013-04-23T16:23:58Z">
+            <saml:AuthnContext>
+                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
+            </saml:AuthnContext>
+        </saml:AuthnStatement>
+        <saml:AttributeStatement>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified" Name="EmailAddress">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+                    amsuat23@gmail.com
+                </saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified" Name="LastName">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+                    Rajamani
+                </saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified" Name="FirstName">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+                    Saravanan
+                </saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified" Name="HHSID">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+                    2000208179
+                </saml:AttributeValue>
+            </saml:Attribute>
+        </saml:AttributeStatement>
+    </saml:Assertion>
+</samlp:Response>

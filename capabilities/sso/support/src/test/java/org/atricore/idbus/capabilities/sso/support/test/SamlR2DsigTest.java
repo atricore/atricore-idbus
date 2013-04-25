@@ -1,5 +1,6 @@
 package org.atricore.idbus.capabilities.sso.support.test;
 
+import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
@@ -9,20 +10,24 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 
 
+import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils.*;
+import static org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils.unmarshal;
 
 import org.w3._2000._09.xmldsig_.ObjectType;
 import org.w3._2000._09.xmldsig_.SignatureType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -59,22 +64,66 @@ public class SamlR2DsigTest {
     }
 
 
-    @Test
-    public void testSignResponse() throws Exception {
-        String responseStr = loadResource("/response-001.xml");
-        StatusResponseType response = unmarshalSamlR2Response(responseStr, false);
-        StatusResponseType signedResponse = signer.sign(response);
+    public void testValidateAssertionFromResposneSignature() throws Exception {
+        String responseStr = loadResource("/response-001-s.xml");
+        ResponseType response = (ResponseType) XmlUtils.unmarshalSamlR2Response(responseStr, false);
+        RoleDescriptorType md = getRoleDescriptorType("idp1");
+
+        signer.validate(md, response, "Response");
+
+        /*
+        List assertions = response.getAssertionOrEncryptedAssertion();
+        for (int i = 0; i < assertions.size(); i++) {
+            AssertionType assertion = (AssertionType) assertions.get(i);
+            logger.debug("Validating " + assertion.getID());
+            signer.validate(md, assertion);
+
+        }  */
 
 
-        String signedResponseStr = marshalSamlR2Response(signedResponse, false);
 
-        signedResponse = unmarshalSamlR2Response(signedResponseStr, false);
-        RoleDescriptorType md = getRoleDescriptorType();
-
-        signer.validate(md, signedResponse);
     }
 
     @Test
+    public void testValidateAssertionSignature() throws Exception {
+        String assertionStr = loadResource("/assertion-003-s.xml");
+        AssertionType assertion = (AssertionType) XmlUtils.unmarshal(assertionStr, new String[]{SAMLR2Constants.SAML_ASSERTION_PKG});
+        RoleDescriptorType md = getRoleDescriptorType("idp1");
+
+        signer.validate(md, assertion);
+
+        /*
+        List assertions = response.getAssertionOrEncryptedAssertion();
+        for (int i = 0; i < assertions.size(); i++) {
+            AssertionType assertion = (AssertionType) assertions.get(i);
+            logger.debug("Validating " + assertion.getID());
+            signer.validate(md, assertion);
+
+        }  */
+
+
+
+    }
+
+
+
+    public void testSignResponse() throws Exception {
+        String responseStr = loadResource("/response-001.xml");
+        StatusResponseType response = XmlUtils.unmarshalSamlR2Response(responseStr, false);
+        StatusResponseType signedResponse = signer.sign(response, "Response");
+
+        String signedResponseStr = marshalSamlR2Response(signedResponse, false);
+        saveResource("/tmp/r.xml", signedResponseStr);
+
+        signedResponseStr = loadResource("/tmp/r.xml");
+        logger.info(signedResponseStr);
+
+        signedResponse = unmarshalSamlR2Response(signedResponseStr, false);
+        RoleDescriptorType md = getRoleDescriptorType("idp1");
+
+        signer.validate(md, signedResponse, "Response");
+    }
+
     public void testWrapSignResponse() throws Exception {
 
         // Load response :
@@ -82,7 +131,7 @@ public class SamlR2DsigTest {
 
         // Create valid signed response
         ResponseType response = (ResponseType) unmarshalSamlR2Response(responseStr, false);
-        ResponseType signedResponse = (ResponseType) signer.sign(response);
+        ResponseType signedResponse = (ResponseType) signer.sign(response, "Response");
 
         // Get signature
         SignatureType signature = signedResponse.getSignature();
@@ -114,13 +163,18 @@ public class SamlR2DsigTest {
         logger.debug("FAKE RESPONSE (2):\n" + marshalSamlR2Response(fakeResponse, false));
 
         // Validate FAKE Response
-        RoleDescriptorType md = getRoleDescriptorType();
-        signer.validate(md, fakeResponse);
+        RoleDescriptorType md = getRoleDescriptorType("idp1");
+        try {
+            signer.validate(md, fakeResponse, "Response");
+            assert false : "Signature should be invalid !";
+        } catch (SamlR2SignatureException ex) {
+            // OK !
+        }
     }
 
 
-    protected RoleDescriptorType getRoleDescriptorType() throws Exception {
-        EntityDescriptorType md = loadSamlR2Metadata();
+    protected RoleDescriptorType getRoleDescriptorType(String idp) throws Exception {
+        EntityDescriptorType md = loadIdPMetadata(idp);
         List<RoleDescriptorType> roles = md.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor();
         for (RoleDescriptorType roleDescriptorType : roles) {
             if (roleDescriptorType instanceof IDPSSODescriptorType)
@@ -129,15 +183,19 @@ public class SamlR2DsigTest {
         throw new RuntimeException("No IDP Role descriptor type found!");
     }
 
-    protected EntityDescriptorType loadSamlR2Metadata() throws Exception {
-        String mdStr = loadResource("/idp1/idp1-samlr2-metadata.xml");
-
+    protected EntityDescriptorType loadIdPMetadata(String idp) throws Exception {
+        String mdStr = loadResource("/"+idp+"/"+idp+"-samlr2-metadata.xml");
         return (EntityDescriptorType) unmarshal(mdStr, new String[] {SAMLR2Constants.SAML_METADATA_PKG});
     }
 
     protected String loadResource(String name) throws Exception {
         InputStream is =  getClass().getResourceAsStream(name);
         return IOUtils.toString(is);
+    }
+
+    protected void saveResource(String name, String content) throws Exception {
+        FileOutputStream fos = new FileOutputStream(name, false);
+        IOUtils.write(content, fos);
     }
 }
 

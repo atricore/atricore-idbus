@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<EntityDescriptor entityID="AMS_IDP_STAGE" xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
+    <IDPSSODescriptor WantAuthnRequestsSigned="false" ID="s0ccd77e2ea7d98ed0bd2d6419704abb842be22ef_01" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <KeyDescriptor use="signing">
+            <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                <ds:X509Data>
+                    <ds:X509Certificate>
+                        MIIFcTCCBFmgAwIBAgICbJswDQYJKoZIhvcNAQELBQAwazETMBEGCgmSJomT8ixkARkWA2NvbTEa
+                        MBgGCgmSJomT8ixkARkWCmN5YmVydHJ1c3QxETAPBgNVBAsTCFNlcnZpY2VzMQwwCgYDVQQLEwNQ
+                        S0kxFzAVBgNVBAMTDkRFTU8tU1NQLUNBLUExMB4XDTExMDcwNjIzMDI0MFoXDTE0MDcwNjIzMDI0
+                        MFowfzELMAkGA1UEBhMCVVMxETAPBgNVBAgTCE1hcnlsYW5kMREwDwYDVQQHEwhCZXRoZXNkYTEM
+                        MAoGA1UEChMDSEhTMRQwEgYDVQQLEwtoaHNpZGVudGl0eTEmMCQGA1UEAxMdc3NvLXN0YWdlLmho
+                        c2lkZW50aXR5Lmhocy5nb3YwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC5njvN3ZSh
+                        T3ulrhyUeWaE5/2zJLOV3rcsKgEwxHAGiLFAnMP9nPngmFVhWDCWz2FAL5YFLRiLgAQFAMIaM4P6
+                        hxzgcpMa8juo+dbJQqtPUBizOOYcvqTysbQwswQS5twGcY5gtqYu/8sI3oSqJM+R97+FxFMCRXfz
+                        VN1grZBC4AxBzdlYgK0x0B/HKnvc3xUTEkbL47Y97MIBLJoHuTtX2yCnyflb1Dh4ZYJ9H4KefGPb
+                        w8eiJ9duSZr/5r1LG4QprlijbF+YHD/l5BrZhI8vjsWOzOtU2USi2Ye8zf8wa1hw/VGPeZ3kQ4va
+                        bj5Tr0JsM8UONnKkdzLdLwB3ssjBAgMBAAGjggIJMIICBTAaBgNVHREEEzARgQ9hbXNoZWxwQGho
+                        cy5nb3YwFwYDVR0gBBAwDjAMBgpghkgBZQMCAQMIMIIBAAYIKwYBBQUHAQEEgfMwgfAwPwYIKwYB
+                        BQUHMAKGM2h0dHA6Ly9haWExLnNzcC1zdHJvbmctaWQubmV0L0NBL0RFTU8tU1NQLUNBLUExLnA3
+                        YzBxBggrBgEFBQcwAoZlbGRhcDovL2RpcjEuc3NwLXN0cm9uZy1pZC5uZXQvY249REVNTy1TU1At
+                        Q0EtQTEsb3U9UEtJLG91PVNlcnZpY2VzLGRjPUN5YmVydHJ1c3QsZGM9Y29tP2NBQ2VydGlmaWNh
+                        dGUwOgYIKwYBBQUHMAGGLmh0dHA6Ly9vY3NwMS5zc3Atc3Ryb25nLWlkLm5ldC9ERU1PLVNTUC1D
+                        QS1BMS8wDgYDVR0PAQH/BAQDAgWgMC0GA1UdJQQmMCQGBFUdJQAGCCsGAQUFBwMBBggrBgEFBQcD
+                        AgYIKwYBBQUIAgIwHwYDVR0jBBgwFoAUR3AC/67v4p22HTtVbGdI2kHq4fwwSwYDVR0fBEQwQjBA
+                        oD6gPIY6aHR0cDovL3RzdHdlYjEuaWRtcHAuY3liZXJ0cnVzdC5jb20vQ0RQL0RFTU8tU1NQLUNB
+                        LUExLmNybDAdBgNVHQ4EFgQURNZrUCLWA1U2Rdf6Lq0L3ZtL/0AwDQYJKoZIhvcNAQELBQADggEB
+                        ANbcm7+tmnUaj9XTpSwPAWFM/AKHXVt1ulMJ3i2CFYNsyKBjhquXD1+MI/CVn6n9PJbJGt68qeV0
+                        ONP1jHzRTKkaHuktvLQjNoyS32z5Qc8jGPc/QcBonYMz9QVmEOC2MYqE2pMBtsp48aRmA5eF/ISp
+                        dvE2+IGqmy9C/CDMInFCR8Y3Tk+ZPOku7f8ycvARe62dDLg04Qu9lJDFTdLrvnOL36bpuGdepzxv
+                        jtawmJcMgd+TJk8bF+qMzggbLPzed4/51m0zv9FwDc7gpeQS99GhvXBIMwlsd1FQ7zGpQG83I8HL
+                        MhrgykM8HV4+xKygcSgs5NpQJJHBa0k42ZOmQzg=
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+        <KeyDescriptor use="encryption">
+            <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                <ds:X509Data>
+                    <ds:X509Certificate>
+                        MIIFcTCCBFmgAwIBAgICbJswDQYJKoZIhvcNAQELBQAwazETMBEGCgmSJomT8ixkARkWA2NvbTEa
+                        MBgGCgmSJomT8ixkARkWCmN5YmVydHJ1c3QxETAPBgNVBAsTCFNlcnZpY2VzMQwwCgYDVQQLEwNQ
+                        S0kxFzAVBgNVBAMTDkRFTU8tU1NQLUNBLUExMB4XDTExMDcwNjIzMDI0MFoXDTE0MDcwNjIzMDI0
+                        MFowfzELMAkGA1UEBhMCVVMxETAPBgNVBAgTCE1hcnlsYW5kMREwDwYDVQQHEwhCZXRoZXNkYTEM
+                        MAoGA1UEChMDSEhTMRQwEgYDVQQLEwtoaHNpZGVudGl0eTEmMCQGA1UEAxMdc3NvLXN0YWdlLmho
+                        c2lkZW50aXR5Lmhocy5nb3YwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC5njvN3ZSh
+                        T3ulrhyUeWaE5/2zJLOV3rcsKgEwxHAGiLFAnMP9nPngmFVhWDCWz2FAL5YFLRiLgAQFAMIaM4P6
+                        hxzgcpMa8juo+dbJQqtPUBizOOYcvqTysbQwswQS5twGcY5gtqYu/8sI3oSqJM+R97+FxFMCRXfz
+                        VN1grZBC4AxBzdlYgK0x0B/HKnvc3xUTEkbL47Y97MIBLJoHuTtX2yCnyflb1Dh4ZYJ9H4KefGPb
+                        w8eiJ9duSZr/5r1LG4QprlijbF+YHD/l5BrZhI8vjsWOzOtU2USi2Ye8zf8wa1hw/VGPeZ3kQ4va
+                        bj5Tr0JsM8UONnKkdzLdLwB3ssjBAgMBAAGjggIJMIICBTAaBgNVHREEEzARgQ9hbXNoZWxwQGho
+                        cy5nb3YwFwYDVR0gBBAwDjAMBgpghkgBZQMCAQMIMIIBAAYIKwYBBQUHAQEEgfMwgfAwPwYIKwYB
+                        BQUHMAKGM2h0dHA6Ly9haWExLnNzcC1zdHJvbmctaWQubmV0L0NBL0RFTU8tU1NQLUNBLUExLnA3
+                        YzBxBggrBgEFBQcwAoZlbGRhcDovL2RpcjEuc3NwLXN0cm9uZy1pZC5uZXQvY249REVNTy1TU1At
+                        Q0EtQTEsb3U9UEtJLG91PVNlcnZpY2VzLGRjPUN5YmVydHJ1c3QsZGM9Y29tP2NBQ2VydGlmaWNh
+                        dGUwOgYIKwYBBQUHMAGGLmh0dHA6Ly9vY3NwMS5zc3Atc3Ryb25nLWlkLm5ldC9ERU1PLVNTUC1D
+                        QS1BMS8wDgYDVR0PAQH/BAQDAgWgMC0GA1UdJQQmMCQGBFUdJQAGCCsGAQUFBwMBBggrBgEFBQcD
+                        AgYIKwYBBQUIAgIwHwYDVR0jBBgwFoAUR3AC/67v4p22HTtVbGdI2kHq4fwwSwYDVR0fBEQwQjBA
+                        oD6gPIY6aHR0cDovL3RzdHdlYjEuaWRtcHAuY3liZXJ0cnVzdC5jb20vQ0RQL0RFTU8tU1NQLUNB
+                        LUExLmNybDAdBgNVHQ4EFgQURNZrUCLWA1U2Rdf6Lq0L3ZtL/0AwDQYJKoZIhvcNAQELBQADggEB
+                        ANbcm7+tmnUaj9XTpSwPAWFM/AKHXVt1ulMJ3i2CFYNsyKBjhquXD1+MI/CVn6n9PJbJGt68qeV0
+                        ONP1jHzRTKkaHuktvLQjNoyS32z5Qc8jGPc/QcBonYMz9QVmEOC2MYqE2pMBtsp48aRmA5eF/ISp
+                        dvE2+IGqmy9C/CDMInFCR8Y3Tk+ZPOku7f8ycvARe62dDLg04Qu9lJDFTdLrvnOL36bpuGdepzxv
+                        jtawmJcMgd+TJk8bF+qMzggbLPzed4/51m0zv9FwDc7gpeQS99GhvXBIMwlsd1FQ7zGpQG83I8HL
+                        MhrgykM8HV4+xKygcSgs5NpQJJHBa0k42ZOmQzg=
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+            <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc">
+                <xenc:KeySize xmlns:xenc="http://www.w3.org/2001/04/xmlenc#">128</xenc:KeySize>
+            </EncryptionMethod>
+        </KeyDescriptor>
+        <ArtifactResolutionService index="0" isDefault="true" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://iam-stage.hhs.gov:443/opensso/ArtifactResolver/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://iam-stage.hhs.gov:443/opensso/IDPSloRedirect/metaAlias/HHS/AMS_IDP_STAGE" ResponseLocation="https://iam-stage.hhs.gov:443/opensso/IDPSloRedirect/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://iam-stage.hhs.gov:443/opensso/IDPSloPOST/metaAlias/HHS/AMS_IDP_STAGE" ResponseLocation="https://iam-stage.hhs.gov:443/opensso/IDPSloPOST/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://iam-stage.hhs.gov:443/opensso/IDPSloSoap/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://iam-stage.hhs.gov:443/opensso/IDPMniRedirect/metaAlias/HHS/AMS_IDP_STAGE" ResponseLocation="https://iam-stage.hhs.gov:443/opensso/IDPMniRedirect/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://iam-stage.hhs.gov:443/opensso/IDPMniPOST/metaAlias/HHS/AMS_IDP_STAGE" ResponseLocation="https://iam-stage.hhs.gov:443/opensso/IDPMniPOST/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://iam-stage.hhs.gov:443/opensso/IDPMniSoap/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</NameIDFormat>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://iam-stage.hhs.gov:443/opensso/SSORedirect/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://iam-stage.hhs.gov:443/opensso/SSOPOST/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://iam-stage.hhs.gov:443/opensso/SSOSoap/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <NameIDMappingService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://iam-stage.hhs.gov:443/opensso/NIMSoap/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <AssertionIDRequestService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://iam-stage.hhs.gov:443/opensso/AIDReqSoap/IDPRole/metaAlias/HHS/AMS_IDP_STAGE"/>
+        <AssertionIDRequestService Binding="urn:oasis:names:tc:SAML:2.0:bindings:URI" Location="https://iam-stage.hhs.gov:443/opensso/AIDReqUri/IDPRole/metaAlias/HHS/AMS_IDP_STAGE"/>
+    </IDPSSODescriptor>
+</EntityDescriptor>

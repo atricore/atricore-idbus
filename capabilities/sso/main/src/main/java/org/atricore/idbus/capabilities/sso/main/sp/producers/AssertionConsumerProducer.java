@@ -934,33 +934,39 @@ public class AssertionConsumerProducer extends SSOProducer {
         // HTTP-Redirect binding does not support embedded signatures
         if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
 
-            if (response.getSignature() == null) {
+            // If there are no assertions, response MUST be signed
+            if (response.getSignature() == null &&
+                    (response.getAssertionOrEncryptedAssertion() == null || response.getAssertionOrEncryptedAssertion().size() == 0)) {
                 // Redirect binding does not have signature elements!
                 throw new SSOResponseException(response,
-                    StatusCode.TOP_REQUESTER,
-                    StatusCode.REQUEST_DENIED,
-                    StatusDetails.INVALID_RESPONSE_SIGNATURE);
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
             }
 
-            try {
+            // If there's no signature, it means that there are assertions
+            if (response.getSignature() != null) {
 
-                // It's better to validate the original message, when available.
-                if (originalResponse != null)
-                    signer.validateDom(idpMd, originalResponse);
-                else
-                    signer.validate(idpMd, response, "Response");
+                try {
 
-            } catch (SamlR2SignatureValidationException e) {
-                throw new SSOResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-            } catch (SamlR2SignatureException e) {
-                //other exceptions like JAXB, xml parser...
-                throw new SSOResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                    // It's better to validate the original message, when available.
+                    if (originalResponse != null)
+                        signer.validateDom(idpMd, originalResponse);
+                    else
+                        signer.validate(idpMd, response, "Response");
+
+                } catch (SamlR2SignatureValidationException e) {
+                    throw new SSOResponseException(response,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                } catch (SamlR2SignatureException e) {
+                    //other exceptions like JAXB, xml parser...
+                    throw new SSOResponseException(response,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                }
             }
 
         } else {
@@ -1025,7 +1031,9 @@ public class AssertionConsumerProducer extends SSOProducer {
                         StatusDetails.INTERNAL_ERROR, e);
             }
 
-            if(saml2SpMd.isWantAssertionsSigned() != null && saml2SpMd.isWantAssertionsSigned()){
+
+            // If the response does not have a signature, assertions MUST be signed, otherwise relay on MD configuration
+            if(response.getSignature() == null || (saml2SpMd.isWantAssertionsSigned() != null && saml2SpMd.isWantAssertionsSigned())) {
 
                 if (assertion.getSignature() == null) {
                     throw new SSOResponseException(response,
@@ -1036,7 +1044,10 @@ public class AssertionConsumerProducer extends SSOProducer {
 
 				try {
 
-                    signer.validate(idpMd, assertion);
+                    if (originalResponse != null)
+                        signer.validateDom(idpMd, originalResponse, assertion.getID());
+                    else
+                        signer.validate(idpMd, assertion);
 
 				} catch (SamlR2SignatureValidationException e) {
 					throw new SSOResponseException(response,

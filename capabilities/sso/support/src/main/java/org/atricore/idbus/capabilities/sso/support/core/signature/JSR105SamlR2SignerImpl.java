@@ -644,14 +644,35 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     }
 
-    /**
-     * This validates XML Didgital signature for SAML 2.0 Documents (requests, responses, assertions, etc)
-     *
-     * @param md  The signer SAML 2.0 Metadata
-     * @param doc DOM representation of the document
-     * @throws SamlR2SignatureException if the signature is invalid
-     */
-    public void validate(RoleDescriptorType md, Document doc) throws SamlR2SignatureException {
+
+    public void validateDom(RoleDescriptorType md, String domStr, String elementId) throws SamlR2SignatureException {
+        try {
+            javax.xml.parsers.DocumentBuilderFactory dbf =
+                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+
+            javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(new ByteArrayInputStream(domStr.getBytes()));
+
+            NodeList nodes = evaluateXPath(doc, "//*[@ID='"+elementId+"']");
+            if (nodes.getLength() > 1)
+                throw new SamlR2SignatureException("Duplicate ID ["+elementId+"] in document ");
+
+            if (nodes.getLength() < 1)
+                throw new SamlR2SignatureException("Invalid element ID " + elementId);
+
+            validate(md, doc, nodes.item(0));
+
+        } catch (ParserConfigurationException e) {
+            throw new SamlR2SignatureException(e);
+        } catch (SAXException e) {
+            throw new SamlR2SignatureException(e);
+        } catch (IOException e) {
+            throw new SamlR2SignatureException(e);
+        }
+    }
+
+    public void validate(RoleDescriptorType md, Document doc, Node root) throws SamlR2SignatureException {
         try {
 
             // Check for duplicate IDs among XML elements
@@ -675,7 +696,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             // We know that in SAML, the root element is the element used by the application, we just need to make sure that
             // the root element is the one referred by the signature
-            Node root = doc.getDocumentElement();
+
             Node rootIdAttr = root.getAttributes().getNamedItem("ID");
             if (rootIdAttr == null)
                 throw new SamlR2SignatureException("SAML document does not have an ID ");
@@ -769,16 +790,29 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             // Check that any of the Signatures matched the root element ID
             if (!rootIdMatched) {
-                logger.error("No Signature element refers to root element (possible signature wrapping attack)");
-                throw new SamlR2SignatureValidationException("No Signature element refers to root element");
+                logger.error("No Signature element refers to signed element (possible signature wrapping attack)");
+                throw new SamlR2SignatureValidationException("No Signature element refers to signed element");
             }
-
 
         } catch (MarshalException e) {
             throw new RuntimeException(e.getMessage(), e);
         } catch (XMLSignatureException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * This validates XML Didgital signature for SAML 2.0 Documents (requests, responses, assertions, etc)
+     *
+     * @param md  The signer SAML 2.0 Metadata
+     * @param doc DOM representation of the document
+     * @throws SamlR2SignatureException if the signature is invalid
+     */
+    public void validate(RoleDescriptorType md, Document doc) throws SamlR2SignatureException {
+
+        Node root = doc.getDocumentElement();
+        validate(md, doc, root);
+
     }
 
     protected byte[] getBinCertificate(RoleDescriptorType md) {
