@@ -21,12 +21,17 @@
 
 package org.atricore.idbus.capabilities.sso.support.test;
 
+import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
+import oasis.names.tc.saml._2_0.protocol.ResponseType;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.junit.Test;
 import org.w3._1999.xhtml.Html;
+
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -34,7 +39,7 @@ import org.w3._1999.xhtml.Html;
  */
 public class XmlUtilsTest {
 
-    public static final Log logger = LogFactory.getLog(XmlUtilsTest.class); 
+    public static final Log logger = LogFactory.getLog(XmlUtilsTest.class);
 
     @Test
     public void testUnmarshallXhtml() throws Exception {
@@ -66,4 +71,10 @@ public class XmlUtilsTest {
         assert o != null;
         assert o instanceof AuthnRequestType;
     }
+
+    protected String loadResource(String name) throws Exception {
+        InputStream is =  getClass().getResourceAsStream(name);
+        return IOUtils.toString(is);
+    }
+
 }
