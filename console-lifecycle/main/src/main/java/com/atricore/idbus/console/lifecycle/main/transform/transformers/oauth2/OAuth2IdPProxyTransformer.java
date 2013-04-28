@@ -58,14 +58,14 @@ public class OAuth2IdPProxyTransformer extends AbstractTransformer implements In
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
 
             if (roleA) {
-                return fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote();
+                //return fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote();
                 // TODO : Change this once the front-end supports it
                 /*
                 return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof ExternalSaml2IdentityProvider
                         && fc.getRoleA().isRemote();
                         */
             } else {
-                return fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote();
+                //return fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote();
                 // TODO : Change this once the front-end supports it
                 /*
                 return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof ExternalSaml2IdentityProvider

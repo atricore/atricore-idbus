@@ -85,13 +85,13 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
             if (roleA) {
                 // Accept all Federated connection nodes that have an IdP as role A
-                return fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote();
+                //return fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote();
                 /* TODO : Enable after console support is added in the front-end
                 return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof ExternalSaml2IdentityProvider
                         && fc.getRoleA().isRemote(); */
             } else {
                 // Accept all Federated connection nodes that have an IdP as role B
-                return fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote();
+                //return fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote();
                 /* TODO : Enable after console support is added in the front-end
                 return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof ExternalSaml2IdentityProvider
                         && fc.getRoleB().isRemote(); */
