@@ -48,6 +48,8 @@ public class IdentityProvider extends FederatedProvider {
 
     private boolean openIdEnabled;
 
+    private boolean dominoEnabled;
+
     private String userDashboardBranding;
 
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
@@ -208,6 +210,14 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setOpenIdEnabled(boolean openIdEnabled) {
         this.openIdEnabled = openIdEnabled;
+    }
+
+    public boolean isDominoEnabled() {
+        return dominoEnabled;
+    }
+
+    public void setDominoEnabled(boolean dominoEnabled) {
+        this.dominoEnabled = dominoEnabled;
     }
 
     public int getMessageTtl() {
