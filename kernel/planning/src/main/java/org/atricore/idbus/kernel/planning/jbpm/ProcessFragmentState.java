@@ -91,10 +91,6 @@ public class ProcessFragmentState extends Node implements Parsable {
     // xml //////////////////////////////////////////////////////////////////////
 
     public void read(Element processStateElement, JpdlXmlReader jpdlReader) {
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP read fragment start");
-
         logger.debug("Start reading JPDL from XML ...");
 
         ProcessFragment processFragment;
@@ -196,9 +192,6 @@ public class ProcessFragmentState extends Node implements Parsable {
 
         logger.debug("End reading JPDL from XML");
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP read fragment end");
-
     }
 
     private ProcessFragmentResolver getProcessFragmentResolver() {
@@ -214,9 +207,6 @@ public class ProcessFragmentState extends Node implements Parsable {
         ProcessFragment processFragment;
         Token superProcessToken = executionContext.getToken();
         ProcessDefinition usedProcessFragmentDefinition = processFragmentDefinition;
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment start " + processFragmentName);
 
         ProcessFragmentRegistry pfr;
         String pdn;
@@ -237,24 +227,13 @@ public class ProcessFragmentState extends Node implements Parsable {
             boolean isProcessFragmentActive = currentProcessDescriptor.isActive(processFragment.getName());
             if (isProcessFragmentActive) {
 
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment lookup ok " + processFragmentName);
-
                 logger.debug("Contributions found for lifecycle [" + processFragmentLifecycle + "], " +
                             "phase [" + processFragmentPhase + "]. Spawning enabled fragment " + processFragment.getName());
 
                 // create the processfragment
                 ProcessInstance processFragmentInstance = superProcessToken.createSubProcessInstance(usedProcessFragmentDefinition);
-
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment subprocess ok " + processFragmentName);
-
                 // fire the processfragment created event
                 fireEvent(Event.EVENTTYPE_SUBPROCESS_CREATED, executionContext);
-
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment fired event " + processFragmentName);
-
                 // Copy all transient variables
                 ContextInstance superContextInstance = executionContext.getContextInstance();
                 ContextInstance subContextInstance = processFragmentInstance.getContextInstance();
@@ -308,20 +287,10 @@ public class ProcessFragmentState extends Node implements Parsable {
                         superContextInstance.getVariable(Constants.VAR_OUT_IDENTITY_ARTIFACT, superProcessToken));
                 subContextInstance.setVariable(Constants.VAR_OUT_IDENTITY_ARTIFACT,
                         superContextInstance.getVariable(Constants.VAR_OUT_IDENTITY_ARTIFACT, superProcessToken));
-
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment before signal " + processFragmentName);
-
                 processFragmentInstance.signal();
-
                 if (!processFragmentInstance.hasEnded()) {
                     logger.warn("Identity Plan process fragment '"+processFragmentName+"' [" + processFragmentInstance.getId() + "] has not ended! Check your process definition");
                 }
-
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment after signal " + processFragmentName);
-
-
                 logger.debug("Spawned enabled Process Fragment " + processFragment.getName());
 
             } else {
@@ -342,9 +311,6 @@ public class ProcessFragmentState extends Node implements Parsable {
                        );
             leave(executionContext, getDefaultLeavingTransition());
         }
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP execute fragment end");
 
     }
 

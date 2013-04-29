@@ -19,6 +19,7 @@ import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.handler.render.PageRenderer;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
@@ -69,13 +70,21 @@ public class ReqRegistrationPanel extends Panel {
 
             @Override
             public void onSubmit() {
+
                 try {
+
                     reqRegistration();
+                } catch (UserExistsException e) {
+                    logger.debug("User already exists " + e.getUsername());
+                    onUserExists(e.getUsername());
+                    return;
+
                 } catch (Exception e) {
                     logger.error("Fatal error during password reset request : " + e.getMessage(), e);
                     onReqRegistrationFailed();
                     return;
                 }
+
                 onReqRegistrationSucceeded();
             }
         };
@@ -91,13 +100,21 @@ public class ReqRegistrationPanel extends Panel {
         feedback.setOutputMarkupId(true);
         feedbackBox.add(feedback);
 
+        SSOWebSession s = (SSOWebSession) getSession();
+
+        RegistrationState state = s.getRegistrationState();
+        if (state == null) {
+            state = new RegistrationState();
+            s.setRegistrationState(state);
+        }
+
     }
 
     protected ReqRegistrationModel getReqRegistrationModel() {
         return (ReqRegistrationModel) form.getDefaultModelObject();
     }
 
-    protected void reqRegistration() throws ProvisioningException {
+    protected void reqRegistration() throws UserExistsException, ProvisioningException {
 
         SSOIdPApplication app = (SSOIdPApplication) getApplication();
 
@@ -108,12 +125,11 @@ public class ReqRegistrationPanel extends Panel {
         FindUserByUsernameRequest userReq = new FindUserByUsernameRequest();
         userReq.setUsername(username);
 
-
         try {
             FindUserByUsernameResponse userResp = app.getProvisioningTarget().findUserByUsername(userReq);
             User user = userResp.getUser();
             // This is a problem, we cannot registration this user again, should we notify the user ?
-            throw new ProvisioningException("User already exists");
+            throw new UserExistsException(user.getUserName());
         } catch (UserNotFoundException e) {
             // This is the expected outcome, user is new
         }
@@ -138,7 +154,8 @@ public class ReqRegistrationPanel extends Panel {
 
         String path = RequestCycle.get().getRequest().getFilterPath();
         String pagePath = urlFor(RegistrationPage.class, new PageParameters().add("transactionId", transactionId)).toString();
-        pagePath = pagePath.substring(1);
+        // This is a relative path !, now it's ../CONFIRM
+        pagePath = pagePath.substring(2);
 
         path = path + "/SS" + pagePath;
 
@@ -158,6 +175,12 @@ public class ReqRegistrationPanel extends Panel {
 
     }
 
+    protected void onUserExists(String username) {
+        RegistrationState s = ((SSOWebSession)getSession()).getRegistrationState();
+        s.setRetries(s.getRetries() + 1);
+        error(getLocalizer().getString("userExists.info", this, "User already registered"));
+    }
+
     protected void onReqRegistrationSucceeded() {
         submit.setEnabled(false);
         //error(getLocalizer().getString("reqRegistrationSucceeded", this, "Operation succeeded"));
@@ -167,6 +190,8 @@ public class ReqRegistrationPanel extends Panel {
 
     protected void onReqRegistrationFailed() {
         // submit.setEnabled(false);
+        RegistrationState s = ((SSOWebSession)getSession()).getRegistrationState();
+        s.setRetries(s.getRetries() + 1);
         error(getLocalizer().getString("app.error", this, "Operation failed"));
     }
 
@@ -214,5 +239,18 @@ public class ReqRegistrationPanel extends Panel {
         parameters.set("tmpPassword", resp.getPassword());
 
         return renderPage(RegistrationEMailTemplate.class, parameters);
+    }
+
+    protected class UserExistsException extends Exception {
+        private String username ;
+
+        public UserExistsException(String username) {
+            super("User " + username + " already exists");
+            this.username = username;
+        }
+
+        public String getUsername() {
+            return username;
+        }
     }
 }

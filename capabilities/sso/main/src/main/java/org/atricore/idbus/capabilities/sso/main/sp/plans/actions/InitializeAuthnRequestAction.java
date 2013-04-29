@@ -212,8 +212,8 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
                 SSOBinding endpointBinding = SSOBinding.asEnum(endpoint.getBinding());
 
-                // Get the POST SSOBinding endpoint
-                if (incomingEndpointBinding != null) {
+                // Get the first non HTTP-redirect binding
+                if (incomingEndpointBinding != null && !endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
 
                     if (incomingEndpointBinding.isFrontChannel() == endpointBinding.isFrontChannel()) {
                         // Get the first endpoint

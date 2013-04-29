@@ -83,7 +83,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
 
         for (String key : expiredKeys) {
-            pendingTransactions.remove(key);
+            PendingTransaction t = pendingTransactions.remove(key);
+            t.rollback();
+
         }
     }
 
@@ -883,6 +885,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         public AbstractProvisioningResponse getResponse() {
             return response;
+        }
+
+        public void rollback() {
+            // TODO : Undo some change, like deleting a temp user that did not confirmed the registration
         }
     }
 

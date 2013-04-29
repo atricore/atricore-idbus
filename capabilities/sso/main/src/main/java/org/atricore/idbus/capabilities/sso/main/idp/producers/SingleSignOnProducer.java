@@ -76,6 +76,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
+import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.atricore.idbus.kernel.planning.*;
@@ -126,15 +127,9 @@ public class SingleSignOnProducer extends SSOProducer {
             String thread = Thread.currentThread().getName();
 
             if (content instanceof PreAuthenticatedIDPInitiatedAuthnRequestType) {
-
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessPreAuthenticatedIDPInitiatedSSO START");
-
                 // New Pre-authenticated IDP Initiated Single Sign-On
                 doProcessPreAuthenticatedIDPInitiantedSSO(exchange, (PreAuthenticatedIDPInitiatedAuthnRequestType) content);
 
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessPreAuthenticatedIDPInitiatedSSO END");
             } else if (content instanceof IDPInitiatedAuthnRequestType) {
                 // New IDP Initiated Single Sign-On
                 metric += "doProcessIDPInitiatedSSO";
@@ -761,9 +756,6 @@ public class SingleSignOnProducer extends SSOProducer {
             // Authenticate the user, send a RequestSecurityToken to the Security Token Service (STS)
             // and emit a SAML 2.0 Assertion
             // ----------------------------------------------------------------------------------------
-
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP emit assertion from claims");
             SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
                     securityTokenEmissionCtx,
                     claimsResponse.getClaimSet(),
@@ -776,18 +768,12 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                     (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP create sec. ctx.");
-
             // Create a new SSO Session
             IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion);
 
             // Associate the SP with the new session, including relay state!
             // We already validated authn request issuer, so we can use it.
             secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
-
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP build saml resp");
 
             // Build a response for the SP
             ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
@@ -802,17 +788,10 @@ public class SingleSignOnProducer extends SSOProducer {
             // --------------------------------------------------------------------
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
-
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP sign 1.1 resp");
-
                 saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
                 SamlR2Signer signer = ((SSOIDPMediator) channel.getIdentityMediator()).getSigner();
                 saml11Response = signer.sign(saml11Response);
             }
-
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
 
             // Clear the current authentication state
             clearAuthnState(exchange);
@@ -859,9 +838,6 @@ public class SingleSignOnProducer extends SSOProducer {
                         in.getMessage().getState()));
                 return;
             }
-
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
@@ -1544,8 +1520,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
         }
 
-
-
         securityTokenEmissionCtx = emitAssertionFromClaims(exchange,
                 securityTokenEmissionCtx,
                 claims,
@@ -1648,34 +1622,20 @@ public class SingleSignOnProducer extends SSOProducer {
         // Emit a new security token
         // -------------------------------------------------------
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP aqm push");
-
         // TODO : Improve communication mechanism between STS and IDP!
 
         // Queue this contenxt and send the artifact as RST context information
         Artifact emitterCtxArtifact = aqm.pushMessage(securityTokenEmissionCtx);
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP build rst");
-
         SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
         // Send artifact id as RST context information, similar to relay state.
         RequestSecurityTokenType rst = buildRequestSecurityToken(receivedClaims, emitterCtxArtifact.getContent());
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP request st");
-
 
         if (logger.isDebugEnabled())
             logger.debug("Requesting Security Token (RST) w/context " + rst.getContext());
 
         // Send request to STS
         RequestSecurityTokenResponseType rstrt = sts.requestSecurityToken(rst);
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP aqm pull");
-
 
         if (logger.isDebugEnabled())
             logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
@@ -1691,9 +1651,37 @@ public class SingleSignOnProducer extends SSOProducer {
 
         securityTokenEmissionCtx.setAssertion(assertion);
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
+        // Some validations about the user !
+        Subject subject = securityTokenEmissionCtx.getSubject();
 
+        // Look up SSO User (TODO : This could be disbled since it adds an additional access to the users repository)
+        SSOUser ssoUser = null;
+        Set<SimplePrincipal> p = subject.getPrincipals(SimplePrincipal.class);
+        if (p != null && p.size() > 0) {
+
+            SimplePrincipal user = p.iterator().next();
+
+            SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
+            ssoUser = identityMgr.findUser(user.getName());
+
+        } else {
+            Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
+            if (ssoUsers != null && ssoUsers.size() > 0) {
+                ssoUser = ssoUsers.iterator().next();
+            }
+        }
+
+        if (ssoUser != null) {
+            // Make some validations on the SSO user
+            for (SSONameValuePair nvp : ssoUser.getProperties()) {
+                if (nvp.getName().equals("accountDisabled")) {
+                    boolean disabled = Boolean.parseBoolean(nvp.getValue());
+                    if (disabled) {
+                        throw new SecurityTokenAuthenticationFailure("Account disabled");
+                    }
+                }
+            }
+        }
 
         // Return context with Assertion and Subject
         return securityTokenEmissionCtx;
@@ -1767,21 +1755,11 @@ public class SingleSignOnProducer extends SSOProducer {
                         new ResponseType());
         idPlanExchange.setOut(out);
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /buildSamlResponse START");
-
         // Prepare execution
         identityPlan.prepare(idPlanExchange);
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /buildSamlResponse STEP start samlr bpm");
-
         // Perform execution
         identityPlan.perform(idPlanExchange);
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /buildSamlResponse END");
-
 
         if (!idPlanExchange.getStatus().equals(IdentityPlanExecutionStatus.SUCCESS)) {
             throw new SecurityTokenEmissionException("Identity plan returned : " + idPlanExchange.getStatus());
@@ -1959,13 +1937,24 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 if (authnRequest.getAssertionConsumerServiceURL() != null) {
                     if (ac.getLocation().equals(authnRequest.getAssertionConsumerServiceURL())) {
-                        acEndpoint = ac;
-                        break;
+
+                        if (ac.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
+                            logger.warn("Invalid requested ACS location at " + ac.getLocation() + ", Ignoring endpoint" );
+                        } else {
+                            acEndpoint = ac;
+                            break;
+                        }
+
                     }
                 }
 
-                if (ac.isIsDefault() != null && ac.isIsDefault())
-                    defaultAcEndpoint = ac;
+                if (ac.isIsDefault() != null && ac.isIsDefault()) {
+                    if (ac.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
+                        logger.warn("Invalid default SP ACS Binding at " + ac.getLocation() + ", Ignoring endpoint" );
+                    } else {
+                        defaultAcEndpoint = ac;
+                    }
+                }
 
                 if (ac.getBinding().equals(SSOBinding.SAMLR2_POST.getValue()))
                     postAcEndpoint = ac;
@@ -1974,7 +1963,11 @@ public class SingleSignOnProducer extends SSOProducer {
                     artifactAcEndpoint = ac;
 
                 if (requestedBinding != null && ac.getBinding().equals(requestedBinding)) {
-                    acEndpoint = ac;
+                    if (ac.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
+                        logger.warn("Invalid Requested ACS Binding at " + ac.getLocation() + ", Ignoring endpoint" );
+                    } else {
+                        acEndpoint = ac;
+                    }
                     break;
                 }
 

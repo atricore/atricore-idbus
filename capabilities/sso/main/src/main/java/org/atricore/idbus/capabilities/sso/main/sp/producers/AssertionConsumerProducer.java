@@ -1033,7 +1033,11 @@ public class AssertionConsumerProducer extends SSOProducer {
 
 
             // If the response does not have a signature, assertions MUST be signed, otherwise relay on MD configuration
-            if(response.getSignature() == null || (saml2SpMd.isWantAssertionsSigned() != null && saml2SpMd.isWantAssertionsSigned())) {
+            if((response.getSignature() == null &&
+                !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue()) &&
+                !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()))
+                    ||
+               (saml2SpMd.isWantAssertionsSigned() != null && saml2SpMd.isWantAssertionsSigned())) {
 
                 if (assertion.getSignature() == null) {
                     throw new SSOResponseException(response,

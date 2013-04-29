@@ -40,10 +40,6 @@ public class SignAssertionAction extends AbstractSSOAssertionAction {
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) throws Exception {
 
         AssertionType assertion = (AssertionType) out.getContent();
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP prepare signer");
-
         SamlR2Signer signer =
                 (SamlR2Signer) executionContext.getContextInstance().getTransientVariable(VAR_SAMLR2_SIGNER);
 
@@ -51,14 +47,7 @@ public class SignAssertionAction extends AbstractSSOAssertionAction {
             logger.debug("Signing assertion " + assertion.getID() + " with signer " + signer);
         
         assertion = signer.sign(assertion);
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP signed");
-
         out.replaceContent(assertion);
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion END");
 
     }
 }

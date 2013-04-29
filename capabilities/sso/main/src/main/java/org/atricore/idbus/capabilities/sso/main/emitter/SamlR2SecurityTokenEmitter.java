@@ -132,9 +132,6 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
         String identityPlanName = (String) samlr2EmissionCtx.getIdentityPlanName();
         identityPlan.set(getIdentityPlanRegistry().lookup(identityPlanName));
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP super.emit");
-
         // Emit, now that the plan is in place
         SecurityToken st = super.emit(context, requestToken, tokenType);
 
@@ -150,9 +147,6 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
                 logger.debug("Propagating Assertion " + assertion.getID() + " to Security Token Emission Context");
 
         }
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP super.emitted");
 
         return st;
    }

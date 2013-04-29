@@ -101,14 +101,7 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
 
         if (logger.isDebugEnabled())
             logger.debug("Recovered claims request from local variable, id:" + credentialClaimsRequest.getId());
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedClaims START");
-
         doProcessReceivedClaims(exchange, credentialClaimsRequest, credentialClaimsResponse.getClaimSet());
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedClaims END");
-
     }
 
     protected void doProcessClaimsRequest(CamelMediationExchange exchange, CredentialClaimsRequest credentialClaimsRequest) throws IOException {
@@ -142,9 +135,6 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
                                            CredentialClaimsRequest credentialClaimsRequest,
                                            ClaimSet receivedClaims) throws Exception {
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedClaims STEP get claims");
-
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         SSOClaimsMediator mediator = ((SSOClaimsMediator) channel.getIdentityMediator());
 
@@ -168,10 +158,6 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
                     credentialClaimsRequest.getIssuerEndpoint().getType() + " found in channel " + credentialClaimsRequest.getIssuerChannel().getName());
         }
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedClaims STEP resolve endpoint");
-
-
         EndpointDescriptor ed = mediator.resolveEndpoint(credentialClaimsRequest.getIssuerChannel(),
                 claimsProcessingEndpoint);
 
@@ -189,10 +175,6 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
             if (credentialClaim.getQualifier().equalsIgnoreCase("password"))
                 password = (String) c.getValue();
         }
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedClaims STEP build response");
-
 
         // Build a SAMLR2 Compatible Security token
         UsernameTokenType usernameToken = new UsernameTokenType ();
@@ -220,10 +202,6 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
                 in.getMessage().getState()));
 
         exchange.setOut(out);
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedClaims STEP end");
-
 
     }
 }

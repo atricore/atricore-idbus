@@ -98,10 +98,6 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
 
         try {
 
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP prepare bpm");
-
-
             // Create the exchange and let subclasses provide the artifacts ...
             IdentityPlanExecutionExchange ex = createIdentityPlanExecutionExchange(context);
 
@@ -123,21 +119,11 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
                 ex.setProperty(propertyName, context.getProperty(propertyName));
             }
 
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP prepare bpm");
-
             // Prepare execution
             identityPlan.get().prepare(ex);
 
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP start bpm");
-
             // Perform execution
             identityPlan.get().perform(ex);
-
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end bpm");
-
 
             if (!ex.getStatus().equals(IdentityPlanExecutionStatus.SUCCESS)) {
                 throw new SecurityTokenEmissionException("Identity plan returned : " + ex.getStatus());
