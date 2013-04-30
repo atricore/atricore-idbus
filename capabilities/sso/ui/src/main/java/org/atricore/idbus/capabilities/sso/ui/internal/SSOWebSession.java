@@ -43,7 +43,9 @@ public class SSOWebSession extends WebSession {
     private SecurityContext securityContext;
 
     private UserSecurityQuestion[] securityQuestions;
+
     private RegistrationState  registrationState;
+    private int retries;
 
     public SSOWebSession(Request request) {
         super(request);
@@ -102,5 +104,13 @@ public class SSOWebSession extends WebSession {
 
     public void setRegistrationState(RegistrationState registrationState) {
         this.registrationState = registrationState;
+    }
+
+    public int getRetries() {
+        return retries;
+    }
+
+    public void setRetries(int retries) {
+        this.retries = retries;
     }
 }

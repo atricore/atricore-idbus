@@ -51,7 +51,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     private Thread monitorThread;
 
-    // TODO : Make it persistente, expire old transactinos !!!!!
+    private static final Set<String> dictionary = new HashSet<String>();
+
+    static {
+        dictionary.add("password");
+        dictionary.add("123456");
+    }
+
+    // TODO : Make it DB Persistent (add store ?)
     private Map<String, PendingTransaction> pendingTransactions = new ConcurrentHashMap<String, PendingTransaction>();
 
     //private Map<String, >
@@ -91,7 +98,15 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
 
     public boolean isTransactionValid(String transactionId) {
-        return pendingTransactions.get(transactionId) != null;
+        return transactionId != null && pendingTransactions.get(transactionId) != null;
+    }
+
+    public AbstractProvisioningRequest lookupTransactionRequest(String transactionId) {
+        PendingTransaction t = pendingTransactions.get(transactionId);
+        if (t != null)
+            return t.getRequest();
+
+        return null;
     }
 
     public String getName() {
@@ -299,6 +314,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     public AddUserResponse addUser(AddUserRequest userRequest) throws ProvisioningException {
+
+        // Make sure that the password meets the security requirements
+        validatePassword(userRequest.getUserPassword());
+
         try {
             
             User user = new User();
@@ -343,14 +362,21 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         userResponse.setUser(u);
 
-        PendingTransaction t = new PendingTransaction(transactionId, 1000L * 60L * 30L, userRequest, userResponse);
+        // TODO : Make configurable
+        PendingTransaction t = new PendingTransaction(transactionId, System.currentTimeMillis() + (1000L * 60L * 30L), userRequest, userResponse);
         storePendingTransaction(t);
 
         return new PrepareAddUserResponse(t.getId(), u, tmpPassword);
     }
 
-    public AddUserResponse confirAddUser(ConfirmAddUserRequest confirmReq) throws ProvisioningException {
+    public AddUserResponse confirmAddUser(ConfirmAddUserRequest confirmReq) throws ProvisioningException {
         String transactionId = confirmReq.getTransactionId();
+
+
+        // Make sure that the password meets the security requirements
+        validatePassword(confirmReq.getUserPassword());
+        validateSecurityQuestions(confirmReq.getSecurityQuestions());
+
         PendingTransaction t = this.consumePendingTransaction(transactionId);
 
         // Retrieve the user from the partition
@@ -470,12 +496,16 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     public SetPasswordResponse setPassword(SetPasswordRequest setPwdRequest) throws ProvisioningException {
+
+        // Validate new password
+        validatePassword(setPwdRequest.getNewPassword());
+
         try {
             User user = identityPartition.findUserById(setPwdRequest.getUserId());
 
             String currentPwd = createPasswordHash(setPwdRequest.getCurrentPassword());
             if (!user.getUserPassword().equals(currentPwd)) {
-                throw new ProvisioningException("Provided password is invalid");
+                throw new InvalidPasswordException("Provided password is invalid");
             }
 
             // TODO : Apply password validation rules
@@ -485,19 +515,25 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             SetPasswordResponse setPwdResponse = new SetPasswordResponse();
             
             return setPwdResponse;
-            
+        } catch (ProvisioningException e) {
+            throw e;
         } catch (Exception e) {
             throw new ProvisioningException("Cannot update user password", e);
         }
     }
 
     public ResetPasswordResponse  resetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException {
+
+        // Generate a password (TODO : improve ?!)
+        // Passwords with alphabetic and numeric characters.
+        String pwd = resetPwdRequest.getNewPassword();
+
+        // Make sure that the password meets the security requirements
+        validatePassword(pwd);
+
         try {
             User user = identityPartition.findUserById(resetPwdRequest.getUser().getId());
 
-            // Generate a password (TODO : improve ?!)
-            // Passwords with alphabetic and numeric characters.
-            String pwd = resetPwdRequest.getNewPassword();
             String pwdHash = createPasswordHash(pwd);
             user.setUserPassword(pwdHash);
 
@@ -520,7 +556,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         ResetPasswordResponse resetPwdResp = new ResetPasswordResponse();
         resetPwdResp.setNewPassword(pwd);
 
-        PendingTransaction t = new PendingTransaction(transactionId, 1000L * 60L * 30L, resetPwdRequest, resetPwdResp);
+        // TODO : Make confiurable
+        PendingTransaction t = new PendingTransaction(transactionId, System.currentTimeMillis() + (1000L * 60L * 30L), resetPwdRequest, resetPwdResp);
 
         storePendingTransaction(t);
 
@@ -529,20 +566,21 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public ResetPasswordResponse confirmResetPassword(ConfirmResetPasswordRequest resetPwdRequest) throws ProvisioningException {
 
-        PendingTransaction t = consumePendingTransaction(resetPwdRequest.getTransactionId());
-
+        // Either the user provides a new password, or we use the one we created.
         boolean usedGeneratedPwd = resetPwdRequest.getNewPassword() == null;
+        if (!usedGeneratedPwd);
+            validatePassword(resetPwdRequest.getNewPassword());
 
-        if (t == null || t.expiresOn > System.currentTimeMillis()) {
+        PendingTransaction t = consumePendingTransaction(resetPwdRequest.getTransactionId());
+        // Did the transaction already expired ?
+        if (t == null || t.expiresOn < System.currentTimeMillis()) {
             throw new TransactionExpiredExcxeption(resetPwdRequest.getTransactionId());
         }
 
         ResetPasswordRequest req = (ResetPasswordRequest) t.getRequest();
         ResetPasswordResponse resp = (ResetPasswordResponse) t.getResponse();
 
-        // Either the user provides a new password, or we use the one we created.
-        String newPwd = usedGeneratedPwd ? resp.getNewPassword() : resetPwdRequest.getNewPassword();
-
+        String newPwd = usedGeneratedPwd ? req.getNewPassword() : resetPwdRequest.getNewPassword();
         String pwdHash = createPasswordHash(newPwd);
         resp.setNewPassword(newPwd);
 
@@ -933,6 +971,54 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public void setMaxTimeToLive(int maxTimeToLive) {
         this.maxTimeToLive = maxTimeToLive;
+    }
+
+    // Use some external plugin/strategy
+    public void validatePassword(String password) throws IllegalPasswordException {
+
+
+
+        if (password == null || password.length() < 6) {
+            throw new IllegalPasswordException("Password is too short");
+        }
+
+        if (dictionary.contains(password))
+            throw new IllegalPasswordException("Password is in dictionary");
+
+        // Look for password in dictionary
+
+        // Keep password history/avoid repeating last N passwords
+
+    }
+
+    public void validateSecurityQuestions(UserSecurityQuestion[] secQuestions) throws IllegalCredentialException {
+        Set<Long> usedIds = new HashSet<Long>();
+        Set<String> usedAnswers = new HashSet<String>();
+        Set<String> usedQuestions = new HashSet<String>();
+
+        for (UserSecurityQuestion usq : secQuestions) {
+
+            if (usq.getQuestion() != null) {
+                if (usedIds.contains(usq.getQuestion().getId())) {
+                    throw new IllegalCredentialException("Duplicated Security Question " + usq.getQuestion().getMessageKey());
+                }
+            } else if (usq.getCustomMessage() != null) {
+
+                if (usedQuestions.contains(usq.getCustomMessage().toLowerCase()))
+                    throw new IllegalCredentialException("Duplicated custom question");
+
+                usedQuestions.add(usq.getCustomMessage().toLowerCase());
+
+            } else {
+                throw new IllegalCredentialException("User security question custom message and referred question cannot be null");
+            }
+
+            if (usedAnswers.contains(usq.getAnswer()))
+                throw new IllegalCredentialException("Duplicated answer");
+
+            usedAnswers.add(usq.getAnswer());
+
+        }
     }
 
 

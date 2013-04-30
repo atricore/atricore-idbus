@@ -48,7 +48,7 @@
                 <array dependent-element="false" />
                 <join delete-action="null"/>
             </field>
-            <field name="securityQuestions" default-fetch-group="true" persistence-modifier="persistent" delete-action="cascade">
+            <field name="securityQuestions" default-fetch-group="true" persistence-modifier="persistent" delete-action="null">
                 <array dependent-element="false" />
             </field>
         </class>

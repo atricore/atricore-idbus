@@ -10,47 +10,31 @@ import java.io.Serializable;
  */
 public class ProfileModel implements Serializable {
 
-    private String username;
-
-    private String email;
-
-    private String name;
+    private String firstName;
 
     private String lastName;
+
+    private String company;
+
+    private String phone;
 
     public ProfileModel() {
 
     }
 
     public ProfileModel(User user) {
-        this.username = user.getUserName();
-        this.email = user.getEmail();
-        this.name = user.getFirstName();
+        this.firstName = user.getFirstName();
         this.lastName = user.getSurename();
+        this.company = user.getOrganizationName();
+        this.phone = user.getTelephoneNumber();
     }
 
-    public String getUsername() {
-        return username;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getLastName() {
@@ -61,4 +45,19 @@ public class ProfileModel implements Serializable {
         this.lastName = lastName;
     }
 
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 }

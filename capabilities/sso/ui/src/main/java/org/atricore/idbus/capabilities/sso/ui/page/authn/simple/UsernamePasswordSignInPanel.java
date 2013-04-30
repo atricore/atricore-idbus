@@ -164,7 +164,6 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
             feedback.setVisible(false);
         }
 
-
         // Add sign-in form to page, passing feedback panel as
         // validation error handler
         UsernamePasswordSignInForm form = new UsernamePasswordSignInForm("signInForm");
@@ -220,6 +219,12 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         UUIDGenerator idGenerator = new UUIDGenerator();
 
         logger.info("Claims Request = " + credentialClaimsRequest);
+
+        SSOWebSession session = (SSOWebSession) getSession();
+
+        if (session.getRetries() > 3)
+            synchronized (this) { try { wait(3000); } catch (InterruptedException e) { /**/ } }
+        session.setRetries(session.getRetries() + 1);
 
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(new CredentialClaimImpl("username", username));

@@ -10,17 +10,26 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.PasswordUtil;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 import org.atricore.idbus.kernel.main.provisioning.domain.SecurityQuestion;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
+import org.atricore.idbus.kernel.main.provisioning.exception.IllegalCredentialException;
+import org.atricore.idbus.kernel.main.provisioning.exception.IllegalPasswordException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.exception.TransactionExpiredExcxeption;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.AddUserRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.ConfirmAddUserRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.FindUserByUsernameRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.ListSecurityQuestionsRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.AddUserResponse;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.FindUserByUsernameResponse;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.ListSecurityQuestionsResponse;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +49,10 @@ public class RegistrationPanel extends Panel {
     private RegistrationModel registration;
 
     private final List <SecurityQuestion> secQuestions;
+
+    private String hashAlgorithm = "MD5";
+
+    private String hashEncoding = "HEX";
 
     public RegistrationPanel(String id, String transactionId) {
         super(id);
@@ -240,9 +253,15 @@ public class RegistrationPanel extends Panel {
                 try {
                     register();
                     onRegisterSucceeded();
+                } catch (TransactionExpiredExcxeption e) {
+                    onRegisterExpired();
+                } catch (IllegalPasswordException e) {
+                    onIllegalPassword();
+                } catch (IllegalCredentialException e) {
+                    onIllegalSecurityQuestion();
                 } catch (Exception e) {
                     logger.error("Fatal error during registration : " + e.getMessage(), e);
-                    onRegisterFailed();
+                    onRegisterFailed(e);
                 }
             }
         };
@@ -284,25 +303,58 @@ public class RegistrationPanel extends Panel {
         form.setResponsePage(ProfilePage.class);
     }
 
-    protected void onRegisterFailed() {
-        // Show app. error page
+    protected void onRegisterFailed(Exception e) {
+        if (e != null ) {
+            if (e instanceof RegistrationException) {
+                RegistrationException re = (RegistrationException) e;
+
+                String messageKey = re.getMessageKey();
+                // Show app. error page
+                error(getLocalizer().getString(messageKey, this, "Operation failed"));
+            } else {
+                // Show app. error page
+                error(getLocalizer().getString("app.error", this, "Operation failed"));
+            }
+        } else {
+            error(getLocalizer().getString("app.error", this, "Operation failed"));
+        }
+
     }
 
     protected void onRegisterExpired() {
         // Show app. error page
-        error(getLocalizer().getString("registration.expired", this, "Operation failed"));
+        error(getLocalizer().getString("error.registration.expired", this, "Operation failed"));
     }
 
-    protected void register() throws ProvisioningException {
+    protected void onIllegalPassword() {
+        // Show app. error page
+        error(getLocalizer().getString("error.password.illegal", this, "Operation failed"));
+    }
+
+    protected void onIllegalSecurityQuestion() {
+        error(getLocalizer().getString("error.securityQuestion.illegal", this, "Operation failed"));
+    }
+
+
+    protected void register() throws ProvisioningException, RegistrationException {
 
         SSOIdPApplication app = (SSOIdPApplication) getApplication();
         ProvisioningTarget pt = app.getProvisioningTarget();
 
-        // TODO : Validate security questions
-
         if (!pt.isTransactionValid(transactionId)) {
-            onRegisterExpired();
-            return;
+            throw new TransactionExpiredExcxeption(transactionId);
+        }
+
+        AddUserRequest addUserRequest = (AddUserRequest) pt.lookupTransactionRequest(transactionId);
+        FindUserByUsernameResponse fu = pt.findUserByUsername(new FindUserByUsernameRequest(addUserRequest.getUserName()));
+        User tmpUser = fu.getUser();
+
+        if (!registration.getNewPassword().equals(registration.getRetypedPassword()))
+            throw new RegistrationException("error.password.doNotMatch", "Invalid temporary password");
+
+        String hash = PasswordUtil.createPasswordHash(registration.getPassword(), getHashAlgorithm(), getHashEncoding(), getDigest());
+        if (!hash.equals(tmpUser.getUserPassword())) {
+            throw new RegistrationException("error.tmpPassword.invalid", "Invalid temporary password");
         }
 
         RegistrationModel registration = getRegisterModel();
@@ -312,48 +364,86 @@ public class RegistrationPanel extends Panel {
         // Q1
         UserSecurityQuestion q1 = new UserSecurityQuestion();
         q1.setAnswer(registration.getSecAnswer1());
-        q1.setCustomMessage((registration.getCustomSecQuestion1()));
-        //q1.setQuestion((lookupQuestion(Long.parseLong(registration.getSecQuestion1()))));
-        q1.setQuestion(registration.getSecQuestion1());
+        if (registration.isUseCustomSecQuestion1())
+            q1.setCustomMessage((registration.getCustomSecQuestion1()));
+        else
+            q1.setQuestion(registration.getSecQuestion1());
 
         // Q2
         UserSecurityQuestion q2 = new UserSecurityQuestion();
         q2.setAnswer(registration.getSecAnswer2());
-        q2.setCustomMessage((registration.getCustomSecQuestion2()));
-        //q2.setQuestion((lookupQuestion(Long.parseLong(registration.getSecQuestion2()))));
-        q2.setQuestion(registration.getSecQuestion2());
+        if (registration.isUseCustomSecQuestion2())
+            q2.setCustomMessage((registration.getCustomSecQuestion2()));
+        else
+            q2.setQuestion(registration.getSecQuestion2());
 
         // Q3
         UserSecurityQuestion q3 = new UserSecurityQuestion();
         q3.setAnswer(registration.getSecAnswer3());
-        q3.setCustomMessage((registration.getCustomSecQuestion3()));
-        //q3.setQuestion((lookupQuestion(Long.parseLong(registration.getSecQuestion3()))));
-        q3.setQuestion(registration.getSecQuestion3());
+        if (registration.isUseCustomSecQuestion3())
+            q3.setCustomMessage((registration.getCustomSecQuestion3()));
+        else
+            q3.setQuestion(registration.getSecQuestion3());
 
         // Q4
         UserSecurityQuestion q4 = new UserSecurityQuestion();
         q4.setAnswer(registration.getSecAnswer4());
-        q4.setCustomMessage((registration.getCustomSecQuestion4()));
-        //q4.setQuestion((lookupQuestion(Long.parseLong(registration.getSecQuestion4()))));
-        q4.setQuestion(registration.getSecQuestion4());
+        if (registration.isUseCustomSecQuestion4())
+            q4.setCustomMessage((registration.getCustomSecQuestion4()));
+        else
+            q4.setQuestion(registration.getSecQuestion4());
 
         // Q5
         UserSecurityQuestion q5 = new UserSecurityQuestion();
         q5.setAnswer(registration.getSecAnswer5());
-        q5.setCustomMessage((registration.getCustomSecQuestion5()));
-        //q5.setQuestion((lookupQuestion(Long.parseLong(registration.getSecQuestion5()))));
-        q5.setQuestion(registration.getSecQuestion5());
+        if (registration.isUseCustomSecQuestion5())
+            q5.setCustomMessage((registration.getCustomSecQuestion5()));
+        else
+            q5.setQuestion(registration.getSecQuestion5());
 
         ConfirmAddUserRequest req = new ConfirmAddUserRequest ();
         req.setUserPassword(registration.getNewPassword());
         req.setSecurityQuestions(new UserSecurityQuestion[] {q1, q2, q3, q4, q5});
         req.setTransactionId(transactionId);
 
-        AddUserResponse resp = ((SSOIdPApplication)getApplication()).getProvisioningTarget().confirAddUser(req);
-
-        newUser = resp.getUser();
+        AddUserResponse resp = pt.confirmAddUser(req);
 
     }
+
+    public String getHashEncoding() {
+        return hashEncoding;
+    }
+
+    public void setHashEncoding(String hashEncoding) {
+        this.hashEncoding = hashEncoding;
+    }
+
+    public String getHashAlgorithm() {
+        return hashAlgorithm;
+    }
+
+    public void setHashAlgorithm(String hashAlgorithm) {
+        this.hashAlgorithm = hashAlgorithm;
+    }
+
+    protected MessageDigest getDigest() throws ProvisioningException {
+
+        MessageDigest digest = null;
+        if (hashAlgorithm != null) {
+
+            try {
+                digest = MessageDigest.getInstance(hashAlgorithm);
+                logger.debug("Using hash algorithm/encoding : " + hashAlgorithm + "/" + hashEncoding);
+            } catch (NoSuchAlgorithmException e) {
+                logger.error("Algorithm not supported : " + hashAlgorithm, e);
+                throw new ProvisioningException(e.getMessage(), e);
+            }
+        }
+
+        return digest;
+
+    }
+
 
     protected SecurityQuestion lookupQuestion(Long id) {
         for (SecurityQuestion sq : this.secQuestions) {

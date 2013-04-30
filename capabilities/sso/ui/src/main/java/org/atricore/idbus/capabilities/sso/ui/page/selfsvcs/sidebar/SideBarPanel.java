@@ -37,7 +37,6 @@ public class SideBarPanel extends Panel {
         String fullName = user.getFirstName() + " " + user.getSurename();
 
         add(new Label("fullName", fullName));
-        add(new Label("username", user.getUserName()));
         add(new Label("email", user.getEmail()));
 
         // Build apps table

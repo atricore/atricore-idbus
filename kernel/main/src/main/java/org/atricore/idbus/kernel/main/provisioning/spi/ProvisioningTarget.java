@@ -21,6 +21,8 @@ public interface ProvisioningTarget {
 
     boolean isTransactionValid(String transactionId);
 
+    AbstractProvisioningRequest lookupTransactionRequest(String transactionId);
+
     //<--------------- Groups -------------------->
 
     RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest)
@@ -55,7 +57,7 @@ public interface ProvisioningTarget {
     PrepareAddUserResponse prepareAddUser(AddUserRequest userRequest)
             throws ProvisioningException;
 
-    AddUserResponse confirAddUser(ConfirmAddUserRequest userRequest)
+    AddUserResponse confirmAddUser(ConfirmAddUserRequest userRequest)
             throws ProvisioningException;
 
     FindUserByIdResponse findUserById(FindUserByIdRequest userRequest)

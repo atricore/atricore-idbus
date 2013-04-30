@@ -11,6 +11,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.exception.IllegalPasswordException;
+import org.atricore.idbus.kernel.main.provisioning.exception.InvalidPasswordException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.SetPasswordRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.SetPasswordResponse;
@@ -55,9 +57,13 @@ public class PwdChangePanel extends Panel {
                 try {
                     update();
                     onUpdateSucceeded();
+                } catch (InvalidPasswordException e) {
+                    onInvalidPassword();
+                } catch (IllegalPasswordException e) {
+                    onIllegalPassword();
                 } catch (Exception e) {
                     logger.error("Fatal error during password update : " + e.getMessage(), e);
-                    onUpdateFailed();
+                    onUpdateFailed(e);
                 }
             }
         };
@@ -80,12 +86,16 @@ public class PwdChangePanel extends Panel {
         return (PwdChangeModel) form.getDefaultModelObject();
     }
 
-    protected void update() throws ProvisioningException {
+    protected void update() throws ProvisioningException, PwdChangeException {
 
         PwdChangeModel pwdChange = getPwdChangeModel();
 
+        if (!pwdChange.getNewPassword().equals(pwdChange.getRetypedPassword())) {
+            throw new PwdChangeException("error.password.doNotMatch");
+        }
 
         SetPasswordRequest req = new SetPasswordRequest ();
+
         req.setUserId(user.getId());
         req.setCurrentPassword(pwdChange.getCurrentPassword());
         req.setNewPassword(pwdChange.getNewPassword());
@@ -94,8 +104,31 @@ public class PwdChangePanel extends Panel {
 
     }
 
-    protected void onUpdateFailed() {
-        error(getLocalizer().getString("app.error", this, "Operation failed"));
+    protected void onInvalidPassword() {
+        error(getLocalizer().getString("error.password.invalid", this, "Operation failed"));
+    }
+
+    protected void onIllegalPassword() {
+        error(getLocalizer().getString("error.password.illegal", this, "Operation failed"));
+    }
+
+    protected void onUpdateFailed(Exception e) {
+
+        if (e != null ) {
+            if (e instanceof PwdChangeException ) {
+                PwdChangeException re = (PwdChangeException ) e;
+
+                String messageKey = re.getMessageKey();
+                // Show app. error page
+                error(getLocalizer().getString(messageKey, this, "Operation failed"));
+            } else {
+                // Show app. error page
+                error(getLocalizer().getString("app.error", this, "Operation failed"));
+            }
+        } else {
+            error(getLocalizer().getString("app.error", this, "Operation failed"));
+        }
+
     }
 
     protected void onUpdateSucceeded() {

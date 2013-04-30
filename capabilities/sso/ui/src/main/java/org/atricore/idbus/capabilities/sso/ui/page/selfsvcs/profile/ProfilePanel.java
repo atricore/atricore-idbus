@@ -11,8 +11,10 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.FindUserByUsernameRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.UpdateUserRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.UpdateUserResponse;
 
@@ -37,21 +39,21 @@ public class ProfilePanel extends Panel {
 
         form = new Form<ProfileModel>("profileForm", new CompoundPropertyModel<ProfileModel>(profile));
 
-        final RequiredTextField<String> username = new RequiredTextField<String>("username");
-        username.setOutputMarkupId(true);
-        form.add(username);
-
-        final EmailTextField email = new EmailTextField("email");
-        email.setOutputMarkupId(true);
-        form.add(email);
-
-        final TextField<String> name = new TextField<String>("name");
-        name.setOutputMarkupId(true);
-        form.add(name);
+        final TextField<String> firstName = new TextField<String>("firstName");
+        firstName.setOutputMarkupId(true);
+        form.add(firstName);
 
         final TextField<String> lastName = new TextField<String>("lastName");
         lastName.setOutputMarkupId(true);
         form.add(lastName);
+
+        final TextField<String> company = new TextField<String>("company");
+        lastName.setOutputMarkupId(true);
+        form.add(company);
+
+        final TextField<String> phone = new TextField<String>("phone");
+        lastName.setOutputMarkupId(true);
+        form.add(phone);
 
         final SubmitLink submit = new SubmitLink("doSave")  {
 
@@ -73,7 +75,7 @@ public class ProfilePanel extends Panel {
         final Button unlock = new AjaxButton("unlock", form) {
             @Override
             public void onSubmit() {
-                name.setEnabled(true);
+                firstName.setEnabled(true);
                 submit.setEnabled(true);
             }
         };
@@ -81,9 +83,9 @@ public class ProfilePanel extends Panel {
         unlock.add(new AjaxEventBehavior("onClick") {
             @Override
             protected void onEvent(AjaxRequestTarget target) {
-                name.setEnabled(true);
+                firstName.setEnabled(true);
                 submit.setEnabled(true);
-                target.add(name);
+                target.add(firstName);
                 target.add(submit);
             }
         });
@@ -108,7 +110,7 @@ public class ProfilePanel extends Panel {
 
     protected void onUpdateSucceeded() {
         // Go to profile
-        // form.setResponsePage(ProfilePage.class);
+        form.setResponsePage(ProfilePage.class);
     }
 
     protected void onUpdateFailed() {
@@ -124,18 +126,16 @@ public class ProfilePanel extends Panel {
 
         ProfileModel profile = getProfileModel();
 
-        user.setEmail(profile.getEmail());
-        user.setFirstName(profile.getName());
+        user.setFirstName(profile.getFirstName());
         user.setSurename(profile.getLastName());
+        user.setOrganizationName(profile.getCompany());
+        user.setTelephoneNumber(profile.getPhone());
 
         UpdateUserRequest req = new UpdateUserRequest ();
         req.setUser(user);
 
         UpdateUserResponse resp = ((SSOIdPApplication)getApplication()).getProvisioningTarget().updateUser(req);
-
         user = resp.getUser();
-
-        // TODO : Refresh session !?
 
     }
 

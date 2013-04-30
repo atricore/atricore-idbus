@@ -337,6 +337,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         try {
             JDOUser jdoUser = userDao.findById(user.getId());
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
+
             List<JDOUserAttributeValue> oldAttrsList = new ArrayList<JDOUserAttributeValue>();
             if (jdoUser.getAttrs() != null) {
                 for (JDOUserAttributeValue oldUserAttr : jdoUser.getAttrs()) {
@@ -377,15 +378,27 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         try {
             JDOUser jdoUser = userDao.findById(id);
             if (jdoUser != null) {
+
+                // Get dependent tables
                 JDOUserAttributeValue[] attrs = jdoUser.getAttrs();
+                JDOUserSecurityQuestion[] secQuestions = jdoUser.getSecurityQuestions();
+
+                // Clear relationship
+                //jdoUser.setSecurityQuestions(null);
                 jdoUser.setAttrs(null);
+
+                // Save and delete
                 userDao.save(jdoUser);
                 userDao.flush();
                 userDao.delete(id);
+
+                // Delete dependants
                 if (attrs != null) {
                     for (JDOUserAttributeValue value : attrs)
                         usrAttrValDao.delete(value.getId());
                 }
+
+
             }
         } catch (JdoObjectRetrievalFailureException e) {
             throw new UserNotFoundException(id);
@@ -500,6 +513,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     }
 
     protected SecurityQuestion toSecurityQuestion(JDOSecurityQuestion jdoSecurityQuestion) {
+        if (jdoSecurityQuestion == null)
+            return null;
+
         SecurityQuestion group = new SecurityQuestion();
 
         group.setId(jdoSecurityQuestion.getId());
@@ -572,21 +588,27 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             JDOUserSecurityQuestion[] jdoSecurityQuestions = new JDOUserSecurityQuestion[user.getSecurityQuestions().length];
 
             for (int i = 0 ; i < user.getSecurityQuestions().length ; i++ ) {
-                UserSecurityQuestion securityQuestion = user.getSecurityQuestions()[i];
-                JDOUserSecurityQuestion jdoSecurityQuestion = null;
-                if (securityQuestion.getId() > 0) {
-                    jdoSecurityQuestion = usrSecQuestionDao.findById(securityQuestion.getId());
-                }
-                if (jdoSecurityQuestion == null) {
-                    jdoSecurityQuestion = new JDOUserSecurityQuestion();
-                }
-                jdoSecurityQuestion.setAnswer(securityQuestion.getAnswer());
-                jdoSecurityQuestion.setCustomMessage(securityQuestion.getCustomMessage());
-                jdoSecurityQuestion.setEncryption(securityQuestion.getEncryption());
-                jdoSecurityQuestion.setHashing(securityQuestion.getHashing());
-                jdoSecurityQuestion.setQuestion(securityQuestionDAO.findById(securityQuestion.getQuestion().getId()));
+                UserSecurityQuestion userSecurityQuestion = user.getSecurityQuestions()[i];
+                JDOUserSecurityQuestion jdoUserSecurityQuestion = null;
 
-                jdoSecurityQuestions[i] = jdoSecurityQuestion;
+                if (userSecurityQuestion.getId() > 0) {
+                    jdoUserSecurityQuestion = usrSecQuestionDao.findById(userSecurityQuestion.getId());
+                }
+
+                if (jdoUserSecurityQuestion == null) {
+                    jdoUserSecurityQuestion = new JDOUserSecurityQuestion();
+                }
+
+                jdoUserSecurityQuestion.setAnswer(userSecurityQuestion.getAnswer());
+                jdoUserSecurityQuestion.setCustomMessage(userSecurityQuestion.getCustomMessage());
+                jdoUserSecurityQuestion.setEncryption(userSecurityQuestion.getEncryption());
+                jdoUserSecurityQuestion.setHashing(userSecurityQuestion.getHashing());
+
+                if (userSecurityQuestion.getQuestion() != null) {
+                    jdoUserSecurityQuestion.setQuestion(securityQuestionDAO.findById(userSecurityQuestion.getQuestion().getId()));
+                }
+
+                jdoSecurityQuestions[i] = jdoUserSecurityQuestion;
 
             }
 
@@ -650,7 +672,10 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                     userSecurityQuestion.setId(jdoUserSecurityQuestion.getId());
                     userSecurityQuestion.setAnswer(jdoUserSecurityQuestion.getAnswer());
                     userSecurityQuestion.setCustomMessage(jdoUserSecurityQuestion.getCustomMessage());
-                    userSecurityQuestion.setQuestion(toSecurityQuestion(jdoUserSecurityQuestion.getQuestion()));
+
+                    if (jdoUserSecurityQuestion.getQuestion() != null)
+                        userSecurityQuestion.setQuestion(toSecurityQuestion(jdoUserSecurityQuestion.getQuestion()));
+
                     userSecurityQuestion.setHashing(jdoUserSecurityQuestion.getHashing());
                     userSecurityQuestion.setEncryption(jdoUserSecurityQuestion.getEncryption());
                     securityQuestions.add(userSecurityQuestion);

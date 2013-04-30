@@ -32,6 +32,13 @@ public class FindUserByUsernameRequest extends AbstractProvisioningRequest {
 
     private String username;
 
+    public FindUserByUsernameRequest(String username) {
+        this.username = username;
+    }
+
+    public FindUserByUsernameRequest() {
+    }
+
     public String getUsername() {
         return username;
     }

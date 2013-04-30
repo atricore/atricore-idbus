@@ -4,7 +4,7 @@ package org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration;
  * @author: sgonzalez@atriocore.com
  * @date: 4/29/13
  */
-public class RegistrationState {
+public class RegistrationState implements java.io.Serializable {
 
     private int retries;
 
