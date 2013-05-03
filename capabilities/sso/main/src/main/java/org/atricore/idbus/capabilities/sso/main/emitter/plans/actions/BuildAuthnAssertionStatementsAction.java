@@ -54,10 +54,6 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSSOAssertionAct
 
         logger.debug("starting action");
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /emitSamlAssertion STEP build assertion stmt");
-
-
         AssertionType assertion = (AssertionType) out.getContent();
 
         // Do we have a SSOUser ?

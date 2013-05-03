@@ -153,16 +153,7 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
      */
     public Object startProcess(Object processType, Map processVariables, Map transientVariables) throws Exception {
         ProcessInstance processInstance = null;
-
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP create JBPM context");
-
         JbpmContext jbpmContext = jbpmConfiguration.createJbpmContext();
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP find process definition");
-
 
         try {
             // Some access needs to be serialized:
@@ -184,22 +175,14 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
                 processInstance.getContextInstance().setTransientVariables(transientVariables);
             }
 
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP signal process");
-
             // Leave the start state.
             processInstance.signal();
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP save process");
             jbpmContext.save(processInstance);
 
         } catch (Exception e) {
             jbpmContext.setRollbackOnly();
             throw e;
         } finally {
-
-            if (logger.isTraceEnabled())
-                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP close process");
             jbpmContext.close();
         }
 
@@ -467,12 +450,6 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
 
     public void perform(String processType, String processDescriptorName, IdentityPlanExecutionExchange ex) throws IdentityPlanningException {
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess START");
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP prepare variables");
-
         Map<String, Object> transientVariables = new HashMap<String, Object>();
         Map<String, Object> processVariables = new HashMap<String, Object>();
 
@@ -501,22 +478,14 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
             transientVariables.put(transientVar,  ex.getTransientProperty(transientVar));
         }
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP run process");
-
         Object processId = null;
         try {
             if (processType != null) {
 
                 logger.debug("Starting process '" + processType + "'");
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP start process");
 
                 process = startProcess(processType, processVariables, transientVariables);
                 processId = getId(process);
-
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP get state");
 
                 Object state = getState(process);
                 logger.debug("New " + processType + " process started, ID = " + processId + ", state:" + state);
@@ -525,12 +494,6 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
                     logger.warn("Identity Plan process '"+processType+"' [" + processId + "] has not ended! Check your process definition");
                     // we'll destroy it later : abortProcess(processId);
                 }
-
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP ended process");
-
-
-
             } else {
                 throw new IllegalArgumentException("Process type is missing, cannot start a new process.");
             }
@@ -539,9 +502,6 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
             throw new IdentityPlanningException(e);
         } finally {
             if (processId != null) {
-                if (logger.isTraceEnabled())
-                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess STEP destroy process");
-
                 destroyProcess(processId);
             }
         }
@@ -550,9 +510,6 @@ public class JbpmManager implements BPMSManager, Constants, InitializingBean, Ap
         IdentityArtifact outIdentityArtifact = (IdentityArtifact) processVariables.get(VAR_OUT_IDENTITY_ARTIFACT);
         ex.setOut(outIdentityArtifact);
         ex.setStatus(IdentityPlanExecutionStatus.SUCCESS);
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /bpm.startProcess END");
 
     }
 

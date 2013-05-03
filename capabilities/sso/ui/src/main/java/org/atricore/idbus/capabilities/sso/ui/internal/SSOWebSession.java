@@ -24,6 +24,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
 import org.atricore.idbus.capabilities.sso.ui.agent.SecurityContext;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationState;
 import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
 
@@ -42,6 +43,7 @@ public class SSOWebSession extends WebSession {
     private SecurityContext securityContext;
 
     private UserSecurityQuestion[] securityQuestions;
+    private RegistrationState  registrationState;
 
     public SSOWebSession(Request request) {
         super(request);
@@ -50,8 +52,7 @@ public class SSOWebSession extends WebSession {
     /**
      * @return Current authenticated web session
      */
-    public static SSOWebSession get()
-    {
+    public static SSOWebSession get() {
         return (SSOWebSession) Session.get();
     }
 
@@ -93,5 +94,13 @@ public class SSOWebSession extends WebSession {
 
     public void setSecurityQuestions(UserSecurityQuestion[] securityQuestions) {
         this.securityQuestions = securityQuestions;
+    }
+
+    public RegistrationState  getRegistrationState() {
+        return registrationState;
+    }
+
+    public void setRegistrationState(RegistrationState registrationState) {
+        this.registrationState = registrationState;
     }
 }

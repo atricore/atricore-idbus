@@ -94,9 +94,6 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
     protected void doProcessReceivedSecurityTokenClaim(CamelMediationExchange exchange,
                                            CredentialClaimsRequest credentialClaimsRequest) throws Exception {
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedSecurityTokenClaim STEP get claims");
-
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         SSOClaimsMediator mediator = ((SSOClaimsMediator) channel.getIdentityMediator());
 
@@ -120,17 +117,8 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
                     credentialClaimsRequest.getIssuerEndpoint().getType() + " found in channel " + credentialClaimsRequest.getIssuerChannel().getName());
         }
 
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedSecurityTokenClaim STEP resolve endpoint");
-
-
         EndpointDescriptor ed = mediator.resolveEndpoint(credentialClaimsRequest.getIssuerChannel(),
                 claimsProcessingEndpoint);
-
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedSecurityTokenClaim STEP build response");
-
 
         PasswordString token = new PasswordString();
         token.setValue(credentialClaimsRequest.getPreauthenticationSecurityToken());
@@ -152,10 +140,6 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
                 in.getMessage().getState()));
 
         exchange.setOut(out);
-
-        if (logger.isTraceEnabled())
-            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessReceivedSecurityTokenClaim STEP end");
-
 
     }
 }
