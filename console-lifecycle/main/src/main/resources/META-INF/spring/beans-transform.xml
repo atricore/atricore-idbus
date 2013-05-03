@@ -114,6 +114,10 @@
         <property name="roleA" value="false"/>
     </bean>
 
+    <bean name="dominoIdpLocalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.domino.DominoIdPTransformer">
+    </bean>
+
     <bean name="basicAuthnClaimsChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.claims.BasicAuthenticationClaimsChannelTransformer"/>
 
@@ -376,6 +380,12 @@
         </property>
     </bean>
 
+    <bean name="dominoBpTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.domino.DominoBPTransformer"/>
+
+    <bean name="dominoSpTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.domino.DominoSPTransformer"/>
+
     <bean name="identityLookupTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
 
@@ -488,6 +498,8 @@
                                         <ref bean="oauth2IdPRoleAProxyTransformer"/>
                                         <ref bean="oauth2IdPRoleBProxyTransformer"/>
 
+                                        <ref bean="dominoIdpLocalTransformer"/>
+
                                         <ref bean="basicAuthnClaimsChannelTransformer"/>
                                         <ref bean="2faAuthnClaimsChannelTransformer"/>
                                         <ref bean="wiaAuthnClaimsChannelTransformer"/>
@@ -524,6 +536,9 @@
 
                                         <ref bean="selfSvcsResoruceTransformer"/>
                                         <ref bean="selfSvcsResourceBindingTransformer"/>
+
+                                        <ref bean="dominoBpTransformer"/>
+                                        <ref bean="dominoSpTransformer"/>
 
                                         <ref bean="samlr2SPTransformer"/>
 

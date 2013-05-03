@@ -44,6 +44,7 @@
         import com.atricore.idbus.console.services.dto.ColdfusionResource;
         import com.atricore.idbus.console.services.dto.DbIdentitySource;
         import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
+        import com.atricore.idbus.console.services.dto.DominoResource;
         import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
         import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
@@ -209,6 +210,8 @@
                     _linkIcon = EmbeddedIcons.jbosseppResourceIcon;
                 } else if (obj is SelfServicesResource) {
                     _linkIcon = EmbeddedIcons.selfServicesResourceIcon;
+                } else if (obj is DominoResource) {
+                    _linkIcon = EmbeddedIcons.dominoResourceIcon;
                 } else if (obj is JOSSO2Resource) {
                     _linkIcon = EmbeddedIcons.josso2ResourceIcon;
                 } else if (obj is MicroStrategyResource) {

@@ -41,6 +41,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivatio
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDbIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDirectoryServiceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateDominoResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalSaml2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalSaml2IdentityProviderElementRequest;
@@ -70,6 +71,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdenti
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDirectoryServiceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDominoResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2ServiceProviderElementRequest;
@@ -109,6 +111,7 @@ import com.atricore.idbus.console.services.dto.CaptiveExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
+import com.atricore.idbus.console.services.dto.DominoResource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
@@ -642,6 +645,14 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_SELFSERVICES_RESOURCE_ELEMENT, cslfsvcs);
                         break;
+                    case DiagramElementTypes.DOMINO_RESOURCE_ELEMENT_TYPE:
+                        var cdomres:CreateDominoResourceElementRequest = new CreateDominoResourceElementRequest(
+                                _identityAppliance, null);
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_DOMINO_RESOURCE_ELEMENT, cdomres);
+                        break;
                     case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                         var cwseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                 );
@@ -1024,6 +1035,16 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_SELFSERVICES_RESOURCE_ELEMENT, rslfsvcsr);
+                            break;
+
+                        case DiagramElementTypes.DOMINO_RESOURCE_ELEMENT_TYPE:
+                            var dominoResource:DominoResource = _currentlySelectedNode.data as DominoResource;
+
+                            var rdomres:RemoveDominoResourceElementRequest = new RemoveDominoResourceElementRequest(dominoResource);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_DOMINO_RESOURCE_ELEMENT, rdomres);
                             break;
 
                         case DiagramElementTypes.EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
@@ -1651,6 +1672,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.LIFERAY_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is SelfServicesResource) {
                 elementType = DiagramElementTypes.SELFSERVICES_RESOURCE_ELEMENT_TYPE;
+            } else if (node.data is DominoResource) {
+                elementType = DiagramElementTypes.DOMINO_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is JOSSO1Resource) {
                 elementType = DiagramElementTypes.JOSSO1_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is JOSSO2Resource) {

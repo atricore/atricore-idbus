@@ -34,6 +34,7 @@ import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.DominoAuthenticationService;
+import com.atricore.idbus.console.services.dto.DominoResource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
@@ -219,6 +220,8 @@ public class BrowserModelFactory {
                 resourceNode.icon = EmbeddedIcons.jbosseppResourceMiniIcon;
             } else if (serviceResource is SelfServicesResource) {
                 resourceNode.icon = EmbeddedIcons.selfServicesResourceMiniIcon;
+            } else if (serviceResource is DominoResource) {
+                resourceNode.icon = EmbeddedIcons.dominoResourceMiniIcon;
             } else if (serviceResource is JOSSO2Resource) {
                 resourceNode.icon = EmbeddedIcons.josso2ResourceMiniIcon;
             } else if (serviceResource is MicroStrategyResource) {

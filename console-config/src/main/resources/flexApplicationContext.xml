@@ -83,6 +83,7 @@
         <property name="liferayPortalResourceCreateMediator" ref="liferayPortalResourceCreateMediator" />
         <property name="jbosseppResourceCreateMediator" ref="jbosseppResourceCreateMediator" />
         <property name="selfServicesResourceCreateMediator" ref="selfServicesResourceCreateMediator" />
+        <property name="dominoResourceCreateMediator" ref="dominoResourceCreateMediator" />
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
@@ -132,6 +133,7 @@
         <property name="jbosseppResourceRemoveCommand" ref="jbosseppResourceRemoveCommand"/>
         <property name="liferayResourceRemoveCommand" ref="liferayResourceRemoveCommand"/>
         <property name="selfServicesResourceRemoveCommand" ref="selfServicesResourceRemoveCommand"/>
+        <property name="dominoResourceRemoveCommand" ref="dominoResourceRemoveCommand"/>
         <property name="createActivationCommand" ref="createActivationCommand" />
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
         <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
@@ -383,6 +385,10 @@
     </object>
     <object id="selfServicesResourceRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.SelfServicesResourceRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="dominoResourceRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.DominoResourceRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="activationRemoveCommand"
@@ -767,6 +773,11 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
+    <object id="dominoResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.domino.DominoResourceCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
     <object id="wasceExecutionEnvironmentCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -1095,6 +1106,7 @@
         <property name="liferayPortalResourceCreateMediator" ref="liferayPortalResourceCreateMediator"/>
         <property name="jbosseppResourceCreateMediator" ref="jbosseppResourceCreateMediator"/>
         <property name="selfServicesResourceCreateMediator" ref="selfServicesResourceCreateMediator"/>
+        <property name="dominoResourceCreateMediator" ref="dominoResourceCreateMediator"/>
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator"/>
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator"/>
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator"/>

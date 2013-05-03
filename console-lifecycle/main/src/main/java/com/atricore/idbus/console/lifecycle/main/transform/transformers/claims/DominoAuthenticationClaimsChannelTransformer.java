@@ -128,6 +128,7 @@ public class DominoAuthenticationClaimsChannelTransformer extends AbstractTransf
                 Bean ccDominoHttpPreauth = newAnonymousBean(IdentityMediationEndpointImpl.class);
                 ccDominoHttpPreauth.setName(idpBean.getName() + "-cc-domino-preauth");
                 setPropertyValue(ccDominoHttpPreauth, "name", ccDominoHttpPreauth.getName());
+                setPropertyValue(ccDominoHttpPreauth, "type", "{urn:org:atricore:idbus:domino:metadata}InboundSSOService");
                 setPropertyValue(ccDominoHttpPreauth, "binding", "urn:org:atricore:idbus:capabilities:domino:bindings:PREAUTH");
                 setPropertyValue(ccDominoHttpPreauth, "location", "/DOMINO/PREAUTH");
                 setPropertyValue(ccDominoHttpPreauth, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:PreviousSession");
@@ -139,7 +140,7 @@ public class DominoAuthenticationClaimsChannelTransformer extends AbstractTransf
                 // Claims Mediator
                 // ----------------------------------------
                 // TODO : Do not force domino on name
-                Bean ccMediator = newBean(idpBeans, claimChannelBeanName + "-mediator", "org.atricore.idbus.capabilities.domino.main.DominoMediator");
+                Bean ccMediator = newBean(idpBeans, claimChannelBeanName + "-mediator", "org.atricore.idbus.capabilities.domino.main.DominoPreauthMediator");
 
                 DominoAuthenticationService das = (DominoAuthenticationService) authnMechanism.getDelegatedAuthentication().getAuthnService();
 

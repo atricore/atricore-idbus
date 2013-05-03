@@ -73,6 +73,7 @@ public class DiagramElementTypes {
     public static const JBOSSEPP_AUTHENTICATION_ELEMENT_TYPE:int = 49;
     public static const JBOSSEPP_RESOURCE_ELEMENT_TYPE:int = 50;
     public static const SELFSERVICES_RESOURCE_ELEMENT_TYPE:int = 51;
+    public static const DOMINO_RESOURCE_ELEMENT_TYPE:int = 52;
 
 }
 }

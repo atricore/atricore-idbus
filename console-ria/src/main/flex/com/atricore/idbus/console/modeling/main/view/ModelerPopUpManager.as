@@ -52,6 +52,8 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jav
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.resources.domino.DominoResourceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.resources.domino.DominoResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.jbossepp.JBossEPPResourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.resources.jbossepp.JBossEPPResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.jbossportal.JBossPortalResourceCreateForm;
@@ -165,6 +167,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _liferayPortalResourceCreateMediator:LiferayPortalResourceCreateMediator;
     private var _jbosseppResourceCreateMediator:JBossEPPResourceCreateMediator;
     private var _selfServicesResourceCreateMediator:SelfServicesResourceCreateMediator;
+    private var _dominoResourceCreateMediator:DominoResourceCreateMediator;
     private var _wasceExecutionEnvironmentCreateMediator:WASCEExecutionEnvironmentCreateMediator;
     private var _apacheExecutionEnvironmentCreateMediator:ApacheExecutionEnvironmentCreateMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:WindowsIISExecutionEnvironmentCreateMediator;
@@ -219,6 +222,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _liferayPortalResourceCreateForm:LiferayPortalResourceCreateForm;
     private var _jbosseppResourceCreateForm:JBossEPPResourceCreateForm;
     private var _selfServicesResourceCreateForm:SelfServicesResourceCreateForm;
+    private var _dominoResourceCreateForm:DominoResourceCreateForm;
     private var _wasceExecutionEnvironmentCreateForm:WASCEExecutionEnvironmentCreateForm;
     private var _apacheExecutionEnvironmentCreateForm:ApacheExecutionEnvironmentCreateForm;
     private var _windowsIISExecutionEnvironmentCreateForm:WindowsIISExecutionEnvironmentCreateForm;
@@ -481,13 +485,20 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _jbosseppResourceCreateMediator = value;
     }
 
-
     public function get selfServicesResourceCreateMediator():SelfServicesResourceCreateMediator {
         return _selfServicesResourceCreateMediator;
     }
 
     public function set selfServicesResourceCreateMediator(value:SelfServicesResourceCreateMediator):void {
         _selfServicesResourceCreateMediator = value;
+    }
+
+    public function get dominoResourceCreateMediator():DominoResourceCreateMediator {
+        return _dominoResourceCreateMediator;
+    }
+
+    public function set dominoResourceCreateMediator(value:DominoResourceCreateMediator):void {
+        _dominoResourceCreateMediator = value;
     }
 
     public function get wasceExecutionEnvironmentCreateMediator():WASCEExecutionEnvironmentCreateMediator {
@@ -1185,6 +1196,26 @@ public class ModelerPopUpManager extends BasePopUpManager {
         selfServicesResourceCreateMediator.handleNotification(_lastWindowNotification);
     }
 
+    public function showCreateDominoResourceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createDominoResourceCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.dominoResource");
+        _popup.width = 800;
+        _popup.height = 260;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_dominoResourceCreateForm);
+    }
+
+    private function createDominoResourceCreateForm():void {
+        _dominoResourceCreateForm = new DominoResourceCreateForm();
+        _dominoResourceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleDominoResourceCreateFormCreated);
+    }
+
+    private function handleDominoResourceCreateFormCreated(event:FlexEvent):void {
+        dominoResourceCreateMediator.setViewComponent(_dominoResourceCreateForm);
+        dominoResourceCreateMediator.handleNotification(_lastWindowNotification);
+    }
 
     public function showCreateWASCEExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;

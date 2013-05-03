@@ -108,11 +108,11 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // -------------------------------------------------------
         Bean idMediationUnit = newBean(idauBeans, idauName + "-mediation-unit", OsgiIdentityMediationUnit.class.getName());
         idMediationUnit.setDependsOn(idauName + "-cot," + idauName + "-cot-manager,bpms-manager,cxf");
-        
+
         // Properties
         setPropertyValue(idMediationUnit, "name", idMediationUnit.getName());
         setPropertyRef(idMediationUnit, "container", idauName + "-container");
-        
+
         // -------------------------------------------------------
         // Define Mediation Unit Container bean
         // -------------------------------------------------------
@@ -138,7 +138,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
 
         // Properties
         setPropertyValue(cot, "name", cot.getName());
-        
+
         // -------------------------------------------------------
         // Define Circle Of Trust Manager bean
         // -------------------------------------------------------
@@ -257,7 +257,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         */
 
         // Wire channels to Unit Container
-        addPropertyBeansAsRefs(idMediationUnit , "channels", entitySelectorChannel);
+        addPropertyBeansAsRefs(idMediationUnit, "channels", entitySelectorChannel);
 
         // -------------------------------------------------------
         // Define MBean Server Factory bean
@@ -266,7 +266,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
                 "org.springframework.jmx.support.MBeanServerFactoryBean");
         mBeanServer.setScope("singleton");
         setPropertyValue(mBeanServer, "locateExistingServerIfPossible", true);
-        
+
         // ---------------------------------------
         // Identity Mediation Unit OSGI Exporter
         // ---------------------------------------
@@ -278,7 +278,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         idMediationUnitExporter.setInterface(OsgiIdentityMediationUnit.class.getName());
 
         idauBeansOsgi.getImportsAndAliasAndBeen().add(idMediationUnitExporter);
-        
+
         // ----------------------------------------
         // CXF OSGI Importer
         // ----------------------------------------
@@ -379,11 +379,11 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // Store beans as module resources
         // ----------------------------------------
 
-        IdProjectResource<Beans> rBeans =  new IdProjectResource<Beans>(idGen.generateId(), "beans", "spring-beans", idauBeans);
+        IdProjectResource<Beans> rBeans = new IdProjectResource<Beans>(idGen.generateId(), "beans", "spring-beans", idauBeans);
         rBeans.setClassifier("jaxb");
         module.addResource(rBeans);
 
-        IdProjectResource<Beans> rBeansOsgi =  new IdProjectResource<Beans>(idGen.generateId(), "beans-osgi", "spring-beans", idauBeansOsgi);
+        IdProjectResource<Beans> rBeansOsgi = new IdProjectResource<Beans>(idGen.generateId(), "beans-osgi", "spring-beans", idauBeansOsgi);
         rBeansOsgi.setClassifier("jaxb");
         module.addResource(rBeansOsgi);
 
@@ -393,6 +393,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
     public Object after(TransformEvent event) {
         // Beans wiring
         IdProjectResource<Beans> rIdauBeans = null;
+
         for (IdProjectResource r : event.getContext().getCurrentModule().getResources()) {
             if (r.getValue() instanceof Beans && r.getName().equals("beans")) {
                 rIdauBeans = r;
@@ -403,48 +404,16 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         if (rIdauBeans == null)
             throw new IllegalStateException("Cannot find beans definition");
 
-        if (event.getLastResults() != null) {
-            if (logger.isDebugEnabled())
-                logger.debug("Received results");
-            for (Object result : event.getLastResults()) {
-
-                if (result == null)
-                    continue;
-
-                Object [] r = (Object[]) result;
-                for (Object o : r) {
-                    if (o instanceof IdProjectResource) {
-
-                        IdProjectResource rBeans = (IdProjectResource) o;
-                        if (rBeans.getValue() instanceof Beans) {
-                            if (logger.isDebugEnabled())
-                                logger.debug("Importing beans " + rBeans);
-                            Import i = new Import();
-                            i.setResource(rBeans.getId());
-                            rIdauBeans.getValue().getImportsAndAliasAndBeen().add(i);
-                        }
-                    } else if (o instanceof Set) {
-                        Set s = (Set) o;
-
-                        for (Object so : s) {
-                            if (so instanceof IdProjectResource) {
-                                IdProjectResource rBeans = (IdProjectResource) so;
-                                if (rBeans.getValue() instanceof Beans) {
-                                    if (logger.isDebugEnabled())
-                                        logger.debug("Importing beans " + rBeans);
-                                    Import i = new Import();
-                                    i.setResource(rBeans.getId());
-                                    rIdauBeans.getValue().getImportsAndAliasAndBeen().add(i);
-                                }
-                            }
-                        }
-
-
-                    }
-                }
-
+        for (IdProjectResource r : event.getContext().getCurrentModule().getResources()) {
+            if (r.getValue() instanceof Beans && r.getNameSpace() != null && r.getSubtype() == null) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Importing beans " + r);
+                Import i = new Import();
+                i.setResource(r.getId());
+                rIdauBeans.getValue().getImportsAndAliasAndBeen().add(i);
             }
         }
+
 
         return rIdauBeans;
     }

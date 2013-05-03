@@ -61,6 +61,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironme
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.coldfusion.ColdfusionResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.javaee.JavaEEExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jboss.JBossExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.resources.domino.DominoResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.jbossepp.JBossEPPResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.jbossportal.JBossPortalResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.liferayportal.LiferayPortalResourceCoreSection;
@@ -125,6 +126,7 @@ import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
+import com.atricore.idbus.console.services.dto.DominoResource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
@@ -277,6 +279,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _liferayResourceCoreSection:LiferayPortalResourceCoreSection;
     private var _jbosseppResourceCoreSection:JBossEPPResourceCoreSection;
     private var _selfServicesResourceCoreSection:SelfServicesResourceCoreSection;
+    private var _dominoResourceCoreSection:DominoResourceCoreSection;
     private var _wasceExecEnvCoreSection:WASCEExecEnvCoreSection;
     private var _jbossExecEnvCoreSection:JBossExecEnvCoreSection;
     private var _apacheExecEnvCoreSection:ApacheExecEnvCoreSection;
@@ -309,12 +312,12 @@ public class PropertySheetMediator extends IocMediator {
 
     private var _execEnvSaveFunction:Function;
     private var _execEnvHomeDir:TextInput;
-    
-    protected var _validators : Array;
+
+    protected var _validators:Array;
 
     [Bindable]
     public var _jdbcDrivers:ArrayCollection;
-    
+
     // keystore
     private var _uploadedFile:ByteArray;
     private var _uploadedFileName:String;
@@ -388,7 +391,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _uploadedWCStoreFile:ByteArray;
     private var _uploadedWCStoreFileName:String;
 
-    public function PropertySheetMediator(name : String = null, viewComp:PropertySheetView = null) {
+    public function PropertySheetMediator(name:String = null, viewComp:PropertySheetView = null) {
         super(name, viewComp);
     }
 
@@ -424,8 +427,8 @@ public class PropertySheetMediator extends IocMediator {
     private function stackChanged(event:IndexChangeEvent):void {
         _propertySheetsViewStack.selectedIndex = _tabbedPropertiesTabBar.selectedIndex;
         /*if (_tabbedPropertiesTabBar.selectedItem.name == "Authentication") {
-            handleAuthenticationTabClick();
-        }*/
+         handleAuthenticationTabClick();
+         }*/
     }
 
     override public function listNotificationInterests():Array {
@@ -454,7 +457,7 @@ public class PropertySheetMediator extends IocMediator {
             SubjectNameIDPolicyListCommand.FAILURE,
             ImpersonateUserPoliciesListCommand.SUCCESS,
             ImpersonateUserPoliciesListCommand.FAILURE
-            ];
+        ];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -521,6 +524,8 @@ public class PropertySheetMediator extends IocMediator {
                         enableJBossEPPResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is SelfServicesResource) {
                         enableSelfServicesResourcePropertyTabs();
+                    } else if (_currentIdentityApplianceElement is DominoResource) {
+                        enableDominoResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is JOSSO2Resource) {
                         enableJOSSO2ResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is SharepointResource) {
@@ -547,7 +552,7 @@ public class PropertySheetMediator extends IocMediator {
                 } else if (_currentIdentityApplianceElement is ExecutionEnvironment) {
                     if (_currentIdentityApplianceElement is TomcatExecutionEnvironment) {
                         enableTomcatExecEnvPropertyTabs();
-                    } else if(_currentIdentityApplianceElement is WeblogicExecutionEnvironment) {
+                    } else if (_currentIdentityApplianceElement is WeblogicExecutionEnvironment) {
                         enableWeblogicExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is JBossPortalResource) {
                         enableJBossPortalExecEnvPropertyTabs();
@@ -555,19 +560,19 @@ public class PropertySheetMediator extends IocMediator {
                         enableLiferayResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is WASCEExecutionEnvironment) {
                         enableWASCEExecEnvPropertyTabs();
-                    } else if (_currentIdentityApplianceElement is JbossExecutionEnvironment){
+                    } else if (_currentIdentityApplianceElement is JbossExecutionEnvironment) {
                         enableJbossExecEnvPropertyTabs();
-                    } else if (_currentIdentityApplianceElement is ApacheExecutionEnvironment){
+                    } else if (_currentIdentityApplianceElement is ApacheExecutionEnvironment) {
                         enableApacheExecEnvPropertyTabs();
-                    } else if (_currentIdentityApplianceElement is WindowsIISExecutionEnvironment){
+                    } else if (_currentIdentityApplianceElement is WindowsIISExecutionEnvironment) {
                         enableWindowsIISExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is AlfrescoResource) {
                         enableAlfrescoExecEnvPropertyTabs();
-                    } else if (_currentIdentityApplianceElement is JEEExecutionEnvironment){
+                    } else if (_currentIdentityApplianceElement is JEEExecutionEnvironment) {
                         enableJavaEEExecEnvPropertyTabs();
-                    } else if (_currentIdentityApplianceElement is PHPExecutionEnvironment){
+                    } else if (_currentIdentityApplianceElement is PHPExecutionEnvironment) {
                         enablePHPExecEnvPropertyTabs();
-                    } else if (_currentIdentityApplianceElement is PhpBBResource){
+                    } else if (_currentIdentityApplianceElement is PhpBBResource) {
                         enablePhpBBExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is WebserverExecutionEnvironment) {
                         enableWebserverExecEnvPropertyTabs();
@@ -575,7 +580,7 @@ public class PropertySheetMediator extends IocMediator {
                 }
                 break;
             case FolderExistsCommand.FOLDER_EXISTS:
-                if(_execEnvHomeDir != null && _execEnvSaveFunction != null){
+                if (_execEnvHomeDir != null && _execEnvSaveFunction != null) {
                     _execEnvHomeDir.errorString = "";
                     _execEnvSaveFunction.call();
                     _execEnvHomeDir = null;
@@ -583,7 +588,7 @@ public class PropertySheetMediator extends IocMediator {
                 }
                 break;
             case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
-                if(_execEnvHomeDir != null){
+                if (_execEnvHomeDir != null) {
                     _execEnvHomeDir.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                     _execEnvHomeDir = null;
                     _execEnvSaveFunction = null;
@@ -602,7 +607,7 @@ public class PropertySheetMediator extends IocMediator {
                                 if (_liferayResourceCoreSection.containerPath.text == invalidFolder) {
                                     _liferayResourceCoreSection.containerPath.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                                 }
-                            } else if (currentElement is AlfrescoResource){
+                            } else if (currentElement is AlfrescoResource) {
                                 if (_alfrescoExecEnvCoreSection.homeDirectory.text == invalidFolder) {
                                     _alfrescoExecEnvCoreSection.homeDirectory.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                                 }
@@ -669,14 +674,14 @@ public class PropertySheetMediator extends IocMediator {
                         _accountLinkagePolicies = projectProxy.accountLinkagePolicies;
                         var sp:InternalSaml2ServiceProvider = _currentIdentityApplianceElement as InternalSaml2ServiceProvider;
                         if (sp.accountLinkagePolicy != null) {
-                            for (var j:int=0; j < _spCoreSection.accountLinkagePolicyCombo.dataProvider.length; j++) {
+                            for (var j:int = 0; j < _spCoreSection.accountLinkagePolicyCombo.dataProvider.length; j++) {
                                 if (_spCoreSection.accountLinkagePolicyCombo.dataProvider[j].name == sp.accountLinkagePolicy.name) {
                                     _spCoreSection.accountLinkagePolicyCombo.selectedIndex = j;
                                     break;
                                 }
                             }
                         } else {
-                            for (var k:int=0; k < _spCoreSection.accountLinkagePolicyCombo.dataProvider.length; k++) {
+                            for (var k:int = 0; k < _spCoreSection.accountLinkagePolicyCombo.dataProvider.length; k++) {
                                 if (_spCoreSection.accountLinkagePolicyCombo.dataProvider[k].linkEmitterType.toString() == AccountLinkEmitterType.ONE_TO_ONE.toString()) {
                                     _spCoreSection.accountLinkagePolicyCombo.selectedIndex = k;
                                     break;
@@ -695,14 +700,14 @@ public class PropertySheetMediator extends IocMediator {
                         }
 
                         if (idpChannel.accountLinkagePolicy != null) {
-                            for (var l:int=0; l < _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider.length; l++) {
+                            for (var l:int = 0; l < _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider.length; l++) {
                                 if (_federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider[l].name == idpChannel.accountLinkagePolicy.name) {
                                     _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.selectedIndex = l;
                                     break;
                                 }
                             }
                         } else {
-                            for (var m:int=0; m < _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider.length; m++) {
+                            for (var m:int = 0; m < _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider.length; m++) {
                                 if (_federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider[m].linkEmitterType.toString() == AccountLinkEmitterType.ONE_TO_ONE.toString()) {
                                     _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.selectedIndex = m;
                                     break;
@@ -724,14 +729,14 @@ public class PropertySheetMediator extends IocMediator {
                         var idaDef1:IdentityApplianceDefinition = ida1.idApplianceDefinition;
 
                         if (idaDef1.userDashboardBranding != null) {
-                            for (var ni:int=0; ni < _iaCoreSection.userDashboardBrandingCombo.dataProvider.length; ni++) {
+                            for (var ni:int = 0; ni < _iaCoreSection.userDashboardBrandingCombo.dataProvider.length; ni++) {
                                 if (_iaCoreSection.userDashboardBrandingCombo.dataProvider[ni].name == idaDef1.userDashboardBranding.name) {
                                     _iaCoreSection.userDashboardBrandingCombo.selectedIndex = ni;
                                     break;
                                 }
                             }
                         } else {
-                            for (var pi:int=0; pi < _iaCoreSection.userDashboardBrandingCombo.dataProvider.length; pi++) {
+                            for (var pi:int = 0; pi < _iaCoreSection.userDashboardBrandingCombo.dataProvider.length; pi++) {
                                 if (_iaCoreSection.userDashboardBrandingCombo.dataProvider[pi].id == "josso2-default-branding") {
                                     _iaCoreSection.userDashboardBrandingCombo.selectedIndex = pi;
                                     break;
@@ -747,15 +752,15 @@ public class PropertySheetMediator extends IocMediator {
                         var brandingId4:String = ip4.userDashboardBranding;
 
                         if (brandingId4 != null) {
-                            for (var n4:int=0; n4 < _ipCoreSection.userDashboardBrandingCombo.dataProvider.length; n4++) {
+                            for (var n4:int = 0; n4 < _ipCoreSection.userDashboardBrandingCombo.dataProvider.length; n4++) {
                                 if (_ipCoreSection.userDashboardBrandingCombo.dataProvider[n4].id == brandingId4) {
                                     _ipCoreSection.userDashboardBrandingCombo.selectedIndex = n4;
                                     break;
                                 }
                             }
                         } else {
-                            for (var p4:int=0; p4 < _ipCoreSection.userDashboardBrandingCombo.dataProvider.length; p4++) {
-                                if (_ipCoreSection.userDashboardBrandingCombo.dataProvider[p4].id  == "josso2-default-branding") {
+                            for (var p4:int = 0; p4 < _ipCoreSection.userDashboardBrandingCombo.dataProvider.length; p4++) {
+                                if (_ipCoreSection.userDashboardBrandingCombo.dataProvider[p4].id == "josso2-default-branding") {
                                     _ipCoreSection.userDashboardBrandingCombo.selectedIndex = p4;
                                     break;
                                 }
@@ -778,14 +783,14 @@ public class PropertySheetMediator extends IocMediator {
                         var idaDef2:IdentityApplianceDefinition = ida2.idApplianceDefinition;
 
                         if (idaDef2.idpSelector != null) {
-                            for (var nj:int=0; nj < _iaCoreSection.idpSelectorsCombo.dataProvider.length; nj++) {
+                            for (var nj:int = 0; nj < _iaCoreSection.idpSelectorsCombo.dataProvider.length; nj++) {
                                 if (_iaCoreSection.idpSelectorsCombo.dataProvider[nj].name == idaDef2.idpSelector.name) {
                                     _iaCoreSection.idpSelectorsCombo.selectedIndex = nj;
                                     break;
                                 }
                             }
                         } else {
-                            for (var pj:int=0; pj < _iaCoreSection.idpSelectorsCombo.dataProvider.length; pj++) {
+                            for (var pj:int = 0; pj < _iaCoreSection.idpSelectorsCombo.dataProvider.length; pj++) {
                                 if (_iaCoreSection.idpSelectorsCombo.dataProvider[pj].name == "preferred-idp-selector") {
                                     _iaCoreSection.idpSelectorsCombo.selectedIndex = pj;
                                     break;
@@ -804,14 +809,14 @@ public class PropertySheetMediator extends IocMediator {
                         _identityMappingPolicies = projectProxy.identityMappingPolicies;
                         var sp2:InternalSaml2ServiceProvider = _currentIdentityApplianceElement as InternalSaml2ServiceProvider;
                         if (sp2.identityMappingPolicy != null) {
-                            for (var n:int=0; n < _spCoreSection.identityMappingPolicyCombo.dataProvider.length; n++) {
+                            for (var n:int = 0; n < _spCoreSection.identityMappingPolicyCombo.dataProvider.length; n++) {
                                 if (_spCoreSection.identityMappingPolicyCombo.dataProvider[n].name == sp2.identityMappingPolicy.name) {
                                     _spCoreSection.identityMappingPolicyCombo.selectedIndex = n;
                                     break;
                                 }
                             }
                         } else {
-                            for (var p:int=0; p < _spCoreSection.identityMappingPolicyCombo.dataProvider.length; p++) {
+                            for (var p:int = 0; p < _spCoreSection.identityMappingPolicyCombo.dataProvider.length; p++) {
                                 if (_spCoreSection.identityMappingPolicyCombo.dataProvider[p].mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
                                     _spCoreSection.identityMappingPolicyCombo.selectedIndex = p;
                                     break;
@@ -830,14 +835,14 @@ public class PropertySheetMediator extends IocMediator {
                         }
 
                         if (idpChannel2.identityMappingPolicy != null) {
-                            for (var q:int=0; q < _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider.length; q++) {
+                            for (var q:int = 0; q < _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider.length; q++) {
                                 if (_federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider[q].name == idpChannel2.identityMappingPolicy.name) {
                                     _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.selectedIndex = q;
                                     break;
                                 }
                             }
                         } else {
-                            for (var r:int=0; r < _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider.length; r++) {
+                            for (var r:int = 0; r < _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider.length; r++) {
                                 if (_federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider[r].mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
                                     _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.selectedIndex = r;
                                     break;
@@ -854,14 +859,14 @@ public class PropertySheetMediator extends IocMediator {
                         _subjectNameIdPolicies = projectProxy.subjectNameIdentifierPolicies;
                         var ip2:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
                         if (ip2.subjectNameIDPolicy != null) {
-                            for (var n1:int=0; n1 < _ipCoreSection.subjectNameIdPolicyCombo.dataProvider.length; n1++) {
+                            for (var n1:int = 0; n1 < _ipCoreSection.subjectNameIdPolicyCombo.dataProvider.length; n1++) {
                                 if (_ipCoreSection.subjectNameIdPolicyCombo.dataProvider[n1].name == ip2.subjectNameIDPolicy.name) {
                                     _ipCoreSection.subjectNameIdPolicyCombo.selectedIndex = n1;
                                     break;
                                 }
                             }
                         } else {
-                            for (var p1:int=0; p1 < _ipCoreSection.subjectNameIdPolicyCombo.dataProvider.length; p1++) {
+                            for (var p1:int = 0; p1 < _ipCoreSection.subjectNameIdPolicyCombo.dataProvider.length; p1++) {
 
                                 if (_ipCoreSection.subjectNameIdPolicyCombo.dataProvider[p1].type.toString() == SubjectNameIDPolicyType.PRINCIPAL.toString()) {
                                     _ipCoreSection.subjectNameIdPolicyCombo.selectedIndex = p1;
@@ -881,14 +886,14 @@ public class PropertySheetMediator extends IocMediator {
                         }
 
                         if (spChannel2.subjectNameIDPolicy != null) {
-                            for (var q2:int=0; q2 < _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.dataProvider.length; q2++) {
+                            for (var q2:int = 0; q2 < _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.dataProvider.length; q2++) {
                                 if (_federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.dataProvider[q2].name == spChannel2.subjectNameIDPolicy.name) {
                                     _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.selectedIndex = q2;
                                     break;
                                 }
                             }
                         } else {
-                            for (var r2:int=0; r2 < _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.dataProvider.length; r2++) {
+                            for (var r2:int = 0; r2 < _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.dataProvider.length; r2++) {
                                 if (_federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.dataProvider[r2].type.toString() == SubjectNameIDPolicyType.PRINCIPAL.toString()) {
                                     _federatedConnectionSPChannelSection.subjectNameIdPolicyCombo.selectedIndex = r2;
                                     break;
@@ -917,14 +922,14 @@ public class PropertySheetMediator extends IocMediator {
                         }
 
                         if (bauthn3 != null) {
-                            for (var n2:int=0; n2 < _basicAuthenticationSection.impersonateUserPoliciesCombo.dataProvider.length; n2++) {
+                            for (var n2:int = 0; n2 < _basicAuthenticationSection.impersonateUserPoliciesCombo.dataProvider.length; n2++) {
                                 if (_basicAuthenticationSection.impersonateUserPoliciesCombo.dataProvider[n2].name == bauthn3.impersonateUserPolicy.name) {
                                     _basicAuthenticationSection.impersonateUserPoliciesCombo.selectedIndex = n2;
                                     break;
                                 }
                             }
                         } else {
-                            for (var p2:int=0; p2 < _basicAuthenticationSection.impersonateUserPoliciesCombo.dataProvider.length; p2++) {
+                            for (var p2:int = 0; p2 < _basicAuthenticationSection.impersonateUserPoliciesCombo.dataProvider.length; p2++) {
                                 if (_basicAuthenticationSection.impersonateUserPoliciesCombo.dataProvider[p2].type.toString() == ImpersonateUserPolicyType.DISABLED.toString()) {
                                     _basicAuthenticationSection.impersonateUserPoliciesCombo.selectedIndex = p2;
                                     break;
@@ -1015,7 +1020,7 @@ public class PropertySheetMediator extends IocMediator {
     private function handleIdentityApplianceCorePropertyTabRollOut(e:Event):void {
         trace(e);
         if (_dirty && validate(true)) {
-             // bind model
+            // bind model
             // fetch appliance object
             var identityAppliance:IdentityAppliance;
             identityAppliance = projectProxy.currentIdentityAppliance;
@@ -1063,19 +1068,19 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderCorePropertyTabRollOut);
 
         /*// Contract Tab
-        var contractPropertyTab:Group = new Group();
-        contractPropertyTab.layoutDirection = LayoutDirection.LTR;
-        contractPropertyTab.id = "propertySheetContractSection";
-        contractPropertyTab.name = "Contract";
-        contractPropertyTab.width = Number("100%");
-        contractPropertyTab.height = Number("100%");
-        contractPropertyTab.setStyle("borderStyle", "solid");
+         var contractPropertyTab:Group = new Group();
+         contractPropertyTab.layoutDirection = LayoutDirection.LTR;
+         contractPropertyTab.id = "propertySheetContractSection";
+         contractPropertyTab.name = "Contract";
+         contractPropertyTab.width = Number("100%");
+         contractPropertyTab.height = Number("100%");
+         contractPropertyTab.setStyle("borderStyle", "solid");
 
-        _ipContractSection = new IdentityProviderContractSection();
-        contractPropertyTab.addElement(_ipContractSection);
-        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        _ipContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderContractPropertyTabCreationComplete);
-        contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderContractPropertyTabRollOut);*/
+         _ipContractSection = new IdentityProviderContractSection();
+         contractPropertyTab.addElement(_ipContractSection);
+         _propertySheetsViewStack.addNewChild(contractPropertyTab);
+         _ipContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderContractPropertyTabCreationComplete);
+         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderContractPropertyTabRollOut);*/
 
         // SAML 2.0 Tab
         var saml2PropertyTab:Group = new Group();
@@ -1174,21 +1179,21 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderCorePropertyTabRollOut);
 
         /*// Contract Tab
-        var contractPropertyTab:Group = new Group();
-        contractPropertyTab.layoutDirection = LayoutDirection.LTR;
-        contractPropertyTab.id = "propertySheetContractSection";
-        contractPropertyTab.name = "Contract";
-        contractPropertyTab.width = Number("100%");
-        contractPropertyTab.height = Number("100%");
-        contractPropertyTab.setStyle("borderStyle", "solid");
+         var contractPropertyTab:Group = new Group();
+         contractPropertyTab.layoutDirection = LayoutDirection.LTR;
+         contractPropertyTab.id = "propertySheetContractSection";
+         contractPropertyTab.name = "Contract";
+         contractPropertyTab.width = Number("100%");
+         contractPropertyTab.height = Number("100%");
+         contractPropertyTab.setStyle("borderStyle", "solid");
 
-        _spContractSection = new ServiceProviderContractSection();
-        contractPropertyTab.addElement(_spContractSection);
-        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        _tabbedPropertiesTabBar.selectedIndex = 0;
+         _spContractSection = new ServiceProviderContractSection();
+         contractPropertyTab.addElement(_spContractSection);
+         _propertySheetsViewStack.addNewChild(contractPropertyTab);
+         _tabbedPropertiesTabBar.selectedIndex = 0;
 
-        _spContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderContractPropertyTabCreationComplete);
-        contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderContractPropertyTabRollOut);*/
+         _spContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderContractPropertyTabCreationComplete);
+         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderContractPropertyTabRollOut);*/
 
         // SAML 2.0 Tab
         var saml2PropertyTab:Group = new Group();
@@ -1260,7 +1265,7 @@ public class PropertySheetMediator extends IocMediator {
             // select authentication mechanism (currently there is always only one selected authn. mechanism)
             var selectedAuthnMechanism:String = "basic";
             if (identityProvider.authenticationMechanisms != null && identityProvider.authenticationMechanisms.length > 0) {
-                var authnMechanism:AuthenticationMechanism  = identityProvider.authenticationMechanisms.getItemAt(0) as AuthenticationMechanism;
+                var authnMechanism:AuthenticationMechanism = identityProvider.authenticationMechanisms.getItemAt(0) as AuthenticationMechanism;
                 if (authnMechanism is BasicAuthentication)
                     selectedAuthnMechanism = "basic";
                 else if (authnMechanism is TwoFactorAuthentication)
@@ -1272,11 +1277,11 @@ public class PropertySheetMediator extends IocMediator {
 
             }
             /*for (var j:int = 0; j < _ipCoreSection.authMechanismCombo.dataProvider.length; j++) {
-                if (_ipCoreSection.authMechanismCombo.dataProvider[j].data == selectedAuthnMechanism) {
-                    _ipCoreSection.authMechanismCombo.selectedIndex = j;
-                    break;
-                }
-            }*/
+             if (_ipCoreSection.authMechanismCombo.dataProvider[j].data == selectedAuthnMechanism) {
+             _ipCoreSection.authMechanismCombo.selectedIndex = j;
+             break;
+             }
+             }*/
 
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1375,135 +1380,135 @@ public class PropertySheetMediator extends IocMediator {
 
     /*private function handleIdentityProviderContractPropertyTabCreationComplete(event:Event):void {
 
-        var identityProvider:IdentityProvider;
+     var identityProvider:IdentityProvider;
 
-        identityProvider = _currentIdentityApplianceElement as IdentityProvider;
+     identityProvider = _currentIdentityApplianceElement as IdentityProvider;
 
-        // if identityProvider is null that means some other element was selected before completing this
-        if (identityProvider != null) {
-            _ipContractSection.wantAuthnRequestsSignedCheck.selected = identityProvider.wantAuthnRequestsSigned;
-            _ipContractSection.signRequestsCheck.selected = identityProvider.signRequests;
-            _ipContractSection.wantSignedRequestsCheck.selected = identityProvider.wantSignedRequests;
+     // if identityProvider is null that means some other element was selected before completing this
+     if (identityProvider != null) {
+     _ipContractSection.wantAuthnRequestsSignedCheck.selected = identityProvider.wantAuthnRequestsSigned;
+     _ipContractSection.signRequestsCheck.selected = identityProvider.signRequests;
+     _ipContractSection.wantSignedRequestsCheck.selected = identityProvider.wantSignedRequests;
 
-            _ipContractSection.oauth2ClientsConfig.text = identityProvider.oauth2ClientsConfig;
-            _ipContractSection.oauth2Key.text = identityProvider.oauth2Key;
-            
-            for (var j:int = 0; j < identityProvider.activeBindings.length; j ++) {
-                var tmpBinding:Binding = identityProvider.activeBindings.getItemAt(j) as Binding;
-                if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                    _ipContractSection.samlBindingHttpPostCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                    _ipContractSection.samlBindingHttpRedirectCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                    _ipContractSection.samlBindingArtifactCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                    _ipContractSection.samlBindingSoapCheck.selected = true;
-                }
-            }
-            for (j = 0; j < identityProvider.activeProfiles.length; j++) {
-                var tmpProfile:Profile = identityProvider.activeProfiles.getItemAt(j) as Profile;
-                if (tmpProfile.name == Profile.SSO.name) {
-                    _ipContractSection.samlProfileSSOCheck.selected = true;
-                }
-                if (tmpProfile.name == Profile.SSO_SLO.name) {
-                    _ipContractSection.samlProfileSLOCheck.selected = true;
-                }
-            }
+     _ipContractSection.oauth2ClientsConfig.text = identityProvider.oauth2ClientsConfig;
+     _ipContractSection.oauth2Key.text = identityProvider.oauth2Key;
 
-            if (_applianceSaved) {
-                _ipContractSection.btnExportMetadata.enabled = true;
-                _ipContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
-            }
+     for (var j:int = 0; j < identityProvider.activeBindings.length; j ++) {
+     var tmpBinding:Binding = identityProvider.activeBindings.getItemAt(j) as Binding;
+     if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
+     _ipContractSection.samlBindingHttpPostCheck.selected = true;
+     }
+     if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
+     _ipContractSection.samlBindingHttpRedirectCheck.selected = true;
+     }
+     if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
+     _ipContractSection.samlBindingArtifactCheck.selected = true;
+     }
+     if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
+     _ipContractSection.samlBindingSoapCheck.selected = true;
+     }
+     }
+     for (j = 0; j < identityProvider.activeProfiles.length; j++) {
+     var tmpProfile:Profile = identityProvider.activeProfiles.getItemAt(j) as Profile;
+     if (tmpProfile.name == Profile.SSO.name) {
+     _ipContractSection.samlProfileSSOCheck.selected = true;
+     }
+     if (tmpProfile.name == Profile.SSO_SLO.name) {
+     _ipContractSection.samlProfileSLOCheck.selected = true;
+     }
+     }
 
-            _ipContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipContractSection.wantAuthnRequestsSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipContractSection.signRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipContractSection.wantSignedRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     if (_applianceSaved) {
+     _ipContractSection.btnExportMetadata.enabled = true;
+     _ipContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+     }
 
-            _ipContractSection.oauth2UsernamePasswordFlow.addEventListener(Event.CHANGE,  handleSectionChange)
-            _ipContractSection.oauth2BindingRestfulCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipContractSection.oauth2BindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipContractSection.oauth2ClientsConfig.addEventListener(Event.CHANGE,  handleSectionChange)
-            _ipContractSection.oauth2Key.addEventListener(Event.CHANGE,  handleSectionChange)
+     _ipContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _ipContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _ipContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _ipContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _ipContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _ipContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _ipContractSection.wantAuthnRequestsSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _ipContractSection.signRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _ipContractSection.wantSignedRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
 
-        }
-    }
+     _ipContractSection.oauth2UsernamePasswordFlow.addEventListener(Event.CHANGE,  handleSectionChange)
+     _ipContractSection.oauth2BindingRestfulCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _ipContractSection.oauth2BindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _ipContractSection.oauth2ClientsConfig.addEventListener(Event.CHANGE,  handleSectionChange)
+     _ipContractSection.oauth2Key.addEventListener(Event.CHANGE,  handleSectionChange)
 
-    private function handleIdentityProviderContractPropertyTabRollOut(event:Event):void {
-        if (_dirty && validate(true)) {
-            var identityProvider:IdentityProvider;
+     }
+     }
 
-            identityProvider = _currentIdentityApplianceElement as IdentityProvider;
+     private function handleIdentityProviderContractPropertyTabRollOut(event:Event):void {
+     if (_dirty && validate(true)) {
+     var identityProvider:IdentityProvider;
 
-//            var spChannel:InternalSaml2ServiceProviderChannel = identityProvider.defaultChannel as InternalSaml2ServiceProviderChannel;
+     identityProvider = _currentIdentityApplianceElement as IdentityProvider;
 
-            if (identityProvider.activeBindings == null) {
-                identityProvider.activeBindings = new ArrayCollection();
-            }
-            identityProvider.activeBindings.removeAll();
-            if (_ipContractSection.samlBindingHttpPostCheck.selected) {
-                identityProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
-            }
-            if (_ipContractSection.samlBindingArtifactCheck.selected) {
-                identityProvider.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
-            }
-            if (_ipContractSection.samlBindingHttpRedirectCheck.selected) {
-                identityProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
-            }
-            if (_ipContractSection.samlBindingSoapCheck.selected) {
-                identityProvider.activeBindings.addItem(Binding.SAMLR2_SOAP);
-            }
+     //            var spChannel:InternalSaml2ServiceProviderChannel = identityProvider.defaultChannel as InternalSaml2ServiceProviderChannel;
 
-            if (identityProvider.activeProfiles == null) {
-                identityProvider.activeProfiles = new ArrayCollection();
-            }
-            identityProvider.activeProfiles.removeAll();
-            if (_ipContractSection.samlProfileSSOCheck.selected) {
-                identityProvider.activeProfiles.addItem(Profile.SSO);
-            }
-            if (_ipContractSection.samlProfileSLOCheck.selected) {
-                identityProvider.activeProfiles.addItem(Profile.SSO_SLO);
-            }
+     if (identityProvider.activeBindings == null) {
+     identityProvider.activeBindings = new ArrayCollection();
+     }
+     identityProvider.activeBindings.removeAll();
+     if (_ipContractSection.samlBindingHttpPostCheck.selected) {
+     identityProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
+     }
+     if (_ipContractSection.samlBindingArtifactCheck.selected) {
+     identityProvider.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
+     }
+     if (_ipContractSection.samlBindingHttpRedirectCheck.selected) {
+     identityProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
+     }
+     if (_ipContractSection.samlBindingSoapCheck.selected) {
+     identityProvider.activeBindings.addItem(Binding.SAMLR2_SOAP);
+     }
 
-//            identityProvider.defaultChannel = spChannel;
-            identityProvider.wantAuthnRequestsSigned = _ipContractSection.wantAuthnRequestsSignedCheck.selected;
-            identityProvider.signRequests = _ipContractSection.signRequestsCheck.selected;
-            identityProvider.wantSignedRequests = _ipContractSection.wantSignedRequestsCheck.selected;
-            identityProvider.oauth2ClientsConfig = _ipContractSection.oauth2ClientsConfig.text;
-            identityProvider.oauth2Key = _ipContractSection.oauth2Key.text;
+     if (identityProvider.activeProfiles == null) {
+     identityProvider.activeProfiles = new ArrayCollection();
+     }
+     identityProvider.activeProfiles.removeAll();
+     if (_ipContractSection.samlProfileSSOCheck.selected) {
+     identityProvider.activeProfiles.addItem(Profile.SSO);
+     }
+     if (_ipContractSection.samlProfileSLOCheck.selected) {
+     identityProvider.activeProfiles.addItem(Profile.SSO_SLO);
+     }
 
-            // update default sp channels
-            if (identityProvider.federatedConnectionsA != null) {
-                for (var i:int = 0; i < identityProvider.federatedConnectionsA.length; i++) {
-                    var spChannel:InternalSaml2ServiceProviderChannel = identityProvider.federatedConnectionsA[i].channelA as InternalSaml2ServiceProviderChannel;
-                    if (!spChannel.overrideProviderSetup) {
-                        updateInternalSaml2ServiceProviderChannel(spChannel, identityProvider);
-                    }
-                }
-            }
+     //            identityProvider.defaultChannel = spChannel;
+     identityProvider.wantAuthnRequestsSigned = _ipContractSection.wantAuthnRequestsSignedCheck.selected;
+     identityProvider.signRequests = _ipContractSection.signRequestsCheck.selected;
+     identityProvider.wantSignedRequests = _ipContractSection.wantSignedRequestsCheck.selected;
+     identityProvider.oauth2ClientsConfig = _ipContractSection.oauth2ClientsConfig.text;
+     identityProvider.oauth2Key = _ipContractSection.oauth2Key.text;
 
-            if (identityProvider.federatedConnectionsB != null) {
-                for (var j:int = 0; j < identityProvider.federatedConnectionsB.length; j++) {
-                    var spChannel2:InternalSaml2ServiceProviderChannel = identityProvider.federatedConnectionsB[j].channelB as InternalSaml2ServiceProviderChannel;
-                    if (!spChannel2.overrideProviderSetup) {
-                        updateInternalSaml2ServiceProviderChannel(spChannel2, identityProvider);
-                    }
-                }
-            }
-            
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _applianceSaved = false;
-            _dirty = false;
-        }
-    }*/
+     // update default sp channels
+     if (identityProvider.federatedConnectionsA != null) {
+     for (var i:int = 0; i < identityProvider.federatedConnectionsA.length; i++) {
+     var spChannel:InternalSaml2ServiceProviderChannel = identityProvider.federatedConnectionsA[i].channelA as InternalSaml2ServiceProviderChannel;
+     if (!spChannel.overrideProviderSetup) {
+     updateInternalSaml2ServiceProviderChannel(spChannel, identityProvider);
+     }
+     }
+     }
+
+     if (identityProvider.federatedConnectionsB != null) {
+     for (var j:int = 0; j < identityProvider.federatedConnectionsB.length; j++) {
+     var spChannel2:InternalSaml2ServiceProviderChannel = identityProvider.federatedConnectionsB[j].channelB as InternalSaml2ServiceProviderChannel;
+     if (!spChannel2.overrideProviderSetup) {
+     updateInternalSaml2ServiceProviderChannel(spChannel2, identityProvider);
+     }
+     }
+     }
+
+     sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+     _applianceSaved = false;
+     _dirty = false;
+     }
+     }*/
 
     private function handleIdentityProviderSaml2PropertyTabCreationComplete(event:Event):void {
 
@@ -1519,7 +1524,7 @@ public class PropertySheetMediator extends IocMediator {
             _ipSaml2Section.messageTtl.text = identityProvider.messageTtl.toString();
             _ipSaml2Section.messageTtlTolerance.text = identityProvider.messageTtlTolerance.toString();
 
-            for (var j:int = 0; j < identityProvider.activeBindings.length; j ++) {
+            for (var j:int = 0; j < identityProvider.activeBindings.length; j++) {
                 var tmpBinding:Binding = identityProvider.activeBindings.getItemAt(j) as Binding;
                 if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
                     _ipSaml2Section.samlBindingHttpPostCheck.selected = true;
@@ -1655,11 +1660,11 @@ public class PropertySheetMediator extends IocMediator {
             _ipOAuth2Section.oauth2Key.text = identityProvider.oauth2Key;
 
             _ipOAuth2Section.oauth2Enabled.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipOAuth2Section.oauth2UsernamePasswordFlow.addEventListener(Event.CHANGE,  handleSectionChange);
+            _ipOAuth2Section.oauth2UsernamePasswordFlow.addEventListener(Event.CHANGE, handleSectionChange);
             _ipOAuth2Section.oauth2BindingRestfulCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipOAuth2Section.oauth2BindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _ipOAuth2Section.oauth2ClientsConfig.addEventListener(Event.CHANGE,  handleSectionChange);
-            _ipOAuth2Section.oauth2Key.addEventListener(Event.CHANGE,  handleSectionChange);
+            _ipOAuth2Section.oauth2ClientsConfig.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipOAuth2Section.oauth2Key.addEventListener(Event.CHANGE, handleSectionChange);
         }
     }
 
@@ -1689,7 +1694,7 @@ public class PropertySheetMediator extends IocMediator {
         if (identityProvider != null) {
             _ipOpenIDSection.openIdEnabled.selected = identityProvider.oauth2Enabled;
 
-            _ipOpenIDSection.openIdEnabled.addEventListener(Event.CHANGE,  handleSectionChange);
+            _ipOpenIDSection.openIdEnabled.addEventListener(Event.CHANGE, handleSectionChange);
         }
     }
 
@@ -1987,7 +1992,7 @@ public class PropertySheetMediator extends IocMediator {
 
             if (twoFactorAuthentication != null) {
                 _twoFactorAuthenticationSection.authName.text = twoFactorAuthentication.name;
-                
+
                 _twoFactorAuthenticationSection.authName.addEventListener(Event.CHANGE, handleSectionChange);
 
                 //clear all existing validators and add basic auth. section validators
@@ -2321,7 +2326,7 @@ public class PropertySheetMediator extends IocMediator {
 
             BindingUtils.bindProperty(_spCoreSection.identityMappingPolicyCombo, "dataProvider", this, "_identityMappingPolicies");
             sendNotification(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES);
-            
+
             _spCoreSection.serviceProvName.text = serviceProvider.name;
             _spCoreSection.serviceProvDescription.text = serviceProvider.description;
             //TODO
@@ -2345,7 +2350,7 @@ public class PropertySheetMediator extends IocMediator {
             _spCoreSection.spLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
             _spCoreSection.spLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
             _spCoreSection.spLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-            
+
             _validators = [];
             _validators.push(_spCoreSection.nameValidator);
             _validators.push(_spCoreSection.portValidator);
@@ -2392,7 +2397,7 @@ public class PropertySheetMediator extends IocMediator {
                     }
                 }
             }
-            
+
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
@@ -2402,123 +2407,123 @@ public class PropertySheetMediator extends IocMediator {
 
     /*private function handleServiceProviderContractPropertyTabCreationComplete(event:Event):void {
 
-        var serviceProvider:InternalSaml2ServiceProvider;
+     var serviceProvider:InternalSaml2ServiceProvider;
 
-        serviceProvider = _currentIdentityApplianceElement as InternalSaml2ServiceProvider;
+     serviceProvider = _currentIdentityApplianceElement as InternalSaml2ServiceProvider;
 
-        // if serviceProvider is null that means some other element was selected before completing this
-        if (serviceProvider != null) {
-            _spContractSection.signAuthnRequestsCheck.selected = serviceProvider.signAuthenticationRequests;
-            _spContractSection.wantAssertionSignedCheck.selected = serviceProvider.wantAssertionSigned;
-            _spContractSection.signRequestsCheck.selected = serviceProvider.signRequests;
-            _spContractSection.wantSignedRequestsCheck.selected = serviceProvider.wantSignedRequests;
+     // if serviceProvider is null that means some other element was selected before completing this
+     if (serviceProvider != null) {
+     _spContractSection.signAuthnRequestsCheck.selected = serviceProvider.signAuthenticationRequests;
+     _spContractSection.wantAssertionSignedCheck.selected = serviceProvider.wantAssertionSigned;
+     _spContractSection.signRequestsCheck.selected = serviceProvider.signRequests;
+     _spContractSection.wantSignedRequestsCheck.selected = serviceProvider.wantSignedRequests;
 
-            for (var j:int = 0; j < serviceProvider.activeBindings.length; j ++) {
-                var tmpBinding:Binding = serviceProvider.activeBindings.getItemAt(j) as Binding;
-                if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                    _spContractSection.samlBindingHttpPostCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                    _spContractSection.samlBindingHttpRedirectCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                    _spContractSection.samlBindingArtifactCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                    _spContractSection.samlBindingSoapCheck.selected = true;
-                }
-            }
-            for (j = 0; j < serviceProvider.activeProfiles.length; j++) {
-                var tmpProfile:Profile = serviceProvider.activeProfiles.getItemAt(j) as Profile;
-                if (tmpProfile.name == Profile.SSO.name) {
-                    _spContractSection.samlProfileSSOCheck.selected = true;
-                }
-                if (tmpProfile.name == Profile.SSO_SLO.name) {
-                    _spContractSection.samlProfileSLOCheck.selected = true;
-                }
-            }
+     for (var j:int = 0; j < serviceProvider.activeBindings.length; j ++) {
+     var tmpBinding:Binding = serviceProvider.activeBindings.getItemAt(j) as Binding;
+     if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
+     _spContractSection.samlBindingHttpPostCheck.selected = true;
+     }
+     if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
+     _spContractSection.samlBindingHttpRedirectCheck.selected = true;
+     }
+     if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
+     _spContractSection.samlBindingArtifactCheck.selected = true;
+     }
+     if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
+     _spContractSection.samlBindingSoapCheck.selected = true;
+     }
+     }
+     for (j = 0; j < serviceProvider.activeProfiles.length; j++) {
+     var tmpProfile:Profile = serviceProvider.activeProfiles.getItemAt(j) as Profile;
+     if (tmpProfile.name == Profile.SSO.name) {
+     _spContractSection.samlProfileSSOCheck.selected = true;
+     }
+     if (tmpProfile.name == Profile.SSO_SLO.name) {
+     _spContractSection.samlProfileSLOCheck.selected = true;
+     }
+     }
 
-            if (_applianceSaved) {
-                _spContractSection.btnExportMetadata.enabled = true;
-                _spContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
-            }
+     if (_applianceSaved) {
+     _spContractSection.btnExportMetadata.enabled = true;
+     _spContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+     }
 
-            _spContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spContractSection.signAuthnRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spContractSection.wantAssertionSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spContractSection.signRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spContractSection.wantSignedRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        }
-    }
+     _spContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _spContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _spContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _spContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _spContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _spContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _spContractSection.signAuthnRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _spContractSection.wantAssertionSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _spContractSection.signRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     _spContractSection.wantSignedRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
+     }
+     }
 
-    private function handleServiceProviderContractPropertyTabRollOut(event:Event):void {
-        if (_dirty && validate(true)) {
-            var serviceProvider:InternalSaml2ServiceProvider;
+     private function handleServiceProviderContractPropertyTabRollOut(event:Event):void {
+     if (_dirty && validate(true)) {
+     var serviceProvider:InternalSaml2ServiceProvider;
 
-            serviceProvider = _currentIdentityApplianceElement as InternalSaml2ServiceProvider;
+     serviceProvider = _currentIdentityApplianceElement as InternalSaml2ServiceProvider;
 
-            if (serviceProvider.activeBindings == null) {
-                serviceProvider.activeBindings = new ArrayCollection();
-            }
-            serviceProvider.activeBindings.removeAll();
-            if (_spContractSection.samlBindingHttpPostCheck.selected) {
-                serviceProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
-            }
-            if (_spContractSection.samlBindingArtifactCheck.selected) {
-                serviceProvider.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
-            }
-            if (_spContractSection.samlBindingHttpRedirectCheck.selected) {
-                serviceProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
-            }
-            if (_spContractSection.samlBindingSoapCheck.selected) {
-                serviceProvider.activeBindings.addItem(Binding.SAMLR2_SOAP);
-            }
+     if (serviceProvider.activeBindings == null) {
+     serviceProvider.activeBindings = new ArrayCollection();
+     }
+     serviceProvider.activeBindings.removeAll();
+     if (_spContractSection.samlBindingHttpPostCheck.selected) {
+     serviceProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
+     }
+     if (_spContractSection.samlBindingArtifactCheck.selected) {
+     serviceProvider.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
+     }
+     if (_spContractSection.samlBindingHttpRedirectCheck.selected) {
+     serviceProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
+     }
+     if (_spContractSection.samlBindingSoapCheck.selected) {
+     serviceProvider.activeBindings.addItem(Binding.SAMLR2_SOAP);
+     }
 
-            if (serviceProvider.activeProfiles == null) {
-                serviceProvider.activeProfiles = new ArrayCollection();
-            }
-            serviceProvider.activeProfiles.removeAll();
-            if (_spContractSection.samlProfileSSOCheck.selected) {
-                serviceProvider.activeProfiles.addItem(Profile.SSO);
-            }
-            if (_spContractSection.samlProfileSLOCheck.selected) {
-                serviceProvider.activeProfiles.addItem(Profile.SSO_SLO);
-            }
+     if (serviceProvider.activeProfiles == null) {
+     serviceProvider.activeProfiles = new ArrayCollection();
+     }
+     serviceProvider.activeProfiles.removeAll();
+     if (_spContractSection.samlProfileSSOCheck.selected) {
+     serviceProvider.activeProfiles.addItem(Profile.SSO);
+     }
+     if (_spContractSection.samlProfileSLOCheck.selected) {
+     serviceProvider.activeProfiles.addItem(Profile.SSO_SLO);
+     }
 
-            serviceProvider.signAuthenticationRequests = _spContractSection.signAuthnRequestsCheck.selected;
-            serviceProvider.wantAssertionSigned = _spContractSection.wantAssertionSignedCheck.selected;
-            serviceProvider.signRequests = _spContractSection.signRequestsCheck.selected;
-            serviceProvider.wantSignedRequests = _spContractSection.wantSignedRequestsCheck.selected;
-            
-            // update default idp channels
-            if (serviceProvider.federatedConnectionsA != null) {
-                for (var i:int = 0; i < serviceProvider.federatedConnectionsA.length; i++) {
-                    var idpChannel:IdentityProviderChannel = serviceProvider.federatedConnectionsA[i].channelA as IdentityProviderChannel;
-                    if (!idpChannel.overrideProviderSetup) {
-                        updateIdentityProviderChannel(idpChannel, serviceProvider);
-                    }
-                }
-            }
+     serviceProvider.signAuthenticationRequests = _spContractSection.signAuthnRequestsCheck.selected;
+     serviceProvider.wantAssertionSigned = _spContractSection.wantAssertionSignedCheck.selected;
+     serviceProvider.signRequests = _spContractSection.signRequestsCheck.selected;
+     serviceProvider.wantSignedRequests = _spContractSection.wantSignedRequestsCheck.selected;
 
-            if (serviceProvider.federatedConnectionsB != null) {
-                for (var j:int = 0; j < serviceProvider.federatedConnectionsB.length; j++) {
-                    var idpChannel2:IdentityProviderChannel = serviceProvider.federatedConnectionsB[j].channelB as IdentityProviderChannel;
-                    if (!idpChannel2.overrideProviderSetup) {
-                        updateIdentityProviderChannel(idpChannel2, serviceProvider);
-                    }
-                }
-            }
-            
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _applianceSaved = false;
-            _dirty = false;
-        }
-    }*/
+     // update default idp channels
+     if (serviceProvider.federatedConnectionsA != null) {
+     for (var i:int = 0; i < serviceProvider.federatedConnectionsA.length; i++) {
+     var idpChannel:IdentityProviderChannel = serviceProvider.federatedConnectionsA[i].channelA as IdentityProviderChannel;
+     if (!idpChannel.overrideProviderSetup) {
+     updateIdentityProviderChannel(idpChannel, serviceProvider);
+     }
+     }
+     }
+
+     if (serviceProvider.federatedConnectionsB != null) {
+     for (var j:int = 0; j < serviceProvider.federatedConnectionsB.length; j++) {
+     var idpChannel2:IdentityProviderChannel = serviceProvider.federatedConnectionsB[j].channelB as IdentityProviderChannel;
+     if (!idpChannel2.overrideProviderSetup) {
+     updateIdentityProviderChannel(idpChannel2, serviceProvider);
+     }
+     }
+     }
+
+     sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+     _applianceSaved = false;
+     _dirty = false;
+     }
+     }*/
 
     private function handleServiceProviderSaml2PropertyTabCreationComplete(event:Event):void {
 
@@ -2535,7 +2540,7 @@ public class PropertySheetMediator extends IocMediator {
             _spSaml2Section.messageTtl.text = serviceProvider.messageTtl.toString();
             _spSaml2Section.messageTtlTolerance.text = serviceProvider.messageTtlTolerance.toString();
 
-            for (var j:int = 0; j < serviceProvider.activeBindings.length; j ++) {
+            for (var j:int = 0; j < serviceProvider.activeBindings.length; j++) {
                 var tmpBinding:Binding = serviceProvider.activeBindings.getItemAt(j) as Binding;
                 if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
                     _spSaml2Section.samlBindingHttpPostCheck.selected = true;
@@ -2561,7 +2566,7 @@ public class PropertySheetMediator extends IocMediator {
             }
 
             if (serviceProvider.serviceConnection != null &&
-                serviceProvider.serviceConnection.resource is JOSSO1Resource) {
+                    serviceProvider.serviceConnection.resource is JOSSO1Resource) {
                 var location:String = resolveProviderLocationUrl(serviceProvider);
                 _spSaml2Section.entityID.text = location + "/SAML2/MD";
 
@@ -2701,7 +2706,7 @@ public class PropertySheetMediator extends IocMediator {
 
         idpChannel.signAuthenticationRequests = serviceProvider.signAuthenticationRequests;
     }
-    
+
     private function handleProviderCertificatePropertyTabCreationComplete(event:Event):void {
         var provider:Provider = _currentIdentityApplianceElement as Provider;
 
@@ -2804,7 +2809,7 @@ public class PropertySheetMediator extends IocMediator {
         if (identityProvider != null) {
 
             resetUploadMetadataFields();
-            
+
             // bind view
             _externalIdpCoreSection.identityProviderName.text = identityProvider.name;
             _externalIdpCoreSection.identityProvDescription.text = identityProvider.description;
@@ -3579,7 +3584,7 @@ public class PropertySheetMediator extends IocMediator {
             _wikidAuthnServiceCoreSection.lblWCStoreMsg.text = "";
             _wikidAuthnServiceCoreSection.lblWCStoreMsg.setStyle("color", "Green");
             _wikidAuthnServiceCoreSection.lblWCStoreMsg.visible = false;
-            
+
             if (_selectedWikidCAStores != null && _selectedWikidCAStores.length > 0) {
                 _wikidCAStoreFileRef.load();
             } else if (_selectedWCStores != null && _selectedWCStores.length > 0) {
@@ -3592,7 +3597,7 @@ public class PropertySheetMediator extends IocMediator {
 
     private function saveWikidAuthnService():void {
         var wikidAuthnService:WikidAuthenticationService = _currentIdentityApplianceElement as WikidAuthenticationService;
-        
+
         if (wikidAuthnService != null) {
             var oldName:String = wikidAuthnService.name;
             wikidAuthnService.name = _wikidAuthnServiceCoreSection.wikidName.text;
@@ -3711,7 +3716,7 @@ public class PropertySheetMediator extends IocMediator {
         lookupPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleDirectoryAuthnServiceLookupPropertyTabRollOut);
 
     }
-    
+
     private function handleDirectoryAuthnServiceCorePropertyTabCreationComplete(event:Event):void {
         var directoryAuthnService:DirectoryAuthenticationService = _currentIdentityApplianceElement as DirectoryAuthenticationService;
 
@@ -3831,7 +3836,7 @@ public class PropertySheetMediator extends IocMediator {
             var directoryAuthnService:DirectoryAuthenticationService = _currentIdentityApplianceElement as DirectoryAuthenticationService;
             directoryAuthnService.usersCtxDN = _directoryAuthnServiceLookupSection.usersCtxDN.text;
             directoryAuthnService.principalUidAttributeID = _directoryAuthnServiceLookupSection.principalUidAttributeID.text;
-            directoryAuthnService.ldapSearchScope= _directoryAuthnServiceLookupSection.ldapSearchScope.selectedItem.data;
+            directoryAuthnService.ldapSearchScope = _directoryAuthnServiceLookupSection.ldapSearchScope.selectedItem.data;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -3839,7 +3844,7 @@ public class PropertySheetMediator extends IocMediator {
             _dirty = false;
         }
     }
-    
+
     protected function enableWindowsIntegratedAuthnPropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();
 
@@ -3861,7 +3866,7 @@ public class PropertySheetMediator extends IocMediator {
 
 
     }
-    
+
     private function handleWindowsIntegratedAuthnCorePropertyTabCreationComplete(event:Event):void {
         var windowsIntegratedAuth:WindowsIntegratedAuthentication = _currentIdentityApplianceElement as WindowsIntegratedAuthentication;
 
@@ -3938,7 +3943,7 @@ public class PropertySheetMediator extends IocMediator {
         spn = _windowsIntegratedAuthnCoreSection.serviceClass.selectedItem.data + "/" + _windowsIntegratedAuthnCoreSection.host.text;
 
         if (_windowsIntegratedAuthnCoreSection.port.text != null && _windowsIntegratedAuthnCoreSection.port.text != "")
-             spn += ":" + _windowsIntegratedAuthnCoreSection.port.text;
+            spn += ":" + _windowsIntegratedAuthnCoreSection.port.text;
 
         if (_windowsIntegratedAuthnCoreSection.serviceName != null && _windowsIntegratedAuthnCoreSection.serviceName.text != "") {
             spn += "/" + _windowsIntegratedAuthnCoreSection.serviceName.text;
@@ -3954,7 +3959,7 @@ public class PropertySheetMediator extends IocMediator {
 
         if (_dirty && validate(true)) {
 
-            if (_selectedKeyTabFiles != null && _selectedKeyTabFiles .length > 0) {
+            if (_selectedKeyTabFiles != null && _selectedKeyTabFiles.length > 0) {
                 _keyTabFileRef.load();
             } else {
                 updateWindowsIntegratedAuthn();
@@ -4034,7 +4039,7 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.setStyle("borderStyle", "solid");
 
         _dominoAuthnServiceCoreSection = new DominoAuthenticationServiceCoreSection();
-        corePropertyTab.addElement(_dominoAuthnServiceCoreSection  );
+        corePropertyTab.addElement(_dominoAuthnServiceCoreSection);
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
@@ -4124,7 +4129,7 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.setStyle("borderStyle", "solid");
 
         _clientCertAuthnServiceCoreSection = new ClientCertAuthnServiceCoreSection();
-        corePropertyTab.addElement(_clientCertAuthnServiceCoreSection  );
+        corePropertyTab.addElement(_clientCertAuthnServiceCoreSection);
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
@@ -4150,7 +4155,7 @@ public class PropertySheetMediator extends IocMediator {
             _clientCertAuthnServiceCoreSection.clientCertCrlUrl.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
-            _validators.push(_clientCertAuthnServiceCoreSection .nameValidator);
+            _validators.push(_clientCertAuthnServiceCoreSection.nameValidator);
 
         }
     }
@@ -4215,7 +4220,7 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.setStyle("borderStyle", "solid");
 
         _jbosseppAuthenticationCoreSection = new JBossEPPAuthenticationServiceCoreSection();
-        corePropertyTab.addElement(_jbosseppAuthenticationCoreSection  );
+        corePropertyTab.addElement(_jbosseppAuthenticationCoreSection);
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
@@ -4300,7 +4305,7 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     // Identity vault
-    
+
 
     protected function enableIdentityVaultPropertyTabs():void {
         // Attach embedded DB identity vault editor form to property tabbed view
@@ -4416,13 +4421,13 @@ public class PropertySheetMediator extends IocMediator {
             _externalDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
             //_externalDbVaultCoreSection.driverName.text = dbIdentityVault.driverName;
             /*if (_externalDbVaultCoreSection.driver.dataProvider != null) {
-                for (var i:int = 0; i < _externalDbVaultCoreSection.driver.dataProvider.length; i++) {
-                    if (_externalDbVaultCoreSection.driver.dataProvider[i].className == dbIdentityVault.driverName) {
-                        _externalDbVaultCoreSection.driver.selectedIndex = i;
-                        break;
-                    }
-                }
-            }*/
+             for (var i:int = 0; i < _externalDbVaultCoreSection.driver.dataProvider.length; i++) {
+             if (_externalDbVaultCoreSection.driver.dataProvider[i].className == dbIdentityVault.driverName) {
+             _externalDbVaultCoreSection.driver.selectedIndex = i;
+             break;
+             }
+             }
+             }*/
             _externalDbVaultCoreSection.connectionUrl.text = dbIdentityVault.connectionUrl;
             _externalDbVaultCoreSection.dbUsername.text = dbIdentityVault.admin;
             _externalDbVaultCoreSection.dbPassword.text = dbIdentityVault.password;
@@ -4462,14 +4467,14 @@ public class PropertySheetMediator extends IocMediator {
             //if (_selectedDriverFiles != null && _selectedDriverFiles.length > 0) {
             //    _driverFileRef.load();
             //} else {
-                updateDbIdentitySource();
+            updateDbIdentitySource();
             //}
         }
     }
 
     private function updateDbIdentitySource():void {
         var dbIdentityVault:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
-        
+
         dbIdentityVault.name = _externalDbVaultCoreSection.userRepositoryName.text;
         //dbIdentityVault.driverName = _externalDbVaultCoreSection.driverName.text;
         dbIdentityVault.driverName = _externalDbVaultCoreSection.driver.selectedItem.className;
@@ -4478,13 +4483,13 @@ public class PropertySheetMediator extends IocMediator {
         dbIdentityVault.password = _externalDbVaultCoreSection.dbPassword.text;
 
         /*if (_uploadedDriver != null && _uploadedDriverName != null) {
-            var driver:Resource = dbIdentityVault.driver;
-            driver.name = _uploadedDriverName.substring(0, _uploadedDriverName.lastIndexOf("."));
-            driver.displayName = _uploadedDriverName;
-            driver.uri = _uploadedDriverName;
-            driver.value = _uploadedDriver;
-            dbIdentityVault.driver = driver;
-        }*/
+         var driver:Resource = dbIdentityVault.driver;
+         driver.name = _uploadedDriverName.substring(0, _uploadedDriverName.lastIndexOf("."));
+         driver.displayName = _uploadedDriverName;
+         driver.uri = _uploadedDriverName;
+         driver.value = _uploadedDriver;
+         dbIdentityVault.driver = driver;
+         }*/
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -4522,7 +4527,7 @@ public class PropertySheetMediator extends IocMediator {
 
             dbIdentityVault.userQueryString = _externalDbVaultLookupSection.userQuery.text;
             dbIdentityVault.rolesQueryString = _externalDbVaultLookupSection.rolesQuery.text;
-            dbIdentityVault.credentialsQueryString =  _externalDbVaultLookupSection.credentialsQuery.text;
+            dbIdentityVault.credentialsQueryString = _externalDbVaultLookupSection.credentialsQuery.text;
             dbIdentityVault.userPropertiesQueryString = _externalDbVaultLookupSection.propertiesQuery.text;
             dbIdentityVault.resetCredentialDml = _externalDbVaultLookupSection.credentialsUpdate.text;
             dbIdentityVault.relayCredentialQueryString = _externalDbVaultLookupSection.relayCredentialQuery.text;
@@ -4534,10 +4539,10 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-   protected function enableLdapIdentitySourcePropertyTabs():void {
+    protected function enableLdapIdentitySourcePropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();
 
-       // Core Tab
+        // Core Tab
         var corePropertyTab:Group = new Group();
         corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
@@ -5022,7 +5027,7 @@ public class PropertySheetMediator extends IocMediator {
     private function handleFederatedConnectionCorePropertyTabRollOut(e:Event):void {
         trace(e);
         if (_dirty && validate(true)) {
-             // bind model
+            // bind model
             var connection:Connection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
 
             connection.name = _federatedConnectionCoreSection.connectionName.text;
@@ -5039,9 +5044,9 @@ public class PropertySheetMediator extends IocMediator {
 
         var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
         if (connection != null) {
-            if(connection.channelA is InternalSaml2ServiceProviderChannel){
+            if (connection.channelA is InternalSaml2ServiceProviderChannel) {
                 spChannel = connection.channelA as InternalSaml2ServiceProviderChannel;
-            } else if (connection.channelB is InternalSaml2ServiceProviderChannel){
+            } else if (connection.channelB is InternalSaml2ServiceProviderChannel) {
                 spChannel = connection.channelB as InternalSaml2ServiceProviderChannel;
             }
         }
@@ -5159,10 +5164,10 @@ public class PropertySheetMediator extends IocMediator {
             var idp:IdentityProvider;
 
             var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
-            if(connection.channelA is InternalSaml2ServiceProviderChannel){
+            if (connection.channelA is InternalSaml2ServiceProviderChannel) {
                 spChannel = connection.channelA as InternalSaml2ServiceProviderChannel;
                 idp = connection.roleA as IdentityProvider;
-            } else if (connection.channelB is InternalSaml2ServiceProviderChannel){
+            } else if (connection.channelB is InternalSaml2ServiceProviderChannel) {
                 spChannel = connection.channelB as InternalSaml2ServiceProviderChannel;
                 idp = connection.roleB as IdentityProvider;
             }
@@ -5218,7 +5223,7 @@ public class PropertySheetMediator extends IocMediator {
                 spChannel.wantAuthnRequestsSigned = _federatedConnectionSPChannelSection.wantAuthnRequestsSignedCheck.selected;
             }
 
-            
+
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
             _dirty = false;
@@ -5230,9 +5235,9 @@ public class PropertySheetMediator extends IocMediator {
 
         var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
         if (connection != null) {
-            if(connection.channelA is IdentityProviderChannel){
+            if (connection.channelA is IdentityProviderChannel) {
                 idpChannel = connection.channelA as IdentityProviderChannel;
-            } else if (connection.channelB is IdentityProviderChannel){
+            } else if (connection.channelB is IdentityProviderChannel) {
                 idpChannel = connection.channelB as IdentityProviderChannel;
             }
         }
@@ -5250,7 +5255,7 @@ public class PropertySheetMediator extends IocMediator {
 
             BindingUtils.bindProperty(_federatedConnectionIDPChannelSection.identityMappingPolicyCombo, "dataProvider", this, "_identityMappingPolicies");
             sendNotification(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES);
-            
+
             if (idpChannel.overrideProviderSetup) {
                 _federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected = false;
                 _federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected = false;
@@ -5331,7 +5336,7 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.idpChannelMessageTtl.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.idpChannelMessageTtlTolerance.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.preferredIDPChannel.addEventListener(Event.CHANGE, handleSectionChange);
-            
+
             //clear all existing validators and add idp channel section validators
             if (idpChannel.overrideProviderSetup) {
                 _validators = [];
@@ -5352,24 +5357,24 @@ public class PropertySheetMediator extends IocMediator {
             var sp:InternalSaml2ServiceProvider;
 
             var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
-            if(connection.channelA is IdentityProviderChannel){
+            if (connection.channelA is IdentityProviderChannel) {
                 idpChannel = connection.channelA as IdentityProviderChannel;
                 sp = connection.roleA as InternalSaml2ServiceProvider;
-            } else if (connection.channelB is IdentityProviderChannel){
+            } else if (connection.channelB is IdentityProviderChannel) {
                 idpChannel = connection.channelB as IdentityProviderChannel;
                 sp = connection.roleB as InternalSaml2ServiceProvider;
             }
 
             idpChannel.preferred = _federatedConnectionIDPChannelSection.preferredIDPChannel.selected;
-            if(idpChannel.preferred){
+            if (idpChannel.preferred) {
                 //if idpchannel is preferred, go through all the idp channels in a SP and deselect previously preferred
-                for each(var conn:FederatedConnection in sp.federatedConnectionsA){
-                    if(conn.channelA != null && conn.channelA != idpChannel){
+                for each(var conn:FederatedConnection in sp.federatedConnectionsA) {
+                    if (conn.channelA != null && conn.channelA != idpChannel) {
                         (conn.channelA as IdentityProviderChannel).preferred = false;
                     }
                 }
-                for each(conn in sp.federatedConnectionsB){
-                    if(conn.channelB != null && conn.channelB != idpChannel){
+                for each(conn in sp.federatedConnectionsB) {
+                    if (conn.channelB != null && conn.channelB != idpChannel) {
                         (conn.channelB as IdentityProviderChannel).preferred = false;
                     }
                 }
@@ -5516,74 +5521,74 @@ public class PropertySheetMediator extends IocMediator {
             _jossoActivationCoreSection.connectionDescription.text = activation.description;
             /*_jossoActivationCoreSection.partnerAppId.text = activation.partnerAppId;
 
-            var location:Location = activation.partnerAppLocation;
-            for (var i:int = 0; i < _jossoActivationCoreSection.partnerAppLocationProtocol.dataProvider.length; i++) {
-                if (location != null && location.protocol == _jossoActivationCoreSection.partnerAppLocationProtocol.dataProvider[i].label) {
-                    _jossoActivationCoreSection.partnerAppLocationProtocol.selectedIndex = i;
-                    break;
-                }
-            }
-            _jossoActivationCoreSection.partnerAppLocationDomain.text = location.host;
-            _jossoActivationCoreSection.partnerAppLocationPort.text = location.port.toString() != "0" ?
-                    location.port.toString() : "";
-            _jossoActivationCoreSection.partnerAppLocationContext.text = location.context;
-            _jossoActivationCoreSection.partnerAppLocationPath.text = location.uri;
+             var location:Location = activation.partnerAppLocation;
+             for (var i:int = 0; i < _jossoActivationCoreSection.partnerAppLocationProtocol.dataProvider.length; i++) {
+             if (location != null && location.protocol == _jossoActivationCoreSection.partnerAppLocationProtocol.dataProvider[i].label) {
+             _jossoActivationCoreSection.partnerAppLocationProtocol.selectedIndex = i;
+             break;
+             }
+             }
+             _jossoActivationCoreSection.partnerAppLocationDomain.text = location.host;
+             _jossoActivationCoreSection.partnerAppLocationPort.text = location.port.toString() != "0" ?
+             location.port.toString() : "";
+             _jossoActivationCoreSection.partnerAppLocationContext.text = location.context;
+             _jossoActivationCoreSection.partnerAppLocationPath.text = location.uri;
 
-            var ignoredWebResources:String = "";
-            if (activation.ignoredWebResources != null) {
-                for (var j:int = 0; j < activation.ignoredWebResources.length; j++) {
-                    if (ignoredWebResources != "") {
-                        ignoredWebResources += ", ";
-                    }
-                    ignoredWebResources += activation.ignoredWebResources[j] as String;
-                }
-            }
-            _jossoActivationCoreSection.ignoredWebResources.text = ignoredWebResources;*/
+             var ignoredWebResources:String = "";
+             if (activation.ignoredWebResources != null) {
+             for (var j:int = 0; j < activation.ignoredWebResources.length; j++) {
+             if (ignoredWebResources != "") {
+             ignoredWebResources += ", ";
+             }
+             ignoredWebResources += activation.ignoredWebResources[j] as String;
+             }
+             }
+             _jossoActivationCoreSection.ignoredWebResources.text = ignoredWebResources;*/
 
             _jossoActivationCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
             _jossoActivationCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
             /*_jossoActivationCoreSection.partnerAppId.addEventListener(Event.CHANGE, handleSectionChange);
-            _jossoActivationCoreSection.partnerAppLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
-            _jossoActivationCoreSection.partnerAppLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
-            _jossoActivationCoreSection.partnerAppLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
-            _jossoActivationCoreSection.partnerAppLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
-            _jossoActivationCoreSection.partnerAppLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-            _jossoActivationCoreSection.ignoredWebResources.addEventListener(Event.CHANGE, handleSectionChange);*/
+             _jossoActivationCoreSection.partnerAppLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+             _jossoActivationCoreSection.partnerAppLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
+             _jossoActivationCoreSection.partnerAppLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+             _jossoActivationCoreSection.partnerAppLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
+             _jossoActivationCoreSection.partnerAppLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+             _jossoActivationCoreSection.ignoredWebResources.addEventListener(Event.CHANGE, handleSectionChange);*/
 
             _validators = [];
             _validators.push(_jossoActivationCoreSection.nameValidator);
             /*_validators.push(_jossoActivationCoreSection.domainValidator);
-            _validators.push(_jossoActivationCoreSection.contextValidator);
-            _validators.push(_jossoActivationCoreSection.portValidator);
-            _validators.push(_jossoActivationCoreSection.pathValidator);*/
+             _validators.push(_jossoActivationCoreSection.contextValidator);
+             _validators.push(_jossoActivationCoreSection.portValidator);
+             _validators.push(_jossoActivationCoreSection.pathValidator);*/
         }
     }
 
     private function handleJOSSOActivationCorePropertyTabRollOut(e:Event):void {
         trace(e);
         if (_dirty && validate(true)) {
-             // bind model
+            // bind model
             var activation:JOSSOActivation = projectProxy.currentIdentityApplianceElement as JOSSOActivation;
             activation.name = _jossoActivationCoreSection.connectionName.text;
             activation.description = _jossoActivationCoreSection.connectionDescription.text;
             /*activation.partnerAppId = _jossoActivationCoreSection.partnerAppId.text;
-            activation.partnerAppLocation.protocol = _jossoActivationCoreSection.partnerAppLocationProtocol.selectedItem.label;
-            activation.partnerAppLocation.host = _jossoActivationCoreSection.partnerAppLocationDomain.text;
-            activation.partnerAppLocation.port = parseInt(_jossoActivationCoreSection.partnerAppLocationPort.text);
-            activation.partnerAppLocation.context = _jossoActivationCoreSection.partnerAppLocationContext.text;
-            activation.partnerAppLocation.uri = _jossoActivationCoreSection.partnerAppLocationPath.text;
-            var ignoredWebResources:Array = _jossoActivationCoreSection.ignoredWebResources.text.split(",");
-            if (activation.ignoredWebResources == null) {
-                activation.ignoredWebResources = new ArrayCollection();
-            } else {
-                activation.ignoredWebResources.removeAll();
-            }
-            for each (var ignoredWebResource:String in ignoredWebResources) {
-                ignoredWebResource = StringUtil.trim(ignoredWebResource);
-                if (ignoredWebResource != "") {
-                    activation.ignoredWebResources.addItem(ignoredWebResource);
-                }
-            }*/
+             activation.partnerAppLocation.protocol = _jossoActivationCoreSection.partnerAppLocationProtocol.selectedItem.label;
+             activation.partnerAppLocation.host = _jossoActivationCoreSection.partnerAppLocationDomain.text;
+             activation.partnerAppLocation.port = parseInt(_jossoActivationCoreSection.partnerAppLocationPort.text);
+             activation.partnerAppLocation.context = _jossoActivationCoreSection.partnerAppLocationContext.text;
+             activation.partnerAppLocation.uri = _jossoActivationCoreSection.partnerAppLocationPath.text;
+             var ignoredWebResources:Array = _jossoActivationCoreSection.ignoredWebResources.text.split(",");
+             if (activation.ignoredWebResources == null) {
+             activation.ignoredWebResources = new ArrayCollection();
+             } else {
+             activation.ignoredWebResources.removeAll();
+             }
+             for each (var ignoredWebResource:String in ignoredWebResources) {
+             ignoredWebResource = StringUtil.trim(ignoredWebResource);
+             if (ignoredWebResource != "") {
+             activation.ignoredWebResources.addItem(ignoredWebResource);
+             }
+             }*/
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
@@ -5635,15 +5640,15 @@ public class PropertySheetMediator extends IocMediator {
             _tomcatExecEnvCoreSection.executionEnvironmentName.text = tomcatExecEnv.name;
             _tomcatExecEnvCoreSection.executionEnvironmentDescription.text = tomcatExecEnv.description;
 
-            for(var i:int=0; i < _tomcatExecEnvCoreSection.platform.dataProvider.length; i++){
-                if(_tomcatExecEnvCoreSection.platform.dataProvider[i].data == tomcatExecEnv.platformId){
+            for (var i:int = 0; i < _tomcatExecEnvCoreSection.platform.dataProvider.length; i++) {
+                if (_tomcatExecEnvCoreSection.platform.dataProvider[i].data == tomcatExecEnv.platformId) {
                     _tomcatExecEnvCoreSection.platform.selectedIndex = i;
                     break;
                 }
             }
 
-            for(var j:int=0; j < _tomcatExecEnvCoreSection.selectedHost.dataProvider.length; j++){
-                if(_tomcatExecEnvCoreSection.selectedHost.dataProvider[j].data == tomcatExecEnv.type.toString()){
+            for (var j:int = 0; j < _tomcatExecEnvCoreSection.selectedHost.dataProvider.length; j++) {
+                if (_tomcatExecEnvCoreSection.selectedHost.dataProvider[j].data == tomcatExecEnv.type.toString()) {
                     _tomcatExecEnvCoreSection.selectedHost.selectedIndex = j;
                     break;
                 }
@@ -5668,7 +5673,7 @@ public class PropertySheetMediator extends IocMediator {
             _tomcatExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _tomcatExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _tomcatExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _tomcatExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_tomcatExecEnvCoreSection);
             });
 
@@ -5707,7 +5712,7 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function tomcatSave(): void {
+    private function tomcatSave():void {
         var tomcatExecEnv:TomcatExecutionEnvironment = projectProxy.currentIdentityApplianceElement as TomcatExecutionEnvironment;
         tomcatExecEnv.name = _tomcatExecEnvCoreSection.executionEnvironmentName.text;
         tomcatExecEnv.description = _tomcatExecEnvCoreSection.executionEnvironmentDescription.text;
@@ -5719,7 +5724,7 @@ public class PropertySheetMediator extends IocMediator {
         } else {
             tomcatExecEnv.location = null;
         }
-        
+
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
         _applianceSaved = false;
@@ -5773,7 +5778,7 @@ public class PropertySheetMediator extends IocMediator {
             _weblogicExecEnvCoreSection.selectedHost.selectedIndex = 0;
             _weblogicExecEnvCoreSection.selectedHost.enabled = false;
 
-            for (var i:int=0; i < _weblogicExecEnvCoreSection.platform.dataProvider.length; i++){
+            for (var i:int = 0; i < _weblogicExecEnvCoreSection.platform.dataProvider.length; i++) {
                 if (_weblogicExecEnvCoreSection.platform.dataProvider[i].data == weblogicExecEnv.platformId) {
                     _weblogicExecEnvCoreSection.platform.selectedIndex = i;
                     break;
@@ -5782,7 +5787,7 @@ public class PropertySheetMediator extends IocMediator {
 
             _weblogicExecEnvCoreSection.domain.text = weblogicExecEnv.domain;
 
-            for (var j:int=0; j < _weblogicExecEnvCoreSection.selectedHost.dataProvider.length; j++) {
+            for (var j:int = 0; j < _weblogicExecEnvCoreSection.selectedHost.dataProvider.length; j++) {
                 if (_weblogicExecEnvCoreSection.selectedHost.dataProvider[j].data == weblogicExecEnv.type.toString()) {
                     _weblogicExecEnvCoreSection.selectedHost.selectedIndex = j;
                     break;
@@ -5809,7 +5814,7 @@ public class PropertySheetMediator extends IocMediator {
             _weblogicExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
             _weblogicExecEnvCoreSection.domain.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _weblogicExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _weblogicExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_weblogicExecEnvCoreSection);
             });
 
@@ -5849,8 +5854,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function weblogicSave(): void {
-         // bind model
+    private function weblogicSave():void {
+        // bind model
         var weblogicExecEnv:WeblogicExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WeblogicExecutionEnvironment;
         weblogicExecEnv.name = _weblogicExecEnvCoreSection.executionEnvironmentName.text;
         weblogicExecEnv.description = _weblogicExecEnvCoreSection.executionEnvironmentDescription.text;
@@ -5915,7 +5920,7 @@ public class PropertySheetMediator extends IocMediator {
             _jbossPortalResourceCoreSection.executionEnvironmentName.text = jbossPortalResource.name;
             _jbossPortalResourceCoreSection.executionEnvironmentDescription.text = jbossPortalResource.description;
 
-            for (var i:int=0; i < _jbossPortalResourceCoreSection.selectedHost.dataProvider.length; i++) {
+            for (var i:int = 0; i < _jbossPortalResourceCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_jbossPortalResourceCoreSection.selectedHost.dataProvider[i].data == jbossPortalResource.type.toString()) {
                     _jbossPortalResourceCoreSection.selectedHost.selectedIndex = i;
                     break;
@@ -5930,7 +5935,7 @@ public class PropertySheetMediator extends IocMediator {
             _jbossPortalResourceCoreSection.homeDirectory.text = jbossPortalResource.installUri;
             if (jbossPortalResource.type.name == ExecEnvType.REMOTE.name)
                 _jbossPortalResourceCoreSection.location.text = jbossPortalResource.location;
-            
+
             _locationValidator = new URLValidator();
             _locationValidator.required = true;
 
@@ -5940,7 +5945,7 @@ public class PropertySheetMediator extends IocMediator {
             _jbossPortalResourceCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _jbossPortalResourceCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _jbossPortalResourceCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _jbossPortalResourceCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_jbossPortalResourceCoreSection);
             });
 
@@ -5979,8 +5984,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function jbossPortalSave(): void {
-         // bind model
+    private function jbossPortalSave():void {
+        // bind model
         var jbossPortalResource:JBossPortalResource = projectProxy.currentIdentityApplianceElement as JBossPortalResource;
         jbossPortalResource.name = _jbossPortalResourceCoreSection.executionEnvironmentName.text;
         jbossPortalResource.description = _jbossPortalResourceCoreSection.executionEnvironmentDescription.text;
@@ -6037,7 +6042,7 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleLiferayResourceCorePropertyTabCreationComplete(event:Event):void {
         var liferayResource:LiferayResource = projectProxy.currentIdentityApplianceElement as LiferayResource;
-        var liferayEE:LiferayExecutionEnvironment = liferayResource.activation.executionEnv as LiferayExecutionEnvironment ;
+        var liferayEE:LiferayExecutionEnvironment = liferayResource.activation.executionEnv as LiferayExecutionEnvironment;
 
         if (liferayResource != null) {
             // bind view
@@ -6062,7 +6067,7 @@ public class PropertySheetMediator extends IocMediator {
             _liferayResourceCoreSection.resourcePath.text = location.uri;
 
 
-            for (var j:int=0; j < _liferayResourceCoreSection.selectedHost.dataProvider.length; j++) {
+            for (var j:int = 0; j < _liferayResourceCoreSection.selectedHost.dataProvider.length; j++) {
                 if (_liferayResourceCoreSection.selectedHost.dataProvider[j].data == liferayEE.type.toString()) {
                     _liferayResourceCoreSection.selectedHost.selectedIndex = j;
                     break;
@@ -6081,7 +6086,7 @@ public class PropertySheetMediator extends IocMediator {
             _locationValidator = new URLValidator();
             _locationValidator.required = true;
 
-            for (var k:int=0; k < _liferayResourceCoreSection.containerType.dataProvider.length; k++){
+            for (var k:int = 0; k < _liferayResourceCoreSection.containerType.dataProvider.length; k++) {
                 if (_liferayResourceCoreSection.containerType.dataProvider[k].data == liferayEE.containerType) {
                     _liferayResourceCoreSection.containerType.selectedIndex = k;
                     break;
@@ -6097,7 +6102,7 @@ public class PropertySheetMediator extends IocMediator {
             _liferayResourceCoreSection.containerType.addEventListener(Event.CHANGE, handleSectionChange);
             _liferayResourceCoreSection.containerPath.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _liferayResourceCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _liferayResourceCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_liferayResourceCoreSection);
             });
 
@@ -6119,7 +6124,7 @@ public class PropertySheetMediator extends IocMediator {
                 _liferayResourceCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
                 return;
             }
-            
+
             if (_liferayResourceCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
                 var lvResult:ValidationResultEvent = _locationValidator.validate(_liferayResourceCoreSection.location.text);
                 if (lvResult.type != ValidationResultEvent.VALID) {
@@ -6136,7 +6141,7 @@ public class PropertySheetMediator extends IocMediator {
             if (_liferayResourceCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 folders.addItem(_liferayResourceCoreSection.homeDirectory.text);
             }
-            
+
             folders.addItem(_liferayResourceCoreSection.containerPath.text);
             cf.folders = folders;
             cf.environmentName = "n/a";
@@ -6144,14 +6149,13 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function liferaySave(): void {
-         // bind model
+    private function liferaySave():void {
+        // bind model
         var liferayResource:LiferayResource = projectProxy.currentIdentityApplianceElement as LiferayResource;
         var liferayEE:LiferayExecutionEnvironment = liferayResource.activation.executionEnv as LiferayExecutionEnvironment;
 
         liferayResource.name = _liferayResourceCoreSection.executionEnvironmentName.text;
         liferayResource.description = _liferayResourceCoreSection.executionEnvironmentDescription.text;
-
 
 
         liferayEE.type = ExecEnvType.valueOf(_liferayResourceCoreSection.selectedHost.selectedItem.data);
@@ -6180,7 +6184,6 @@ public class PropertySheetMediator extends IocMediator {
         //liferayEE.platformId = "liferay";
         // TODO : For now liferay 6 only
         liferayEE.platformId = "liferay6";
-
 
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -6227,7 +6230,7 @@ public class PropertySheetMediator extends IocMediator {
     private function handleJBossEPPResourceCorePropertyTabCreationComplete(event:Event):void {
         var jbosseppResource:JBossEPPResource = projectProxy.currentIdentityApplianceElement as JBossEPPResource;
         var jbosseppEE:JBossEPPExecutionEnvironment = jbosseppResource.activation.executionEnv as JBossEPPExecutionEnvironment;
-        
+
         if (jbosseppResource != null) {
             // bind view
             _jbosseppResourceCoreSection.resourceName.text = jbosseppResource.name;
@@ -6250,7 +6253,7 @@ public class PropertySheetMediator extends IocMediator {
             _jbosseppResourceCoreSection.resourceContext.text = location.context;
             _jbosseppResourceCoreSection.resourcePath.text = location.uri;
 
-            for (var j:int=0; j < _jbosseppResourceCoreSection.selectedHost.dataProvider.length; j++) {
+            for (var j:int = 0; j < _jbosseppResourceCoreSection.selectedHost.dataProvider.length; j++) {
                 if (_jbosseppResourceCoreSection.selectedHost.dataProvider[j].data == jbosseppEE.type.toString()) {
                     _jbosseppResourceCoreSection.selectedHost.selectedIndex = j;
                     break;
@@ -6281,7 +6284,7 @@ public class PropertySheetMediator extends IocMediator {
             _jbosseppResourceCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
             _jbosseppResourceCoreSection.instance.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _jbosseppResourceCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _jbosseppResourceCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_jbosseppResourceCoreSection);
             });
 
@@ -6326,7 +6329,7 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function jbosseppSave(): void {
+    private function jbosseppSave():void {
         // bind model
         var jbosseppResource:JBossEPPResource = projectProxy.currentIdentityApplianceElement as JBossEPPResource;
         var jbosseppEE:JBossEPPExecutionEnvironment = jbosseppResource.activation.executionEnv as JBossEPPExecutionEnvironment;
@@ -6408,33 +6411,33 @@ public class PropertySheetMediator extends IocMediator {
 
             /*
 
-            var location:Location = selfServicesResource.location;
-            if (location == null)
-                location = new Location();
+             var location:Location = selfServicesResource.location;
+             if (location == null)
+             location = new Location();
 
-            for (var i:int = 0; i < _selfServicesResourceCoreSection.resourceProtocol.dataProvider.length; i++) {
-                if (location != null && location.protocol == _selfServicesResourceCoreSection.resourceProtocol.dataProvider[i].label) {
-                    _selfServicesResourceCoreSection.resourceProtocol.selectedIndex = i;
-                    break;
-                }
-            }
+             for (var i:int = 0; i < _selfServicesResourceCoreSection.resourceProtocol.dataProvider.length; i++) {
+             if (location != null && location.protocol == _selfServicesResourceCoreSection.resourceProtocol.dataProvider[i].label) {
+             _selfServicesResourceCoreSection.resourceProtocol.selectedIndex = i;
+             break;
+             }
+             }
 
-            _selfServicesResourceCoreSection.resourceDomain.text = location.host;
-            _selfServicesResourceCoreSection.resourcePort.text = location.port.toString() != "0" ? location.port.toString() : "";
-            _selfServicesResourceCoreSection.resourceContext.text = location.context;
-            _selfServicesResourceCoreSection.resourcePath.text = location.uri;
-            */
+             _selfServicesResourceCoreSection.resourceDomain.text = location.host;
+             _selfServicesResourceCoreSection.resourcePort.text = location.port.toString() != "0" ? location.port.toString() : "";
+             _selfServicesResourceCoreSection.resourceContext.text = location.context;
+             _selfServicesResourceCoreSection.resourcePath.text = location.uri;
+             */
 
             _selfServicesResourceCoreSection.resourceName.addEventListener(Event.CHANGE, handleSectionChange);
             _selfServicesResourceCoreSection.resourceDescription.addEventListener(Event.CHANGE, handleSectionChange);
 
             /*
-            _selfServicesResourceCoreSection.resourceProtocol.addEventListener(Event.CHANGE, handleSectionChange);
-            _selfServicesResourceCoreSection.resourcePort.addEventListener(Event.CHANGE, handleSectionChange);
-            _selfServicesResourceCoreSection.resourceDomain.addEventListener(Event.CHANGE, handleSectionChange);
-            _selfServicesResourceCoreSection.resourceContext.addEventListener(Event.CHANGE, handleSectionChange);
-            _selfServicesResourceCoreSection.resourcePath.addEventListener(Event.CHANGE, handleSectionChange);
-            */
+             _selfServicesResourceCoreSection.resourceProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+             _selfServicesResourceCoreSection.resourcePort.addEventListener(Event.CHANGE, handleSectionChange);
+             _selfServicesResourceCoreSection.resourceDomain.addEventListener(Event.CHANGE, handleSectionChange);
+             _selfServicesResourceCoreSection.resourceContext.addEventListener(Event.CHANGE, handleSectionChange);
+             _selfServicesResourceCoreSection.resourcePath.addEventListener(Event.CHANGE, handleSectionChange);
+             */
 
             _validators = [];
             _validators.push(_selfServicesResourceCoreSection.nameValidator);
@@ -6449,7 +6452,7 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function selfServicesSave(): void {
+    private function selfServicesSave():void {
 
         // bind model
         var selfServicesResource:SelfServicesResource = projectProxy.currentIdentityApplianceElement as SelfServicesResource;
@@ -6458,12 +6461,93 @@ public class PropertySheetMediator extends IocMediator {
         selfServicesResource.description = _selfServicesResourceCoreSection.resourceDescription.text;
 
         /*
-        selfServicesResource.location.protocol = _selfServicesResourceCoreSection.resourceProtocol.selectedItem.label;
-        selfServicesResource.location.host = _selfServicesResourceCoreSection.resourceDomain.text;
-        selfServicesResource.location.port = parseInt(_selfServicesResourceCoreSection.resourcePort.text);
-        selfServicesResource.location.context = _selfServicesResourceCoreSection.resourceContext.text;
-        selfServicesResource.location.uri = _selfServicesResourceCoreSection.resourcePath.text;
-        */
+         selfServicesResource.location.protocol = _selfServicesResourceCoreSection.resourceProtocol.selectedItem.label;
+         selfServicesResource.location.host = _selfServicesResourceCoreSection.resourceDomain.text;
+         selfServicesResource.location.port = parseInt(_selfServicesResourceCoreSection.resourcePort.text);
+         selfServicesResource.location.context = _selfServicesResourceCoreSection.resourceContext.text;
+         selfServicesResource.location.uri = _selfServicesResourceCoreSection.resourcePath.text;
+         */
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
+    private function enableDominoResourcePropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _dominoResourceCoreSection = new DominoResourceCoreSection();
+        corePropertyTab.addElement(_dominoResourceCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _dominoResourceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleDominoResourceCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleDominoResourceCorePropertyTabRollOut);
+
+        // No Activation Tab
+
+    }
+
+    private function handleDominoResourceCorePropertyTabCreationComplete(event:Event):void {
+        var dominoResource:DominoResource = projectProxy.currentIdentityApplianceElement as DominoResource;
+
+        if (dominoResource != null) {
+            // bind view
+            _dominoResourceCoreSection.resourceName.text = dominoResource.name;
+            _dominoResourceCoreSection.resourceDescription.text = dominoResource.description;
+
+            _dominoResourceCoreSection.resourceDomain.text = dominoResource.homeLocation.host;
+            _dominoResourceCoreSection.resourcePort.text = dominoResource.homeLocation.port.toString() != "0" ? dominoResource.homeLocation.port.toString() : "";
+            _dominoResourceCoreSection.resourceContext.text = dominoResource.homeLocation.context;
+            _dominoResourceCoreSection.resourcePath.text = dominoResource.homeLocation.uri;
+            _dominoResourceCoreSection.serverUrl.text = dominoResource.serverUrl;
+
+            _dominoResourceCoreSection.resourceName.addEventListener(Event.CHANGE, handleSectionChange);
+            _dominoResourceCoreSection.resourceDescription.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _dominoResourceCoreSection.resourceProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+            _dominoResourceCoreSection.resourcePort.addEventListener(Event.CHANGE, handleSectionChange);
+            _dominoResourceCoreSection.resourceDomain.addEventListener(Event.CHANGE, handleSectionChange);
+            _dominoResourceCoreSection.resourceContext.addEventListener(Event.CHANGE, handleSectionChange);
+            _dominoResourceCoreSection.resourcePath.addEventListener(Event.CHANGE, handleSectionChange);
+            _dominoResourceCoreSection.serverUrl.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_dominoResourceCoreSection.nameValidator);
+        }
+    }
+
+    private function handleDominoResourceCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        if (_dirty && validate(true)) {
+            dominoResourceSave();
+
+        }
+    }
+
+    private function dominoResourceSave():void {
+
+        // bind model
+        var dominoResource:DominoResource = projectProxy.currentIdentityApplianceElement as DominoResource;
+
+        dominoResource.name = _dominoResourceCoreSection.resourceName.text;
+        dominoResource.description = _dominoResourceCoreSection.resourceDescription.text;
+
+        dominoResource.homeLocation.protocol = _dominoResourceCoreSection.resourceProtocol.selectedItem.label;
+        dominoResource.homeLocation.host = _dominoResourceCoreSection.resourceDomain.text;
+        dominoResource.homeLocation.port = parseInt(_dominoResourceCoreSection.resourcePort.text);
+        dominoResource.homeLocation.context = _dominoResourceCoreSection.resourceContext.text;
+        dominoResource.homeLocation.uri = _dominoResourceCoreSection.resourcePath.text;
+        dominoResource.serverUrl = _dominoResourceCoreSection.serverUrl.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -6515,7 +6599,7 @@ public class PropertySheetMediator extends IocMediator {
             _wasceExecEnvCoreSection.executionEnvironmentName.text = wasceExecEnv.name;
             _wasceExecEnvCoreSection.executionEnvironmentDescription.text = wasceExecEnv.description;
 
-            for (var i:int=0; i < _wasceExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
+            for (var i:int = 0; i < _wasceExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_wasceExecEnvCoreSection.selectedHost.dataProvider[i].data == wasceExecEnv.type.toString()) {
                     _wasceExecEnvCoreSection.selectedHost.selectedIndex = i;
                     break;
@@ -6540,7 +6624,7 @@ public class PropertySheetMediator extends IocMediator {
             _wasceExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _wasceExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _wasceExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _wasceExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_wasceExecEnvCoreSection);
             });
 
@@ -6579,8 +6663,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function wasceSave(): void {
-         // bind model
+    private function wasceSave():void {
+        // bind model
         var wasceExecEnv:WASCEExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WASCEExecutionEnvironment;
         wasceExecEnv.name = _wasceExecEnvCoreSection.executionEnvironmentName.text;
         wasceExecEnv.description = _wasceExecEnvCoreSection.executionEnvironmentDescription.text;
@@ -6645,14 +6729,14 @@ public class PropertySheetMediator extends IocMediator {
             _jbossExecEnvCoreSection.executionEnvironmentName.text = jbossExecEnv.name;
             _jbossExecEnvCoreSection.executionEnvironmentDescription.text = jbossExecEnv.description;
 
-            for(var i:int=0; i < _jbossExecEnvCoreSection.platform.dataProvider.length; i++){
-                if(_jbossExecEnvCoreSection.platform.dataProvider[i].data == jbossExecEnv.platformId){
+            for (var i:int = 0; i < _jbossExecEnvCoreSection.platform.dataProvider.length; i++) {
+                if (_jbossExecEnvCoreSection.platform.dataProvider[i].data == jbossExecEnv.platformId) {
                     _jbossExecEnvCoreSection.platform.selectedIndex = i;
                     break;
                 }
             }
 
-            for (var j:int=0; j < _jbossExecEnvCoreSection.selectedHost.dataProvider.length; j++) {
+            for (var j:int = 0; j < _jbossExecEnvCoreSection.selectedHost.dataProvider.length; j++) {
                 if (_jbossExecEnvCoreSection.selectedHost.dataProvider[j].data == jbossExecEnv.type.toString()) {
                     _jbossExecEnvCoreSection.selectedHost.selectedIndex = j;
                     break;
@@ -6667,7 +6751,7 @@ public class PropertySheetMediator extends IocMediator {
             _jbossExecEnvCoreSection.homeDirectory.text = jbossExecEnv.installUri;
             if (jbossExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _jbossExecEnvCoreSection.location.text = jbossExecEnv.location;
-            
+
             _locationValidator = new URLValidator();
             _locationValidator.required = true;
 
@@ -6681,7 +6765,7 @@ public class PropertySheetMediator extends IocMediator {
             _jbossExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
             _jbossExecEnvCoreSection.instance.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _jbossExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _jbossExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_jbossExecEnvCoreSection);
             });
 
@@ -6721,8 +6805,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function jbossSave(): void {
-         // bind model
+    private function jbossSave():void {
+        // bind model
         var jbossExecEnv:JbossExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JbossExecutionEnvironment;
         jbossExecEnv.name = _jbossExecEnvCoreSection.executionEnvironmentName.text;
         jbossExecEnv.description = _jbossExecEnvCoreSection.executionEnvironmentDescription.text;
@@ -6788,7 +6872,7 @@ public class PropertySheetMediator extends IocMediator {
             _apacheExecEnvCoreSection.executionEnvironmentName.text = apacheExecEnv.name;
             _apacheExecEnvCoreSection.executionEnvironmentDescription.text = apacheExecEnv.description;
 
-            for (var i:int=0; i < _apacheExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
+            for (var i:int = 0; i < _apacheExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_apacheExecEnvCoreSection.selectedHost.dataProvider[i].data == apacheExecEnv.type.toString()) {
                     _apacheExecEnvCoreSection.selectedHost.selectedIndex = i;
                     break;
@@ -6813,7 +6897,7 @@ public class PropertySheetMediator extends IocMediator {
             _apacheExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _apacheExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _apacheExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _apacheExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_apacheExecEnvCoreSection);
             });
 
@@ -6852,8 +6936,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function apacheSave(): void {
-         // bind model
+    private function apacheSave():void {
+        // bind model
         var apacheExecEnv:ApacheExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ApacheExecutionEnvironment;
         apacheExecEnv.name = _apacheExecEnvCoreSection.executionEnvironmentName.text;
         apacheExecEnv.description = _apacheExecEnvCoreSection.executionEnvironmentDescription.text;
@@ -6919,7 +7003,7 @@ public class PropertySheetMediator extends IocMediator {
             _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text = windowsIISExecEnv.description;
             _windowsIISExecEnvCoreSection.isapiExtensionPath.text = windowsIISExecEnv.isapiExtensionPath;
 
-            for (var i:int=0; i < _windowsIISExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
+            for (var i:int = 0; i < _windowsIISExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_windowsIISExecEnvCoreSection.selectedHost.dataProvider[i].data == windowsIISExecEnv.type.toString()) {
                     _windowsIISExecEnvCoreSection.selectedHost.selectedIndex = i;
                     break;
@@ -6934,11 +7018,11 @@ public class PropertySheetMediator extends IocMediator {
             _windowsIISExecEnvCoreSection.homeDirectory.text = windowsIISExecEnv.installUri;
             if (windowsIISExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _windowsIISExecEnvCoreSection.location.text = windowsIISExecEnv.location;
-            
+
             _locationValidator = new URLValidator();
             _locationValidator.required = true;
 
-            for (var j:int=0; j < _windowsIISExecEnvCoreSection.architecture.dataProvider.length; j++) {
+            for (var j:int = 0; j < _windowsIISExecEnvCoreSection.architecture.dataProvider.length; j++) {
                 if (_windowsIISExecEnvCoreSection.architecture.dataProvider[j].data == windowsIISExecEnv.platformId) {
                     _windowsIISExecEnvCoreSection.architecture.selectedIndex = j;
                     break;
@@ -6953,7 +7037,7 @@ public class PropertySheetMediator extends IocMediator {
             _windowsIISExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
             _windowsIISExecEnvCoreSection.architecture.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _windowsIISExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _windowsIISExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_windowsIISExecEnvCoreSection);
             });
 
@@ -6992,8 +7076,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function windowsIISSave(): void {
-         // bind model
+    private function windowsIISSave():void {
+        // bind model
         var windowsIISExecEnv:WindowsIISExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WindowsIISExecutionEnvironment;
         windowsIISExecEnv.name = _windowsIISExecEnvCoreSection.executionEnvironmentName.text;
         windowsIISExecEnv.description = _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text;
@@ -7060,7 +7144,7 @@ public class PropertySheetMediator extends IocMediator {
             _alfrescoExecEnvCoreSection.executionEnvironmentDescription.text = alfrescoExecEnv.description;
             _alfrescoExecEnvCoreSection.tomcatInstallDir.text = alfrescoExecEnv.tomcatInstallDir;
 
-            for (var i:int=0; i < _alfrescoExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
+            for (var i:int = 0; i < _alfrescoExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_alfrescoExecEnvCoreSection.selectedHost.dataProvider[i].data == alfrescoExecEnv.type.toString()) {
                     _alfrescoExecEnvCoreSection.selectedHost.selectedIndex = i;
                     break;
@@ -7086,7 +7170,7 @@ public class PropertySheetMediator extends IocMediator {
             _alfrescoExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
             _alfrescoExecEnvCoreSection.tomcatInstallDir.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _alfrescoExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _alfrescoExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_alfrescoExecEnvCoreSection);
             });
 
@@ -7101,7 +7185,7 @@ public class PropertySheetMediator extends IocMediator {
         trace(e);
         _alfrescoExecEnvCoreSection.homeDirectory.errorString = "";
         _alfrescoExecEnvCoreSection.location.errorString = "";
-        _alfrescoExecEnvCoreSection.tomcatInstallDir.errorString = "";        
+        _alfrescoExecEnvCoreSection.tomcatInstallDir.errorString = "";
         if (_dirty && validate(true)) {
             var hvResult:ValidationResultEvent;
             if ((hvResult = _alfrescoExecEnvCoreSection.homeDirValidator.validate(_alfrescoExecEnvCoreSection.homeDirectory.text)).type != ValidationResultEvent.VALID) {
@@ -7133,8 +7217,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function alfrescoSave(): void {
-         // bind model
+    private function alfrescoSave():void {
+        // bind model
         var alfrescoExecEnv:AlfrescoResource = projectProxy.currentIdentityApplianceElement as AlfrescoResource;
         alfrescoExecEnv.name = _alfrescoExecEnvCoreSection.executionEnvironmentName.text;
         alfrescoExecEnv.description = _alfrescoExecEnvCoreSection.executionEnvironmentDescription.text;
@@ -7200,7 +7284,7 @@ public class PropertySheetMediator extends IocMediator {
             _javaEEExecEnvCoreSection.executionEnvironmentName.text = javaEEExecEnv.name;
             _javaEEExecEnvCoreSection.executionEnvironmentDescription.text = javaEEExecEnv.description;
 
-            for (var i:int=0; i < _javaEEExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
+            for (var i:int = 0; i < _javaEEExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_javaEEExecEnvCoreSection.selectedHost.dataProvider[i].data == javaEEExecEnv.type.toString()) {
                     _javaEEExecEnvCoreSection.selectedHost.selectedIndex = i;
                     break;
@@ -7225,7 +7309,7 @@ public class PropertySheetMediator extends IocMediator {
             _javaEEExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _javaEEExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _javaEEExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _javaEEExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_javaEEExecEnvCoreSection);
             });
 
@@ -7264,8 +7348,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function javaEESave(): void {
-         // bind model
+    private function javaEESave():void {
+        // bind model
         var javaEEExecEnv:JEEExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JEEExecutionEnvironment;
         javaEEExecEnv.name = _javaEEExecEnvCoreSection.executionEnvironmentName.text;
         javaEEExecEnv.description = _javaEEExecEnvCoreSection.executionEnvironmentDescription.text;
@@ -7315,7 +7399,7 @@ public class PropertySheetMediator extends IocMediator {
             _phpExecEnvCoreSection.executionEnvironmentName.text = phpExecEnv.name;
             _phpExecEnvCoreSection.executionEnvironmentDescription.text = phpExecEnv.description;
 
-            for (var i:int=0; i < _phpExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
+            for (var i:int = 0; i < _phpExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_phpExecEnvCoreSection.selectedHost.dataProvider[i].data == phpExecEnv.type.toString()) {
                     _phpExecEnvCoreSection.selectedHost.selectedIndex = i;
                     break;
@@ -7340,7 +7424,7 @@ public class PropertySheetMediator extends IocMediator {
             _phpExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _phpExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _phpExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _phpExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_phpExecEnvCoreSection);
             });
 
@@ -7379,8 +7463,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function phpSave(): void {
-         // bind model
+    private function phpSave():void {
+        // bind model
         var phpExecEnv:PHPExecutionEnvironment = projectProxy.currentIdentityApplianceElement as PHPExecutionEnvironment;
         phpExecEnv.name = _phpExecEnvCoreSection.executionEnvironmentName.text;
         phpExecEnv.description = _phpExecEnvCoreSection.executionEnvironmentDescription.text;
@@ -7446,7 +7530,7 @@ public class PropertySheetMediator extends IocMediator {
             _phpBBResourceCoreSection.executionEnvironmentName.text = phpBBResource.name;
             _phpBBResourceCoreSection.executionEnvironmentDescription.text = phpBBResource.description;
 
-            for (var i:int=0; i < _phpBBResourceCoreSection.selectedHost.dataProvider.length; i++) {
+            for (var i:int = 0; i < _phpBBResourceCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_phpBBResourceCoreSection.selectedHost.dataProvider[i].data == phpBBResource.type.toString()) {
                     _phpBBResourceCoreSection.selectedHost.selectedIndex = i;
                     break;
@@ -7461,7 +7545,7 @@ public class PropertySheetMediator extends IocMediator {
             _phpBBResourceCoreSection.homeDirectory.text = phpBBResource.installUri;
             if (phpBBResource.type.name == ExecEnvType.REMOTE.name)
                 _phpBBResourceCoreSection.location.text = phpBBResource.location;
-            
+
             _locationValidator = new URLValidator();
             _locationValidator.required = true;
 
@@ -7471,7 +7555,7 @@ public class PropertySheetMediator extends IocMediator {
             _phpBBResourceCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _phpBBResourceCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _phpBBResourceCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _phpBBResourceCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_phpBBResourceCoreSection);
             });
 
@@ -7510,8 +7594,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function phpBBSave(): void {
-         // bind model
+    private function phpBBSave():void {
+        // bind model
         var phpBBResource:PhpBBResource = projectProxy.currentIdentityApplianceElement as PhpBBResource;
         phpBBResource.name = _phpBBResourceCoreSection.executionEnvironmentName.text;
         phpBBResource.description = _phpBBResourceCoreSection.executionEnvironmentDescription.text;
@@ -7561,7 +7645,7 @@ public class PropertySheetMediator extends IocMediator {
             _webserverExecEnvCoreSection.executionEnvironmentDescription.text = webserverExecEnv.description;
             _webserverExecEnvCoreSection.executionEnvironmentType.text = webserverExecEnv.containerType;
 
-            for (var i:int=0; i < _webserverExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
+            for (var i:int = 0; i < _webserverExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
                 if (_webserverExecEnvCoreSection.selectedHost.dataProvider[i].data == webserverExecEnv.type.toString()) {
                     _webserverExecEnvCoreSection.selectedHost.selectedIndex = i;
                     break;
@@ -7576,7 +7660,7 @@ public class PropertySheetMediator extends IocMediator {
             _webserverExecEnvCoreSection.homeDirectory.text = webserverExecEnv.installUri;
             if (webserverExecEnv.type.name == ExecEnvType.REMOTE.name)
                 _webserverExecEnvCoreSection.location.text = webserverExecEnv.location;
-            
+
             _locationValidator = new URLValidator();
             _locationValidator.required = true;
 
@@ -7586,7 +7670,7 @@ public class PropertySheetMediator extends IocMediator {
             _webserverExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _webserverExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _webserverExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _webserverExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_webserverExecEnvCoreSection);
             });
 
@@ -7626,8 +7710,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function webserverSave(): void {
-         // bind model
+    private function webserverSave():void {
+        // bind model
         var webserverExecEnv:WebserverExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WebserverExecutionEnvironment;
         webserverExecEnv.name = _webserverExecEnvCoreSection.executionEnvironmentName.text;
         webserverExecEnv.description = _webserverExecEnvCoreSection.executionEnvironmentDescription.text;
@@ -7702,7 +7786,7 @@ public class PropertySheetMediator extends IocMediator {
                         break;
                     }
                 }
-                        _sharepoint2010ResourceCoreSection.appResourceDomain.text = sharepointResource.partnerAppLocation.host;
+                _sharepoint2010ResourceCoreSection.appResourceDomain.text = sharepointResource.partnerAppLocation.host;
                 _sharepoint2010ResourceCoreSection.appResourcePort.text = sharepointResource.partnerAppLocation.port.toString();
                 _sharepoint2010ResourceCoreSection.appResourceContext.text = sharepointResource.partnerAppLocation.context;
                 _sharepoint2010ResourceCoreSection.appResourcePath.text = sharepointResource.partnerAppLocation.uri;
@@ -7775,8 +7859,8 @@ public class PropertySheetMediator extends IocMediator {
 
     }
 
-    private function sharepoint2010Save(): void {
-         // bind model
+    private function sharepoint2010Save():void {
+        // bind model
         var sharepointResource:SharepointResource = projectProxy.currentIdentityApplianceElement as SharepointResource;
         var sharepointEE:SharepointExecutionEnvironment = sharepointResource.activation.executionEnv as SharepointExecutionEnvironment;
 
@@ -7870,13 +7954,13 @@ public class PropertySheetMediator extends IocMediator {
             _coldfusionExecEnvCoreSection.executionEnvironmentDescription.text = coldfusionExecEnv.description;
 
             /*
-            for (var i:int=0; i < _coldfusionExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
-                if (_coldfusionExecEnvCoreSection.selectedHost.dataProvider[i].data == coldfusionExecEnv.type.toString()) {
-                    _coldfusionExecEnvCoreSection.selectedHost.selectedIndex = i;
-                    break;
-                }
-            }
-            */
+             for (var i:int=0; i < _coldfusionExecEnvCoreSection.selectedHost.dataProvider.length; i++) {
+             if (_coldfusionExecEnvCoreSection.selectedHost.dataProvider[i].data == coldfusionExecEnv.type.toString()) {
+             _coldfusionExecEnvCoreSection.selectedHost.selectedIndex = i;
+             break;
+             }
+             }
+             */
 
             if (_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
                 _coldfusionExecEnvCoreSection.locationItem.includeInLayout = true;
@@ -7884,13 +7968,13 @@ public class PropertySheetMediator extends IocMediator {
             }
 
             /*
-            _coldfusionExecEnvCoreSection.homeDirectory.text = coldfusionExecEnv.installUri;
-            if (coldfusionExecEnv.type.name == ExecEnvType.REMOTE.name)
-                _coldfusionExecEnvCoreSection.location.text = coldfusionExecEnv.location;
-            
-            _locationValidator = new URLValidator();
-            _locationValidator.required = true;
-            */
+             _coldfusionExecEnvCoreSection.homeDirectory.text = coldfusionExecEnv.installUri;
+             if (coldfusionExecEnv.type.name == ExecEnvType.REMOTE.name)
+             _coldfusionExecEnvCoreSection.location.text = coldfusionExecEnv.location;
+
+             _locationValidator = new URLValidator();
+             _locationValidator.required = true;
+             */
 
             _coldfusionExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _coldfusionExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -7898,7 +7982,7 @@ public class PropertySheetMediator extends IocMediator {
             _coldfusionExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
             _coldfusionExecEnvCoreSection.location.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _coldfusionExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function(event:Event):void {
+            _coldfusionExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, function (event:Event):void {
                 handleHostChange(_coldfusionExecEnvCoreSection);
             });
 
@@ -7918,7 +8002,7 @@ public class PropertySheetMediator extends IocMediator {
                 _coldfusionExecEnvCoreSection.homeDirectory.errorString = hvResult.results[0].errorMessage;
                 return;
             }
-            
+
             if (_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.REMOTE.name) {
                 var lvResult:ValidationResultEvent = _locationValidator.validate(_coldfusionExecEnvCoreSection.location.text);
                 if (lvResult.type != ValidationResultEvent.VALID) {
@@ -7935,29 +8019,29 @@ public class PropertySheetMediator extends IocMediator {
             if (_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 folders.addItem(_coldfusionExecEnvCoreSection.homeDirectory.text);
             }
-            
+
             cf.folders = folders;
             cf.environmentName = "n/a";
             sendNotification(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, cf);
         }
     }
 
-    private function coldfusionSave(): void {
-         // bind model
+    private function coldfusionSave():void {
+        // bind model
         var coldfusionResource:ColdfusionResource = projectProxy.currentIdentityApplianceElement as ColdfusionResource;
         coldfusionResource.name = _coldfusionExecEnvCoreSection.executionEnvironmentName.text;
         coldfusionResource.description = _coldfusionExecEnvCoreSection.executionEnvironmentDescription.text;
         /* TODO: no placeholder yet for EE coordinates
-        coldfusionResource.platformId = "coldfusion";
+         coldfusionResource.platformId = "coldfusion";
 
-        coldfusionResource.type = ExecEnvType.valueOf(_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data);
-        coldfusionResource.installUri = _coldfusionExecEnvCoreSection.homeDirectory.text;
-        if (coldfusionResource.type.name == ExecEnvType.REMOTE.name) {
-            coldfusionResource.location = _coldfusionExecEnvCoreSection.location.text;
-        } else {
-            coldfusionResource.location = null;
-        }
-        */
+         coldfusionResource.type = ExecEnvType.valueOf(_coldfusionExecEnvCoreSection.selectedHost.selectedItem.data);
+         coldfusionResource.installUri = _coldfusionExecEnvCoreSection.homeDirectory.text;
+         if (coldfusionResource.type.name == ExecEnvType.REMOTE.name) {
+         coldfusionResource.location = _coldfusionExecEnvCoreSection.location.text;
+         } else {
+         coldfusionResource.location = null;
+         }
+         */
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
         _applianceSaved = false;
@@ -8035,7 +8119,7 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function microStrategySave(): void {
+    private function microStrategySave():void {
         var microStrategyResource:MicroStrategyResource = projectProxy.currentIdentityApplianceElement as MicroStrategyResource;
         microStrategyResource.name = _microStrategyResourceCoreSection.executionEnvironmentName.text;
         microStrategyResource.secret = _microStrategyResourceCoreSection.sharedSecret.text;
@@ -8081,18 +8165,18 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handleExecEnvActivationPropertyTabRollOut(event:Event):void {
-        if (projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.toString()){
+        if (projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.toString()) {
             //activateExecutionEnvironment(event);
             if (_executionEnvironmentActivateSection.reactivate.selected && _applianceSaved) {
                 sendNotification(ApplicationFacade.DISPLAY_ACTIVATION_DIALOG,
                         [_executionEnvironmentActivateSection.reactivate.selected,
-                         _executionEnvironmentActivateSection.replaceConfFiles.selected,
-                         _executionEnvironmentActivateSection.installSamples.selected]);
+                            _executionEnvironmentActivateSection.replaceConfFiles.selected,
+                            _executionEnvironmentActivateSection.installSamples.selected]);
             }
         }
-        if (_dirty){
+        if (_dirty) {
             var execEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
-            execEnv.installDemoApps = _executionEnvironmentActivateSection.installSamples.selected ;
+            execEnv.installDemoApps = _executionEnvironmentActivateSection.installSamples.selected;
             execEnv.overwriteOriginalSetup = _executionEnvironmentActivateSection.replaceConfFiles.selected;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -8103,7 +8187,7 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function executionEnvironmentReactivateClickHandler(event:Event):void {
-        if(!_applianceSaved){
+        if (!_applianceSaved) {
             Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "activation.save.info"),
                     resourceManager.getString(AtricoreConsole.BUNDLE, "activation.save.title"), Alert.OK, null, null, null, Alert.OK);
             _executionEnvironmentActivateSection.reactivate.selected = false;
@@ -8128,7 +8212,7 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handleResourceActivationPropertyTabRollOut(event:Event):void {
-        if (projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.toString()){
+        if (projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.toString()) {
             //activateExecutionEnvironment(event);
             if (_resourceActivateSection.reactivate.selected && _applianceSaved) {
                 sendNotification(ApplicationFacade.DISPLAY_ACTIVATION_DIALOG,
@@ -8136,7 +8220,7 @@ public class PropertySheetMediator extends IocMediator {
                             _resourceActivateSection.replaceConfFiles.selected]);
             }
         }
-        if (_dirty){
+        if (_dirty) {
             var res:ServiceResource = projectProxy.currentIdentityApplianceElement as ServiceResource;
             var ee:ExecutionEnvironment = res.activation.executionEnv;
             ee.overwriteOriginalSetup = _resourceActivateSection.replaceConfFiles.selected;
@@ -8149,7 +8233,7 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function resourceReactivateClickHandler(event:Event):void {
-        if(!_applianceSaved){
+        if (!_applianceSaved) {
             Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "activation.save.info"),
                     resourceManager.getString(AtricoreConsole.BUNDLE, "activation.save.title"), Alert.OK, null, null, null, Alert.OK);
             _resourceActivateSection.reactivate.selected = false;
@@ -8157,45 +8241,45 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     /*
-    private function activateExecutionEnvironment(event:Event):void {
-        var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
-        if(_executionEnvironmentActivateSection.reactivate.selected && _applianceSaved){
-            var text:String = currentExecEnv.name + " "
-                    + resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.line1")
-                    + "\n"
-                    + resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.line2");
-            var alert:Alert = Alert.show(text,
-                    resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.title"), 
-                    Alert.OK | Alert.CANCEL, null, activationConfirmationHandler, null, Alert.OK);
-            alert.width = 450;
-            alert.callLater(function():void {
-                var textField:IUITextField =  IUITextField(alert.mx_internal::alertForm.mx_internal::textField);
+     private function activateExecutionEnvironment(event:Event):void {
+     var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
+     if(_executionEnvironmentActivateSection.reactivate.selected && _applianceSaved){
+     var text:String = currentExecEnv.name + " "
+     + resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.line1")
+     + "\n"
+     + resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.line2");
+     var alert:Alert = Alert.show(text,
+     resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.title"),
+     Alert.OK | Alert.CANCEL, null, activationConfirmationHandler, null, Alert.OK);
+     alert.width = 450;
+     alert.callLater(function():void {
+     var textField:IUITextField =  IUITextField(alert.mx_internal::alertForm.mx_internal::textField);
 
-                var textFormat:TextFormat = new TextFormat();
-                textFormat.align = "center";
+     var textFormat:TextFormat = new TextFormat();
+     textFormat.align = "center";
 
-                textField.width = alert.width - 10;
-                textField.x = 0;
-                textField.setTextFormat(textFormat);
-            });
-        }
-    }
+     textField.width = alert.width - 10;
+     textField.x = 0;
+     textField.setTextFormat(textFormat);
+     });
+     }
+     }
 
 
-    private function activationConfirmationHandler(event:CloseEvent):void {
-        if (event.detail == Alert.OK) {
-            var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
-            var activateExecEnvReq:ActivateExecutionEnvironmentRequest = new ActivateExecutionEnvironmentRequest();
-            activateExecEnvReq.reactivate = _executionEnvironmentActivateSection.reactivate.selected;
-            activateExecEnvReq.replaceConfFiles = _executionEnvironmentActivateSection.replaceConfFiles.selected;
-            activateExecEnvReq.executionEnvironment = currentExecEnv;
-            activateExecEnvReq.installSamples = _executionEnvironmentActivateSection.installSamples.selected;
+     private function activationConfirmationHandler(event:CloseEvent):void {
+     if (event.detail == Alert.OK) {
+     var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
+     var activateExecEnvReq:ActivateExecutionEnvironmentRequest = new ActivateExecutionEnvironmentRequest();
+     activateExecEnvReq.reactivate = _executionEnvironmentActivateSection.reactivate.selected;
+     activateExecEnvReq.replaceConfFiles = _executionEnvironmentActivateSection.replaceConfFiles.selected;
+     activateExecEnvReq.executionEnvironment = currentExecEnv;
+     activateExecEnvReq.installSamples = _executionEnvironmentActivateSection.installSamples.selected;
 
-            sendNotification(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvReq);
-        }
-        _executionEnvironmentActivateSection.reactivate.selected = false;
-    }
-    */
+     sendNotification(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvReq);
+     }
+     _executionEnvironmentActivateSection.reactivate.selected = false;
+     }
+     */
 
     protected function enableIdentityLookupPropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();
@@ -8236,7 +8320,7 @@ public class PropertySheetMediator extends IocMediator {
     private function handleIdentityLookupCorePropertyTabRollOut(e:Event):void {
         trace(e);
         if (_dirty && validate(true)) {
-             // bind model
+            // bind model
             var identityLookup:IdentityLookup = projectProxy.currentIdentityApplianceElement as IdentityLookup;
 
             identityLookup.name = _identityLookupCoreSection.connectionName.text;
@@ -8286,7 +8370,7 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleDelegatedAuthenticationCorePropertyTabRollOut(e:Event):void {
         if (_dirty && validate(true)) {
-             // bind model
+            // bind model
             var delegatedAuthentication:DelegatedAuthentication = projectProxy.currentIdentityApplianceElement as DelegatedAuthentication;
 
             delegatedAuthentication.name = _delegatedAuthenticationCoreSection.connectionName.text;
@@ -8436,7 +8520,7 @@ public class PropertySheetMediator extends IocMediator {
         _selectedMetadataFiles = new ArrayCollection();
 
         if (_currentIdentityApplianceElement is ExternalSaml2IdentityProvider) {
-            _externalIdpCoreSection.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "externalIdentityProv.metadata.uploadSuccess");            
+            _externalIdpCoreSection.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "externalIdentityProv.metadata.uploadSuccess");
             _externalIdpCoreSection.lblUploadMsg.setStyle("color", "Green");
             _externalIdpCoreSection.lblUploadMsg.visible = true;
             _externalIdpCoreSection.fadeFx.play([_externalIdpCoreSection.lblUploadMsg]);
@@ -8447,7 +8531,7 @@ public class PropertySheetMediator extends IocMediator {
             _externalSpCoreSection.lblUploadMsg.setStyle("color", "Green");
             _externalSpCoreSection.lblUploadMsg.visible = true;
             _externalSpCoreSection.fadeFx.play([_externalSpCoreSection.lblUploadMsg]);
-            _externalSpCoreSection.metadataFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "externalServiceProv.metadata.browseFile");            
+            _externalSpCoreSection.metadataFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "externalServiceProv.metadata.browseFile");
             updateExternalSaml2ServiceProvider();
         }
     }
@@ -8482,7 +8566,7 @@ public class PropertySheetMediator extends IocMediator {
 
             if (resp.wantAuthnRequestsSigned)
                 _externalIdpContractSection.wantAuthnRequestsSignedCheck.selected = true;
-            
+
             // signing certificate
             if (resp.signingCertIssuerDN != null) {
                 _externalIdpContractSection.signAuthAssertionCheck.selected = true;
@@ -8619,7 +8703,8 @@ public class PropertySheetMediator extends IocMediator {
         _wikidAuthnServiceCoreSection.caFadeFx.play([_wikidAuthnServiceCoreSection.lblCAStoreMsg]);
 
         _uploadedWikidCAStoreFile = null;
-        _selectedWikidCAStores = new ArrayCollection();0
+        _selectedWikidCAStores = new ArrayCollection();
+        0
         _wikidAuthnServiceCoreSection.caStore.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "wikid.ca.store.browse");
 
         if (_selectedWCStores != null && _selectedWCStores.length > 0) {
@@ -8731,6 +8816,7 @@ public class PropertySheetMediator extends IocMediator {
         _tabbedPropertiesTabBar.visible = true;
         _propertySheetsViewStack.visible = true;
     }
+
     private function handleSectionChange(event:Event):void {
         _dirty = true;
         disableExportButtons();
@@ -8740,11 +8826,11 @@ public class PropertySheetMediator extends IocMediator {
         if (_certificateSection != null)
             _certificateSection.btnExportCertificate.enabled = false;
         /*if (_ipContractSection != null)
-            _ipContractSection.btnExportMetadata.enabled = false;*/
+         _ipContractSection.btnExportMetadata.enabled = false;*/
         if (_ipSaml2Section != null)
             _ipSaml2Section.btnExportMetadata.enabled = false;
         /*if (_spContractSection != null)
-            _spContractSection.btnExportMetadata.enabled = false;*/
+         _spContractSection.btnExportMetadata.enabled = false;*/
         if (_spSaml2Section != null)
             _spSaml2Section.btnExportMetadata.enabled = false;
         if (_federatedConnectionIDPChannelSection != null)
@@ -8774,20 +8860,19 @@ public class PropertySheetMediator extends IocMediator {
             execEnvView.locationItem.visible = false;
         }
     }
-    
-    protected function get view():PropertySheetView
-    {
+
+    protected function get view():PropertySheetView {
         return viewComponent as PropertySheetView;
     }
 
-   public function validate(revalidate : Boolean) : Boolean {
-      return FormUtility.validateAll(_validators, revalidate);
-   }
+    public function validate(revalidate:Boolean):Boolean {
+        return FormUtility.validateAll(_validators, revalidate);
+    }
 
-    public function resetValidation() : void {
-      for each(var validator : Validator in _validators) {
-         validator.source.errorString = "";
-      }
+    public function resetValidation():void {
+        for each(var validator:Validator in _validators) {
+            validator.source.errorString = "";
+        }
     }
 
     /**
@@ -8815,7 +8900,7 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleUseInheritedIDPSettingsChange(event:Event):void {
         setSpChannelFields();
-        if(_federatedConnectionSPChannelSection.useInheritedIDPSettings.selected){
+        if (_federatedConnectionSPChannelSection.useInheritedIDPSettings.selected) {
             reflectIdpSettingsInSpChannelTab();
         } else {
             _validators.push(_federatedConnectionSPChannelSection.portValidator);
@@ -8829,11 +8914,11 @@ public class PropertySheetMediator extends IocMediator {
             var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
             var spName:String = null;
             var idp:IdentityProvider = null;
-            if(connection.roleA is IdentityProvider){
+            if (connection.roleA is IdentityProvider) {
                 idp = connection.roleA as IdentityProvider;
                 spName = connection.roleB.name;
 
-            } else if (connection.roleB is IdentityProvider){
+            } else if (connection.roleB is IdentityProvider) {
                 idp = connection.roleB as IdentityProvider;
                 spName = connection.roleA.name;
             }
@@ -8850,7 +8935,7 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleUseInheritedSPSettingsChange(event:Event):void {
         setIdpChannelFields();
-        if(_federatedConnectionIDPChannelSection.useInheritedSPSettings.selected){
+        if (_federatedConnectionIDPChannelSection.useInheritedSPSettings.selected) {
             reflectSPSettingsInIdpChannelTab();
         } else {
             _validators.push(_federatedConnectionIDPChannelSection.portValidator);
@@ -8864,11 +8949,11 @@ public class PropertySheetMediator extends IocMediator {
             var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
             var idpName:String = null;
             var sp:InternalSaml2ServiceProvider = null;
-            if(connection.roleA is InternalSaml2ServiceProvider){
+            if (connection.roleA is InternalSaml2ServiceProvider) {
                 sp = connection.roleA as InternalSaml2ServiceProvider;
                 idpName = connection.roleB.name;
 
-            } else if (connection.roleB is InternalSaml2ServiceProvider){
+            } else if (connection.roleB is InternalSaml2ServiceProvider) {
                 sp = connection.roleB as InternalSaml2ServiceProvider;
                 idpName = connection.roleA.name;
             }
@@ -8884,10 +8969,10 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function reflectSPSettingsInIdpChannelTab():void {
-        var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;        
-        if(connection.roleA is InternalSaml2ServiceProvider){
+        var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
+        if (connection.roleA is InternalSaml2ServiceProvider) {
             var sp:InternalSaml2ServiceProvider = connection.roleA as InternalSaml2ServiceProvider;
-        } else if (connection.roleB is InternalSaml2ServiceProvider){
+        } else if (connection.roleB is InternalSaml2ServiceProvider) {
             sp = connection.roleB as InternalSaml2ServiceProvider;
         }
 
@@ -8942,14 +9027,14 @@ public class PropertySheetMediator extends IocMediator {
         // set account linkage policy
         if (_federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider != null) {
             if (sp.accountLinkagePolicy != null) {
-                for (var k:int=0; k < _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider.length; k++) {
+                for (var k:int = 0; k < _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider.length; k++) {
                     if (_federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider[k].name == sp.accountLinkagePolicy.name) {
                         _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.selectedIndex = k;
                         break;
                     }
                 }
             } else {
-                for (var l:int=0; l < _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider.length; l++) {
+                for (var l:int = 0; l < _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider.length; l++) {
                     if (_federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.dataProvider[l].linkEmitterType.toString() == AccountLinkEmitterType.ONE_TO_ONE.toString()) {
                         _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.selectedIndex = l;
                         break;
@@ -8961,14 +9046,14 @@ public class PropertySheetMediator extends IocMediator {
         // set identity mapping policy
         if (_federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider != null) {
             if (sp.identityMappingPolicy != null) {
-                for (var m:int=0; m < _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider.length; m++) {
+                for (var m:int = 0; m < _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider.length; m++) {
                     if (_federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider[m].name == sp.identityMappingPolicy.name) {
                         _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.selectedIndex = m;
                         break;
                     }
                 }
             } else {
-                for (var n:int=0; n < _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider.length; n++) {
+                for (var n:int = 0; n < _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider.length; n++) {
                     if (_federatedConnectionIDPChannelSection.identityMappingPolicyCombo.dataProvider[n].mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
                         _federatedConnectionIDPChannelSection.identityMappingPolicyCombo.selectedIndex = n;
                         break;
@@ -8983,9 +9068,9 @@ public class PropertySheetMediator extends IocMediator {
 
     private function reflectIdpSettingsInSpChannelTab():void {
         var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
-        if(connection.roleA is IdentityProvider){
+        if (connection.roleA is IdentityProvider) {
             var idp:IdentityProvider = connection.roleA as IdentityProvider;
-        } else if (connection.roleB is IdentityProvider){
+        } else if (connection.roleB is IdentityProvider) {
             idp = connection.roleB as IdentityProvider;
         }
 
@@ -8993,7 +9078,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _federatedConnectionSPChannelSection.spChannelMessageTtl.text = idp.messageTtl.toString();
         _federatedConnectionSPChannelSection.spChannelMessageTtlTolerance.text = idp.messageTtlTolerance.toString();
-        
+
         _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected = false;
         _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected = false;
         _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.selected = false;
@@ -9039,7 +9124,7 @@ public class PropertySheetMediator extends IocMediator {
         // select authentication mechanism (currently there is always only one selected authn. mechanism)
         var selectedAuthnMechanism:String = "basic";
         if (idp.authenticationMechanisms != null && idp.authenticationMechanisms.length > 0) {
-            var authnMechanism:AuthenticationMechanism  = idp.authenticationMechanisms.getItemAt(0) as AuthenticationMechanism;
+            var authnMechanism:AuthenticationMechanism = idp.authenticationMechanisms.getItemAt(0) as AuthenticationMechanism;
             if (authnMechanism is BasicAuthentication)
                 selectedAuthnMechanism = "basic"
             else if (authnMechanism is TwoFactorAuthentication)
@@ -9062,7 +9147,7 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function setIdpChannelFields():void {
-        if(_federatedConnectionIDPChannelSection.useInheritedSPSettings.selected){
+        if (_federatedConnectionIDPChannelSection.useInheritedSPSettings.selected) {
 //            reflectSPSettingsInIdpChannelTab();
             _federatedConnectionIDPChannelSection.samlProfileSSOCheck.enabled = false;
             _federatedConnectionIDPChannelSection.samlProfileSLOCheck.enabled = false;
@@ -9119,7 +9204,7 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function setSpChannelFields():void {
-        if(_federatedConnectionSPChannelSection.useInheritedIDPSettings.selected){
+        if (_federatedConnectionSPChannelSection.useInheritedIDPSettings.selected) {
 //            reflectIdpSettingsInSpChannelTab();
             _federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.enabled = false;
             _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.enabled = false;
@@ -9276,16 +9361,16 @@ public class PropertySheetMediator extends IocMediator {
             protocolString = location.protocol + "://";
             // For HTTP, remove default ports
             if (location.protocol.toLowerCase() == "http")
-                portString = (location.port == 80 ? "" :  ":" + location.port);
+                portString = (location.port == 80 ? "" : ":" + location.port);
             if (location.protocol.toLowerCase() == "https")
-                portString = (location.port == 443 ? "" :  ":" + location.port);
+                portString = (location.port == 443 ? "" : ":" + location.port);
         }
 
         var hostString:String = "";
         if (location.host != null)
             hostString = location.host;
 
-        return protocolString  + hostString + portString;
+        return protocolString + hostString + portString;
     }
 
 }

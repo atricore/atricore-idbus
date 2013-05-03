@@ -42,6 +42,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _liferayPortalResourceCreateMediator:IIocMediator;
     private var _jbosseppResourceCreateMediator:IIocMediator;
     private var _selfServicesResourceCreateMediator:IIocMediator;
+    private var _dominoResourceCreateMediator:IIocMediator;
     private var _wasceExecutionEnvironmentCreateMediator:IIocMediator;
     private var _apacheExecutionEnvironmentCreateMediator:IIocMediator;
     private var _alfrescoResourceCreateMediator:IIocMediator;
@@ -86,6 +87,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _jbosseppResourceRemoveCommand:IIocCommand;
     private var _liferayResourceRemoveCommand:IIocCommand;
     private var _selfServicesResourceRemoveCommand:IIocCommand;
+    private var _dominoResourceRemoveCommand:IIocCommand;
     private var _lookupIdentityApplianceByIdCommand:IIocCommand;
     private var _identityApplianceUpdateCommand:IIocCommand;
     private var _identityVaultRemoveCommand:IIocCommand;
@@ -196,6 +198,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.JBOSSEPP_RESOURCE_REMOVE, jbosseppResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIFERAY_RESOURCE_REMOVE, liferayResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SELFSERVICES_RESOURCE_REMOVE, selfServicesResourceRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.DOMINO_RESOURCE_REMOVE, dominoResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_SOURCE_REMOVE, identityVaultRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATION_REMOVE, activationRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_CONNECTION_REMOVE, serviceConnectionRemoveCommand.getConfigName());
@@ -411,6 +414,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set selfServicesResourceCreateMediator(value:IIocMediator):void {
         _selfServicesResourceCreateMediator = value;
+    }
+
+    public function get dominoResourceCreateMediator():IIocMediator {
+        return _dominoResourceCreateMediator;
+    }
+
+    public function set dominoResourceCreateMediator(value:IIocMediator):void {
+        _dominoResourceCreateMediator = value;
     }
 
     public function get weblogicExecutionEnvironmentCreateMediator():IIocMediator {
@@ -790,6 +801,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set selfServicesResourceRemoveCommand(value:IIocCommand):void {
         _selfServicesResourceRemoveCommand = value;
+    }
+
+    public function get dominoResourceRemoveCommand():IIocCommand {
+        return _dominoResourceRemoveCommand;
+    }
+
+    public function set dominoResourceRemoveCommand(value:IIocCommand):void {
+        _dominoResourceRemoveCommand = value;
     }
 
     public function get lookupIdentityApplianceByIdCommand():IIocCommand {

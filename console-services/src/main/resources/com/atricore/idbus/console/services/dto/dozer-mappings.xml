@@ -116,7 +116,8 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ColdfusionResource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.MicroStrategyResource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPResource,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.SelfServicesResource
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.SelfServicesResource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoResource
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.JOSSO1ResourceDTO,
@@ -129,7 +130,8 @@
                 com.atricore.idbus.console.services.dto.ColdfusionResourceDTO,
                 com.atricore.idbus.console.services.dto.MicroStrategyResourceDTO,
                 com.atricore.idbus.console.services.dto.JBossEPPResourceDTO,
-                com.atricore.idbus.console.services.dto.SelfServicesResourceDTO
+                com.atricore.idbus.console.services.dto.SelfServicesResourceDTO,
+                com.atricore.idbus.console.services.dto.DominoResourceDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -710,6 +712,11 @@
     </mapping>
 
     <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoResource</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.DominoResourceDTO</class-b>
+    </mapping>
+
+    <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.AccountLinkagePolicy</class-a>
         <class-b>com.atricore.idbus.console.services.dto.AccountLinkagePolicyDTO</class-b>
     </mapping>
@@ -1111,7 +1118,8 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ColdfusionResource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.MicroStrategyResource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPResource,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.SelfServicesResource
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.SelfServicesResource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DominoResource
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.JOSSO1ResourceDTO,
@@ -1124,7 +1132,8 @@
                 com.atricore.idbus.console.services.dto.ColdfusionResourceDTO,
                 com.atricore.idbus.console.services.dto.MicroStrategyResourceDTO,
                 com.atricore.idbus.console.services.dto.JBossEPPResourceDTO,
-                com.atricore.idbus.console.services.dto.SelfServicesResourceDTO
+                com.atricore.idbus.console.services.dto.SelfServicesResourceDTO,
+                com.atricore.idbus.console.services.dto.DominoResourceDTO
             </b-hint>
         </field>
     </mapping>

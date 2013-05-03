@@ -30,6 +30,7 @@ import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDirectoryServiceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDominoResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveGoogleAppsElementRequest;
@@ -371,6 +372,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_LIFERAY_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_JBOSSEPP_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_SELFSERVICES_RESOURCE_ELEMENT,
+            ApplicationFacade.CREATE_DOMINO_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT,
@@ -416,6 +418,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.REMOVE_JBOSSEPP_RESOURCE_ELEMENT,
             ApplicationFacade.REMOVE_LIFERAY_RESOURCE_ELEMENT,
             ApplicationFacade.REMOVE_SELFSERVICES_RESOURCE_ELEMENT,
+            ApplicationFacade.REMOVE_DOMINO_RESOURCE_ELEMENT,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
@@ -597,6 +600,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 var rslfsvcsr:RemoveSelfServicesResourceElementRequest = RemoveSelfServicesResourceElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.SELFSERVICES_RESOURCE_REMOVE, rslfsvcsr.resource);
                 break;
+            case ApplicationFacade.REMOVE_DOMINO_RESOURCE_ELEMENT:
+                var rdomres:RemoveDominoResourceElementRequest = RemoveDominoResourceElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.DOMINO_RESOURCE_REMOVE, rdomres.resource);
+                break;
             case ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateJBossExecutionEnvironmentWindow(notification);
                 break;
@@ -617,6 +624,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.CREATE_SELFSERVICES_RESOURCE_ELEMENT:
                 popupManager.showCreateSelfServicesResourceWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_DOMINO_RESOURCE_ELEMENT:
+                popupManager.showCreateDominoResourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateWASCEExecutionEnvironmentWindow(notification);

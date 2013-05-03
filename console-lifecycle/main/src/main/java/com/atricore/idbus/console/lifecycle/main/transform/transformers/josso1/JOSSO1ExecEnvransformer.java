@@ -503,6 +503,7 @@ public class JOSSO1ExecEnvransformer extends AbstractTransformer {
                     bpBean.getName() + "/josso",
                     "josso-agent-" + bpBean.getName(),
                     "spring-beans",
+                    "josso1-agent-configuration",
                     agentBeans);
 
             rAgentBeans.setClassifier("jaxb");

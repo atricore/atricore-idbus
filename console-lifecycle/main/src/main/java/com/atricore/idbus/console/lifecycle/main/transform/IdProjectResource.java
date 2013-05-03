@@ -16,6 +16,8 @@ public class IdProjectResource<T> {
 
     private String type;
 
+    private String subtype;
+
     private String classifier;
 
     private Scope scope;
@@ -25,6 +27,7 @@ public class IdProjectResource<T> {
     private String extension;
 
     private Map<String, Object> params;
+
 
     public IdProjectResource(String id, String name, String type, T value) {
         this.id = id;
@@ -39,6 +42,12 @@ public class IdProjectResource<T> {
         this(id, name, type, value);
         this.nameSpace = nameSpace;
     }
+
+    public IdProjectResource(String id, String nameSpace, String name, String type, String subtype, T value) {
+        this(id, nameSpace, name, type, value);
+        this.subtype = subtype;
+    }
+
 
     public String getId() {
         return id;
@@ -55,6 +64,15 @@ public class IdProjectResource<T> {
     public String getType() {
         return type;
     }
+
+    public String getSubtype() {
+        return subtype;
+    }
+
+    public void setSubtype(String subtype) {
+        this.subtype = subtype;
+    }
+
 
     public T getValue() {
         return value;
@@ -102,7 +120,7 @@ public class IdProjectResource<T> {
 
     @Override
     public String toString() {
-        return "{" + id + "}:" + nameSpace + "/" + name + "/" + type + "/" + classifier + " value=["+value+"]";
+        return "{" + id + "}:" + nameSpace + "/" + name + "/" + type + "/" + subtype + "/" + classifier + " value=["+value+"]";
     }
 
     public enum Scope {

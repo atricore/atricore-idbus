@@ -64,6 +64,8 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const JBOSSEPP_RESOURCE_REMOVE:String = "jbosseppResourceRemove";
     public static const LIFERAY_RESOURCE_REMOVE:String = "liferayResourceRemove";
     public static const SELFSERVICES_RESOURCE_REMOVE:String = "selfServicesResourceRemove";
+    public static const DOMINO_RESOURCE_REMOVE:String = "dominoResourceRemove";
+
 //    public static const IDP_CHANNEL_REMOVE:String = "idpChannelRemove";
 //    public static const SP_CHANNEL_REMOVE:String = "spChannelRemove";
     public static const IDENTITY_SOURCE_REMOVE:String = "identitySourceRemove";
@@ -207,6 +209,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const REMOVE_JBOSSEPP_RESOURCE_ELEMENT:String = "removeJBossEPPResourceElement";
     public static const REMOVE_LIFERAY_RESOURCE_ELEMENT:String = "removeLiferayResourceElement";
     public static const REMOVE_SELFSERVICES_RESOURCE_ELEMENT:String = "removeSelfServicesResourceElement";
+    public static const REMOVE_DOMINO_RESOURCE_ELEMENT:String = "removeDominoResourceElement";
     public static const CREATE_DB_IDENTITY_SOURCE_ELEMENT:String = "createDbIdentitySourceElement";
     public static const REMOVE_IDENTITY_SOURCE_ELEMENT:String = "removeIdentitySourceElement";
     public static const CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:String = "createLdapIdentitySourceElement";
@@ -232,6 +235,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_LIFERAY_RESOURCE_ELEMENT:String = "createLiferayResourceElement";
     public static const CREATE_JBOSSEPP_RESOURCE_ELEMENT:String = "createJBossEPPResourceElement";
     public static const CREATE_SELFSERVICES_RESOURCE_ELEMENT:String = "createSelfServicesResourceElement"
+    public static const CREATE_DOMINO_RESOURCE_ELEMENT:String = "createDominoResourceElement"
     public static const CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWebsphereExecutionEnvironmentElement";
     public static const CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createApacheExecutionEnvironmentElement";
     public static const CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWindowsIISExecutionEnvironmentElement";
