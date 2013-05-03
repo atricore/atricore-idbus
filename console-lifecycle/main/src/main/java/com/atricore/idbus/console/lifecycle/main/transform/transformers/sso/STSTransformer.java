@@ -41,21 +41,20 @@ public class STSTransformer extends AbstractTransformer {
             ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
 
-            if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote())
-                return true;
+            //if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote()) {
                 // TODO : Change this once the front-end supports it
                 /*
                 return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof ExternalSaml2IdentityProvider
                         && fc.getRoleA().isRemote();
                         */
-            if (fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote()) {
-                return true;
+            // }
+            //if (fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote()) {
                 // TODO : Change this once the front-end supports it
                 /*
                 return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof ExternalSaml2IdentityProvider
                         && fc.getRoleB().isRemote();
                         */
-            }
+            //}
 
         }
 
@@ -83,6 +82,7 @@ public class STSTransformer extends AbstractTransformer {
         }
 
         assert provider != null : "No valid provider found for STS ";
+        // Beans idpBeans = isProxy ? (Beans) event.getContext().get("idpProxyBeans") : (Beans) event.getContext().get("idpBeans");
         Beans idpBeans = isProxy ? (Beans) event.getContext().get("idpProxyBeans") : (Beans) event.getContext().get("idpBeans");
 
         if (logger.isTraceEnabled())
