@@ -1660,7 +1660,6 @@ public class SingleSignOnProducer extends SSOProducer {
         if (p != null && p.size() > 0) {
 
             SimplePrincipal user = p.iterator().next();
-
             SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
             ssoUser = identityMgr.findUser(user.getName());
 
@@ -1930,8 +1929,13 @@ public class SingleSignOnProducer extends SSOProducer {
                 if (authnRequest.getAssertionConsumerServiceIndex() != null &&
                         authnRequest.getAssertionConsumerServiceIndex() >= 0) {
                     if (ac.getIndex() == authnRequest.getAssertionConsumerServiceIndex()) {
-                        acEndpoint = ac;
-                        break;
+
+                        if (ac.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
+                            logger.warn("Invalid requested ACS location at " + ac.getLocation() + ", Ignoring endpoint" );
+                        } else {
+                            acEndpoint = ac;
+                            break;
+                        }
                     }
                 }
 
@@ -1968,7 +1972,6 @@ public class SingleSignOnProducer extends SSOProducer {
                     } else {
                         acEndpoint = ac;
                     }
-                    break;
                 }
 
             }
