@@ -1488,6 +1488,37 @@ public class SingleSignOnProducer extends SSOProducer {
         if (logger.isTraceEnabled())
             logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
 
+        // Some validations about the user !
+        Subject subject = securityTokenEmissionCtx.getSubject();
+
+        // Look up SSO User (TODO : This could be disbled since it adds an additional access to the users repository)
+        SSOUser ssoUser = null;
+        Set<SimplePrincipal> p = subject.getPrincipals(SimplePrincipal.class);
+        if (p != null && p.size() > 0) {
+
+            SimplePrincipal user = p.iterator().next();
+
+            SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
+            ssoUser = identityMgr.findUser(user.getName());
+
+        } else {
+            Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
+            if (ssoUsers != null && ssoUsers.size() > 0) {
+                ssoUser = ssoUsers.iterator().next();
+            }
+        }
+
+        if (ssoUser != null) {
+            // Make some validations on the SSO user
+            for (SSONameValuePair nvp : ssoUser.getProperties()) {
+                if (nvp.getName().equals("accountDisabled")) {
+                    boolean disabled = Boolean.parseBoolean(nvp.getValue());
+                    if (disabled) {
+                        throw new SecurityTokenAuthenticationFailure("Account disabled");
+                    }
+                }
+            }
+        }
 
         // Return context with Assertion and Subject
         return securityTokenEmissionCtx;
@@ -1681,8 +1712,13 @@ public class SingleSignOnProducer extends SSOProducer {
                 if (authnRequest.getAssertionConsumerServiceIndex() != null &&
                         authnRequest.getAssertionConsumerServiceIndex() >= 0) {
                     if (ac.getIndex() == authnRequest.getAssertionConsumerServiceIndex()) {
-                        acEndpoint = ac;
-                        break;
+
+                        if (ac.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
+                            logger.warn("Invalid requested ACS location at " + ac.getLocation() + ", Ignoring endpoint" );
+                        } else {
+                            acEndpoint = ac;
+                            break;
+                        }
                     }
                 }
 
@@ -1693,8 +1729,13 @@ public class SingleSignOnProducer extends SSOProducer {
                     }
                 }
 
-                if (ac.isIsDefault() != null && ac.isIsDefault())
-                    defaultAcEndpoint = ac;
+                if (ac.isIsDefault() != null && ac.isIsDefault()) {
+                    if (ac.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
+                        logger.warn("Invalid default SP ACS Binding at " + ac.getLocation() + ", Ignoring endpoint" );
+                    } else {
+                        defaultAcEndpoint = ac;
+                    }
+                }
 
                 if (ac.getBinding().equals(SSOBinding.SAMLR2_POST.getValue()))
                     postAcEndpoint = ac;
@@ -1703,8 +1744,11 @@ public class SingleSignOnProducer extends SSOProducer {
                     artifactAcEndpoint = ac;
 
                 if (requestedBinding != null && ac.getBinding().equals(requestedBinding)) {
-                    acEndpoint = ac;
-                    break;
+                    if (ac.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
+                        logger.warn("Invalid Requested ACS Binding at " + ac.getLocation() + ", Ignoring endpoint" );
+                    } else {
+                        acEndpoint = ac;
+                    }
                 }
 
             }

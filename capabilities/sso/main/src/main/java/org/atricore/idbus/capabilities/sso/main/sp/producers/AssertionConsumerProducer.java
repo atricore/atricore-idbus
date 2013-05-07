@@ -788,7 +788,6 @@ public class AssertionConsumerProducer extends SSOProducer {
             if (location ==null)
                 location = endpointDesc.getLocation();
 
-
     		if(!response.getDestination().equals(location)){
     			throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
@@ -798,7 +797,9 @@ public class AssertionConsumerProducer extends SSOProducer {
 
     	} else if(response.getSignature() != null &&
                 (!endpointDesc.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue()) &&
-                 !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()))) {
+                 !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()) &&
+                 !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())
+                )) {
 
             // If message is signed, the destination is mandatory!
             //saml2 binding, sections 3.4.5.2 & 3.5.5.2
@@ -940,7 +941,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
             // If there are no assertions, response MUST be signed
             if (response.getSignature() == null &&
-                    (response.getAssertionOrEncryptedAssertion() == null || response.getAssertionOrEncryptedAssertion().size() == 0)) {
+               (response.getAssertionOrEncryptedAssertion() == null || response.getAssertionOrEncryptedAssertion().size() == 0)) {
                 // Redirect binding does not have signature elements!
                 throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
@@ -1036,8 +1037,15 @@ public class AssertionConsumerProducer extends SSOProducer {
             }
 
 
-            // If the response does not have a signature, assertions MUST be signed, otherwise relay on MD configuration
-            if(response.getSignature() == null || (saml2SpMd.isWantAssertionsSigned() != null && saml2SpMd.isWantAssertionsSigned())) {
+            // If the response does not have a signature, assertions MUST be signed, otherwise relay on MD configuration to require a signature
+            if(
+               // Do we required signed assertions ?
+               (saml2SpMd.isWantAssertionsSigned() != null && saml2SpMd.isWantAssertionsSigned()) ||
+               // Does response have a signature for bindings that require it ?
+               (response.getSignature() == null && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()) && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue()) && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue())) ||
+               // Does redirect binding have an outbound signature ?
+               (state.getTransientVariable("Signature") == null && endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()))
+              ) {
 
                 if (assertion.getSignature() == null) {
                     throw new SSOResponseException(response,
