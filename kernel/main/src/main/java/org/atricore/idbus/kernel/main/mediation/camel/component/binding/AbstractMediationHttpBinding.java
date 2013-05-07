@@ -205,10 +205,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                         state.getRemoteVariable(name) + ";Path=/");
 
             }
-
-
         }
-
     }
 
     protected MediationState createMediationState(Exchange exchange) {

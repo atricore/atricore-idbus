@@ -64,7 +64,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
             OAuth2AccessTokenEnvelope envelope = buildOAuth2AccessTokenEnvelope(token);
 
-            String tokenValue = marshalOAuthAccessEvnelopeToken(envelope);
+            String tokenValue = marshalOAuthAccessEnvelopeToken(envelope);
 
             String uuid = super.uuidGenerator.generateId();
             ObjectFactory of = new ObjectFactory();
@@ -152,7 +152,6 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
      * @return
      */
     protected Subject resolveSubject(Subject subject) {
-        OAuth2AccessToken at = new OAuth2AccessToken();
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
         Set<SimplePrincipal> simplePrincipals = subject.getPrincipals(SimplePrincipal.class);
 
@@ -215,13 +214,13 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         return subject;
     }
 
-    private String marshalOAuthAccessEvnelopeToken(OAuth2AccessTokenEnvelope envelope) throws IOException {
+    private String marshalOAuthAccessEnvelopeToken(OAuth2AccessTokenEnvelope envelope) throws IOException {
         return JasonUtils.marshalAccessTokenEnvelope(envelope, true);
     }
 
     @Override
     protected IdentityArtifact createOutArtifact(Object requestToken, String tokenType) {
-        throw new UnsupportedOperationException("Operatino not available");
+        throw new UnsupportedOperationException("Operation not available");
     }
 
     public SSOIdentityManager getIdentityManager() {
