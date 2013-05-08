@@ -49,6 +49,10 @@ public class RemoteSubjectIdentityMapper implements IdentityMapper {
     }
 
     public Subject map(Subject remoteSubject, Subject localSubject) {
+        return map(remoteSubject, localSubject, null);
+    }
+
+    public Subject map(Subject remoteSubject, Subject localSubject, Set<Principal> additionalPrincipals) {
 
         Subject federatedSubject = null;
         Set<Principal> merged = new HashSet<Principal>();
@@ -77,12 +81,31 @@ public class RemoteSubjectIdentityMapper implements IdentityMapper {
             if (p instanceof SubjectAttribute) {
                 SubjectAttribute sa = (SubjectAttribute) p;
                 if (roleAttributeNames.contains(sa.getName())) {
-                    merged.add(new SubjectRole(sa.getValue()));
+                    SubjectRole r = new SubjectRole(sa.getValue());
+                    if (!merged.contains(r))
+                        merged.add(r);
                 }
             }
 
+            if (!merged.contains(p))
+                merged.add(p);
+        }
 
-            merged.add(p);
+        if (additionalPrincipals != null) {
+            for (Principal p : additionalPrincipals) {
+                if (p instanceof SubjectNameID)
+                    continue;
+
+                // If Subject attribute is configured as role name attribute, also add a SubjectRole
+                if (p instanceof SubjectAttribute) {
+                    SubjectAttribute sa = (SubjectAttribute) p;
+                    if (roleAttributeNames.contains(sa.getName())) {
+                        merged.add(new SubjectRole(sa.getValue()));
+                    }
+                }
+
+                merged.add(p);
+            }
         }
 
         federatedSubject = new Subject(true, merged,

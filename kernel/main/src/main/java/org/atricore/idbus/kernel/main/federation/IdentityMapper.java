@@ -22,6 +22,8 @@
 package org.atricore.idbus.kernel.main.federation;
 
 import javax.security.auth.Subject;
+import java.security.Principal;
+import java.util.Set;
 
 /**
  *
@@ -31,5 +33,7 @@ import javax.security.auth.Subject;
 public interface IdentityMapper {
 
     Subject map(Subject idpSubject, Subject localSubject);
+
+    Subject map(Subject remoteSubject, Subject localSubject, Set<Principal> additionalPrincipals);
 
 }

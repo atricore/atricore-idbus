@@ -346,6 +346,25 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
         return null;
     }
 
+    public FederatedProvider lookupFederatedProviderByAlias(String alias) {
+        for (FederatedProvider provider : cot.getProviders()) {
+
+            for (CircleOfTrustMemberDescriptor member : provider.getAllMembers()) {
+                if (member.getAlias().equals(alias)) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Specific Provider found for " + alias + " in provider " + provider.getName());
+                    return provider;
+                }
+            }
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("No Provider registered with alias " + alias);
+
+        // Not found !?
+        return null;
+    }
+
     /**
      * The member alias must match a MD Definition ID.
      */

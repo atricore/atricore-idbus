@@ -49,6 +49,10 @@ public class MergedSubjectIdentityMapper implements IdentityMapper {
     }
 
     public Subject map(Subject remoteSubject, Subject localSubject) {
+        return map(remoteSubject, localSubject, null);
+    }
+
+    public Subject map(Subject remoteSubject, Subject localSubject, Set<Principal> additionalPrincipals) {
 
         Subject federatedSubject = null;
 
@@ -97,6 +101,30 @@ public class MergedSubjectIdentityMapper implements IdentityMapper {
 
             if (!merged.contains (p))
                 merged.add(p);
+        }
+
+        if (additionalPrincipals != null) {
+            for (Principal p : additionalPrincipals) {
+                if (p instanceof SubjectNameID)
+                    continue;
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Merging Additional principal " + p);
+
+                // If Subject attribute is configured as role name attribute, also add a SubjectRole
+                if (p instanceof SubjectAttribute) {
+                    SubjectAttribute sa = (SubjectAttribute) p;
+                    if (roleAttributeNames.contains(sa.getName())) {
+                        SubjectRole r = new SubjectRole(sa.getValue());
+                        if (!merged.contains(r))
+                            merged.add(r);
+                    }
+                }
+
+                if (!merged.contains(p))
+                    merged.add(p);
+            }
+
         }
 
         /*

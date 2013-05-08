@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.kernel.main.federation.metadata;
 
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 
 import java.util.Collection;
@@ -91,7 +92,19 @@ public interface CircleOfTrustManager {
      */
     CircleOfTrustMemberDescriptor lookupMemberByAlias(String memberAlias);
 
+    /**
+     * Look up COT Member descriptor by ID
+     * @param hash
+     * @return
+     */
     CircleOfTrustMemberDescriptor loolkupMemberById(String hash);
+
+    /**
+     * Lookup federated provider by alias
+     * @param providerAlias
+     * @return
+     */
+    FederatedProvider lookupFederatedProviderByAlias(String providerAlias);
 
     /**
      * True if the COT member is running in the same identity appliance..
