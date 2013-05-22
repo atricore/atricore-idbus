@@ -27,6 +27,7 @@ import org.atricore.idbus.kernel.main.federation.SubjectNameID;
 import org.atricore.idbus.kernel.main.federation.SubjectRole;
 
 import javax.security.auth.Subject;
+import java.security.Principal;
 import java.util.Set;
 
 /**
@@ -37,6 +38,11 @@ import java.util.Set;
 public class RestrictedAccessIdentityMapper implements IdentityMapper {
 
     public Subject map(Subject idpSubject, Subject localSubject) {
+        return map(idpSubject, localSubject, null);
+    }
+
+    public Subject map(Subject idpSubject, Subject localSubject, Set<Principal> additionalPrincipals) {
+
         Subject federatedSubject = new Subject();
 
         Set<SubjectNameID> subjectNameID = localSubject.getPrincipals(SubjectNameID.class);
@@ -56,6 +62,26 @@ public class RestrictedAccessIdentityMapper implements IdentityMapper {
             }
         }
 
+
+        if (additionalPrincipals != null) {
+            for (Principal p : additionalPrincipals) {
+                if (p instanceof SubjectNameID)
+                    continue;
+
+                // If Subject attribute is configured as role name attribute, also add a SubjectRole
+                if (p instanceof SubjectAttribute) {
+                    SubjectAttribute sa = (SubjectAttribute) p;
+                    if (sa.getName().equals("urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE:groups")) {
+                        federatedSubject.getPrincipals().add(
+                                new SubjectRole("restricted_" + sa.getValue())
+                        );
+                    } else {
+                        federatedSubject.getPrincipals().add(sa);
+                    }
+                }
+
+            }
+        }
 
         return federatedSubject;
     }

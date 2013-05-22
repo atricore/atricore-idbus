@@ -39,6 +39,11 @@ import java.util.Set;
  */
 public class OneToOneIdentityMapper implements IdentityMapper {
 
+
+    public Subject map(Subject remoteSubject, Subject localSubject, Set<Principal> additionalPrincipals) {
+        return map(remoteSubject, localSubject);
+    }
+
     public Subject map(Subject idpSubject, Subject localSubject) {
 
         //Subject federatedSubject = new Subject();

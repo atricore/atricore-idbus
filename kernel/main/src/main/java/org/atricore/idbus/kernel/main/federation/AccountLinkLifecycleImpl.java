@@ -138,7 +138,7 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
             resolvedSubject.getPrincipals().add(new SubjectNameID(userId, null));
 
             if (logger.isDebugEnabled())
-                logger.debug("No local identity store, returing local subject as " + resolvedSubject);
+                logger.debug("No local identity store, returning local subject as " + resolvedSubject);
 
             return resolvedSubject;
         }

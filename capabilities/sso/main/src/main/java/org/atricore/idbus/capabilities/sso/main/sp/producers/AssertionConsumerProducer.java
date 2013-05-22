@@ -63,6 +63,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
@@ -75,6 +76,7 @@ import javax.security.auth.Subject;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
+import java.security.Principal;
 import java.util.*;
 
 /**
@@ -147,6 +149,9 @@ public class AssertionConsumerProducer extends SSOProducer {
         // ------------------------------------------------------
 
         validateResponse(authnRequest, response, in.getMessage().getRawContent(), state);
+
+        String issuerAlias = response.getIssuer().getValue();
+        FederatedProvider issuer = getCotManager().lookupFederatedProviderByAlias(issuerAlias);
 
         // Response is valid, check received status!
         StatusCode status = StatusCode.asEnum(response.getStatus().getStatusCode().getValue());
@@ -279,6 +284,8 @@ public class AssertionConsumerProducer extends SSOProducer {
         Subject federatedSubject = localAccountSubject; // if no identity mapping, the local account
                                                         // subject is used
 
+        SubjectAttribute idpNameAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
+
         // having both idp and local account is now time to apply custom identity mapping rules
         if (fChannel.getIdentityMapper() != null) {
             IdentityMapper im = fChannel.getIdentityMapper();
@@ -286,8 +293,16 @@ public class AssertionConsumerProducer extends SSOProducer {
             if (logger.isTraceEnabled())
                 logger.trace("Using identity mapper : " + im.getClass().getName());
 
-            federatedSubject = im.map(idpSubject, localAccountSubject);
+            Set<Principal> additionalPrincipals = new HashSet<Principal>();
+            additionalPrincipals.add(idpNameAttr);
+
+            federatedSubject = im.map(idpSubject, localAccountSubject, additionalPrincipals );
+        } else {
+            federatedSubject.getPrincipals().add(idpNameAttr);
         }
+
+        // Add IDP Name to federated Subject
+
 
 
         if (logger.isDebugEnabled())
