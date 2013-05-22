@@ -106,7 +106,7 @@
         <property name="adminGroupName" value="Administrators" />
         <property name="adminGroupDescription" value="Administrators" />
         <property name="adminUsername" value="admin" />
-        <property name="adminPassword" value="admin" />
+        <property name="adminPassword" value="atricore" />
         <property name="adminName" value="Administrator" />
         <property name="adminLastName" value="Administrator" />
         <property name="adminFullName" value="Administrator" />
