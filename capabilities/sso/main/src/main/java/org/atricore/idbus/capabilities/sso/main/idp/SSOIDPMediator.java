@@ -58,6 +58,8 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
     private String claimEndpointSelection;
 
+    private String identityConfirmationEndpointSelection;
+
     @Override
     protected RouteBuilder createIdPRoutes(final SPChannel spChannel) throws Exception {
         
@@ -400,6 +402,14 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
     public void setClaimEndpointSelection(String claimEndpointSelection) {
         this.claimEndpointSelection = claimEndpointSelection;
+    }
+
+    public String getIdentityConfirmationEndpointSelection() {
+        return identityConfirmationEndpointSelection;
+    }
+
+    public void setIdentityConfirmationEndpointSelection(String identityConfirmationEndpointSelection) {
+        this.identityConfirmationEndpointSelection = identityConfirmationEndpointSelection;
     }
 
 }

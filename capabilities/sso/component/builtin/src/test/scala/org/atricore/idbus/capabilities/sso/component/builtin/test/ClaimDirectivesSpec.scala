@@ -31,21 +31,19 @@ import org.atricore.idbus.capabilities.sso.dsl.{Redirect, IdentityFlowResponse, 
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState
-import org.atricore.idbus.capabilities.sso.component.builtin.MediationDirectives
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass
 import org.atricore.idbus.capabilities.sso.test.dsl.IdentityFlowDSLTestSupport
+import org.atricore.idbus.capabilities.sso.component.builtin.directives.{MediationDirectives, ClaimDirectives}
 
-/**
- * Simple identity flow route tester.
- */
-class IdentityFlowSpec extends Specification
+class ClaimDirectivesSpec extends Specification
   with IdentityFlowDSLTestSupport
   with IdentityFlowDirectives
   with MediationDirectives
+  with ClaimDirectives
   with Logging {
 
-  "The identity flow definition" should {
-    "handle correctly" in {
+  "The claim directive" should {
+    "select claim endpoints" in {
 
       val r1 =
         logRequestResponse("") {

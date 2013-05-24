@@ -29,47 +29,66 @@ import java.net.URL
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-case class IdentityFlowResponse(statusCode : StatusCode)
+case class IdentityFlowResponse(
+  statusCode: StatusCode,
+  content: Option[Object] = None,
+  contentType: Option[String] = None
+)
 
 sealed abstract class StatusCode {
   def value: Int
+
   def defaultMessage: String
+
   def isSuccess: Boolean
+
   def isWarning: Boolean
+
   def isFailure: Boolean
+
   override def toString = "StatusCode(" + value + ", " + defaultMessage + ')'
 
 }
 
 sealed abstract class IdentityFlowSuccess extends StatusCode {
   def isSuccess = true
+
   def isWarning = false
+
   def isFailure = false
 }
 
 sealed abstract class IdentityFlowWarning extends StatusCode {
   def isSuccess = false
+
   def isWarning = true
+
   def isFailure = false
 }
+
 sealed abstract class IdentityFlowFailure extends StatusCode {
   def isSuccess = false
+
   def isWarning = false
+
   def isFailure = true
 }
 
-case class Redirect(channel : Channel, endpoint : IdentityMediationEndpoint) extends IdentityFlowSuccess {
+case class RedirectToEndpoint(channel : Channel, endpoint: IdentityMediationEndpoint)
+  extends IdentityFlowSuccess {
   def value: Int = 1
 
   def defaultMessage: String =
-    "The user should be redirected to endpoint %s of channel %s".format(endpoint.getName, channel.getName)
+    "The user should be redirected to endpoint %s on channel %s".
+      format(channel.getName, endpoint.getName)
 }
 
-case class RedirectToUrl(url : URL) extends IdentityFlowSuccess {
+case class RedirectToLocation(location : String)
+  extends IdentityFlowSuccess {
   def value: Int = 2
 
   def defaultMessage: String =
-    "The user should be redirected to url %s".format(url.toExternalForm)
+    "The user should be redirected to location %s".
+      format(location)
 }
-
 

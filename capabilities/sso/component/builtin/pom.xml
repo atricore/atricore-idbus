@@ -144,7 +144,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>${project.artifactId};version=${project.version}</Export-Package>
+                        <Export-Package>${project.artifactId}.*;version=${project.version}</Export-Package>
                         <Require-Bundle>
                             org.atricore.idbus.capabilities.sso.dsl,
                             org.atricore.idbus.bundles.scala-library-v2_9_1

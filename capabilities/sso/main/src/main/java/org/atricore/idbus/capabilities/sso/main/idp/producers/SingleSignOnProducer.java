@@ -35,7 +35,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.component.container.IdentityFlowContainer;
 import org.atricore.idbus.capabilities.sso.dsl.IdentityFlowResponse;
-import org.atricore.idbus.capabilities.sso.dsl.Redirect;
+import org.atricore.idbus.capabilities.sso.dsl.RedirectToEndpoint;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
@@ -71,6 +71,9 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannel;
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationRequest;
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationRequestImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequestImpl;
@@ -367,9 +370,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-
         MediationState mediationState = in.getMessage().getState();
-
 
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
@@ -696,12 +697,12 @@ public class SingleSignOnProducer extends SSOProducer {
     }
 
     /**
-     * This will emit an assertion using the recieved claims.  If the process is successful, a SAML Response will
+     * This will emit an assertion using the received claims.  If the process is successful, a SAML Response will
      * be issued to the original SP.
-     * If an error occures, the procedure will decide to retry collecting claims with the las
+     * If an error occurs, the procedure will decide to retry collecting claims with the las
      * claims endpoint selected or collect claims using a new claims endpoint.
      * <p/>
-     * If no more claim endpoints are available, this will send an satus error response to the SP.
+     * If no more claim endpoints are available, this will send an status error response to the SP.
      *
      * @param exchange
      * @param claimsResponse
@@ -748,7 +749,7 @@ public class SingleSignOnProducer extends SSOProducer {
             // Build STS Context
             // -------------------------------------------------------
             // The context will act as an alternative communication exchange between this producer (IDP) and the STS.
-            // It will transport back the Subject wich is not supported by the WST protocol
+            // It will transport back the Subject which is not supported by the WST protocol
             SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx = new SamlR2SecurityTokenEmissionContext();
             // Send extra information to STS, using the emission context
 
@@ -820,7 +821,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
 
             // Clear the current authentication state
-            clearAuthnState(exchange);
+//            clearAuthnState(exchange);
 
             // If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
             List<SSOPolicyEnforcementStatement> stmts = getPolicyEnforcementStatements(assertion);
@@ -863,6 +864,44 @@ public class SingleSignOnProducer extends SSOProducer {
                         pweEd,
                         in.getMessage().getState()));
                 return;
+            }
+
+            // Upon successful authentication, confirm user identity using the chosen mechanism
+            IdentityConfirmationChannel idConfChannel = selectNextIdentityConfirmationEndpoint(authnState, exchange);
+            IdentityMediationEndpoint idConfEndpoint = authnState.getCurrentIdConfirmationEndpoint();
+            if (idConfEndpoint != null) {
+                logger.debug("Selected identity confirmation endpoint : " + idConfEndpoint);
+
+                // Create Claims Request
+                IdentityConfirmationRequest idConfRequest = new IdentityConfirmationRequestImpl();
+
+                // TODO: add user claims to identity confirmation request
+                idConfRequest.getUserClaims().add(new UserClaimImpl("", "principal", "fooUser"));
+                idConfRequest.getUserClaims().add(new UserClaimImpl("", "sourceIpAddress", "192.168.1.1"));
+                idConfRequest.getUserClaims().add(new UserClaimImpl("", "lastSourceIpAddress", "192.168.1.2"));
+                idConfRequest.getUserClaims().add(new UserClaimImpl("", "emailAddress", "foo@acme.com"));
+
+                // --------------------------------------------------------------------
+                // Submit identity confirmation request
+                // --------------------------------------------------------------------
+
+                EndpointDescriptor idConfEp = new EndpointDescriptorImpl(idConfEndpoint.getBinding(),
+                        idConfEndpoint.getType(),
+                        idConfEndpoint.getBinding(),
+                        idConfEndpoint.getLocation().startsWith("/") ?
+                                idConfChannel.getLocation() + idConfEndpoint.getLocation() :
+                                idConfEndpoint.getLocation(),
+                        idConfEndpoint.getResponseLocation());
+
+                logger.debug("Confirming user identity using endpoint " + idConfEp);
+
+                out.setMessage(new MediationMessageImpl(idConfRequest.getId(),
+                        idConfRequest, "IdentityConfirmationRequest", null, idConfEp, in.getMessage().getState()));
+
+                exchange.setOut(out);
+                return;
+            } else {
+                logger.debug("There is no endpoint available for identity confirmation. Skipping.");
             }
 
             if (logger.isTraceEnabled())
@@ -1329,7 +1368,7 @@ public class SingleSignOnProducer extends SSOProducer {
     }
 
     /**
-     * This has the logic to select endpoits for claims collecting.
+     * This has the logic to select endpoints for claims collecting.
      */
     protected ClaimChannel selectNextClaimsEndpoint(AuthenticationState status, CamelMediationExchange exchange) {
 
@@ -1341,13 +1380,40 @@ public class SingleSignOnProducer extends SSOProducer {
                         idpMediator.getClaimEndpointSelection(),
                         exchange,
                         getProvider(),
-                        channel
+                        channel,
+                        endpoint
                 );
 
-        if (response.statusCode() instanceof Redirect) {
+        if (response.statusCode() instanceof RedirectToEndpoint) {
             logger.debug("Got redirect response : " + response);
-            Redirect redirect = (Redirect) response.statusCode();
+            RedirectToEndpoint redirect = (RedirectToEndpoint) response.statusCode();
             return (ClaimChannel) redirect.channel();
+        }
+
+        return null;
+    }
+
+    /**
+     * This has the logic to select endpoints for identity confirmation.
+     */
+    protected IdentityConfirmationChannel selectNextIdentityConfirmationEndpoint(AuthenticationState status, CamelMediationExchange exchange) {
+
+        SSOIDPMediator idpMediator = (SSOIDPMediator) channel.getIdentityMediator();
+        IdentityFlowContainer ifc = idpMediator.getIdentityFlowContainer();
+
+        IdentityFlowResponse response =
+                ifc.dispatch(
+                        idpMediator.getIdentityConfirmationEndpointSelection(),
+                        exchange,
+                        getProvider(),
+                        channel,
+                        endpoint
+                );
+
+        if (response.statusCode() instanceof RedirectToEndpoint) {
+            logger.debug("Got redirect response : " + response);
+            RedirectToEndpoint redirect = (RedirectToEndpoint) response.statusCode();
+            return (IdentityConfirmationChannel) redirect.channel();
         }
 
         return null;

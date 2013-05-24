@@ -26,10 +26,10 @@ import org.atricore.idbus.capabilities.sso.dsl.{IdentityFlowResponse, IdentityFl
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.{CamelMediationMessage, CamelMediationExchange}
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer
 import org.apache.camel.Endpoint
-import org.atricore.idbus.capabilities.idconfirmation.main.IdentityConfirmationNegotiationRequest
+import org.atricore.idbus.capabilities.idconfirmation.main.{IdentityConfirmationMediator}
 import org.apache.commons.logging.LogFactory
 import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannel
-import org.atricore.idbus.capabilities.sso.dsl.core.{Rejection, IdentityFlowRequestContext}
+import org.atricore.idbus.capabilities.sso.dsl.core.{IdentityBusConnector, Rejection, IdentityFlowRequestContext}
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.BasicIdentityConfirmationDirectives
 import org.atricore.idbus.capabilities.sso.dsl.core.directives.{DebuggingDirectives, BasicIdentityFlowDirectives}
 
@@ -38,19 +38,21 @@ import org.atricore.idbus.capabilities.sso.dsl.core.directives.{DebuggingDirecti
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-private[main] class IdentityConfirmationNegotiationProducer(endpoint: Endpoint[CamelMediationExchange])
-  extends AbstractCamelProducer[CamelMediationExchange](endpoint)
+private[main] class IdentityConfirmationNegotiationProducer(camelEndpoint: Endpoint[CamelMediationExchange])
+  extends AbstractCamelProducer[CamelMediationExchange](camelEndpoint)
   with BasicIdentityFlowDirectives
   with BasicIdentityConfirmationDirectives
-  with DebuggingDirectives {
+  with DebuggingDirectives
+  with IdentityBusConnector {
 
   private final val logger = LogFactory.getLog(classOf[IdentityConfirmationNegotiationProducer])
 
   protected def doProcess(exchange: CamelMediationExchange) {
-    val provider = channel.asInstanceOf[IdentityConfirmationChannel].getProvider
+    val idcChannel =  channel.asInstanceOf[IdentityConfirmationChannel]
+    val idcMediator = idcChannel.getIdentityMediator.asInstanceOf[IdentityConfirmationMediator]
+    val provider = idcChannel.getProvider
     var rejections: Option[Set[Rejection]] = None
-    var response: Option[IdentityFlowResponse] = None
-    val ctx = IdentityFlowRequestContext(IdentityFlowRequest(exchange, provider, channel))
+    val ctx = IdentityFlowRequestContext(IdentityFlowRequest(exchange, provider, idcChannel, endpoint))
 
     logRequestResponse("") {
       onConfirmationRequest {
@@ -59,7 +61,7 @@ private[main] class IdentityConfirmationNegotiationProducer(endpoint: Endpoint[C
             issueSecret(10) {
               secret =>
                 shareSecretByEmail(secret) {
-                  notifyConfirmation
+                  notifyTokenShared(idcMediator.tokenSharingConfirmationUILocation, secret)
                 }
             }
           }
@@ -76,8 +78,8 @@ private[main] class IdentityConfirmationNegotiationProducer(endpoint: Endpoint[C
 
               }
           }
-      }
-    }(ctx.withResponse(resp => response = Some(resp)).withReject(rejs => rejections = Some(rejs)))
+      }                           // TODO: Rejection handling!!
+    }(ctx.withResponse(resp => respond(exchange, resp)).withReject(rejs => rejections = Some(rejs)))
 
   }
 }

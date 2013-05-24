@@ -25,6 +25,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.{CamelMe
 import org.atricore.idbus.kernel.main.mediation.{Channel, MediationMessageImpl, MediationMessage}
 import org.apache.camel.{Message, Exchange}
 import org.apache.commons.logging.LogFactory
+import org.atricore.idbus.capabilities.idconfirmation.component.builtin.{IdentityConfirmationNegotiationInitiation, IdentityConfirmationNegotiationRequest}
 
 /**
  * Adapts http messages to identity confirmation exchanges.

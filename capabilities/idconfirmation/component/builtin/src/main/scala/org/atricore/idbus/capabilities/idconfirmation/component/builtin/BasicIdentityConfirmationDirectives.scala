@@ -31,8 +31,10 @@ import scala.collection.JavaConversions._
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.Rejections._
 import java.security.SecureRandom
 import scala.Some
-import org.atricore.idbus.capabilities.sso.dsl.{RedirectToUrl, Redirect, IdentityFlowResponse}
+import org.atricore.idbus.capabilities.sso.dsl.{RedirectToLocation,IdentityFlowResponse}
 import java.net.URL
+import org.atricore.idbus.kernel.main.federation.metadata.{EndpointDescriptorImpl, EndpointDescriptor}
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 
 /**
  * Identity confirmation directives of the identity combinator library.
@@ -45,6 +47,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
   def onConfirmationRequest =
     filter1[IdentityConfirmationRequest] {
       ctx =>
+        log.debug("Identity Confirmation Message = " + ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage].getMessage.getContent)
         Option(ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage].getMessage.getContent) match {
           case Some(idConfReq: IdentityConfirmationRequest) =>
             Pass(idConfReq)
@@ -174,11 +177,17 @@ trait BasicIdentityConfirmationDirectives extends Logging {
     }
   }
 
-  def notifyConfirmation : IdentityFlowRoute = {
+  def notifyTokenShared(tokenSharedConfirmationUILocation : String, secret : String) : IdentityFlowRoute = {
       ctx =>
-        ctx.respond(IdentityFlowResponse(RedirectToUrl(new URL("http://localhost/"))))
+        val tsc = TokenSharedConfirmation(secret)
 
-    }
+        ctx.respond(
+          IdentityFlowResponse(
+            RedirectToLocation(tokenSharedConfirmationUILocation),
+            Option(tsc),
+            Option("TokenSharedConfirmation"))
+        )
+  }
 
   def withIdentityConfirmationState = {
     filter1 {
@@ -244,7 +253,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
 
   def notifyCompletion : IdentityFlowRoute = {
     ctx =>
-      ctx.respond(IdentityFlowResponse(RedirectToUrl(new URL("http://localhost/"))))
+     //ctx.respond(IdentityFlowResponse(RedirectToUrl(new URL("http://localhost/"))))
   }
 
 

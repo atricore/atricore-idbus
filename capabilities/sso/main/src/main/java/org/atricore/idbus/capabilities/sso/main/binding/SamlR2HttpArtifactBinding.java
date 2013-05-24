@@ -78,8 +78,8 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             CircleOfTrustMemberDescriptor resolverMemberDescr = ((FederatedLocalProvider)this.getProvider()).getCotManager().lookupMemberById(sourceId);
             if (resolverMemberDescr == null) {
                 /* Unknown SOURCE ID! */
-                logger.warn("Unkonw SAML Artifact SourceID ["+sourceId+"]");
-                throw new SSOException("Unkonw SAML Artifact SourceID ["+sourceId+"]");
+                logger.warn("Unknown SAML Artifact SourceID ["+sourceId+"]");
+                throw new SSOException("Unknown SAML Artifact SourceID ["+sourceId+"]");
             }
 
 

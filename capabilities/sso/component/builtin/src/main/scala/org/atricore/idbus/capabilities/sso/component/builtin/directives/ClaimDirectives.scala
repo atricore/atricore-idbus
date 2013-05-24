@@ -19,24 +19,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.capabilities.sso.component.builtin
+package org.atricore.idbus.capabilities.sso.component.builtin.directives
 
 import org.atricore.idbus.capabilities.sso.dsl.core._
 import directives.BasicIdentityFlowDirectives
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.{CamelMediationMessage, CamelMediationExchange}
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState
-import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType
 import scala.Option
 import scala.collection.JavaConversions._
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
-import org.atricore.idbus.kernel.main.mediation.{Channel, MediationState}
-import org.atricore.idbus.capabilities.sso.dsl.{Redirect, IdentityFlowSuccess, IdentityFlowResponse}
+import org.atricore.idbus.kernel.main.mediation.Channel
+import org.atricore.idbus.capabilities.sso.dsl.{RedirectToEndpoint, IdentityFlowResponse}
 import org.atricore.idbus.capabilities.sso.dsl.util.Logging
 
 /**
@@ -44,110 +42,8 @@ import org.atricore.idbus.capabilities.sso.dsl.util.Logging
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-trait MediationDirectives extends Logging {
-  this: BasicIdentityFlowDirectives =>
-
-  def mediationState =
-    filter1 {
-      ctx =>
-        Option(ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage].getMessage.getState) match {
-          case Some(state) =>
-            Pass(state)
-          case _ =>
-            Reject(NoStateAvailable)
-        }
-
-    }
-
-  def securityContext = {
-    filter1 {
-      ctx =>
-        val securityContextVarName = ctx.request.provider.getName.toUpperCase + "_SECURITY_CTX"
-
-        mediationState.filter(ctx) match {
-          case Pass(values, transform) =>
-            Option(values._1.getLocalVariable(securityContextVarName)) match {
-              case Some(sc) =>
-                Pass(sc.asInstanceOf[IdPSecurityContext])
-              case _ =>
-                Reject(NoSecurityContextAvailable)
-            }
-        }
-    }
-  }
-
-  def sessionManager = {
-    filter1 {
-      ctx =>
-        Option(ctx.request.channel.asInstanceOf[SPChannel].getSessionManager) match {
-          case Some(sm) => Pass(sm)
-          case _ => Reject(NoSessionManagerAvailable)
-        }
-
-    }
-  }
-
-  def withValidSession = {
-    filter1 {
-      ctx =>
-        securityContext.filter(ctx).flatMap(
-          secCtx =>
-            Option(secCtx._1.getSessionIndex) match {
-              case Some(sessionIndex) =>
-                sessionManager.filter(ctx).flatMap(
-                {
-                  sm =>
-                    try {
-                      sm._1.accessSession(sessionIndex)
-                      Pass(sessionIndex)
-                    } catch {
-                      case e: NoSuchSessionException =>
-                        Reject(InvalidSession)
-                    }
-                }
-                )
-              case _ =>
-                Reject(InvalidSession)
-            }
-        )
-    }
-  }
-
-  def withNoSession = {
-    filter {
-      ctx =>
-        securityContext.filter(ctx) match {
-          case Pass(values, transform) =>
-            Option(values._1.getSessionIndex) match {
-              case Some(_) => Reject(SessionExists)
-              case _ => Pass
-            }
-          case Reject(_) =>
-            Pass
-        }
-    }
-  }
-
-  def withAuthenticationState = {
-    filter1 {
-      ctx =>
-        val in = ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage]
-        try {
-          Option(in.getMessage.getState.getLocalVariable("urn:org:atricore:idbus:samlr2:idp:authn-state").asInstanceOf[AuthenticationState]) match {
-            case Some(state) => Pass(state)
-            case _ =>
-              val state = new AuthenticationState
-              val in = ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage]
-              in.getMessage.getState.setLocalVariable("urn:org:atricore:idbus:samlr2:idp:authn-state", state)
-              Pass(state)
-          }
-        } catch {
-          case e: IllegalStateException => {
-            Pass(new AuthenticationState)
-          }
-        }
-    }
-  }
+trait ClaimDirectives extends Logging {
+  this: BasicIdentityFlowDirectives with MediationDirectives =>
 
   def pendingRetries(maxRetries : Int = 50) = {
     filter {
@@ -181,14 +77,14 @@ trait MediationDirectives extends Logging {
           val spChannel = ctx.request.channel.asInstanceOf[SPChannel]
           val claimChannels = spChannel.getClaimProviders
 
-          for (claimChannel <- claimChannels) {
-            for (claimEndpoint <- claimChannel.getEndpoints) {
+          claimChannels.foreach { claimChannel =>
+            claimChannel.getEndpoints.foreach { claimEndpoint =>
               if (claimEndpoint.getName == as.getCurrentClaimsEndpoint.getName) {
                 log.debug(
                   "Retrying claim endpoint " + claimEndpoint.getName + ". Already tried " +
                     as.getCurrentClaimsEndpointTryCount + " times")
                 as.setCurrentClaimsEndpointTryCount(as.getCurrentClaimsEndpointTryCount + 1)
-                ctx.respond(IdentityFlowResponse(Redirect(claimChannel, claimEndpoint)))
+                ctx.respond(IdentityFlowResponse(RedirectToEndpoint(claimChannel, claimEndpoint)))
               }
             }
           }
@@ -257,7 +153,7 @@ trait MediationDirectives extends Logging {
           val as = values._1
           as.setCurrentClaimsEndpoint(endpoint)
           as.setCurrentClaimsEndpointTryCount(0);
-          ctx.respond(IdentityFlowResponse(Redirect(channel, endpoint)))
+          ctx.respond(IdentityFlowResponse(RedirectToEndpoint(channel, endpoint)))
         case Reject(_) => Reject(NoAuthenticationStateAvailable)
       }
   }

@@ -19,7 +19,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.capabilities.idconfirmation.main
+package org.atricore.idbus.capabilities.idconfirmation.component.builtin
+
+import java.net.URL
 
 /**
  * Message types issued by the identity confirmation binding to the corresponding producer.
@@ -27,6 +29,8 @@ package org.atricore.idbus.capabilities.idconfirmation.main
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
 trait IdentityConfirmationMessage extends Serializable
+
+case class TokenSharedConfirmation(secret : String) extends IdentityConfirmationMessage
 
 case class IdentityConfirmationNegotiationRequest extends IdentityConfirmationMessage
 

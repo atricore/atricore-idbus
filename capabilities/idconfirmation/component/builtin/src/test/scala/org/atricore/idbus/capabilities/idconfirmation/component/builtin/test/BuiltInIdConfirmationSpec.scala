@@ -30,12 +30,12 @@ import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass
 import org.atricore.idbus.capabilities.sso.test.dsl.{MockCamelMediationMessage, MockCamelMediationExchange, IdentityFlowDSLTestSupport}
-import org.atricore.idbus.capabilities.sso.component.builtin.MediationDirectives
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.{IdentityConfirmationState, BasicIdentityConfirmationDirectives}
 import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmationTokenAuthenticationRequestImpl, IdentityConfirmationTokenAuthenticationRequest, IdentityConfirmationRequest, IdentityConfirmationRequestImpl}
 import org.atricore.idbus.kernel.main.mediation.{MediationStateImpl, MediationMessageImpl}
 import org.atricore.idbus.kernel.main.mediation.claim.{UserClaimImpl, UserClaim}
 import org.atricore.idbus.kernel.main.mediation.state.LocalStateImpl
+import org.atricore.idbus.capabilities.sso.component.builtin.directives.MediationDirectives
 
 /**
  * Identity Confirmation route tester.
@@ -61,7 +61,7 @@ class BuiltInIdConfirmationSpec
                 issueSecret(10) {
                   secret =>
                     shareSecretByEmail(secret) {
-                      notifyConfirmation
+                      notifyTokenShared
                     }
                 }
               }
@@ -89,7 +89,6 @@ class BuiltInIdConfirmationSpec
 
           // claim channel and endpoints
           val idConfChannel1 = newIdentityConfirmationChannel("idcc-1")
-          idConfChannel1.setProvider(provider)
           val idConfCh1Ep1 = newIdentityMediationEndpoint("idcc-1-ep1", SSOBinding.SSO_LOCAL, AuthnCtxClass.UNSPECIFIED_AUTHN_CTX)
           idConfChannel1.getEndpoints.add(idConfCh1Ep1)
           provider.setChannel(idConfChannel1)

@@ -37,7 +37,7 @@ import org.atricore.idbus.capabilities.sso.dsl.core._
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
-import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannelImpl
+import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmationChannel, IdentityConfirmationChannelImpl}
 
 /**
  * Base class for identity flow testers
@@ -103,6 +103,7 @@ trait IdentityFlowDSLTestSupport {
     val spChannel = new SPChannelImpl
     spChannel.setName(name)
     spChannel.setClaimProviders(new util.ArrayList[ClaimChannel])
+    spChannel.setIdentityConfirmationProviders(new util.ArrayList[IdentityConfirmationChannel])
     spChannel
   }
 

@@ -23,7 +23,6 @@ package org.atricore.idbus.capabilities.idconfirmation.main
 
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator
 import org.apache.commons.logging.LogFactory
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel
 import org.apache.camel.builder.RouteBuilder
 import org.atricore.idbus.kernel.main.mediation.{Channel, IdentityMediationException}
 import org.atricore.idbus.kernel.main.federation.metadata.{EndpointDescriptorImpl, EndpointDescriptor}
@@ -31,6 +30,8 @@ import scala.collection.JavaConversions._
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
 import IdentityConfirmationBinding._
 import org.atricore.idbus.kernel.main.mediation.camel.logging.MediationLogger
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannel
+import reflect.BeanProperty
 
 /**
  * Exposes identity confirmation services.
@@ -40,47 +41,50 @@ import org.atricore.idbus.kernel.main.mediation.camel.logging.MediationLogger
 class IdentityConfirmationMediator extends AbstractCamelMediator {
   private final val logger = LogFactory.getLog(classOf[IdentityConfirmationMediator])
 
-  protected override def createClaimRoutes(claimChannel: ClaimChannel): RouteBuilder = {
+  @BeanProperty
+  var tokenSharingConfirmationUILocation : String = ""
+
+  protected override def createIdentityConfirmationRoutes(identityConfirmationChannel: IdentityConfirmationChannel): RouteBuilder = {
     logger.info("Creating Identity Confirmation Routes")
 
     new RouteBuilder {
       def configure {
-        Option(claimChannel.getEndpoints) match {
+        Option(identityConfirmationChannel.getEndpoints) match {
           case Some(endpoints) =>
-            endpoints.foreach({
+            endpoints.foreach {
               endpoint =>
                 val binding = IdentityConfirmationBinding.withName(endpoint.getBinding)
-                val ed: EndpointDescriptor = resolveEndpoint(claimChannel, endpoint)
+                val ed: EndpointDescriptor = resolveEndpoint(identityConfirmationChannel, endpoint)
                 binding match {
                   case SSO_ARTIFACT =>
                     // FROM idbus-http TO idbus-bind
                     from("idbus-http:" + ed.getLocation).process(new ScalaLoggerProcessor(getLogger)).to("direct:" + ed.getName)
                     // FROM idbus-bind TO idconf (claim processing)
-                    from("idbus-bind:camel://direct:" + ed.getName + "?binding=" + ed.getBinding + "&channelRef=" + claimChannel.getName).process(new ScalaLoggerProcessor(getLogger)).to("idconf:" + ed.getType + "?channelRef=" + claimChannel.getName + "&endpointRef=" + endpoint.getName)
+                    from("idbus-bind:camel://direct:" + ed.getName + "?binding=" + ed.getBinding + "&channelRef=" + identityConfirmationChannel.getName).process(new ScalaLoggerProcessor(getLogger)).to("idconf:" + ed.getType + "?channelRef=" + identityConfirmationChannel.getName + "&endpointRef=" + endpoint.getName)
                     if (ed.getResponseLocation != null) {
                       from("idbus-http:" + ed.getResponseLocation).process(new ScalaLoggerProcessor(getLogger)).to("direct:" + ed.getName + "-response")
-                      from("idbus-bind:camel://direct:" + ed.getName + "-response" + "?binding=" + ed.getBinding + "&channelRef=" + claimChannel.getName).process(new ScalaLoggerProcessor(getLogger)).to("idconf:" + ed.getType + "?channelRef=" + claimChannel.getName + "&endpointRef=" + endpoint.getName + "&response=true")
+                      from("idbus-bind:camel://direct:" + ed.getName + "-response" + "?binding=" + ed.getBinding + "&channelRef=" + identityConfirmationChannel.getName).process(new ScalaLoggerProcessor(getLogger)).to("idconf:" + ed.getType + "?channelRef=" + identityConfirmationChannel.getName + "&endpointRef=" + endpoint.getName + "&response=true")
                     }
                   case ID_CONFIRMATION_HTTP_INITIATION =>
                     // FROM idbus-http TO idbus-bind
                     from("idbus-http:" + ed.getLocation).process(new ScalaLoggerProcessor(getLogger)).to("direct:" + ed.getName)
                     // FROM idbus-bind TO idconf (claim processing)
-                    from("idbus-bind:camel://direct:" + ed.getName + "?binding=" + ed.getBinding + "&channelRef=" + claimChannel.getName).process(new ScalaLoggerProcessor(getLogger)).to("idconf:" + ed.getType + "?channelRef=" + claimChannel.getName + "&endpointRef=" + endpoint.getName)
+                    from("idbus-bind:camel://direct:" + ed.getName + "?binding=" + ed.getBinding + "&channelRef=" + identityConfirmationChannel.getName).process(new ScalaLoggerProcessor(getLogger)).to("idconf:" + ed.getType + "?channelRef=" + identityConfirmationChannel.getName + "&endpointRef=" + endpoint.getName)
                   case ID_CONFIRMATION_HTTP_NEGOTIATION =>
                     // FROM idbus-http TO idbus-bind
                     from("idbus-http:" + ed.getLocation).process(new ScalaLoggerProcessor(getLogger)).to("direct:" + ed.getName)
                     // FROM idbus-bind TO idconf (claim processing)
-                    from("idbus-bind:camel://direct:" + ed.getName + "?binding=" + ed.getBinding + "&channelRef=" + claimChannel.getName).process(new ScalaLoggerProcessor(getLogger)).to("idconf:" + ed.getType + "?channelRef=" + claimChannel.getName + "&endpointRef=" + endpoint.getName)
+                    from("idbus-bind:camel://direct:" + ed.getName + "?binding=" + ed.getBinding + "&channelRef=" + identityConfirmationChannel.getName).process(new ScalaLoggerProcessor(getLogger)).to("idconf:" + ed.getType + "?channelRef=" + identityConfirmationChannel.getName + "&endpointRef=" + endpoint.getName)
                     if (ed.getResponseLocation != null) {
                       from("idbus-http:" + ed.getResponseLocation).process(new ScalaLoggerProcessor(getLogger)).to("direct:" + ed.getName + "-response")
-                      from("idbus-bind:camel://direct:" + ed.getName + "-response" + "?binding=" + ed.getBinding + "&channelRef=" + claimChannel.getName).process(new ScalaLoggerProcessor(getLogger)).to("idconf:" + ed.getType + "?channelRef=" + claimChannel.getName + "&endpointRef=" + endpoint.getName + "&response=true")
+                      from("idbus-bind:camel://direct:" + ed.getName + "-response" + "?binding=" + ed.getBinding + "&channelRef=" + identityConfirmationChannel.getName).process(new ScalaLoggerProcessor(getLogger)).to("idconf:" + ed.getType + "?channelRef=" + identityConfirmationChannel.getName + "&endpointRef=" + endpoint.getName + "&response=true")
                     }
                   case _ =>
                     throw new IdentityConfirmationException("Unsupported Identity Confirmation Binding " + binding)
                 }
-            })
+            }
           case None =>
-            throw new IdentityMediationException("No endpoints defined for claims channel : " + claimChannel.getName)
+            throw new IdentityMediationException("No endpoints defined for claims channel : " + identityConfirmationChannel.getName)
 
         }
       }
@@ -90,7 +94,7 @@ class IdentityConfirmationMediator extends AbstractCamelMediator {
   def resolveEndpoint(channel: Channel, endpoint: IdentityMediationEndpoint): EndpointDescriptor = {
 
     (channel match {
-      case cc : ClaimChannel =>
+      case cc : IdentityConfirmationChannel =>
         for (ch <- Option(channel); ep <- Option(endpoint)) yield {
 
           // ---------------------------------------------

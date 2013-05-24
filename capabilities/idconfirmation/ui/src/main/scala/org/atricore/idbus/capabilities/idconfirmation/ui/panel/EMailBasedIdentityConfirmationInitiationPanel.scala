@@ -4,19 +4,20 @@ import org.apache.wicket.markup.html.panel.{FeedbackPanel, Panel}
 import org.apache.wicket.markup.html.form.{TextField, Form}
 import org.apache.wicket.markup.html.WebMarkupContainer
 import org.atricore.idbus.capabilities.idconfirmation.ui.IdentityConfirmationModel
-import org.apache.wicket.model.CompoundPropertyModel
+import org.apache.wicket.model.{PropertyModel, CompoundPropertyModel}
 import org.atricore.idbus.capabilities.idconfirmation.ui.page.IdentityConfirmationInitiationPage
 
 import org.atricore.idbus.capabilities.idconfirmation.ui.WicketImplicits._
+import org.atricore.idbus.capabilities.idconfirmation.component.builtin.TokenSharedConfirmation
 
-class EMailBasedIdentityConfirmationInitiationPanel(id : String) extends Panel(id) with IdentityConfirmationModel {
+class EMailBasedIdentityConfirmationInitiationPanel(id : String, tsc : TokenSharedConfirmation) extends Panel(id) with IdentityConfirmationModel {
 
   val form : Form[EMailBasedIdentityConfirmationModel] = new Form(
     "idConfirmationForm",
     new CompoundPropertyModel[EMailBasedIdentityConfirmationModel](EMailBasedIdentityConfirmationModel())
   )
 
-  val email = new TextField("email")
+  val email = new TextField[String]("email", new PropertyModel[String](tsc, "secret"))
   email.setOutputMarkupId(true)
   form.add(email)
 

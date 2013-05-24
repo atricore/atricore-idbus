@@ -32,7 +32,19 @@ import java.util.Collection;
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
 public class IdentityConfirmationRequestImpl implements IdentityConfirmationRequest {
+    private String id;
     private Collection<UserClaim> userClaims = new ArrayList<UserClaim>();
+    private String relayState;
+    private String lastErrorId;
+    private String lastErrorMsg;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public Collection<UserClaim> getUserClaims() {
         return userClaims;
@@ -41,4 +53,30 @@ public class IdentityConfirmationRequestImpl implements IdentityConfirmationRequ
     public void addUserClaim(UserClaim userClaim) {
         userClaims.add(userClaim);
     }
+
+    public String getRelayState() {
+        return relayState;
+    }
+
+    public void setRelayState(String relayState) {
+        this.relayState = relayState;
+    }
+
+    public String getLastErrorId() {
+        return lastErrorId;
+    }
+
+    public void setLastErrorId(String lastErrorId) {
+        this.lastErrorId = lastErrorId;
+    }
+
+    public String getLastErrorMsg() {
+        return lastErrorMsg;
+    }
+
+    public void setLastErrorMsg(String lastErrorMsg) {
+        this.lastErrorMsg = lastErrorMsg;
+    }
+
+
 }

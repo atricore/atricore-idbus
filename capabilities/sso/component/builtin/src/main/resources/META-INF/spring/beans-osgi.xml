@@ -32,4 +32,7 @@
     <osgi:service id="simple-claim-channel-selection-osgi" ref="simple-claim-channel-selection"
                   interface="org.atricore.idbus.capabilities.sso.component.container.IdentityFlowComponent" />
 
+    <osgi:service id="simple-idconf-channel-selection-osgi" ref="simple-idconf-channel-selection"
+                  interface="org.atricore.idbus.capabilities.sso.component.container.IdentityFlowComponent" />
+
 </s:beans>

@@ -23,13 +23,15 @@ package org.atricore.idbus.capabilities.sso.dsl
 import org.atricore.idbus.kernel.main.mediation.Channel
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange
 import org.atricore.idbus.kernel.main.mediation.provider.Provider
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
 
 /**
  * Abstractions representing an identity flow request
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-case class IdentityFlowRequest(exchange : CamelMediationExchange, provider : Provider, channel : Channel)
+case class IdentityFlowRequest(exchange : CamelMediationExchange, provider : Provider, channel : Channel, endpoint : IdentityMediationEndpoint)
 
 
 

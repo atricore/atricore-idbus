@@ -11,4 +11,14 @@
             <value>50</value>
         </constructor-arg>
     </bean>
+
+    <bean id="simple-idconf-channel-selection" class="org.atricore.idbus.capabilities.sso.component.builtin.SimpleIdentityConfirmationEndpointSelection">
+        <constructor-arg type="java.lang.String" index="0">
+            <value>simple-idconf-channel-selection</value>
+        </constructor-arg>
+        <constructor-arg type="int" index="1">
+            <value>1</value>
+        </constructor-arg>
+    </bean>
+
 </beans>

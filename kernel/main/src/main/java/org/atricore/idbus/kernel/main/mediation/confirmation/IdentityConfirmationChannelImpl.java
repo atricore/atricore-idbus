@@ -21,25 +21,14 @@
 
 package org.atricore.idbus.kernel.main.mediation.confirmation;
 
-import org.atricore.idbus.kernel.main.mediation.AbstractChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityConfirmationProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
-import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 
 /**
  * Channel implementation of identity confirmation providers.
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-public class IdentityConfirmationChannelImpl extends AbstractChannel implements IdentityConfirmationChannel {
+public class IdentityConfirmationChannelImpl extends BaseIdentityConfirmationChannel {
 
-    private IdentityConfirmationProvider identityConfirmationProvider;
-
-    public StatefulProvider getProvider() {
-        return identityConfirmationProvider;
-    }
-
-    public void setProvider(IdentityConfirmationProvider identityConfirmationProvider) {
-        this.identityConfirmationProvider = identityConfirmationProvider;
-    }
 }

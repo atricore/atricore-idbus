@@ -39,4 +39,5 @@ case object SessionExists extends Rejection
 case object NoMoreClaimEndpoints extends Rejection
 case object NoAuthenticationStateAvailable extends Rejection
 case object NoAuthenticationRequestAvailable extends Rejection
+case object NoMoreIdentityConfirmationEndpoints extends Rejection
 

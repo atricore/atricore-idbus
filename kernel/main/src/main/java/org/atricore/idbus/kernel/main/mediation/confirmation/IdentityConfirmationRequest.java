@@ -34,6 +34,14 @@ import java.util.Collection;
  */
 public interface IdentityConfirmationRequest extends Serializable {
 
-    public Collection<UserClaim> getUserClaims();
+    Collection<UserClaim> getUserClaims();
+
+    String getId();
+
+    String getRelayState();
+
+    String getLastErrorId();
+
+    String getLastErrorMsg();
 
 }
