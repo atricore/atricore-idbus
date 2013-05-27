@@ -19,22 +19,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.kernel.main.mediation.confirmation;
+package org.atricore.idbus.capabilities.idconfirmation.component.builtin
 
 /**
- * Default implementation of an identity confirmation token request.
+ * Endpoint types supported by the identity confirmation capability.
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-public class IdentityConfirmationTokenAuthenticationRequestImpl implements IdentityConfirmationTokenAuthenticationRequest {
-    public String getToken() {
-        return token;
-    }
+object IdentityConfirmationBindings extends Enumeration {
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    private String token;
-
+  val ID_CONFIRMATION_HTTP_AUTHENTICATION = Value("urn:org:atricore:idbus:identityconfirmation:bindings:HTTP-Authentication")
+  val SSO_ARTIFACT = Value("urn:org:atricore:idbus:sso:bindings:HTTP-Artifact")
 }

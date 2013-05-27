@@ -30,8 +30,8 @@ import java.net.URL
  */
 trait IdentityConfirmationMessage extends Serializable
 
-case class TokenSharedConfirmation(secret : String) extends IdentityConfirmationMessage
+case class TokenSharedConfirmation(secret : String, tokenAuthenticationLocation : URL) extends IdentityConfirmationMessage
 
-case class IdentityConfirmationNegotiationRequest extends IdentityConfirmationMessage
+case class TokenAuthenticationRequest(secret : String) extends IdentityConfirmationMessage
 
 case class IdentityConfirmationNegotiationInitiation extends IdentityConfirmationMessage

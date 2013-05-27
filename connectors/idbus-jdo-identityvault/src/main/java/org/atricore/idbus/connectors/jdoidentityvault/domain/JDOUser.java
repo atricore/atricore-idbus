@@ -66,6 +66,9 @@ public class JDOUser implements Serializable {
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
 
+    //<--- Access Control ---->
+    private JDOAcl[] acls;
+
 //<--- Extended Attributes ---->
     private JDOUserAttributeValue[] attrs;
 
@@ -451,6 +454,14 @@ public class JDOUser implements Serializable {
 
     public void setEmailNewPasword(Boolean emailNewPasword) {
         this.emailNewPasword = emailNewPasword;
+    }
+
+    public JDOAcl[] getAcls() {
+        return acls;
+    }
+
+    public void setAcls(JDOAcl[] acls) {
+        this.acls = acls;
     }
 
     @Override

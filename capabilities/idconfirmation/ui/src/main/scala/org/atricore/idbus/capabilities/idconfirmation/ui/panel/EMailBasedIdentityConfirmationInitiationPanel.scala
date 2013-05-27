@@ -9,6 +9,9 @@ import org.atricore.idbus.capabilities.idconfirmation.ui.page.IdentityConfirmati
 
 import org.atricore.idbus.capabilities.idconfirmation.ui.WicketImplicits._
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.TokenSharedConfirmation
+import java.net.URL
+import org.apache.wicket.util.convert.IConverter
+import org.atricore.idbus.capabilities.idconfirmation.ui.util.URLConverter
 
 class EMailBasedIdentityConfirmationInitiationPanel(id : String, tsc : TokenSharedConfirmation) extends Panel(id) with IdentityConfirmationModel {
 
@@ -17,7 +20,10 @@ class EMailBasedIdentityConfirmationInitiationPanel(id : String, tsc : TokenShar
     new CompoundPropertyModel[EMailBasedIdentityConfirmationModel](EMailBasedIdentityConfirmationModel())
   )
 
-  val email = new TextField[String]("email", new PropertyModel[String](tsc, "secret"))
+  val email = new TextField[URL]("email", new PropertyModel[URL](tsc, "tokenAuthenticationLocation")) {
+    override def getConverter[C](t: Class[C]): IConverter[C] = if (t == classOf[URL]) URLConverter.asInstanceOf[IConverter[C]] else super.getConverter(t)
+  }
+
   email.setOutputMarkupId(true)
   form.add(email)
 

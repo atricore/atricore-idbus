@@ -26,7 +26,7 @@ import org.atricore.idbus.capabilities.sso.dsl.core._
 import org.atricore.idbus.capabilities.sso.dsl.core.directives.{IdentityRoute, BasicIdentityFlowDirectives}
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage
 import org.atricore.idbus.capabilities.sso.dsl.core.{Reject, Pass}
-import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmationTokenAuthenticationRequest, IdentityConfirmationRequest}
+import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmationChannel,IdentityConfirmationRequest}
 import scala.collection.JavaConversions._
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.Rejections._
 import java.security.SecureRandom
@@ -35,6 +35,7 @@ import org.atricore.idbus.capabilities.sso.dsl.{RedirectToLocation,IdentityFlowR
 import java.net.URL
 import org.atricore.idbus.kernel.main.federation.metadata.{EndpointDescriptorImpl, EndpointDescriptor}
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
+import org.atricore.idbus.kernel.main.mediation.channel.SPChannel
 
 /**
  * Identity confirmation directives of the identity combinator library.
@@ -57,10 +58,10 @@ trait BasicIdentityConfirmationDirectives extends Logging {
     }
 
   def onConfirmationTokenAuthenticationRequest =
-    filter1[IdentityConfirmationTokenAuthenticationRequest] {
+    filter1[TokenAuthenticationRequest] {
       ctx =>
         Option(ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage].getMessage.getContent) match {
-          case Some(idConfTokenReq: IdentityConfirmationTokenAuthenticationRequest) =>
+          case Some(idConfTokenReq: TokenAuthenticationRequest) =>
             Pass(idConfTokenReq)
           case _ =>
             Reject(NoIdentityConfirmationTokenAuthenticationRequestAvailable)
@@ -179,14 +180,24 @@ trait BasicIdentityConfirmationDirectives extends Logging {
 
   def notifyTokenShared(tokenSharedConfirmationUILocation : String, secret : String) : IdentityFlowRoute = {
       ctx =>
-        val tsc = TokenSharedConfirmation(secret)
 
-        ctx.respond(
-          IdentityFlowResponse(
-            RedirectToLocation(tokenSharedConfirmationUILocation),
-            Option(tsc),
-            Option("TokenSharedConfirmation"))
-        )
+        val taloc =
+          ctx.request.channel.asInstanceOf[IdentityConfirmationChannel].getEndpoints.filter( ep =>
+                IdentityConfirmationBindings.withName(ep.getBinding) == IdentityConfirmationBindings.ID_CONFIRMATION_HTTP_AUTHENTICATION
+          ).headOption.map( ep => new URL("%s%s?t=%s".format(ctx.request.channel.getLocation, ep.getLocation, secret)))
+
+        taloc match {
+          case Some(tal) =>
+            val tsc = TokenSharedConfirmation(secret, tal)
+            ctx.respond(
+              IdentityFlowResponse(
+                RedirectToLocation(tokenSharedConfirmationUILocation),
+                Option(tsc),
+                Option("TokenSharedConfirmation"))
+            )
+          case None =>
+            log.error("No endpoint specified in channel " + ctx.request.channel.getName + " Identity Confirmation Token Authentication")
+        }
   }
 
   def withIdentityConfirmationState = {
@@ -215,7 +226,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
       ctx =>
         onConfirmationTokenAuthenticationRequest.filter(ctx) match {
           case Pass(values, transform) =>
-            Option(values._1.getToken) match {
+            Option(values._1.secret) match {
               case Some(token) =>
                 Pass(token)
               case None =>

@@ -6,6 +6,8 @@ import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUserAttributeValue;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupAttributeValueDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserAttributeValueDAO;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOAclDAOImpl;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOAclEntryDAOImpl;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
@@ -41,6 +43,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     private JDOUserDAOImpl userDao;
     private JDOGroupDAOImpl groupDao;
+    private JDOAclDAOImpl aclDao;
+    private JDOAclEntryDAOImpl aclEntryDao;
     private JDOUserAttributeValueDAO usrAttrValDao;
     private JDOGroupAttributeValueDAO grpAttrValDao;
 
@@ -70,7 +74,23 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         return groupDao;
     }
 
-    public void setUsrAttrValDao(JDOUserAttributeValueDAO usrAttrValDao) {
+    public JDOAclEntryDAOImpl getAclEntryDao() {
+        return aclEntryDao;
+    }
+
+    public void setAclEntryDao(JDOAclEntryDAOImpl aclEntryDao) {
+        this.aclEntryDao = aclEntryDao;
+    }
+
+    public JDOAclDAOImpl getAclDao() {
+        return aclDao;
+    }
+
+    public void setAclDao(JDOAclDAOImpl aclDao) {
+        this.aclDao = aclDao;
+    }
+
+   public void setUsrAttrValDao(JDOUserAttributeValueDAO usrAttrValDao) {
         this.usrAttrValDao = usrAttrValDao;
     }
 

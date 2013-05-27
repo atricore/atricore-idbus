@@ -25,13 +25,13 @@ import org.atricore.idbus.capabilities.sso.dsl.core.directives.IdentityFlowDirec
 import org.atricore.idbus.capabilities.sso.dsl.util.Logging
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange
 import org.atricore.idbus.capabilities.sso.dsl.core.{NoMoreClaimEndpoints, IdentityFlowRequestContext}
-import org.atricore.idbus.capabilities.sso.dsl.{Redirect, IdentityFlowRequest}
+import org.atricore.idbus.capabilities.sso.dsl.{IdentityFlowRequest}
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass
 import org.atricore.idbus.capabilities.sso.test.dsl.{MockCamelMediationMessage, MockCamelMediationExchange, IdentityFlowDSLTestSupport}
-import org.atricore.idbus.capabilities.idconfirmation.component.builtin.{IdentityConfirmationState, BasicIdentityConfirmationDirectives}
-import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmationTokenAuthenticationRequestImpl, IdentityConfirmationTokenAuthenticationRequest, IdentityConfirmationRequest, IdentityConfirmationRequestImpl}
+import org.atricore.idbus.capabilities.idconfirmation.component.builtin.{TokenAuthenticationRequest, IdentityConfirmationState, BasicIdentityConfirmationDirectives}
+import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmationRequest, IdentityConfirmationRequestImpl}
 import org.atricore.idbus.kernel.main.mediation.{MediationStateImpl, MediationMessageImpl}
 import org.atricore.idbus.kernel.main.mediation.claim.{UserClaimImpl, UserClaim}
 import org.atricore.idbus.kernel.main.mediation.state.LocalStateImpl
@@ -149,11 +149,8 @@ class BuiltInIdConfirmationSpec
     icr
   }
 
-  protected def newIdentityConfirmationTokenAuthenticationRequest(token : String) : IdentityConfirmationTokenAuthenticationRequest = {
-    val ictar = new IdentityConfirmationTokenAuthenticationRequestImpl
-    ictar.setToken(token)
-    ictar
-  }
+  protected def newIdentityConfirmationTokenAuthenticationRequest(token : String) : TokenAuthenticationRequest =
+    TokenAuthenticationRequest(token)
 
 
 }

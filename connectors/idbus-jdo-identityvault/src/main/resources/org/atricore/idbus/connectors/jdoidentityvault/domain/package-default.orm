@@ -183,6 +183,15 @@
                 <column name="EMAILNEWPASSWORD" />
             </field>
 
+            <field name="acls" table="ATC_USER_ACL">
+                <join >
+                    <column name="USER_ID"/>
+                </join>
+                <element>
+                    <column name="ACL_ID"/>
+                </element>
+            </field>
+
             <field name="groups" table="ATC_USER_GROUP">
                 <join >
                     <column name="USER_ID"/>
@@ -209,6 +218,46 @@
                 <foreign-key name="USER_ATTRS_FK" delete-action="cascade"/>
             </field>
 
+        </class>
+
+        <class name="JDOAcl" table="ATC_ACL" >
+
+            <field name="name" >
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="description">
+                <column length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="entries" table="ATC_ACL_ENTRIES">
+                <join >
+                    <column name="ACL_ID"/>
+                </join>
+                <element>
+                    <column name="ACL_ENTRY_ID"/>
+                </element>
+            </field>
+
+        </class>
+
+        <class name="JDOAclEntry" table="ATC_ACL_ENTRY" >
+
+            <field name="decision">
+                <column name="DECISION"/>
+            </field>
+
+            <field name="from">
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="state">
+                 <column name="STATE"/>
+             </field>
+
+            <field name="approvalToken">
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
         </class>
 
         <class name="JDOUserAttributeDefinition" table="ATC_USER_ATTRIBUTE" >

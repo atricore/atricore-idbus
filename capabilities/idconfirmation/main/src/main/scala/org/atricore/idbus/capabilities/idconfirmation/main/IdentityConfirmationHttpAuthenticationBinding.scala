@@ -22,35 +22,41 @@
 package org.atricore.idbus.capabilities.idconfirmation.main
 
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.{CamelMediationMessage, AbstractMediationHttpBinding}
-import org.atricore.idbus.kernel.main.mediation.{Channel, MediationMessageImpl, MediationMessage}
+import org.atricore.idbus.kernel.main.mediation.{MediationState, Channel, MediationMessageImpl, MediationMessage}
 import org.apache.camel.{Message, Exchange}
 import org.apache.commons.logging.LogFactory
-import org.atricore.idbus.capabilities.idconfirmation.component.builtin.{IdentityConfirmationNegotiationInitiation, IdentityConfirmationNegotiationRequest}
+import org.atricore.idbus.capabilities.idconfirmation.component.builtin.{IdentityConfirmationMessage, IdentityConfirmationNegotiationInitiation, TokenAuthenticationRequest}
 
 /**
  * Adapts http messages to identity confirmation exchanges.
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-private[main] class IdentityConfirmationNegotiatorBinding(binding : String, channel : Channel)
+private[main] class IdentityConfirmationHttpAuthenticationBinding(binding : String, channel : Channel)
   extends AbstractMediationHttpBinding(binding, channel) {
 
-  private final val logger = LogFactory.getLog(classOf[IdentityConfirmationNegotiatorBinding])
+  private final val logger = LogFactory.getLog(classOf[IdentityConfirmationHttpAuthenticationBinding])
 
-  def createMessage(message: CamelMediationMessage): MediationMessage[IdentityConfirmationNegotiationRequest] = {
+  def createMessage(message: CamelMediationMessage): MediationMessage[TokenAuthenticationRequest] = {
     val exchange = message.getExchange.getExchange
-    val httpMsg: Message = exchange.getIn
-    val idconfNegotiationReqMsg = IdentityConfirmationNegotiationRequest()
+    val httpMsg = exchange.getIn
+    val state = createMediationState(exchange)
 
     logger.debug("Create Message Body from exchange " + exchange.getClass.getName)
 
+    val idConfToken = Option(state.getTransientVariable("t")).getOrElse(
+      throw new IllegalStateException("Identity Confirmation Token not present in request")
+    )
+
+    val tar = TokenAuthenticationRequest(idConfToken)
+
     new MediationMessageImpl(
       message.getMessageId,
-      idconfNegotiationReqMsg,
+      tar,
       null,
       null,
       null,
-      createMediationState(exchange)
+      state
     )
   }
 
