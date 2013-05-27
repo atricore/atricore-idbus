@@ -1,14 +1,10 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers.idconf;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.AuthenticationMechanism;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsAuthentication;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIntegratedAuthentication;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
-import com.atricore.idbus.console.lifecycle.main.transform.transformers.authn.WindowsIntegratedAuthenticationTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;
@@ -17,7 +13,7 @@ import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannelImpl;
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
@@ -88,7 +84,7 @@ public class BasicIdentityConfirmationChannelTransformer extends AbstractTransfo
 
         Bean identityConfirmationChannelBean = null;
 
-        identityConfirmationChannelBean = newBean(idpBeans, idConfChannelBeanName, ClaimChannelImpl.class);
+        identityConfirmationChannelBean = newBean(idpBeans, idConfChannelBeanName, IdentityConfirmationChannelImpl.class);
 
         // name
         setPropertyValue(identityConfirmationChannelBean, "name", identityConfirmationChannelBean.getName());
@@ -98,49 +94,44 @@ public class BasicIdentityConfirmationChannelTransformer extends AbstractTransfo
         setPropertyValue(identityConfirmationChannelBean, "location", locationUrl);
 
         // endpoints
-        List<Bean> ccEndpoints = new ArrayList<Bean>();
+        List<Bean> idConfEndpoints = new ArrayList<Bean>();
 
-        Bean ccIdConfArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ccIdConfArtifact.setName(idpBean.getName() + "-cc-idconf-artifact");
-        setPropertyValue(ccIdConfArtifact, "name", ccIdConfArtifact.getName());
-        setPropertyValue(ccIdConfArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
-        setPropertyValue(ccIdConfArtifact, "location", "/IDCONF/ARTIFACT");
-        setPropertyValue(ccIdConfArtifact, "type", "urn:org:atricore:idbus:ac:classes:IdentityConfirmation");
-        ccEndpoints.add(ccIdConfArtifact);
+        Bean idConfArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
+        idConfArtifact.setName(idpBean.getName() + "-idcc-idconf-artifact");
+        setPropertyValue(idConfArtifact, "name", idConfArtifact.getName());
+        setPropertyValue(idConfArtifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
+        setPropertyValue(idConfArtifact, "location", "/EMB/ARTIFACT");
+        setPropertyValue(idConfArtifact, "type", "urn:org:atricore:idbus:ac:classes:IdentityConfirmation");
+        idConfEndpoints.add(idConfArtifact);
 
-        Bean ccIdConfHttpInit = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ccIdConfHttpInit.setName(idpBean.getName() + "-cc-idconf-initiator");
-        setPropertyValue(ccIdConfHttpInit, "name", ccIdConfHttpInit.getName());
-        setPropertyValue(ccIdConfHttpInit, "binding", "urn:org:atricore:idbus:identityconfirmation:bindings:HTTP-Initiation");
-        setPropertyValue(ccIdConfHttpInit, "location", "/IDCONF/INITIATE");
-        setPropertyValue(ccIdConfHttpInit, "type", "urn:org:atricore:idbus:ac:classes:IdentityConfirmation");
-        ccEndpoints.add(ccIdConfHttpInit);
+        Bean idConfHttpAuthn = newAnonymousBean(IdentityMediationEndpointImpl.class);
+        idConfHttpAuthn.setName(idpBean.getName() + "-idcc-idconf-authentication");
+        setPropertyValue(idConfHttpAuthn, "name", idConfHttpAuthn.getName());
+        setPropertyValue(idConfHttpAuthn, "binding", "urn:org:atricore:idbus:identityconfirmation:bindings:HTTP-Authentication");
+        setPropertyValue(idConfHttpAuthn, "location", "/EMB/AUTHN");
+        setPropertyValue(idConfHttpAuthn, "type", "urn:org:atricore:idbus:ac:classes:IdentityConfirmation");
+        idConfEndpoints.add(idConfHttpAuthn);
 
-        Bean ccIdConfHttpNegotiate = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ccIdConfHttpNegotiate.setName(idpBean.getName() + "-cc-idconf-negotiatior");
-        setPropertyValue(ccIdConfHttpNegotiate, "name", ccIdConfHttpNegotiate.getName());
-        setPropertyValue(ccIdConfHttpNegotiate, "binding", "urn:org:atricore:idbus:identityconfirmation:bindings:HTTP-Negotiation");
-        setPropertyValue(ccIdConfHttpNegotiate, "location", "/IDCONF/NEGOTIATE");
-        setPropertyValue(ccIdConfHttpNegotiate, "responseLocation", "/IDCONF/NEGOTIATE-RESP");
-        setPropertyValue(ccIdConfHttpInit, "type", "urn:org:atricore:idbus:ac:classes:IdentityConfirmation");
-        ccEndpoints.add(ccIdConfHttpNegotiate);
-
-        setPropertyAsBeans(identityConfirmationChannelBean, "endpoints", ccEndpoints);
+        setPropertyAsBeans(identityConfirmationChannelBean, "endpoints", idConfEndpoints);
 
         // ----------------------------------------
         // Identity Confirmation Mediator
         // ----------------------------------------
-        Bean ccMediator = newBean(idpBeans, idConfChannelBeanName + "-mediator", "org.atricore.idbus.capabilities.idconfirmation.main.IdentityConfirmationMediator");
+        Bean idcMediator = newBean(idpBeans, idConfChannelBeanName + "-mediator", "org.atricore.idbus.capabilities.idconfirmation.main.IdentityConfirmationMediator");
 
         // logMessages
-        setPropertyValue(ccMediator, "logMessages", true);
+        setPropertyValue(idcMediator, "logMessages", true);
+
+        // identity confirmation initiation UI page
+        setPropertyValue(idcMediator, "tokenSharingConfirmationUILocation",
+                resolveUiLocationPath(appliance) + "/" + provider.getName().toUpperCase() + "/IDCONF/INITIATE");
 
         // artifactQueueManager
         // setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
-        setPropertyRef(ccMediator, "artifactQueueManager", "artifactQueueManager");
+        setPropertyRef(idcMediator, "artifactQueueManager", "artifactQueueManager");
 
         // bindingFactory
-        setPropertyBean(ccMediator, "bindingFactory", newAnonymousBean("org.atricore.idbus.capabilities.idconfirmation.main.IdentityConfirmationBindingFactory"));
+        setPropertyBean(idcMediator, "bindingFactory", newAnonymousBean("org.atricore.idbus.capabilities.idconfirmation.main.IdentityConfirmationBindingFactory"));
 
         List<Bean> ccLogBuilders = new ArrayList<Bean>();
         ccLogBuilders.add(newAnonymousBean(CamelLogMessageBuilder.class));
@@ -151,10 +142,10 @@ public class BasicIdentityConfirmationChannelTransformer extends AbstractTransfo
         setPropertyAsBeans(ccLogger, "messageBuilders", ccLogBuilders);
 
         // logger
-        setPropertyBean(ccMediator, "logger", ccLogger);
+        setPropertyBean(idcMediator, "logger", ccLogger);
 
         // identityMediator
-        setPropertyRef(identityConfirmationChannelBean, "identityMediator", ccMediator.getName());
+        setPropertyRef(identityConfirmationChannelBean, "identityMediator", idcMediator.getName());
 
         // provider
         setPropertyRef(identityConfirmationChannelBean, "federatedProvider", idpBean.getName());

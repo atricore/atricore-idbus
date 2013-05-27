@@ -92,6 +92,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
+            <artifactId>org.atricore.idbus.capabilities.idconfirmation.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
             <scope>provided</scope>

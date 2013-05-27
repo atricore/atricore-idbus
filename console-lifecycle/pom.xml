@@ -144,6 +144,11 @@
                 <version>${idbus.cap.oauth2.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
+                <artifactId>org.atricore.idbus.capabilities.idconfirmation.main</artifactId>
+                <version>${idbus.cap.idconfirmation.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>

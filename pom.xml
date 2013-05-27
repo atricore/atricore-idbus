@@ -43,6 +43,7 @@
         <idbus.cap.spml2.version>1.4.0-SNAPSHOT</idbus.cap.spml2.version>
         <idbus.cap.openid.version>1.4.0-SNAPSHOT</idbus.cap.openid.version>
         <idbus.cap.oauth2.version>1.4.0-SNAPSHOT</idbus.cap.oauth2.version>
+        <idbus.cap.idconfirmation.version>1.4.0-SNAPSHOT</idbus.cap.idconfirmation.version>
         <idbus.cap.josso.version>1.4.0-SNAPSHOT</idbus.cap.josso.version>
         <idbus.cap.sts.version>1.4.0-SNAPSHOT</idbus.cap.sts.version>
 
