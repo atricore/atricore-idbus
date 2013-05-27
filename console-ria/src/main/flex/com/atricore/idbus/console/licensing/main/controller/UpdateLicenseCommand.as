@@ -69,8 +69,13 @@ public class UpdateLicenseCommand extends IocSimpleCommand implements IResponder
     public function result(data:Object):void {
         var res:ActivateLicenseResponse = data.result as ActivateLicenseResponse;
         if(res.errorMsg != null){
-            sendNotification(FAILURE, res.errorMsg);
+            trace("Error activating: " + res.errorMsg);
+            sendNotification(FAILURE, "Error activating: " + res.errorMsg);
+        } else if (!res.valid) {
+            trace("Error activating: Invalid license");
+            sendNotification(FAILURE, "Invalid license");
         } else {
+            trace("Successful activation");
             sendNotification(SUCCESS);
         }
     }

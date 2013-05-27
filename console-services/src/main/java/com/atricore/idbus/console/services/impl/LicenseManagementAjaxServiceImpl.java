@@ -43,7 +43,9 @@ public class LicenseManagementAjaxServiceImpl implements LicenseManagementAjaxSe
             res.setValid(true);
         } catch (InvalidLicenseException e) {
             res.setValid(false);
+            res.setErrorMsg("Invalid license information");
         } catch (LicenseServiceError e) {
+            res.setValid(false);
             res.setErrorMsg(e.getMessage());
         }
         return res;
@@ -59,6 +61,7 @@ public class LicenseManagementAjaxServiceImpl implements LicenseManagementAjaxSe
             res.setValid(false);
         } catch (Exception e) {
             res.setError(e.getMessage());
+            res.setValid(false);
         }
         //TODO implement
         return res;
