@@ -40,8 +40,6 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedRemoteProvider
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
 import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
-import org.atricore.idbus.kernel.main.store.SSOIdentityManagerImpl;
-import org.atricore.idbus.kernel.main.store.identity.SimpleIdentityStoreKeyAdapter;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
@@ -56,6 +54,7 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.util.*;
 
+import static com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil.isIdPProxyRequired;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
@@ -113,31 +112,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
     @Override
     public boolean accept(TransformEvent event) {
-
-        if (event.getData() instanceof ServiceProviderChannel) {
-
-            ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
-            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
-
-            if (roleA) {
-                //return fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote();
-                // TODO : Change this once the front-end supports it
-                /*
-                return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof ExternalSaml2IdentityProvider
-                        && fc.getRoleA().isRemote();
-                        */
-            } else {
-                //return fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote();
-                // TODO : Change this once the front-end supports it
-                /*
-                return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof ExternalSaml2IdentityProvider
-                        && fc.getRoleB().isRemote();
-                        */
-            }
-
-        }
-
-        return false;
+        return isIdPProxyRequired(event, isRoleA());
     }
 
     @Override

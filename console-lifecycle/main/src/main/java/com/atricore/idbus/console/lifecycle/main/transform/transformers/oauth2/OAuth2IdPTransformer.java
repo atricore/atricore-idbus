@@ -118,6 +118,8 @@ public class OAuth2IdPTransformer extends AbstractTransformer implements Initial
 
                 try {
                     // TODO : Use a metadata-specific class ?!
+
+                    // OAUth 2.0 Clients are NOT SPs (resource servers), they're SP consumers (external apps)
                     List<OAuth2Client> clients = JasonUtils.unmarshallClients(provider.getOauth2ClientsConfig());
                     if (clients != null) {
                         for (OAuth2Client oauth2ClientDef : clients) {

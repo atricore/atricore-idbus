@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
-public class MicroStrategyResource extends ServiceResource {
+public class MicroStrategyResource extends ServiceResource implements OAuth2Resource {
 
     // TODO : Maybe we need a parent OAUTH resource, instead of JOSSO 2 ?!
 

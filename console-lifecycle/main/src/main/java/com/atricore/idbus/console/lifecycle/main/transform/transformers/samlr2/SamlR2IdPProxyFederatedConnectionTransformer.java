@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import static com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil.isIdPProxyRequired;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
 
@@ -78,28 +79,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
     @Override
     public boolean accept(TransformEvent event) {
-        if (event.getData() instanceof ServiceProviderChannel) {
-
-            ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
-            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
-
-            if (roleA) {
-                // Accept all Federated connection nodes that have an IdP as role A
-                //return fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote();
-                /* TODO : Enable after console support is added in the front-end
-                return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof ExternalSaml2IdentityProvider
-                        && fc.getRoleA().isRemote(); */
-            } else {
-                // Accept all Federated connection nodes that have an IdP as role B
-                //return fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote();
-                /* TODO : Enable after console support is added in the front-end
-                return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof ExternalSaml2IdentityProvider
-                        && fc.getRoleB().isRemote(); */
-            }
-
-        }
-
-        return false;
+        return isIdPProxyRequired(event, roleA);
     }
 
     @Override

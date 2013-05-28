@@ -4,6 +4,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.spi.ApplianceBuilder;
+import com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -80,6 +81,7 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
         if (layout.getWorkDir() != null) {
             String idauPath = (String) ctx.get("idauPath");
             Provider provider = null;
+            Provider proxied = null;
             Channel channel = null;
 
             for (Provider p : appliance.getIdApplianceDefinition().getProviders()) {
@@ -89,17 +91,30 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
                         Set<FederatedConnection> fedConns = new HashSet<FederatedConnection>();
                         fedConns.addAll(((FederatedProvider) provider).getFederatedConnectionsA());
                         fedConns.addAll(((FederatedProvider) provider).getFederatedConnectionsB());
+                        boolean roleA = false;
+                        FederatedConnection fedConnection = null;
                         for (FederatedConnection fedConn : fedConns) {
                             FederatedChannel fedChannelA = fedConn.getChannelA();
                             FederatedChannel fedChannelB = fedConn.getChannelB();
                             if (fedChannelA.getName().equals(channelName)) {
                                 channel = fedChannelA;
+                                fedConnection = fedConn;
+                                roleA = true;
                                 break;
                             } else if (fedChannelB.getName().equals(channelName)) {
                                 channel = fedChannelB;
+                                fedConnection = fedConn;
+                                roleA = false;
                                 break;
                             }
                         }
+                        // We have a specific channel, let's check if the other end is a proxied remote saml idp
+
+                        if (p instanceof InternalSaml2ServiceProvider &&
+                                ProxyUtil.isIdPProxyRequired(fedConnection, !roleA)) {
+                            proxied = roleA ? fedConnection.getRoleB() : fedConnection.getRoleA();
+                        }
+
                     }
                     break;
                 }
@@ -111,13 +126,23 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
             }
 
             String providerBeanName = normalizeBeanName(provider.getName());
+
             String resourceName = providerBeanName;
             if (channel != null && channel.isOverrideProviderSetup()) {
                 resourceName = normalizeBeanName(channel.getName());
             }
 
-            String metadataFile = layout.getWorkDir() + "/idau/src/main/resources/" +
+            String metadataFile = null;
+
+            if (proxied != null) {
+                String proxiedProviderBeanName = normalizeBeanName(proxied.getName());
+                // Metadata file for proxied provider!
+                metadataFile = layout.getWorkDir() + "/idau/src/main/resources/" +
+                        idauPath + proxiedProviderBeanName + "/" + resourceName + "-to-" + proxiedProviderBeanName + "-samlr2-metadata.xml";
+            } else {
+                metadataFile = layout.getWorkDir() + "/idau/src/main/resources/" +
                     idauPath + providerBeanName + "/" + resourceName + "-samlr2-metadata.xml";
+            }
 
             FileInputStream is = null;
             try {
@@ -125,7 +150,7 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
                 is = new FileInputStream(file);
                 return IOUtils.toByteArray(is);
             } catch (Exception e) {
-                logger.error("Error exporting SAML metadata: error reading file [" + metadataFile + "].");
+                logger.error("Error exporting metadata: error reading file [" + metadataFile + "].");
                 return new byte[0];
             } finally {
                 IOUtils.closeQuietly(is);

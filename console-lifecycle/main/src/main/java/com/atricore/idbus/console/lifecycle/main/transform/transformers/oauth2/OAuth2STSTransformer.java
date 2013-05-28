@@ -4,7 +4,6 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
-import com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.STSTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import org.apache.commons.logging.Log;
@@ -17,10 +16,13 @@ import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 
 import java.util.Collection;
 
+import static com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil.isIdPProxyRequired;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
 
 /**
+ * OAuth 2.0 Emitter for WS-Trust service
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class OAuth2STSTransformer extends AbstractTransformer {
@@ -36,28 +38,7 @@ public class OAuth2STSTransformer extends AbstractTransformer {
             return true;
         }
 
-        if (event.getData() instanceof ServiceProviderChannel) {
-
-            // TODO : Check for OAUTH2 Enabled on proxy
-
-            ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
-            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
-
-            //if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote()) {
-            //    return true;
-            // TODO : Change this once the front-end supports it
-            /* return spChannel.isOverrideProviderSetup() && fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote();
-            */
-            // }
-            //if (fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote()) {
-            //    return true;
-                // TODO : Change this once the front-end supports it
-                /* return spChannel.isOverrideProviderSetup() && fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote(); */
-            //}
-
-        }
-
-        return false;
+        return isIdPProxyRequired(event, true) || isIdPProxyRequired(event, false);
     }
 
     @Override
@@ -65,20 +46,30 @@ public class OAuth2STSTransformer extends AbstractTransformer {
         boolean isProxy = false;
 
         FederatedProvider provider = null;
+        OAuth2Resource resource = null;
         if (event.getData() instanceof FederatedProvider) {
             provider = (FederatedProvider) event.getData();
             isProxy = false;
-        } else if (event.getData() instanceof ServiceProviderChannel) {
+        } else if (isIdPProxyRequired(event, true) || isIdPProxyRequired(event, false)) {
+            // Since this is a proxy, it must be an internal SAML 2.0 SP
             ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
+
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
             isProxy = true;
-            if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote())
+
+            if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote()) {
                 provider = fc.getRoleA();
-            else if (fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote()) {
+                resource = (OAuth2Resource) ((InternalSaml2ServiceProvider)fc.getRoleB()).getServiceConnection().getResource();
+            } else if (fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote()) {
+                resource = (OAuth2Resource) ((InternalSaml2ServiceProvider)fc.getRoleA()).getServiceConnection().getResource();
                 provider = fc.getRoleB();
+            } else {
+                // ERROR !
+                logger.error("External IdP not supported in federated connection " + fc.getName() +
+                        ", available providers A: " + fc.getRoleA().getName() + ", B:" + fc.getRoleB().getName());
+                throw new TransformException("External IdP type not found in federated connection " + fc.getName());
             }
         }
-
 
         Beans idpBeans = isProxy ? (Beans) event.getContext().get("idpProxyBeans") : (Beans) event.getContext().get("idpBeans");
 
@@ -103,10 +94,10 @@ public class OAuth2STSTransformer extends AbstractTransformer {
 
         // ----------------------------------------
         // STS, must be already created
-        // ----------------------------------------                                                                                oauth2StsTransformer
+        // ----------------------------------------
         Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
 
-        // ----------------------------------------                                                                                oauth2StsTransformer
+        // ----------------------------------------
         // Emitters
         // ----------------------------------------
         Bean oauth2StsEmitter = newBean(idpBeans,
@@ -131,7 +122,9 @@ public class OAuth2STSTransformer extends AbstractTransformer {
             setPropertyRef(oauth2StsEmitter, "identityManager", idpBean.getName() + "-identity-manager");
         }
 
-        String oauth2Key = localIdp != null ? localIdp.getOauth2Key()  : "@WSX3edc"; // TODO : Get key when working with proxy idp !!!!! provider.getOauth2Key();
+        // If we have a local IdP, we use the OAuth 2.0 key, otherwise we take the OAuth 2.0 shared secret from the resource
+        // (It means we're proxying an external IdP)
+        String oauth2Key = localIdp != null ? localIdp.getOauth2Key()  : resource.getSecret();
 
         /* Configure AES encryption */
         Bean aesEncrypter = newAnonymousBean(AESTokenEncrypter.class);
@@ -149,5 +142,6 @@ public class OAuth2STSTransformer extends AbstractTransformer {
 
         return null;
     }
+
 
 }
