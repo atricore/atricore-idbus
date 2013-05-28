@@ -1661,7 +1661,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
             SimplePrincipal user = p.iterator().next();
             SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
-            ssoUser = identityMgr.findUser(user.getName());
+            if (identityMgr != null)
+                ssoUser = identityMgr.findUser(user.getName());
 
         } else {
             Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
