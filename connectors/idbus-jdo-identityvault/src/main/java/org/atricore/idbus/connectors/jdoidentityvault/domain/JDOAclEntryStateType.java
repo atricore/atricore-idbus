@@ -1,6 +1,9 @@
 package org.atricore.idbus.connectors.jdoidentityvault.domain;
 
-public enum AclEntryStateType {
+/**
+ * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
+ */
+public enum JDOAclEntryStateType {
 
     PENDING,
     APPROVED;
@@ -9,7 +12,7 @@ public enum AclEntryStateType {
         return name();
     }
 
-    public static AclEntryStateType fromValue(String v) {
+    public static JDOAclEntryStateType fromValue(String v) {
         return valueOf(v);
     }
 }

@@ -18,6 +18,7 @@ import org.atricore.idbus.capabilities.idconfirmation.component.builtin.TokenSha
 import org.apache.commons.logging.LogFactory
 
 class IdentityConfirmationInitiationPage extends BasePage with IdentityConfirmationModel {
+  @transient
   private final val logger = LogFactory.getLog(classOf[IdentityConfirmationInitiationPage])
 
   private var artifactId : Option[String] = _
@@ -59,4 +60,8 @@ class IdentityConfirmationInitiationPage extends BasePage with IdentityConfirmat
 
 
   }
+}
+
+object IdentityConfirmationInitiationPage {
+
 }

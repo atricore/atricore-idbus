@@ -9,7 +9,7 @@ object WicketImplicits {
 
   implicit def pimpForm(form : Form[_]) = new PimpedForm(form)
 
-  class PimpedForm(form : Form[_]) {
+  class PimpedForm(form : Form[_]) extends Serializable {
 
     def withSubmitLink[T <: wicketSubmitAction](func : T) = {
       val sl = new SubmitLink("doSave") {

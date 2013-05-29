@@ -1,9 +1,6 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
-import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroup;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroupAttributeValue;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUserAttributeValue;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.*;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupAttributeValueDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserAttributeValueDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOAclDAOImpl;
@@ -11,10 +8,7 @@ import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOAclEntr
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
-import org.atricore.idbus.kernel.main.provisioning.domain.Group;
-import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeValue;
-import org.atricore.idbus.kernel.main.provisioning.domain.User;
-import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeValue;
+import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
@@ -301,7 +295,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     @Transactional
     public User findUserByUserName(String username) throws ProvisioningException {
-        
+
         try {
             JDOUser jdoUser = userDao.findByUserName(username);
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
@@ -362,7 +356,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
             jdoUser = userDao.findById(user.getId());
             JDOUserAttributeValue[] oldAttrs = jdoUser.getAttrs();
-            
+
             // Do not let users to change the password!
             toJDOUser(jdoUser, user, false);
             jdoUser = userDao.save(jdoUser);
@@ -464,7 +458,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
         if (jdoGroup.getAttrs() != null) {
             List<GroupAttributeValue> attrs = new ArrayList<GroupAttributeValue>();
-            
+
             for (int i = 0; i < jdoGroup.getAttrs().length; i++) {
                 JDOGroupAttributeValue jdoAttr = jdoGroup.getAttrs()[i];
                 if (jdoAttr.getId() > 0) {
@@ -503,10 +497,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     protected JDOUser toJDOUser(JDOUser jdoUser, User user, boolean keepUserPassword) {
 
-
         String pwd = jdoUser.getUserPassword();
 
-        BeanUtils.copyProperties(user, jdoUser, new String[] {"id", "groups", "attrs"});
+        BeanUtils.copyProperties(user, jdoUser, new String[] {"id", "groups", "acls", "attrs"});
 
         if (keepUserPassword)
             jdoUser.setUserPassword(pwd);
@@ -519,6 +512,42 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 jdoGroups[i] = jdoGroup;
             }
             jdoUser.setGroups(jdoGroups);
+        }
+
+        if (user.getAcls() != null) {
+            JDOAcl[] jdoAcls = new JDOAcl[user.getAcls().length];
+            for (int i = 0; i < user.getAcls().length; i++) {
+                Acl acl = user.getAcls()[i];
+                JDOAcl jdoAcl;
+                if (acl.getId() != null) {
+                    jdoAcl = aclDao.findById(acl.getId());
+                } else {
+                    jdoAcl = new JDOAcl();
+                    jdoAcl.setName(acl.getName());
+                    jdoAcl.setDescription(acl.getDescription());
+                }
+
+                jdoAcls[i] = jdoAcl;
+                JDOAclEntry[] jdoAclEntries = new JDOAclEntry[acl.getEntries().length];
+                for (int j =0; j < acl.getEntries().length; j++) {
+                    AclEntry aclEntry = acl.getEntries()[j];
+
+                    JDOAclEntry jdoAclEntry;
+                    if (aclEntry.getId() != null) {
+                        jdoAclEntry = aclEntryDao.findById(aclEntry.getId());
+                    } else {
+                        jdoAclEntry = new JDOAclEntry();
+                        jdoAclEntry.setFrom(aclEntry.getFrom());
+                        jdoAclEntry.setDecision(JDOAclDecisionType.fromValue(aclEntry.getDecision().toString()));
+                        jdoAclEntry.setState(JDOAclEntryStateType.fromValue(aclEntry.getState().toString()));
+                        jdoAclEntry.setApprovalToken(aclEntry.getApprovalToken());
+                    }
+
+                    jdoAclEntries[j] = jdoAclEntry;
+                }
+                jdoAcl.setAclEntries(jdoAclEntries);
+            }
+            jdoUser.setAcls(jdoAcls);
         }
 
         if (user.getAttrs() != null) {
@@ -547,7 +576,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     protected User toUser(JDOUser jdoUser, boolean retrieveUserPassword) {
         User user = new User();
-        BeanUtils.copyProperties(jdoUser, user, new String[] {"groups", "attrs"});
+        BeanUtils.copyProperties(jdoUser, user, new String[] {"groups", "acls", "attrs"});
 
         if (!retrieveUserPassword)
             user.setUserPassword(null);
@@ -566,6 +595,33 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             }
 
             user.setGroups(groups);
+        }
+
+        if (jdoUser.getAcls() != null) {
+            Acl[] acls = new Acl[jdoUser.getAcls().length];
+
+            for (int i = 0; i < jdoUser.getAcls().length; i++) {
+                JDOAcl jdoAcl = jdoUser.getAcls()[i];
+                Acl acl = new Acl();
+                acl.setName(jdoAcl.getName());
+                acl.setDescription(jdoAcl.getDescription());
+                acl.setId(jdoAcl.getId());
+
+                AclEntry[] aclEntries = new AclEntry[jdoAcl.getEntries().length];
+                for (int j = 0; j < jdoAcl.getEntries().length; j++) {
+                    JDOAclEntry jdoAclEntry = jdoAcl.getEntries()[j];
+                    AclEntry aclEntry = new AclEntry();
+                    aclEntry.setFrom(jdoAclEntry.getFrom());
+                    aclEntry.setDecision(AclDecisionType.fromValue(jdoAclEntry.getDecision().toString()));
+                    aclEntry.setApprovalToken(jdoAclEntry.getApprovalToken());
+                    aclEntry.setState(AclEntryStateType.fromValue(jdoAclEntry.getState().toString()));
+                    aclEntry.setId(jdoAcl.getId());
+                    aclEntries[j] = aclEntry;
+                }
+                acls[i] = acl;
+            }
+
+            user.setAcls(acls);
         }
 
         if (jdoUser.getAttrs() != null) {

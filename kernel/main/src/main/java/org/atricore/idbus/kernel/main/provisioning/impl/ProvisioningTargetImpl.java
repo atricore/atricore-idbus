@@ -4,10 +4,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
-import org.atricore.idbus.kernel.main.provisioning.domain.Group;
-import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeDefinition;
-import org.atricore.idbus.kernel.main.provisioning.domain.User;
-import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeDefinition;
+import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
@@ -262,14 +259,15 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             
             User user = new User();
 
-            BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "userPassword"});
+            BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "acls", "userPassword"});
 
             // TODO : Apply password validation rules
             user.setUserPassword(createPasswordHash(userRequest.getUserPassword()));
                 
             Group[] groups = userRequest.getGroups();
             user.setGroups(groups);
-            
+
+
             user = identityPartition.addUser(user);
             AddUserResponse userResponse = new AddUserResponse();
             userResponse.setUser(user);
@@ -342,8 +340,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             User user = userRequest.getUser();
             User oldUser = identityPartition.findUserById(user.getId());
 
-            BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "userPassword", "id"});
+            BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "acls", "userPassword", "id"});
             oldUser.setGroups(user.getGroups());
+            oldUser.setAcls(user.getAcls());
 
             // DO NOT UPDATE USER PASSWORD HERE : oldUser.setUserPassword(createPasswordHash(user.getUserPassword()));
 

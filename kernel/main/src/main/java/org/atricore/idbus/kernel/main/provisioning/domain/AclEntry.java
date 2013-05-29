@@ -1,18 +1,18 @@
-package org.atricore.idbus.connectors.jdoidentityvault.domain;
+package org.atricore.idbus.kernel.main.provisioning.domain;
 
 import java.io.Serializable;
 
 /**
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
  */
-public class JDOAclEntry implements Serializable {
+public class AclEntry implements Serializable {
 
     private static final long serialVersionUID = 4595183658527599864L;
 
     private Long id;
-    private JDOAclDecisionType decision;
+    private AclDecisionType decision;
     private String from;
-    private JDOAclEntryStateType state;
+    private AclEntryStateType state;
     private String approvalToken;
 
     public Long getId() {
@@ -23,11 +23,11 @@ public class JDOAclEntry implements Serializable {
         this.id = id;
     }
 
-    public JDOAclDecisionType getDecision() {
+    public AclDecisionType getDecision() {
         return decision;
     }
 
-    public void setDecision(JDOAclDecisionType decision) {
+    public void setDecision(AclDecisionType decision) {
         this.decision = decision;
     }
 
@@ -39,11 +39,11 @@ public class JDOAclEntry implements Serializable {
         this.from = from;
     }
 
-    public JDOAclEntryStateType getState() {
+    public AclEntryStateType getState() {
         return state;
     }
 
-    public void setState(JDOAclEntryStateType state) {
+    public void setState(AclEntryStateType state) {
         this.state = state;
     }
 
@@ -55,13 +55,12 @@ public class JDOAclEntry implements Serializable {
         this.approvalToken = approvalToken;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof JDOAclEntry)) return false;
+        if (!(o instanceof AclEntry)) return false;
 
-        JDOAclEntry that = (JDOAclEntry) o;
+        AclEntry that = (AclEntry) o;
 
         if(id == 0) return false;
 

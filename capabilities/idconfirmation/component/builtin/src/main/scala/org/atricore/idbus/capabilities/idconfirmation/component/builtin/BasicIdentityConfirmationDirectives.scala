@@ -36,6 +36,11 @@ import java.net.URL
 import org.atricore.idbus.kernel.main.federation.metadata.{EndpointDescriptorImpl, EndpointDescriptor}
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel
+import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider
+import org.atricore.idbus.kernel.main.provisioning.spi.request.{UpdateUserRequest, FindUserByUsernameRequest}
+import org.atricore.idbus.kernel.main.provisioning.domain.{AclEntryStateType, AclDecisionType, AclEntry, Acl}
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType
+import org.atricore.idbus.kernel.main.mediation.claim.{Claim, UserClaim}
 
 /**
  * Identity confirmation directives of the identity combinator library.
@@ -73,7 +78,27 @@ trait BasicIdentityConfirmationDirectives extends Logging {
       ctx =>
         onConfirmationRequest.filter(ctx) match {
           case Pass(values, transform) =>
-            values._1.getUserClaims.find(_.getName == claimId) match {
+            values._1.getClaims.find {
+              case uc : UserClaim => uc.getName == claimId
+              case _ => false
+            } match {
+              case Some(claimValue) =>
+                Pass(claimValue)
+              case None =>
+                Reject(NoClaimFound)
+            }
+          case reject: Reject =>
+            reject
+        }
+
+    }
+
+  def claim[T](claimType: Class[T]) =
+    filter1 {
+      ctx =>
+        onConfirmationRequest.filter(ctx) match {
+          case Pass(values, transform) =>
+            values._1.getClaims.find { _.getValue.isInstanceOf[T] } match {
               case Some(claimValue) =>
                 Pass(claimValue)
               case None =>
@@ -180,6 +205,49 @@ trait BasicIdentityConfirmationDirectives extends Logging {
 
   def notifyTokenShared(tokenSharedConfirmationUILocation : String, secret : String) : IdentityFlowRoute = {
       ctx =>
+        userClaim("sourceIpAddress").filter(ctx) match {
+          case Pass(values, transform) =>
+            val sourceIpAddress = values._1.getValue.asInstanceOf[String]
+            val icr = ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage].getMessage.getContent.asInstanceOf[IdentityConfirmationRequest]
+            val pt = icr.getIssuerChannel.getProvider.asInstanceOf[IdentityProvider].getProvisioningTarget
+
+            val nid = icr.getClaims.find(_.getValue.isInstanceOf[UsernameTokenType]).
+              getOrElse( throw new IllegalArgumentException("No name identifier claim found")).
+              getValue.asInstanceOf[UsernameTokenType].getUsername.getValue
+
+            val fureq = new FindUserByUsernameRequest
+            fureq.setUsername(nid)
+
+            val user = pt.findUserByUsername(fureq).getUser
+            log.debug("user1 acls size = " + user.getAcls.length)
+            log.debug("user1 acls entries size = " + user.getAcls.length);
+
+            val acl = new Acl
+            acl.setName("Identity Confirmation Acl")
+            acl.setDescription("An Identity Confirmation Access Control List")
+
+            val aclEntry = new AclEntry
+            aclEntry.setDecision(AclDecisionType.ALLOW)
+            aclEntry.setFrom(sourceIpAddress)
+            aclEntry.setState(AclEntryStateType.PENDING)
+            aclEntry.setApprovalToken(secret)
+            acl.setAclEntries(Array(aclEntry))
+            user.setAcls(Array(acl))
+
+            val uureq = new UpdateUserRequest
+            uureq.setUser(user)
+            pt.updateUser(uureq)
+
+            //
+            val fureq2 = new FindUserByUsernameRequest
+            fureq2.setUsername(nid)
+
+            val user2 = pt.findUserByUsername(fureq2).getUser
+            log.debug("user2 acls size = " + user2.getAcls.length)
+            log.debug("user2 acls entries size = " + user2.getAcls.length);
+
+          case reject => reject
+        }
 
         val taloc =
           ctx.request.channel.asInstanceOf[IdentityConfirmationChannel].getEndpoints.filter( ep =>

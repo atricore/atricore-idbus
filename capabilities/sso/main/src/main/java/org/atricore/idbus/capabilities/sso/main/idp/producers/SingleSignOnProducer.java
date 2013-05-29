@@ -28,7 +28,6 @@ import oasis.names.tc.saml._2_0.idbus.PreAuthenticatedAuthnRequestType;
 import oasis.names.tc.saml._2_0.idbus.SecTokenAuthnRequestType;
 import oasis.names.tc.saml._2_0.metadata.*;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
-import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
@@ -89,7 +88,6 @@ import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
-import org.springframework.context.ApplicationContext;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestedSecurityTokenType;
@@ -873,13 +871,17 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("Selected identity confirmation endpoint : " + idConfEndpoint);
 
                 // Create Claims Request
-                IdentityConfirmationRequest idConfRequest = new IdentityConfirmationRequestImpl();
+                IdentityConfirmationRequest idConfRequest = new IdentityConfirmationRequestImpl((SPChannel)channel);
 
-                // TODO: add user claims to identity confirmation request
-                idConfRequest.getUserClaims().add(new UserClaimImpl("", "principal", "fooUser"));
-                idConfRequest.getUserClaims().add(new UserClaimImpl("", "sourceIpAddress", "192.168.1.1"));
-                idConfRequest.getUserClaims().add(new UserClaimImpl("", "lastSourceIpAddress", "192.168.1.2"));
-                idConfRequest.getUserClaims().add(new UserClaimImpl("", "emailAddress", "foo@acme.com"));
+                for (Claim claim : claimsResponse.getClaimSet().getClaims()) {
+                    idConfRequest.getClaims().add(claim);
+                }
+
+                // generate our own claims
+                idConfRequest.getClaims().add(new UserClaimImpl("", "principal", "fooUser"));
+                idConfRequest.getClaims().add(new UserClaimImpl("", "sourceIpAddress", "192.168.1.1"));
+                idConfRequest.getClaims().add(new UserClaimImpl("", "lastSourceIpAddress", "192.168.1.2"));
+                idConfRequest.getClaims().add(new UserClaimImpl("", "emailAddress", "foo@acme.com"));
 
                 // --------------------------------------------------------------------
                 // Submit identity confirmation request

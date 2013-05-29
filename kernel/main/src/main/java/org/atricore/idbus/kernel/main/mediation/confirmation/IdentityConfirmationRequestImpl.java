@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.mediation.confirmation;
 
+import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.claim.Claim;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaim;
 
 import java.util.ArrayList;
@@ -33,10 +35,15 @@ import java.util.Collection;
  */
 public class IdentityConfirmationRequestImpl implements IdentityConfirmationRequest {
     private String id;
-    private Collection<UserClaim> userClaims = new ArrayList<UserClaim>();
+    private FederationChannel issuerChannel;
+    private Collection<Claim> claims = new ArrayList<Claim>();
     private String relayState;
     private String lastErrorId;
     private String lastErrorMsg;
+
+    public IdentityConfirmationRequestImpl(FederationChannel issuerChannel) {
+        this.issuerChannel = issuerChannel;
+    }
 
     public String getId() {
         return id;
@@ -46,12 +53,20 @@ public class IdentityConfirmationRequestImpl implements IdentityConfirmationRequ
         this.id = id;
     }
 
-    public Collection<UserClaim> getUserClaims() {
-        return userClaims;
+    public FederationChannel getIssuerChannel() {
+        return issuerChannel;
     }
 
-    public void addUserClaim(UserClaim userClaim) {
-        userClaims.add(userClaim);
+    public void setIssuerChannel(FederationChannel issuerChannel) {
+        this.issuerChannel = issuerChannel;
+    }
+
+    public Collection<Claim> getClaims() {
+        return claims;
+    }
+
+    public void addClaim(Claim claim) {
+        claims.add(claim);
     }
 
     public String getRelayState() {

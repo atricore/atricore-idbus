@@ -144,7 +144,7 @@ class BuiltInIdConfirmationSpec
   protected def newIdentityConfirmationRequest(userClaims : Map[String,String]) : IdentityConfirmationRequest = {
     val icr = new IdentityConfirmationRequestImpl
     userClaims.foreach( { case(k, v) =>
-      icr.addUserClaim(new UserClaimImpl("", k, v))
+      icr.addClaim(new UserClaimImpl("", k, v))
     })
     icr
   }

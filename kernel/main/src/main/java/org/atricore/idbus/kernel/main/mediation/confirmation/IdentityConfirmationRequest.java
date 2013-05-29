@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.mediation.confirmation;
 
+import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.claim.Claim;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaim;
 
@@ -34,9 +36,11 @@ import java.util.Collection;
  */
 public interface IdentityConfirmationRequest extends Serializable {
 
-    Collection<UserClaim> getUserClaims();
-
     String getId();
+
+    FederationChannel getIssuerChannel();
+
+    Collection<Claim> getClaims();
 
     String getRelayState();
 

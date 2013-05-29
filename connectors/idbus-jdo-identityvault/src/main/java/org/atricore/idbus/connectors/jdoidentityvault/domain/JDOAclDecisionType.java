@@ -1,6 +1,9 @@
 package org.atricore.idbus.connectors.jdoidentityvault.domain;
 
-public enum AclDecisionType {
+/**
+ * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
+ */
+public enum JDOAclDecisionType {
 
     ALLOW,
     DENY;
@@ -9,7 +12,7 @@ public enum AclDecisionType {
         return name();
     }
 
-    public static AclDecisionType fromValue(String v) {
+    public static JDOAclDecisionType fromValue(String v) {
         return valueOf(v);
     }
 }
