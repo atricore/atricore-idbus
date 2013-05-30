@@ -454,6 +454,20 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     }
 
+    public FindAclEntryByApprovalTokenResponse findAclEntryByApprovalToken(FindAclEntryByApprovalTokenRequest aclEntryRequest) throws ProvisioningException {
+
+        try {
+            AclEntry aclEntry = identityPartition.findAclEntryByApprovalToken(aclEntryRequest.getApprovalToken());
+            FindAclEntryByApprovalTokenResponse aclEntryResponse = new FindAclEntryByApprovalTokenResponse();
+            aclEntryResponse.setAclEntry(aclEntry);
+            return aclEntryResponse;
+        } catch (AclEntryNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
     public AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest) throws ProvisioningException {
         try {
             // create user attribute

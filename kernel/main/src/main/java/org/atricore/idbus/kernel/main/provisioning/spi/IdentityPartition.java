@@ -1,5 +1,6 @@
 package org.atricore.idbus.kernel.main.provisioning.spi;
 
+import org.atricore.idbus.kernel.main.provisioning.domain.AclEntry;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
@@ -50,5 +51,8 @@ public interface IdentityPartition {
     User updateUser(User user) throws ProvisioningException;
 
     Collection<User> getUsersByGroup(Group group) throws ProvisioningException;
+
+    AclEntry findAclEntryByApprovalToken(String approvalToken) throws ProvisioningException;
+
 
 }

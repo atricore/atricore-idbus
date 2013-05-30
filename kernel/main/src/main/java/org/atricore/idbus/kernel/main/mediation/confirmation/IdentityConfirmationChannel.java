@@ -22,6 +22,7 @@
 package org.atricore.idbus.kernel.main.mediation.confirmation;
 
 import org.atricore.idbus.kernel.main.mediation.channel.StatefulChannel;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 
 
 /**
@@ -30,5 +31,9 @@ import org.atricore.idbus.kernel.main.mediation.channel.StatefulChannel;
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
 public interface IdentityConfirmationChannel extends StatefulChannel {
+
+    FederatedLocalProvider getFederatedProvider();
+
+    int getPriority();
 
 }

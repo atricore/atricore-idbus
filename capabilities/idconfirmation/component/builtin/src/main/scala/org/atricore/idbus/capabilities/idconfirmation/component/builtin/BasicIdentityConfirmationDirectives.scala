@@ -26,18 +26,18 @@ import org.atricore.idbus.capabilities.sso.dsl.core._
 import org.atricore.idbus.capabilities.sso.dsl.core.directives.{IdentityRoute, BasicIdentityFlowDirectives}
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage
 import org.atricore.idbus.capabilities.sso.dsl.core.{Reject, Pass}
-import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmationChannel,IdentityConfirmationRequest}
+import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmationChannel, IdentityConfirmationRequest}
 import scala.collection.JavaConversions._
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.Rejections._
 import java.security.SecureRandom
 import scala.Some
-import org.atricore.idbus.capabilities.sso.dsl.{RedirectToLocation,IdentityFlowResponse}
+import org.atricore.idbus.capabilities.sso.dsl.{RedirectToLocation, IdentityFlowResponse}
 import java.net.URL
 import org.atricore.idbus.kernel.main.federation.metadata.{EndpointDescriptorImpl, EndpointDescriptor}
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider
-import org.atricore.idbus.kernel.main.provisioning.spi.request.{UpdateUserRequest, FindUserByUsernameRequest}
+import org.atricore.idbus.kernel.main.provisioning.spi.request.{FindAclEntryByApprovalTokenRequest, UpdateUserRequest, FindUserByUsernameRequest}
 import org.atricore.idbus.kernel.main.provisioning.domain.{AclEntryStateType, AclDecisionType, AclEntry, Acl}
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType
 import org.atricore.idbus.kernel.main.mediation.claim.{Claim, UserClaim}
@@ -79,7 +79,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
         onConfirmationRequest.filter(ctx) match {
           case Pass(values, transform) =>
             values._1.getClaims.find {
-              case uc : UserClaim => uc.getName == claimId
+              case uc: UserClaim => uc.getName == claimId
               case _ => false
             } match {
               case Some(claimValue) =>
@@ -98,7 +98,9 @@ trait BasicIdentityConfirmationDirectives extends Logging {
       ctx =>
         onConfirmationRequest.filter(ctx) match {
           case Pass(values, transform) =>
-            values._1.getClaims.find { _.getValue.isInstanceOf[T] } match {
+            values._1.getClaims.find {
+              _.getValue.isInstanceOf[T]
+            } match {
               case Some(claimValue) =>
                 Pass(claimValue)
               case None =>
@@ -189,7 +191,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
     }
   }
 
-  def shareSecretByEmail(secret : String) = {
+  def shareSecretByEmail(secret: String) = {
     filter {
       ctx =>
         issueSecret(10).filter(ctx).flatMap(secret =>
@@ -203,69 +205,87 @@ trait BasicIdentityConfirmationDirectives extends Logging {
     }
   }
 
-  def notifyTokenShared(tokenSharedConfirmationUILocation : String, secret : String) : IdentityFlowRoute = {
-      ctx =>
-        userClaim("sourceIpAddress").filter(ctx) match {
-          case Pass(values, transform) =>
-            val sourceIpAddress = values._1.getValue.asInstanceOf[String]
-            val icr = ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage].getMessage.getContent.asInstanceOf[IdentityConfirmationRequest]
-            val pt = icr.getIssuerChannel.getProvider.asInstanceOf[IdentityProvider].getProvisioningTarget
+  def notifyTokenShared(tokenSharedConfirmationUILocation: String, secret: String): IdentityFlowRoute = {
+    ctx =>
+      userClaim("sourceIpAddress").filter(ctx) match {
+        case Pass(values, transform) =>
+          val sourceIpAddress = values._1.getValue.asInstanceOf[String]
+          val icr = ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage].getMessage.getContent.asInstanceOf[IdentityConfirmationRequest]
+          val pt = icr.getIssuerChannel.getProvider.asInstanceOf[IdentityProvider].getProvisioningTarget
 
-            val nid = icr.getClaims.find(_.getValue.isInstanceOf[UsernameTokenType]).
-              getOrElse( throw new IllegalArgumentException("No name identifier claim found")).
-              getValue.asInstanceOf[UsernameTokenType].getUsername.getValue
+          val nid = icr.getClaims.find(_.getValue.isInstanceOf[UsernameTokenType]).
+            getOrElse(throw new IllegalArgumentException("No name identifier claim found")).
+            getValue.asInstanceOf[UsernameTokenType].getUsername.getValue
 
-            val fureq = new FindUserByUsernameRequest
-            fureq.setUsername(nid)
+          val fureq = new FindUserByUsernameRequest
+          fureq.setUsername(nid)
 
-            val user = pt.findUserByUsername(fureq).getUser
-            log.debug("user1 acls size = " + user.getAcls.length)
-            log.debug("user1 acls entries size = " + user.getAcls.length);
+          val user = pt.findUserByUsername(fureq).getUser
 
-            val acl = new Acl
-            acl.setName("Identity Confirmation Acl")
-            acl.setDescription("An Identity Confirmation Access Control List")
+          val idConfAcl = {
+            lazy val newAcl = {
+              val acl = new Acl
+              acl.setName("Identity Confirmation Acl")
+              acl.setDescription("An Identity Confirmation Access Control List")
+              acl
+            }
 
+            Option(user.getAcls) match {
+              case Some(acls) =>
+                acls.find(_.getName == "Identity Confirmation Acl") match {
+                  case Some(acl) =>
+                    acl
+                  case None =>
+                    user.setAcls((user.getAcls) :+ newAcl)
+                    newAcl
+                }
+              case None =>
+                user.setAcls(Array(newAcl))
+                newAcl
+            }
+          }
+
+          val updatedAclEntries = {
             val aclEntry = new AclEntry
             aclEntry.setDecision(AclDecisionType.ALLOW)
             aclEntry.setFrom(sourceIpAddress)
             aclEntry.setState(AclEntryStateType.PENDING)
             aclEntry.setApprovalToken(secret)
-            acl.setAclEntries(Array(aclEntry))
-            user.setAcls(Array(acl))
 
-            val uureq = new UpdateUserRequest
-            uureq.setUser(user)
-            pt.updateUser(uureq)
+            Option(idConfAcl.getEntries) match {
+              case Some(aclEntries) =>
+                aclEntries :+ aclEntry
+              case None =>
+                Array(aclEntry)
+            }
+          }
 
-            //
-            val fureq2 = new FindUserByUsernameRequest
-            fureq2.setUsername(nid)
+          idConfAcl.setAclEntries(updatedAclEntries)
 
-            val user2 = pt.findUserByUsername(fureq2).getUser
-            log.debug("user2 acls size = " + user2.getAcls.length)
-            log.debug("user2 acls entries size = " + user2.getAcls.length);
+          val uureq = new UpdateUserRequest
+          uureq.setUser(user)
+          pt.updateUser(uureq)
 
-          case reject => reject
-        }
+        case reject => reject
+      }
 
-        val taloc =
-          ctx.request.channel.asInstanceOf[IdentityConfirmationChannel].getEndpoints.filter( ep =>
-                IdentityConfirmationBindings.withName(ep.getBinding) == IdentityConfirmationBindings.ID_CONFIRMATION_HTTP_AUTHENTICATION
-          ).headOption.map( ep => new URL("%s%s?t=%s".format(ctx.request.channel.getLocation, ep.getLocation, secret)))
+      val taloc =
+        ctx.request.channel.asInstanceOf[IdentityConfirmationChannel].getEndpoints.filter(ep =>
+          IdentityConfirmationBindings.withName(ep.getBinding) == IdentityConfirmationBindings.ID_CONFIRMATION_HTTP_AUTHENTICATION
+        ).headOption.map(ep => new URL("%s%s?t=%s".format(ctx.request.channel.getLocation, ep.getLocation, secret)))
 
-        taloc match {
-          case Some(tal) =>
-            val tsc = TokenSharedConfirmation(secret, tal)
-            ctx.respond(
-              IdentityFlowResponse(
-                RedirectToLocation(tokenSharedConfirmationUILocation),
-                Option(tsc),
-                Option("TokenSharedConfirmation"))
-            )
-          case None =>
-            log.error("No endpoint specified in channel " + ctx.request.channel.getName + " Identity Confirmation Token Authentication")
-        }
+      taloc match {
+        case Some(tal) =>
+          val tsc = TokenSharedConfirmation(secret, tal)
+          ctx.respond(
+            IdentityFlowResponse(
+              RedirectToLocation(tokenSharedConfirmationUILocation),
+              Option(tsc),
+              Option("TokenSharedConfirmation"))
+          )
+        case None =>
+          log.error("No endpoint specified in channel " + ctx.request.channel.getName + " Identity Confirmation Token Authentication")
+      }
   }
 
   def withIdentityConfirmationState = {
@@ -306,33 +326,36 @@ trait BasicIdentityConfirmationDirectives extends Logging {
     }
   }
 
-  def forIssuedSecret = {
-    filter1[String] {
+  def forAclEntry(secret : String) = {
+    filter1[AclEntry] {
       ctx =>
-        withIdentityConfirmationState.filter(ctx) match {
-          case Pass(values, transform) =>
-            values._1 match {
-              case IdentityConfirmationState(Some(issuedSecret)) =>
-                Pass(issuedSecret)
-              case IdentityConfirmationState(None) =>
-                Reject(NoIssuedSecretFound)
-            }
-          case reject =>
-            Reject(NoIssuedSecretFound)
-        }
+        val idp = ctx.request.channel.asInstanceOf[IdentityConfirmationChannel].getFederatedProvider.asInstanceOf[IdentityProvider]
+        val pt = idp.getProvisioningTarget
+
+        val faereq = new FindAclEntryByApprovalTokenRequest
+        faereq.setApprovalToken(secret)
+
+        val faersp = pt.findAclEntryByApprovalToken(faereq)
+
+        Pass(faersp.getAclEntry)
     }
   }
 
-  def verifyToken(receivedToken : String, issuedToken : String) = {
+  def verifyToken(receivedToken: String, aclEntry: AclEntry) = {
     filter {
       ctx =>
-        if (receivedToken == issuedToken) Pass else Reject(AuthenticationFailed)
+        if (receivedToken == aclEntry.getApprovalToken) Pass else Reject(AuthenticationFailed)
     }
   }
 
-  def notifyCompletion : IdentityFlowRoute = {
+  def notifyCompletion: IdentityFlowRoute = {
     ctx =>
-     //ctx.respond(IdentityFlowResponse(RedirectToUrl(new URL("http://localhost/"))))
+      ctx.respond(
+        IdentityFlowResponse(
+          RedirectToLocation("OKOK"),
+          Option(null),
+          Option("TokenSharedConfirmation"))
+      )
   }
 
 

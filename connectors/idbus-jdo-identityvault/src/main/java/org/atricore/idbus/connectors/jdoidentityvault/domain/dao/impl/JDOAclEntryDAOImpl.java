@@ -30,6 +30,9 @@ public class JDOAclEntryDAOImpl extends GenericDAOImpl<JDOAclEntry, Long> implem
 
         Collection<JDOAclEntry> entries = (Collection<JDOAclEntry>) query.execute();
 
+        if (entries == null || entries.size() != 1)
+            throw new IncorrectResultSizeDataAccessException(1, entries.size());
+
         return (entries == null) ? null : entries.iterator().next();
     }
 
@@ -40,6 +43,9 @@ public class JDOAclEntryDAOImpl extends GenericDAOImpl<JDOAclEntry, Long> implem
                 " WHERE this.approvalToken == '" + approvalToken + "'");
 
         Collection<JDOAclEntry> entries = (Collection<JDOAclEntry>) query.execute();
+
+        if (entries == null || entries.size() != 1)
+            throw new IncorrectResultSizeDataAccessException(1, entries.size());
 
         return (entries == null) ? null : entries.iterator().next();
     }

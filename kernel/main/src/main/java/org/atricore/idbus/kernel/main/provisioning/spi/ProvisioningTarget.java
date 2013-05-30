@@ -76,6 +76,10 @@ public interface ProvisioningTarget {
 
     ResetPasswordResponse confirmResetPassword(ConfirmResetPasswordRequest resetPwdRequest) throws ProvisioningException;
 
+    //<--------------- ACLs -------------------->
+
+    FindAclEntryByApprovalTokenResponse findAclEntryByApprovalToken(FindAclEntryByApprovalTokenRequest aclEntryRequest) throws ProvisioningException;
+
     //<--------------- Schema -------------------->
 
     AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest)

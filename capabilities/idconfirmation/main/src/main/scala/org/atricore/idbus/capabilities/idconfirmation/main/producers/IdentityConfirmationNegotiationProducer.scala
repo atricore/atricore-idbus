@@ -48,7 +48,7 @@ private[main] class IdentityConfirmationNegotiationProducer(camelEndpoint: Endpo
   private final val logger = LogFactory.getLog(classOf[IdentityConfirmationNegotiationProducer])
 
   protected def doProcess(exchange: CamelMediationExchange) {
-    val idcChannel =  channel.asInstanceOf[IdentityConfirmationChannel]
+    val idcChannel = channel.asInstanceOf[IdentityConfirmationChannel]
     val idcMediator = idcChannel.getIdentityMediator.asInstanceOf[IdentityConfirmationMediator]
     val provider = idcChannel.getProvider
     var rejections: Option[Set[Rejection]] = None
@@ -66,19 +66,18 @@ private[main] class IdentityConfirmationNegotiationProducer(camelEndpoint: Endpo
             }
           }
       } ~
-      onConfirmationTokenAuthenticationRequest {
-        _ =>
-          forReceivedSecret {
-            (receivedSecret) =>
-              forIssuedSecret {
-                (issuedSecret) =>
-                  verifyToken(receivedSecret, issuedSecret) {
-                    notifyCompletion
-                  }
-
-              }
-          }
-      }                           // TODO: Rejection handling!!
+        onConfirmationTokenAuthenticationRequest {
+          _ =>
+            forReceivedSecret {
+              (receivedSecret) =>
+                forAclEntry(receivedSecret) {
+                  (aclEntry) =>
+                    verifyToken(receivedSecret, aclEntry) {
+                      notifyCompletion
+                    }
+                }
+            }
+        }
     }(ctx.withResponse(resp => respond(exchange, resp)).withReject(rejs => rejections = Some(rejs)))
 
   }

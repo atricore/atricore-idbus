@@ -9,6 +9,7 @@ import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDA
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 import org.atricore.idbus.kernel.main.provisioning.domain.*;
+import org.atricore.idbus.kernel.main.provisioning.exception.AclEntryNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
@@ -400,6 +401,25 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         }
     }
 
+    // -------------------------------------< ACLs >
+
+    @Transactional
+    public AclEntry findAclEntryByApprovalToken(String approvalToken) throws ProvisioningException {
+
+        try {
+            JDOAclEntry jdoAclEntry = aclEntryDao.findByApprovalToken(approvalToken);
+            jdoAclEntry = aclEntryDao.detachCopy(jdoAclEntry, FetchPlan.FETCH_SIZE_GREEDY);
+            return toAclEntry(jdoAclEntry);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            if (e.getActualSize() == 0)
+                throw new AclEntryNotFoundException(approvalToken);
+            throw new ProvisioningException(e);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+
     // -------------------------------------------< Utils >
 
     protected JDOGroup toJDOGroup(Group group) {
@@ -610,14 +630,10 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 AclEntry[] aclEntries = new AclEntry[jdoAcl.getEntries().length];
                 for (int j = 0; j < jdoAcl.getEntries().length; j++) {
                     JDOAclEntry jdoAclEntry = jdoAcl.getEntries()[j];
-                    AclEntry aclEntry = new AclEntry();
-                    aclEntry.setFrom(jdoAclEntry.getFrom());
-                    aclEntry.setDecision(AclDecisionType.fromValue(jdoAclEntry.getDecision().toString()));
-                    aclEntry.setApprovalToken(jdoAclEntry.getApprovalToken());
-                    aclEntry.setState(AclEntryStateType.fromValue(jdoAclEntry.getState().toString()));
-                    aclEntry.setId(jdoAcl.getId());
+                    AclEntry aclEntry = toAclEntry(jdoAclEntry);
                     aclEntries[j] = aclEntry;
                 }
+                acl.setAclEntries(aclEntries);
                 acls[i] = acl;
             }
 
@@ -657,7 +673,17 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         return users;
 
     }
-    
+
+    protected AclEntry toAclEntry(JDOAclEntry jdoAclEntry) {
+        AclEntry aclEntry = new AclEntry();
+        aclEntry.setFrom(jdoAclEntry.getFrom());
+        aclEntry.setDecision(AclDecisionType.fromValue(jdoAclEntry.getDecision().toString()));
+        aclEntry.setApprovalToken(jdoAclEntry.getApprovalToken());
+        aclEntry.setState(AclEntryStateType.fromValue(jdoAclEntry.getState().toString()));
+        aclEntry.setId(jdoAclEntry.getId());
+        return aclEntry;
+
+    }
 
 }
 
