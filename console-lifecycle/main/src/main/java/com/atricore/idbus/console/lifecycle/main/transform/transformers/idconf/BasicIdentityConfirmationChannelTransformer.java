@@ -126,6 +126,12 @@ public class BasicIdentityConfirmationChannelTransformer extends AbstractTransfo
         setPropertyValue(idcMediator, "tokenSharingConfirmationUILocation",
                 resolveUiLocationPath(appliance) + "/" + provider.getName().toUpperCase() + "/IDCONF/INITIATE");
 
+        // OAuth2 stuff required for issuing access tokens
+        setPropertyValue(idcMediator, "oauth2ClientId", "internal");
+        setPropertyValue(idcMediator, "oauth2ClientSecret", "abc123");
+        setPropertyValue(idcMediator, "oauth2AuthorizationServerEndpoint",
+                      resolveLocationUrl(provider) + "/OAUTH2/TOKEN/SOAP");
+
         // artifactQueueManager
         // setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
         setPropertyRef(idcMediator, "artifactQueueManager", "artifactQueueManager");
