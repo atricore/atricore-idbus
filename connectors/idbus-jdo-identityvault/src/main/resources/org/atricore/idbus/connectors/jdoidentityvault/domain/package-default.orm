@@ -243,6 +243,14 @@
 
         <class name="JDOAclEntry" table="ATC_ACL_ENTRY" >
 
+            <field name="principalNameClaim">
+                <column name="PRINCIPAL_NAME_CLAIM"/>
+            </field>
+
+            <field name="passwordClaim">
+                <column name="PASSWORD_CLAIM"/>
+            </field>
+
             <field name="decision">
                 <column name="DECISION"/>
             </field>

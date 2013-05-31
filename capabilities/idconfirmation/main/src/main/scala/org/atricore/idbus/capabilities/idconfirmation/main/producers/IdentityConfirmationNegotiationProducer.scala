@@ -32,6 +32,7 @@ import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmatio
 import org.atricore.idbus.capabilities.sso.dsl.core.{IdentityBusConnector, Rejection, IdentityFlowRequestContext}
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.BasicIdentityConfirmationDirectives
 import org.atricore.idbus.capabilities.sso.dsl.core.directives.{DebuggingDirectives, BasicIdentityFlowDirectives}
+import org.atricore.idbus.capabilities.oauth2.component.builtin.BasicOAuth2Directives
 
 /**
  * Implementation of the identity confirmation capability.
@@ -42,6 +43,7 @@ private[main] class IdentityConfirmationNegotiationProducer(camelEndpoint: Endpo
   extends AbstractCamelProducer[CamelMediationExchange](camelEndpoint)
   with BasicIdentityFlowDirectives
   with BasicIdentityConfirmationDirectives
+  with BasicOAuth2Directives
   with DebuggingDirectives
   with IdentityBusConnector {
 
@@ -73,7 +75,17 @@ private[main] class IdentityConfirmationNegotiationProducer(camelEndpoint: Endpo
                 forAclEntry(receivedSecret) {
                   (aclEntry) =>
                     verifyToken(receivedSecret, aclEntry) {
-                      notifyCompletion
+                      requestOAuth2AccessToken(
+                        idcMediator.oauth2ClientId,
+                        idcMediator.oauth2ClientSecret,
+                        idcMediator.oauth2AuthorizationServerEndpoint,
+                        aclEntry.getPrincipalNameClaim,
+                        aclEntry.getPasswordClaim
+                      ) {
+                        (oauth2Token) =>
+                          logger.debug("OAuth2 Token = " + oauth2Token)
+                          notifyCompletion
+                      }
                     }
                 }
             }

@@ -10,6 +10,8 @@ public class JDOAclEntry implements Serializable {
     private static final long serialVersionUID = 4595183658527599864L;
 
     private Long id;
+    private String principalNameClaim;
+    private String passwordClaim;
     private JDOAclDecisionType decision;
     private String from;
     private JDOAclEntryStateType state;
@@ -21,6 +23,22 @@ public class JDOAclEntry implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getPrincipalNameClaim() {
+        return principalNameClaim;
+    }
+
+    public void setPrincipalNameClaim(String principalNameClaim) {
+        this.principalNameClaim = principalNameClaim;
+    }
+
+    public String getPasswordClaim() {
+        return passwordClaim;
+    }
+
+    public void setPasswordClaim(String passwordClaim) {
+        this.passwordClaim = passwordClaim;
     }
 
     public JDOAclDecisionType getDecision() {

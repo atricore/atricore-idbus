@@ -43,7 +43,16 @@ class IdentityConfirmationMediator extends AbstractCamelMediator {
   private final val logger = LogFactory.getLog(classOf[IdentityConfirmationMediator])
 
   @BeanProperty
-  var tokenSharingConfirmationUILocation : String = ""
+  var tokenSharingConfirmationUILocation : String = _
+
+  @BeanProperty
+  var oauth2ClientId : String = _
+
+  @BeanProperty
+  var oauth2ClientSecret : String = _
+
+  @BeanProperty
+  var oauth2AuthorizationServerEndpoint : String = _
 
   protected override def createIdentityConfirmationRoutes(identityConfirmationChannel: IdentityConfirmationChannel): RouteBuilder = {
     logger.info("Creating Identity Confirmation Routes")

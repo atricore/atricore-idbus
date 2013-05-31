@@ -39,8 +39,10 @@ import org.atricore.idbus.kernel.main.mediation.channel.SPChannel
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider
 import org.atricore.idbus.kernel.main.provisioning.spi.request.{FindAclEntryByApprovalTokenRequest, UpdateUserRequest, FindUserByUsernameRequest}
 import org.atricore.idbus.kernel.main.provisioning.domain.{AclEntryStateType, AclDecisionType, AclEntry, Acl}
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.{PasswordString, UsernameTokenType}
 import org.atricore.idbus.kernel.main.mediation.claim.{Claim, UserClaim}
+import org.atricore.idbus.kernel.main.authn.Constants
+import javax.xml.namespace.QName
 
 /**
  * Identity confirmation directives of the identity combinator library.
@@ -213,9 +215,14 @@ trait BasicIdentityConfirmationDirectives extends Logging {
           val icr = ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage].getMessage.getContent.asInstanceOf[IdentityConfirmationRequest]
           val pt = icr.getIssuerChannel.getProvider.asInstanceOf[IdentityProvider].getProvisioningTarget
 
-          val nid = icr.getClaims.find(_.getValue.isInstanceOf[UsernameTokenType]).
-            getOrElse(throw new IllegalArgumentException("No name identifier claim found")).
-            getValue.asInstanceOf[UsernameTokenType].getUsername.getValue
+          val username = icr.getClaims.find(_.getValue.isInstanceOf[UsernameTokenType]).
+            getOrElse(throw new IllegalArgumentException("No credentials found")).getValue.asInstanceOf[UsernameTokenType]
+
+          val nid = Option(username.getUsername).
+            getOrElse(throw new IllegalArgumentException("No username found")).getValue
+
+          val pwd = Option(username.getOtherAttributes.get(new QName(Constants.PASSWORD_NS))).
+            getOrElse(throw new IllegalArgumentException("No password found"))
 
           val fureq = new FindUserByUsernameRequest
           fureq.setUsername(nid)
@@ -247,6 +254,8 @@ trait BasicIdentityConfirmationDirectives extends Logging {
 
           val updatedAclEntries = {
             val aclEntry = new AclEntry
+            aclEntry.setPrincipalNameClaim(nid)
+            aclEntry.setPasswordClaim(pwd)
             aclEntry.setDecision(AclDecisionType.ALLOW)
             aclEntry.setFrom(sourceIpAddress)
             aclEntry.setState(AclEntryStateType.PENDING)

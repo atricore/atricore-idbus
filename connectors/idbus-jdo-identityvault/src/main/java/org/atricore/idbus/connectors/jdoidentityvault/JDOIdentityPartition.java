@@ -676,6 +676,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     protected AclEntry toAclEntry(JDOAclEntry jdoAclEntry) {
         AclEntry aclEntry = new AclEntry();
+        aclEntry.setPrincipalNameClaim(jdoAclEntry.getPrincipalNameClaim());
+        aclEntry.setPasswordClaim(jdoAclEntry.getPasswordClaim());
         aclEntry.setFrom(jdoAclEntry.getFrom());
         aclEntry.setDecision(AclDecisionType.fromValue(jdoAclEntry.getDecision().toString()));
         aclEntry.setApprovalToken(jdoAclEntry.getApprovalToken());

@@ -43,6 +43,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.oauth2.component.builtin</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
             <artifactId>org.atricore.idbus.capabilities.idconfirmation.component.builtin</artifactId>
             <version>${pom.version}</version>
