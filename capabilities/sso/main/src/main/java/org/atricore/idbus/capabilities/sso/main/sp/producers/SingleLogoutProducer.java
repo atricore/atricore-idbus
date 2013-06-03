@@ -238,7 +238,7 @@ public class SingleLogoutProducer extends SSOProducer {
         in.getMessage().getState().removeLocalVariable("urn:oasis:names:tc:SAML:2.0:protocol:LogoutRequest");
 
         // Validate received Response
-        validateResponse(logoutRequest, (StatusResponseType) in.getMessage().getContent(),
+        validateSLOResponse(logoutRequest, (StatusResponseType) in.getMessage().getContent(),
                 in.getMessage().getRawContent(),
                 in.getMessage().getState());
 
@@ -348,10 +348,10 @@ public class SingleLogoutProducer extends SSOProducer {
 
 
     // TODO : Reuse basic SAML response validations ....
-    protected StatusResponseType validateResponse(LogoutRequestType request,
-                                            StatusResponseType response,
-                                            String originalResponse,
-                                            MediationState state)
+    protected StatusResponseType validateSLOResponse(LogoutRequestType request,
+                                                     StatusResponseType response,
+                                                     String originalResponse,
+                                                     MediationState state)
             throws SSOResponseException, SSOException {
 
         SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
@@ -542,12 +542,18 @@ public class SingleLogoutProducer extends SSOProducer {
 		// XML Signature, saml2 core, section 5 (always validate response signature)
         // If no signature is present, throw an exception!
 
-        if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
+        // What to do with artifact and SOAP bindings ?!
+        if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()) &&
+            !endpoint.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue())) {
             if (response.getSignature() == null)
-                throw new SSOResponseException(response,
+                // Disable this for non-saml compliant IdPs
+                if (mediator.isWantSLOResponseSigned()) {
+                    throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_RESPONSE_SIGNATURE);
+                }
+
             try {
 
                 if (originalResponse != null)
@@ -570,12 +576,16 @@ public class SingleLogoutProducer extends SSOProducer {
         } else {
             // HTTP-Redirect binding signature validation !
             try {
-                signer.validateQueryString(idpMd,
+
+                // Only validate SLO Response signature if required
+                if (mediator.isWantSLOResponseSigned())
+                    signer.validateQueryString(idpMd,
                         state.getTransientVariable("SAMLResponse"),
                         state.getTransientVariable("RelayState"),
                         state.getTransientVariable("SigAlg"),
                         state.getTransientVariable("Signature"),
                         true);
+
             } catch (SamlR2SignatureValidationException e) {
                 throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
