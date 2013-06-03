@@ -46,6 +46,8 @@ public class InternalSaml2ServiceProvider extends FederatedProvider {
     private boolean signRequests;
 
     private boolean wantSignedRequests;
+
+    private boolean wantSLOResponseSigned;
     
     private int messageTtl;
     
@@ -133,6 +135,14 @@ public class InternalSaml2ServiceProvider extends FederatedProvider {
         this.wantSignedRequests = wantSignedRequests;
     }
 
+    public boolean isWantSLOResponseSigned() {
+        return wantSLOResponseSigned;
+    }
+
+    public void setWantSLOResponseSigned(boolean wantSLOResponseSigned) {
+        this.wantSLOResponseSigned = wantSLOResponseSigned;
+    }
+
     public int getMessageTtl() {
         return messageTtl;
     }
@@ -148,4 +158,5 @@ public class InternalSaml2ServiceProvider extends FederatedProvider {
     public void setMessageTtlTolerance(int messageTtlTolerance) {
         this.messageTtlTolerance = messageTtlTolerance;
     }
+
 }

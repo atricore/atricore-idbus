@@ -138,6 +138,7 @@ public class InternalSaml2ServiceProviderCreateMediator extends IocFormMediator 
         view.spLocationPath.text = "";
         view.signAuthnRequestsCheck.selected = false;
         view.wantAssertionSignedCheck.selected = false;
+        view.wantSLOResponseSignedCheck.selected = true;
         view.signRequestsCheck.selected = false;
         view.wantSignedRequestsCheck.selected = false;
         view.samlBindingHttpPostCheck.selected = false;
@@ -219,6 +220,7 @@ public class InternalSaml2ServiceProviderCreateMediator extends IocFormMediator 
 
         serviceProvider.signAuthenticationRequests = view.signAuthnRequestsCheck.selected;
         serviceProvider.wantAssertionSigned = view.wantAssertionSignedCheck.selected;
+        serviceProvider.wantSLOResponseSigned = view.wantSLOResponseSignedCheck.selected;
         serviceProvider.signRequests = view.signRequestsCheck.selected;
         serviceProvider.wantSignedRequests = view.wantSignedRequestsCheck.selected;
         serviceProvider.messageTtl = parseInt(view.messageTtl.text);

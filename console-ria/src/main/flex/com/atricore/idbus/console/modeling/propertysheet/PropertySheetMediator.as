@@ -2405,126 +2405,6 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    /*private function handleServiceProviderContractPropertyTabCreationComplete(event:Event):void {
-
-     var serviceProvider:InternalSaml2ServiceProvider;
-
-     serviceProvider = _currentIdentityApplianceElement as InternalSaml2ServiceProvider;
-
-     // if serviceProvider is null that means some other element was selected before completing this
-     if (serviceProvider != null) {
-     _spContractSection.signAuthnRequestsCheck.selected = serviceProvider.signAuthenticationRequests;
-     _spContractSection.wantAssertionSignedCheck.selected = serviceProvider.wantAssertionSigned;
-     _spContractSection.signRequestsCheck.selected = serviceProvider.signRequests;
-     _spContractSection.wantSignedRequestsCheck.selected = serviceProvider.wantSignedRequests;
-
-     for (var j:int = 0; j < serviceProvider.activeBindings.length; j ++) {
-     var tmpBinding:Binding = serviceProvider.activeBindings.getItemAt(j) as Binding;
-     if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-     _spContractSection.samlBindingHttpPostCheck.selected = true;
-     }
-     if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-     _spContractSection.samlBindingHttpRedirectCheck.selected = true;
-     }
-     if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-     _spContractSection.samlBindingArtifactCheck.selected = true;
-     }
-     if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-     _spContractSection.samlBindingSoapCheck.selected = true;
-     }
-     }
-     for (j = 0; j < serviceProvider.activeProfiles.length; j++) {
-     var tmpProfile:Profile = serviceProvider.activeProfiles.getItemAt(j) as Profile;
-     if (tmpProfile.name == Profile.SSO.name) {
-     _spContractSection.samlProfileSSOCheck.selected = true;
-     }
-     if (tmpProfile.name == Profile.SSO_SLO.name) {
-     _spContractSection.samlProfileSLOCheck.selected = true;
-     }
-     }
-
-     if (_applianceSaved) {
-     _spContractSection.btnExportMetadata.enabled = true;
-     _spContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
-     }
-
-     _spContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
-     _spContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
-     _spContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
-     _spContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
-     _spContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-     _spContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-     _spContractSection.signAuthnRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
-     _spContractSection.wantAssertionSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
-     _spContractSection.signRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
-     _spContractSection.wantSignedRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
-     }
-     }
-
-     private function handleServiceProviderContractPropertyTabRollOut(event:Event):void {
-     if (_dirty && validate(true)) {
-     var serviceProvider:InternalSaml2ServiceProvider;
-
-     serviceProvider = _currentIdentityApplianceElement as InternalSaml2ServiceProvider;
-
-     if (serviceProvider.activeBindings == null) {
-     serviceProvider.activeBindings = new ArrayCollection();
-     }
-     serviceProvider.activeBindings.removeAll();
-     if (_spContractSection.samlBindingHttpPostCheck.selected) {
-     serviceProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
-     }
-     if (_spContractSection.samlBindingArtifactCheck.selected) {
-     serviceProvider.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
-     }
-     if (_spContractSection.samlBindingHttpRedirectCheck.selected) {
-     serviceProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
-     }
-     if (_spContractSection.samlBindingSoapCheck.selected) {
-     serviceProvider.activeBindings.addItem(Binding.SAMLR2_SOAP);
-     }
-
-     if (serviceProvider.activeProfiles == null) {
-     serviceProvider.activeProfiles = new ArrayCollection();
-     }
-     serviceProvider.activeProfiles.removeAll();
-     if (_spContractSection.samlProfileSSOCheck.selected) {
-     serviceProvider.activeProfiles.addItem(Profile.SSO);
-     }
-     if (_spContractSection.samlProfileSLOCheck.selected) {
-     serviceProvider.activeProfiles.addItem(Profile.SSO_SLO);
-     }
-
-     serviceProvider.signAuthenticationRequests = _spContractSection.signAuthnRequestsCheck.selected;
-     serviceProvider.wantAssertionSigned = _spContractSection.wantAssertionSignedCheck.selected;
-     serviceProvider.signRequests = _spContractSection.signRequestsCheck.selected;
-     serviceProvider.wantSignedRequests = _spContractSection.wantSignedRequestsCheck.selected;
-
-     // update default idp channels
-     if (serviceProvider.federatedConnectionsA != null) {
-     for (var i:int = 0; i < serviceProvider.federatedConnectionsA.length; i++) {
-     var idpChannel:IdentityProviderChannel = serviceProvider.federatedConnectionsA[i].channelA as IdentityProviderChannel;
-     if (!idpChannel.overrideProviderSetup) {
-     updateIdentityProviderChannel(idpChannel, serviceProvider);
-     }
-     }
-     }
-
-     if (serviceProvider.federatedConnectionsB != null) {
-     for (var j:int = 0; j < serviceProvider.federatedConnectionsB.length; j++) {
-     var idpChannel2:IdentityProviderChannel = serviceProvider.federatedConnectionsB[j].channelB as IdentityProviderChannel;
-     if (!idpChannel2.overrideProviderSetup) {
-     updateIdentityProviderChannel(idpChannel2, serviceProvider);
-     }
-     }
-     }
-
-     sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-     _applianceSaved = false;
-     _dirty = false;
-     }
-     }*/
-
     private function handleServiceProviderSaml2PropertyTabCreationComplete(event:Event):void {
 
         var serviceProvider:InternalSaml2ServiceProvider;
@@ -2535,6 +2415,7 @@ public class PropertySheetMediator extends IocMediator {
         if (serviceProvider != null) {
             _spSaml2Section.signAuthnRequestsCheck.selected = serviceProvider.signAuthenticationRequests;
             _spSaml2Section.wantAssertionSignedCheck.selected = serviceProvider.wantAssertionSigned;
+            _spSaml2Section.wantSLOResponseSignedCheck.selected = serviceProvider.wantSLOResponseSigned;
             _spSaml2Section.signRequestsCheck.selected = serviceProvider.signRequests;
             _spSaml2Section.wantSignedRequestsCheck.selected = serviceProvider.wantSignedRequests;
             _spSaml2Section.messageTtl.text = serviceProvider.messageTtl.toString();
@@ -2594,6 +2475,7 @@ public class PropertySheetMediator extends IocMediator {
             _spSaml2Section.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _spSaml2Section.signAuthnRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _spSaml2Section.wantAssertionSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spSaml2Section.wantSLOResponseSignedCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _spSaml2Section.signRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _spSaml2Section.wantSignedRequestsCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _spSaml2Section.messageTtl.addEventListener(Event.CHANGE, handleSectionChange);
@@ -2641,6 +2523,7 @@ public class PropertySheetMediator extends IocMediator {
 
             serviceProvider.signAuthenticationRequests = _spSaml2Section.signAuthnRequestsCheck.selected;
             serviceProvider.wantAssertionSigned = _spSaml2Section.wantAssertionSignedCheck.selected;
+            serviceProvider.wantSLOResponseSigned = _spSaml2Section.wantSLOResponseSignedCheck.selected;
             serviceProvider.signRequests = _spSaml2Section.signRequestsCheck.selected;
             serviceProvider.wantSignedRequests = _spSaml2Section.wantSignedRequestsCheck.selected;
             serviceProvider.messageTtl = parseInt(_spSaml2Section.messageTtl.text);

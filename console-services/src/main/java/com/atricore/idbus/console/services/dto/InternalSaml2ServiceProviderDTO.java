@@ -46,6 +46,8 @@ public class InternalSaml2ServiceProviderDTO extends FederatedProviderDTO {
 
     private boolean wantSignedRequests;
 
+    private boolean wantSLOResponseSigned;
+
     private int messageTtl;
 
     private int messageTtlTolerance;
@@ -146,5 +148,13 @@ public class InternalSaml2ServiceProviderDTO extends FederatedProviderDTO {
 
     public void setMessageTtlTolerance(int messageTtlTolerance) {
         this.messageTtlTolerance = messageTtlTolerance;
+    }
+
+    public boolean isWantSLOResponseSigned() {
+        return wantSLOResponseSigned;
+    }
+
+    public void setWantSLOResponseSigned(boolean wantSLOResponseSigned) {
+        this.wantSLOResponseSigned = wantSLOResponseSigned;
     }
 }

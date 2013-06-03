@@ -125,6 +125,10 @@
                     <s:CheckBox id="wantAssertionSignedCheck" selected="false"/>
                 </mx:FormItem>
 
+                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantSLOResponseSigned')}:">
+                    <s:CheckBox id="wantSLOResponseSignedCheck" selected="true"/>
+                </mx:FormItem>
+
                 <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantSignedRequests')}:">
                     <s:CheckBox id="wantSignedRequestsCheck" selected="false"/>
                 </mx:FormItem>

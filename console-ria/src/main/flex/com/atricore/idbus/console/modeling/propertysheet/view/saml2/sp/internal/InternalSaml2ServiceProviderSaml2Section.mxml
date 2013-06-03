@@ -62,6 +62,10 @@
             <s:CheckBox id="signRequestsCheck"/>
         </mx:FormItem>
 
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.wantSLOResponseSigned')}:">
+            <s:CheckBox id="wantSLOResponseSignedCheck"/>
+        </mx:FormItem>
+
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.messageTtl')}:">
             <s:TextInput id="messageTtl"/>
         </mx:FormItem>

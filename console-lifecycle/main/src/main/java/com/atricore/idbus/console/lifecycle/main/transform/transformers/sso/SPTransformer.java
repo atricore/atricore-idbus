@@ -309,6 +309,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
             setPropertyValue(spMediator, "signRequests", providerInternalSaml2.isSignRequests());
             setPropertyValue(spMediator, "validateRequestsSignature", providerInternalSaml2.isWantSignedRequests());
+            setPropertyValue(spMediator, "wantSLOResponseSigned", providerInternalSaml2.isWantSLOResponseSigned());
 
         } else {
             throw new TransformException("No Signer defined for " + sp.getName());
