@@ -58,7 +58,11 @@ public class SSOSPMediator extends AbstractSSOMediator {
 
     private String spBindingSLO;
 
+
     private String idpSelector;
+
+    private boolean wantSLOResponseSigned;
+
 
     // Send IdP Heart Beat every 7 minutes by default!
     private long idpSessionHeartBeatInterval = 7L * 60L;
@@ -528,5 +532,12 @@ public class SSOSPMediator extends AbstractSSOMediator {
         this.idpSessionHeartBeatInterval = idpSessionHeartBeatInterval;
     }
 
+    public boolean isWantSLOResponseSigned() {
+        return wantSLOResponseSigned;
+    }
+
+    public void setWantSLOResponseSigned(boolean wantSLOResponseSigned) {
+        this.wantSLOResponseSigned = wantSLOResponseSigned;
+    }
 
 }
