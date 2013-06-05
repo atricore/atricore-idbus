@@ -100,17 +100,18 @@ trait UserDirectives extends Logging {
 
         idConfAcl match {
           case Some(acl) =>
-            acl.getEntries.filter(aclEntry =>
-              aclEntry.getFrom == from).headOption match {
-              case Some(aclEntry) => Pass(aclEntry)
+            Option(acl.getEntries) match {
+              case Some(aclEntries) =>
+                aclEntries.filter(aclEntry =>
+                  aclEntry.getFrom == from).headOption match {
+                  case Some(aclEntry) => Pass(aclEntry)
+                  case None => Reject(AclEntryNotFound)
+              }
               case None => Reject(AclEntryNotFound)
             }
           case None =>
             Reject(UserNotFound)
-
         }
-
-
     }
   }
 

@@ -664,13 +664,15 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 acl.setDescription(jdoAcl.getDescription());
                 acl.setId(jdoAcl.getId());
 
-                AclEntry[] aclEntries = new AclEntry[jdoAcl.getEntries().length];
-                for (int j = 0; j < jdoAcl.getEntries().length; j++) {
-                    JDOAclEntry jdoAclEntry = jdoAcl.getEntries()[j];
-                    AclEntry aclEntry = toAclEntry(jdoAclEntry);
-                    aclEntries[j] = aclEntry;
+                if (jdoAcl.getEntries() != null) {
+                    AclEntry[] aclEntries = new AclEntry[jdoAcl.getEntries().length];
+                    for (int j = 0; j < jdoAcl.getEntries().length; j++) {
+                        JDOAclEntry jdoAclEntry = jdoAcl.getEntries()[j];
+                        AclEntry aclEntry = toAclEntry(jdoAclEntry);
+                        aclEntries[j] = aclEntry;
+                    }
+                    acl.setAclEntries(aclEntries);
                 }
-                acl.setAclEntries(aclEntries);
                 acls[i] = acl;
             }
 

@@ -887,14 +887,20 @@ public class AssertionConsumerProducer extends SSOProducer {
     	// Request can be null for IDP initiated SSO
 
 
-    	if(request != null) {
+    	if(request != null && response.getInResponseTo() != null) {
+            // A second IDP-initiated request might have been triggered after an SP-initiated one.
+            // The response for the IDP-initiated request should be honoured even if does not correspond with the
+            // first authentication request. This condition is triggered in the identity confirmation usage scenario.
+            //
+            /*
             if (response.getInResponseTo() == null) {
                 throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         null,
                         StatusDetails.NO_IN_RESPONSE_TO);
 
-            } else if (!request.getID().equals(response.getInResponseTo())) {
+            } else */
+            if (!request.getID().equals(response.getInResponseTo())) {
                 throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         null,

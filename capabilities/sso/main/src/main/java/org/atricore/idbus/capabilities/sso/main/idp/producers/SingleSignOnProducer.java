@@ -825,6 +825,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 logger.debug("Confirming user identity using endpoint " + idConfEp);
 
+                clearAuthnState(exchange);
+
                 out.setMessage(new MediationMessageImpl(idConfRequest.getId(),
                         idConfRequest, "IdentityConfirmationRequest", null, idConfEp, in.getMessage().getState()));
 
