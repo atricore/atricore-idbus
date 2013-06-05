@@ -54,5 +54,8 @@ public interface IdentityPartition {
 
     AclEntry findAclEntryByApprovalToken(String approvalToken) throws ProvisioningException;
 
+    AclEntry findAclEntryById(long id) throws ProvisioningException;
+
+    AclEntry updateAclEntry(AclEntry aclEntry) throws ProvisioningException;
 
 }

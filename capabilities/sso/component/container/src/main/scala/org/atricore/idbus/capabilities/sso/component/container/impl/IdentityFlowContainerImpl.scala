@@ -9,6 +9,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.provider.Provider
 import org.atricore.idbus.kernel.main.mediation.Channel
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet
 
 class IdentityFlowContainerImpl extends IdentityFlowContainer {
   private[this] val log: Log = LogFactory.getLog(this.getClass)
@@ -34,11 +35,12 @@ class IdentityFlowContainerImpl extends IdentityFlowContainer {
     }
   }
 
-  def dispatch( componentId : String, exchange : CamelMediationExchange, provider : Provider, channel : Channel, endpoint : IdentityMediationEndpoint) = {
+  def dispatch( componentId : String, exchange : CamelMediationExchange, provider : Provider, channel : Channel,
+                endpoint : IdentityMediationEndpoint, claims : ClaimSet) = {
     var rejections : Option[Set[Rejection]] = None
     var response : Option[IdentityFlowResponse] = None
 
-    val ctx = IdentityFlowRequestContext( IdentityFlowRequest(exchange, provider, channel, endpoint))
+    val ctx = IdentityFlowRequestContext( IdentityFlowRequest(exchange, provider, channel, endpoint, Option(claims)))
 
     _components.find( _.name == componentId).headOption match {
       case Some(comp) =>

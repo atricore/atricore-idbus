@@ -266,6 +266,10 @@
             <field name="approvalToken">
                 <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
             </field>
+
+            <field name="spAlias">
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
         </class>
 
         <class name="JDOUserAttributeDefinition" table="ATC_USER_ATTRIBUTE" >

@@ -54,6 +54,9 @@ class IdentityConfirmationMediator extends AbstractCamelMediator {
   @BeanProperty
   var oauth2AuthorizationServerEndpoint : String = _
 
+  @BeanProperty
+  var idpInitiatedEndpoint : String = _
+
   protected override def createIdentityConfirmationRoutes(identityConfirmationChannel: IdentityConfirmationChannel): RouteBuilder = {
     logger.info("Creating Identity Confirmation Routes")
 

@@ -117,4 +117,6 @@ public interface ProvisioningTarget {
 
     ListGroupAttributesResponse listGroupAttributes(ListGroupAttributesRequest groupAttributeRequest)
             throws ProvisioningException;
+
+    UpdateAclEntryResponse updateAclEntry(UpdateAclEntryRequest aclEntryRequest) throws ProvisioningException;
 }

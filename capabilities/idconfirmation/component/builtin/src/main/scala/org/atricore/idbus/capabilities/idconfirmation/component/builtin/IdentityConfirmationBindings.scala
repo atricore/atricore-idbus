@@ -30,4 +30,5 @@ object IdentityConfirmationBindings extends Enumeration {
 
   val ID_CONFIRMATION_HTTP_AUTHENTICATION = Value("urn:org:atricore:idbus:identityconfirmation:bindings:HTTP-Authentication")
   val SSO_ARTIFACT = Value("urn:org:atricore:idbus:sso:bindings:HTTP-Artifact")
+  val SSO_REDIRECT = Value("urn:org:atricore:idbus:sso:bindings:HTTP-Redirect")
 }

@@ -29,6 +29,10 @@ package org.atricore.idbus.kernel.main.provisioning.exception;
  */
 public class AclEntryNotFoundException extends ProvisioningException {
 
+    public AclEntryNotFoundException(long id) {
+        super("The ACL entry with id "+id+" couldn't be found");
+    }
+
     public AclEntryNotFoundException(String approvalToken) {
         super("The ACL entry with approval token "+approvalToken+" couldn't be found");
     }

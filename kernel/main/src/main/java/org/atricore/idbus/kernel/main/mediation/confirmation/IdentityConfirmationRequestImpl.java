@@ -36,13 +36,15 @@ import java.util.Collection;
 public class IdentityConfirmationRequestImpl implements IdentityConfirmationRequest {
     private String id;
     private FederationChannel issuerChannel;
+    private String spAlias;
     private Collection<Claim> claims = new ArrayList<Claim>();
     private String relayState;
     private String lastErrorId;
     private String lastErrorMsg;
 
-    public IdentityConfirmationRequestImpl(FederationChannel issuerChannel) {
+    public IdentityConfirmationRequestImpl(FederationChannel issuerChannel, String spAlias) {
         this.issuerChannel = issuerChannel;
+        this.spAlias = spAlias;
     }
 
     public String getId() {
@@ -59,6 +61,14 @@ public class IdentityConfirmationRequestImpl implements IdentityConfirmationRequ
 
     public void setIssuerChannel(FederationChannel issuerChannel) {
         this.issuerChannel = issuerChannel;
+    }
+
+    public String getSpAlias() {
+        return spAlias;
+    }
+
+    public void setSpAlias(String spAlias) {
+        this.spAlias = spAlias;
     }
 
     public Collection<Claim> getClaims() {

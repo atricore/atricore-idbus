@@ -40,6 +40,8 @@ public interface IdentityConfirmationRequest extends Serializable {
 
     FederationChannel getIssuerChannel();
 
+    String getSpAlias();
+
     Collection<Claim> getClaims();
 
     String getRelayState();

@@ -92,7 +92,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
     @Override
     public CamelMediationExchange createExchange(Exchange exchange) {
 
-        logger.debug("Creating new Camel Mediation Exchage from Binding Endpoint, nested exchange is : " +
+        logger.debug("Creating new Camel Mediation Exchange from Binding Endpoint, nested exchange is : " +
                 (exchange != null ? exchange.getClass().getName() : "null"));
 
         CamelMediationExchange camelMediationExchange = new CamelMediationExchange(getCamelContext(),

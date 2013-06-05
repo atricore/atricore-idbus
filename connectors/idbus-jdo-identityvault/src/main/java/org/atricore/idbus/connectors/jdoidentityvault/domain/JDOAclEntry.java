@@ -16,6 +16,7 @@ public class JDOAclEntry implements Serializable {
     private String from;
     private JDOAclEntryStateType state;
     private String approvalToken;
+    private String spAlias;
 
     public Long getId() {
         return id;
@@ -73,6 +74,13 @@ public class JDOAclEntry implements Serializable {
         this.approvalToken = approvalToken;
     }
 
+    public String getSpAlias() {
+        return spAlias;
+    }
+
+    public void setSpAlias(String spAlias) {
+        this.spAlias = spAlias;
+    }
 
     @Override
     public boolean equals(Object o) {

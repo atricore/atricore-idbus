@@ -53,7 +53,7 @@ public class DefaultMediationLogger implements MediationLogger, InitializingBean
     private Collection<LogMessageBuilder> builders = new java.util.ArrayList<LogMessageBuilder>();
 
     public void afterPropertiesSet() throws Exception {
-        logger.debug("Starging Commons Logging log service in category '" + category +
+        logger.debug("Starting Commons Logging log service in category '" + category +
                 "' using " + builders.size() + " configured LogMessageBuilders");
         log = LogFactory.getLog(category);
     }

@@ -83,12 +83,28 @@ case class RedirectToEndpoint(channel : Channel, endpoint: IdentityMediationEndp
       format(channel.getName, endpoint.getName)
 }
 
-case class RedirectToLocation(location : String)
+case class RedirectToLocationWithArtifact(location : String)
   extends IdentityFlowSuccess {
   def value: Int = 2
+
+  def defaultMessage: String =
+    "The user should be redirected to location %s with artifact".
+      format(location)
+}
+
+case class RedirectToLocation(location : String)
+  extends IdentityFlowSuccess {
+  def value: Int = 3
 
   def defaultMessage: String =
     "The user should be redirected to location %s".
       format(location)
 }
 
+case class NoFurtherActionRequired(reason : String)
+  extends IdentityFlowSuccess {
+  def value: Int = 4
+
+  def defaultMessage: String =
+    "No further action is required to be performed by the user due to : %s".format(reason)
+}

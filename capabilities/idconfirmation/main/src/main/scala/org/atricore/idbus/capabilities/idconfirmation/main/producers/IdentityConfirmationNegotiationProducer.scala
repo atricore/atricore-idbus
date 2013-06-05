@@ -33,6 +33,7 @@ import org.atricore.idbus.capabilities.sso.dsl.core.{IdentityBusConnector, Rejec
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.BasicIdentityConfirmationDirectives
 import org.atricore.idbus.capabilities.sso.dsl.core.directives.{DebuggingDirectives, BasicIdentityFlowDirectives}
 import org.atricore.idbus.capabilities.oauth2.component.builtin.BasicOAuth2Directives
+import org.atricore.idbus.capabilities.sso.component.builtin.directives.{MediationDirectives, UserDirectives}
 
 /**
  * Implementation of the identity confirmation capability.
@@ -42,8 +43,10 @@ import org.atricore.idbus.capabilities.oauth2.component.builtin.BasicOAuth2Direc
 private[main] class IdentityConfirmationNegotiationProducer(camelEndpoint: Endpoint[CamelMediationExchange])
   extends AbstractCamelProducer[CamelMediationExchange](camelEndpoint)
   with BasicIdentityFlowDirectives
+  with MediationDirectives
   with BasicIdentityConfirmationDirectives
   with BasicOAuth2Directives
+  with UserDirectives
   with DebuggingDirectives
   with IdentityBusConnector {
 
@@ -59,13 +62,11 @@ private[main] class IdentityConfirmationNegotiationProducer(camelEndpoint: Endpo
     logRequestResponse("") {
       onConfirmationRequest {
         _ =>
-          fromUnknownIpAddress {
-            issueSecret(10) {
-              secret =>
-                shareSecretByEmail(secret) {
-                  notifyTokenShared(idcMediator.tokenSharingConfirmationUILocation, secret)
-                }
-            }
+          issueSecret(10) {
+            secret =>
+              shareSecretByEmail(secret) {
+                notifyTokenShared(idcMediator.tokenSharingConfirmationUILocation, secret)
+              }
           }
       } ~
         onConfirmationTokenAuthenticationRequest {
@@ -75,16 +76,22 @@ private[main] class IdentityConfirmationNegotiationProducer(camelEndpoint: Endpo
                 forAclEntry(receivedSecret) {
                   (aclEntry) =>
                     verifyToken(receivedSecret, aclEntry) {
-                      requestOAuth2AccessToken(
-                        idcMediator.oauth2ClientId,
-                        idcMediator.oauth2ClientSecret,
-                        idcMediator.oauth2AuthorizationServerEndpoint,
-                        aclEntry.getPrincipalNameClaim,
-                        aclEntry.getPasswordClaim
-                      ) {
-                        (oauth2Token) =>
-                          logger.debug("OAuth2 Token = " + oauth2Token)
-                          notifyCompletion
+                      whitelistSourceByAclEntry(aclEntry) {
+                        aclEntry =>
+                          requestOAuth2AccessToken(
+                            idcMediator.oauth2ClientId,
+                            idcMediator.oauth2ClientSecret,
+                            idcMediator.oauth2AuthorizationServerEndpoint,
+                            aclEntry.getPrincipalNameClaim,
+                            aclEntry.getPasswordClaim
+                          ) {
+                            (oauth2Token) =>
+                              preauthUrl(idcMediator.getIdpInitiatedEndpoint, aclEntry.getSpAlias, oauth2Token) {
+                                (preauthUrl) =>
+                                  logger.debug("Preauth Url = " + preauthUrl)
+                                  notifyCompletion(preauthUrl)
+                              }
+                          }
                       }
                     }
                 }

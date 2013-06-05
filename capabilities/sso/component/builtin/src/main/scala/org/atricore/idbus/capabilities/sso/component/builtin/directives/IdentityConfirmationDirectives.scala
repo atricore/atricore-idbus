@@ -28,7 +28,7 @@ import scala.Option
 import scala.collection.JavaConversions._
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
 import org.atricore.idbus.kernel.main.mediation.Channel
-import org.atricore.idbus.capabilities.sso.dsl.{RedirectToEndpoint, IdentityFlowResponse}
+import org.atricore.idbus.capabilities.sso.dsl.{NoFurtherActionRequired, RedirectToEndpoint, IdentityFlowResponse}
 import org.atricore.idbus.capabilities.sso.dsl.util.Logging
 
 /**
@@ -130,5 +130,12 @@ trait IdentityConfirmationDirectives extends Logging {
         case Reject(_) => Reject(NoAuthenticationStateAvailable)
       }
   }
+
+  def noIdentityConfirmationRequired: IdentityFlowRoute = {
+    ctx =>
+      log.debug("Identity has been confirmed. Skipping identity confirmation.")
+      ctx.respond(IdentityFlowResponse(NoFurtherActionRequired("Identity Confirmation is not required")))
+  }
+
 
 }

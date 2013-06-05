@@ -170,6 +170,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         requestedSecurityToken = of.createRequestedSecurityToken(new RequestedSecurityTokenType());
         requestedSecurityToken.getValue().setAny(securityToken.getContent());
         rstr.getAny().add(requestedSecurityToken);
+        rstr.getAny().add(subject);
 
         if (logger.isTraceEnabled())
             logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
@@ -179,7 +180,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
     }
 
     /**
-     * For now authentiactors are all considered to be sufficient, as long as one of them succeeds, the authentication is valid.
+     * For now authenticators are all considered to be sufficient, as long as one of them succeeds, the authentication is valid.
      */
     protected Subject authenticate(Object requestToken, String tokenType) throws SecurityTokenEmissionException {
 
@@ -188,6 +189,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         SecurityTokenAuthenticationFailure lastAuthnFailedException = null;
         for (SecurityTokenAuthenticator authenticator : authenticators) {
 
+            logger.debug("Checking whether authenticator " + authenticator.getId() + " can handle token of type " + tokenType);
             if (authenticator.canAuthenticate(requestToken)) {
 
                 try {

@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.capabilities.idconfirmation.main
 
-import org.atricore.idbus.capabilities.sso.main.binding.{SsoHttpArtifactBinding, SamlR2BindingFactory}
+import org.atricore.idbus.capabilities.sso.main.binding.{SsoHttpRedirectBinding, SsoHttpArtifactBinding, SamlR2BindingFactory}
 import org.atricore.idbus.kernel.main.mediation.{MediationBindingFactory, MediationBinding, Channel}
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.IdentityConfirmationBindings
 import IdentityConfirmationBindings._
@@ -36,5 +36,8 @@ class IdentityConfirmationBindingFactory extends MediationBindingFactory {
         new IdentityConfirmationHttpAuthenticationBinding(binding, channel)
       case SSO_ARTIFACT =>
         new SsoHttpArtifactBinding(channel)
+      case SSO_REDIRECT =>
+        new SsoHttpRedirectBinding(channel)
+
     }
 }

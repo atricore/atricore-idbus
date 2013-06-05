@@ -419,8 +419,42 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         }
     }
 
+    @Transactional
+    public AclEntry findAclEntryById(long id) throws ProvisioningException {
 
-    // -------------------------------------------< Utils >
+        try {
+            JDOAclEntry jdoAclEntry = aclEntryDao.findById(id);
+            jdoAclEntry = aclEntryDao.detachCopy(jdoAclEntry, FetchPlan.FETCH_SIZE_GREEDY);
+            return toAclEntry(jdoAclEntry);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            if (e.getActualSize() == 0)
+                throw new AclEntryNotFoundException(id);
+            throw new ProvisioningException(e);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    @Transactional
+    public AclEntry updateAclEntry(AclEntry aclEntry) throws ProvisioningException {
+        try {
+            JDOAclEntry jdoAclEntry = aclEntryDao.findById(aclEntry.getId());
+            jdoAclEntry = toJDOAclEntry(jdoAclEntry, aclEntry);
+            jdoAclEntry = aclEntryDao.save(jdoAclEntry);
+            jdoAclEntry = aclEntryDao.detachCopy(jdoAclEntry, FetchPlan.FETCH_SIZE_GREEDY);
+            return toAclEntry(jdoAclEntry);
+        } catch (JdoObjectRetrievalFailureException e) {
+            throw new AclEntryNotFoundException(aclEntry.getId());
+        } catch (JDOObjectNotFoundException e) {
+            throw new GroupNotFoundException(aclEntry.getId());
+        } catch (NucleusObjectNotFoundException e) {
+            throw new GroupNotFoundException(aclEntry.getId());
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+
+    }
+// -------------------------------------------< Utils >
 
     protected JDOGroup toJDOGroup(Group group) {
         JDOGroup jdoGroup = toJDOGroup(new JDOGroup(), group);
@@ -557,10 +591,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                         jdoAclEntry = aclEntryDao.findById(aclEntry.getId());
                     } else {
                         jdoAclEntry = new JDOAclEntry();
+                        jdoAclEntry.setPrincipalNameClaim(aclEntry.getPrincipalNameClaim());
+                        jdoAclEntry.setPasswordClaim(aclEntry.getPasswordClaim());
                         jdoAclEntry.setFrom(aclEntry.getFrom());
                         jdoAclEntry.setDecision(JDOAclDecisionType.fromValue(aclEntry.getDecision().toString()));
                         jdoAclEntry.setState(JDOAclEntryStateType.fromValue(aclEntry.getState().toString()));
                         jdoAclEntry.setApprovalToken(aclEntry.getApprovalToken());
+                        jdoAclEntry.setSpAlias(aclEntry.getSpAlias());
                     }
 
                     jdoAclEntries[j] = jdoAclEntry;
@@ -674,6 +711,18 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     }
 
+    protected JDOAclEntry toJDOAclEntry(JDOAclEntry jdoAclEntry, AclEntry aclEntry) {
+        jdoAclEntry.setPrincipalNameClaim(aclEntry.getPrincipalNameClaim());
+        jdoAclEntry.setPasswordClaim(aclEntry.getPasswordClaim());
+        jdoAclEntry.setFrom(aclEntry.getFrom());
+        jdoAclEntry.setDecision(JDOAclDecisionType.fromValue(aclEntry.getDecision().toString()));
+        jdoAclEntry.setState(JDOAclEntryStateType.fromValue(aclEntry.getState().toString()));
+        jdoAclEntry.setApprovalToken(aclEntry.getApprovalToken());
+        jdoAclEntry.setSpAlias(aclEntry.getSpAlias());
+
+        return jdoAclEntry;
+    }
+
     protected AclEntry toAclEntry(JDOAclEntry jdoAclEntry) {
         AclEntry aclEntry = new AclEntry();
         aclEntry.setPrincipalNameClaim(jdoAclEntry.getPrincipalNameClaim());
@@ -682,6 +731,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         aclEntry.setDecision(AclDecisionType.fromValue(jdoAclEntry.getDecision().toString()));
         aclEntry.setApprovalToken(jdoAclEntry.getApprovalToken());
         aclEntry.setState(AclEntryStateType.fromValue(jdoAclEntry.getState().toString()));
+        aclEntry.setSpAlias(jdoAclEntry.getSpAlias());
         aclEntry.setId(jdoAclEntry.getId());
         return aclEntry;
 

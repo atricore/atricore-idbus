@@ -40,4 +40,11 @@ case object NoMoreClaimEndpoints extends Rejection
 case object NoAuthenticationStateAvailable extends Rejection
 case object NoAuthenticationRequestAvailable extends Rejection
 case object NoMoreIdentityConfirmationEndpoints extends Rejection
+case object AclEntryNotFound extends Rejection
+case object IdentityConfirmationNotRequired extends Rejection
+case object UserNotFound extends Rejection
+case object NoPrincipalFoundInRequest extends Rejection
+case object CannotExtractRemoteAddress extends Rejection
+case object CannotExtractProvisioningTarget extends Rejection
+case object TransientVariableNotFound extends Rejection
 

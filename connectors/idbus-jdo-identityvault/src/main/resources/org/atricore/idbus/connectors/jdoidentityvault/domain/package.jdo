@@ -74,6 +74,7 @@
             <field name="from"/>
             <field name="state"/>
             <field name="approvalToken"/>
+            <field name="spAlias"/>
         </class>
 
         <class name="JDOUserAttributeDefinition">

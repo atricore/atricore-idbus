@@ -38,6 +38,7 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 import org.atricore.idbus.kernel.main.mediation.{Channel, MediationState}
 import org.atricore.idbus.capabilities.sso.dsl.{IdentityFlowSuccess, IdentityFlowResponse}
 import org.atricore.idbus.capabilities.sso.dsl.util.Logging
+import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider
 
 /**
  * Identity Flow directives for handling
@@ -152,5 +153,28 @@ trait MediationDirectives extends Logging {
     }
   }
 
+  def remoteAddress = {
+    filter1 {
+      ctx =>
+        val in = ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage]
+
+        Option(in.getMessage.getState.getTransientVariable("RemoteAddress")) match {
+          case Some(remoteAddr) => Pass(remoteAddr)
+          case _ => Reject(TransientVariableNotFound)
+        }
+    }
+
+  }
+
+  def provisioningTarget = {
+    filter1 {
+      ctx =>
+        ctx.request.provider match {
+          case idp : IdentityProvider => Pass(idp.getProvisioningTarget)
+          case _ => Reject(CannotExtractProvisioningTarget)
+        }
+    }
+
+  }
 
 }

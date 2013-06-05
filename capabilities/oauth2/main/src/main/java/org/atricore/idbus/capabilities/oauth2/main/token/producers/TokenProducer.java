@@ -72,7 +72,7 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
                 throw new OAuth2ServerException(ErrorCodeType.UNAUTHORIZED_CLIENT, "Invalid clientId/clientSecret");
             }
 
-            // Authenticate the client, unless an error has ocured.
+            // Authenticate the client, unless an error has occurred.
             authenticateRequest(client, atReq, atRes);
 
             OAuth2SecurityTokenEmissionContext securityTokenEmissionCtx = new OAuth2SecurityTokenEmissionContext();

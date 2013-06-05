@@ -16,6 +16,7 @@ public class AclEntry implements Serializable {
     private String from;
     private AclEntryStateType state;
     private String approvalToken;
+    private String spAlias;
 
     public Long getId() {
         return id;
@@ -72,6 +73,14 @@ public class AclEntry implements Serializable {
 
     public void setApprovalToken(String approvalToken) {
         this.approvalToken = approvalToken;
+    }
+
+    public String getSpAlias() {
+        return spAlias;
+    }
+
+    public void setSpAlias(String spAlias) {
+        this.spAlias = spAlias;
     }
 
     @Override

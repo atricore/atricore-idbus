@@ -31,18 +31,20 @@ import scala.collection.JavaConversions._
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.Rejections._
 import java.security.SecureRandom
 import scala.Some
-import org.atricore.idbus.capabilities.sso.dsl.{RedirectToLocation, IdentityFlowResponse}
+import org.atricore.idbus.capabilities.sso.dsl.{RedirectToLocation, RedirectToLocationWithArtifact, IdentityFlowResponse}
 import java.net.URL
 import org.atricore.idbus.kernel.main.federation.metadata.{EndpointDescriptorImpl, EndpointDescriptor}
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider
-import org.atricore.idbus.kernel.main.provisioning.spi.request.{FindAclEntryByApprovalTokenRequest, UpdateUserRequest, FindUserByUsernameRequest}
+import org.atricore.idbus.kernel.main.provisioning.spi.request.{UpdateAclEntryRequest, FindAclEntryByApprovalTokenRequest, UpdateUserRequest, FindUserByUsernameRequest}
 import org.atricore.idbus.kernel.main.provisioning.domain.{AclEntryStateType, AclDecisionType, AclEntry, Acl}
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.{PasswordString, UsernameTokenType}
 import org.atricore.idbus.kernel.main.mediation.claim.{Claim, UserClaim}
 import org.atricore.idbus.kernel.main.authn.Constants
 import javax.xml.namespace.QName
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget
+import org.atricore.idbus.capabilities.sso.component.builtin.directives.UserDirectives
 
 /**
  * Identity confirmation directives of the identity combinator library.
@@ -50,7 +52,7 @@ import javax.xml.namespace.QName
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
 trait BasicIdentityConfirmationDirectives extends Logging {
-  this: BasicIdentityFlowDirectives =>
+  this: BasicIdentityFlowDirectives with UserDirectives =>
 
   def onConfirmationRequest =
     filter1[IdentityConfirmationRequest] {
@@ -151,6 +153,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
 
     }
 
+  /*  TODO: Remove
   def fromUnknownIpAddress =
     filter {
       ctx =>
@@ -163,6 +166,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
           )
         )
     }
+    */
 
   def issueSecret(size: Int = 10) = {
     /**
@@ -260,6 +264,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
             aclEntry.setFrom(sourceIpAddress)
             aclEntry.setState(AclEntryStateType.PENDING)
             aclEntry.setApprovalToken(secret)
+            aclEntry.setSpAlias(icr.getSpAlias)
 
             Option(idConfAcl.getEntries) match {
               case Some(aclEntries) =>
@@ -288,7 +293,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
           val tsc = TokenSharedConfirmation(secret, tal)
           ctx.respond(
             IdentityFlowResponse(
-              RedirectToLocation(tokenSharedConfirmationUILocation),
+              RedirectToLocationWithArtifact(tokenSharedConfirmationUILocation),
               Option(tsc),
               Option("TokenSharedConfirmation"))
           )
@@ -357,11 +362,49 @@ trait BasicIdentityConfirmationDirectives extends Logging {
     }
   }
 
-  def notifyCompletion: IdentityFlowRoute = {
+  def whitelistSourceByFrom(from: String, nameId: String, pt: ProvisioningTarget) = {
+    filter1 {
+      ctx =>
+        aclEntryByFrom(from, nameId, pt).filter(ctx) match {
+          case Pass(values, _) =>
+            val aclEntry = values._1
+            aclEntry.setDecision(AclDecisionType.ALLOW)
+
+            val uaereq = new UpdateAclEntryRequest
+            uaereq.setAclEntry(aclEntry)
+
+            val uaersp = pt.updateAclEntry(uaereq)
+            Pass(uaersp.getAclEntry)
+          case Reject(r) => Reject(r)
+        }
+
+    }
+
+  }
+
+  def whitelistSourceByAclEntry(aclEntry: AclEntry) = {
+    filter1 {
+      ctx =>
+        val idp = ctx.request.channel.asInstanceOf[IdentityConfirmationChannel].getFederatedProvider.asInstanceOf[IdentityProvider]
+        val pt = idp.getProvisioningTarget
+
+        aclEntry.setState(AclEntryStateType.APPROVED)
+
+        val uaereq = new UpdateAclEntryRequest
+        uaereq.setAclEntry(aclEntry)
+
+        val uaersp = pt.updateAclEntry(uaereq)
+        Pass(uaersp.getAclEntry)
+
+    }
+
+  }
+
+  def notifyCompletion(preauthUrl : URL) : IdentityFlowRoute = {
     ctx =>
       ctx.respond(
         IdentityFlowResponse(
-          RedirectToLocation("OKOK"),
+          RedirectToLocation(preauthUrl.toString),
           Option(null),
           Option("TokenSharedConfirmation"))
       )

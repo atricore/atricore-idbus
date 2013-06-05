@@ -468,6 +468,26 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
+    public UpdateAclEntryResponse updateAclEntry(UpdateAclEntryRequest aclEntryRequest) throws ProvisioningException {
+        try {
+            AclEntry aclEntry = aclEntryRequest.getAclEntry();
+            AclEntry oldAclEntry = identityPartition.findAclEntryById(aclEntry.getId());
+
+            BeanUtils.copyProperties(aclEntry, oldAclEntry, new String[] {"id"});
+
+            aclEntry = identityPartition.updateAclEntry(oldAclEntry);
+
+            UpdateAclEntryResponse aclEntryResponse = new UpdateAclEntryResponse();
+            aclEntryResponse.setAclEntry(aclEntry);
+
+            return aclEntryResponse;
+        } catch (AclEntryNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
     public AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest) throws ProvisioningException {
         try {
             // create user attribute

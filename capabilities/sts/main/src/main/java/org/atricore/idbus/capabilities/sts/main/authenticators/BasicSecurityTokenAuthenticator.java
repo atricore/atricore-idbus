@@ -40,6 +40,7 @@ public class BasicSecurityTokenAuthenticator extends AbstractSecurityTokenAuthen
 
         if (requestToken instanceof UsernameTokenType) {
             UsernameTokenType usernameToken = (UsernameTokenType) requestToken;
+
             if (usernameToken.getOtherAttributes().get( new QName( PASSWORD_NS) ) != null)
                 return true;
         }

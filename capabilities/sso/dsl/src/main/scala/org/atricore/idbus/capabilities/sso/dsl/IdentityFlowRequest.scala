@@ -25,13 +25,15 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.provider.Provider
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet
 
 /**
  * Abstractions representing an identity flow request
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-case class IdentityFlowRequest(exchange : CamelMediationExchange, provider : Provider, channel : Channel, endpoint : IdentityMediationEndpoint)
+case class IdentityFlowRequest(exchange : CamelMediationExchange, provider : Provider, channel : Channel,
+                               endpoint : IdentityMediationEndpoint, userClaims : Option[ClaimSet] = None)
 
 
 

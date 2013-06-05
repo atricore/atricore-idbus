@@ -49,4 +49,6 @@ public class JDOAclEntryDAOImpl extends GenericDAOImpl<JDOAclEntry, Long> implem
 
         return (entries == null) ? null : entries.iterator().next();
     }
+
 }
+
