@@ -205,38 +205,24 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
         }
 
-        // Look for the ACS endpoint configured in the IdP channel
+        // Look for the ACS endpoint configured in the IdP channel, redirect is out of the question
         for (IdentityMediationEndpoint endpoint : idpChannel.getEndpoints()) {
 
             if (endpoint.getType().equals(acsEndpointType)) {
 
-                SSOBinding endpointBinding = SSOBinding.asEnum(endpoint.getBinding());
+                if (endpoint.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()))
+                    acsArtifactEndpoint = endpoint;
 
-                // Get the first non HTTP-redirect binding
-                if (incomingEndpointBinding != null && !endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
+                if (endpoint.getBinding().equals(SSOBinding.SAMLR2_POST.getValue()))
+                    acsPostEndpoint = endpoint;
 
-                    if (incomingEndpointBinding.isFrontChannel() == endpointBinding.isFrontChannel()) {
-                        // Get the first endpoint
-                        acsEndpoint = endpoint;
-                    }
-
-                } else {
-
-                    // Get the first endpoint
-                    acsEndpoint = endpoint;
-                    if (endpoint.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()))
-                        acsArtifactEndpoint = endpoint;
-
-                    if (endpoint.getBinding().equals(SSOBinding.SAMLR2_POST.getValue()))
-                        acsPostEndpoint = endpoint;
-                }
             }
         }
+
+        //POST, then artifact
+        acsEndpoint = acsPostEndpoint;
         if (acsEndpoint == null)
             acsEndpoint = acsArtifactEndpoint;
-
-        if (acsEndpoint == null)
-            acsEndpoint = acsPostEndpoint;
 
         if (log.isDebugEnabled())
             log.debug("Selected ACS endpoint " + (acsEndpoint != null ? acsEndpoint.getName() : "<Null>"));
