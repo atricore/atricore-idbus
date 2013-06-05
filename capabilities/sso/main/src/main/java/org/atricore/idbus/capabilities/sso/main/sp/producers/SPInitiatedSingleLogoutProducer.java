@@ -138,10 +138,10 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
             // ------------------------------------------------------
             // Send SLO Request to IdP
             // ------------------------------------------------------
-            SSOBinding binding = SSOBinding.asEnum(endpoint.getBinding());
+            SSOBinding binding = SSOBinding.asEnum(SSOBinding.SAMLR2_REDIRECT.getValue());
 
-            // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
-            EndpointType idpSsoEndpoint = resolveIdpSloEndpoint(idp, binding.isFrontChannel());
+            // Select endpoint, must be a SingleSingOnService endpoint
+            EndpointType idpSsoEndpoint = resolveIdpSloEndpoint(idp, true);
             EndpointDescriptor ed = new EndpointDescriptorImpl(
                     "IDPSLOEndpoint",
                     "SingleLogoutService",
@@ -296,8 +296,16 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
                     IDPSSODescriptorType idpSsoRole = (IDPSSODescriptorType) role;
 
                     EndpointType endpoint = null;
+                    EndpointType postEndpoint = null;
+                    EndpointType redirEndpoint = null;
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("SLO Endpoints count for IdP  " +  (idpSsoRole.getSingleLogoutService() == null ? "<EMPTY>" : idpSsoRole.getSingleLogoutService().size() + ""));
 
                     for (EndpointType idpSloEndpoint : idpSsoRole.getSingleLogoutService()) {
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Looking at SLO Endpoint " + idpSloEndpoint.getBinding());
 
                         SSOBinding b = SSOBinding.asEnum(idpSloEndpoint.getBinding());
 
@@ -312,13 +320,26 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
 
                         // If POST is available, use it
                         if (b.equals(SSOBinding.SAMLR2_POST))
-                            endpoint = idpSloEndpoint;
+                            postEndpoint = idpSloEndpoint;
+
+                        if (b.equals(SSOBinding.SAMLR2_REDIRECT))
+                            redirEndpoint = idpSloEndpoint;
 
                         // Take the first front channel endpoint
                         if (endpoint == null)
                             endpoint = idpSloEndpoint;
                     }
 
+
+                    // First use redirect
+                    if (redirEndpoint != null)
+                        endpoint = redirEndpoint;
+
+                    // If no redirect, use post
+                    if (postEndpoint != null)
+                        endpoint = postEndpoint;
+
+                    // Use any front-channel endpoint
                     if (logger.isDebugEnabled())
                         logger.debug("Selected IdP SLO Endpoint " + (endpoint != null ? endpoint.getBinding() : "<NONE>"));
 
