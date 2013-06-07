@@ -233,6 +233,9 @@ public class DominoSTSTransformer extends AbstractTransformer implements Initial
                     // Inject identity Manager TODO : When using proxy, take identity manager from SP !
                     if (idMgr != null) {
                         setPropertyRef(dominoStsEmitter, "identityManager", sp.getName() + "-identity-manager");
+                    } else if (isProxy) {
+                        // Link with SP Identity manager, unfortunately we can't get spBeans here to make sure that it exists
+                        setPropertyRef(dominoStsEmitter, "identityManager", sp.getName() + "-identity-manager");
                     }
 
                     insertPropertyBean(sts, "emitters", dominoStsEmitter);
