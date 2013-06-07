@@ -424,7 +424,8 @@
                             *
                         </Import-Package>
 
-                        <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
+                        <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false
+                        </Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>
