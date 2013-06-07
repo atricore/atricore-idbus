@@ -110,9 +110,24 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         this.roleA = roleA;
     }
 
+    /**
+     * Internal SAML 2.0 SPs connected to external SAML 2.0 IdPs and using a resource that requires special functionallity (OAuth, Domino, etc).
+     */
     @Override
     public boolean accept(TransformEvent event) {
-        return isIdPProxyRequired(event, isRoleA());
+
+        if (event.getData() instanceof ServiceProviderChannel) {
+            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
+            boolean requireProxy = isIdPProxyRequired(fc, roleA);
+
+            if (requireProxy)
+                if (logger.isDebugEnabled())
+                    logger.debug("Required IdP proxy (role " + (roleA ? "A" : "B") + ") between "  + fc.getRoleA().getName() + ":" + fc.getRoleB().getName());
+
+            return requireProxy;
+        }
+
+        return false;
     }
 
     @Override
@@ -670,7 +685,6 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         setPropertyValue(sessionIdGenerator, "algorithm", "MD5");
 
         // Session Store
-        //Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.memorysessionstore.MemorySessionStore");
         Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStore");
         sessionStore.setInitMethod("init");
         setPropertyRef(sessionStore, "cacheManager", remoteIdentityProvider.getIdentityAppliance().getName() + "-cache-manager");
@@ -680,17 +694,6 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         // Wiring
         setPropertyBean(sessionManager, "sessionIdGenerator", sessionIdGenerator);
         setPropertyBean(sessionManager, "sessionStore", sessionStore);
-
-        // If no identity manager was defined yet, create a new one based on memory
-
-        //
-        /*
-        Bean identityManager = newBean(idpProxyBeans, idpName + "-identity-manager", SSOIdentityManagerImpl.class);
-        setPropertyRef(identityManager, "identityStore", idpName + "-identity-store");
-        setPropertyBean(identityManager, "identityStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));
-
-        Bean identityStore = newBean(idpProxyBeans, idpName + "-identity-store", "org.atricore.idbus.idojos.memoryidentitystore.MemoryIdentityStore");
-        */
 
         // generate IDP metadata for default SP channel
         IdProjectResource<EntityDescriptorType> idpMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
@@ -715,7 +718,6 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         Beans idpProxyBeans = (Beans) event.getContext().get("idpProxyBeans");
-
 
         Bean idpBean = getBeansOfType(idpBeans, FederatedRemoteProviderImpl.class.getName()).iterator().next();
         Bean idpProxyBean = (Bean) event.getContext().get("idpProxyBean");

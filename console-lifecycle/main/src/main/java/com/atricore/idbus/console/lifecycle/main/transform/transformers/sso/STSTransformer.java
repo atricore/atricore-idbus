@@ -34,10 +34,26 @@ public class STSTransformer extends AbstractTransformer {
     @Override
     public boolean accept(TransformEvent event) {
         // TODO : Check that Federated connection is set to override ?!
-        if (event.getData() instanceof IdentityProvider && !((IdentityProvider)event.getData()).isRemote())
-            return true;
+        if (event.getData() instanceof IdentityProvider && !((IdentityProvider)event.getData()).isRemote()) {
+            if (logger.isDebugEnabled())
+                logger.debug("Required STS for local IdP " + ((IdentityProvider)event.getData()).getName());
 
-        return isIdPProxyRequired(event, true) || isIdPProxyRequired(event, false);
+            return true;
+        }
+
+        if (event.getData() instanceof ServiceProviderChannel) {
+            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
+            boolean requireProxy = isIdPProxyRequired(fc, true) || isIdPProxyRequired(fc, false);
+
+            if (requireProxy)
+                if (logger.isDebugEnabled())
+                    logger.debug("Required STS for proxied IdP between "  + fc.getRoleA().getName() + ":" + fc.getRoleB().getName());
+
+            return requireProxy;
+        }
+
+
+        return false;
     }
 
     @Override
@@ -49,9 +65,19 @@ public class STSTransformer extends AbstractTransformer {
         if (event.getData() instanceof FederatedProvider) {
             provider = (FederatedProvider) event.getData();
             isProxy = false;
+
+            if (logger.isDebugEnabled())
+                logger.debug("Creating STS components for local IdP "  + provider.getName());
+
         } else if (event.getData() instanceof ServiceProviderChannel) {
+
+
             ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
+
+            if (logger.isTraceEnabled())
+                logger.trace("Creating STS components for proxied IdP between " + fc.getRoleA().getName() + ":" + fc.getRoleB().getName());
+
             isProxy = true;
             if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote())
                 provider = fc.getRoleA();

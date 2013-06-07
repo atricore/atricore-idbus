@@ -131,14 +131,17 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 identityStoreOsgi.setTimeout(60L);
                 providerBeans.getImportsAndAliasAndBeen().add(identityStoreOsgi);
 
-                Reference provisioningTargetOsgi = new Reference();
-                provisioningTargetOsgi.setId(providerBean.getName() + "-provisioning-target");
-                provisioningTargetOsgi.setInterface(ProvisioningTarget.class.getName());
-                provisioningTargetOsgi.setCardinality("1..1");
-                identityStoreOsgi.setTimeout(60L);
-                providerBeans.getImportsAndAliasAndBeen().add(provisioningTargetOsgi);
+                // Add Provisioning target definition for IdPs
+                if (providerBean.getClazz().equals(IdentityProviderImpl.class.getName())) {
+                    Reference provisioningTargetOsgi = new Reference();
+                    provisioningTargetOsgi.setId(providerBean.getName() + "-provisioning-target");
+                    provisioningTargetOsgi.setInterface(ProvisioningTarget.class.getName());
+                    provisioningTargetOsgi.setCardinality("1..1");
+                    identityStoreOsgi.setTimeout(60L);
+                    providerBeans.getImportsAndAliasAndBeen().add(provisioningTargetOsgi);
 
-                setPropertyRef(providerBean, "provisioningTarget", providerBean.getName() + "-provisioning-target");
+                    setPropertyRef(providerBean, "provisioningTarget", providerBean.getName() + "-provisioning-target");
+                }
 
 
             } else if (identitySource instanceof XmlIdentitySource) {

@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil.isIdPProxyRequired;
+import static com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil.isOAuth2IdPProxyRequired;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.addPropertyBean;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
@@ -53,8 +54,16 @@ public class OAuth2IdPProxyTransformer extends AbstractTransformer implements In
 
     @Override
     public boolean accept(TransformEvent event) {
-        return isIdPProxyRequired(event, roleA);
+        // Do we have to enable an IdP proxy for a service provider ?
+        if (event.getData() instanceof ServiceProviderChannel) {
 
+            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
+            FederatedProvider idp = roleA ? fc.getRoleA() : fc.getRoleB();
+            if (idp instanceof ExternalSaml2IdentityProvider)
+                return isOAuth2IdPProxyRequired(fc);
+        }
+
+        return false;
     }
 
     @Override
@@ -72,8 +81,6 @@ public class OAuth2IdPProxyTransformer extends AbstractTransformer implements In
         InternalSaml2ServiceProvider internalSaml2ServiceProvider = (InternalSaml2ServiceProvider) (roleA ? fc.getRoleB() : fc.getRoleA());
         IdentityProviderChannel idpChannel = (IdentityProviderChannel) (roleA ? fc.getChannelB() : fc.getChannelA());
 
-        // Publish root element so that other transformers can use it.
-        event.getContext().put("idpProxyBeans", idpProxyBeans);
         String idauPath = (String) event.getContext().get("idauPath");
 
         // Create internal IDP facing local SP
@@ -130,27 +137,6 @@ public class OAuth2IdPProxyTransformer extends AbstractTransformer implements In
         // warningUrl
         setPropertyValue(idpMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
-        // we need to create OAuth2 Client definitions, for now use Client Config string as JSON serialization
-
-        /*
-        if (provider.getOauth2ClientsConfig() != null && !"".equals(provider.getOauth2ClientsConfig())) {
-
-            try {
-                // TODO : Use a metadata-specific class ?!
-                List<OAuth2Client> clients = JasonUtils.unmarshallClients(provider.getOauth2ClientsConfig());
-                if (clients != null) {
-                    for (OAuth2Client oauth2ClientDef : clients) {
-                        Bean oauth2ClientBean = newAnonymousBean(OAuth2Client.class);
-                        setPropertyValue(oauth2ClientBean, "id", oauth2ClientDef.getId());
-                        setPropertyValue(oauth2ClientBean, "secret", oauth2ClientDef.getSecret());
-
-                        addPropertyBean(idpMediator, "clients", oauth2ClientBean);
-                    }
-                }
-            } catch (IOException e) {
-                throw new TransactionSuspensionNotSupportedException(e.getMessage(), e);
-            }
-        } */
 
     }
 }

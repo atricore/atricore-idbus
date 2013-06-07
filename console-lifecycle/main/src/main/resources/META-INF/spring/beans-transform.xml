@@ -78,7 +78,6 @@
         <property name="roleA" value="false"/>
     </bean>
 
-
     <bean name="samlr2IdpRoleAProxyFederatedConnectionTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.samlr2.SamlR2IdPProxyFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
@@ -114,8 +113,8 @@
         <property name="roleA" value="false"/>
     </bean>
 
-    <bean name="dominoIdpLocalTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.domino.DominoIdPTransformer">
+    <bean name="dominoSTSTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.domino.DominoSTSTransformer">
     </bean>
 
     <bean name="basicAuthnClaimsChannelTransformer"
@@ -136,7 +135,7 @@
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.STSTransformer"/>
 
-    <bean name="oauth2StsTransformer"
+    <bean name="oauth2STSTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2STSTransformer"/>
 
     <bean name="basicAuthenticationTransformer"
@@ -498,16 +497,16 @@
                                         <ref bean="oauth2IdPRoleAProxyTransformer"/>
                                         <ref bean="oauth2IdPRoleBProxyTransformer"/>
 
-                                        <ref bean="dominoIdpLocalTransformer"/>
-
                                         <ref bean="basicAuthnClaimsChannelTransformer"/>
                                         <ref bean="2faAuthnClaimsChannelTransformer"/>
                                         <ref bean="wiaAuthnClaimsChannelTransformer"/>
                                         <ref bean="dominoAuthnClaimsChannelTransformer"/>
                                         <ref bean="oauth2AuthenticationTransformer"/>
 
+                                        <!-- STS Transformers -->
                                         <ref bean="stsTransformer"/>
-                                        <ref bean="oauth2StsTransformer"/>
+                                        <ref bean="oauth2STSTransformer"/>
+                                        <ref bean="dominoSTSTransformer"/>
 
                                         <ref bean="basicAuthenticationTransformer"/>
                                         <ref bean="twoFactorAuthenticationTransformer"/>

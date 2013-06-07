@@ -10,27 +10,6 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 public class ProxyUtil {
 
     /**
-     * Internal SAML 2.0 SPs connected to external SAML 2.0 IdPs and using a resource that requires special
-     * IdP capabilities (i.e. OAuth 2.0 tokens)
-     *
-     * @param event the transformation event
-     * @param roleA the role that the IdP should play in the federated connection: true for role A and false for role B
-     *
-     */
-    public static boolean isIdPProxyRequired(TransformEvent event, boolean roleA) {
-
-        if (event.getData() instanceof ServiceProviderChannel) {
-
-            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
-            return isIdPProxyRequired(fc, roleA);
-
-        }
-
-        // This is not a local SAML 2.0 SP
-        return false;
-    }
-
-    /**
      * @param roleA, the role that the IdP plays in the federated connection: true for role A and false for role B
      */
     public static boolean isIdPProxyRequired(FederatedConnection fc, boolean roleA) {
@@ -60,7 +39,71 @@ public class ProxyUtil {
         if (sp.getServiceConnection().getResource() instanceof MicroStrategyResource)
             return true;
 
+        // Check resources that require this proxy
+        if (sp.getServiceConnection().getResource() instanceof DominoResource)
+            return true;
+
         return false;
 
     }
+
+    public static boolean isOAuth2IdPProxyRequired(FederatedConnection fc) {
+
+        ExternalSaml2IdentityProvider idp = null;
+        InternalSaml2ServiceProvider sp = null;
+
+        // Do we have an external SAML 2.0 IdP at any
+        if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote()) {
+            // Remote IdP on role A
+            idp = (ExternalSaml2IdentityProvider) fc.getRoleA();
+            sp = (InternalSaml2ServiceProvider) fc.getRoleB();
+        } else if (fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote()) {
+
+            // Remote IdP on role B
+            idp = (ExternalSaml2IdentityProvider) fc.getRoleB();
+            sp = (InternalSaml2ServiceProvider) fc.getRoleA();
+        }
+
+        // We don't have an external SAML 2.0 IdP
+        if (idp == null)
+            return false;
+
+        // Check resources that require this proxy
+        if (sp.getServiceConnection().getResource() instanceof MicroStrategyResource)
+            return true;
+
+        return false;
+
+    }
+
+    public static boolean isDominoIdPProxyRequired(FederatedConnection fc) {
+
+        ExternalSaml2IdentityProvider idp = null;
+        InternalSaml2ServiceProvider sp = null;
+
+        // Do we have an external SAML 2.0 IdP at any
+        if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote()) {
+            // Remote IdP on role A
+            idp = (ExternalSaml2IdentityProvider) fc.getRoleA();
+            sp = (InternalSaml2ServiceProvider) fc.getRoleB();
+        } else if (fc.getRoleB() instanceof ExternalSaml2IdentityProvider && fc.getRoleB().isRemote()) {
+
+            // Remote IdP on role B
+            idp = (ExternalSaml2IdentityProvider) fc.getRoleB();
+            sp = (InternalSaml2ServiceProvider) fc.getRoleA();
+        }
+
+        // We don't have an external SAML 2.0 IdP
+        if (idp == null)
+            return false;
+
+        // Check resources that require this proxy
+        if (sp.getServiceConnection().getResource() instanceof DominoResource)
+            return true;
+
+        return false;
+
+    }
+
+
 }

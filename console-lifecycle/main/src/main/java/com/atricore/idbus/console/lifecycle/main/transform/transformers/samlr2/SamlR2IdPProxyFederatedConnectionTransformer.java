@@ -77,9 +77,18 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
 
     }
 
+    /**
+     * Internal SAML 2.0 SPs connected to external SAML 2.0 IdPs and using a resource that requires special functionallity (OAuth, Domino, etc).
+     */
     @Override
     public boolean accept(TransformEvent event) {
-        return isIdPProxyRequired(event, roleA);
+
+        if (event.getData() instanceof ServiceProviderChannel) {
+            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
+            return isIdPProxyRequired(fc, roleA);
+        }
+
+        return false;
     }
 
     @Override

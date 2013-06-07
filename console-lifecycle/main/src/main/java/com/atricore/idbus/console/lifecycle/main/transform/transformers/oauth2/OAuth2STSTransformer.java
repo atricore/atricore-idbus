@@ -17,6 +17,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import java.util.Collection;
 
 import static com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil.isIdPProxyRequired;
+import static com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil.isOAuth2IdPProxyRequired;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
 
@@ -31,14 +32,30 @@ public class OAuth2STSTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        // Only work for Local IdPs with OAuth 2.0 support enabled
+        // Enable OAuth 2.0 STS for local IdPs with OAuth 2.0 support enabled
         if (event.getData() instanceof IdentityProvider &&
                 !((IdentityProvider)event.getData()).isRemote() &&
                 ((IdentityProvider)event.getData()).isOauth2Enabled()) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Required OAuth2 STS components for local IdP " + ((IdentityProvider)event.getData()).getName());
+
             return true;
         }
 
-        return isIdPProxyRequired(event, true) || isIdPProxyRequired(event, false);
+        // Enable OAuth 2.0 STS for remote SAML 2.0 IdPs without OAuth 2.0 support
+        if (event.getData() instanceof ServiceProviderChannel) {
+            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
+            boolean proxy = isOAuth2IdPProxyRequired(fc);
+
+            if (proxy)
+                if (logger.isTraceEnabled())
+                    logger.trace("Required OAuth2 STS components for proxied IdP between " + fc.getRoleA().getName() + ":" + fc.getRoleB().getName());
+
+            return proxy;
+        }
+
+        return false;
     }
 
     @Override
@@ -50,11 +67,18 @@ public class OAuth2STSTransformer extends AbstractTransformer {
         if (event.getData() instanceof FederatedProvider) {
             provider = (FederatedProvider) event.getData();
             isProxy = false;
-        } else if (isIdPProxyRequired(event, true) || isIdPProxyRequired(event, false)) {
+            if (logger.isTraceEnabled())
+                logger.trace("Creating OAuth2 STS components for local IdP " + ((IdentityProvider)event.getData()).getName());
+
+        } else if (isOAuth2IdPProxyRequired((FederatedConnection) event.getContext().getParentNode())) {
             // Since this is a proxy, it must be an internal SAML 2.0 SP
             ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
 
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
+
+            if (logger.isTraceEnabled())
+                logger.trace("Creating OAuth2 STS components for proxied IdP between " + fc.getRoleA().getName() + ":" + fc.getRoleB().getName());
+
             isProxy = true;
 
             if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote()) {
@@ -69,6 +93,8 @@ public class OAuth2STSTransformer extends AbstractTransformer {
                         ", available providers A: " + fc.getRoleA().getName() + ", B:" + fc.getRoleB().getName());
                 throw new TransformException("External IdP type not found in federated connection " + fc.getName());
             }
+        } else {
+            logger.error("Accepted invalid node : " + event.getData());
         }
 
         Beans idpBeans = isProxy ? (Beans) event.getContext().get("idpProxyBeans") : (Beans) event.getContext().get("idpBeans");
