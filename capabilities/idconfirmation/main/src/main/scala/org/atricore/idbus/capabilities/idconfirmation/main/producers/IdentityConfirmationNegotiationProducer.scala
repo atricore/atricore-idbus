@@ -64,9 +64,14 @@ private[main] class IdentityConfirmationNegotiationProducer(camelEndpoint: Endpo
         _ =>
           issueSecret(10) {
             secret =>
-              shareSecretByEmail(secret) {
-                notifyTokenShared(idcMediator.tokenSharingConfirmationUILocation, secret)
+              tokenAuthenticationMessage(secret, "/templates/token_authentication_message.ssp") {
+                (tokenAuthenticationMessage) =>
+                  logger.debug("Token shared message is = " + tokenAuthenticationMessage)
+                  shareSecretByEmail(secret) {
+                    notifyTokenShared(idcMediator.tokenSharingConfirmationUILocation, secret)
+                  }
               }
+
           }
       } ~
         onConfirmationTokenAuthenticationRequest {

@@ -45,13 +45,13 @@
         <dependency>
             <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
             <artifactId>org.atricore.idbus.capabilities.oauth2.component.builtin</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
             <artifactId>org.atricore.idbus.capabilities.idconfirmation.component.builtin</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -235,11 +235,27 @@
                             *
                         </Import-Package>
                         <Export-Package>
-                            ${project.artifactId}.*;version=${project.version}
+                            ${project.artifactId}.*;version=${project.version},
+                            templates
                         </Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
+     <plugin>
+      <groupId>org.fusesource.scalate</groupId>
+      <artifactId>maven-scalate-plugin_2.9</artifactId>
+      <version>1.6.1</version>
+      <configuration>
+         <contextClass>org.fusesource.scalate.DefaultRenderContext</contextClass>
+      </configuration>
+      <executions>
+        <execution>
+          <goals>
+            <goal>precompile</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
             <plugin>
                 <groupId>com.mmakowski</groupId>
                 <artifactId>maven-specs2-plugin</artifactId>

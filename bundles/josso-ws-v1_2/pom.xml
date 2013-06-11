@@ -64,7 +64,7 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Bundle : josso-ws-v1_2</Bundle-Name>
                         <Bundle-Description>This bundle simply wraps josso-ws-v1_2.jar</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>org.josso.gateway.ws._1_2.*;version=${josso.version}</Export-Package>
                         <Private-Package>!*</Private-Package>
                     </instructions>

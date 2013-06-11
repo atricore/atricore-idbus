@@ -471,27 +471,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.webconsole</groupId>
-            <artifactId>org.apache.karaf.webconsole.admin</artifactId>
-            <version>${karaf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.webconsole</groupId>
             <artifactId>org.apache.karaf.webconsole.branding</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.webconsole</groupId>
             <artifactId>org.apache.karaf.webconsole.console</artifactId>
-            <version>${karaf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.webconsole</groupId>
-            <artifactId>org.apache.karaf.webconsole.features</artifactId>
-            <version>${karaf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.webconsole</groupId>
-            <artifactId>org.apache.karaf.webconsole.gogo</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <!--dependency>
@@ -1278,13 +1263,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.kernel.ha</groupId>
-            <artifactId>org.atricore.idbus.kernel.ha.web</artifactId>
-            <version>${idbus.kernel.version}</version>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>kernel</artifactId>
             <version>${idbus.kernel.version}</version>
@@ -1700,12 +1678,6 @@
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.sso</groupId>
-            <artifactId>sso</artifactId>
-            <version>${idbus.cap.sso.version}</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
             <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
             <artifactId>org.atricore.idbus.capabilities.spmlr2.main</artifactId>
             <version>${idbus.cap.spml2.version}</version>
@@ -1911,19 +1883,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-servlet_2.5_spec</artifactId>
-            <version>${geronimo.servlet.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jaxrpc_1.1_spec</artifactId>
             <version>2.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-jsp</artifactId>
-            <version>${pax.web.version}</version>
         </dependency>
 
         <dependency>
@@ -1944,12 +1905,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.ops4j.pax.url</groupId>
-            <artifactId>pax-url-war</artifactId>
-            <version>${pax.url.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.apache-tiles-jsp-v2_2_2</artifactId>
             <version>${idbus.bundle.apache-tiles-jsp-v2_2_2.version}</version>
@@ -1957,16 +1912,6 @@
 
         <!-- SPRING -->
 
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
@@ -2047,44 +1992,10 @@
 
         <dependency>
             <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-api</artifactId>
-            <version>${pax.web.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-spi</artifactId>
-            <version>${pax.web.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-runtime</artifactId>
-            <version>${pax.web.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-jetty</artifactId>
-            <version>${pax.web.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
             <artifactId>pax-web-jetty-bundle</artifactId>
             <version>${pax.web.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-extender-war</artifactId>
-            <version>${pax.web.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-extender-whiteboard</artifactId>
-            <version>${pax.web.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.karaf</groupId>
             <artifactId>apache-karaf</artifactId>
@@ -2143,12 +2054,6 @@
             <artifactId>geronimo-jms_1.1_spec</artifactId>
             <version>${geronimo.jms.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-servlet_2.5_spec</artifactId>
-            <version>${geronimo.servlet.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
@@ -2285,11 +2190,6 @@
             <version>${xalan.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.jsr311-api-${jaxrs.api.version}</artifactId>
-            <version>${servicemix.specs.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.xmlsec</artifactId>
             <version>${xmlsec.version}</version>
@@ -2301,23 +2201,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.xmlbeans</artifactId>
-            <version>${xmlbeans.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.commons-codec</artifactId>
-            <version>${commons-codec.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.commons-httpclient</artifactId>
             <version>${commons-httpclient.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.commons-lang</artifactId>
-            <version>${commons-lang.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-digester</groupId>
@@ -2495,12 +2380,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>maven-bundle-plugin</artifactId>
-            <version>${felix.plugin.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-parent</artifactId>
             <version>1.0.0.GA</version>
@@ -2511,34 +2390,6 @@
             <groupId>org.jbpm.jbpm3</groupId>
             <artifactId>jbpm</artifactId>
             <version>3.3.1.GA</version>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.geronimo.genesis.config</groupId>
-            <artifactId>config</artifactId>
-            <version>1.4</version>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.geronimo.genesis</groupId>
-            <artifactId>genesis</artifactId>
-            <version>1.4</version>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.geronimo.genesis.config</groupId>
-            <artifactId>config</artifactId>
-            <version>1.2</version>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.geronimo.genesis</groupId>
-            <artifactId>genesis</artifactId>
-            <version>1.2</version>
             <type>pom</type>
         </dependency>
 
@@ -2787,7 +2638,7 @@
                             <descriptors>
                                 <descriptor>src/main/descriptors/unix-bin.xml</descriptor>
                             </descriptors>
-                            <finalName>${pom.artifactId}-${pom.version}</finalName>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
                             <tarLongFileMode>gnu</tarLongFileMode>
                         </configuration>
                     </execution>
@@ -2801,7 +2652,7 @@
                             <descriptors>
                                 <descriptor>src/main/descriptors/windows-bin.xml</descriptor>
                             </descriptors>
-                            <finalName>${pom.artifactId}-${pom.version}</finalName>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
                             <appendAssemblyId>true</appendAssemblyId>
                             <assemblyId/>
                         </configuration>

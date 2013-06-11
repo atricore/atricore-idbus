@@ -150,7 +150,7 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Example : Simple Federation @@idau-identifier@@</Bundle-Name>
                         <Bundle-Description>Identity Bus Simple Federation</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>meta-inf.spring.*</Export-Package>
                         <Private-Package/>
                         <DynamicImport-Package>org.atricore.idbus.*</DynamicImport-Package>

@@ -172,50 +172,50 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>idbus-server-config</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>idbus-server-lib</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>idbus-server-ria</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
                 <type>swf</type>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>org.atricore.idbus.applications.server.ui</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.atricore.idbus.capabilities.management</groupId>
                 <artifactId>org.atricore.idbus.capabilities.management.main</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>org.atricore.idbus.applications.server.services</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.atricore.idbus.capabilities.management</groupId>
                 <artifactId>org.atricore.idbus.capabilities.management.support.springmetadata</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>org.atricore.idbus.applications.server.web</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <!--dependency>
@@ -251,12 +251,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${felix.osgi.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
-                <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
             </dependency>
 
             <dependency>
@@ -707,13 +701,6 @@
             <id>DataNucleus_2</id>
             <url>http://www.datanucleus.org/downloads/maven2/</url>
         </pluginRepository>
-        <pluginRepository>
-            <id>java.net</id>
-            <name>java.net Maven Repository</name>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
-        </pluginRepository>
-
     </pluginRepositories>
 
     <modules>

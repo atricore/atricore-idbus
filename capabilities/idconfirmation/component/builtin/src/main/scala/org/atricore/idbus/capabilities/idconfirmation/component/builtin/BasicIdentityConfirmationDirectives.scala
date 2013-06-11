@@ -45,6 +45,8 @@ import org.atricore.idbus.kernel.main.authn.Constants
 import javax.xml.namespace.QName
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget
 import org.atricore.idbus.capabilities.sso.component.builtin.directives.UserDirectives
+import org.fusesource.scalate.TemplateEngine
+import org.fusesource.scalate.util.{Resource, FileResourceLoader}
 
 /**
  * Identity confirmation directives of the identity combinator library.
@@ -398,6 +400,42 @@ trait BasicIdentityConfirmationDirectives extends Logging {
 
     }
 
+  }
+
+  def tokenAuthenticationMessage(secret: String, templateUri : String) = {
+    filter1 {
+      ctx =>
+        val taloc =
+          ctx.request.channel.asInstanceOf[IdentityConfirmationChannel].getEndpoints.filter(ep =>
+            IdentityConfirmationBindings.withName(ep.getBinding) == IdentityConfirmationBindings.ID_CONFIRMATION_HTTP_AUTHENTICATION
+          ).headOption.map(ep => new URL("%s%s?t=%s".format(ctx.request.channel.getLocation, ep.getLocation, secret)))
+
+        taloc match {
+          case Some(tal) =>
+            log.debug("Context class loader is " + Thread.currentThread().getContextClassLoader)
+            log.debug("This class loader is " + this.getClass.getClassLoader)
+
+            val in = this.getClass().getClassLoader.getResourceAsStream(templateUri)
+            log.debug("ssp = " + in)
+            val in2 = this.getClass().getClassLoader.getResourceAsStream(templateUri)
+            log.debug("ssp = " + in2)
+
+            Thread.currentThread().setContextClassLoader(this.getClass.getClassLoader)
+            val engine = new TemplateEngine
+
+            /*
+            engine.resourceLoader = new FileResourceLoader {
+              override def resource(uri: String): Option[Resource] =
+                Some(Resource.from(uri, "Some text"))
+            }
+            */
+
+            val output = engine.layout(templateUri, Map( "tokenAuthenticationUrl" -> tal ))
+            Pass(output)
+          case None =>
+            Reject(TokenAuthenticationMessageGenerationFailed)
+        }
+    }
   }
 
   def notifyCompletion(preauthUrl : URL) : IdentityFlowRoute = {

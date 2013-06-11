@@ -92,8 +92,8 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Kernel : Html Binding</Bundle-Name>
                         <Bundle-Description>Html Binding</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.w3._1999.xhtml.*;version=${pom.version}</Export-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>org.w3._1999.xhtml.*;version=${project.version}</Export-Package>
                         <!--
                         <Import-Package>!*</Import-Package>
                         -->

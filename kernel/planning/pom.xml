@@ -126,7 +126,7 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Kernel : Planning Engine</Bundle-Name>
                         <Bundle-Description>Identity Planning Engine</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             org.atricore.idbus.kernel.planning.*,
                             org.jbpm.*

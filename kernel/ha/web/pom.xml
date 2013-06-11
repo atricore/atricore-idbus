@@ -102,7 +102,7 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Kernel HA : Web</Bundle-Name>
                         <Bundle-Description>Identity Bus</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Fragment-Host>org.ops4j.pax.web.pax-web-jetty</Fragment-Host>
                         <Export-Package>!*</Export-Package>
                     </instructions>

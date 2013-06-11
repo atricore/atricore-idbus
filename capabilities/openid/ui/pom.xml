@@ -84,12 +84,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.karaf.jaas</groupId>
-            <artifactId>org.apache.karaf.jaas.modules</artifactId>
-            <version>${karaf.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.ui</artifactId>
             <version>${idbus.cap.sso.version}</version>
@@ -379,11 +373,11 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>
                                      org.atricore.idbus.capabilities.openid.ui.internal.Activator
                         </Bundle-Activator>
-                        <Export-Package>org.atricore.idbus.capabilities.openid.ui.*;version=${pom.version}
+                        <Export-Package>org.atricore.idbus.capabilities.openid.ui.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                            !org.atricore.idbus.capabilities.openid.ui*,

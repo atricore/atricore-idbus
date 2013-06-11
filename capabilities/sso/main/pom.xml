@@ -43,7 +43,7 @@
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.component.container</artifactId>
             <scope>provided</scope>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
@@ -103,7 +103,7 @@
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -326,9 +326,9 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
-                            org.atricore.idbus.capabilities.sso.main.*;version=${pom.version},
+                            org.atricore.idbus.capabilities.sso.main.*;version=${project.version},
                         </Export-Package>
                         <Import-Package>
                                org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,

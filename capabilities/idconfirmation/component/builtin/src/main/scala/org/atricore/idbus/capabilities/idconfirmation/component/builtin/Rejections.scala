@@ -37,5 +37,6 @@ object Rejections {
   case object NoTokenInAuthenticationRequest extends Rejection
   case object NoIssuedSecretFound extends Rejection
   case object AuthenticationFailed extends Rejection
+  case object TokenAuthenticationMessageGenerationFailed extends Rejection
 
 }

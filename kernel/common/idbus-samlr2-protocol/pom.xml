@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.xmldsig</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         
@@ -115,13 +115,13 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
-                            oasis.names.tc.saml._2_0.assertion;version=${pom.version},
-                            oasis.names.tc.saml._2_0.metadata;version=${pom.version},
-                            oasis.names.tc.saml._2_0.protocol;version=${pom.version},
-                            oasis.names.tc.saml._2_0.idbus;version=${pom.version},
-                            oasis.names.tc.saml._2_0.wsdl;version=${pom.version},
+                            oasis.names.tc.saml._2_0.assertion;version=${project.version},
+                            oasis.names.tc.saml._2_0.metadata;version=${project.version},
+                            oasis.names.tc.saml._2_0.protocol;version=${project.version},
+                            oasis.names.tc.saml._2_0.idbus;version=${project.version},
+                            oasis.names.tc.saml._2_0.wsdl;version=${project.version},
                         </Export-Package>
                         <Import-Package>
                             javax.xml.bind,
