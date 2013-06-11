@@ -412,24 +412,10 @@ trait BasicIdentityConfirmationDirectives extends Logging {
 
         taloc match {
           case Some(tal) =>
-            log.debug("Context class loader is " + Thread.currentThread().getContextClassLoader)
-            log.debug("This class loader is " + this.getClass.getClassLoader)
-
-            val in = this.getClass().getClassLoader.getResourceAsStream(templateUri)
-            log.debug("ssp = " + in)
-            val in2 = this.getClass().getClassLoader.getResourceAsStream(templateUri)
-            log.debug("ssp = " + in2)
-
+            // NOTE: This is the classloader of the main identity confirmation module. Hence precompiled templates need
+            // to live there
             Thread.currentThread().setContextClassLoader(this.getClass.getClassLoader)
             val engine = new TemplateEngine
-
-            /*
-            engine.resourceLoader = new FileResourceLoader {
-              override def resource(uri: String): Option[Resource] =
-                Some(Resource.from(uri, "Some text"))
-            }
-            */
-
             val output = engine.layout(templateUri, Map( "tokenAuthenticationUrl" -> tal ))
             Pass(output)
           case None =>
