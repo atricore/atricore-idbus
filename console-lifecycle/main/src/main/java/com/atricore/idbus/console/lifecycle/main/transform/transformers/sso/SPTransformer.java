@@ -177,13 +177,6 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         Bean spMediator = newBean(spBeans, sp.getName() + "-samlr2-mediator",
                 SSOSPMediator.class.getName());
 
-        /* TODO : How to se preferred IDP
-        Collection<Bean> idpMds = getBeansOfType(idpBeans, ResourceCircleOfTrustMemberDescriptorImpl.class.getName());
-        Bean idpMd = idpMds.iterator().next();
-
-
-        */
-
         if (preferredIdp != null) {
             if (preferredIdp instanceof IdentityProvider) {
                 setPropertyValue(spMediator, "preferredIdpAlias", resolveLocationUrl(preferredIdp, preferredSpChannel) + "/SAML2/MD");

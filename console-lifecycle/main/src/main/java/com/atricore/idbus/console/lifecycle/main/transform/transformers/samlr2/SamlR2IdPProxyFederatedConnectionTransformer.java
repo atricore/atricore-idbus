@@ -310,7 +310,7 @@ public class SamlR2IdPProxyFederatedConnectionTransformer extends AbstractTransf
         setPropertyValue(idpChannelBean, "description", (idpChannel != null ? idpChannel.getDisplayName() : sp.getName()));
 
         setPropertyValue(idpChannelBean, "location", idpChannelLocation.toString());
-        setPropertyRef(idpChannelBean, "federatedProvider", normalizeBeanName(sp.getName()));
+        setPropertyRef(idpChannelBean, "federatedProvider", normalizeBeanName(spProxyBean.getName()));
         if (idpChannel != null)
             setPropertyRef(idpChannelBean, "targetProvider", normalizeBeanName(target.getName()));
         setPropertyRef(idpChannelBean, "sessionManager", spProxyBean.getName() + "-session-manager");
