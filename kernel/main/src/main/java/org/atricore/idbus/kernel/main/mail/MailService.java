@@ -6,7 +6,7 @@ package org.atricore.idbus.kernel.main.mail;
  */
 public interface MailService {
 
-    // TODO : Add multipar support, attachments, etc
+    // TODO : Add multipart support, attachments, etc
 
     void send(String config, String from, String to, String subject, String message, String contentType);
 

@@ -437,6 +437,7 @@ public class SingleSignOnProducer extends SSOProducer {
             // ------------------------------------------------------
             if (spChannel.isProxyModeEnabled()) {
 
+                // We don't have a session, but we're working in proxy mode.  Start Authn process on the remote/proxied IdP
                 Channel proxyChannel = spChannel.getProxy();
 
                 EndpointDescriptor proxyEndpoint = resolveSPInitiatedSSOProxyEndpointDescriptor(exchange, proxyChannel);
@@ -2478,17 +2479,17 @@ public class SingleSignOnProducer extends SSOProducer {
     }
 
     private EndpointDescriptor resolveSPInitiatedSSOProxyEndpointDescriptor(CamelMediationExchange exchange,
-                                                                            Channel bc) throws SSOException {
+                                                                            Channel proxyChannel) throws SSOException {
 
         try {
 
             if (logger.isDebugEnabled())
-                logger.debug("Looking for " + SSOService.SPInitiatedSingleSignOnServiceProxy.toString() + " at " + bc.getName());
+                logger.debug("Looking for " + SSOService.SPInitiatedSingleSignOnServiceProxy.toString() + " at " + proxyChannel.getName());
 
-            for (IdentityMediationEndpoint endpoint : bc.getEndpoints()) {
+            for (IdentityMediationEndpoint endpoint : proxyChannel.getEndpoints()) {
 
                 if (logger.isTraceEnabled())
-                    logger.trace("Processing endpoint : " + endpoint.getType() + "[" + endpoint.getBinding() + "] from " + bc.getName());
+                    logger.trace("Processing endpoint : " + endpoint.getType() + "[" + endpoint.getBinding() + "] from " + proxyChannel.getName());
 
                 if (endpoint.getType().equals(SSOService.SPInitiatedSingleSignOnServiceProxy.toString())) {
 
@@ -2496,7 +2497,7 @@ public class SingleSignOnProducer extends SSOProducer {
                         if (logger.isDebugEnabled())
                             logger.debug("Found SP Initiated SSO Service endpoint : " + endpoint.getName());
                         // This is the endpoint we're looking for
-                        return bc.getIdentityMediator().resolveEndpoint(bc, endpoint);
+                        return proxyChannel.getIdentityMediator().resolveEndpoint(proxyChannel, endpoint);
                     }
                 }
             }
@@ -2504,7 +2505,7 @@ public class SingleSignOnProducer extends SSOProducer {
             throw new SSOException(e);
         }
 
-        throw new SSOException("No SP Initiated SSO Proxy endpoint found for SP Initiated SSO using SSO Artifact binding for channel " + bc.getName());
+        throw new SSOException("No SP Initiated SSO Proxy endpoint found for SP Initiated SSO using SSO Artifact binding for channel " + proxyChannel.getName());
     }
 
     /**
