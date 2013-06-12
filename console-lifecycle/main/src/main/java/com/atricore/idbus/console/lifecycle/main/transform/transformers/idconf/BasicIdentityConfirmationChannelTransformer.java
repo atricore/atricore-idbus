@@ -7,6 +7,7 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
@@ -114,6 +115,14 @@ public class BasicIdentityConfirmationChannelTransformer extends AbstractTransfo
 
         setPropertyAsBeans(identityConfirmationChannelBean, "endpoints", idConfEndpoints);
 
+        // Import mail service
+        Reference mailServiceImporter = new Reference();
+        mailServiceImporter.setId("mailService");
+        mailServiceImporter.setCardinality("1..1");
+        mailServiceImporter.setTimeout(60L);
+        mailServiceImporter.setInterface("org.atricore.idbus.kernel.main.mail.MailService");
+        idpBeans.getImportsAndAliasAndBeen().add(mailServiceImporter);
+
         // ----------------------------------------
         // Identity Confirmation Mediator
         // ----------------------------------------
@@ -128,9 +137,13 @@ public class BasicIdentityConfirmationChannelTransformer extends AbstractTransfo
 
         // OAuth2 stuff required for issuing access tokens
         setPropertyValue(idcMediator, "oauth2ClientId", "internal");
-        setPropertyValue(idcMediator, "oauth2ClientSecret", "abc123");
+        setPropertyValue(idcMediator, "oauth2ClientSecret", "abc123456");
         setPropertyValue(idcMediator, "oauth2AuthorizationServerEndpoint",
                       resolveLocationUrl(provider) + "/OAUTH2/TOKEN/SOAP");
+        setPropertyValue(idcMediator, "idpInitiatedEndpoint",
+                resolveLocationUrl(provider) + "/SAML2/SSO/IDP_INITIATE");
+
+        setPropertyRef(idcMediator, "mailService", "mailService");
 
         // artifactQueueManager
         // setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
