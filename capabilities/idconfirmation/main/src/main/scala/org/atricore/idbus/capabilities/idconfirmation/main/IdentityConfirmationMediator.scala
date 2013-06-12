@@ -33,6 +33,7 @@ import IdentityConfirmationBindings._
 import org.atricore.idbus.kernel.main.mediation.camel.logging.MediationLogger
 import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannel
 import reflect.BeanProperty
+import org.atricore.idbus.kernel.main.mail.MailService
 
 /**
  * Exposes identity confirmation services.
@@ -56,6 +57,9 @@ class IdentityConfirmationMediator extends AbstractCamelMediator {
 
   @BeanProperty
   var idpInitiatedEndpoint : String = _
+
+  @BeanProperty
+  var mailService : MailService = _
 
   protected override def createIdentityConfirmationRoutes(identityConfirmationChannel: IdentityConfirmationChannel): RouteBuilder = {
     logger.info("Creating Identity Confirmation Routes")

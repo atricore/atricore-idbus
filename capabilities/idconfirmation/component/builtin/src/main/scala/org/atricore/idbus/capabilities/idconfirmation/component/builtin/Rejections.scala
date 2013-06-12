@@ -38,5 +38,6 @@ object Rejections {
   case object NoIssuedSecretFound extends Rejection
   case object AuthenticationFailed extends Rejection
   case object TokenAuthenticationMessageGenerationFailed extends Rejection
+  case object EMailNotDefinedForUser extends Rejection
 
 }

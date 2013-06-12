@@ -666,7 +666,7 @@ public class SingleSignOnProducer extends SSOProducer {
         AssertionType assertion = cxt.getAssertion();
         Subject authnSubject = cxt.getSubject();
 
-        logger.debug("New Assertion " + assertion.getID() + " emmitted form request " +
+        logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                 (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
         // Create a new SSO Session
@@ -809,7 +809,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // generate our own claims
                 idConfRequest.getClaims().add(new UserClaimImpl("", "sourceIpAddress", state.getTransientVariable("RemoteAddress")));
-                idConfRequest.getClaims().add(new UserClaimImpl("", "emailAddress", "foo@acme.com"));
+                idConfRequest.getClaims().add(new UserClaimImpl("", "emailAddress", "gbrigand@gmail.com"));
 
                 // --------------------------------------------------------------------
                 // Submit identity confirmation request

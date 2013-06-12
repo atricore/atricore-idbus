@@ -66,8 +66,7 @@ private[main] class IdentityConfirmationNegotiationProducer(camelEndpoint: Endpo
             secret =>
               tokenAuthenticationMessage(secret, "/templates/token_authentication_message.ssp") {
                 (tokenAuthenticationMessage) =>
-                  logger.debug("Token shared message is = " + tokenAuthenticationMessage)
-                  shareSecretByEmail(secret) {
+                  shareSecretByEmail(tokenAuthenticationMessage) {
                     notifyTokenShared(idcMediator.tokenSharingConfirmationUILocation, secret)
                   }
               }
@@ -93,7 +92,6 @@ private[main] class IdentityConfirmationNegotiationProducer(camelEndpoint: Endpo
                             (oauth2Token) =>
                               preauthUrl(idcMediator.getIdpInitiatedEndpoint, aclEntry.getSpAlias, oauth2Token) {
                                 (preauthUrl) =>
-                                  logger.debug("Preauth Url = " + preauthUrl)
                                   notifyCompletion(preauthUrl)
                               }
                           }

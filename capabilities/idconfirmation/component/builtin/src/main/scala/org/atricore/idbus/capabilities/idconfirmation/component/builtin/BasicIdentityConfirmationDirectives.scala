@@ -23,7 +23,7 @@ package org.atricore.idbus.capabilities.idconfirmation.component.builtin
 
 import org.atricore.idbus.capabilities.sso.dsl.util.Logging
 import org.atricore.idbus.capabilities.sso.dsl.core._
-import org.atricore.idbus.capabilities.sso.dsl.core.directives.{IdentityRoute, BasicIdentityFlowDirectives}
+import org.atricore.idbus.capabilities.sso.dsl.core.directives.BasicIdentityFlowDirectives
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage
 import org.atricore.idbus.capabilities.sso.dsl.core.{Reject, Pass}
 import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmationChannel, IdentityConfirmationRequest}
@@ -33,20 +33,17 @@ import java.security.SecureRandom
 import scala.Some
 import org.atricore.idbus.capabilities.sso.dsl.{RedirectToLocation, RedirectToLocationWithArtifact, IdentityFlowResponse}
 import java.net.URL
-import org.atricore.idbus.kernel.main.federation.metadata.{EndpointDescriptorImpl, EndpointDescriptor}
-import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
-import org.atricore.idbus.kernel.main.mediation.channel.SPChannel
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider
 import org.atricore.idbus.kernel.main.provisioning.spi.request.{UpdateAclEntryRequest, FindAclEntryByApprovalTokenRequest, UpdateUserRequest, FindUserByUsernameRequest}
 import org.atricore.idbus.kernel.main.provisioning.domain.{AclEntryStateType, AclDecisionType, AclEntry, Acl}
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.{PasswordString, UsernameTokenType}
-import org.atricore.idbus.kernel.main.mediation.claim.{Claim, UserClaim}
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType
+import org.atricore.idbus.kernel.main.mediation.claim.UserClaim
 import org.atricore.idbus.kernel.main.authn.Constants
 import javax.xml.namespace.QName
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget
 import org.atricore.idbus.capabilities.sso.component.builtin.directives.UserDirectives
 import org.fusesource.scalate.TemplateEngine
-import org.fusesource.scalate.util.{Resource, FileResourceLoader}
+import org.atricore.idbus.kernel.main.mail.MailService
 
 /**
  * Identity confirmation directives of the identity combinator library.
@@ -121,10 +118,15 @@ trait BasicIdentityConfirmationDirectives extends Logging {
   def identityToConfirm =
     filter1 {
       ctx =>
-        userClaim("principal").filter(ctx) match {
-          case Pass(values, transform) => Pass(values._1)
-          case reject: Reject => reject
-        }
+        val icr = ctx.request.exchange.getIn.asInstanceOf[CamelMediationMessage].getMessage.getContent.asInstanceOf[IdentityConfirmationRequest]
+
+        val username = icr.getClaims.find(_.getValue.isInstanceOf[UsernameTokenType]).
+          getOrElse(throw new IllegalArgumentException("No credentials found")).getValue.asInstanceOf[UsernameTokenType]
+
+        val nid = Option(username.getUsername).
+          getOrElse(throw new IllegalArgumentException("No username found")).getValue
+
+        Pass(nid)
     }
 
   def sourceIpAddress =
@@ -136,39 +138,19 @@ trait BasicIdentityConfirmationDirectives extends Logging {
         }
     }
 
-  def lastSourceIpAddress =
+  def emailAddress(nameId: String) =
     filter1 {
       ctx =>
-        userClaim("lastSourceIpAddress").filter(ctx) match {
-          case Pass(values, transform) => Pass(values._1)
-          case reject => reject
-        }
-    }
+        val idp = ctx.request.channel.asInstanceOf[IdentityConfirmationChannel].getFederatedProvider.asInstanceOf[IdentityProvider]
+        val pt = idp.getProvisioningTarget
 
-  def emailAddress =
-    filter1 {
-      ctx =>
-        userClaim("emailAddress").filter(ctx) match {
-          case Pass(values, transform) => Pass(values._1)
-          case reject => reject
-        }
-
-    }
-
-  /*  TODO: Remove
-  def fromUnknownIpAddress =
-    filter {
-      ctx =>
-        lastSourceIpAddress.filter(ctx).flatMap(lastSourceIpAddress =>
-          sourceIpAddress.filter(ctx).flatMap(sourceIpAddress =>
-            if (lastSourceIpAddress._1 != sourceIpAddress._1)
-              Pass
-            else
-              Reject(IdentityConfirmationNotRequired)
-          )
+        subject(nameId, pt).filter(ctx).flatMap( v =>
+          Option(v._1.getEmail) match {
+            case Some(email) => Pass(email)
+            case None => Reject(EMailNotDefinedForUser)
+          }
         )
     }
-    */
 
   def issueSecret(size: Int = 10) = {
     /**
@@ -199,17 +181,20 @@ trait BasicIdentityConfirmationDirectives extends Logging {
     }
   }
 
-  def shareSecretByEmail(secret: String) = {
+  def shareSecretByEmail(tam: String) = {
     filter {
       ctx =>
-        issueSecret(10).filter(ctx).flatMap(secret =>
-          emailAddress.filter(ctx).flatMap(emailAddress => {
-            // TODO: send email
-            log.debug("Sending secret [" + secret + "] to email address [" + emailAddress + "]")
-            Pass
-          }
-          )
-        )
+        identityToConfirm.filter(ctx).flatMap {
+          nameId =>
+            emailAddress(nameId._1).filter(ctx).flatMap {
+              email =>
+                val recipient = email._1
+                val mediator = ctx.request.channel.getIdentityMediator.asInstanceOf[ {def getMailService: MailService}]
+                log.debug("Sending message [" + tam + "] to email address [" + recipient + "]")
+                mediator.getMailService.send("josso@atricore.com", recipient, "Identity Confirmation", tam, "text/html")
+                Pass
+            }
+        }
     }
   }
 
@@ -342,7 +327,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
     }
   }
 
-  def forAclEntry(secret : String) = {
+  def forAclEntry(secret: String) = {
     filter1[AclEntry] {
       ctx =>
         val idp = ctx.request.channel.asInstanceOf[IdentityConfirmationChannel].getFederatedProvider.asInstanceOf[IdentityProvider]
@@ -402,7 +387,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
 
   }
 
-  def tokenAuthenticationMessage(secret: String, templateUri : String) = {
+  def tokenAuthenticationMessage(secret: String, templateUri: String) = {
     filter1 {
       ctx =>
         val taloc =
@@ -412,11 +397,13 @@ trait BasicIdentityConfirmationDirectives extends Logging {
 
         taloc match {
           case Some(tal) =>
-            // NOTE: This is the classloader of the main identity confirmation module. Hence precompiled templates need
+            // NOTE: This is the classloader of the main identity confirmation module. Hence pre-compiled templates need
             // to live there
+            val oldCl = Thread.currentThread().getContextClassLoader
             Thread.currentThread().setContextClassLoader(this.getClass.getClassLoader)
             val engine = new TemplateEngine
-            val output = engine.layout(templateUri, Map( "tokenAuthenticationUrl" -> tal ))
+            val output = engine.layout(templateUri, Map("tokenAuthenticationUrl" -> tal))
+            Thread.currentThread().setContextClassLoader(oldCl)
             Pass(output)
           case None =>
             Reject(TokenAuthenticationMessageGenerationFailed)
@@ -424,7 +411,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
     }
   }
 
-  def notifyCompletion(preauthUrl : URL) : IdentityFlowRoute = {
+  def notifyCompletion(preauthUrl: URL): IdentityFlowRoute = {
     ctx =>
       ctx.respond(
         IdentityFlowResponse(

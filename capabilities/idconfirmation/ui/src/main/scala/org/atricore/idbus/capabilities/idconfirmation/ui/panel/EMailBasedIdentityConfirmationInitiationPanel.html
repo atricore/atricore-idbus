@@ -9,25 +9,7 @@
     <!-- This form can be used to add/edit a user -->
     <h2 class="gt-form-head"><wicket:message key="title"/></h2>
     <div class="gt-form gt-content-box">
-
-        <div wicket:id="feedbackBox">
-            <span wicket:id="feedback"/>
-        </div>
-
-        <form wicket:id="idConfirmationForm">
-            <fieldset>
-
-                <div class="gt-form-row gt-width-33">
-                    <label for="email"><wicket:message key="label.email"/></label>
-                    <input wicket:id="email" class="gt-form-text" path="email" />
-                </div>
-                <!-- form row -->
-                <div class="gt-form-row">
-                    <input class="gt-btn-gray-medium" type="submit" value="Send Identity Confirmation E-Mail" wicket:id="doSave" />
-                </div>
-                <!-- /form row -->
-            </fieldset>
-        </form>
+        <div wicket:id="confirmationMessageLabel"/>
     </div>
 </wicket:panel>
 </body>
