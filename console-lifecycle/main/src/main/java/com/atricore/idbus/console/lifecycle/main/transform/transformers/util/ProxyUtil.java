@@ -10,16 +10,16 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 public class ProxyUtil {
 
     /**
-     * @param roleA, the role that the IdP plays in the federated connection: true for role A and false for role B
+     * @param idpIsRoleA, the role that the IdP plays in the federated connection: true for role A and false for role B
      */
-    public static boolean isIdPProxyRequired(FederatedConnection fc, boolean roleA) {
+    public static boolean isIdPProxyRequired(FederatedConnection fc, boolean idpIsRoleA) {
 
         ExternalSaml2IdentityProvider idp = null;
         InternalSaml2ServiceProvider sp = null;
 
         // Do we have an external SAML 2.0 IdP at any
 
-        if (roleA) {
+        if (idpIsRoleA) {
             if (fc.getRoleA() instanceof ExternalSaml2IdentityProvider && fc.getRoleA().isRemote()) {
                 idp = (ExternalSaml2IdentityProvider) fc.getRoleA();
                 sp = (InternalSaml2ServiceProvider) fc.getRoleB();

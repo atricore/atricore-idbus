@@ -8,6 +8,7 @@ import com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.Abst
 import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2Service;
@@ -22,12 +23,10 @@ import org.atricore.idbus.kernel.main.util.HashGenerator;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyRefs;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
@@ -178,8 +177,39 @@ public class AbstractOAuth2SPChannelTransformer extends AbstractTransformer {
         setPropertyValue(spChannelBean, "description", (spChannel != null ? spChannel.getDisplayName() : idp.getName()));
         setPropertyValue(spChannelBean, "location", resolveLocationUrl(idp, spChannel));
         setPropertyRef(spChannelBean, "federatedProvider", normalizeBeanName(idp.getName()));
-        if (spChannel != null)
+        if (spChannel != null) {
             setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
+            // Set trustedProviders
+            Set<Ref> trustedProviders = new HashSet<Ref>();
+            Ref t = new Ref();
+            t.setBean(target.getName());
+            trustedProviders.add(t);
+            setPropertyRefs(spChannelBean, "trustedProviders", trustedProviders);
+
+        } else {
+            // Set trustedProviders
+            Set<Ref> trustedProviders = new HashSet<Ref>();
+            for (FederatedConnection fa : idp.getFederatedConnectionsA()) {
+                if (fa.getChannelA().isOverrideProviderSetup())
+                    continue;
+
+                Ref t = new Ref();
+                t.setBean(fa.getRoleB().getName());
+                trustedProviders.add(t);
+            }
+            for (FederatedConnection fb : idp.getFederatedConnectionsB()) {
+                if (fb.getChannelB().isOverrideProviderSetup())
+                    continue;
+
+                Ref t = new Ref();
+                t.setBean(fb.getRoleA().getName());
+                trustedProviders.add(t);
+            }
+
+
+            setPropertyRefs(spChannelBean, "trustedProviders", trustedProviders);
+
+        }
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
         setPropertyRef(spChannelBean, "member", idpMd.getName());
 
