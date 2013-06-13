@@ -121,7 +121,7 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
                 _idpSelectors = projectProxy.idpSelectors;
 
                 for (var pj:int=0; pj < view.steps[0].idpSelectorsCombo.dataProvider.length; pj++) {
-                    if (view.steps[0].idpSelectorsCombo.dataProvider[pj].name == "preferred-idp-selector") {
+                    if (view.steps[0].idpSelectorsCombo.dataProvider[pj].name == "requested-preferred-idp-selector") {
                         view.steps[0].idpSelectorsCombo.selectedIndex = pj;
                         break;
                     }

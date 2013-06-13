@@ -118,8 +118,8 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // -------------------------------------------------------
         Bean idContainer = newBean(idauBeans, idauName + "-container", OsgiCamelIdentityMediationUnitContainerImpl.class.getName());
 
-        // Properties
-        setPropertyValue(idContainer, "name", idauName + "-engine");
+        // Properties, the Identity Mediation unit container name is the Identity Appliance Unit name:
+        setPropertyValue(idContainer, "name", idauName);
         setPropertyRef(idContainer, "cxfBus", "cxf");
 
         // ----------------------------------------
@@ -193,10 +193,12 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         Bean ssoEntitySelectorMediator = newBean(idauBeans, appliance.getName() + "-entity-selector-mediator", SSOEntitySelectorMediator.class);
         setPropertyValue(ssoEntitySelectorMediator, "logMessages", "true");
         setPropertyRef(ssoEntitySelectorMediator, "selectorManager", selectorMgr.getName());
+
+        // Configure IdP selection strategy
         if (ida.getIdpSelector() != null)
             setPropertyValue(ssoEntitySelectorMediator, "preferredStrategy", ida.getIdpSelector().getName());
         else
-            setPropertyValue(ssoEntitySelectorMediator, "preferredStrategy", "preferred-idp-selector");
+            setPropertyValue(ssoEntitySelectorMediator, "preferredStrategy", "requested-preferred-idp-selector");
 
         setPropertyRef(ssoEntitySelectorMediator, "artifactQueueManager", "artifactQueueManager");
 
@@ -223,6 +225,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
 
         // dashboardUrl
         setPropertyValue(ssoEntitySelectorMediator, "dashboardUrl", "");
+        setPropertyValue(ssoEntitySelectorMediator, "uiLocation", resolveUiSsoLocation(appliance));
 
         // Channel
 
@@ -244,17 +247,6 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         endpoints.add(ssoIdPSelectEndpoint);
 
         setPropertyAsBeans(entitySelectorChannel, "endpoints", endpoints);
-
-        // Wire provider to COT
-        /* TODO : For now only federated providers accepted by COT
-        addPropertyBeansAsRefsToSet(cot, "providers", entitySelectorProvider);
-        String dependsOn = cot.getDependsOn();
-        if (dependsOn == null || dependsOn.equals("")) {
-            cot.setDependsOn(entitySelectorProvider.getName());
-        } else {
-            cot.setDependsOn(dependsOn + "," + entitySelectorProvider.getName());
-        }
-        */
 
         // Wire channels to Unit Container
         addPropertyBeansAsRefs(idMediationUnit, "channels", entitySelectorChannel);

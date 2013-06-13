@@ -162,6 +162,13 @@ public abstract class AbstractTransformer implements Transformer {
         return resolveLocationBaseUrl(appliance.getIdApplianceDefinition().getLocation()) + "/IDBUS-UI/" + appliance.getName().toUpperCase() + "/SSO/WARN/POLICY-ENFORCEMENT";
     }
 
+    protected String resolveUiSsoLocation(IdentityAppliance appliance) {
+        return resolveLocationBaseUrl(appliance.getIdApplianceDefinition().getLocation()) + "/IDBUS-UI/" + appliance.getName().toUpperCase() + "/SSO";
+    }
+
+    protected String resolveUiSsoLocation(IdentityAppliance appliance, IdentityProvider idp) {
+        return resolveLocationBaseUrl(appliance.getIdApplianceDefinition().getLocation()) + "/IDBUS-UI/" + appliance.getName().toUpperCase() + "/" + idp.getName().toUpperCase() + "/SSO";
+    }
 
     // -----------------------------------------------------------------------
     // Location Utilities

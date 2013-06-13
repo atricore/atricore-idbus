@@ -791,7 +791,7 @@ public class PropertySheetMediator extends IocMediator {
                             }
                         } else {
                             for (var pj:int = 0; pj < _iaCoreSection.idpSelectorsCombo.dataProvider.length; pj++) {
-                                if (_iaCoreSection.idpSelectorsCombo.dataProvider[pj].name == "preferred-idp-selector") {
+                                if (_iaCoreSection.idpSelectorsCombo.dataProvider[pj].name == "requested-preferred-idp-selector") {
                                     _iaCoreSection.idpSelectorsCombo.selectedIndex = pj;
                                     break;
                                 }
@@ -6387,6 +6387,13 @@ public class PropertySheetMediator extends IocMediator {
             // bind view
             _dominoResourceCoreSection.resourceName.text = dominoResource.name;
             _dominoResourceCoreSection.resourceDescription.text = dominoResource.description;
+
+            for (var i:int = 0; i < _dominoResourceCoreSection.resourceProtocol.dataProvider.length; i++) {
+                if (dominoResource.homeLocation.protocol == _dominoResourceCoreSection.resourceProtocol.dataProvider[i].label) {
+                    _dominoResourceCoreSection.resourceProtocol.selectedIndex = i;
+                    break;
+                }
+            }
 
             _dominoResourceCoreSection.resourceDomain.text = dominoResource.homeLocation.host;
             _dominoResourceCoreSection.resourcePort.text = dominoResource.homeLocation.port.toString() != "0" ? dominoResource.homeLocation.port.toString() : "";
