@@ -8,7 +8,7 @@
 
     <bean id="wia-idp-selection" class="org.atricore.idbus.capabilities.sso.main.select.spi.SelectionStrategy">
         <property name="name" value="wia-idp-selector"/>
-        <property name="description" value="Windows Domain, requested then preferred"/>
+        <property name="description" value="Windows Domain, Requested then Preferred"/>
         <property name="selectors">
             <list>
                 <bean class="org.atricore.idbus.capabilities.spnego.selectors.SpnegoIdPSelector"/>
@@ -18,6 +18,20 @@
             </list>
         </property>
     </bean>
+
+    <bean id="wia-usr-idp-selection" class="org.atricore.idbus.capabilities.sso.main.select.spi.SelectionStrategy">
+        <property name="name" value="wia-usr-idp-selection"/>
+        <property name="description" value="Windows Domain, Requested then User Selected"/>
+        <property name="selectors">
+            <list>
+                <bean class="org.atricore.idbus.capabilities.spnego.selectors.SpnegoIdPSelector"/>
+                <!-- The SSO Capability must be always on -->
+                <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.RequestedIdPEntitySelector"/>
+                <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.UserSelectedIdPEntitySelector"/>
+            </list>
+        </property>
+    </bean>
+
 
     <osgi:service ref="wia-idp-selection" interface="org.atricore.idbus.capabilities.sso.main.select.spi.SelectionStrategy"/>
 

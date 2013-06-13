@@ -15,12 +15,16 @@ public class WebAppConfig implements IClusterable {
 
     private String mountPoint;
 
+    // Optional, used for IdP based UI Applications
     private String idpName;
 
     private String selfServicesSpName;
 
     private Properties properties = new Properties();
+
+    // Identity Appliance Unit name
     private String unitName;
+
     private String selfServicesSharedSecret;
 
     public String getAppName() {
