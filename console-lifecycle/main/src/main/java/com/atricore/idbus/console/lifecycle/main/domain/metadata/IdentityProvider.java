@@ -50,6 +50,8 @@ public class IdentityProvider extends FederatedProvider {
 
     private String userDashboardBranding;
 
+    private boolean identityConfirmationEnabled;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicy subjectNameIDPolicy;
 
@@ -200,6 +202,14 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setOauth2Enabled(boolean oauth2Enabled) {
         this.oauth2Enabled = oauth2Enabled;
+    }
+
+    public boolean isIdentityConfirmationEnabled() {
+        return identityConfirmationEnabled;
+    }
+
+    public void setIdentityConfirmationEnabled(boolean identityConfirmationEnabled) {
+        this.identityConfirmationEnabled = identityConfirmationEnabled;
     }
 
     public boolean isOpenIdEnabled() {

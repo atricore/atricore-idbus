@@ -43,6 +43,9 @@ public class BasicIdentityConfirmationChannelTransformer extends AbstractTransfo
         if (idp.getAuthenticationMechanisms() == null)
             return false;
 
+        if (!idp.isIdentityConfirmationEnabled())
+            return false;
+
         return true;
     }
 
