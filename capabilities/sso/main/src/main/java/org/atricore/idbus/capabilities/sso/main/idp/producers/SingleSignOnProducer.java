@@ -80,7 +80,7 @@ import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequestI
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
+import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
@@ -777,63 +777,66 @@ public class SingleSignOnProducer extends SSOProducer {
                     claimsResponse.getClaimSet(),
                     sp);
 
-            // --------------------------------------------------------------------
-            // Confirm user's identity in case needed
-            // --------------------------------------------------------------------
-            logger.debug("Confirming user's identity with claims [" + claimsResponse.getClaimSet().getClaims() + "] and " +
-                         "subject [" + securityTokenEmissionCtx.getSubject() + "]");
 
-            SimplePrincipal principal = securityTokenEmissionCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next();
-            UsernameTokenType usernameToken = new UsernameTokenType ();
-            AttributedString usernameString = new AttributedString();
-            usernameString.setValue( principal.getName() );
-            usernameToken.setUsername(usernameString);
-            Claim principalClaim = new CredentialClaimImpl("", usernameToken);
-            claimsResponse.getClaimSet().addClaim(principalClaim);
+            if ( ((IdentityProvider)getProvider()).isIdentityConfirmationEnabled()) {
+                // --------------------------------------------------------------------
+                // Confirm user's identity in case needed
+                // --------------------------------------------------------------------
+                logger.debug("Confirming user's identity with claims [" + claimsResponse.getClaimSet().getClaims() + "] and " +
+                             "subject [" + securityTokenEmissionCtx.getSubject() + "]");
 
-            IdentityConfirmationChannel idConfChannel = selectNextIdentityConfirmationEndpoint(
-                    authnState, exchange, claimsResponse.getClaimSet());
-            IdentityMediationEndpoint idConfEndpoint = authnState.getCurrentIdConfirmationEndpoint();
-            if (idConfEndpoint != null) {
-                logger.debug("Selected identity confirmation endpoint : " + idConfEndpoint);
+                SimplePrincipal principal = securityTokenEmissionCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next();
+                UsernameTokenType usernameToken = new UsernameTokenType ();
+                AttributedString usernameString = new AttributedString();
+                usernameString.setValue( principal.getName() );
+                usernameToken.setUsername(usernameString);
+                Claim principalClaim = new CredentialClaimImpl("", usernameToken);
+                claimsResponse.getClaimSet().addClaim(principalClaim);
 
-                // Create Claims Request
-                IdentityConfirmationRequest idConfRequest = new IdentityConfirmationRequestImpl(
-                        (SPChannel)channel,
-                        authnRequest.getIssuer().getValue()
-                );
+                IdentityConfirmationChannel idConfChannel = selectNextIdentityConfirmationEndpoint(
+                        authnState, exchange, claimsResponse.getClaimSet());
+                IdentityMediationEndpoint idConfEndpoint = authnState.getCurrentIdConfirmationEndpoint();
+                if (idConfEndpoint != null) {
+                    logger.debug("Selected identity confirmation endpoint : " + idConfEndpoint);
 
-                for (Claim claim : claimsResponse.getClaimSet().getClaims()) {
-                    idConfRequest.getClaims().add(claim);
+                    // Create Claims Request
+                    IdentityConfirmationRequest idConfRequest = new IdentityConfirmationRequestImpl(
+                            (SPChannel)channel,
+                            authnRequest.getIssuer().getValue()
+                    );
+
+                    for (Claim claim : claimsResponse.getClaimSet().getClaims()) {
+                        idConfRequest.getClaims().add(claim);
+                    }
+
+                    // generate our own claims
+                    idConfRequest.getClaims().add(new UserClaimImpl("", "sourceIpAddress", state.getTransientVariable("RemoteAddress")));
+                    idConfRequest.getClaims().add(new UserClaimImpl("", "emailAddress", "gbrigand@gmail.com"));
+
+                    // --------------------------------------------------------------------
+                    // Submit identity confirmation request
+                    // --------------------------------------------------------------------
+
+                    EndpointDescriptor idConfEp = new EndpointDescriptorImpl(idConfEndpoint.getBinding(),
+                            idConfEndpoint.getType(),
+                            idConfEndpoint.getBinding(),
+                            idConfEndpoint.getLocation().startsWith("/") ?
+                                    idConfChannel.getLocation() + idConfEndpoint.getLocation() :
+                                    idConfEndpoint.getLocation(),
+                            idConfEndpoint.getResponseLocation());
+
+                    logger.debug("Confirming user identity using endpoint " + idConfEp);
+
+                    clearAuthnState(exchange);
+
+                    out.setMessage(new MediationMessageImpl(idConfRequest.getId(),
+                            idConfRequest, "IdentityConfirmationRequest", null, idConfEp, in.getMessage().getState()));
+
+                    exchange.setOut(out);
+                    return;
+                } else {
+                    logger.debug("There is no endpoint available for identity confirmation. Skipping.");
                 }
-
-                // generate our own claims
-                idConfRequest.getClaims().add(new UserClaimImpl("", "sourceIpAddress", state.getTransientVariable("RemoteAddress")));
-                idConfRequest.getClaims().add(new UserClaimImpl("", "emailAddress", "gbrigand@gmail.com"));
-
-                // --------------------------------------------------------------------
-                // Submit identity confirmation request
-                // --------------------------------------------------------------------
-
-                EndpointDescriptor idConfEp = new EndpointDescriptorImpl(idConfEndpoint.getBinding(),
-                        idConfEndpoint.getType(),
-                        idConfEndpoint.getBinding(),
-                        idConfEndpoint.getLocation().startsWith("/") ?
-                                idConfChannel.getLocation() + idConfEndpoint.getLocation() :
-                                idConfEndpoint.getLocation(),
-                        idConfEndpoint.getResponseLocation());
-
-                logger.debug("Confirming user identity using endpoint " + idConfEp);
-
-                clearAuthnState(exchange);
-
-                out.setMessage(new MediationMessageImpl(idConfRequest.getId(),
-                        idConfRequest, "IdentityConfirmationRequest", null, idConfEp, in.getMessage().getState()));
-
-                exchange.setOut(out);
-                return;
-            } else {
-                logger.debug("There is no endpoint available for identity confirmation. Skipping.");
             }
 
             AssertionType assertion = cxt.getAssertion();
