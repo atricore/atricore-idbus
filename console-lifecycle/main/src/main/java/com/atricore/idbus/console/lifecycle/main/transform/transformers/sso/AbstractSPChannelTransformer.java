@@ -173,8 +173,40 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
         setPropertyValue(spChannelBean, "description", (spChannel != null ? spChannel.getDisplayName() : idpBean.getName()));
         setPropertyValue(spChannelBean, "location", resolveLocationUrl(idp, spChannel));
         setPropertyRef(spChannelBean, "federatedProvider", normalizeBeanName(idpBean.getName()));
-        if (spChannel != null)
+        if (spChannel != null) {
             setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
+
+            // Set trustedProviders
+            Set<Ref> trustedProviders = new HashSet<Ref>();
+            Ref t = new Ref();
+            t.setBean(target.getName());
+            trustedProviders.add(t);
+            setPropertyRefs(spChannelBean, "trustedProviders", trustedProviders);
+
+        } else {
+            // Set trustedProviders
+            Set<Ref> trustedProviders = new HashSet<Ref>();
+            for (FederatedConnection fa : idp.getFederatedConnectionsA()) {
+                if (fa.getChannelA().isOverrideProviderSetup())
+                    continue;
+
+                Ref t = new Ref();
+                t.setBean(fa.getRoleB().getName());
+                trustedProviders.add(t);
+            }
+            for (FederatedConnection fb : idp.getFederatedConnectionsB()) {
+                if (fb.getChannelB().isOverrideProviderSetup())
+                    continue;
+
+                Ref t = new Ref();
+                t.setBean(fb.getRoleA().getName());
+                trustedProviders.add(t);
+            }
+
+
+            setPropertyRefs(spChannelBean, "trustedProviders", trustedProviders);
+
+        }
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
 
         if (idMgr != null) {

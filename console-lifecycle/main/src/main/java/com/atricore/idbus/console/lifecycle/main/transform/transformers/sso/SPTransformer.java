@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import static com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil.isIdPProxyRequired;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
@@ -83,9 +84,12 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         InternalSaml2ServiceProvider providerInternalSaml2 = (InternalSaml2ServiceProvider) event.getData();
 
+        IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
+
         FederatedProvider preferredIdp = null;
         FederatedConnection preferredIdpConnection = null;
         ServiceProviderChannel preferredSpChannel = null;
+        boolean proxyPreferredIdP = false;
 
         for (FederatedConnection fc : providerInternalSaml2.getFederatedConnectionsA()) {
             IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelA();
@@ -93,6 +97,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
                 preferredIdp = (FederatedProvider) fc.getRoleB();
                 preferredSpChannel = (ServiceProviderChannel) fc.getChannelB();
                 preferredIdpConnection = fc;
+                proxyPreferredIdP = isIdPProxyRequired(fc, false);
                 break;
             }
         }
@@ -104,6 +109,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
                     preferredIdp = (FederatedProvider) fc.getRoleA();
                     preferredSpChannel = (ServiceProviderChannel) fc.getChannelA();
                     preferredIdpConnection = fc;
+                    proxyPreferredIdP = isIdPProxyRequired(fc, false);
                     break;
                 }
             }
@@ -182,17 +188,22 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
                 setPropertyValue(spMediator, "preferredIdpAlias", resolveLocationUrl(preferredIdp, preferredSpChannel) + "/SAML2/MD");
             } else if (preferredIdp instanceof ExternalSaml2IdentityProvider) {
 
-                try {
-                    MetadataDefinition md = MetadataUtil.loadMetadataDefinition(preferredIdp.getMetadata().getValue());
-                    setPropertyValue(spMediator, "preferredIdpAlias", MetadataUtil.findEntityId(md));
-                } catch (Exception e) {
-                    throw new TransformException("Error loading metadata definition for " + preferredIdp.getName());
+                if (proxyPreferredIdP) { // Use the internal IdP alias as preferred alias
+                    Location proxyLocation = new Location(providerInternalSaml2.getLocation());
+                    proxyLocation.setUri(appliance.getName().toUpperCase() + "/" + preferredIdp.getName().toUpperCase() + "-" + providerInternalSaml2.getName().toUpperCase() + "-IDP-PROXY/SAML2/MD");
+                    setPropertyValue(spMediator, "preferredIdpAlias", proxyLocation.toString());
+                } else {
+
+                    try {
+                        MetadataDefinition md = MetadataUtil.loadMetadataDefinition(preferredIdp.getMetadata().getValue());
+                        setPropertyValue(spMediator, "preferredIdpAlias", MetadataUtil.findEntityId(md));
+                    } catch (Exception e) {
+                        throw new TransformException("Error loading metadata definition for " + preferredIdp.getName());
+                    }
                 }
             }
         }
 
-        //setPropertyValue(spMediator, "preferredIdpSSOBinding", SSOBinding.SAMLR2_POST.getValue());
-        //setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_POST.getValue());
         setPropertyValue(spMediator, "preferredIdpSSOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SSOBinding.SAMLR2_ARTIFACT.getValue());
 
@@ -200,7 +211,6 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         ServiceResource svcResource = providerInternalSaml2.getServiceConnection().getResource();
         ExecutionEnvironment execEnv = svcResource.getActivation() != null ? svcResource.getActivation().getExecutionEnv() : null;
 
-        IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
         IdentityApplianceDefinition applianceDef = providerInternalSaml2.getIdentityAppliance();
 
         // TODO [IDP-PXY]: Use either service resource or execution environment !!!!

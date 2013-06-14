@@ -97,6 +97,7 @@ public class IdauUITransformer extends AbstractTransformer {
             // App Configuration
             Bean appCfgBean = newBean(idauBeansUi, ssoUiApp.getId() + "-cfg", "org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
             setPropertyValue(appCfgBean, "appName", ssoUiApp.getId());
+            setPropertyValue(appCfgBean, "unitName", ida.getName() + "-mediation-unit");
             setPropertyValue(appCfgBean, "mountPoint", ssoUiApp.getMountPoint());
             if (ida.getUserDashboardBranding() != null) {
                 setPropertyValue(appCfgBean, "brandingId", ida.getUserDashboardBranding().getId());

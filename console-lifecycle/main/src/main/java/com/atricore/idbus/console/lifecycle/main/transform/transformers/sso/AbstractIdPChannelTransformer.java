@@ -30,13 +30,12 @@ import org.atricore.idbus.kernel.main.util.HashGenerator;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import static com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil.isIdPProxyRequired;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyRefs;
 
 
 /**
@@ -152,8 +151,66 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
         setPropertyValue(idpChannelBean, "description", (idpChannel != null ? idpChannel.getDisplayName() : sp.getName()));
         setPropertyValue(idpChannelBean, "location", resolveLocationUrl(sp, idpChannel));
         setPropertyRef(idpChannelBean, "federatedProvider", normalizeBeanName(sp.getName()));
-        if (idpChannel != null)
-            setPropertyRef(idpChannelBean, "targetProvider", normalizeBeanName(target.getName()));
+
+        if (idpChannel != null) {
+
+            if (isIdPProxyRequired(fc, !fc.getRoleA().equals(sp))) {
+                // Use proxy IdP as target
+                setPropertyRef(idpChannelBean, "targetProvider", normalizeBeanName(target.getName() + "-" + sp.getName() + "-idp-proxy"));
+                // Set trustedProviders
+                Set<Ref> trustedProviders = new HashSet<Ref>();
+                Ref t = new Ref();
+                t.setBean(target.getName());
+                trustedProviders.add(t);
+                setPropertyRefs(idpChannelBean, "trustedProviders", trustedProviders);
+
+            } else {
+                setPropertyRef(idpChannelBean, "targetProvider", normalizeBeanName(target.getName()));
+                // Set trustedProviders
+                Set<Ref> trustedProviders = new HashSet<Ref>();
+                Ref t = new Ref();
+                t.setBean(target.getName());
+                trustedProviders.add(t);
+                setPropertyRefs(idpChannelBean, "trustedProviders", trustedProviders);
+            }
+
+        } else {
+            // Set trustedProviders
+            Set<Ref> trustedProviders = new HashSet<Ref>();
+            for (FederatedConnection fa : sp.getFederatedConnectionsA()) {
+
+                if (fa.getChannelA().isOverrideProviderSetup())
+                    continue;
+
+                if (isIdPProxyRequired(fa, false)) {
+                    Ref t = new Ref();
+                    t.setBean(fa.getRoleB().getName() + "-" + sp.getName() + "-idp-proxy");
+                    trustedProviders.add(t);
+                } else {
+                    Ref t = new Ref();
+                    t.setBean(fa.getRoleB().getName());
+                    trustedProviders.add(t);
+                }
+            }
+            for (FederatedConnection fb : sp.getFederatedConnectionsB()) {
+                if (fb.getChannelB().isOverrideProviderSetup())
+                    continue;
+                if (isIdPProxyRequired(fb, true)) {
+                    Ref t = new Ref();
+                    t.setBean(fb.getRoleA().getName() + "-" + sp.getName() + "-idp-proxy");
+                    trustedProviders.add(t);
+
+                } else {
+                    Ref t = new Ref();
+                    t.setBean(fb.getRoleA().getName());
+                    trustedProviders.add(t);
+                }
+            }
+
+
+            setPropertyRefs(idpChannelBean, "trustedProviders", trustedProviders);
+
+        }
         setPropertyRef(idpChannelBean, "sessionManager", spBean.getName() + "-session-manager");
         setPropertyRef(idpChannelBean, "member", spMd.getName());
         
