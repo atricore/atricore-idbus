@@ -495,6 +495,26 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         }
 
     }
+
+    @Transactional
+    public void deleteAclEntry(long id) throws ProvisioningException {
+        try {
+            JDOAclEntry jdoAclEntry = aclEntryDao.findById(id);
+            if (jdoAclEntry != null) {
+                aclEntryDao.delete(id);
+            }
+        } catch (JdoObjectRetrievalFailureException e) {
+            throw new AclEntryNotFoundException(id);
+        } catch (JDOObjectNotFoundException e) {
+            throw new AclEntryNotFoundException(id);
+        } catch (NucleusObjectNotFoundException e) {
+            throw new AclEntryNotFoundException(id);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+
+    }
+
 // -------------------------------------------< Utils >
 
     protected JDOGroup toJDOGroup(Group group) {

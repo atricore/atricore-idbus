@@ -34,7 +34,7 @@ import scala.Some
 import org.atricore.idbus.capabilities.sso.dsl.{RedirectToLocation, RedirectToLocationWithArtifact, IdentityFlowResponse}
 import java.net.URL
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider
-import org.atricore.idbus.kernel.main.provisioning.spi.request.{UpdateAclEntryRequest, FindAclEntryByApprovalTokenRequest, UpdateUserRequest, FindUserByUsernameRequest}
+import org.atricore.idbus.kernel.main.provisioning.spi.request._
 import org.atricore.idbus.kernel.main.provisioning.domain.{AclEntryStateType, AclDecisionType, AclEntry, Acl}
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaim
@@ -44,6 +44,13 @@ import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget
 import org.atricore.idbus.capabilities.sso.component.builtin.directives.UserDirectives
 import org.fusesource.scalate.TemplateEngine
 import org.atricore.idbus.kernel.main.mail.MailService
+import org.atricore.idbus.capabilities.idconfirmation.component.builtin.TokenAuthenticationRequest
+import org.atricore.idbus.capabilities.sso.dsl.RedirectToLocation
+import scala.Some
+import org.atricore.idbus.capabilities.idconfirmation.component.builtin.IdentityConfirmationState
+import org.atricore.idbus.capabilities.sso.dsl.RedirectToLocationWithArtifact
+import org.atricore.idbus.capabilities.sso.dsl.IdentityFlowResponse
+import org.atricore.idbus.capabilities.idconfirmation.component.builtin.TokenSharedConfirmation
 
 /**
  * Identity confirmation directives of the identity combinator library.
@@ -244,6 +251,10 @@ trait BasicIdentityConfirmationDirectives extends Logging {
           }
 
 
+          val pendingAclEntries = Option(idConfAcl.getEntries).map { aclEntries =>
+            aclEntries.filter( _.getFrom == sourceIpAddress ).filter( _.getState == AclEntryStateType.PENDING)
+          }
+
           val updatedAclEntries = {
             val aclEntry = new AclEntry
             aclEntry.setPrincipalNameClaim(nid)
@@ -256,10 +267,6 @@ trait BasicIdentityConfirmationDirectives extends Logging {
 
             Option(idConfAcl.getEntries) match {
               case Some(aclEntries) =>
-                // TODO: Remove pending acl entries manually
-                val pendingAclEntries = Option(idConfAcl.getEntries).map { aclEntries =>
-                  aclEntries.filter( _.getFrom == sourceIpAddress ).filter( _.getState == AclEntryStateType.PENDING)
-                }
 
                 aclEntries.filterNot{ e =>
                   pendingAclEntries.get.contains(e)
@@ -270,12 +277,21 @@ trait BasicIdentityConfirmationDirectives extends Logging {
             }
           }
 
-
           idConfAcl.setAclEntries(updatedAclEntries)
 
           val uureq = new UpdateUserRequest
           uureq.setUser(user)
           pt.updateUser(uureq)
+
+          pendingAclEntries.foreach { pentries =>
+            pentries.foreach { pentry =>
+              val rereq = new RemoveAclEntryRequest
+              rereq.setId(pentry.getId)
+              pt.removeAclEntry(rereq)
+            }
+
+          }
+
 
         case reject => reject
       }
