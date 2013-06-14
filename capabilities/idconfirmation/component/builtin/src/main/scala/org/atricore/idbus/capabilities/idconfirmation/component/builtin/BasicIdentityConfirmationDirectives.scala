@@ -243,6 +243,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
             }
           }
 
+
           val updatedAclEntries = {
             val aclEntry = new AclEntry
             aclEntry.setPrincipalNameClaim(nid)
@@ -255,11 +256,20 @@ trait BasicIdentityConfirmationDirectives extends Logging {
 
             Option(idConfAcl.getEntries) match {
               case Some(aclEntries) =>
-                aclEntries :+ aclEntry
+                // TODO: Remove pending acl entries manually
+                val pendingAclEntries = Option(idConfAcl.getEntries).map { aclEntries =>
+                  aclEntries.filter( _.getFrom == sourceIpAddress ).filter( _.getState == AclEntryStateType.PENDING)
+                }
+
+                aclEntries.filterNot{ e =>
+                  pendingAclEntries.get.contains(e)
+                } :+ aclEntry
+
               case None =>
                 Array(aclEntry)
             }
           }
+
 
           idConfAcl.setAclEntries(updatedAclEntries)
 
