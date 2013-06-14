@@ -196,13 +196,6 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.josso-ws-v1_2</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
             <version>1.4.0-SNAPSHOT</version>
             <scope>provided</scope>

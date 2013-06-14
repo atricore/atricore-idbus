@@ -213,8 +213,8 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Capability : STS Main</Bundle-Name>
                         <Bundle-Description>Atricore Identity Bus Security Token Service Capability</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.atricore.idbus.capabilities.sts.main.*;version=${pom.version}
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>org.atricore.idbus.capabilities.sts.main.*;version=${project.version}
                         </Export-Package>
                         
                         <Import-Package>

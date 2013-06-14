@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:wicket="http://www.ops4j.org/schema/wicket" xmlns:ns4="http://www.springframework.org/schema/tool"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd http://www.ops4j.org/schema/wicket http://www.ops4j.org/schema/wicket/wicket.xsd ">
+
+    <bean id="josso2-default-branding" class="org.atricore.idbus.capabilities.sso.ui.WebBranding">
+        <property name="id" value="josso2-default-branding"/>
+        <property name="skin" value="josso2"/>
+
+        <!-- Add additional static resource extensions if necessary, the main ones are already configured (js, css, gif, etc)
+        <property name="allowedResourcesPatterns">
+            <set>
+                <value>+*.eot</value>
+                <value>+*.ttf</value>
+            </set>
+        </property>
+        -->
+
+        <!--
+        <property name="resources">
+            <list>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="favicon-ico"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="Images/favicon.ico"/>
+                    <property name="shared" value="true"/>
+                </bean>
+            </list>
+        </property>
+        -->
+
+    </bean>
+
+</beans>

@@ -68,6 +68,9 @@ public class User implements Serializable {
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
 
+    //<--- Access Control ---->
+    private Acl[] acls;
+
     private UserAttributeValue[] attrs;
 
     public long getId() {
@@ -276,6 +279,14 @@ public class User implements Serializable {
 
     public void setSecurityQuestions(UserSecurityQuestion[] securityQuestions) {
         this.securityQuestions = securityQuestions;
+    }
+
+    public Acl[] getAcls() {
+        return acls;
+    }
+
+    public void setAcls(Acl[] acls) {
+        this.acls = acls;
     }
 
     public UserAttributeValue[] getAttrs() {

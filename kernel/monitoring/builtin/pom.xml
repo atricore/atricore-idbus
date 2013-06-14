@@ -21,7 +21,7 @@
         <dependency>
            <groupId>org.atricore.idbus.kernel.monitoring</groupId>
            <artifactId>org.atricore.idbus.kernel.monitoring.core</artifactId>
-           <version>${pom.version}</version>
+           <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -42,11 +42,11 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
                             *
                         </Import-Package>
-                        <Export-Package>org.atricore.idbus.kernel.monitoring.builtin.*;version=${pom.version}</Export-Package>
+                        <Export-Package>org.atricore.idbus.kernel.monitoring.builtin.*;version=${project.version}</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

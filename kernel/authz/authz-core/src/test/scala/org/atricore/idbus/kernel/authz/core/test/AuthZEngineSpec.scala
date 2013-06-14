@@ -40,18 +40,18 @@ class AuthZEngineSpec extends Specification with AccessControlDirectives with Lo
 
         val obligations = new Obligations {
           obligation is {
-            id := "obligation-1"
+            id := 'obligation_1
             fulfillOn := "Permit"
 
             attributeAssignment is {
-              id := "urn:oasis:names:tc:xacml:2.0:example:attribute:text"
+              id := 'urn_oasis_names_tc_xacml_2_0_example_attribute_text
               dataType := "http://www.w3.org/2001/XMLSchema#string"
               attributeValue := "Your medical record has been accessed by:"
 
             }
 
             attributeAssignment is {
-              id := "urn:oasis:names:tc:xacml:2.0:example:attribute:text2"
+              id := 'urn_oasis_names_tc_xacml_2_0_example_attribute_text2
               dataType := "http://www.w3.org/2001/XMLSchema#string"
               attributeValue := "Your medical record has been accessed by:"
             }
@@ -135,11 +135,11 @@ class AuthZEngineSpec extends Specification with AccessControlDirectives with Lo
 
         (denyOverrides(Some(new Obligations {
           obligation is {
-            id := "urn:oasis:names:tc:xacml:example:obligation:email"
+            id := 'urn_oasis_names_tc_xacml_example_obligation_email
             fulfillOn := "Permit"
 
             attributeAssignment is {
-              id := "urn:oasis:names:tc:xacml:2.0:example:attribute:text"
+              id := 'urn_oasis_names_tc_xacml_2_0_example_attribute_text
               category := "category-1"
               issuer := "issuer-1"
               dataType := "http://www.w3.org/2001/XMLSchema#string"
@@ -147,7 +147,7 @@ class AuthZEngineSpec extends Specification with AccessControlDirectives with Lo
             }
 
             attributeAssignment is {
-              id := "urn:oasis:names:tc:xacml:2.0:example:attribute:mailto"
+              id := 'urn_oasis_names_tc_xacml_2_0_example_attribute_mailto
               category := "category-2"
               issuer := "issuer-2"
               dataType := "http://www.w3.org/2001/XMLSchema#string"
@@ -168,7 +168,7 @@ class AuthZEngineSpec extends Specification with AccessControlDirectives with Lo
                 ) {
                   respond
                 }
-            } ~
+              } ~
               resourceAttributeDesignator(
                 mustBePresent = false,
                 attributeId = "urn:oasis:names:tc:xacml:1.0:resource:resource-id",

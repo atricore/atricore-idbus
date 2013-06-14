@@ -65,7 +65,7 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Bundle : Java JSP Standard Tag Library v1.2.0</Bundle-Name>
                         <Bundle-Description>This bundle simply wraps Java JSTL v1.2.0 JARs</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>javax.servlet.jsp.jstl.*;version=${jstl.osgi.version},
                         org.apache.taglibs.*;version=${jstl.osgi.version},
                         </Export-Package>

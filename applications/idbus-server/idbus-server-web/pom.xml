@@ -152,7 +152,7 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Application : Server UI Web distribution</Bundle-Name>
                         <Bundle-Description>Identity Bus Server UI Web distribution</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 
                         <Bundle-ClassPath>
                             .,

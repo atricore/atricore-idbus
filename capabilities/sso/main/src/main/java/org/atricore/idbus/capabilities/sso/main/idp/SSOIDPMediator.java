@@ -56,6 +56,10 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
     private SSOBinding preferredIdpSLOBinding = SSOBinding.SAMLR2_ARTIFACT;
 
+    private String claimEndpointSelection;
+
+    private String identityConfirmationEndpointSelection;
+
     @Override
     protected RouteBuilder createIdPRoutes(final SPChannel spChannel) throws Exception {
         
@@ -390,6 +394,22 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
     public SSOBinding getPreferredIdpSLOBindingValue() {
         return preferredIdpSLOBinding;
+    }
+
+    public String getClaimEndpointSelection() {
+        return claimEndpointSelection;
+    }
+
+    public void setClaimEndpointSelection(String claimEndpointSelection) {
+        this.claimEndpointSelection = claimEndpointSelection;
+    }
+
+    public String getIdentityConfirmationEndpointSelection() {
+        return identityConfirmationEndpointSelection;
+    }
+
+    public void setIdentityConfirmationEndpointSelection(String identityConfirmationEndpointSelection) {
+        this.identityConfirmationEndpointSelection = identityConfirmationEndpointSelection;
     }
 
 }

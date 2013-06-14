@@ -105,10 +105,10 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
-                            org.atricore.idbus.common.oauth._2_0.protocol;version=${pom.version},
-                            org.atricore.idbus.common.oauth._2_0.wsdl;version=${pom.version}
+                            org.atricore.idbus.common.oauth._2_0.protocol;version=${project.version},
+                            org.atricore.idbus.common.oauth._2_0.wsdl;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             javax.xml.bind,

@@ -38,6 +38,7 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimsRequest;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimsResponse;
 import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsResponse;
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationRequest;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
 import org.w3._1999.xhtml.Html;
@@ -125,7 +126,9 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
 
             if (out.getContent() instanceof ClaimsRequest) {
                 msgValue = out.getContent();
-
+            } else
+            if (out.getContent() instanceof IdentityConfirmationRequest) {
+                msgValue = out.getContent();
             } else if (out.getContent() instanceof ClaimsResponse) {
                 msgValue = out.getContent();
                 isResponse = true;
@@ -141,14 +144,16 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
             } else if (out.getContent() instanceof PolicyEnforcementResponse) {
                 msgValue = out.getContent();
                 isResponse = true;
-
             } else if (msgValue != null) {
                 msgValue = out.getContent();
                 logger.warn("Unknown message content type : " + msgValue.getClass().getName());
                 // Try to guess if this is a response ...
                 if (msgValue.getClass().getSimpleName().contains("esponse"))
                     isResponse = true;
-            }
+            } else {
+                logger.warn("Pushing payload of unknown type : " + out.getContent().getClass().getSimpleName());
+                msgValue = out.getContent();
+           }
 
             MessageQueueManager aqm = getArtifactQueueManager();
             Artifact contentArtifact = aqm.pushMessage(msgValue);

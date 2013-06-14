@@ -93,12 +93,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.sso</groupId>
-            <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
-            <version>${idbus.samlr2.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.ini4j-v0_5_1</artifactId>
             <version>${idbus.bundle.ini4j-v0_5_1.version}</version>

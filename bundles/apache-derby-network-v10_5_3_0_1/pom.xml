@@ -178,7 +178,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             org.apache.derby.*;version=${derby-version},
                             org.atricore.idbus.bundles.apache.derby.*;version=${derby-version},

@@ -75,8 +75,8 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: IDOJO : Memory Identity Store Component</Bundle-Name>
                         <Bundle-Description>Memory Identity Store Component</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.atricore.idbus.idojos.memoryidentitystore.*;version=${pom.version}</Export-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>org.atricore.idbus.idojos.memoryidentitystore.*;version=${project.version}</Export-Package>
                         <Private-Package>!*</Private-Package>
                         <Import-Package>
                                org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
@@ -104,7 +104,7 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 

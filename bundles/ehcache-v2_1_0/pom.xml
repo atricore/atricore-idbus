@@ -154,7 +154,7 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Bundle : EHCache Core v2.1.0</Bundle-Name>
                         <Bundle-Description>This bundle simply wraps EHCache Core v2.1.0 JARs</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             net.sf.ehcache.*;version=${ehcache.version},
                             org.atricore.idbus.bundles.ehcache.*;version=${ehcache.version},

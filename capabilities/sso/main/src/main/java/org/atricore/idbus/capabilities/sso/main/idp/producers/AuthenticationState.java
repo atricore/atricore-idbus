@@ -48,6 +48,12 @@ public class AuthenticationState implements java.io.Serializable {
 
     private Set<String> usedClaimsEndpoints = new HashSet<String>();
 
+    private IdentityMediationEndpoint currentIdConfirmationEndpoint;
+
+    private int currentIdConfirmationEndpointTryCount;
+
+    private Set<String> usedIdConfirmationEndpoints = new HashSet<String>();
+
     private String responseMode;
 
     private String responseFormat;
@@ -96,6 +102,30 @@ public class AuthenticationState implements java.io.Serializable {
             return AuthnCtxClass.asEnum(currentClaimsEndpoint.getType());
 
         return null;
+    }
+
+    public IdentityMediationEndpoint getCurrentIdConfirmationEndpoint() {
+        return currentIdConfirmationEndpoint;
+    }
+
+    public void setCurrentIdConfirmationEndpoint(IdentityMediationEndpoint currentIdConfirmationEndpoint) {
+        this.currentIdConfirmationEndpoint = currentIdConfirmationEndpoint;
+    }
+
+    public int getCurrentIdConfirmationEndpointTryCount() {
+        return currentIdConfirmationEndpointTryCount;
+    }
+
+    public void setCurrentIdConfirmationEndpointTryCount(int currentIdConfirmationEndpointTryCount) {
+        this.currentIdConfirmationEndpointTryCount = currentIdConfirmationEndpointTryCount;
+    }
+
+    public Set<String> getUsedIdConfirmationEndpoints() {
+        return usedIdConfirmationEndpoints;
+    }
+
+    public void setUsedIdConfirmationEndpoints(Set<String> usedIdConfirmationEndpoints) {
+        this.usedIdConfirmationEndpoints = usedIdConfirmationEndpoints;
     }
 
     public String getResponseMode() {

@@ -67,6 +67,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         // Export additional information in CAMEL headers
         httpMessage.getHeaders().put("org.atricore.idbus.http.RequestURL", httpServletRequest.getRequestURL().toString());
         httpMessage.getHeaders().put("org.atricore.idbus.http.QueryString", httpServletRequest.getQueryString());
+        httpMessage.getHeaders().put("org.atricore.idbus.http.RemoteAddress", httpServletRequest.getRemoteAddr());
 
         logger.debug("Publishing HTTP Session as Camel header org.atricore.idbus.http.HttpSession");
         httpMessage.getHeaders().put("org.atricore.idbus.http.HttpSession", httpServletRequest.getSession(true));
@@ -97,7 +98,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
 
         }
 
-        logger.trace("Writting HTTP Servlet Response");
+        logger.trace("Writing HTTP Servlet Response");
         super.doWriteResponse(message, httpServletResponse);
     }
 }

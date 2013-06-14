@@ -43,9 +43,9 @@ case class Response(decision: Decision, status: Option[Status], obligations: Opt
 
 case class Status(code: String, message: String, detail: String)
 
-case class Obligation(id: String, attributeAssignments: List[AttributeAssignment], fullFillOn: Effect)
+case class Obligation(id: Symbol, attributeAssignments: List[AttributeAssignment], fullFillOn: Effect)
 
-case class AttributeAssignment(id: String, category: String, issuer: String, dataType: String, value: String)
+case class AttributeAssignment(id: Symbol, category: String, issuer: String, dataType: String, value: String)
 
 trait Decision
 

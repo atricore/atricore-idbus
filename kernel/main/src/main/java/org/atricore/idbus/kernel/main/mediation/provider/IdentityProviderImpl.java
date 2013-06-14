@@ -30,6 +30,7 @@ import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 public class IdentityProviderImpl extends AbstractFederatedLocalProvider implements IdentityProvider {
 
     private transient ProvisioningTarget provisioningTarget;
+    private boolean identityConfirmationEnabled;
 
     public ProvisioningTarget getProvisioningTarget() {
         return provisioningTarget;
@@ -38,4 +39,14 @@ public class IdentityProviderImpl extends AbstractFederatedLocalProvider impleme
     public void setProvisioningTarget(ProvisioningTarget provisioningTarget) {
         this.provisioningTarget = provisioningTarget;
     }
+
+    public boolean isIdentityConfirmationEnabled() {
+        return identityConfirmationEnabled;
+    }
+
+    public void setIdentityConfirmationEnabled(boolean identityConfirmationEnabled) {
+        this.identityConfirmationEnabled = identityConfirmationEnabled;
+    }
+
+
 }

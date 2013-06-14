@@ -145,7 +145,7 @@
                         <Bundle-Description>This bundle includes Apache Derby Client ${derby-version}
                         </Bundle-Description>
                         <!-- Bundle Symbolic name is hard coded in datanucleus code! -->
-                        <Bundle-SymbolicName>${artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             org.apache.derby.*;version=${derby-version},
                         </Export-Package>

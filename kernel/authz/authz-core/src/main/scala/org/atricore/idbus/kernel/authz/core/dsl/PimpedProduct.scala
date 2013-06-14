@@ -22,6 +22,7 @@
 package org.atricore.idbus.kernel.authz.core.dsl
 
 
+
 class PimpedProduct(product: Product) {}
 
 sealed class Product0 extends Product {

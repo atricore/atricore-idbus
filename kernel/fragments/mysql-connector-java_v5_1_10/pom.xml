@@ -75,7 +75,7 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Kernel : MySql Conector Java v5.1.10</Bundle-Name>
                         <Bundle-Description>Identity Bus</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Fragment-Host>org.atricore.idbus.kernel.main</Fragment-Host>
                         <Export-Package>!*</Export-Package>
                         <Embed-Dependency>mysql-connector-java</Embed-Dependency>

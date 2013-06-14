@@ -120,5 +120,4 @@
     <!--                  -->
     <s:import resource="actions/jbpm-process-action-samlr2.xml" />
 
-
 </s:beans>

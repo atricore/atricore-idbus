@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <bean id="container"
+          class="org.atricore.idbus.capabilities.sso.component.container.impl.IdentityFlowContainerImpl"
+          init-method="init"
+          destroy-method="close"/>
+
+    <reference-list id="components"
+                    interface="org.atricore.idbus.capabilities.sso.component.container.IdentityFlowComponent"
+                    availability="optional">
+        <reference-listener ref="container" bind-method="register" unbind-method="unregister" />
+    </reference-list>
+
+    <service ref="container" interface="org.atricore.idbus.capabilities.sso.component.container.IdentityFlowContainer" />
+
+</blueprint>

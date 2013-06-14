@@ -24,6 +24,7 @@ package org.atricore.idbus.capabilities.sso.main.common;
 import oasis.names.tc.saml._2_0.metadata.EndpointType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.component.container.IdentityFlowContainer;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
@@ -60,6 +61,8 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
     private SamlR2Encrypter encrypter;
 
     private String metricsPrefix = "";
+
+    private IdentityFlowContainer identityFlowContainer;
 
     protected AbstractSSOMediator() {
 
@@ -275,4 +278,13 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
     public void setMetricsPrefix(String metricsPrefix) {
         this.metricsPrefix = metricsPrefix;
     }
+
+    public IdentityFlowContainer getIdentityFlowContainer() {
+        return identityFlowContainer;
+    }
+
+    public void setIdentityFlowContainer(IdentityFlowContainer identityFlowContainer) {
+        this.identityFlowContainer = identityFlowContainer;
+    }
+
 }

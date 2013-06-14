@@ -110,6 +110,8 @@
         
         <property name="userDao" ref="idpart1-user-dao"/>
         <property name="groupDao" ref="idpart1-group-dao"/>
+        <property name="aclDao" ref="idpart1-acl-dao"/>
+        <property name="aclEntryDao" ref="idpart1-acl-entry-dao"/>
 
         <!--property name="schemaManager" ref="schema-manager-default"/-->
         <property name="usrAttrValDao" ref="idpart1-user-attribute-value-dao"/>
@@ -129,6 +131,14 @@
     </bean>
 
     <bean name="idpart1-user-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl">
+        <property name="persistenceManagerFactory" ref="idpart1-pmf"/>
+    </bean>
+
+    <bean name="idpart1-acl-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOAclDAOImpl">
+        <property name="persistenceManagerFactory" ref="idpart1-pmf"/>
+    </bean>
+
+    <bean name="idpart1-acl-entry-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOAclEntryDAOImpl">
         <property name="persistenceManagerFactory" ref="idpart1-pmf"/>
     </bean>
 

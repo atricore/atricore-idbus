@@ -90,6 +90,9 @@ public interface ProvisioningTarget {
 
     ListSecurityQuestionsResponse listSecurityQuestions(ListSecurityQuestionsRequest request) throws ProvisioningException;
 
+    //<--------------- ACLs -------------------->
+    FindAclEntryByApprovalTokenResponse findAclEntryByApprovalToken(FindAclEntryByApprovalTokenRequest aclEntryRequest) throws ProvisioningException;
+
     //<--------------- Schema -------------------->
 
     AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest)
@@ -128,6 +131,5 @@ public interface ProvisioningTarget {
     ListGroupAttributesResponse listGroupAttributes(ListGroupAttributesRequest groupAttributeRequest)
             throws ProvisioningException;
 
-
-
+    UpdateAclEntryResponse updateAclEntry(UpdateAclEntryRequest aclEntryRequest) throws ProvisioningException;
 }

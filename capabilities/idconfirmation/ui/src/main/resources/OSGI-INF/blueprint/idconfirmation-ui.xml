@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:wicket="http://www.ops4j.org/schema/wicket">
+
+    <!--
+    <wicket:application id="idcWebUi"
+        class="org.atricore.idbus.capabilities.idconfirmation.ui.internal.IdentityConfirmationApplication"
+        applicationName="ssoWebUI" mountPoint="IDBUS-UI/IDC">
+    </wicket:application>
+    -->
+
+    <!-- UI Application use the bundle context associated with the application class, not the appliance's -->
+    <reference id="artifactQueueManager" timeout="60"
+               interface="org.atricore.idbus.kernel.main.mediation.MessageQueueManager"
+        availability="mandatory" />
+
+    <reference id="idsuRegistry" timeout="60"
+               interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry"
+               availability="mandatory"/>
+
+    <reference id="mailService" timeout="60"
+               interface="org.atricore.idbus.kernel.main.mail.MailService"
+               availability="mandatory"/>
+
+</blueprint>

@@ -77,8 +77,8 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: IDOJO : DB Identity Store Component</Bundle-Name>
                         <Bundle-Description>DB Identity Store Component</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.atricore.idbus.idojos.dbidentitystore.*;version=${pom.version}</Export-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>org.atricore.idbus.idojos.dbidentitystore.*;version=${project.version}</Export-Package>
                         <Private-Package>!*</Private-Package>
                         <!-- TODO : Check this, for now is needed to load any JDBC driver -->
                         <DynamicImport-Package>*</DynamicImport-Package>
