@@ -453,11 +453,13 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         // Resolve identity provider
         String unitName = getAppConfig().getUnitName();
         String idpName = getAppConfig().getIdpName();
+        String ssSpName = getAppConfig().getSelfServicesSpName();
 
         if (idpName == null)
-            logger.error("IDP Name must be provided for application " + getAppConfig().getAppName());
+            logger.debug("IdP Name not provided for application " + getAppConfig().getAppName());
 
-        String spName = getAppConfig().getSelfServicesSpName();
+        if (ssSpName == null)
+            logger.debug("IdP Name not provided for application " + getAppConfig().getAppName());
 
         if(unitName != null) {
 
@@ -465,15 +467,15 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
             for (Channel c : unit.getChannels()) {
 
-                // Look for the IDP
+                // Look for the configured IDP, if any
                 if (idpName != null && c instanceof SPChannel) {
                     SPChannel spChannel = (SPChannel) c;
                     if (spChannel.getProvider().getName().equalsIgnoreCase(idpName))
                         identityProvider = (IdentityProvider) spChannel.getProvider();
 
-                } else if (spName != null && c instanceof IdPChannel) {
+                } else if (ssSpName != null && c instanceof IdPChannel) {
                     IdPChannel idpChannel = (IdPChannel) c;
-                    if (idpChannel.getProvider().getName().equalsIgnoreCase(spName))
+                    if (idpChannel.getProvider().getName().equalsIgnoreCase(ssSpName))
                         selfServicesSP = (ServiceProvider) idpChannel.getProvider();
 
                 }
@@ -483,8 +485,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                 logger.error("No IDP found with name " + idpName + " in Mediation Unit " + unitName);
             }
 
-            if (spName != null && selfServicesSP == null) {
-                logger.error("No SP found with name " + spName + " in Mediation Unit " + unitName);
+            if (ssSpName != null && selfServicesSP == null) {
+                logger.error("No SP found with name " + ssSpName + " in Mediation Unit " + unitName);
             }
         }
 

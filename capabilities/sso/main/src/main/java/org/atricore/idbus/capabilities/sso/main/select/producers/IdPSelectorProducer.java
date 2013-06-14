@@ -61,7 +61,9 @@ public class IdPSelectorProducer extends SSOProducer {
                     logger.debug("Starting IdP selection for " + endpointRef);
 
                 doProcessSelectEntityRequest(exchange, state, request);
+
             } else if (content instanceof UserClaimsResponse) {
+                // Claims collected from the user, to make a selection decision.
                 doProcessUserClaimsResponse(exchange, state, (UserClaimsResponse) content);
 
             } else {

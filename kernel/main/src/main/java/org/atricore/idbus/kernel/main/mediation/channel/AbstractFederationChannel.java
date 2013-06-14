@@ -34,6 +34,8 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
 
+import java.util.Set;
+
 /**
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
@@ -47,6 +49,8 @@ public abstract class AbstractFederationChannel extends AbstractChannel implemen
     private MetadataEntry metadata;
     private transient FederatedLocalProvider provider;
     private transient FederatedProvider targetProvider;
+    // This is the same as the targetProvider, when the targetProvider has a value.
+    private transient Set<FederatedProvider> trustedProviders;
 
     private transient AccountLinkLifecycle accountLinkLifecycle;
     private transient AccountLinkEmitter accountLinkEmitter;
@@ -130,6 +134,14 @@ public abstract class AbstractFederationChannel extends AbstractChannel implemen
 
     public void setIdentityMapper(IdentityMapper identityMapper) {
         this.identityMapper = identityMapper;
+    }
+
+    public Set<FederatedProvider> getTrustedProviders() {
+        return trustedProviders;
+    }
+
+    public void setTrustedProviders(Set<FederatedProvider> trustedProviders) {
+        this.trustedProviders = trustedProviders;
     }
 
     @Override

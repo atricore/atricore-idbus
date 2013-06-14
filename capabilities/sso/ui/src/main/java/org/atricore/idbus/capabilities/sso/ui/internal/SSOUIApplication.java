@@ -28,6 +28,7 @@ import org.apache.wicket.request.Response;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.simple.SimpleLoginPage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.IdBusErrorPage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
+import org.atricore.idbus.capabilities.sso.ui.page.select.SelectIdPPage;
 
 /**
  * Entry point for the Wicket-based SSO front-end.
@@ -64,6 +65,8 @@ public class SSOUIApplication extends BaseWebApplication {
         mountPage("ERROR/401", AccessDeniedPage.class);
         mountPage("ERROR/404", PageExpiredErrorPage.class);
         mountPage("ERROR/SESSION", SessionExpiredPage.class);
+
+        mountPage("IDPS", SelectIdPPage.class);
 
         getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
         getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
