@@ -89,6 +89,7 @@ trait UserDirectives extends Logging {
                     Some(newAcl)
                 }
               case None =>
+                log.debug("Empty Identity Confirmation Acl")
                 user.setAcls(Array(newAcl))
                 Option(newAcl)
             }
@@ -119,9 +120,15 @@ trait UserDirectives extends Logging {
     filter {
       ctx =>
         aclEntryByFrom(from, nameId, pt).filter(ctx) match {
-          case Pass(values, _) if (values._1.getState == AclEntryStateType.PENDING) => Pass
-          case Pass(values, _) if (values._1.getState == AclEntryStateType.APPROVED) => Reject(IdentityConfirmationNotRequired)
-          case Reject(rejs) if (rejs.contains(AclEntryNotFound)) => Pass
+          case Pass(values, _) if (values._1.getState == AclEntryStateType.PENDING) =>
+            log.debug( "Principal %s connecting from %s whitelisting is pending".format(nameId, from))
+            Pass
+          case Pass(values, _) if (values._1.getState == AclEntryStateType.APPROVED) =>
+            log.debug( "Principal %s connecting from %s is whitelisted".format(nameId, from))
+            Reject(IdentityConfirmationNotRequired)
+          case Reject(rejs) if (rejs.contains(AclEntryNotFound)) =>
+            log.debug( "Principal %s connecting from %s is not whitelisted".format(nameId, from))
+            Pass
           case Reject(r) => Reject(r)
         }
     }
