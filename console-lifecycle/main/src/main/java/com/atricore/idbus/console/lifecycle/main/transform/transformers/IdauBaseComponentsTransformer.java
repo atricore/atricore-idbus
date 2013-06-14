@@ -225,7 +225,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
 
         // dashboardUrl
         setPropertyValue(ssoEntitySelectorMediator, "dashboardUrl", "");
-        setPropertyValue(ssoEntitySelectorMediator, "uiLocation", resolveUiSsoLocation(appliance));
+        //setPropertyValue(ssoEntitySelectorMediator, "uiLocation", resolveUiSsoLocation(appliance));
 
         // Channel
 
@@ -366,6 +366,17 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         monitoringServer.setInterface("org.atricore.idbus.kernel.monitoring.core.MonitoringServer");
 
         idauBeansOsgi.getImportsAndAliasAndBeen().add(monitoringServer);
+
+        // ----------------------------------------
+        // Container for Identity Flow Components
+        // ----------------------------------------
+        Reference identityFlowContainer = new Reference();
+        identityFlowContainer.setId("identity-flow-container");
+        identityFlowContainer.setCardinality("1..1");
+        identityFlowContainer.setTimeout(60L);
+        identityFlowContainer.setInterface("org.atricore.idbus.capabilities.sso.component.container.IdentityFlowContainer");
+
+        idauBeansOsgi.getImportsAndAliasAndBeen().add(identityFlowContainer);
 
         // ----------------------------------------
         // Store beans as module resources

@@ -247,6 +247,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
         identityProvider.openIdEnabled = view.openidEnabled.selected;
 
+        identityProvider.identityConfirmationEnabled = view.idconfirmationEnabled.selected;
+
         identityProvider.activeBindings = new ArrayCollection();
 
         // SAML 2.0 Bindings

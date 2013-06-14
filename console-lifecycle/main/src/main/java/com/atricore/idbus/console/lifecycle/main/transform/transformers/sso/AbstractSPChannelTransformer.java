@@ -26,6 +26,7 @@ import org.atricore.idbus.capabilities.sso.main.emitter.plans.UnspecifiedNameIDB
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannelImpl;
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
@@ -682,7 +683,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
 
         // The same Claim Providers and STS are used for the IDP in all channels!
 
-        // claimsProvider
+        // wire claim channels to sp channel
         String claimChannelName = idpBean.getName() + "-claim-channel";
         Collection<Bean> claimChannels = getBeansOfType(idpBeans, ClaimChannelImpl.class.getName());
 
@@ -690,6 +691,13 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             if (claimChannel == null)
                 throw new TransformException("No claim channel defined as " + claimChannelName);
             addPropertyBeansAsRefs(spChannelBean, "claimProviders", claimChannel);
+        }
+
+        // wire identity confirmation channels to sp channel
+        Collection<Bean> idConfChannels = getBeansOfType(idpBeans, IdentityConfirmationChannelImpl.class.getName());
+
+        for (Bean idConfChannel : idConfChannels) {
+            addPropertyBeansAsRefs(spChannelBean, "identityConfirmationProviders", idConfChannel);
         }
 
         // STS

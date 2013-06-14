@@ -14,9 +14,13 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Description;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Entry;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.atricore.idbus.capabilities.sso.component.builtin.SimpleClaimEndpointSelection;
+import org.atricore.idbus.capabilities.sso.component.builtin.SimpleIdentityConfirmationEndpointSelection;
+import org.atricore.idbus.capabilities.sso.component.container.IdentityFlowComponent;
 import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.logging.SSOLogMessageBuilder;
 import org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder;
@@ -131,6 +135,8 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
 
         // State Manager
         setPropertyRef(idpBean, "stateManager", provider.getIdentityAppliance().getName() + "-state-manager");
+
+        setPropertyValue(idpBean, "identityConfirmationEnabled", provider.isIdentityConfirmationEnabled());
 
         // ----------------------------------------
         // Identity Provider Mediator
@@ -265,9 +271,19 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
 
             // encrypter
             setPropertyRef(idpMediator, "encrypter", encrypter.getName());
+
         } else {
             throw new TransformException("No Encrypter defined for " + provider.getName());
         }
+
+        // ------------------------------------------------------------
+        // Wire Identity Flow Container and Components to IdP Mediator
+        // ------------------------------------------------------------
+        setPropertyRef(idpMediator, "identityFlowContainer", "identity-flow-container");
+        setPropertyValue(idpMediator, "claimEndpointSelection", provider.getIdentityAppliance().getName() +
+                "-" + idpBean.getName() + "-claim-endpoint-selection");
+        setPropertyValue(idpMediator, "identityConfirmationEndpointSelection", provider.getIdentityAppliance().getName() +
+                "-" + idpBean.getName() + "-identity-confirmation-endpoint-selection");
 
         // ----------------------------------------
         // MBean
@@ -330,6 +346,38 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
 
         setPropertyRef(sessionManager, "monitoringServer", "monitoring-server");
         setPropertyValue(sessionManager, "metricsPrefix", appliance.getName() + "/" + idpBean.getName());
+
+        // -------------------------------------------------------------
+        // Register and configure default claim selection identity flow
+        // -------------------------------------------------------------
+        Bean claimEndpointSelection = newBean(idpBeans, provider.getIdentityAppliance().getName() +
+                "-" + idpBean.getName() + "-claim-endpoint-selection", SimpleClaimEndpointSelection.class);
+        setConstructorArg(claimEndpointSelection, 0, "java.lang.String",
+                provider.getIdentityAppliance().getName() +
+                        "-" + idpBean.getName() + "-claim-endpoint-selection");
+        setConstructorArg(claimEndpointSelection, 1, "int", "50");
+
+        Service claimEndpointSelectionExporter = new Service();
+        claimEndpointSelectionExporter.setId(claimEndpointSelection.getName() + "-exporter");
+        claimEndpointSelectionExporter.setRef(claimEndpointSelection.getName());
+        claimEndpointSelectionExporter.setInterface(IdentityFlowComponent.class.getName());
+        beansOsgi.getImportsAndAliasAndBeen().add(claimEndpointSelectionExporter);
+
+        // ----------------------------------------------------------
+        // Register and configure default identity confirmation flow
+        // ----------------------------------------------------------
+        Bean idConfEndpointSelection = newBean(idpBeans, provider.getIdentityAppliance().getName() +
+                "-" + idpBean.getName() + "-identity-confirmation-endpoint-selection", SimpleIdentityConfirmationEndpointSelection.class);
+        setConstructorArg(idConfEndpointSelection, 0, "java.lang.String",
+                provider.getIdentityAppliance().getName() +
+                        "-" + idpBean.getName() + "-identity-confirmation-endpoint-selection");
+        setConstructorArg(idConfEndpointSelection, 1, "int", "0");
+
+        Service idConfEndpointSelectionExporter = new Service();
+        idConfEndpointSelectionExporter.setId(idConfEndpointSelection.getName() + "-exporter");
+        idConfEndpointSelectionExporter.setRef(idConfEndpointSelection.getName());
+        idConfEndpointSelectionExporter.setInterface(IdentityFlowComponent.class.getName());
+        beansOsgi.getImportsAndAliasAndBeen().add(idConfEndpointSelectionExporter);
 
     }
 

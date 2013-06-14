@@ -20,7 +20,7 @@ import java.util.Collection;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
 /**
- * TODO : Split into LDAP, DB, EMBEDDED, etc TRANSFOMER ...
+ * TODO : Split into LDAP, DB, EMBEDDED, etc TRANSFORMER ...
  *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$

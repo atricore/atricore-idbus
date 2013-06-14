@@ -55,6 +55,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.E
 import com.atricore.idbus.console.modeling.propertysheet.view.delegatedauthentication.DelegatedAuthenticationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderIdentityConfirmationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.ResourceActivationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.resources.alfresco.AlfrescoResourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
@@ -263,6 +264,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _ipSaml2Section:IdentityProviderSaml2Section;
     private var _ipOAuth2Section:IdentityProviderOAuth2Section;
     private var _ipOpenIDSection:IdentityProviderOpenIDSection;
+    private var _ipIdentityConfirmationSection:IdentityProviderIdentityConfirmationSection;
     //private var _spContractSection:ServiceProviderContractSection;
     private var _spSaml2Section:InternalSaml2ServiceProviderSaml2Section;
     private var _externalDbVaultLookupSection:ExternalDBIdentityVaultLookupSection;
@@ -1156,6 +1158,22 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.addNewChild(certificatePropertyTab);
         _certificateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleProviderCertificatePropertyTabCreationComplete);
         certificatePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleProviderCertificatePropertyTabRollOut);
+
+        // Identity Confirmation Tab
+        var identityConfirmationPropertyTab:Group = new Group();
+        identityConfirmationPropertyTab.layoutDirection = LayoutDirection.LTR;
+        identityConfirmationPropertyTab.id = "propertySheetIdentityConfirmationSection";
+        identityConfirmationPropertyTab.name = "Identity Confirmation";
+        identityConfirmationPropertyTab.width = Number("100%");
+        identityConfirmationPropertyTab.height = Number("100%");
+        identityConfirmationPropertyTab.setStyle("borderStyle", "solid");
+
+        _ipIdentityConfirmationSection = new IdentityProviderIdentityConfirmationSection();
+        identityConfirmationPropertyTab.addElement(_ipIdentityConfirmationSection);
+        _propertySheetsViewStack.addNewChild(identityConfirmationPropertyTab);
+        _ipIdentityConfirmationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderIdentityConfirmationPropertyTabCreationComplete);
+        identityConfirmationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderIdentityConfirmationPropertyTabRollOut);
+
     }
 
     protected function enableServiceProviderPropertyTabs():void {
@@ -1711,6 +1729,35 @@ public class PropertySheetMediator extends IocMediator {
             _dirty = false;
         }
     }
+
+    private function handleIdentityProviderIdentityConfirmationPropertyTabCreationComplete(event:Event):void {
+
+        var identityProvider:IdentityProvider;
+
+        identityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            _ipIdentityConfirmationSection.idconfirmationEnabled.selected = identityProvider.identityConfirmationEnabled;
+            _ipIdentityConfirmationSection.idconfirmationEnabled.addEventListener(Event.CHANGE, handleSectionChange);
+
+        }
+    }
+
+    private function handleIdentityProviderIdentityConfirmationPropertyTabRollOut(event:Event):void {
+        if (_dirty && validate(true)) {
+            var identityProvider:IdentityProvider;
+
+            identityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+            identityProvider.identityConfirmationEnabled = _ipIdentityConfirmationSection.idconfirmationEnabled.selected;
+
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }
+
 
     private function updateInternalSaml2ServiceProviderChannel(spChannel:InternalSaml2ServiceProviderChannel, identityProvider:IdentityProvider):void {
         // set location

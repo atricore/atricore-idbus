@@ -129,6 +129,9 @@
     <bean name="dominoAuthnClaimsChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.claims.DominoAuthenticationClaimsChannelTransformer"/>
 
+    <bean name="identityConfirmationClaimsChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.idconf.BasicIdentityConfirmationChannelTransformer"/>
+
     <bean name="oauth2AuthnClaimsChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.claims.OAuth2AuthenticationClaimsChannelTransformer"/>
 
@@ -502,6 +505,7 @@
                                         <ref bean="wiaAuthnClaimsChannelTransformer"/>
                                         <ref bean="dominoAuthnClaimsChannelTransformer"/>
                                         <ref bean="oauth2AuthenticationTransformer"/>
+                                        <ref bean="identityConfirmationClaimsChannelTransformer"/>
 
                                         <!-- STS Transformers -->
                                         <ref bean="stsTransformer"/>

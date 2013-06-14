@@ -303,6 +303,17 @@
             </s:VGroup>
         </s:NavigatorContent>
 
+        <!-- Identity Confirmation Tab -->
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.tab.idconfirmation')}">
+            <s:VGroup>
+
+                <mx:FormItem labelWidth="230" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idconfirmation.enabled')}:">
+                    <s:CheckBox id="idconfirmationEnabled" selected="false"/>
+                </mx:FormItem>
+
+            </s:VGroup>
+        </s:NavigatorContent>
+
     </mx:TabNavigator>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
