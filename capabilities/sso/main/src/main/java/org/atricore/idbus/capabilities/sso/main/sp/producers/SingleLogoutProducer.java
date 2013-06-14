@@ -545,7 +545,8 @@ public class SingleLogoutProducer extends SSOProducer {
         // What to do with artifact and SOAP bindings ?!
         if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()) &&
             !endpoint.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue())) {
-            if (response.getSignature() == null)
+
+            if (response.getSignature() == null) {
                 // Disable this for non-saml compliant IdPs
                 if (mediator.isWantSLOResponseSigned()) {
                     throw new SSOResponseException(response,
@@ -554,25 +555,29 @@ public class SingleLogoutProducer extends SSOProducer {
                         StatusDetails.INVALID_RESPONSE_SIGNATURE);
                 }
 
-            try {
+            } else {
 
-                if (originalResponse != null)
-                    signer.validateDom(idpMd, originalResponse);
-                else
-                    signer.validate(idpMd, response, "LogoutResponse");
+                try {
 
-            } catch (SamlR2SignatureValidationException e) {
-                throw new SSOResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-            } catch (SamlR2SignatureException e) {
-                //other exceptions like JAXB, xml parser...
-                throw new SSOResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                    if (originalResponse != null)
+                        signer.validateDom(idpMd, originalResponse);
+                    else
+                        signer.validate(idpMd, response, "LogoutResponse");
+
+                } catch (SamlR2SignatureValidationException e) {
+                    throw new SSOResponseException(response,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                } catch (SamlR2SignatureException e) {
+                    //other exceptions like JAXB, xml parser...
+                    throw new SSOResponseException(response,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                }
             }
+
         } else {
             // HTTP-Redirect binding signature validation !
             try {
