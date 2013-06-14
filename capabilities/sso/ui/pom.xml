@@ -101,13 +101,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.sso</groupId>
-            <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
-            <version>${idbus.cap.sso.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
             <artifactId>org.atricore.idbus.capabilities.oauth2.common</artifactId>
             <version>${idbus.cap.oauth2.version}</version>
@@ -432,11 +425,11 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>
                                      org.atricore.idbus.capabilities.sso.ui.internal.Activator
                         </Bundle-Activator>
-                        <Export-Package>org.atricore.idbus.capabilities.sso.ui.*;version=${pom.version}
+                        <Export-Package>org.atricore.idbus.capabilities.sso.ui.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                            !org.atricore.idbus.capabilities.sso.ui*,

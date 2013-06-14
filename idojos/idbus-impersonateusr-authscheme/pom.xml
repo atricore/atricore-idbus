@@ -57,8 +57,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.atricore.idbus.idojos.impersonateusrauthscheme.*;version=${pom.version}</Export-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>org.atricore.idbus.idojos.impersonateusrauthscheme.*;version=${project.version}</Export-Package>
                         <Private-Package>!*</Private-Package>
                         <Import-Package>
                                org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 

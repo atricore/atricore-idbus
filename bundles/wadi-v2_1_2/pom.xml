@@ -136,7 +136,7 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Bundle : WADI v${wadi.version}</Bundle-Name>
                         <Bundle-Description>This bundle simply wraps WADI v${wadi.version}</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             org.codehaus.wadi.*;version="${wadi.version}",
                             edu.emory.mathcs.backport.java.util.*;version="2.2",

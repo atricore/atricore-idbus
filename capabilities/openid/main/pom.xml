@@ -348,8 +348,8 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.atricore.idbus.capabilities.openid.main.*;version=${pom.version}
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>org.atricore.idbus.capabilities.openid.main.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             com.google.inject.internal.asm.util; resolution:=optional,

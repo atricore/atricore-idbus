@@ -49,7 +49,7 @@
                         <supportedProjectType>war</supportedProjectType>
                     </supportedProjectTypes>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Fragment-Host>org.atricore.idbus.applications.server.web</Fragment-Host>
                         <Export-Package>!*</Export-Package>
                         <Bundle-ClassPath>

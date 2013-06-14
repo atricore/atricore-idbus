@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel.authz</groupId>
             <artifactId>org.atricore.idbus.kernel.authz.core</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -127,7 +127,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>${project.artifactId};version=${project.version}</Export-Package>
                         <Import-Package>
                             !${project.artifactId},

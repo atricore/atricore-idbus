@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:ns2="http://www.springframework.org/schema/osgi"
+       xmlns:ns3="http://www.springframework.org/schema/tool" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <bean id="simple-claim-channel-selection" class="org.atricore.idbus.capabilities.sso.component.builtin.SimpleClaimEndpointSelection">
+        <constructor-arg type="java.lang.String" index="0">
+            <value>simple-claim-channel-selection</value>
+        </constructor-arg>
+        <constructor-arg type="int" index="1">
+            <value>50</value>
+        </constructor-arg>
+    </bean>
+
+    <bean id="simple-idconf-channel-selection" class="org.atricore.idbus.capabilities.sso.component.builtin.SimpleIdentityConfirmationEndpointSelection">
+        <constructor-arg type="java.lang.String" index="0">
+            <value>simple-idconf-channel-selection</value>
+        </constructor-arg>
+        <constructor-arg type="int" index="1">
+            <value>1</value>
+        </constructor-arg>
+    </bean>
+
+</beans>

@@ -127,7 +127,7 @@ public class OpenIDHttpPostBinding extends AbstractMediationHttpBinding {
                             new String[]{"org.w3._1999.xhtml"});
 
                     // ------------------------------------------------------------
-                    // Prepare HTTP Resposne
+                    // Prepare HTTP Response
                     // ------------------------------------------------------------
                     copyBackState(out.getState(), exchange);
 

@@ -228,12 +228,12 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Example : Salesforce Federation Identity Appliance Unit</Bundle-Name>
                         <Bundle-Description>Identity Bus Salesforce Federation Example Identity Appliance Unit</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 
                         <Private-Package>!*</Private-Package>
 
                         <Export-Package>
-                            org.atricore.idbus.examples.salesforce.idau; version="${pom.version}"
+                            org.atricore.idbus.examples.salesforce.idau; version="${project.version}"
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,

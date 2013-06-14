@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel.authz</groupId>
             <artifactId>org.atricore.idbus.kernel.authz.config</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -30,7 +30,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Require-Bundle>
                             org.atricore.idbus.kernel.authz.core,
                             org.atricore.idbus.bundles.scala-library-v2_9_1

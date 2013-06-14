@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:wicket="http://www.ops4j.org/schema/wicket" xmlns:ns4="http://www.springframework.org/schema/tool"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd http://www.ops4j.org/schema/wicket http://www.ops4j.org/schema/wicket/wicket.xsd ">
+
+    <!-- UI Application use the bundle context associated with the application class, not the appliance's -->
+    <osgi:reference timeout="60" cardinality="1..1"
+                   interface="org.atricore.idbus.kernel.main.mediation.MessageQueueManager" id="artifactQueueManager"/>
+    <osgi:reference timeout="60" cardinality="1..1"
+                   interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry"
+                   id="idsuRegistry"/>
+    <osgi:reference id="mailService"
+                    timeout="60" cardinality="1..1"
+                    interface="org.atricore.idbus.kernel.main.mail.MailService"/>
+    <osgi:reference id="webContainer"
+                    interface="org.ops4j.pax.web.service.WebContainer"/>
+
+    <bean id="webContainerSetup" class="org.atricore.idbus.capabilities.sso.ui.internal.WebContainerSetup" init-method="init">
+        <property name="webContainer" ref="webContainer"/>
+    </bean>
+
+    <!-- Get application configurations -->
+    <bean id="webAppConfigRegistry" class="org.atricore.idbus.capabilities.sso.ui.internal.ApplicationRegistryImpl" >
+    </bean>
+
+    <!-- Application configuration registry -->
+    <bean id="osgiWebAppConfigRegistry" class="org.atricore.idbus.capabilities.sso.ui.internal.OsgiApplicationRegistry">
+        <constructor-arg ref="webAppConfigRegistry" />
+    </bean>
+
+    <osgi:service id="webAppConfigRegistryExporter" ref="webAppConfigRegistry"
+                  interface="org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry" />
+
+    <osgi:list id="appConfigs" interface="org.atricore.idbus.capabilities.sso.ui.WebAppConfig"
+               cardinality="0..N" >
+        <osgi:listener ref="osgiWebAppConfigRegistry" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
+
+    <!-- ============================================== -->
+    <!-- Web Branding service                           -->
+    <!-- ============================================== -->
+    <bean id="webBrandingService" init-method="init"
+          class="org.atricore.idbus.capabilities.sso.ui.internal.WebBrandingServiceImpl"/>
+
+    <osgi:service id="webBrandingServiceOsgi"
+                  ref="webBrandingService"
+                  interface="org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService"/>
+
+    <bean id="webBrandingRegistry" class="org.atricore.idbus.capabilities.sso.ui.internal.WebBrandingRegistryImpl">
+        <property name="service" ref="webBrandingService"/>
+    </bean>
+
+    <bean id="osgiWebBrandingRegitry" class="org.atricore.idbus.capabilities.sso.ui.internal.SpringWebBrandingRegistry">
+        <constructor-arg ref="webBrandingRegistry" />
+    </bean>
+
+    <!--
+    <bean id="osgiWebBrandingRegitry" class="org.atricore.idbus.capabilities.sso.ui.internal.OsgiWebBrandingRegitry">
+        <constructor-arg ref="webBrandingRegistry" />
+    </bean>
+
+    <osgi:list id="webBrandings" interface="org.atricore.idbus.capabilities.sso.ui.WebBranding"
+               cardinality="0..N" >
+        <osgi:listener ref="osgiWebBrandingRegitry" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
+    -->
+
+</beans>

@@ -33,4 +33,5 @@ public interface IdentityProvider extends FederatedLocalProvider {
 
     ProvisioningTarget getProvisioningTarget();
 
+    boolean isIdentityConfirmationEnabled();
 }

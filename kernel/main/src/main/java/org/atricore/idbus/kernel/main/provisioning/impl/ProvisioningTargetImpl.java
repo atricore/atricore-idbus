@@ -322,7 +322,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             
             User user = new User();
 
-            BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "securityQuestions", "userPassword"});
+            BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "securityQuestions", "acls", "userPassword"});
 
             // TODO : Apply password validation rules
             user.setUserPassword(createPasswordHash(userRequest.getUserPassword()));
@@ -332,7 +332,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             UserSecurityQuestion[] securityQuestions = userRequest.getSecurityQuestions();
             user.setSecurityQuestions(securityQuestions);
-            
+
             user = identityPartition.addUser(user);
             AddUserResponse userResponse = new AddUserResponse();
             userResponse.setUser(user);
@@ -472,8 +472,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             User oldUser = identityPartition.findUserById(user.getId());
 
             // DO NOT UPDATE USER PASSWORD OR LIFE QUESTIONS HERE
-            BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "securityQuestions", "userPassword"});
+            BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "securityQuestions", "acls", "userPassword", "id"});
             oldUser.setGroups(user.getGroups());
+            oldUser.setAcls(user.getAcls());
+
+            // DO NOT UPDATE USER PASSWORD HERE : oldUser.setUserPassword(createPasswordHash(user.getUserPassword()));
 
             user = identityPartition.updateUser(oldUser);
 
@@ -597,6 +600,40 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     }
 
+    public FindAclEntryByApprovalTokenResponse findAclEntryByApprovalToken(FindAclEntryByApprovalTokenRequest aclEntryRequest) throws ProvisioningException {
+
+        try {
+            AclEntry aclEntry = identityPartition.findAclEntryByApprovalToken(aclEntryRequest.getApprovalToken());
+            FindAclEntryByApprovalTokenResponse aclEntryResponse = new FindAclEntryByApprovalTokenResponse();
+            aclEntryResponse.setAclEntry(aclEntry);
+            return aclEntryResponse;
+        } catch (AclEntryNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public UpdateAclEntryResponse updateAclEntry(UpdateAclEntryRequest aclEntryRequest) throws ProvisioningException {
+        try {
+            AclEntry aclEntry = aclEntryRequest.getAclEntry();
+            AclEntry oldAclEntry = identityPartition.findAclEntryById(aclEntry.getId());
+
+            BeanUtils.copyProperties(aclEntry, oldAclEntry, new String[] {"id"});
+
+            aclEntry = identityPartition.updateAclEntry(oldAclEntry);
+
+            UpdateAclEntryResponse aclEntryResponse = new UpdateAclEntryResponse();
+            aclEntryResponse.setAclEntry(aclEntry);
+
+            return aclEntryResponse;
+        } catch (AclEntryNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
     public AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest) throws ProvisioningException {
         try {
             // create user attribute
@@ -623,7 +660,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             UserAttributeDefinition oldUserAttribute = schemaManager.findUserAttributeById(userAttribute.getId());
 
-            BeanUtils.copyProperties(userAttribute, oldUserAttribute, new String[]{"id"});
+            BeanUtils.copyProperties(userAttribute, oldUserAttribute, new String[] {"id"});
             
             userAttribute = schemaManager.updateUserAttribute(oldUserAttribute);
 
@@ -714,7 +751,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             GroupAttributeDefinition oldGroupAttribute = schemaManager.findGroupAttributeById(groupAttribute.getId());
 
-            BeanUtils.copyProperties(groupAttribute, oldGroupAttribute, new String[]{"id"});
+            BeanUtils.copyProperties(groupAttribute, oldGroupAttribute, new String[] {"id"});
 
             groupAttribute = schemaManager.updateGroupAttribute(oldGroupAttribute);
 

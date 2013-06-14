@@ -274,5 +274,8 @@
         <module>main</module>
         <module>ui</module>
         <module>management</module>
+        <module>dsl</module>
+        <module>component</module>
+        <module>test</module>
     </modules>
 </project>

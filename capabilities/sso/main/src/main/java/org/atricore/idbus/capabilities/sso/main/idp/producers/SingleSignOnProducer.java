@@ -33,6 +33,10 @@ import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.component.container.IdentityFlowContainer;
+import org.atricore.idbus.capabilities.sso.dsl.IdentityFlowResponse;
+import org.atricore.idbus.capabilities.sso.dsl.NoFurtherActionRequired;
+import org.atricore.idbus.capabilities.sso.dsl.RedirectToEndpoint;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
@@ -68,12 +72,16 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannel;
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationRequest;
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationRequestImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequestImpl;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
@@ -127,9 +135,15 @@ public class SingleSignOnProducer extends SSOProducer {
             String thread = Thread.currentThread().getName();
 
             if (content instanceof PreAuthenticatedIDPInitiatedAuthnRequestType) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessPreAuthenticatedIDPInitiatedSSO START");
+
                 // New Pre-authenticated IDP Initiated Single Sign-On
                 doProcessPreAuthenticatedIDPInitiantedSSO(exchange, (PreAuthenticatedIDPInitiatedAuthnRequestType) content);
 
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + thread + "] /doProcessPreAuthenticatedIDPInitiatedSSO END");
             } else if (content instanceof IDPInitiatedAuthnRequestType) {
                 // New IDP Initiated Single Sign-On
                 metric += "doProcessIDPInitiatedSSO";
@@ -437,7 +451,6 @@ public class SingleSignOnProducer extends SSOProducer {
             // ------------------------------------------------------
             if (spChannel.isProxyModeEnabled()) {
 
-                // We don't have a session, but we're working in proxy mode.  Start Authn process on the remote/proxied IdP
                 Channel proxyChannel = spChannel.getProxy();
 
                 EndpointDescriptor proxyEndpoint = resolveSPInitiatedSSOProxyEndpointDescriptor(exchange, proxyChannel);
@@ -468,7 +481,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // TODO : Verify max sessions per user, etc!
 
-                ClaimChannel claimChannel = selectNextClaimsEndpoint(authnState);
+                ClaimChannel claimChannel = selectNextClaimsEndpoint(authnState, exchange);
                 IdentityMediationEndpoint claimEndpoint = authnState.getCurrentClaimsEndpoint();
 
                 if (claimEndpoint == null) {
@@ -495,8 +508,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // Create Claims Request
                 SSOCredentialClaimsRequest claimsRequest = null;
-                
-                if ( authnRequest instanceof PreAuthenticatedAuthnRequestType) {
+
+                if (authnRequest instanceof PreAuthenticatedAuthnRequestType) {
                     PreAuthenticatedAuthnRequestType preAuthnRequest = (PreAuthenticatedAuthnRequestType) authnRequest;
                     claimsRequest = new SSOCredentialClaimsRequest(
                             authnRequest.getID(),
@@ -513,7 +526,7 @@ public class SingleSignOnProducer extends SSOProducer {
                             claimChannel,
                             uuidGenerator.generateId());
                 }
-                
+
                 // Send our state ID as relay
                 claimsRequest.setRelayState(mediationState.getLocalState().getId());
 
@@ -656,7 +669,7 @@ public class SingleSignOnProducer extends SSOProducer {
         AssertionType assertion = cxt.getAssertion();
         Subject authnSubject = cxt.getSubject();
 
-        logger.debug("New Assertion " + assertion.getID() + " emmitted form request " +
+        logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                 (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
         // Create a new SSO Session
@@ -687,12 +700,12 @@ public class SingleSignOnProducer extends SSOProducer {
     }
 
     /**
-     * This will emit an assertion using the recieved claims.  If the process is successful, a SAML Response will
+     * This will emit an assertion using the received claims.  If the process is successful, a SAML Response will
      * be issued to the original SP.
-     * If an error occures, the procedure will decide to retry collecting claims with the las
+     * If an error occurs, the procedure will decide to retry collecting claims with the las
      * claims endpoint selected or collect claims using a new claims endpoint.
      * <p/>
-     * If no more claim endpoints are available, this will send an satus error response to the SP.
+     * If no more claim endpoints are available, this will send an status error response to the SP.
      *
      * @param exchange
      * @param claimsResponse
@@ -701,12 +714,14 @@ public class SingleSignOnProducer extends SSOProducer {
     protected void doProcessClaimsResponse(CamelMediationExchange exchange,
                                            SSOCredentialClaimsResponse claimsResponse) throws Exception {
 
+
         //------------------------------------------------------------
         // Process a claims response
         //------------------------------------------------------------
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        MediationState state = in.getMessage().getState();
 
         // TODO : On IDP Initiated, there is no AuthnRequest
         AuthenticationState authnState = getAuthnState(exchange);
@@ -739,7 +754,7 @@ public class SingleSignOnProducer extends SSOProducer {
             // Build STS Context
             // -------------------------------------------------------
             // The context will act as an alternative communication exchange between this producer (IDP) and the STS.
-            // It will transport back the Subject wich is not supported by the WST protocol
+            // It will transport back the Subject which is not supported by the WST protocol
             SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx = new SamlR2SecurityTokenEmissionContext();
             // Send extra information to STS, using the emission context
 
@@ -757,17 +772,85 @@ public class SingleSignOnProducer extends SSOProducer {
             // Authenticate the user, send a RequestSecurityToken to the Security Token Service (STS)
             // and emit a SAML 2.0 Assertion
             // ----------------------------------------------------------------------------------------
+
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP emit assertion from claims");
             SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
                     securityTokenEmissionCtx,
                     claimsResponse.getClaimSet(),
                     sp);
+
+
+            if ( ((IdentityProvider)getProvider()).isIdentityConfirmationEnabled()) {
+                // --------------------------------------------------------------------
+                // Confirm user's identity in case needed
+                // --------------------------------------------------------------------
+                logger.debug("Confirming user's identity with claims [" + claimsResponse.getClaimSet().getClaims() + "] and " +
+                             "subject [" + securityTokenEmissionCtx.getSubject() + "]");
+
+                SimplePrincipal principal = securityTokenEmissionCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next();
+                UsernameTokenType usernameToken = new UsernameTokenType ();
+                AttributedString usernameString = new AttributedString();
+                usernameString.setValue( principal.getName() );
+                usernameToken.setUsername(usernameString);
+                Claim principalClaim = new CredentialClaimImpl("", usernameToken);
+                claimsResponse.getClaimSet().addClaim(principalClaim);
+
+                IdentityConfirmationChannel idConfChannel = selectNextIdentityConfirmationEndpoint(
+                        authnState, exchange, claimsResponse.getClaimSet());
+                IdentityMediationEndpoint idConfEndpoint = authnState.getCurrentIdConfirmationEndpoint();
+                if (idConfEndpoint != null) {
+                    logger.debug("Selected identity confirmation endpoint : " + idConfEndpoint);
+
+                    // Create Claims Request
+                    IdentityConfirmationRequest idConfRequest = new IdentityConfirmationRequestImpl(
+                            (SPChannel)channel,
+                            authnRequest.getIssuer().getValue()
+                    );
+
+                    for (Claim claim : claimsResponse.getClaimSet().getClaims()) {
+                        idConfRequest.getClaims().add(claim);
+                    }
+
+                    // generate our own claims
+                    idConfRequest.getClaims().add(new UserClaimImpl("", "sourceIpAddress", state.getTransientVariable("RemoteAddress")));
+                    idConfRequest.getClaims().add(new UserClaimImpl("", "emailAddress", "gbrigand@gmail.com"));
+
+                    // --------------------------------------------------------------------
+                    // Submit identity confirmation request
+                    // --------------------------------------------------------------------
+
+                    EndpointDescriptor idConfEp = new EndpointDescriptorImpl(idConfEndpoint.getBinding(),
+                            idConfEndpoint.getType(),
+                            idConfEndpoint.getBinding(),
+                            idConfEndpoint.getLocation().startsWith("/") ?
+                                    idConfChannel.getLocation() + idConfEndpoint.getLocation() :
+                                    idConfEndpoint.getLocation(),
+                            idConfEndpoint.getResponseLocation());
+
+                    logger.debug("Confirming user identity using endpoint " + idConfEp);
+
+                    clearAuthnState(exchange);
+
+                    out.setMessage(new MediationMessageImpl(idConfRequest.getId(),
+                            idConfRequest, "IdentityConfirmationRequest", null, idConfEp, in.getMessage().getState()));
+
+                    exchange.setOut(out);
+                    return;
+                } else {
+                    logger.debug("There is no endpoint available for identity confirmation. Skipping.");
+                }
+            }
 
             AssertionType assertion = cxt.getAssertion();
             Subject authnSubject = cxt.getSubject();
 
             if (logger.isDebugEnabled())
                 logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
-                    (authnRequest != null ? authnRequest.getID() : "<NULL>"));
+                        (authnRequest != null ? authnRequest.getID() : "<NULL>"));
+
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP create sec. ctx.");
 
             // Create a new SSO Session
             IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion);
@@ -775,6 +858,9 @@ public class SingleSignOnProducer extends SSOProducer {
             // Associate the SP with the new session, including relay state!
             // We already validated authn request issuer, so we can use it.
             secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
+
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP build saml resp");
 
             // Build a response for the SP
             ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
@@ -789,10 +875,17 @@ public class SingleSignOnProducer extends SSOProducer {
             // --------------------------------------------------------------------
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP sign 1.1 resp");
+
                 saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
                 SamlR2Signer signer = ((SSOIDPMediator) channel.getIdentityMediator()).getSigner();
                 saml11Response = signer.sign(saml11Response);
             }
+
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
 
             // Clear the current authentication state
             clearAuthnState(exchange);
@@ -840,6 +933,9 @@ public class SingleSignOnProducer extends SSOProducer {
                 return;
             }
 
+            if (logger.isTraceEnabled())
+                logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP end");
+
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
                         saml11Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
@@ -865,7 +961,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("Security Token authentication failure : " + e.getMessage(), e);
 
             // Ask for more claims, using other auth schemes
-            ClaimChannel claimChannel = selectNextClaimsEndpoint(authnState);
+            ClaimChannel claimChannel = selectNextClaimsEndpoint(authnState, exchange);
             IdentityMediationEndpoint claimEndpoint = authnState.getCurrentClaimsEndpoint();
 
             // No more claim endpoints available, the authentication process is over.
@@ -1301,187 +1397,63 @@ public class SingleSignOnProducer extends SSOProducer {
     }
 
     /**
-     * This has the logic to select endpoits for claims collecting.
+     * This has the logic to select endpoints for claims collecting.
      */
-    protected ClaimChannel selectNextClaimsEndpoint(AuthenticationState status) {
+    protected ClaimChannel selectNextClaimsEndpoint(AuthenticationState status, CamelMediationExchange exchange) {
 
-        Collection<ClaimChannel> claimChannels = ((SPChannel) channel).getClaimProviders();
+        SSOIDPMediator idpMediator = (SSOIDPMediator) channel.getIdentityMediator();
+        IdentityFlowContainer ifc = idpMediator.getIdentityFlowContainer();
 
-        RequestedAuthnContextType reqAuthnCtx = null;
+        IdentityFlowResponse response =
+                ifc.dispatch(
+                        idpMediator.getClaimEndpointSelection(),
+                        exchange,
+                        getProvider(),
+                        channel,
+                        endpoint,
+                        null
+                );
 
-        if (status.getAuthnRequest() != null && status.getAuthnRequest().getRequestedAuthnContext() != null) {
-            reqAuthnCtx = status.getAuthnRequest().getRequestedAuthnContext();
-        }
-        
-        logger.trace("Selecting Claims Endpoint preferently with authentication context " + reqAuthnCtx);
-
-        // -------------------------------------------------------------------
-        // Keep using current endpoint until we reach the MAX TRY COUNT for it
-        // -------------------------------------------------------------------
-        if (status.getCurrentClaimsEndpoint() != null) {
-
-            // Current authn ctcx.
-            AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(status.getCurrentClaimsEndpoint().getType());
-
-            // TODO : Make configurable, per authctx
-            if (authnCtxClass.isPassive() || status.getCurrentClaimsEndpointTryCount() >= 50) {
-
-                // Passive endpoints are only tried out once. Clear current endpoint so we select a new one.
-                status.getUsedClaimsEndpoints().add(status.getCurrentClaimsEndpoint().getName());
-                status.setCurrentClaimsEndpoint(null);
-                status.setCurrentClaimsEndpointTryCount(0);
-
-            } else {
-                status.setCurrentClaimsEndpointTryCount(status.getCurrentClaimsEndpointTryCount() + 1);
-            }
-
+        if (response.statusCode() instanceof RedirectToEndpoint) {
+            logger.debug("Got redirect response : " + response);
+            RedirectToEndpoint redirect = (RedirectToEndpoint) response.statusCode();
+            return (ClaimChannel) redirect.channel();
         }
 
-        // -------------------------------------------------------------------
-        // Use current endpoint
-        // -------------------------------------------------------------------
-        if (status.getCurrentClaimsEndpoint() != null) {
-            // We have a valid endpoint
+        return null;
+    }
 
-            if (logger.isDebugEnabled())
-                logger.debug("Retry current claims endpoint : " + status.getCurrentClaimsEndpoint());
-            // Look for the channel that references the endpoint
-            for (ClaimChannel c : claimChannels) {
-                for (IdentityMediationEndpoint endpoint : c.getEndpoints()) {
+    /**
+     * This has the logic to select endpoints for identity confirmation.
+     */
+    protected IdentityConfirmationChannel selectNextIdentityConfirmationEndpoint(AuthenticationState status,
+                                                                                 CamelMediationExchange exchange,
+                                                                                 ClaimSet claims) {
 
-                    if (endpoint.getName().equals(status.getCurrentClaimsEndpoint().getName()))
-                        return c;
-                }
-            }
+        SSOIDPMediator idpMediator = (SSOIDPMediator) channel.getIdentityMediator();
+        IdentityFlowContainer ifc = idpMediator.getIdentityFlowContainer();
 
-            throw new RuntimeException("No ClaimChannel found for " + status.getCurrentClaimsEndpoint().getName());
+        IdentityFlowResponse response =
+                ifc.dispatch(
+                        idpMediator.getIdentityConfirmationEndpointSelection(),
+                        exchange,
+                        getProvider(),
+                        channel,
+                        endpoint,
+                        claims
+                );
+
+        if (response.statusCode() instanceof RedirectToEndpoint) {
+            logger.debug("Got redirect response : " + response);
+            RedirectToEndpoint redirect = (RedirectToEndpoint) response.statusCode();
+            return (IdentityConfirmationChannel) redirect.channel();
+        } else
+        if (response.statusCode() instanceof NoFurtherActionRequired) {
+            logger.debug("Skipping identity confirmation");
         }
 
 
-        // -------------------------------------------------------------------
-        // Select a new endpoint, either the one previously used is no longer
-        // valid, or it's the first time we select a claims endpoint
-        // -------------------------------------------------------------------
-        if (logger.isTraceEnabled())
-            logger.trace("Starting to select next claims endpoint ...");
-
-        ClaimChannel requestedChannel = null;
-        IdentityMediationEndpoint requestedEndpoint = null;
-        ClaimChannel availableChannel = null;
-        IdentityMediationEndpoint availableEndpoint = null;
-
-        // Go through all claim channels, and claim endpoints.
-        for (ClaimChannel c : claimChannels) {
-
-            if (logger.isTraceEnabled())
-                logger.trace("Processing claims channel/provider " + c.getName() + " [ " + c.getPriority() + "]");
-
-            for (IdentityMediationEndpoint endpoint : c.getEndpoints()) {
-
-                if (logger.isTraceEnabled())
-                    logger.trace("Processing claims endpoint " + endpoint);
-
-                // As a work around, ignore endpoints not using artifact or local binding
-                if (!endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue()) &&
-                    !endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
-
-                    if (logger.isTraceEnabled())
-                        logger.trace("Skip claims endpoint. Unsupported binding " + endpoint);
-                    continue;
-                }
-
-                // Ignore used endpoints
-                if (status.getUsedClaimsEndpoints().contains(endpoint.getName())) {
-                    if (logger.isTraceEnabled())
-                        logger.trace("Skip claims endpoint. Already used " + endpoint);
-                    continue;
-                }
-
-                // Found requested authn context, use it to filter endpoints if not used before!
-
-                if (reqAuthnCtx != null) {
-
-                    for (String reqAuthnCtxClass : reqAuthnCtx.getAuthnContextClassRef()) {
-
-                        if (logger.isTraceEnabled())
-                            logger.trace("Requested AuthnCtxClass for claiming " + reqAuthnCtxClass);
-
-                        // TODO : Support comparison method as stated by SAML, for now If Requested, use only matching authn context
-                        // reqAuthnCtx.getComparison()
-                        if (reqAuthnCtxClass.equals(endpoint.getType())) {
-
-                            if (logger.isTraceEnabled())
-                                logger.trace("Found requested AuthnCtxClass for claiming " + reqAuthnCtxClass);
-
-                            requestedEndpoint = endpoint;
-                            requestedChannel = c;
-                            break;
-                        }
-                    }
-
-                }
-
-                AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(endpoint.getType());
-
-                // Only use endpoints that are 'passive' when 'passive' was requested.
-                if (status.getAuthnRequest().isIsPassive() != null &&
-                        status.getAuthnRequest().isIsPassive()) {
-
-                    if (!authnCtxClass.isPassive()) {
-                        if (logger.isTraceEnabled())
-                            logger.trace("Skip claims endpoint. Non-passive " + endpoint);
-
-                        continue;
-                    }
-                }
-
-                if (availableEndpoint == null) {
-
-                    if (reqAuthnCtx == null && !endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
-                        if (logger.isTraceEnabled())
-                            logger.trace("Unsupported binding for non-requested endpoint : " + endpoint.getBinding());
-                        continue;
-                    }
-
-                    if (logger.isDebugEnabled())
-                        logger.debug("Selecting available endpoint : " + endpoint.getName());
-
-                    availableEndpoint = endpoint;
-                    availableChannel = c;
-                }
-
-            }
-        }
-
-        ClaimChannel claimChannel = null;
-        if (requestedEndpoint != null) {
-            if (logger.isTraceEnabled())
-                logger.trace("Selecting requested endpoint : " + requestedEndpoint);
-
-            status.setCurrentClaimsEndpoint(requestedEndpoint);
-            status.setCurrentClaimsEndpointTryCount(0);
-            claimChannel = requestedChannel;
-
-        } else if (availableEndpoint != null) {
-            if (logger.isTraceEnabled())
-                logger.trace("Selecting available endpoint : " + availableEndpoint);
-
-            status.setCurrentClaimsEndpoint(availableEndpoint);
-            status.setCurrentClaimsEndpointTryCount(0);
-            claimChannel = availableChannel;
-
-        } else {
-            if (logger.isDebugEnabled())
-                logger.debug("No available claims endpoint!");
-
-            return null;
-        }
-
-        if (logger.isDebugEnabled())
-            logger.debug("Current claims endpoint : " + status.getCurrentClaimsEndpoint());
-
-        return claimChannel;
-
+        return null;
     }
 
     protected SamlR2SecurityTokenEmissionContext emitAssertionFromPreviousSession(CamelMediationExchange exchange,
@@ -1498,7 +1470,7 @@ public class SingleSignOnProducer extends SSOProducer {
         ClaimSet claims = new ClaimSetImpl();
         UsernameTokenType usernameToken = new UsernameTokenType();
 
-        for (Iterator<Principal> iterator = secCtx.getSubject().getPrincipals().iterator() ; iterator.hasNext(); ) {
+        for (Iterator<Principal> iterator = secCtx.getSubject().getPrincipals().iterator(); iterator.hasNext(); ) {
 
             Principal next = iterator.next();
 
@@ -1520,6 +1492,7 @@ public class SingleSignOnProducer extends SSOProducer {
             }
 
         }
+
 
         securityTokenEmissionCtx = emitAssertionFromClaims(exchange,
                 securityTokenEmissionCtx,
@@ -1612,9 +1585,9 @@ public class SingleSignOnProducer extends SSOProducer {
     }
 
     protected SamlR2SecurityTokenEmissionContext emitAssertionFromClaims(CamelMediationExchange exchange,
-                                                                             SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
-                                                                             ClaimSet receivedClaims,
-                                                                             CircleOfTrustMemberDescriptor sp, SPChannel spChannel) throws Exception {
+                                                                         SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
+                                                                         ClaimSet receivedClaims,
+                                                                         CircleOfTrustMemberDescriptor sp, SPChannel spChannel) throws Exception {
 
 
         MessageQueueManager aqm = getArtifactQueueManager();
@@ -1623,20 +1596,34 @@ public class SingleSignOnProducer extends SSOProducer {
         // Emit a new security token
         // -------------------------------------------------------
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP aqm push");
+
         // TODO : Improve communication mechanism between STS and IDP!
 
         // Queue this contenxt and send the artifact as RST context information
         Artifact emitterCtxArtifact = aqm.pushMessage(securityTokenEmissionCtx);
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP build rst");
+
         SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
         // Send artifact id as RST context information, similar to relay state.
         RequestSecurityTokenType rst = buildRequestSecurityToken(receivedClaims, emitterCtxArtifact.getContent());
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP request st");
+
 
         if (logger.isDebugEnabled())
             logger.debug("Requesting Security Token (RST) w/context " + rst.getContext());
 
         // Send request to STS
         RequestSecurityTokenResponseType rstrt = sts.requestSecurityToken(rst);
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /doProcessClaimsResponse STEP aqm pull");
+
 
         if (logger.isDebugEnabled())
             logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
@@ -1646,14 +1633,16 @@ public class SingleSignOnProducer extends SSOProducer {
 
         /// Obtain assertion from STS Response
         JAXBElement<RequestedSecurityTokenType> token = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
+        Subject subject = (Subject) rstrt.getAny().get(2);
         AssertionType assertion = (AssertionType) token.getValue().getAny();
         if (logger.isDebugEnabled())
             logger.debug("Generated SamlR2 Assertion " + assertion.getID());
 
         securityTokenEmissionCtx.setAssertion(assertion);
+        securityTokenEmissionCtx.setSubject(subject);
 
         // Some validations about the user !
-        Subject subject = securityTokenEmissionCtx.getSubject();
+        //Subject subject = securityTokenEmissionCtx.getSubject();
 
         // Look up SSO User (TODO : This could be disbled since it adds an additional access to the users repository)
         SSOUser ssoUser = null;
@@ -1756,11 +1745,21 @@ public class SingleSignOnProducer extends SSOProducer {
                         new ResponseType());
         idPlanExchange.setOut(out);
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /buildSamlResponse START");
+
         // Prepare execution
         identityPlan.prepare(idPlanExchange);
 
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /buildSamlResponse STEP start samlr bpm");
+
         // Perform execution
         identityPlan.perform(idPlanExchange);
+
+        if (logger.isTraceEnabled())
+            logger.trace("IDBUS-PERF METHODC [" + Thread.currentThread().getName() + "] /buildSamlResponse END");
+
 
         if (!idPlanExchange.getStatus().equals(IdentityPlanExecutionStatus.SUCCESS)) {
             throw new SecurityTokenEmissionException("Identity plan returned : " + idPlanExchange.getStatus());
@@ -1822,9 +1821,9 @@ public class SingleSignOnProducer extends SSOProducer {
      * Build an AuthnRequest for the target SP to which IDP's unsollicited response needs to be pushed to.
      */
     protected PreAuthenticatedAuthnRequestType buildPreAuthIdPInitiatedAuthnRequest(CamelMediationExchange exchange,
-                                                             CircleOfTrustMemberDescriptor idp,
-                                                             EndpointDescriptor ed,
-                                                             FederationChannel spChannel
+                                                                                    CircleOfTrustMemberDescriptor idp,
+                                                                                    EndpointDescriptor ed,
+                                                                                    FederationChannel spChannel
     ) throws IdentityPlanningException, SSOException {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(IDPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
@@ -1840,7 +1839,7 @@ public class SingleSignOnProducer extends SSOProducer {
         PreAuthenticatedIDPInitiatedAuthnRequestType ssoAuthnRequest =
                 (PreAuthenticatedIDPInitiatedAuthnRequestType) ((CamelMediationMessage) exchange.getIn()).getMessage().getContent();
 
-                // Create in/out artifacts
+        // Create in/out artifacts
         IdentityArtifact in =
                 new IdentityArtifactImpl(new QName("urn:org:atricore:idbus:sso:protocol", "PreAuthenticatedIDPInitiatedAuthnRequest"), ssoAuthnRequest);
         idPlanExchange.setIn(in);
@@ -1874,7 +1873,7 @@ public class SingleSignOnProducer extends SSOProducer {
         for (FederationChannel fChannel : spl.getChannels()) {
             if (fChannel.getTargetProvider() != null) {
 
-                if ( fChannel.getTargetProvider().getName().equals(((SPChannel) channel).getFederatedProvider().getName())) {
+                if (fChannel.getTargetProvider().getName().equals(((SPChannel) channel).getFederatedProvider().getName())) {
                     if (logger.isTraceEnabled())
                         logger.trace("Selected SP Channel " + fChannel.getName() + " from provider " + sp);
 
@@ -2550,4 +2549,5 @@ public class SingleSignOnProducer extends SSOProducer {
         }
         return null;
     }
+
 }

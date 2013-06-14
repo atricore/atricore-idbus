@@ -66,7 +66,7 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Bundle : Java JDO2 Api v2.3.0-ec</Bundle-Name>
                         <Bundle-Description>This bundle simply wraps JDO2 Api v2.3.0-ec JARs</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             javax.jdo.*;version=${jdo.osgi.version}
                         </Export-Package>

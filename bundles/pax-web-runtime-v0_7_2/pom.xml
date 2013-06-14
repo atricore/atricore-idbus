@@ -97,6 +97,7 @@
             <plugin>
                 <groupId>org.ops4j</groupId>
                 <artifactId>maven-pax-plugin</artifactId>
+                <version>1.5</version>
             </plugin>
         </plugins>
     </build>

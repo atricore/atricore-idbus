@@ -114,6 +114,8 @@ final class AttributeDeclaration(val property: ObligationProperty) {
 
   def :=(value: String) = this.value = Some(value)
 
+  def :=(value: Symbol) = this.value = Some(value.name)
+
   def toObligationPropertyNode = value match {
     case Some(v) => ObligationPropertyNode(property.name, v) :: Nil
     case None => Nil
@@ -180,10 +182,10 @@ class ObligationFulfillment(val obls: List[Obligation], val configuration: Oblig
     obls.map(
       obl => {
         obl.id match {
-          case "urn:oasis:names:tc:xacml:example:obligation:email" =>
+          case 'urn_oasis_names_tc_xacml_example_obligation_email =>
             runObligation2(
               obl,
-              ("urn:oasis:names:tc:xacml:2.0:example:attribute:mailto","urn:oasis:names:tc:xacml:2.0:example:attribute:text"),
+              ('urn_oasis_names_tc_xacml_2_0_example_attribute_mailto, 'urn_oasis_names_tc_xacml_2_0_example_attribute_text),
               sendEmail _
             )
         }
@@ -191,7 +193,7 @@ class ObligationFulfillment(val obls: List[Obligation], val configuration: Oblig
     )
   }
 
-  private def runObligation2( obl : Obligation, attrs : Product2[String,String], f : Function2[String,String, Any] ) = {
+  private def runObligation2( obl : Obligation, attrs : Product2[Symbol,Symbol], f : Function2[String,String, Any] ) = {
 
     val a1: Option[AttributeAssignment] = obl.attributeAssignments.find(_.id == attrs._1)
     val a2: Option[AttributeAssignment] = obl.attributeAssignments.find(_.id == attrs._2)
@@ -210,7 +212,7 @@ class ObligationFulfillment(val obls: List[Obligation], val configuration: Oblig
 
   }
 
-  private def runObligation3( obl : Obligation, attrs : Product3[String,String, String], f : Function3[String,String,String, Any] ) = {
+  private def runObligation3( obl : Obligation, attrs : Product3[Symbol, Symbol, Symbol], f : Function3[String,String,String, Any] ) = {
 
     val a1: Option[AttributeAssignment] = obl.attributeAssignments.find(_.id == attrs._1)
     val a2: Option[AttributeAssignment] = obl.attributeAssignments.find(_.id == attrs._2)

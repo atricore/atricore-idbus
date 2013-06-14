@@ -103,15 +103,15 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Kernel : WS-Trust Binding</Bundle-Name>
                         <Bundle-Description>WS-Trust Protocol Binding</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
-                            org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0;version=${pom.version},
-                            org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_utility_1_0;version=${pom.version},
-                            org.w3._2000._09.xmldsig_;version=${pom.version},
-                            org.xmlsoap.schemas.ws._2004._08.addressing;version=${pom.version},
-                            org.xmlsoap.schemas.ws._2004._09.policy;version=${pom.version},
-                            org.xmlsoap.schemas.ws._2005._02.trust;version=${pom.version},
-                            org.xmlsoap.schemas.ws._2005._02.trust.wsdl;version=${pom.version},
+                            org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0;version=${project.version},
+                            org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_utility_1_0;version=${project.version},
+                            org.w3._2000._09.xmldsig_;version=${project.version},
+                            org.xmlsoap.schemas.ws._2004._08.addressing;version=${project.version},
+                            org.xmlsoap.schemas.ws._2004._09.policy;version=${project.version},
+                            org.xmlsoap.schemas.ws._2005._02.trust;version=${project.version},
+                            org.xmlsoap.schemas.ws._2005._02.trust.wsdl;version=${project.version},
                         </Export-Package>
                         <Import-Package>
                             javax.xml.bind,

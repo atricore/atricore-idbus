@@ -107,10 +107,10 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Kernel : Atricore SSO 1.0 Protocol Binding</Bundle-Name>
                         <Bundle-Description>SSO Protocol Binding</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
-                            org.atricore.idbus.common.sso._1_0.protocol;version=${pom.version},
-                            org.atricore.idbus.common.sso._1_0.wsdl;version=${pom.version}
+                            org.atricore.idbus.common.sso._1_0.protocol;version=${project.version},
+                            org.atricore.idbus.common.sso._1_0.wsdl;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             javax.xml.bind,

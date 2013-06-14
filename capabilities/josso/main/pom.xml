@@ -365,28 +365,28 @@
         <!--dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.strongauthscheme</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency-->
 
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.dbidentitystore</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.ldapidentitystore</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.memoryidentitystore</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -400,21 +400,21 @@
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.dbsessionstore</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.memorysessionstore</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.serializedsessionstore</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -429,8 +429,8 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Capability : JOSSO Main Component</Bundle-Name>
                         <Bundle-Description>Identity Bus JOSSO Capability Main Component</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.atricore.idbus.capabilities.josso.*;version=${pom.version}</Export-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>org.atricore.idbus.capabilities.josso.*;version=${project.version}</Export-Package>
                         <Private-Package>!*</Private-Package>
                         <Import-Package>
                                org.josso.gateway.ws._1_2.wsdl,

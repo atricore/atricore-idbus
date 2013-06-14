@@ -302,6 +302,13 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             throw new RuntimeException(e);
         }
 
+        // Extra vanilla transient variables
+        String remoteAddress = (String) exchange.getIn().getHeaders().get("org.atricore.idbus.http.RemoteAddress");
+        if (remoteAddress != null) {
+            String remoteAddrValue = exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress", String.class);
+
+            state.getTransientVars().put("RemoteAddress", remoteAddrValue);
+        }
 
         return state;
 

@@ -51,13 +51,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.sts</groupId>
-            <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
-            <version>${idbus.sts.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
             <version>${idbus.sso.version}</version>

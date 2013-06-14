@@ -41,14 +41,14 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.kernel.monitoring</groupId>
             <artifactId>org.atricore.idbus.kernel.monitoring.core</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -143,7 +143,7 @@
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Kernel : Web Connector</Bundle-Name>
                         <Bundle-Description>Identity Bus Web Connector</Bundle-Description>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-ClassPath>
                             .,
                             WEB-INF,
@@ -178,9 +178,9 @@
                             org.springframework.web.context.support; version="${spring.version}",
                             org.xml.sax;resolution:=optional,
                             org.w3c.dom;resolution:=optional,
-                            org.atricore.idbus.kernel.main.mediation; version=${pom.version},
-                            org.atricore.idbus.kernel.main.mediation.osgi; version=${pom.version},
-                            org.atricore.idbus.kernel.main.mediation.camel.component.http; version=${pom.version},
+                            org.atricore.idbus.kernel.main.mediation; version=${project.version},
+                            org.atricore.idbus.kernel.main.mediation.osgi; version=${project.version},
+                            org.atricore.idbus.kernel.main.mediation.camel.component.http; version=${project.version},
                             *
                         </Import-Package>
                         <Spring-Context>*;publish-context:=true;wait-for-dependencies:=false;create-asynchronously:=true;timeout:=none</Spring-Context>

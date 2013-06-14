@@ -43,6 +43,7 @@
         <ops4j.paxwicket.version>2.1.0</ops4j.paxwicket.version>
         <!--apache-wicket.version>1.4.19</apache-wicket.version-->
         <apache-wicket.version>6.5.0</apache-wicket.version>
+        <pax.web.version>0.7.2</pax.web.version>
     </properties>
 
     <dependencies>
@@ -80,12 +81,6 @@
             <artifactId>org.apache.karaf.jaas.modules</artifactId>
             <version>${karaf.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.karaf.jaas</groupId>
-            <artifactId>org.apache.karaf.jaas.modules</artifactId>
-            <version>${karaf.version}</version>
         </dependency>
 
         <dependency>
@@ -228,6 +223,13 @@
             
         </dependency>
 
+        <!-- PAX WEB Dependencies -->
+        <dependency>
+            <groupId>org.ops4j.pax.web</groupId>
+            <artifactId>pax-web-api</artifactId>
+            <version>${pax.web.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
@@ -371,11 +373,11 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>
                                      org.atricore.idbus.capabilities.openid.ui.internal.Activator
                         </Bundle-Activator>
-                        <Export-Package>org.atricore.idbus.capabilities.openid.ui.*;version=${pom.version}
+                        <Export-Package>org.atricore.idbus.capabilities.openid.ui.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                            !org.atricore.idbus.capabilities.openid.ui*,

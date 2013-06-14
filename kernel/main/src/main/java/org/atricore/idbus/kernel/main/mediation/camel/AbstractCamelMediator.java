@@ -36,6 +36,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannel;
 import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
@@ -139,6 +140,8 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
             setupProvisioningServiceProviderEndpoints((PsPChannel)channel);
         } else if (channel instanceof SelectorChannel) {
             setupEntitySelectorProviderEndpoints((SelectorChannel)channel);
+        } else if (channel instanceof IdentityConfirmationChannel) {
+            setupIdentityConfirmationProviderEndpoints((IdentityConfirmationChannel) channel);
         } else {
             throw new IdentityMediationException(
                     "Cannot setup endpoints for channel type " + channel.getClass().getName());
@@ -284,8 +287,8 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
             logger.info("Setting up Selector endpoints for channel : " + selChannel.getName());
 
-            RouteBuilder pspRoutes = createSelectorRoures(selChannel);
-            context.addRoutes(pspRoutes);
+            RouteBuilder selectorRoutes = createSelectorRoutes(selChannel);
+            context.addRoutes(selectorRoutes);
             /*
             CamelMediationEndpoint endpoint;
             endpoint = new CamelMediationEndpoint(claimChannel, claimRoutes);
@@ -293,6 +296,27 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
         } catch (Exception e) {
             throw new IdentityMediationException(
                     "Error setting up Selector endpoints for channel [" + selChannel.getName() + "]", e);
+        }
+
+    }
+
+    public void setupIdentityConfirmationProviderEndpoints(IdentityConfirmationChannel idconfChannel) throws IdentityMediationException {
+        if (!isInitialized())
+            throw new IllegalStateException("Mediator not initialized!");
+
+        try {
+
+            logger.info("Setting up Identity Confirmation endpoints for channel : " + idconfChannel.getName());
+
+            RouteBuilder idconfRoutes = createIdentityConfirmationRoutes(idconfChannel);
+            context.addRoutes(idconfRoutes);
+            /*
+            CamelMediationEndpoint endpoint;
+            endpoint = new CamelMediationEndpoint(claimChannel, claimRoutes);
+            return endpoint; */
+        } catch (Exception e) {
+            throw new IdentityMediationException(
+                    "Error setting up Identity Confirmation endpoints for channel [" + idconfChannel.getName() + "]", e);
         }
 
     }
@@ -374,7 +398,7 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
         };
     }
 
-    protected RouteBuilder createSelectorRoures(SelectorChannel selChannel) throws Exception {
+    protected RouteBuilder createSelectorRoutes(SelectorChannel selChannel) throws Exception {
         return new RouteBuilder() {
             public void configure() {
                 // no select link routes added by default
@@ -382,6 +406,13 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
         };
     }
 
+    protected RouteBuilder createIdentityConfirmationRoutes(IdentityConfirmationChannel idconfChannel) throws Exception {
+        return new RouteBuilder() {
+            public void configure() {
+                // no select link routes added by default
+            }
+        };
+    }
 
     public boolean isLogMessages() {
         return logMessages;

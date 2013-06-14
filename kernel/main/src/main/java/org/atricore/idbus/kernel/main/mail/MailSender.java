@@ -17,7 +17,7 @@ import java.util.Properties;
  */
 public class MailSender {
 
-    private static final Log logger = LogFactory.getLog(MailSender.class);
+    private static Log logger = LogFactory.getLog(MailSender.class);
 
     private String name;
 

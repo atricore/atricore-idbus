@@ -22,6 +22,7 @@
 package org.atricore.idbus.kernel.main.mediation;
 
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
+import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.planning.IdentityPlan;
 
@@ -50,5 +51,7 @@ public interface Channel extends Skinnable, Serializable {
     Collection<IdentityPlan> getIdentityPlans();
 
     Collection<ClaimChannel> getClaimProviders();
+
+    Collection<IdentityConfirmationChannel> getIdentityConfirmationProviders();
 
 }

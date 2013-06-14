@@ -75,25 +75,25 @@
             <dependency>
                 <groupId>org.atricore.idbus.capabilities.atricoreid</groupId>
                 <artifactId>org.atricore.idbus.capabilities.atricoreid.common</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.atricore.idbus.capabilities.atricoreid</groupId>
                 <artifactId>org.atricore.idbus.capabilities.atricoreid.protocol</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.atricore.idbus.capabilities.atricoreid</groupId>
                 <artifactId>org.atricore.idbus.capabilities.atricoreid.main</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.atricore.idbus.capabilities.atricoreid</groupId>
                 <artifactId>org.atricore.idbus.capabilities.atricoreid.rserver</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
@@ -130,12 +130,6 @@
                 <groupId>org.atricore.idbus.capabilities.sts</groupId>
                 <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
                 <version>${idbus.sts.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.kernel.common</groupId>
-                <artifactId>org.atricore.idbus.kernel.common.atricoreid</artifactId>
-                <version>${idbus.kernel.version}</version>
             </dependency>
 
             <dependency>

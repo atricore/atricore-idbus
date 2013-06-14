@@ -48,7 +48,7 @@ public class SSOEntitySelectorMediator  extends AbstractCamelMediator {
     }
 
     @Override
-    protected RouteBuilder createSelectorRoures(final SelectorChannel selChannel) throws Exception {
+    protected RouteBuilder createSelectorRoutes(final SelectorChannel selChannel) throws Exception {
 
         return new RouteBuilder() {
 

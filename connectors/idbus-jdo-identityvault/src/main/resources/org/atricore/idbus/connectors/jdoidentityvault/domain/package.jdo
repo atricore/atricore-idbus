@@ -51,6 +51,10 @@
             <field name="securityQuestions" default-fetch-group="true" persistence-modifier="persistent" delete-action="null">
                 <array dependent-element="false" />
             </field>
+            <field name="acls" default-fetch-group="true" persistence-modifier="persistent">
+                <array dependent-element="false" />
+                <join delete-action="null"/>
+            </field>
         </class>
 
         <class name="JDOUserSecurityQuestion">
@@ -68,6 +72,29 @@
             <field name="id" primary-key="true" value-strategy="native"/>
             <field name="messageKey" />
             <field name="defaultMessage"/>
+        </class>
+
+        <class name="JDOAcl">
+            <inheritance strategy="new-table"/>
+            <field name="id" primary-key="true" value-strategy="native"/>
+            <field name="name" />
+            <field name="description"/>
+            <field name="entries" default-fetch-group="true" persistence-modifier="persistent">
+                <array dependent-element="false" />
+                <join delete-action="null"/>
+            </field>
+        </class>
+
+        <class name="JDOAclEntry">
+            <inheritance strategy="new-table"/>
+            <field name="id" primary-key="true" value-strategy="native"/>
+            <field name="principalNameClaim"/>
+            <field name="passwordClaim"/>
+            <field name="decision"/>
+            <field name="from"/>
+            <field name="state"/>
+            <field name="approvalToken"/>
+            <field name="spAlias"/>
         </class>
 
 
