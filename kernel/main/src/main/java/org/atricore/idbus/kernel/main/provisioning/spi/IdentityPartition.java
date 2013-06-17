@@ -59,6 +59,8 @@ public interface IdentityPartition {
 
     AclEntry updateAclEntry(AclEntry aclEntry) throws ProvisioningException;
 
+    void deleteAclEntry(long id) throws ProvisioningException;
+
     Collection<SecurityQuestion> findAllSecurityQuestions() throws ProvisioningException;
 
 }

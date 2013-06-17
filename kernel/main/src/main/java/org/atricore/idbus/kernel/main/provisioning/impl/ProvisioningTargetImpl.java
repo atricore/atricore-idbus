@@ -634,6 +634,17 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
+    public RemoveAclEntryResponse removeAclEntry(RemoveAclEntryRequest aclEntryRequest) throws ProvisioningException {
+        try {
+            identityPartition.deleteAclEntry(aclEntryRequest.getId());
+            return new RemoveAclEntryResponse();
+        } catch (AclEntryNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
     public AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest) throws ProvisioningException {
         try {
             // create user attribute
