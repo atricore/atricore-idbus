@@ -78,10 +78,10 @@ public class AbstractOAuth2SPChannelTransformer extends AbstractTransformer {
         idpBean = b.iterator().next();
 
         //---------------------------------------------
-        // Get IDP default (SSO) federation service bean
+        // Get IDP (OAuth2) federation service bean
         //---------------------------------------------
         Bean idpOAuth2SvcBean = null;
-        String idpOAuth2SvcBeanName = null;
+        String idpOAuth2SvcBeanName = idpBean.getName() + "-oauth2-svc";
         Set<Bean> idpFederationSvcs = getPropertyBeansFromSet(idpBeans, idpBean, "federationServices");
         String idpOauth2ServiceType = "urn:org:atricore:idbus:OAUTH:2.0";
 
@@ -96,7 +96,6 @@ public class AbstractOAuth2SPChannelTransformer extends AbstractTransformer {
 
         if (idpOAuth2SvcBean == null) {
 
-            idpOAuth2SvcBeanName = idpBean.getName() + "-oauth2-svc";
             idpOAuth2SvcBean  = newBean(idpBeans, idpOAuth2SvcBeanName, FederationServiceImpl.class);
             setPropertyValue(idpOAuth2SvcBean, "serviceType", idpOauth2ServiceType);
             setPropertyValue(idpOAuth2SvcBean, "name", idpOAuth2SvcBeanName);

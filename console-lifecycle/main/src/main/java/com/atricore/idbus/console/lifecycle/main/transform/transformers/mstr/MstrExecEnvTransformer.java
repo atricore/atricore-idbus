@@ -59,8 +59,6 @@ public class MstrExecEnvTransformer extends AbstractTransformer {
 
         ExecutionEnvironment ex = (ExecutionEnvironment) event.getData();
 
-
-
         boolean hasMstrResource = false;
         for (Activation activation : ex.getActivations()) {
             if (activation.getResource() instanceof MicroStrategyResource) {
