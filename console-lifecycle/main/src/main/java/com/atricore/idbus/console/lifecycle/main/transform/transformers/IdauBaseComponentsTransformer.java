@@ -224,8 +224,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         setPropertyValue(ssoEntitySelectorMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
         // dashboardUrl
-        setPropertyValue(ssoEntitySelectorMediator, "dashboardUrl", "");
-        //setPropertyValue(ssoEntitySelectorMediator, "uiLocation", resolveUiSsoLocation(appliance));
+        setPropertyValue(ssoEntitySelectorMediator, "dashboardUrl", resolveUiSsoLocation(appliance));
 
         // Channel
 
