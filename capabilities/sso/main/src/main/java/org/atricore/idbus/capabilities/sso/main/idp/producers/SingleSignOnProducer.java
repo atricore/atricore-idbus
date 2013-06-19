@@ -1430,12 +1430,13 @@ public class SingleSignOnProducer extends SSOProducer {
                                                                                  CamelMediationExchange exchange,
                                                                                  ClaimSet claims) {
 
+        IdentityProvider idp = (IdentityProvider)getProvider();
         SSOIDPMediator idpMediator = (SSOIDPMediator) channel.getIdentityMediator();
         IdentityFlowContainer ifc = idpMediator.getIdentityFlowContainer();
 
         IdentityFlowResponse response =
                 ifc.dispatch(
-                        idpMediator.getIdentityConfirmationEndpointSelection(),
+                        idp.getIdentityConfirmationPolicy(),
                         exchange,
                         getProvider(),
                         channel,
