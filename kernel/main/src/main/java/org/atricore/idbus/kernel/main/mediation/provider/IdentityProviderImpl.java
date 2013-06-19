@@ -31,6 +31,7 @@ public class IdentityProviderImpl extends AbstractFederatedLocalProvider impleme
 
     private transient ProvisioningTarget provisioningTarget;
     private boolean identityConfirmationEnabled;
+    private String identityConfirmationPolicy;
 
     public ProvisioningTarget getProvisioningTarget() {
         return provisioningTarget;
@@ -46,6 +47,14 @@ public class IdentityProviderImpl extends AbstractFederatedLocalProvider impleme
 
     public void setIdentityConfirmationEnabled(boolean identityConfirmationEnabled) {
         this.identityConfirmationEnabled = identityConfirmationEnabled;
+    }
+
+    public String getIdentityConfirmationPolicy() {
+        return identityConfirmationPolicy;
+    }
+
+    public void setIdentityConfirmationPolicy(String identityConfirmationPolicy) {
+        this.identityConfirmationPolicy = identityConfirmationPolicy;
     }
 
 

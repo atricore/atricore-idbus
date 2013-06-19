@@ -9,7 +9,7 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet
 
 trait IdentityFlowContainer {
 
-  def components : List[IdentityFlowComponent]
+  def components : java.util.List[IdentityFlowComponent]
 
   def dispatch( componentId : String, exchange : CamelMediationExchange, provider : Provider, channel : Channel,
                 endpoint : IdentityMediationEndpoint, claims : ClaimSet) : IdentityFlowResponse

@@ -10,13 +10,14 @@ import org.atricore.idbus.kernel.main.mediation.provider.Provider
 import org.atricore.idbus.kernel.main.mediation.Channel
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet
+import scala.collection.JavaConversions._
 
 class IdentityFlowContainerImpl extends IdentityFlowContainer {
   private[this] val log: Log = LogFactory.getLog(this.getClass)
 
   private val _components = new ListBuffer[IdentityFlowComponent]
 
-  def components: List[IdentityFlowComponent] = _components.toList
+  def components: java.util.List[IdentityFlowComponent] = seqAsJavaList(_components.toList)
 
   def init() {
   }
