@@ -47,6 +47,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.*;
 import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
+import org.atricore.idbus.capabilities.sso.component.container.*;
 import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -151,6 +152,8 @@ public class IdentityApplianceManagementServiceImpl implements
     private SubjectNameIdentifierPolicyRegistry  subjectNameIdentifierPolicyRegistry;
 
     private SelectionStrategiesRegistry selectionStrategiesRegistry;
+
+    private IdentityFlowContainer identityFlowContainer;
 
     public void afterPropertiesSet() throws Exception {
         if (sampleKeystore.getStore() != null &&
@@ -1041,6 +1044,21 @@ public class IdentityApplianceManagementServiceImpl implements
         }
     }
 
+    public ListIdentityFlowComponentsResponse listIdentityFlowComponents(ListIdentityFlowComponentsRequest lifcReq) throws IdentityServerException {
+        ListIdentityFlowComponentsResponse res = new ListIdentityFlowComponentsResponse();
+
+        logger.debug("Listing all identity flow components definitions");
+
+        // Add identity flow component definitions to response
+        Collection<IdentityFlowComponent> components = identityFlowContainer.components();
+
+        for (IdentityFlowComponent c : components) {
+            res.getIdentityFlowComponentReferences().add(new IdentityFlowComponentReference(c.name()));
+        }
+
+        return res;
+    }
+
     /***************************************************************
      * Lookup methods
      ***************************************************************/
@@ -1589,6 +1607,14 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setImpersonateUserPoliciesRegistry(ImpersonateUserPoliciesRegistry impersonateUserPoliciesRegistry) {
         this.impersonateUserPoliciesRegistry = impersonateUserPoliciesRegistry;
+    }
+
+    public IdentityFlowContainer getIdentityFlowContainer() {
+        return identityFlowContainer;
+    }
+
+    public void setIdentityFlowContainer(IdentityFlowContainer identityFlowContainer) {
+        this.identityFlowContainer = identityFlowContainer;
     }
 
     public BrandManager getBrandManger() {

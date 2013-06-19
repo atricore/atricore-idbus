@@ -134,6 +134,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const LIST_IDENTITY_MAPPING_POLICIES:String = "listIdentityMappingPolicies";
     public static const LIST_NAMEID_POLICIES:String = "listNameIDPolicies";
     public static const LIST_IMPERSONATE_USER_POLICIES:String = "listImpersonateUserPolicies";
+    public static const LIST_IDENTITY_FLOW_COMPONENTS:String = "listIdentityFlowComponents"
 
     public static const GET_SERVICE_CONFIG:String = "getServiceConfig";
     public static const UPDATE_SERVICE_CONFIG:String = "updateServiceConfig";

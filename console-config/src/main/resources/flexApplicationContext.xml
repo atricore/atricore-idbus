@@ -157,6 +157,7 @@
         <property name="accountLinkagePolicyListCommand" ref="accountLinkagePolicyListCommand"/>
         <property name="userDashboardBrandingsListCommand" ref="userDashboardBrandingsListCommand"/>
         <property name="idpSelectorsListCommand" ref="idpSelectorsListCommand"/>
+        <property name="identityFlowComponentsListCommand" ref="identityFlowComponentsListCommand"/>
         <property name="subjectNameIDPolicyListCommand" ref="subjectNameIDPolicyListCommand"/>
         <property name="identityMappingPoliciesListCommand" ref="identityMappingPoliciesListCommand"/>
         <property name="impersonateUserPoliciesListCommand" ref="impersonateUserPoliciesListCommand"/>
@@ -600,6 +601,11 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
+    <object id="identityFlowComponentsListCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.IdentityFlowComponentsListCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
 
     <object id="subjectNameIDPolicyListCommand"
             class="com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand">

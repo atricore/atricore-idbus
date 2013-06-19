@@ -47,6 +47,7 @@ public class ProjectProxy extends IocProxy implements IDisposable
     private var _identityMappingPolicies:ArrayCollection;
     private var _userDashboardBrandings:ArrayCollection;
     private var _idpSelectors:ArrayCollection;
+    private var _identityFlowComponents:ArrayCollection;
     private var _subjectNameIdentifierPolicies:ArrayCollection;
     private var _impersonateUserPolicies:ArrayCollection;
 
@@ -159,6 +160,14 @@ public class ProjectProxy extends IocProxy implements IDisposable
         _idpSelectors = value;
     }
 
+    public function get identityFlowComponents():ArrayCollection {
+        return _identityFlowComponents;
+    }
+
+    public function set identityFlowComponents(value:ArrayCollection):void {
+        _identityFlowComponents = value;
+    }
+
     public function get subjectNameIdentifierPolicies():ArrayCollection {
         return _subjectNameIdentifierPolicies;
     }
@@ -185,5 +194,6 @@ public class ProjectProxy extends IocProxy implements IDisposable
         _identityApplianceValidationErrors = null;
         _jdbcDrivers = null;
     }
+
 }
 }

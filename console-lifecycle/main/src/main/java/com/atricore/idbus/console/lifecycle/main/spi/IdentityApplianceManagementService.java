@@ -89,6 +89,7 @@ public interface IdentityApplianceManagementService {
     ListImpersonateUserPoliciesResponse listImpersonateUserPolicies(ListImpersonateUserPoliciesRequest req) throws IdentityServerException;
     ListUserDashboardBrandingsResponse listUserDashboardBrandings(ListUserDashboardBrandingsRequest req) throws IdentityServerException;
     ListIdPSelectorsResponse listIdPSelectors(ListIdPSelectorsRequest beReq) throws IdentityServerException;
+    ListIdentityFlowComponentsResponse listIdentityFlowComponents(ListIdentityFlowComponentsRequest lifcReq) throws IdentityServerException;
 
     /****************************
      * Lookup methods

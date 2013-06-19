@@ -1137,5 +1137,9 @@
             </b-hint>
         </field>
     </mapping>
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Extension</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.ExtensionDTO</class-b>
+    </mapping>
 
 </mappings>

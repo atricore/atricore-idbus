@@ -685,6 +685,19 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, ListIdPSelectorsResponse.class);
     }
 
+    public ListIdentityFlowComponentsResponse listIdentityFlowComponents(ListIdentityFlowComponentsRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityFlowComponentsRequest lifcReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityFlowComponentsRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListIdentityFlowComponentsResponse lifcRes;
+        try {
+            lifcRes = idApplianceManagementService.listIdentityFlowComponents(lifcReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(lifcRes, com.atricore.idbus.console.services.spi.response.ListIdentityFlowComponentsResponse.class);
+    }
+
     /****************************
      * Lookup methods
      ***************************/
