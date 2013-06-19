@@ -291,19 +291,40 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
                     }
 
                     // Use the default channel
-                    if (!useOverrideChannel)
-                        members.add(federatedDestProvider.getChannel().getMember());
+                    if (!useOverrideChannel) {
+                        // Only add it if the provider trust us
+                        for (Provider trusted : federatedDestProvider.getChannel().getTrustedProviders()) {
+                            if (trusted.getName().equals(provider.getName()))
+                                members.add(federatedDestProvider.getChannel().getMember());
+                        }
+
+                    }
+
                 } else {
                     FederatedRemoteProvider destRemoteProvider = (FederatedRemoteProvider) destProvider;
                     for(CircleOfTrustMemberDescriptor m : destRemoteProvider.getAllMembers()) {
                         if (logger.isDebugEnabled())
                             logger.debug("Selected member : " + m.getAlias());
+                        // Only add it if we trust this provider:
+                        if (provider instanceof FederatedLocalProvider) {
+                            FederatedLocalProvider localProvider = (FederatedLocalProvider) provider;
+                            for (Provider trusted: localProvider.getChannel().getTrustedProviders()) {
+                                if (trusted.getName().equals(destRemoteProvider.getName()))
+                                    members.add(m);
+                            }
 
-                        members.add(m);
+                            for (Provider trusted : localProvider.getChannel().getTrustedProviders()) {
+                                if (trusted.getName().equals(destRemoteProvider.getName()))
+                                    members.add(m);
+                            }
+
+                        } else {
+                            // This is not wright
+                            logger.error("Connecting to non-local providers may produce unexpected results");
+                            members.add(m);
+                        }
                     }
                 }
-
-
 
             }
         }

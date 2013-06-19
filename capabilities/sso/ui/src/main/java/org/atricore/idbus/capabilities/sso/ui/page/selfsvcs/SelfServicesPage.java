@@ -111,6 +111,21 @@ public abstract class SelfServicesPage extends BasePage {
                 // Here is an SP, get the SP initiated SSO url along with other details
                 ServiceProvider sp = (ServiceProvider) p;
 
+                boolean isTrusted = false;
+                for (FederatedProvider trusted : idp.getChannel().getTrustedProviders()) {
+                    if (trusted.getName().equals(sp.getName()))
+                        isTrusted = true;
+                }
+
+                for(FederationChannel fc : idp.getChannels()) {
+                    for (FederatedProvider trusted : fc.getTrustedProviders())
+                        if (trusted.getName().equals(sp.getName()))
+                            isTrusted = true;
+                }
+
+                if (!isTrusted)
+                    continue;
+
                 // Use default endpoint, but look for overwritten values
                 String idpInitiatedSsoEndpoint = defaultIdpInitiatedSsoLoation;
 
@@ -130,8 +145,9 @@ public abstract class SelfServicesPage extends BasePage {
                     }
                 }
 
+                // Look for the corresponding IdP channel
                 IdPChannel idpChannel = (IdPChannel) sp.getChannel();
-                for (FederationChannel c : idp.getChannels()) {
+                for (FederationChannel c : sp.getChannels()) {
                     if (c.getTargetProvider().getName().equals(idp.getName())) {
                         idpChannel = (IdPChannel) c;
                         break;
@@ -154,15 +170,30 @@ public abstract class SelfServicesPage extends BasePage {
 
             } else if (p instanceof FederatedRemoteProvider) {
 
+                boolean isTrusted = false;
+                for (FederatedProvider trusted : idp.getChannel().getTrustedProviders()) {
+                    if (trusted.getName().equals(p.getName()))
+                        isTrusted = true;
+                }
+
+                for(FederationChannel fc : idp.getChannels()) {
+                    for (FederatedProvider trusted : fc.getTrustedProviders())
+                        if (trusted.getName().equals(p.getName()))
+                            isTrusted = true;
+                }
+
+                if (!isTrusted)
+                    continue;
+
                 String idpInitiatedSsoEndpoint = defaultIdpInitiatedSsoLoation;
 
                 FederatedRemoteProvider rp = (FederatedRemoteProvider) p;
 
                 if (rp.getRole() != null &&
-                    (rp.getRole().equals(SSOMetadataConstants.SPSSODescriptor_QNAME.getNamespaceURI() +":"+
-                            SSOMetadataConstants.SPSSODescriptor_QNAME.getLocalPart()) ||
-                    rp.getRole().equals("{" + SSOMetadataConstants.SPSSODescriptor_QNAME.getNamespaceURI() +"}"+
-                            SSOMetadataConstants.SPSSODescriptor_QNAME.getLocalPart()))) {
+                        (rp.getRole().equals(SSOMetadataConstants.SPSSODescriptor_QNAME.getNamespaceURI() +":"+
+                                SSOMetadataConstants.SPSSODescriptor_QNAME.getLocalPart()) ||
+                                rp.getRole().equals("{" + SSOMetadataConstants.SPSSODescriptor_QNAME.getNamespaceURI() +"}"+
+                                        SSOMetadataConstants.SPSSODescriptor_QNAME.getLocalPart()))) {
 
                     // For remote providers, there's only one member !
                     CircleOfTrustMemberDescriptor descr = rp.getMembers().iterator().next();
