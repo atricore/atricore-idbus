@@ -63,6 +63,7 @@
         <property name="selectionStrategiesRegistry" ref="selectionStrategiesRegistry"/>
         <property name="impersonateUserPoliciesRegistry" ref="impersonateUserPoliciesRegistry"/>
         <property name="brandManger" ref="brandManager"/>
+        <property name="identityFlowContainer" ref="identityFlowContainer"/>
 
         <!-- DAO's -->
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
@@ -140,6 +141,9 @@
 
     <osgi:reference id="selectionStrategiesRegistry" cardinality="1..1" timeout="60"
                     interface="org.atricore.idbus.capabilities.sso.main.select.spi.SelectionStrategiesRegistry"/>
+
+    <osgi:reference id="identityFlowContainer" cardinality="1..1" timeout="60"
+                    interface="org.atricore.idbus.capabilities.sso.component.container.IdentityFlowContainer"/>
 
     <bean name="accountLinkagePoliciesRegistry"
           class="com.atricore.idbus.console.lifecycle.main.impl.AccountLinkagePoliciesRegistry">

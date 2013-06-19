@@ -52,6 +52,8 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     private boolean identityConfirmationEnabled;
 
+    private ExtensionDTO identityConfirmationPolicy;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicyDTO subjectNameIDPolicy;
 
@@ -173,6 +175,14 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     public void setIgnoreRequestedNameIDPolicy(boolean ignoreRequestedNameIDPolicy) {
         this.ignoreRequestedNameIDPolicy = ignoreRequestedNameIDPolicy;
+    }
+
+    public ExtensionDTO getIdentityConfirmationPolicy() {
+        return identityConfirmationPolicy;
+    }
+
+    public void setIdentityConfirmationPolicy(ExtensionDTO identityConfirmationPolicy) {
+        this.identityConfirmationPolicy = identityConfirmationPolicy;
     }
 
     public SubjectNameIdentifierPolicyDTO getSubjectNameIDPolicy() {

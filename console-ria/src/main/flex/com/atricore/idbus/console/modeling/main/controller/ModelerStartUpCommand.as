@@ -115,6 +115,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _accountLinkagePolicyListCommand:IIocCommand;
     private var _userDashboardBrandingsListCommand:IIocCommand;
     private var _idpSelectorsListCommand:IIocCommand;
+    private var _identityFlowComponentsListCommand:IIocCommand;
     private var _identityMappingPoliciesListCommand:IIocCommand;
     private var _subjectNameIDPolicyListCommand:IIocCommand;
     private var _impersonateUserPoliciesListCommand:IIocCommand;
@@ -227,6 +228,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_ACCOUNT_LINKAGE_POLICIES, accountLinkagePolicyListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_USER_DASHBOARD_BRANDINGS, userDashboardBrandingsListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IDP_SELECTORS, idpSelectorsListCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IDENTITY_FLOW_COMPONENTS, identityFlowComponentsListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_NAMEID_POLICIES, subjectNameIDPolicyListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IDENTITY_MAPPING_POLICIES, identityMappingPoliciesListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IMPERSONATE_USER_POLICIES, impersonateUserPoliciesListCommand.getConfigName());
@@ -1027,6 +1029,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set idpSelectorsListCommand(value:IIocCommand):void {
         _idpSelectorsListCommand = value;
+    }
+
+    public function get identityFlowComponentsListCommand():IIocCommand {
+        return _identityFlowComponentsListCommand;
+    }
+
+    public function set identityFlowComponentsListCommand(value:IIocCommand):void {
+        _identityFlowComponentsListCommand = value;
     }
 
     public function get impersonateUserPoliciesListCommand():IIocCommand {

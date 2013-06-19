@@ -33,5 +33,9 @@
             <s:CheckBox id="idconfirmationEnabled"/>
         </mx:FormItem>
 
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.identityConfirmationPolicy')}:">
+            <s:DropDownList id="identityConfirmationPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" />
+        </mx:FormItem>
+
     </mx:Form>
 </s:Group>

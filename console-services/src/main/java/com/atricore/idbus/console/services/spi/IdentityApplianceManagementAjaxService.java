@@ -82,6 +82,7 @@ public interface IdentityApplianceManagementAjaxService {
     ListImpersonateUserPoliciesResponse listImpersonateUserPolicies(ListImpersonateUserPoliciesRequest req)throws IdentityServerException;
     ListUserDashboardBrandingsResponse listUserDashboardBrandings(ListUserDashboardBrandingsRequest req)throws IdentityServerException;
     ListIdPSelectorsResponse listIdPSelectors(ListIdPSelectorsRequest req)throws IdentityServerException;
+    ListIdentityFlowComponentsResponse listIdentityFlowComponents(ListIdentityFlowComponentsRequest req) throws IdentityServerException;
 
     /****************************
      * Lookup methods
@@ -103,4 +104,5 @@ public interface IdentityApplianceManagementAjaxService {
     ExportProviderCertificateResponse exportProviderCertificate(ExportProviderCertificateRequest req) throws IdentityServerException;
     ExportMetadataResponse exportMetadata(ExportMetadataRequest req) throws IdentityServerException;
     ExportAgentConfigResponse exportAgentConfig(ExportAgentConfigRequest req) throws IdentityServerException;
+
 }

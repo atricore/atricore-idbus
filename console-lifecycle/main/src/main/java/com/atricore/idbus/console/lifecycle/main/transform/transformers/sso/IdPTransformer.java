@@ -138,6 +138,8 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
 
         setPropertyValue(idpBean, "identityConfirmationEnabled", provider.isIdentityConfirmationEnabled());
 
+        setPropertyValue(idpBean, "identityConfirmationPolicy", provider.getIdentityConfirmationPolicy().getName());
+
         // ----------------------------------------
         // Identity Provider Mediator
         // ----------------------------------------
@@ -282,8 +284,6 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         setPropertyRef(idpMediator, "identityFlowContainer", "identity-flow-container");
         setPropertyValue(idpMediator, "claimEndpointSelection", provider.getIdentityAppliance().getName() +
                 "-" + idpBean.getName() + "-claim-endpoint-selection");
-        setPropertyValue(idpMediator, "identityConfirmationEndpointSelection", provider.getIdentityAppliance().getName() +
-                "-" + idpBean.getName() + "-identity-confirmation-endpoint-selection");
 
         // ----------------------------------------
         // MBean

@@ -36,6 +36,7 @@ import com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCom
 import com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdPSelectorsListCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdPSelectorsListCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdentityFlowComponentsListCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityMappingPoliciesListCommand;
 import com.atricore.idbus.console.modeling.main.controller.ImpersonateUserPoliciesListCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
@@ -131,6 +132,7 @@ import com.atricore.idbus.console.services.dto.DominoResource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.Extension;
 import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
@@ -141,6 +143,7 @@ import com.atricore.idbus.console.services.dto.IdBusExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentityApplianceState;
+import com.atricore.idbus.console.services.dto.IdentityFlowComponentReference;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityMappingType;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
@@ -366,6 +369,9 @@ public class PropertySheetMediator extends IocMediator {
     public var _idpSelectors:ArrayCollection;
 
     [Bindable]
+    public var _identityFlowComponents:ArrayCollection;
+
+    [Bindable]
     public var _impersonateUserPolicies:ArrayCollection;
 
     [Bindable]
@@ -455,6 +461,8 @@ public class PropertySheetMediator extends IocMediator {
             UserDashboardBrandingsListCommand.FAILURE,
             IdPSelectorsListCommand.SUCCESS,
             IdPSelectorsListCommand.FAILURE,
+            IdentityFlowComponentsListCommand.SUCCESS,
+            IdentityFlowComponentsListCommand.FAILURE,
             SubjectNameIDPolicyListCommand.SUCCESS,
             SubjectNameIDPolicyListCommand.FAILURE,
             ImpersonateUserPoliciesListCommand.SUCCESS,
@@ -943,6 +951,24 @@ public class PropertySheetMediator extends IocMediator {
                     }
                 }
                 break;
+            case IdentityFlowComponentsListCommand.SUCCESS:
+                if (_currentIdentityApplianceElement != null) {
+                    if (_currentIdentityApplianceElement is IdentityProvider && _ipIdentityConfirmationSection != null) {
+                        _identityFlowComponents = projectProxy.identityFlowComponents;
+                        var ip5:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+                        if (ip5.identityConfirmationPolicy != null) {
+                            for (var n3:int = 0; n3 < _ipIdentityConfirmationSection.identityConfirmationPolicyCombo.dataProvider.length; n3++) {
+                                if (_ipIdentityConfirmationSection.identityConfirmationPolicyCombo.dataProvider[n3].name == ip5.identityConfirmationPolicy.name) {
+                                    _ipIdentityConfirmationSection.identityConfirmationPolicyCombo.selectedIndex = n3;
+                                    break;
+                                }
+                            }
+                        }
+                        _ipIdentityConfirmationSection.identityConfirmationPolicyCombo.addEventListener(Event.CHANGE, handleSectionChange);
+                    }
+                }
+                break;
+
         }
     }
 
@@ -1741,17 +1767,25 @@ public class PropertySheetMediator extends IocMediator {
             _ipIdentityConfirmationSection.idconfirmationEnabled.selected = identityProvider.identityConfirmationEnabled;
             _ipIdentityConfirmationSection.idconfirmationEnabled.addEventListener(Event.CHANGE, handleSectionChange);
 
+            BindingUtils.bindProperty(_ipIdentityConfirmationSection.identityConfirmationPolicyCombo, "dataProvider", this, "_identityFlowComponents");
+            sendNotification(ApplicationFacade.LIST_IDENTITY_FLOW_COMPONENTS);
         }
     }
 
     private function handleIdentityProviderIdentityConfirmationPropertyTabRollOut(event:Event):void {
         if (_dirty && validate(true)) {
             var identityProvider:IdentityProvider;
+            var identityConfirmationPolicyComp:IdentityFlowComponentReference;
+            var identityConfirmationPolicyExt:Extension;
 
             identityProvider = _currentIdentityApplianceElement as IdentityProvider;
 
             identityProvider.identityConfirmationEnabled = _ipIdentityConfirmationSection.idconfirmationEnabled.selected;
-
+            identityConfirmationPolicyComp = _ipIdentityConfirmationSection.identityConfirmationPolicyCombo.selectedItem;
+            identityConfirmationPolicyExt = new Extension();
+            identityConfirmationPolicyExt.name = identityConfirmationPolicyComp.name;
+            identityConfirmationPolicyExt.classifier = "urn:com:atricore:idbus:extensions:identity-flow";
+            identityProvider.identityConfirmationPolicy = identityConfirmationPolicyExt;
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
             _dirty = false;
