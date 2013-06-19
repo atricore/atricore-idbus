@@ -14,7 +14,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.PartnerAppModel;
+import org.atricore.idbus.capabilities.sso.ui.model.PartnerAppModel;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
 import java.util.ArrayList;

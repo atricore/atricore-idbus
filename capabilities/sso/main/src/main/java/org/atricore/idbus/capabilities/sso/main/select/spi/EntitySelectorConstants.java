@@ -10,11 +10,11 @@ public interface EntitySelectorConstants {
 
     public static final String REQUESTED_IDP_ALIAS_ATTR = "atricore_idp_alias";
 
-    public static final String SELECTED_IDP_ALIAS_ATTR = "atricore_idp_alias";
+    public static final String SELECTED_IDP_ALIAS_ATTR = "selected_atricore_idp_alias";
 
     public static final String REQUESTED_IDP_ID_ATTR = "atricore_idp_id";
 
-    public static final String SELECTED_IDP_ID_ATTR = "atricore_idp_id";
+    public static final String SELECTED_IDP_ID_ATTR = "selected_atricore_idp_id";
 
     public static final String AUTHN_CTX_ATTR = "authnCtx";
 

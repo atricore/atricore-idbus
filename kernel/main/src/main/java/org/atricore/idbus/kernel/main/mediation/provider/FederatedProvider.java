@@ -44,6 +44,11 @@ public interface FederatedProvider extends Provider, Skinnable {
      */
     Set<FederationService> getFederationServices();
 
+    /**
+     * Default federation service
+     */
+    FederationService getDefaultFederationService();
+
 
 
 

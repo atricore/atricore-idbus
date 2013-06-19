@@ -3,6 +3,10 @@ package org.atricore.idbus.kernel.main.mediation.claim;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: sgonzalez
@@ -18,6 +22,7 @@ public class UserClaimsRequestImpl implements UserClaimsRequest {
     private IdentityMediationEndpoint issuerEndpoint;
     private String lastErrorId;
     private String lastErrorMsg;
+    private Map<String, java.io.Serializable> attrs = new HashMap<String, Serializable>();
 
     public UserClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint) {
         this.id = id;
@@ -63,4 +68,14 @@ public class UserClaimsRequestImpl implements UserClaimsRequest {
     public void setLastErrorMsg(String lastErrorMsg) {
         this.lastErrorMsg = lastErrorMsg;
     }
+
+    public Object getAttribute(String key) {
+        return attrs.get(key);
+    }
+
+    public void setAttribute(String key, Object value) {
+        attrs.put(key, (Serializable) value);
+    }
+
+
 }

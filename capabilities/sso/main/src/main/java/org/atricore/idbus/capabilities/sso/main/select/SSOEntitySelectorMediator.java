@@ -25,8 +25,6 @@ public class SSOEntitySelectorMediator  extends AbstractCamelMediator {
 
     private String preferredStrategy;
 
-    private String uiLocation;
-
     public SSOEntitySelectorMediator() {
 
     }
@@ -163,11 +161,4 @@ public class SSOEntitySelectorMediator  extends AbstractCamelMediator {
 
     }
 
-    public String getUiLocation() {
-        return uiLocation;
-    }
-
-    public void setUiLocation(String uiLocation) {
-        this.uiLocation = uiLocation;
-    }
 }

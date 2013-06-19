@@ -1,4 +1,4 @@
-package org.atricore.idbus.capabilities.sso.ui.page.selfsvcs;
+package org.atricore.idbus.capabilities.sso.ui.model;
 
 import java.io.Serializable;
 

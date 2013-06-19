@@ -23,6 +23,8 @@ public enum AppResource {
     SHAREPOINT("SharepointResource", "images/sso/sharepoint_resource.png"),
     SAML2_SP("SAML2SP", "images/sso/external_saml_service_provider.png"),
     UNKNOWN("UNKNONW", "images/sso/josso2_resource.png"),
+    SAML2_IDP_LOCAL("SAML2IDPLocal", "images/sso/identity_provider.png"),
+    SAML2_IDP_REMOTE("SAML2IDPRemote", "images/sso/external_saml_identity_provider.png"),
     ;
 
     private String resourceType;

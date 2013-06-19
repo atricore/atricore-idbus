@@ -14,4 +14,8 @@ public interface UserClaimsRequest extends ClaimsRequest {
 
     IdentityMediationEndpoint getIssuerEndpoint();
 
+    Object getAttribute(String key);
+
+    void setAttribute(String key, Object value);
+
 }
