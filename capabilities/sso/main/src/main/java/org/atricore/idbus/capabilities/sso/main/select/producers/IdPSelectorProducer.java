@@ -135,6 +135,8 @@ public class IdPSelectorProducer extends SSOProducer {
                         endpoint,
                         state.getLocalState().getId());
 
+                userClaimsReq.setAttribute("ServiceProvider", request.getIssuer());
+
                 // For now, artifact binding is required.
                 EndpointDescriptor ed = endpoints.get(idx);
 

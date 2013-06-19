@@ -27,11 +27,11 @@ import org.atricore.idbus.kernel.main.federation.IdentityMapper;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
-import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
+
+import java.util.Set;
 
 /**
  *
@@ -62,5 +62,6 @@ public interface FederationChannel extends StatefulChannel {
 
     StatefulProvider getProvider();
 
+    Set<FederatedProvider> getTrustedProviders();
 
 }

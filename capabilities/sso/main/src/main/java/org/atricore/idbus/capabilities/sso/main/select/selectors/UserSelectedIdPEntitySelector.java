@@ -44,18 +44,18 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
 
         // Try with selected IDP alias first
         {
-            UserClaim idpAlias = (UserClaim) ctx.getUserClaim(SELECTED_IDP_ALIAS_ATTR);
+            UserClaim idpAlias = ctx.getUserClaim(SELECTED_IDP_ALIAS_ATTR);
             if (idpAlias != null) {
 
-                String idpAliasName = (String) idpAlias.getValue();
+                String idpAliasValue = (String) idpAlias.getValue();
 
                 if (logger.isDebugEnabled())
                     logger.debug("Using IdP alias " + idpAlias.getValue());
 
                 // Support both encoded and decoded IDP alias values
-                idp = ctx.getCotManager().lookupMemberByAlias(idpAliasName);
+                idp = ctx.getCotManager().lookupMemberByAlias(idpAliasValue);
                 if (idp == null) {
-                    String decodedIdpAlias = new String(Base64.decodeBase64(idpAliasName.getBytes()));
+                    String decodedIdpAlias = new String(Base64.decodeBase64(idpAliasValue.getBytes()));
                     idp = ctx.getCotManager().lookupMemberByAlias(decodedIdpAlias);
                 }
 
@@ -96,7 +96,7 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
         List<EndpointDescriptor> endpoints = new ArrayList<EndpointDescriptor>();
 
         // We need to build a URL like: http://<host>:<port>/IDBUS-UI/<appliance>/SSO/IDPS
-        String location = mediator.getUiLocation() + "/IDPS";
+        String location = mediator.getDashboardUrl() + "/IDPS";
 
         EndpointDescriptor ed = new EndpointDescriptorImpl(
                 "SelectUserClaimsEndpoint",
