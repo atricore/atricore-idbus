@@ -30,8 +30,6 @@ import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmati
 import scala.collection.JavaConversions._
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.Rejections._
 import java.security.SecureRandom
-import scala.Some
-import org.atricore.idbus.capabilities.sso.dsl.{RedirectToLocation, RedirectToLocationWithArtifact, IdentityFlowResponse}
 import java.net.URL
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider
 import org.atricore.idbus.kernel.main.provisioning.spi.request._
@@ -44,13 +42,10 @@ import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget
 import org.atricore.idbus.capabilities.sso.component.builtin.directives.UserDirectives
 import org.fusesource.scalate.TemplateEngine
 import org.atricore.idbus.kernel.main.mail.MailService
-import org.atricore.idbus.capabilities.idconfirmation.component.builtin.TokenAuthenticationRequest
 import org.atricore.idbus.capabilities.sso.dsl.RedirectToLocation
 import scala.Some
-import org.atricore.idbus.capabilities.idconfirmation.component.builtin.IdentityConfirmationState
 import org.atricore.idbus.capabilities.sso.dsl.RedirectToLocationWithArtifact
 import org.atricore.idbus.capabilities.sso.dsl.IdentityFlowResponse
-import org.atricore.idbus.capabilities.idconfirmation.component.builtin.TokenSharedConfirmation
 
 /**
  * Identity confirmation directives of the identity combinator library.
