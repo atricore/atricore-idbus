@@ -213,7 +213,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         Bean spProxyBean = newBean(idpProxyBeans, spProxyName, ServiceProviderImpl.class.getName());
         event.getContext().put("spProxyBean", spProxyBean);
         setPropertyValue(spProxyBean, "name", spProxyName);
-        setPropertyValue(spProxyBean, "description", "SP Proxy, facing external SAML 2.0 IdP " + identityProvider.getName());
+        setPropertyValue(spProxyBean, "description", providerInternalSaml2.getDescription() + "(SP Proxy)");
 
         // Role
         if (!providerInternalSaml2.getRole().equals(ProviderRole.SSOServiceProvider)) {
@@ -494,7 +494,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
         // Name
         setPropertyValue(idpProxyBean, "name", idpProxyBean.getName());
-        setPropertyValue(idpProxyBean, "description", "IdP Proxy, facing inmternal SAML 2.0 SP " + localInternalSaml2ServiceProvider.getName());
+        setPropertyValue(idpProxyBean, "description", remoteIdentityProvider.getDescription() + "(IDP Proxy)");
         event.getContext().put("idpProxyBean", idpProxyBean);
 
         if (logger.isDebugEnabled())
