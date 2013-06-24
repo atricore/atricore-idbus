@@ -50,10 +50,6 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     private String userDashboardBranding;
 
-    private boolean identityConfirmationEnabled;
-
-    private ExtensionDTO identityConfirmationPolicy;
-
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicyDTO subjectNameIDPolicy;
 
@@ -83,6 +79,18 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
     private int messageTtl;
 
     private int messageTtlTolerance;
+
+    private boolean identityConfirmationEnabled;
+
+    private ExtensionDTO identityConfirmationPolicy;
+
+    private String identityConfirmationOAuth2ClientId;
+
+    private String identityConfirmationOAuth2ClientSecret;
+
+    private boolean externallyHostedIdentityConfirmationTokenService;
+
+    private String identityConfirmationOAuth2AuthorizationServerEndpoint;
 
     @Override
     public ProviderRoleDTO getRole() {
@@ -177,14 +185,6 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
         this.ignoreRequestedNameIDPolicy = ignoreRequestedNameIDPolicy;
     }
 
-    public ExtensionDTO getIdentityConfirmationPolicy() {
-        return identityConfirmationPolicy;
-    }
-
-    public void setIdentityConfirmationPolicy(ExtensionDTO identityConfirmationPolicy) {
-        this.identityConfirmationPolicy = identityConfirmationPolicy;
-    }
-
     public SubjectNameIdentifierPolicyDTO getSubjectNameIDPolicy() {
         return subjectNameIDPolicy;
     }
@@ -215,14 +215,6 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     public void setOauth2Enabled(boolean oauth2Enabled) {
         this.oauth2Enabled = oauth2Enabled;
-    }
-
-    public boolean isIdentityConfirmationEnabled() {
-        return identityConfirmationEnabled;
-    }
-
-    public void setIdentityConfirmationEnabled(boolean identityConfirmationEnabled) {
-        this.identityConfirmationEnabled = identityConfirmationEnabled;
     }
 
     public boolean isOpenIdEnabled() {
@@ -265,4 +257,54 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
     public void setUserDashboardBranding(String userDashboardBranding) {
         this.userDashboardBranding = userDashboardBranding;
     }
+
+    public boolean isIdentityConfirmationEnabled() {
+        return identityConfirmationEnabled;
+    }
+
+    public void setIdentityConfirmationEnabled(boolean identityConfirmationEnabled) {
+        this.identityConfirmationEnabled = identityConfirmationEnabled;
+    }
+
+    public String getIdentityConfirmationOAuth2ClientId() {
+        return identityConfirmationOAuth2ClientId;
+    }
+
+    public ExtensionDTO getIdentityConfirmationPolicy() {
+        return identityConfirmationPolicy;
+    }
+
+    public void setIdentityConfirmationPolicy(ExtensionDTO identityConfirmationPolicy) {
+        this.identityConfirmationPolicy = identityConfirmationPolicy;
+    }
+
+    public void setIdentityConfirmationOAuth2ClientId(String identityConfirmationOAuth2ClientId) {
+        this.identityConfirmationOAuth2ClientId = identityConfirmationOAuth2ClientId;
+    }
+
+    public String getIdentityConfirmationOAuth2ClientSecret() {
+        return identityConfirmationOAuth2ClientSecret;
+    }
+
+    public void setIdentityConfirmationOAuth2ClientSecret(String identityConfirmationOAuth2ClientSecret) {
+        this.identityConfirmationOAuth2ClientSecret = identityConfirmationOAuth2ClientSecret;
+    }
+
+    public boolean isExternallyHostedIdentityConfirmationTokenService() {
+        return externallyHostedIdentityConfirmationTokenService;
+    }
+
+    public void setExternallyHostedIdentityConfirmationTokenService(boolean externallyHostedIdentityConfirmationTokenService) {
+        this.externallyHostedIdentityConfirmationTokenService = externallyHostedIdentityConfirmationTokenService;
+    }
+
+    public String getIdentityConfirmationOAuth2AuthorizationServerEndpoint() {
+        return identityConfirmationOAuth2AuthorizationServerEndpoint;
+    }
+
+    public void setIdentityConfirmationOAuth2AuthorizationServerEndpoint(String identityConfirmationOAuth2AuthorizationServerEndpoint) {
+        this.identityConfirmationOAuth2AuthorizationServerEndpoint = identityConfirmationOAuth2AuthorizationServerEndpoint;
+    }
+
+
 }

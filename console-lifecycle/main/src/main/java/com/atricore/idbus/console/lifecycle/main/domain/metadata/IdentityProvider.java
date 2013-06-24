@@ -56,6 +56,14 @@ public class IdentityProvider extends FederatedProvider {
 
     private Extension identityConfirmationPolicy;
 
+    private String identityConfirmationOAuth2ClientId;
+
+    private String identityConfirmationOAuth2ClientSecret;
+
+    private boolean externallyHostedIdentityConfirmationTokenService;
+
+    private String identityConfirmationOAuth2AuthorizationServerEndpoint;
+
     // USERNAME, EMAIL, TRANSIENT, PERSISTENT, X509 Principal Name, Windows DC Principal
     private SubjectNameIdentifierPolicy subjectNameIDPolicy;
 
@@ -176,14 +184,6 @@ public class IdentityProvider extends FederatedProvider {
         this.ignoreRequestedNameIDPolicy = ignoreRequestedNameIDPolicy;
     }
 
-    public Extension getIdentityConfirmationPolicy() {
-        return identityConfirmationPolicy;
-    }
-
-    public void setIdentityConfirmationPolicy(Extension identityConfirmationPolicy) {
-        this.identityConfirmationPolicy = identityConfirmationPolicy;
-    }
-
     public SubjectNameIdentifierPolicy getSubjectNameIDPolicy() {
         return subjectNameIDPolicy;
     }
@@ -214,14 +214,6 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setOauth2Enabled(boolean oauth2Enabled) {
         this.oauth2Enabled = oauth2Enabled;
-    }
-
-    public boolean isIdentityConfirmationEnabled() {
-        return identityConfirmationEnabled;
-    }
-
-    public void setIdentityConfirmationEnabled(boolean identityConfirmationEnabled) {
-        this.identityConfirmationEnabled = identityConfirmationEnabled;
     }
 
     public boolean isOpenIdEnabled() {
@@ -271,6 +263,54 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setUserDashboardBranding(String userDashboardBranding) {
         this.userDashboardBranding = userDashboardBranding;
+    }
+
+    public boolean isIdentityConfirmationEnabled() {
+        return identityConfirmationEnabled;
+    }
+
+    public void setIdentityConfirmationEnabled(boolean identityConfirmationEnabled) {
+        this.identityConfirmationEnabled = identityConfirmationEnabled;
+    }
+
+    public Extension getIdentityConfirmationPolicy() {
+        return identityConfirmationPolicy;
+    }
+
+    public void setIdentityConfirmationPolicy(Extension identityConfirmationPolicy) {
+        this.identityConfirmationPolicy = identityConfirmationPolicy;
+    }
+
+    public String getIdentityConfirmationOAuth2ClientId() {
+        return identityConfirmationOAuth2ClientId;
+    }
+
+    public void setIdentityConfirmationOAuth2ClientId(String identityConfirmationOAuth2ClientId) {
+        this.identityConfirmationOAuth2ClientId = identityConfirmationOAuth2ClientId;
+    }
+
+    public String getIdentityConfirmationOAuth2ClientSecret() {
+        return identityConfirmationOAuth2ClientSecret;
+    }
+
+    public void setIdentityConfirmationOAuth2ClientSecret(String identityConfirmationOAuth2ClientSecret) {
+        this.identityConfirmationOAuth2ClientSecret = identityConfirmationOAuth2ClientSecret;
+    }
+
+    public boolean isExternallyHostedIdentityConfirmationTokenService() {
+        return externallyHostedIdentityConfirmationTokenService;
+    }
+
+    public void setExternallyHostedIdentityConfirmationTokenService(boolean externallyHostedIdentityConfirmationTokenService) {
+        this.externallyHostedIdentityConfirmationTokenService = externallyHostedIdentityConfirmationTokenService;
+    }
+
+    public String getIdentityConfirmationOAuth2AuthorizationServerEndpoint() {
+        return identityConfirmationOAuth2AuthorizationServerEndpoint;
+    }
+
+    public void setIdentityConfirmationOAuth2AuthorizationServerEndpoint(String identityConfirmationOAuth2AuthorizationServerEndpoint) {
+        this.identityConfirmationOAuth2AuthorizationServerEndpoint = identityConfirmationOAuth2AuthorizationServerEndpoint;
     }
 
 }

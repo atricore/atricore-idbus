@@ -139,10 +139,15 @@ public class BasicIdentityConfirmationChannelTransformer extends AbstractTransfo
                 resolveUiLocationPath(appliance) + "/" + provider.getName().toUpperCase() + "/IDCONF/INITIATE");
 
         // OAuth2 stuff required for issuing access tokens
-        setPropertyValue(idcMediator, "oauth2ClientId", "internal");
-        setPropertyValue(idcMediator, "oauth2ClientSecret", "abc123456");
-        setPropertyValue(idcMediator, "oauth2AuthorizationServerEndpoint",
-                      resolveLocationUrl(provider) + "/OAUTH2/TOKEN/SOAP");
+        setPropertyValue(idcMediator, "oauth2ClientId", provider.getIdentityConfirmationOAuth2ClientId());
+        setPropertyValue(idcMediator, "oauth2ClientSecret", provider.getIdentityConfirmationOAuth2ClientSecret());
+        if (!provider.isExternallyHostedIdentityConfirmationTokenService()) {
+            setPropertyValue(idcMediator, "oauth2AuthorizationServerEndpoint",
+                    resolveLocationUrl(provider) + "/OAUTH2/TOKEN/SOAP");
+        } else {
+            setPropertyValue(idcMediator, "oauth2AuthorizationServerEndpoint", provider.getIdentityConfirmationOAuth2AuthorizationServerEndpoint());
+        }
+
         setPropertyValue(idcMediator, "idpInitiatedEndpoint",
                 resolveLocationUrl(provider) + "/SAML2/SSO/IDP_INITIATE");
 

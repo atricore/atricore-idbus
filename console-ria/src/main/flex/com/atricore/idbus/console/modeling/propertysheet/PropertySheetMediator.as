@@ -1767,6 +1767,20 @@ public class PropertySheetMediator extends IocMediator {
             _ipIdentityConfirmationSection.idconfirmationEnabled.selected = identityProvider.identityConfirmationEnabled;
             _ipIdentityConfirmationSection.idconfirmationEnabled.addEventListener(Event.CHANGE, handleSectionChange);
 
+            _ipIdentityConfirmationSection.oauth2ClientId.text = identityProvider.identityConfirmationOAuth2ClientId;
+            _ipIdentityConfirmationSection.oauth2ClientId.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _ipIdentityConfirmationSection.oauth2ClientSecret.text = identityProvider.identityConfirmationOAuth2ClientSecret;
+            _ipIdentityConfirmationSection.oauth2ClientSecret.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _ipIdentityConfirmationSection.externallyHosted.selected = identityProvider.externallyHostedIdentityConfirmationTokenService;
+            enableDisableExternallyHostedIdentityConfirmationTokenService(identityProvider.externallyHostedIdentityConfirmationTokenService);
+            _ipIdentityConfirmationSection.externallyHosted.addEventListener(MouseEvent.CLICK, handleExternallyHostedIdentityConfirmationTokenServiceClicked);
+            _ipIdentityConfirmationSection.externallyHosted.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _ipIdentityConfirmationSection.oauth2AuthorizationServerEndpoint.text = identityProvider.identityConfirmationOAuth2AuthorizationServerEndpoint;
+            _ipIdentityConfirmationSection.oauth2AuthorizationServerEndpoint.addEventListener(Event.CHANGE, handleSectionChange);
+
             BindingUtils.bindProperty(_ipIdentityConfirmationSection.identityConfirmationPolicyCombo, "dataProvider", this, "_identityFlowComponents");
             sendNotification(ApplicationFacade.LIST_IDENTITY_FLOW_COMPONENTS);
         }
@@ -1779,19 +1793,46 @@ public class PropertySheetMediator extends IocMediator {
             var identityConfirmationPolicyExt:Extension;
 
             identityProvider = _currentIdentityApplianceElement as IdentityProvider;
-
             identityProvider.identityConfirmationEnabled = _ipIdentityConfirmationSection.idconfirmationEnabled.selected;
             identityConfirmationPolicyComp = _ipIdentityConfirmationSection.identityConfirmationPolicyCombo.selectedItem;
             identityConfirmationPolicyExt = new Extension();
             identityConfirmationPolicyExt.name = identityConfirmationPolicyComp.name;
             identityConfirmationPolicyExt.classifier = "urn:com:atricore:idbus:extensions:identity-flow";
             identityProvider.identityConfirmationPolicy = identityConfirmationPolicyExt;
+            identityProvider.identityConfirmationOAuth2ClientId = _ipIdentityConfirmationSection.oauth2ClientId.text;
+            identityProvider.identityConfirmationOAuth2ClientSecret = _ipIdentityConfirmationSection.oauth2ClientSecret.text;
+            if (_ipIdentityConfirmationSection.externallyHosted.selected == true) {
+                identityProvider.externallyHostedIdentityConfirmationTokenService = true;
+                identityProvider.identityConfirmationOAuth2AuthorizationServerEndpoint = _ipIdentityConfirmationSection.oauth2AuthorizationServerEndpoint.text;
+            } else {
+                identityProvider.externallyHostedIdentityConfirmationTokenService = false;
+                identityProvider.identityConfirmationOAuth2AuthorizationServerEndpoint = null;
+            }
+
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
             _dirty = false;
         }
     }
 
+    private function handleExternallyHostedIdentityConfirmationTokenServiceClicked(event:Event):void {
+        _validators = [];
+        var provider:Provider = _currentIdentityApplianceElement as Provider;
+        if (provider != null) {
+            if (provider is IdentityProvider) {
+                if (_ipIdentityConfirmationSection.externallyHosted.selected == true) {
+                    enableDisableExternallyHostedIdentityConfirmationTokenService(true);
+                } else {
+                    enableDisableExternallyHostedIdentityConfirmationTokenService(false);
+                }
+
+            }
+        }
+    }
+
+    private function enableDisableExternallyHostedIdentityConfirmationTokenService(enable:Boolean):void {
+        _ipIdentityConfirmationSection.oauth2AuthorizationServerEndpoint.enabled = enable;
+    }
 
     private function updateInternalSaml2ServiceProviderChannel(spChannel:InternalSaml2ServiceProviderChannel, identityProvider:IdentityProvider):void {
         // set location

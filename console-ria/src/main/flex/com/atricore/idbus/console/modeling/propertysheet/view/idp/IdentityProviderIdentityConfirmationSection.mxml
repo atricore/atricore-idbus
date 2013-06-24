@@ -26,16 +26,45 @@
          xmlns:utils="com.atricore.idbus.console.components.*"
          width="100%" height="100%">
 
-    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
+    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+             verticalGap="8">
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idconfirmation.enabled')}:"
                      labelWidth="160" direction="horizontal">
             <s:CheckBox id="idconfirmationEnabled"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.identityConfirmationPolicy')}:">
-            <s:DropDownList id="identityConfirmationPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" />
+        <mx:FormItem
+                label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.identityConfirmationPolicy')}:">
+            <s:DropDownList id="identityConfirmationPolicyCombo" width="200" labelField="name" selectedIndex="0"
+                            requireSelection="true"/>
         </mx:FormItem>
 
+        <utils:TitledBorderBox
+                title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.oauth2AccessTokenIssuanceDetails')}"
+                width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20"
+                paddingBottom="5">
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.externallyHosted')}:"
+                         labelWidth="160" direction="horizontal">
+                <s:CheckBox id="externallyHosted"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="80"
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.oauth2ClientId')}:"
+                         required="true">
+                <s:TextInput id="oauth2ClientId" width="200"/>
+            </mx:FormItem>
+            <mx:FormItem labelWidth="80"
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.oauth2ClientSecret')}:"
+                         required="true">
+                <s:TextInput id="oauth2ClientSecret" width="200"/>
+            </mx:FormItem>
+            <mx:FormItem labelWidth="235"
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.oauth2AuthorizationServerEndpoint')}:"
+                         required="true">
+                <s:TextInput id="oauth2AuthorizationServerEndpoint" width="400" enabled="false"/>
+            </mx:FormItem>
+        </utils:TitledBorderBox>
     </mx:Form>
 </s:Group>
