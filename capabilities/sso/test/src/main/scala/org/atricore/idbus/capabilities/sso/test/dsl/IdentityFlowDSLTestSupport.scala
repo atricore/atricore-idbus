@@ -20,11 +20,12 @@
  */
 package org.atricore.idbus.capabilities.sso.test.dsl
 
-import org.atricore.idbus.kernel.main.mediation.{MediationMessageImpl, MediationStateImpl}
+import org.atricore.idbus.kernel.main.mediation._
+import camel.logging.MediationLogger
 import org.atricore.idbus.kernel.main.mediation.state.LocalStateImpl
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType
-import org.atricore.idbus.kernel.main.mediation.provider.{IdentityConfirmationProviderImpl, ServiceProviderImpl}
+import org.atricore.idbus.kernel.main.mediation.provider._
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl
 import java.util
 import org.atricore.idbus.kernel.main.mediation.claim.{ClaimChannelImpl, ClaimChannel}
@@ -32,12 +33,19 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.{IdentityMediationEndpo
 import org.apache.camel.impl.{DefaultProducer, DefaultCamelContext, DefaultMessage, DefaultComponent}
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.{CamelMediationMessage, CamelMediationEndpoint, MediationBindingComponent, CamelMediationExchange}
 import org.apache.camel.{Message, CamelContext, Exchange, Endpoint}
-import org.atricore.idbus.capabilities.sso.dsl.IdentityFlowResponse
 import org.atricore.idbus.capabilities.sso.dsl.core._
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass
-import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmationChannel, IdentityConfirmationChannelImpl}
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget
+import org.atricore.idbus.kernel.main.provisioning.spi.request._
+import org.atricore.idbus.kernel.main.provisioning.spi.response._
+import org.atricore.idbus.kernel.main.provisioning.domain.User
+import org.atricore.idbus.kernel.main.mail.MailService
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor
+import scala.Some
+import org.atricore.idbus.capabilities.sso.dsl.IdentityFlowResponse
+import org.atricore.idbus.capabilities.sso.dsl.core.IdentityFlowRequestContext
 
 /**
  * Base class for identity flow testers
@@ -87,6 +95,15 @@ trait IdentityFlowDSLTestSupport {
   protected def newMediationEndpoint = new MockCamelMediationEndpoint("foo-uri", "foo-addr", new MediationBindingComponent)
 
 
+  protected def newIdentityProvider(name: String, identityConfirmationEnabled : Boolean = false,
+                                    provisioningTarget : Option[ProvisioningTarget] = None) = {
+    val provider = new IdentityProviderImpl
+    provider.setName(name)
+    provider.setIdentityConfirmationEnabled(identityConfirmationEnabled)
+    provisioningTarget.foreach { pt => provider.setProvisioningTarget(pt) }
+    provider
+  }
+
   protected def newServiceProvider(name: String) = {
     val provider = new ServiceProviderImpl
     provider.setName(name)
@@ -99,11 +116,12 @@ trait IdentityFlowDSLTestSupport {
     provider
   }
 
-  protected def newSpChannel(name: String) = {
+  protected def newSpChannel(name: String, idp : FederatedLocalProvider) = {
     val spChannel = new SPChannelImpl
     spChannel.setName(name)
     spChannel.setClaimProviders(new util.ArrayList[ClaimChannel])
     spChannel.setIdentityConfirmationProviders(new util.ArrayList[IdentityConfirmationChannel])
+    spChannel.setFederatedProvider(idp)
     spChannel
   }
 
@@ -114,17 +132,20 @@ trait IdentityFlowDSLTestSupport {
     claimChannel
   }
 
-  protected def newIdentityConfirmationChannel(name: String) = {
+  protected def newIdentityConfirmationChannel(name: String, provider : FederatedLocalProvider, location : String) = {
     val idConfChannel = new IdentityConfirmationChannelImpl
     idConfChannel.setName("idconf-1")
+    idConfChannel.setFederatedProvider(provider)
+    idConfChannel.setLocation(location)
     idConfChannel.setEndpoints(new util.ArrayList[IdentityMediationEndpoint]())
     idConfChannel
   }
 
-  protected def newIdentityMediationEndpoint(name: String, binding: SSOBinding, epType : AuthnCtxClass ) = {
+  protected def newIdentityMediationEndpoint(name: String, location : String, binding: String, epType : AuthnCtxClass ) = {
    val endpoint = new IdentityMediationEndpointImpl
     endpoint.setName(name)
-    endpoint.setBinding(binding.getValue)
+    endpoint.setLocation(location)
+    endpoint.setBinding(binding)
     endpoint.setType(epType.getValue)
     endpoint
   }
@@ -174,3 +195,141 @@ class MockCamelMediationExchange(camelContext: CamelContext = new DefaultCamelCo
 }
 
 case class MockCamelIdentityFlowResponse(response : Option[IdentityFlowResponse], rejections : Option[Set[Rejection]]) extends DefaultMessage
+
+object MockProvisioningTarget extends ProvisioningTarget {
+  def getName: String = ""
+
+  def init() {}
+
+  def shutDown() {}
+
+  def purgeOldTransactions() {}
+
+  def isTransactionValid(transactionId: String): Boolean = false
+
+  def lookupTransactionRequest(transactionId: String): AbstractProvisioningRequest = null
+
+  def removeGroup(groupRequest: RemoveGroupRequest): RemoveGroupResponse = null
+
+  def addGroup(groupRequest: AddGroupRequest): AddGroupResponse = null
+
+  def findGroupById(groupRequest: FindGroupByIdRequest): FindGroupByIdResponse = null
+
+  def findGroupByName(groupRequest: FindGroupByNameRequest): FindGroupByNameResponse = null
+
+  def listGroups(groupRequest: ListGroupsRequest): ListGroupsResponse = null
+
+  def searchGroups(groupRequest: SearchGroupRequest): SearchGroupResponse = null
+
+  def updateGroup(groupRequest: UpdateGroupRequest): UpdateGroupResponse = null
+
+  def removeUser(userRequest: RemoveUserRequest): RemoveUserResponse = null
+
+  def addUser(userRequest: AddUserRequest): AddUserResponse = null
+
+  def prepareAddUser(userRequest: AddUserRequest): PrepareAddUserResponse = null
+
+  def confirmAddUser(userRequest: ConfirmAddUserRequest): AddUserResponse = null
+
+  def findUserById(userRequest: FindUserByIdRequest): FindUserByIdResponse = null
+
+  def findUserByUsername(userRequest: FindUserByUsernameRequest): FindUserByUsernameResponse = {
+    val user = new User
+    user.setEmail(userRequest.getUsername + "@acme.com")
+    val resp = new FindUserByUsernameResponse
+    resp.setUser(user)
+    resp
+  }
+
+  def listUsers(userRequest: ListUsersRequest): ListUsersResponse = null
+
+  def searchUsers(userRequest: SearchUserRequest): SearchUserResponse = null
+
+  def updateUser(userRequest: UpdateUserRequest): UpdateUserResponse = null
+
+  def getUsersByGroup(usersByGroupRequest: GetUsersByGroupRequest): GetUsersByGroupResponse = null
+
+  def setPassword(setPwdRequest: SetPasswordRequest): SetPasswordResponse = null
+
+  def resetPassword(resetPwdRequest: ResetPasswordRequest): ResetPasswordResponse = null
+
+  def prepareResetPassword(resetPwdRequest: ResetPasswordRequest): PrepareResetPasswordResponse = null
+
+  def confirmResetPassword(resetPwdRequest: ConfirmResetPasswordRequest): ResetPasswordResponse = null
+
+  def listSecurityQuestions(request: ListSecurityQuestionsRequest): ListSecurityQuestionsResponse = null
+
+  def findAclEntryByApprovalToken(aclEntryRequest: FindAclEntryByApprovalTokenRequest): FindAclEntryByApprovalTokenResponse = null
+
+  def updateAclEntry(aclEntryRequest: UpdateAclEntryRequest): UpdateAclEntryResponse = null
+
+  def removeAclEntry(aclEntryRequest: RemoveAclEntryRequest): RemoveAclEntryResponse = null
+
+  def addUserAttribute(userAttributeRequest: AddUserAttributeRequest): AddUserAttributeResponse = null
+
+  def updateUserAttribute(userAttributeRequest: UpdateUserAttributeRequest): UpdateUserAttributeResponse = null
+
+  def removeUserAttribute(userAttributeRequest: RemoveUserAttributeRequest): RemoveUserAttributeResponse = null
+
+  def findUserAttributeById(userAttributeRequest: FindUserAttributeByIdRequest): FindUserAttributeByIdResponse = null
+
+  def findUserAttributeByName(userAttributeRequest: FindUserAttributeByNameRequest): FindUserAttributeByNameResponse = null
+
+  def listUserAttributes(userAttributeRequest: ListUserAttributesRequest): ListUserAttributesResponse = null
+
+  def addGroupAttribute(groupAttributeRequest: AddGroupAttributeRequest): AddGroupAttributeResponse = null
+
+  def updateGroupAttribute(groupAttributeRequest: UpdateGroupAttributeRequest): UpdateGroupAttributeResponse = null
+
+  def removeGroupAttribute(groupAttributeRequest: RemoveGroupAttributeRequest): RemoveGroupAttributeResponse = null
+
+  def findGroupAttributeById(groupAttributeRequest: FindGroupAttributeByIdRequest): FindGroupAttributeByIdResponse = null
+
+  def findGroupAttributeByName(groupAttributeRequest: FindGroupAttributeByNameRequest): FindGroupAttributeByNameResponse = null
+
+  def listGroupAttributes(groupAttributeRequest: ListGroupAttributesRequest): ListGroupAttributesResponse = null
+}
+
+object MockMailService extends MailService {
+  def send(config: String, from: String, to: String, subject: String, message: String, contentType: String) {}
+
+  def sendAsync(config: String, from: String, to: String, subject: String, message: String, contentType: String) {}
+
+  def send(from: String, to: String, subject: String, message: String, contentType: String) {}
+
+  def sendAsync(from: String, to: String, subject: String, message: String, contentType: String) {}
+}
+
+trait MailProvider {
+  def getMailService : MailService
+}
+
+object MockIdentityMediator extends IdentityMediator {
+
+  def init(unitContainer: IdentityMediationUnitContainer) {}
+
+  def start() {}
+
+  def stop() {}
+
+  def setupEndpoints(channel: Channel) {}
+
+  def resolveEndpoint(channel: Channel, endpoint: IdentityMediationEndpoint): EndpointDescriptor = null
+
+  def getBindingFactory: MediationBindingFactory = null
+
+  def getErrorUrl: String = ""
+
+  def getWarningUrl: String = ""
+
+  def getLogger: MediationLogger = null
+
+  def isLogMessages: Boolean = false
+
+  def sendMessage(message: MediationMessage[_], channel: Channel): AnyRef = null
+
+  def sendMessage(content: Any, destination: EndpointDescriptor, channel: Channel): AnyRef = null
+
+  def getMailService : MailService = MockMailService
+
+}

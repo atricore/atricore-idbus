@@ -21,7 +21,7 @@
 package org.atricore.idbus.capabilities.idconfirmation.component.builtin.test
 
 import org.specs2.mutable._
-import org.atricore.idbus.capabilities.sso.dsl.core.directives.IdentityFlowDirectives
+import org.atricore.idbus.capabilities.sso.dsl.core.directives.{DebuggingDirectives, BasicIdentityFlowDirectives, IdentityFlowDirectives}
 import org.atricore.idbus.capabilities.sso.dsl.util.Logging
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange
 import org.atricore.idbus.capabilities.sso.dsl.core.{NoMoreClaimEndpoints, IdentityFlowRequestContext}
@@ -29,13 +29,21 @@ import org.atricore.idbus.capabilities.sso.dsl.{IdentityFlowRequest}
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass
-import org.atricore.idbus.capabilities.sso.test.dsl.{MockCamelMediationMessage, MockCamelMediationExchange, IdentityFlowDSLTestSupport}
-import org.atricore.idbus.capabilities.idconfirmation.component.builtin.{TokenAuthenticationRequest, IdentityConfirmationState, BasicIdentityConfirmationDirectives}
+import org.atricore.idbus.capabilities.sso.test.dsl._
+import org.atricore.idbus.capabilities.idconfirmation.component.builtin.{IdentityConfirmationBindings, TokenAuthenticationRequest, IdentityConfirmationState, BasicIdentityConfirmationDirectives}
 import org.atricore.idbus.kernel.main.mediation.confirmation.{IdentityConfirmationRequest, IdentityConfirmationRequestImpl}
 import org.atricore.idbus.kernel.main.mediation.{MediationStateImpl, MediationMessageImpl}
-import org.atricore.idbus.kernel.main.mediation.claim.{UserClaimImpl, UserClaim}
+import org.atricore.idbus.kernel.main.mediation.claim.{Claim, ClaimSetImpl, UserClaimImpl, UserClaim}
 import org.atricore.idbus.kernel.main.mediation.state.LocalStateImpl
-import org.atricore.idbus.capabilities.sso.component.builtin.directives.MediationDirectives
+import org.atricore.idbus.capabilities.sso.component.builtin.directives.{UserDirectives, MediationDirectives}
+import org.atricore.idbus.capabilities.oauth2.component.builtin.BasicOAuth2Directives
+import scala.collection.JavaConversions._
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.{AttributedString, UsernameTokenType}
+import org.atricore.idbus.capabilities.idconfirmation.component.builtin.TokenAuthenticationRequest
+import scala.Some
+import org.atricore.idbus.capabilities.idconfirmation.component.builtin.IdentityConfirmationState
+import org.atricore.idbus.capabilities.sso.dsl.core.IdentityFlowRequestContext
+import org.atricore.idbus.capabilities.sso.dsl.IdentityFlowRequest
 
 /**
  * Identity Confirmation route tester.
@@ -48,59 +56,95 @@ class BuiltInIdConfirmationSpec
   with BasicIdentityConfirmationDirectives
   with IdentityFlowDirectives
   with MediationDirectives
+  with BasicOAuth2Directives
+  with UserDirectives
+  with DebuggingDirectives
   with Logging {
 
   "The identity flow definition" should {
     "handle correctly" in {
 
+      val tokenSharingConfirmationUILocation = "foo"
+      val idpInitiatedEndpoint = "xxx"
+      val oauth2ClientId = "atricore"
+      val oauth2ClientSecret = "abc123456"
+      val oauth2AuthorizationServerEndpoint = "http://foo"
+
       val r1 =
         logRequestResponse("") {
           onConfirmationRequest {
             _ =>
-              fromUnknownIpAddress {
-                issueSecret(10) {
-                  secret =>
-                    shareSecretByEmail(secret) {
-                      notifyTokenShared
-                    }
-                }
+              issueSecret(10) {
+                secret =>
+                  tokenAuthenticationMessage(secret, "/templates/token_authentication_message.ssp") {
+                    (tokenAuthenticationMessage) =>
+                      shareSecretByEmail(tokenAuthenticationMessage) {
+                        notifyTokenShared(tokenSharingConfirmationUILocation, secret)
+                      }
+                  }
+
               }
           } ~
             onConfirmationTokenAuthenticationRequest {
               _ =>
                 forReceivedSecret {
                   (receivedSecret) =>
-                    forIssuedSecret {
-                      (issuedSecret) =>
-                        verifyToken(receivedSecret, issuedSecret) {
-                          notifyCompletion
+                    forAclEntry(receivedSecret) {
+                      (aclEntry) =>
+                        verifyToken(receivedSecret, aclEntry) {
+                          whitelistSourceByAclEntry(aclEntry) {
+                            aclEntry =>
+                              requestOAuth2AccessToken(
+                                oauth2ClientId,
+                                oauth2ClientSecret,
+                                oauth2AuthorizationServerEndpoint,
+                                aclEntry.getPrincipalNameClaim,
+                                aclEntry.getPasswordClaim
+                              ) {
+                                (oauth2Token) =>
+                                  preauthUrl(idpInitiatedEndpoint, aclEntry.getSpAlias, oauth2Token) {
+                                    (preauthUrl) =>
+                                      notifyCompletion(preauthUrl)
+                                  }
+                              }
+                          }
                         }
-
                     }
                 }
             }
         }
 
-
       val ctx: ContextBuilder = {
         exchange =>
-        // define service provider
-          val provider = newIdentityConfirmationProvider("idcp1")
-
-          // claim channel and endpoints
-          val idConfChannel1 = newIdentityConfirmationChannel("idcc-1")
-          val idConfCh1Ep1 = newIdentityMediationEndpoint("idcc-1-ep1", SSOBinding.SSO_LOCAL, AuthnCtxClass.UNSPECIFIED_AUTHN_CTX)
+          val idcReq = exchange.getIn.asInstanceOf[MockCamelMediationMessage].getMessage.getContent.asInstanceOf[IdentityConfirmationRequest]
+          val provider = idcReq.getIssuerChannel.getFederatedProvider
+          val idConfChannel1 = newIdentityConfirmationChannel("idcc-1", provider, "http://localhost:8081/IDBUS/IA1/IDP1/IDCONF")
+          val idConfCh1Ep1 = newIdentityMediationEndpoint("idcc-1-ep1", "/EMB/AUTHN", IdentityConfirmationBindings.ID_CONFIRMATION_HTTP_AUTHENTICATION.toString, AuthnCtxClass.UNSPECIFIED_AUTHN_CTX)
           idConfChannel1.getEndpoints.add(idConfCh1Ep1)
-          provider.setChannel(idConfChannel1)
+          idConfChannel1.setIdentityMediator(MockIdentityMediator)
 
-          val req = IdentityFlowRequest(exchange.asInstanceOf[CamelMediationExchange], provider, idConfChannel1)
+          //provider.getChannels.add(idConfChannel1)
+
+          val claimSet = {
+            val cs = new ClaimSetImpl
+            idcReq.getClaims.toSet.foreach{ (c : Claim) => cs.addClaim(c) }
+            cs
+          }
+
+          val req = IdentityFlowRequest(exchange.asInstanceOf[CamelMediationExchange], provider, idConfChannel1,
+            idConfCh1Ep1, Option(claimSet) )
           IdentityFlowRequestContext(req)
       }
+
+      val usernameToken = new UsernameTokenType
+      val usernameString = new AttributedString
+      usernameString.setValue("user1")
+      usernameToken.setUsername(usernameString)
 
       val response1 = test(ctx, r1,
         newExchange(
           newIdentityConfirmationRequest(
-            Map( "principal" -> "fooUser",
+            Map( "principal" -> usernameToken,
                  "sourceIpAddress" -> "192.168.1.1",
                  "lastSourceIpAddress" -> "192.168.1.2",
                  "emailAddress" -> "foo@acme.com")),
@@ -141,8 +185,10 @@ class BuiltInIdConfirmationSpec
     ex
   }
 
-  protected def newIdentityConfirmationRequest(userClaims : Map[String,String]) : IdentityConfirmationRequest = {
-    val icr = new IdentityConfirmationRequestImpl
+  protected def newIdentityConfirmationRequest(userClaims : Map[String,_]) : IdentityConfirmationRequest = {
+    val idp1 = newIdentityProvider("idp-1", true, Option(MockProvisioningTarget))
+    val idp1sp1 = newSpChannel("idp-1-ch-1", idp1)
+    val icr = new IdentityConfirmationRequestImpl(idp1sp1, "sp-1")
     userClaims.foreach( { case(k, v) =>
       icr.addClaim(new UserClaimImpl("", k, v))
     })

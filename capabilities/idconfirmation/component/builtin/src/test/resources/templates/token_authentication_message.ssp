@@ -1,0 +1,3 @@
+<%@ var tokenAuthenticationUrl : java.net.URL%>
+
+Please click on this link to complete the identity confirmation process : <%= tokenAuthenticationUrl.toString %>
