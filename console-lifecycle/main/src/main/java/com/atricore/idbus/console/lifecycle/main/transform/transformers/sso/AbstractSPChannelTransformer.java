@@ -179,7 +179,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             // Set trustedProviders
             Set<Ref> trustedProviders = new HashSet<Ref>();
             Ref t = new Ref();
-            t.setBean(target.getName());
+            t.setBean(normalizeBeanName(target.getName()));
             trustedProviders.add(t);
             setPropertyRefs(spChannelBean, "trustedProviders", trustedProviders);
 
@@ -191,7 +191,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
                     continue;
 
                 Ref t = new Ref();
-                t.setBean(fa.getRoleB().getName());
+                t.setBean(normalizeBeanName(fa.getRoleB().getName()));
                 trustedProviders.add(t);
             }
             for (FederatedConnection fb : idp.getFederatedConnectionsB()) {
@@ -199,7 +199,7 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
                     continue;
 
                 Ref t = new Ref();
-                t.setBean(fb.getRoleA().getName());
+                t.setBean(normalizeBeanName(fb.getRoleA().getName()));
                 trustedProviders.add(t);
             }
 

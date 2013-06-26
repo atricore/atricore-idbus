@@ -160,7 +160,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 // Set trustedProviders
                 Set<Ref> trustedProviders = new HashSet<Ref>();
                 Ref t = new Ref();
-                t.setBean(target.getName());
+                t.setBean(normalizeBeanName(target.getName()));
                 trustedProviders.add(t);
                 setPropertyRefs(idpChannelBean, "trustedProviders", trustedProviders);
 
@@ -169,7 +169,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                 // Set trustedProviders
                 Set<Ref> trustedProviders = new HashSet<Ref>();
                 Ref t = new Ref();
-                t.setBean(target.getName());
+                t.setBean(normalizeBeanName(normalizeBeanName(target.getName())));
                 trustedProviders.add(t);
                 setPropertyRefs(idpChannelBean, "trustedProviders", trustedProviders);
             }
@@ -184,11 +184,11 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
 
                 if (isIdPProxyRequired(fa, false)) {
                     Ref t = new Ref();
-                    t.setBean(fa.getRoleB().getName() + "-" + sp.getName() + "-idp-proxy");
+                    t.setBean(normalizeBeanName(fa.getRoleB().getName() + "-" + sp.getName() + "-idp-proxy"));
                     trustedProviders.add(t);
                 } else {
                     Ref t = new Ref();
-                    t.setBean(fa.getRoleB().getName());
+                    t.setBean(normalizeBeanName(fa.getRoleB().getName()));
                     trustedProviders.add(t);
                 }
             }
@@ -197,12 +197,12 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
                     continue;
                 if (isIdPProxyRequired(fb, true)) {
                     Ref t = new Ref();
-                    t.setBean(fb.getRoleA().getName() + "-" + sp.getName() + "-idp-proxy");
+                    t.setBean(normalizeBeanName(fb.getRoleA().getName() + "-" + sp.getName() + "-idp-proxy"));
                     trustedProviders.add(t);
 
                 } else {
                     Ref t = new Ref();
-                    t.setBean(fb.getRoleA().getName());
+                    t.setBean(normalizeBeanName(fb.getRoleA().getName()));
                     trustedProviders.add(t);
                 }
             }
