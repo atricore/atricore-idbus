@@ -66,7 +66,7 @@ public class HttpLogMessageBuilder implements LogMessageBuilder {
                     append("\n\t content-type=\"").append(hreq.getContentType()).append("\"").
                     append("\n\t content-length=\"").append(hreq.getContentLength()).append("\"").
                     append("\n\t content-encoding=\"").append(hreq.getCharacterEncoding()).append("\"").
-                    append("\">");
+                    append(">");
 
             Enumeration headerNames = hreq.getHeaderNames();
 
