@@ -105,15 +105,15 @@ trait ClaimDirectives extends Logging {
                 val selectedEndpoint =
                   ctx.request.channel.asInstanceOf[SPChannel].getClaimProviders.flatMap(
                     cc =>
-                      cc.getEndpoints.filter(
+                      cc.getEndpoints.filter{
                         ep =>
                         // consider only unused artifact and local bindings
                           (ep.getBinding == SSOBinding.SSO_ARTIFACT.getValue ||
                             ep.getBinding == SSOBinding.SSO_LOCAL.getValue) &&
                             !as.getUsedClaimsEndpoints.contains(ep.getName)
-                      ).filter {
-                        ep2 =>
-                            val authnCtxClass = AuthnCtxClass.asEnum(ep2.getType)
+                      }.filter {
+                        ep =>
+                            val authnCtxClass = AuthnCtxClass.asEnum(ep.getType)
 
                             // only consider passive endpoints for passive authentication requests
                             Option(authnRequest.isIsPassive) match {
@@ -122,7 +122,16 @@ trait ClaimDirectives extends Logging {
                               case _ =>
                                 true
                             }
-
+                      }.filter {
+                        ep =>
+                          // if no authentication context has been requested fallback only to endpoints supporting
+                          // artifact binding
+                          Option(authnRequest.getRequestedAuthnContext) match {
+                            case None if (ep.getBinding != SSOBinding.SSO_ARTIFACT.getValue) =>
+                              false
+                            case _ =>
+                              true
+                          }
                       }.map((cc, _))).headOption
 
                 selectedEndpoint match {
