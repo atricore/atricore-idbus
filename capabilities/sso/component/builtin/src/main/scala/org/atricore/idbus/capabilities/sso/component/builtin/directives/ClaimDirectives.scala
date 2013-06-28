@@ -111,24 +111,19 @@ trait ClaimDirectives extends Logging {
                           (ep.getBinding == SSOBinding.SSO_ARTIFACT.getValue ||
                             ep.getBinding == SSOBinding.SSO_LOCAL.getValue) &&
                             !as.getUsedClaimsEndpoints.contains(ep.getName)
-                      ).filter(
+                      ).filter {
                         ep2 =>
-                          Option(authnRequest.getRequestedAuthnContext) match {
-                            case Some(reqAuthnCtx) =>
-                              // see if this is one of the requested endpoints
-                              val authnCtxEp = reqAuthnCtx.getAuthnContextClassRef.filter(_ == ep2.getType)
-                              val authnCtxClass = AuthnCtxClass.asEnum(ep2.getType)
+                            val authnCtxClass = AuthnCtxClass.asEnum(ep2.getType)
 
-                              // only consider passive endpoints for passive authentication requests
-                              if (authnRequest.isIsPassive)
-                                authnCtxClass.isPassive
-                              else
-                                authnCtxEp.headOption.isDefined
-                            case _ =>
-                              // there is no preferred authentication context, any will do
-                              true
-                          }
-                      ).map((cc, _))).headOption
+                            // only consider passive endpoints for passive authentication requests
+                            Option(authnRequest.isIsPassive) match {
+                              case Some(isPassive) if (isPassive && !authnCtxClass.isPassive) =>
+                                false
+                              case _ =>
+                                true
+                            }
+
+                      }.map((cc, _))).headOption
 
                 selectedEndpoint match {
                   case Some((ch, ep)) =>
