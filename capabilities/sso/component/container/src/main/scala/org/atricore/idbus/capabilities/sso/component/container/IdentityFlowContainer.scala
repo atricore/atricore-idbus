@@ -11,6 +11,7 @@ trait IdentityFlowContainer {
 
   def components : java.util.List[IdentityFlowComponent]
 
+  @throws (classOf[RouteRejectionException])
   def dispatch( componentId : String, exchange : CamelMediationExchange, provider : Provider, channel : Channel,
                 endpoint : IdentityMediationEndpoint, claims : ClaimSet) : IdentityFlowResponse
 

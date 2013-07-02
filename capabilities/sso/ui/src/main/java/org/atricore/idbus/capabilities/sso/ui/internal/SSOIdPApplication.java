@@ -71,7 +71,7 @@ public class SSOIdPApplication extends BaseWebApplication {
         mountPage("ERROR/404", PageExpiredErrorPage.class);
         mountPage("ERROR/SESSION", SessionExpiredPage.class);
 
-        // TODO : Only mount Self-Services pages if an SP is configured (we need the app. configured by now)
+        // TODO : Only mount Self-Services pages if an SS SP is configured (we need the app. configured by now)
         mountPage("SS/HOME", DashboardPage.class);
         mountPage("SS/PROFILE", ProfilePage.class);
         mountPage("SS/REGISTER", ReqRegistrationPage.class);

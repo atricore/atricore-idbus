@@ -12,10 +12,19 @@ public class OAuth2Claim  implements Serializable {
 
     private String value;
 
+    private String attr;
+
     public OAuth2Claim(String type, String value) {
         this.type = type;
         this.value = value;
     }
+
+    public OAuth2Claim(String type, String value, String attr) {
+        this.type = type;
+        this.value = value;
+        this.attr = attr;
+    }
+
 
     public OAuth2Claim() {
     }
@@ -34,5 +43,13 @@ public class OAuth2Claim  implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getAttribute() {
+        return attr;
+    }
+
+    public void setAttribute(String attr) {
+        this.attr = attr;
     }
 }

@@ -8,6 +8,7 @@ import javax.management.relation.Role;
 public enum OAuth2ClaimType {
 
     USERID,
+    ATTRIBUTE,
     UNKNOWN,
     ROLE;
 

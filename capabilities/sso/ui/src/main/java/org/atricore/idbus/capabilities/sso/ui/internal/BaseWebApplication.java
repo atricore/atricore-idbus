@@ -29,6 +29,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
+import org.ops4j.pax.wicket.api.PaxWicketBean;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -70,7 +71,6 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     protected List<AppResource> appResources = new ArrayList<AppResource>();
 
     protected IdentityMediationUnitRegistry idsuRegistry;
-
 
     static {
 
@@ -221,7 +221,6 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         // Page settings
         getPageSettings().getComponentResolvers().clear();
         getPageSettings().getComponentResolvers().addAll(newComponentsList);
-
 
         if (branding.getAllowedResourcePatterns() != null && branding.getAllowedResourcePatterns().size() > 0) {
             IPackageResourceGuard guard = this.getResourceSettings().getPackageResourceGuard();

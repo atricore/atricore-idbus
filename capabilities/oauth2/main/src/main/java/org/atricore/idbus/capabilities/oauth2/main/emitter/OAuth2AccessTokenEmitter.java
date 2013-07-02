@@ -135,6 +135,12 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ROLE.toString(), ssoRole.getName()));
         }
 
+        if (user.getProperties() != null) {
+            for (SSONameValuePair property : user.getProperties()) {
+                at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), property.getName(), property.getValue()));
+            }
+        }
+
         // User properties
         // TODO:
 

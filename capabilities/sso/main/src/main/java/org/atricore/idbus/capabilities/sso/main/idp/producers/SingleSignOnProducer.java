@@ -34,6 +34,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.component.container.IdentityFlowContainer;
+import org.atricore.idbus.capabilities.sso.component.container.RouteRejectionException;
 import org.atricore.idbus.capabilities.sso.dsl.IdentityFlowResponse;
 import org.atricore.idbus.capabilities.sso.dsl.NoFurtherActionRequired;
 import org.atricore.idbus.capabilities.sso.dsl.RedirectToEndpoint;
@@ -1404,20 +1405,25 @@ public class SingleSignOnProducer extends SSOProducer {
         SSOIDPMediator idpMediator = (SSOIDPMediator) channel.getIdentityMediator();
         IdentityFlowContainer ifc = idpMediator.getIdentityFlowContainer();
 
-        IdentityFlowResponse response =
-                ifc.dispatch(
-                        idpMediator.getClaimEndpointSelection(),
-                        exchange,
-                        getProvider(),
-                        channel,
-                        endpoint,
-                        null
-                );
+        try {
+            IdentityFlowResponse response =
+                    ifc.dispatch(
+                            idpMediator.getClaimEndpointSelection(),
+                            exchange,
+                            getProvider(),
+                            channel,
+                            endpoint,
+                            null
+                    );
 
-        if (response.statusCode() instanceof RedirectToEndpoint) {
-            logger.debug("Got redirect response : " + response);
-            RedirectToEndpoint redirect = (RedirectToEndpoint) response.statusCode();
-            return (ClaimChannel) redirect.channel();
+            if (response.statusCode() instanceof RedirectToEndpoint) {
+                logger.debug("Got redirect response : " + response);
+                RedirectToEndpoint redirect = (RedirectToEndpoint) response.statusCode();
+                return (ClaimChannel) redirect.channel();
+            }
+        } catch (RouteRejectionException e) {
+            logger.debug(e.getMessage(), e);
+            return null;
         }
 
         return null;
@@ -1434,23 +1440,28 @@ public class SingleSignOnProducer extends SSOProducer {
         SSOIDPMediator idpMediator = (SSOIDPMediator) channel.getIdentityMediator();
         IdentityFlowContainer ifc = idpMediator.getIdentityFlowContainer();
 
-        IdentityFlowResponse response =
-                ifc.dispatch(
-                        idp.getIdentityConfirmationPolicy(),
-                        exchange,
-                        getProvider(),
-                        channel,
-                        endpoint,
-                        claims
-                );
+        try {
+            IdentityFlowResponse response =
+                    ifc.dispatch(
+                            idp.getIdentityConfirmationPolicy(),
+                            exchange,
+                            getProvider(),
+                            channel,
+                            endpoint,
+                            claims
+                    );
 
-        if (response.statusCode() instanceof RedirectToEndpoint) {
-            logger.debug("Got redirect response : " + response);
-            RedirectToEndpoint redirect = (RedirectToEndpoint) response.statusCode();
-            return (IdentityConfirmationChannel) redirect.channel();
-        } else
-        if (response.statusCode() instanceof NoFurtherActionRequired) {
-            logger.debug("Skipping identity confirmation");
+            if (response.statusCode() instanceof RedirectToEndpoint) {
+                logger.debug("Got redirect response : " + response);
+                RedirectToEndpoint redirect = (RedirectToEndpoint) response.statusCode();
+                return (IdentityConfirmationChannel) redirect.channel();
+            } else
+            if (response.statusCode() instanceof NoFurtherActionRequired) {
+                logger.debug("Skipping identity confirmation");
+            }
+        } catch (RouteRejectionException e) {
+            logger.debug(e.getMessage(),  e);
+            return null;
         }
 
 
