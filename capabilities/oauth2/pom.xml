@@ -50,6 +50,7 @@
         <jackson.version>1.9.1</jackson.version>
         <javax.jaxws-api.version>2.1-1</javax.jaxws-api.version>
         <javax.servlet.jsp.version>2.0</javax.servlet.jsp.version>
+        <jaxrs.api.version>2.0</jaxrs.api.version>
 
         <jetty.version>6.1.22</jetty.version>
         <junit.version>4.4</junit.version>
@@ -74,6 +75,12 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${jaxrs.api.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -296,6 +303,7 @@
         <module>component</module>
         <module>resource-servers/oauth2-rs-java</module>
         <module>clients/oauth2-client-java</module>
+        <module>clients/oauth2-client-jaxrs</module>
     </modules>
 
 </project>

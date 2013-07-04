@@ -26,7 +26,13 @@ public class SecureAccessTokenResolverFactory extends AccessTokenResolverFactory
         String defaultKey = config.getProperty(SHARED_SECRECT_PROPERTY);
         String encKey = config.getProperty(SHARED_SECRECT_ENC_PROPERTY, defaultKey);
         String signKey = config.getProperty(SHARED_SECRECT_SIGN_PROPERTY, defaultKey);
-        long tkValidityInterval = Long.parseLong(config.getProperty(TOKEN_VALIDITY_INTERVAL_PROPERTY, "0"));
+        long tkValidityInterval = Long.parseLong(config.getProperty(TOKEN_VALIDITY_INTERVAL_PROPERTY, "30000"));
+
+        if (defaultKey == null && signKey == null)
+            throw new RuntimeException("Secure Token Resolver requires a signature verification key");
+
+        if (defaultKey == null && encKey == null)
+            throw new RuntimeException("Secure Token Resolver requires an encryption verification key");
 
         // HMAC Signer
         HMACTokenSigner signer = new HMACTokenSigner();

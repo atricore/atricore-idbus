@@ -48,6 +48,8 @@ public class SecureAccessTokenResolverImpl implements AccessTokenResolver {
             throw new OAuth2RServerException(e);
         } catch (OAuth2EncryptionException e) {
             throw new OAuth2RServerException(e);
+        } catch (Exception e) {
+            throw new OAuth2RServerException(e);
         }
     }
 
