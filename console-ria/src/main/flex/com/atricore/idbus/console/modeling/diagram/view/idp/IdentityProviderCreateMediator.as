@@ -24,6 +24,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
+import com.atricore.idbus.console.modeling.main.controller.IdentityFlowComponentsListCommand;
 import com.atricore.idbus.console.modeling.main.controller.SubjectNameIDPolicyListCommand;
 import com.atricore.idbus.console.modeling.main.controller.UserDashboardBrandingsListCommand;
 import com.atricore.idbus.console.modeling.main.view.Util;
@@ -32,7 +33,9 @@ import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPo
 import com.atricore.idbus.console.services.dto.AuthenticationContract;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
+import com.atricore.idbus.console.services.dto.Extension;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
+import com.atricore.idbus.console.services.dto.IdentityFlowComponentReference;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.Location;
@@ -81,6 +84,9 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     [Bindable]
     public var _userDashboardBrandings:ArrayCollection;
 
+    [Bindable]
+    public var _identityFlowComponents:ArrayCollection;
+
     public function IdentityProviderCreateMediator(name:String = null, viewComp:IdentityProviderCreateForm = null) {
         super(name, viewComp);
     }
@@ -113,11 +119,24 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         init();
     }
 
+    private function handleExternallyHostedIdentityConfirmationTokenServiceClicked(event:Event):void {
+        if (view.idConfExternallyHosted.selected == true) {
+            enableDisableExternallyHostedIdentityConfirmationTokenService(true);
+        } else {
+            enableDisableExternallyHostedIdentityConfirmationTokenService(false);
+        }
+    }
+
+    private function enableDisableExternallyHostedIdentityConfirmationTokenService(enable:Boolean):void {
+        view.idConfOauth2AuthorizationServerEndpoint.enabled = enable;
+    }
+
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleIdentityProviderSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.certificateManagementType.addEventListener(ItemClickEvent.ITEM_CLICK, handleManagementTypeClicked);
         view.identityProviderName.addEventListener(Event.CHANGE, handleProviderNameChange);
+        view.idConfExternallyHosted.addEventListener(MouseEvent.CLICK, handleExternallyHostedIdentityConfirmationTokenServiceClicked);
 
         // upload bindings
         view.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
@@ -125,7 +144,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         BindingUtils.bindProperty(view.certificateKeyPair, "dataProvider", this, "_selectedFiles");
         BindingUtils.bindProperty(view.userDashboardBrandingCombo, "dataProvider", this, "_userDashboardBrandings");
         BindingUtils.bindProperty(view.subjectNameIdPolicyCombo, "dataProvider", this, "_subjectNameIdPolicies");
-        sendNotification(ApplicationFacade.LIST_NAMEID_POLICIES);
+        BindingUtils.bindProperty(view.identityConfirmationPolicyCombo, "dataProvider", this, "_identityFlowComponents");
 
         initLocation();
         view.focusManager.setFocus(view.identityProviderName);
@@ -155,6 +174,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.authAssertionEmissionPolicy.selectedIndex = 0;
         view.authMechanism.selectedIndex = 0;
         view.subjectNameIdPolicyCombo.selectedIndex = 0;
+        view.identityConfirmationPolicyCombo.selectedIndex = 0;
         view.ignoreRequestedNameIDPolicy.selected = true;
         view.messageTtl.text = "300";
         view.messageTtlTolerance.text = "300";
@@ -190,6 +210,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
         _subjectNameIdPolicies = new ArrayCollection();
         _userDashboardBrandings = new ArrayCollection()
+        _identityFlowComponents = new ArrayCollection();
 
         FormUtility.clearValidationErrors(_validators);
 //        registerValidators();
@@ -240,6 +261,21 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         identityProvider.ignoreRequestedNameIDPolicy = view.ignoreRequestedNameIDPolicy.selected;
         identityProvider.subjectNameIDPolicy = view.subjectNameIdPolicyCombo.selectedItem;
         identityProvider.userDashboardBranding = view.userDashboardBrandingCombo.selectedItem.id;
+
+
+        var identityConfirmationPolicyComp:IdentityFlowComponentReference;
+        var identityConfirmationPolicyExt:Extension;
+
+        identityConfirmationPolicyComp = view.identityConfirmationPolicyCombo.selectedItem;
+        identityConfirmationPolicyExt = new Extension();
+        identityConfirmationPolicyExt.name = identityConfirmationPolicyComp.name;
+        identityConfirmationPolicyExt.classifier = "urn:com:atricore:idbus:extensions:identity-flow";
+
+        identityProvider.identityConfirmationPolicy = identityConfirmationPolicyExt;
+        identityProvider.externallyHostedIdentityConfirmationTokenService = view.idConfExternallyHosted.selected;
+        identityProvider.identityConfirmationOAuth2ClientId = view.idConfOauth2ClientId.text;
+        identityProvider.identityConfirmationOAuth2ClientSecret  = view.idConfOauth2ClientSecret.text;
+        identityProvider.identityConfirmationOAuth2AuthorizationServerEndpoint = view.idConfOauth2AuthorizationServerEndpoint.text;
 
         identityProvider.oauth2Enabled = view.oauth2Enabled.selected;
         identityProvider.oauth2ClientsConfig = view.oauth2ClientsConfig.text;
@@ -492,7 +528,9 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         return [SubjectNameIDPolicyListCommand.SUCCESS,
             SubjectNameIDPolicyListCommand.FAILURE,
             UserDashboardBrandingsListCommand.SUCCESS,
-            UserDashboardBrandingsListCommand.FAILURE];
+            UserDashboardBrandingsListCommand.FAILURE,
+            IdentityFlowComponentsListCommand.SUCCESS,
+            IdentityFlowComponentsListCommand.FAILURE];
     }
 
 
@@ -505,6 +543,18 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
                         // hard-coded saml format string ...
                         if (view.subjectNameIdPolicyCombo.dataProvider[i].type.toString() == SubjectNameIDPolicyType.PRINCIPAL.toString()) {
                             view.subjectNameIdPolicyCombo.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                break;
+            case IdentityFlowComponentsListCommand.SUCCESS:
+                if (view != null && view.parent != null) {
+                    _identityFlowComponents = projectProxy.identityFlowComponents;
+                    for (var i:int=0; i < view.identityConfirmationPolicyCombo.dataProvider.length; i++) {
+                        // hard-coded saml format string ...
+                        if (view.identityConfirmationPolicyCombo.dataProvider[i].name.toString() == "simple-claim-channel-selection") {
+                            view.identityConfirmationPolicyCombo.selectedIndex = i;
                             break;
                         }
                     }
@@ -526,6 +576,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             default:
                 initLocation();
                 sendNotification(ApplicationFacade.LIST_USER_DASHBOARD_BRANDINGS);
+                sendNotification(ApplicationFacade.LIST_IDENTITY_FLOW_COMPONENTS);
+                sendNotification(ApplicationFacade.LIST_NAMEID_POLICIES);
                 break;
         }
 

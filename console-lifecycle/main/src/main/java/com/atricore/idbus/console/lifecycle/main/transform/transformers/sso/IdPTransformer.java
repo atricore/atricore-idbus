@@ -137,8 +137,8 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         setPropertyRef(idpBean, "stateManager", provider.getIdentityAppliance().getName() + "-state-manager");
 
         setPropertyValue(idpBean, "identityConfirmationEnabled", provider.isIdentityConfirmationEnabled());
-
-        setPropertyValue(idpBean, "identityConfirmationPolicy", provider.getIdentityConfirmationPolicy().getName());
+        if (provider.getIdentityConfirmationPolicy() != null)
+            setPropertyValue(idpBean, "identityConfirmationPolicy", provider.getIdentityConfirmationPolicy().getName());
 
         // ----------------------------------------
         // Identity Provider Mediator

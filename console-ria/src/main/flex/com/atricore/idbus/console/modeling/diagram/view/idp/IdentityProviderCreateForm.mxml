@@ -311,6 +311,39 @@
                     <s:CheckBox id="idconfirmationEnabled" selected="false"/>
                 </mx:FormItem>
 
+                <mx:FormItem
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.identityConfirmationPolicy')}:">
+                    <s:DropDownList id="identityConfirmationPolicyCombo" width="200" labelField="name" selectedIndex="0"
+                                    requireSelection="true"/>
+                </mx:FormItem>
+
+                <utils:TitledBorderBox
+                        title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.oauth2AccessTokenIssuanceDetails')}"
+                        width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20"
+                        paddingBottom="5">
+
+                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.externallyHosted')}:"
+                                 labelWidth="160" direction="horizontal">
+                        <s:CheckBox id="idConfExternallyHosted"/>
+                    </mx:FormItem>
+
+                    <mx:FormItem labelWidth="80"
+                                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.oauth2ClientId')}:"
+                                 required="true">
+                        <s:TextInput id="idConfOauth2ClientId" width="200"/>
+                    </mx:FormItem>
+                    <mx:FormItem labelWidth="80"
+                                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.oauth2ClientSecret')}:"
+                                 required="true">
+                        <s:TextInput id="idConfOauth2ClientSecret" width="200"/>
+                    </mx:FormItem>
+                    <mx:FormItem labelWidth="235"
+                                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.idconf.oauth2AuthorizationServerEndpoint')}:"
+                                 required="true">
+                        <s:TextInput id="idConfOauth2AuthorizationServerEndpoint" width="380" enabled="false"/>
+                    </mx:FormItem>
+                </utils:TitledBorderBox>
+
             </s:VGroup>
         </s:NavigatorContent>
 
