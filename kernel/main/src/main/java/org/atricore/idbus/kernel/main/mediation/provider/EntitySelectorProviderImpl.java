@@ -27,7 +27,7 @@ public class EntitySelectorProviderImpl implements EntitySelectorProvider, Bundl
 
     private SelectorChannel channel;
 
-    private ProviderStateManager stateManager;
+    private transient ProviderStateManager stateManager;
 
     public SelectorChannel getChannel() {
         return channel;

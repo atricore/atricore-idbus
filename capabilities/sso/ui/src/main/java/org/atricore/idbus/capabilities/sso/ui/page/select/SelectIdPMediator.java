@@ -73,7 +73,8 @@ public class SelectIdPMediator implements Serializable {
 
         if (artifactId != null) {
 
-            logger.info("Artifact ID = " + artifactId);
+            if (logger.isDebugEnabled())
+                logger.debug("Artifact ID = " + artifactId);
 
             // Lookup for ClaimsRequest!
             try {
@@ -87,7 +88,7 @@ public class SelectIdPMediator implements Serializable {
                 getSession().setUserClaimsRequest(userClaimsReq);
 
                 if (logger.isDebugEnabled())
-                    logger.info("Received select entity request " + userClaimsReq +
+                    logger.debug("Received select entity request " + userClaimsReq +
                             " for SP " + userClaimsReq.getAttribute("ServiceProvider)"));
 
             } else {
@@ -98,7 +99,7 @@ public class SelectIdPMediator implements Serializable {
             userClaimsReq = getSession().getUserClaimsRequest();
         }
 
-        logger.info("claimsRequest = " + userClaimsReq);
+        logger.debug("claimsRequest = " + userClaimsReq);
 
         if (userClaimsReq == null) {
             // No way to process this page, fall-back
