@@ -42,6 +42,12 @@ public class WebBranding implements IClusterable, BundleContextAware {
 
     private List<IPageHeaderContributor> pageHeaderContributors = new ArrayList<IPageHeaderContributor>();
 
+    private String ssoAppClazz;
+
+    private String ssoIdPAppClazz;
+
+    // TODO : Support other application customization properties
+
     public List<IPageHeaderContributor> getPageHeaderContributors() {
         return pageHeaderContributors;
     }
@@ -141,6 +147,22 @@ public class WebBranding implements IClusterable, BundleContextAware {
 
     public void setAllowedResourcePatterns(Set<String> allowedResourcesPatterns) {
         this.allowedResourcePatterns = allowedResourcesPatterns;
+    }
+
+    public String getSsoAppClazz() {
+        return ssoAppClazz;
+    }
+
+    public void setSsoAppClazz(String ssoAppClazz) {
+        this.ssoAppClazz = ssoAppClazz;
+    }
+
+    public String getSsoIdPAppClazz() {
+        return ssoIdPAppClazz;
+    }
+
+    public void setSsoIdPAppClazz(String ssoIdPAppClazz) {
+        this.ssoIdPAppClazz = ssoIdPAppClazz;
     }
 
     public class ResourcesBundle {

@@ -50,9 +50,14 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
 
     public boolean match(HttpServletRequest originalReq, String redirectUrl) {
 
+        if (logger.isTraceEnabled())
+            logger.trace("Matching URL [" + redirectUrl+ "]");
+
+
         // Force includes/excludes
         for (String includedUrl : includedUrls) {
-            if (redirectUrl.startsWith(includedUrl)) {
+            String prefix = redirectUrl.substring(0, includedUrl.length());
+            if (prefix.equals(includedUrl)) {
                 if (logger.isTraceEnabled())
                     logger.trace("Following, Matching URL to [" + includedUrl + "]");
                 return true;
@@ -60,7 +65,8 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
         }
 
         for (String excludedUrl : excludedUrls) {
-            if (redirectUrl.startsWith(excludedUrl)) {
+            String prefix = redirectUrl.substring(0, excludedUrl.length());
+            if (prefix.equals(excludedUrl)) {
                 if (logger.isTraceEnabled())
                     logger.trace("Not Following, Matching URL to ["+excludedUrl+"]");
 
@@ -76,8 +82,13 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
             throw new RuntimeException("Cannot work with mediation on root context !");
         }
 
-        int ctxEnd = originalUrl.indexOf(ctxPath) + ctxPath.length();
-        return redirectUrl.startsWith(originalUrl.substring(0, ctxEnd));
+        // This should give us the position of the "/" after the context
+        int ctxEnd = originalUrl.indexOf(ctxPath) + ctxPath.length() + 1;
+
+        String originalBase = originalUrl.substring(0, ctxEnd);
+        String redirectBase = redirectUrl.substring(0, ctxEnd);
+
+        return originalBase.equals(redirectBase);
 
 
     }
