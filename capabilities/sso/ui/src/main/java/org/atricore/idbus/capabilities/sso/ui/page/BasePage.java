@@ -126,17 +126,9 @@ public class BasePage extends WebPage implements IHeaderContributor {
         // ---------------------------------------------------------------------
         BaseWebApplication app = (BaseWebApplication) getApplication();
         WebBranding branding = app.getBranding();
-        if (branding != null) {
 
-            if (logger.isTraceEnabled())
-                logger.trace("Using 'variant' ["+branding.getSkin()+"] based on " + branding.getId());
-
-            if (branding.getSkin() != null)
-                setVariation(branding.getSkin());
-
-        } else {
-            logger.error("No Branding found for application : " + app.getName());
-        }
+        String variation = resolveVariation(branding);
+        setVariation(variation);
 
         final SSOWebSession session = (SSOWebSession)getSession();
 
@@ -224,6 +216,24 @@ public class BasePage extends WebPage implements IHeaderContributor {
     @Override
     public String getVariation() {
         return variant;
+    }
+
+    protected String resolveVariation(WebBranding branding) {
+
+        BaseWebApplication app = (BaseWebApplication) getApplication();
+        if (branding != null) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Using 'variation' ["+branding.getSkin()+"] based on " + branding.getId());
+
+            if (branding.getSkin() != null)
+                setVariation(branding.getSkin());
+
+        } else {
+            logger.error("No Branding found for application : " + app.getName());
+        }
+        return null;
+
     }
 
 

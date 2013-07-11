@@ -112,15 +112,17 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
 
         // Force includes/excludes
         for (String includedUrl : includedUrls) {
-            if (requestUrl.startsWith(includedUrl)) {
+            String prefix = requestUrl.substring(0, includedUrl.length());
+            if (prefix.equals(includedUrl)) {
                 if (logger.isTraceEnabled())
-                    logger.trace("Following, Matching URL to ["+includedUrl+"]");
+                    logger.trace("Following, Matching URL to [" + includedUrl + "]");
                 return true;
             }
         }
 
         for (String excludedUrl : excludedUrls) {
-            if (requestUrl.startsWith(excludedUrl)) {
+            String prefix = requestUrl.substring(0, excludedUrl.length());
+            if (prefix.equals(excludedUrl)) {
                 if (logger.isTraceEnabled())
                     logger.trace("Not Following, Matching URL to ["+excludedUrl+"]");
 
