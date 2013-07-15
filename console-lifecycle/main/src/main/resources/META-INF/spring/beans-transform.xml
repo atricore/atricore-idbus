@@ -47,7 +47,9 @@
     </bean>
 
     <bean name="idpUiLocalTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdPUITransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdPUITransformer">
+        <property name="brandManager" ref="brandManager"/>
+    </bean>
 
     <bean name="oauth2IdpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2IdPTransformer">

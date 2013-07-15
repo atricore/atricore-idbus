@@ -12,7 +12,6 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Se
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.pax.wicket.Application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -67,8 +66,23 @@ public class IdauUITransformer extends AbstractTransformer {
             String pkg = module.getPackage();
             String ssoAppClazz = "SSOUIApplication";
             String parentClazz = "org.atricore.idbus.capabilities.sso.ui.internal.SSOUIApplication";
+            String customSsoAppClazz = null;
 
+            String brandingId = ida.getUserDashboardBranding().getId();
+            if (brandingId != null) {
+                try {
+                    // TODO : Work-around to a 'transactional' issue, this thread already has a transaction
+                    BrandingDefinition bd = brandManager.lookupByNameNT(brandingId);
+                    if (bd instanceof CustomBrandingDefinition) {
+                        CustomBrandingDefinition cbd = (CustomBrandingDefinition) bd;
+                        customSsoAppClazz = cbd.getCustomSsoAppClazz();
+                    }
+                } catch (BrandingServiceException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
 
+            /* Do not need a custom class
             {
                 IdProjectSource s = new IdProjectSource(ssoAppClazz, path, ssoAppClazz, "java", "extends");
                 s.setExtension("java");
@@ -80,26 +94,24 @@ public class IdauUITransformer extends AbstractTransformer {
                 params.put("parentClazz", parentClazz);
                 s.setParams(params);
                 module.addSource(s);
-            }
+            } */
 
             // Each IDP must have its own application. but we also need some generic pages for non-idp error display
             Application ssoUiApp = new Application();
             ssoUiApp.setId(normalizeBeanName(ida.getName() + "-sso-ui"));
             ssoUiApp.setApplicationName(ida.getName().toLowerCase() + "-sso-ui");
-            //ssoUiApp.setClazz(pkg + "." + ssoAppClazz); // DO NOT USE THE GENERATED CLASS WITH WICKET 6.X
-            ssoUiApp.setClazz(parentClazz);
+            ssoUiApp.setClazz(customSsoAppClazz != null ? customSsoAppClazz : parentClazz);
             ssoUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/SSO");
             ssoUiApp.setInjectionSource("spring");
 
             idauBeansUi.getImportsAndAliasAndBeen().add(ssoUiApp);
-
 
             // App Configuration
             Bean appCfgBean = newBean(idauBeansUi, ssoUiApp.getId() + "-cfg", "org.atricore.idbus.capabilities.sso.ui.WebAppConfig");
             setPropertyValue(appCfgBean, "appName", ssoUiApp.getId());
             setPropertyValue(appCfgBean, "unitName", ida.getName() + "-mediation-unit");
             setPropertyValue(appCfgBean, "mountPoint", ssoUiApp.getMountPoint());
-            if (ida.getUserDashboardBranding() != null) {
+            if (brandingId != null) {
                 setPropertyValue(appCfgBean, "brandingId", ida.getUserDashboardBranding().getId());
             }
 

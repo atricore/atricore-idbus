@@ -1,5 +1,9 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers.sso;
 
+import com.atricore.idbus.console.brandservice.main.BrandingServiceException;
+import com.atricore.idbus.console.brandservice.main.domain.BrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.domain.CustomBrandingDefinition;
+import com.atricore.idbus.console.brandservice.main.spi.BrandManager;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
@@ -27,6 +31,8 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
 public class IdPUITransformer extends AbstractTransformer {
 
     private static final Log logger = LogFactory.getLog(IdPUITransformer.class);
+
+    private BrandManager brandManager;
 
     @Override
     public boolean accept(TransformEvent event) {
@@ -62,7 +68,6 @@ public class IdPUITransformer extends AbstractTransformer {
         if (uiLocation != null) {
             uiBasePath = resolveLocationPath(uiLocation);
         }
-
 
         String path = module.getPath();
         String pkg = module.getPackage();
@@ -121,6 +126,19 @@ public class IdPUITransformer extends AbstractTransformer {
         // Self-Services are OAuth2 based, look for the shared secret:
 
         String brandingId = idp.getUserDashboardBranding() != null ? idp.getUserDashboardBranding() : ida.getUserDashboardBranding().getId();
+        String customSsoIdPAppClazz = null;
+        if (brandingId != null) {
+            try {
+                // TODO : Work-around to a 'transactional' issue, this thread already has a transaction manager
+                BrandingDefinition bd = brandManager.lookupByNameNT(brandingId);
+                if (bd instanceof CustomBrandingDefinition) {
+                    CustomBrandingDefinition cbd = (CustomBrandingDefinition) bd;
+                    customSsoIdPAppClazz = cbd.getCustomSsoIdPAppClazz();
+                }
+            } catch (BrandingServiceException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
 
         // If the IdP uses a different branding, create an application for it
         // TODO : This should now consider different self-services options for each IdP
@@ -128,7 +146,7 @@ public class IdPUITransformer extends AbstractTransformer {
         idpUiApp.setId(normalizeBeanName(ida.getName() + "-" + idp.getName() + "-sso-ui"));
         idpUiApp.setApplicationName(ida.getName().toLowerCase() + "-" + idp.getName().toLowerCase() + "-sso-ui");
         //idpUiApp.setClazz(pkg + "." + idpAppClazz); // DO NOT USE THE GENERATED CLASS WITH WICKET 6.X
-        idpUiApp.setClazz(parentClazz);
+        idpUiApp.setClazz(customSsoIdPAppClazz != null ? customSsoIdPAppClazz  : parentClazz);
         idpUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/" + idp.getName().toUpperCase() + "/SSO");
         idpUiApp.setInjectionSource("spring");
 
@@ -213,4 +231,11 @@ public class IdPUITransformer extends AbstractTransformer {
 
     }
 
+    public BrandManager getBrandManager() {
+        return brandManager;
+    }
+
+    public void setBrandManager(BrandManager brandManager) {
+        this.brandManager = brandManager;
+    }
 }

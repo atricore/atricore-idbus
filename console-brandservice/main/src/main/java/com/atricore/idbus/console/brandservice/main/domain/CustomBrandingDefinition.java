@@ -11,6 +11,8 @@ public class CustomBrandingDefinition extends BrandingDefinition {
 
     private String customSsoAppClazz;
 
+    private String customSsoIdPAppClazz;
+
     private String customOpenIdAppClazz;
     
     private String bundleSymbolicName;
@@ -33,6 +35,14 @@ public class CustomBrandingDefinition extends BrandingDefinition {
 
     public void setCustomSsoAppClazz(String customSsoAppClazz) {
         this.customSsoAppClazz = customSsoAppClazz;
+    }
+
+    public String getCustomSsoIdPAppClazz() {
+        return customSsoIdPAppClazz;
+    }
+
+    public void setCustomSsoIdPAppClazz(String customSsoIdPAppClazz) {
+        this.customSsoIdPAppClazz = customSsoIdPAppClazz;
     }
 
     public String getCustomOpenIdAppClazz() {

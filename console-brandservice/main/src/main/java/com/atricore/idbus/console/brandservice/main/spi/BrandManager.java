@@ -26,6 +26,9 @@ public interface BrandManager {
 
     BrandingDefinition lookupByName(String name) throws BrandingServiceException;
 
+    // TODO : Work-around method (transactionless) to avoid clashing multimple JDO Managers
+    BrandingDefinition lookupByNameNT(String name) throws BrandingServiceException;
+
     BrandingDefinition lookup(long id) throws BrandingServiceException;
 
     Collection<BrandingDefinition> list() throws BrandingServiceException;

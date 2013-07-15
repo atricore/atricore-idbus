@@ -34,20 +34,28 @@
 
     <utils:ValidatingForm id="brandingForm" width="100%" height="100%" labelWidth="80">
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.name')}:" required="true">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.name')}:" labelWidth="280" required="true">
             <s:TextInput id="brandingName" width="150"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.description')}:">
-            <s:TextArea id="brandingDescription" width="150" height="80"/>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.description')}:" labelWidth="280" required="true">
+            <s:TextInput id="brandingDescription" width="150" />
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.bundle.uri')}:" required="true">
-            <s:TextInput id="bundleURI" width="200"/>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.ssoApp')}:" labelWidth="280" required="true">
+            <s:TextInput id="ssoApp" width="320" />
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.ssoIdPApp')}:" labelWidth="280" required="true">
+            <s:TextInput id="ssoIdPApp" width="320" />
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.bundle.uri')}:" labelWidth="280" required="true">
+            <s:TextInput id="bundleURI" width="320"/>
             <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.bundle.uri.format')}"/>
         </mx:FormItem>
 
-        <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.bundle.file')}:">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.bundle.file')}:" labelWidth="280" >
             <s:DropDownList id="bundleFile" width="170" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.bundle.file.browseFile')}"
                             requireSelection="true"/>
         </mx:FormItem>

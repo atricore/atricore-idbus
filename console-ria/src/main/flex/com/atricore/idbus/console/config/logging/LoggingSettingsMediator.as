@@ -140,9 +140,8 @@ public class LoggingSettingsMediator extends IocFormMediator implements IDisposa
         serviceMods.addItem({data:0,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.loggingVerbosity.develop')});
         serviceMods.addItem({data:5,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.loggingVerbosity.detailed')});
         serviceMods.addItem({data:10,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.loggingVerbosity.normal')});
-        if (_logServiceConfig.serviceMode == 20) {
-            serviceMods.addItem({data:20,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.loggingVerbosity.custom')});
-        }
+        serviceMods.addItem({data:20,label:resourceManager.getString(AtricoreConsole.BUNDLE, 'config.log.loggingVerbosity.custom')});
+
         view.serviceMode.dataProvider = serviceMods;
         view.serviceMode.validateNow();
 
@@ -152,14 +151,20 @@ public class LoggingSettingsMediator extends IocFormMediator implements IDisposa
             view.customLogData.includeInLayout = false;
             view.serviceMode.enabled = true;
             view.btnSave.enabled = true;
-        } else if (_logServiceConfig.serviceMode == 10) {
+        } else if (_logServiceConfig.serviceMode == 5) {
             view.serviceMode.selectedIndex = 1;
             view.customLogData.visible = false;
             view.customLogData.includeInLayout = false;
             view.serviceMode.enabled = true;
             view.btnSave.enabled = true;
-        } else if (_logServiceConfig.serviceMode == 20) {
+        } else if (_logServiceConfig.serviceMode == 10) {
             view.serviceMode.selectedIndex = 2;
+            view.customLogData.visible = false;
+            view.customLogData.includeInLayout = false;
+            view.serviceMode.enabled = true;
+            view.btnSave.enabled = true;
+        } else if (_logServiceConfig.serviceMode == 20) {
+            view.serviceMode.selectedIndex = 3;
             view.customLogData.includeInLayout = true;
             view.customLogData.visible = true;
             view.serviceMode.enabled = false;

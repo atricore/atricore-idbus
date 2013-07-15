@@ -104,18 +104,21 @@ public class CreateBrandingExtensionMediator extends IocFormMediator
         newCustomBrandingDefinition.resource = _uploadedFile;
         newCustomBrandingDefinition.bundleSymbolicName = _uploadedFileName;
         newCustomBrandingDefinition.webBrandingId = view.brandingName.text;
-        
+        newCustomBrandingDefinition.customSsoAppClazz = view.ssoApp.text;
+        newCustomBrandingDefinition.customSsoIdPAppClazz = view.ssoIdPApp.text;
+
         _newCustomBrandingDefinition = newCustomBrandingDefinition;
     }
     
 
     private function saveBranding():void {
-        view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+        //view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
         sendNotification(ProcessingMediator.START,
                 resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.save.progress"));
 
         bindModel();
         sendNotification(ApplicationFacade.CREATE_BRANDING, _newCustomBrandingDefinition);
+        view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
     private function closeWindow():void {

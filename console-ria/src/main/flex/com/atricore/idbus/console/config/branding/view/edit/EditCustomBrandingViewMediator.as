@@ -120,7 +120,9 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
         _branding.name = view.brandingName.text;
         _branding.description = view.brandingDescription.text;
         _branding.bundleUri = view.bundleURI.text;
-        _branding.webBrandingId = view.webID.text;
+        _branding.customSsoAppClazz = view.ssoApp.text;
+        _branding.customSsoIdPAppClazz = view.ssoIdPApp.text;
+        //_branding.webBrandingId = view.webID.text;
         if (_uploadedFile != null) {
             _branding.resource = _uploadedFile;
             _branding.bundleSymbolicName = _uploadedFileName;
@@ -135,7 +137,9 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
         view.brandingName.text = "";
         view.brandingDescription.text = "";
         view.bundleURI.text = "";
-        view.webID.text = "";
+        //view.webID.text = "";
+        view.ssoApp.text = "";
+        view.ssoIdPApp.text = "";
         view.bundleFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "config.branding.create.form.bundle.file.browseFile");
     }
 
@@ -207,7 +211,9 @@ public class EditCustomBrandingViewMediator extends IocFormMediator implements I
         view.brandingName.text = _branding.name;
         view.brandingDescription.text = _branding.description;
         view.bundleURI.text = _branding.bundleUri;
-        view.webID.text = _branding.webBrandingId;
+        view.ssoApp.text = _branding.customSsoAppClazz;
+        view.ssoIdPApp.text = _branding.customSsoIdPAppClazz;
+
     }
 
     private function browseHandler(event:MouseEvent):void {

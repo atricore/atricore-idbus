@@ -17,6 +17,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.osgi.context.BundleContextAware;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 
@@ -343,6 +344,11 @@ public class BrandManagerImpl implements BrandManager, BundleContextAware,
     public BrandingDefinition lookupByName(String name) throws BrandingServiceException {
         return store.retrieveByName(name);
     }
+
+    public BrandingDefinition lookupByNameNT(String name) throws BrandingServiceException {
+        return store.retrieveByName(name);
+    }
+
 
     @Transactional
     public BrandingDefinition lookup(long id) throws BrandingServiceException {

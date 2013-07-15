@@ -59,8 +59,9 @@ public class BrandingPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createBrandingCreationView();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.title');
-        _popup.x = (_popupParent.width / 2) - 225;
-        _popup.y = 80;
+        _popup.width = 650
+        _popup.x = (_popupParent.width / 2) - 325;
+        _popup.y = 50;
         showPopup(_createBrandingExtensionView);
     }
 

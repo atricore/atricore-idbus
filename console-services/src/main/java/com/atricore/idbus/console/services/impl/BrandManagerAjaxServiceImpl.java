@@ -75,6 +75,8 @@ public class BrandManagerAjaxServiceImpl implements BrandManagerAjaxService {
             BrandingDefinition brandingDefinition = null;
             if (brandingDefinitionDTO.getType() == BrandingTypeDTO.CUSTOM) {
                 brandingDefinition = new CustomBrandingDefinition();
+            } else {
+                throw new BrandingServiceException("Unsupported branding type " + brandingDefinitionDTO.getType().name());
             }
             dozerMapper.map(brandingDefinitionDTO, brandingDefinition);
             brandingDefinition = brandManager.create(brandingDefinition);
