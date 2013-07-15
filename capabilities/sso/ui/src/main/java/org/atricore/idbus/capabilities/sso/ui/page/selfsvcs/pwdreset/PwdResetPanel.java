@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
@@ -78,7 +79,7 @@ public class PwdResetPanel extends Panel {
 
     protected void onPwdResetSucceeded() {
         // Go to profile
-        form.setResponsePage(ProfilePage.class);
+        form.setResponsePage(((BaseWebApplication)getApplication()).resolvePage("SS/PROFILE"));
         error(getLocalizer().getString("app.error", this, "Operation failed"));
     }
 

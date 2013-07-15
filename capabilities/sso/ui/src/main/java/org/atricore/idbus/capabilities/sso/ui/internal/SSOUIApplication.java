@@ -25,10 +25,14 @@ import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.atricore.idbus.capabilities.sso.ui.PageMountPoint;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.simple.SimpleLoginPage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.IdBusErrorPage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
 import org.atricore.idbus.capabilities.sso.ui.page.select.SelectIdPPage;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Entry point for the Wicket-based SSO front-end.
@@ -59,17 +63,12 @@ public class SSOUIApplication extends BaseWebApplication {
     }
 
     @Override
-    protected void mountPages() {
-
-        mountPage("ERROR", IdBusErrorPage.class);
-        mountPage("ERROR/401", AccessDeniedPage.class);
-        mountPage("ERROR/404", PageExpiredErrorPage.class);
-        mountPage("ERROR/SESSION", SessionExpiredPage.class);
-
-        mountPage("IDPS", SelectIdPPage.class);
-
-        getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
-        getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
+    protected void buildPageMounts() {
+        addPageMount("ERROR", IdBusErrorPage.class);
+        addPageMount("ERROR/401", AccessDeniedPage.class);
+        addPageMount("ERROR/404", PageExpiredErrorPage.class);
+        addPageMount("ERROR/SESSION", SessionExpiredPage.class);
+        addPageMount("IDPS", SelectIdPPage.class);
     }
 
     /**

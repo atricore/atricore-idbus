@@ -39,14 +39,12 @@ public class OpenIDIdPApplication extends BaseWebApplication {
     }
 
     @Override
-    protected void mountPages() {
+    protected void buildPageMounts() {
 
-        mountPage("/LOGIN", OpenIDLoginPage.class);
-        mountPage("/ERROR/401", AccessDeniedPage.class);
-        mountPage("/ERROR/404", PageExpiredErrorPage.class);
+        addPageMount("/LOGIN", OpenIDLoginPage.class);
+        addPageMount("/ERROR/401", AccessDeniedPage.class);
+        addPageMount("/ERROR/404", PageExpiredErrorPage.class);
 
-        getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
-        getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
     }
 
     /**

@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.PasswordUtil;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
@@ -172,7 +173,7 @@ public class VerifyPwdResetPanel extends Panel {
     protected void onVerifyPwdResetSucceeded() {
         PageParameters params = new PageParameters();
         params.add("username", user.getUserName());
-        throw new RestartResponseAtInterceptPageException(PwdResetPage.class, params);
+        throw new RestartResponseAtInterceptPageException(((BaseWebApplication)getApplication()).resolvePage("SS/PWDRESET"), params);
     }
 
     protected void onVerifyPwdResetError() {

@@ -11,12 +11,11 @@ import org.atricore.idbus.capabilities.idconfirmation.ui.page.IdentityConfirmati
  */
 class IdentityConfirmationApplication extends BaseWebApplication {
 
-  protected override def mountPages {
-    mountPage("/INITIATE", classOf[IdentityConfirmationInitiationPage])
-    mountPage("/ERROR/401", classOf[AccessDeniedPage])
-    mountPage("/ERROR/404", classOf[PageExpiredErrorPage])
-    getApplicationSettings.setAccessDeniedPage(classOf[AccessDeniedPage])
-    getApplicationSettings.setPageExpiredErrorPage(classOf[PageExpiredErrorPage])
+  protected override def buildPageMounts {
+    addPageMount("/INITIATE", classOf[IdentityConfirmationInitiationPage])
+    addPageMount("/ERROR/401", classOf[AccessDeniedPage])
+    addPageMount("/ERROR/404", classOf[PageExpiredErrorPage])
+
   }
 
   /**

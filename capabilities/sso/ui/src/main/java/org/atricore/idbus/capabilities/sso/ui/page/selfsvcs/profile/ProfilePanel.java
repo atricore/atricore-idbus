@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
@@ -110,7 +111,7 @@ public class ProfilePanel extends Panel {
 
     protected void onUpdateSucceeded() {
         // Go to profile
-        form.setResponsePage(ProfilePage.class);
+        form.setResponsePage(((BaseWebApplication)getApplication()).resolvePage("SS/PROFILEPAGE"));
     }
 
     protected void onUpdateFailed() {

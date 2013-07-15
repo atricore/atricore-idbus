@@ -57,39 +57,37 @@ public class SSOIdPApplication extends BaseWebApplication {
     }
 
     @Override
-    protected void mountPages() {
+    protected void buildPageMounts() {
 
         // SSO Authentication pages: SIMPLE (usr/pwd), STRONG (x509 cert, SSL), 2FA (2 factor pass code)
-        mountPage("LOGIN/SIMPLE", SimpleLoginPage.class);
-        mountPage("LOGIN/STRONG", StrongLoginPage.class);
-        mountPage("LOGIN/2FA", TwoFactorLoginPage.class);
+        addPageMount("LOGIN/SIMPLE", SimpleLoginPage.class);
+        addPageMount("LOGIN/STRONG", StrongLoginPage.class);
+        addPageMount("LOGIN/2FA", TwoFactorLoginPage.class);
 
         // Use general purpose error pages ?!
-        mountPage("ERROR", IdBusErrorPage.class);
-        mountPage("ERROR/APP", AppErrorPage.class);
-        mountPage("ERROR/401", AccessDeniedPage.class);
-        mountPage("ERROR/404", PageExpiredErrorPage.class);
-        mountPage("ERROR/SESSION", SessionExpiredPage.class);
+        addPageMount("ERROR", IdBusErrorPage.class);
+        addPageMount("ERROR/APP", AppErrorPage.class);
+        addPageMount("ERROR/401", AccessDeniedPage.class);
+        addPageMount("ERROR/404", PageExpiredErrorPage.class);
+        addPageMount("ERROR/SESSION", SessionExpiredPage.class);
 
         // TODO : Only mount Self-Services pages if an SS SP is configured (we need the app. configured by now)
-        mountPage("SS/HOME", DashboardPage.class);
-        mountPage("SS/PROFILE", ProfilePage.class);
-        mountPage("SS/REGISTER", ReqRegistrationPage.class);
-        mountPage("SS/REIGSTERED", RegistrationStartedPage.class);
+        addPageMount("SS/HOME", DashboardPage.class);
+        addPageMount("SS/PROFILE", ProfilePage.class);
+        addPageMount("SS/REGISTER", ReqRegistrationPage.class);
+        addPageMount("SS/REIGSTERED", RegistrationStartedPage.class);
 
-        mountPage("SS/CONFIRM", RegistrationPage.class);
+        addPageMount("SS/CONFIRM", RegistrationPage.class);
 
-        mountPage("SS/PWDCHANGE", PwdChangePage.class);
-        mountPage("SS/REQPWDRESET", ReqPwdResetPage.class);
-        mountPage("SS/VFYPWDRESET", VerifyPwdResetPage.class);
-        mountPage("SS/PWDRESET", PwdResetPage.class);
+        addPageMount("SS/PWDCHANGE", PwdChangePage.class);
+        addPageMount("SS/REQPWDRESET", ReqPwdResetPage.class);
+        addPageMount("SS/VFYPWDRESET", VerifyPwdResetPage.class);
+        addPageMount("SS/PWDRESET", PwdResetPage.class);
 
-        mountPage("AGENT/LOGIN", JossoLoginPage.class);
-        mountPage("AGENT/LOGOUT", JossoLogoutPage.class);
-        mountPage("AGENT/SECURITY_CHECK", JossoSecurityCheckPage.class);
+        addPageMount("AGENT/LOGIN", JossoLoginPage.class);
+        addPageMount("AGENT/LOGOUT", JossoLogoutPage.class);
+        addPageMount("AGENT/SECURITY_CHECK", JossoSecurityCheckPage.class);
 
-        getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
-        getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
     }
 
     /**

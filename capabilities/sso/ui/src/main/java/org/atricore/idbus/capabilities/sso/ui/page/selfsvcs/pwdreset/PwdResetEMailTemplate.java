@@ -6,6 +6,7 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 
 /**
  * @author: sgonzalez@atriocore.com
@@ -33,7 +34,7 @@ public class PwdResetEMailTemplate extends WebPage {
         // TODO : Improve this, it must be a better way to create an external link to the PwdRegister.class page !
         String path = RequestCycle.get().getRequest().getFilterPath();
 
-        String pagePath = urlFor(PwdResetPage.class, new PageParameters().add("transactionId", transactionId)).toString();
+        String pagePath = urlFor(((BaseWebApplication)getApplication()).resolvePage("SS/PWDRESET"), new PageParameters().add("transactionId", transactionId)).toString();
         pagePath = pagePath.substring(1);
 
         path = path + "/SS" + pagePath;

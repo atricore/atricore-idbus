@@ -41,7 +41,7 @@ public class SelectIdPPage extends BasePage {
         SSOUIApplication app = ((SSOUIApplication)getApplication());
         SSOWebSession session = (SSOWebSession) getSession();
         if (session.isAuthenticated())
-            throw new RestartResponseAtInterceptPageException(ProfilePage.class);
+            throw new RestartResponseAtInterceptPageException(resolvePage("SS/PROFILE"));
 
         SelectIdPMediator m = new SelectIdPMediator(this, idsuRegistry, artifactQueueManager, app, session);
         m.onInitialize(getPageParameters());

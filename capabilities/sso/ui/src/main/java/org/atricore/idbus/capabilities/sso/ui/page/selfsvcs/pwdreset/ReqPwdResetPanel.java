@@ -20,6 +20,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.handler.render.PageRenderer;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationStartedPage;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
@@ -127,7 +128,7 @@ public class ReqPwdResetPanel extends Panel {
         //error(getLocalizer().getString("reqPwdResetSucceeded", this, "Operation succeeded"));
         PageParameters params = new PageParameters();
         params.add("username", user.getUserName());
-        throw new RestartResponseAtInterceptPageException(VerifyPwdResetPage.class, params);
+        throw new RestartResponseAtInterceptPageException(((BaseWebApplication)getApplication()).resolvePage("SS/VFYPWDRESET"), params);
 
     }
 

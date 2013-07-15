@@ -5,22 +5,18 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.IRequestCycleProvider;
 import org.apache.wicket.markup.html.IPackageResourceGuard;
 import org.apache.wicket.markup.html.SecurePackageResourceGuard;
+import org.apache.wicket.markup.html.pages.AccessDeniedPage;
+import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.markup.parser.filter.RelativePathPrefixHandler;
 import org.apache.wicket.markup.resolver.IComponentResolver;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.atricore.idbus.capabilities.sso.ui.BrandingResource;
-import org.atricore.idbus.capabilities.sso.ui.BrandingResourceType;
-import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
-import org.atricore.idbus.capabilities.sso.ui.WebBranding;
+import org.atricore.idbus.capabilities.sso.ui.*;
 import org.atricore.idbus.capabilities.sso.ui.agent.JossoAuthorizationStrategy;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
-import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
-import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
-import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEventListener;
-import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
+import org.atricore.idbus.capabilities.sso.ui.spi.*;
 import org.atricore.idbus.kernel.main.mail.MailService;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnit;
@@ -29,7 +25,6 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
-import org.ops4j.pax.wicket.api.PaxWicketBean;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -71,6 +66,11 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     protected List<AppResource> appResources = new ArrayList<AppResource>();
 
     protected IdentityMediationUnitRegistry idsuRegistry;
+
+    protected Set<PageMountPoint> mounts;
+
+    protected Map<String, PageMountPoint> mountsByPath;
+
 
     static {
 
@@ -173,9 +173,56 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         }
     }
 
-    protected void mountPages() {
+    protected abstract void buildPageMounts();
 
+    protected PageMountPoint addPageMount(PageMountPoint m) {
+        if (mounts == null) {
+            mounts = new HashSet<PageMountPoint>();
+            mountsByPath = new HashMap<String, PageMountPoint>();
+        }
+
+        mounts.add(m);
+        mountsByPath.put(m.getPath(), m);
+        return m;
     }
+
+    protected PageMountPoint addPageMount(String path, Class pageClass) {
+        return addPageMount(new PageMountPoint(path, pageClass));
+    }
+
+    protected void setupSettingPages() {
+        getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
+        getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
+        //getApplicationSettings().setInternalErrorPage(ApplicationErrorPage.class);
+    }
+
+    protected void mountPages() {
+        buildPageMounts();
+        for (PageMountPoint mount : mounts) {
+            mountPage(mount.getPath(), mount.getPageClass());
+        }
+        setupSettingPages();
+    }
+
+    public Class resolvePage(String path) {
+        PageMountPoint m = resolveMoutnPoint(path);
+        if (m == null) {
+            logger.warn("Page not found for " + path);
+            return null;
+        }
+        return m.getPageClass();
+    }
+
+    public PageMountPoint resolveMoutnPoint(String path)  {
+        PageMountPoint m = mountsByPath.get(path);
+        if (m == null) {
+            logger.warn("page Mount point not found for " + path);
+            return null;
+        }
+
+        return m;
+    }
+
 
     protected void preInit() {
         setRequestCycleProvider(new IRequestCycleProvider()

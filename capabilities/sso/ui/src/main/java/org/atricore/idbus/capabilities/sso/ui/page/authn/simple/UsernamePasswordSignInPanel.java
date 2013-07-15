@@ -23,9 +23,12 @@ package org.atricore.idbus.capabilities.sso.ui.page.authn.simple;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.IFormSubmitter;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.value.ValueMap;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
@@ -39,6 +42,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.Abstract
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
  * Sign-in panel for simple authentication for collecting username and password credentials.
@@ -46,6 +51,7 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
 public class UsernamePasswordSignInPanel extends BaseSignInPanel {
+
     private static final Log logger = LogFactory.getLog(UsernamePasswordSignInPanel.class);
 
     private static final long serialVersionUID = 1L;
@@ -53,21 +59,37 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
     /**
      * Field for user name.
      */
-    private RequiredTextField<String> username;
+    protected RequiredTextField<String> username;
 
     /**
      * Field for password.
      */
-    private PasswordTextField password;
+    protected PasswordTextField password;
+
+    /**
+     * Error information
+     */
+    protected FeedbackPanel feedbackPanel;
+
+    /**
+     * Error information
+     */
+    protected WebMarkupContainer feedbackBox;
+
+    /**
+     * Form being processed
+     */
+    protected UsernamePasswordSignInForm form;
 
     /**
      * Sign in form.
      */
     public final class UsernamePasswordSignInForm extends StatelessForm<Void> {
+
         private static final long serialVersionUID = 1L;
 
         /**
-         * El-cheapo model for form.
+         * Model for form.
          */
         private final ValueMap properties = new ValueMap();
 
@@ -78,11 +100,17 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
          */
         public UsernamePasswordSignInForm(final String id) {
             super(id);
-
             // Attach textfield components that edit properties map
             // in lieu of a formal beans model
-            add(username = new RequiredTextField<String>("username", new PropertyModel<String>(properties,
-                    "username")));
+
+            PropertyModel<String> m = new PropertyModel<String>(properties, "username");
+
+            SSOWebSession s = (SSOWebSession) getSession();
+            if (s.getLastUsername() != null) {
+                m.setObject(s.getLastUsername());
+            }
+
+            add(username = new RequiredTextField<String>("username", m));
             username.setType(String.class);
             username.setOutputMarkupId(true);
             username.setRequired(false);
@@ -91,9 +119,55 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
                     "password")));
             password.setType(String.class);
             password.setRequired(false);
+        }
+
+        @Override
+        protected void onInitialize() {
+            super.onInitialize();
+
+            // Since wicket does not know about form submittion yet (form.isSubmitted() always false),
+            // we have a work-around that does the same check that wicket will perform later.
+            boolean submitted = false;
+            if (getRequest().getContainerRequest() instanceof HttpServletRequest) {
+                String desiredMethod = getMethod();
+                String actualMethod = ((HttpServletRequest)getRequest().getContainerRequest()).getMethod();
+                submitted = actualMethod.equalsIgnoreCase(desiredMethod);
+            }
+
+            // If the form is being sumbitted, just clear the errors.
+            if (submitted) {
+                onClearError();
+            } else if (credentialClaimsRequest.getLastErrorId() != null) {
+
+                if (logger.isDebugEnabled())
+                    logger.info("Received last error ID : " +
+                            credentialClaimsRequest.getLastErrorId() +
+                            " ("+ credentialClaimsRequest.getLastErrorMsg()+")");
+
+                onPreviousError();
+
+            } else if (((SSOWebSession)getSession()).getLastAppErrorId() != null){
+
+                String lastAppErrorID = ((SSOWebSession)getSession()).getLastAppErrorId();
+                if (logger.isDebugEnabled())
+                    logger.info("Found last app error ID : " +
+                            lastAppErrorID +
+                            " ("+lastAppErrorID+")");
+
+                onAppError(lastAppErrorID);
+
+            } else {
+                // No errors, just hide our feedback panel
+                onNoPreviousError();
+            }
+
 
         }
 
+        @Override
+        protected void onValidate() {
+            super.onValidate();
+        }
         /**
          * @see org.apache.wicket.markup.html.form.Form#onSubmit()
          */
@@ -111,65 +185,113 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
 
     }
 
+
     /**
      * @param id See Component constructor
      * @see org.apache.wicket.Component#Component(String)
      */
     public UsernamePasswordSignInPanel(final String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
-                                       final IdentityMediationUnitRegistry idsuRegistry
-    ) {
+                                       final IdentityMediationUnitRegistry idsuRegistry) {
         super(id);
-
         this.credentialClaimsRequest = credentialClaimsRequest;
         this.artifactQueueManager = artifactQueueManager;
         this.idsuRegistry = idsuRegistry;
+    }
 
-        // Create feedback panel and add it to page
-        final WebMarkupContainer feedbackBox = new WebMarkupContainer("feedbackBox");
-        add(feedbackBox);
 
-        final GtFeedbackPanel feedback = new GtFeedbackPanel ("feedback");
-        feedback.setOutputMarkupId(true);
-        feedbackBox.add(feedback);
 
-        if (credentialClaimsRequest.getLastErrorId() != null) {
-            if (logger.isDebugEnabled())
-                logger.info("Received last error ID : " +
-                    credentialClaimsRequest.getLastErrorId() +
-                    " ("+ credentialClaimsRequest.getLastErrorMsg()+")");
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
 
-            feedbackBox.setVisible(true);
+        // 1. Feedback Panel
+        feedbackBox = buildFeedbackBox();
+        feedbackPanel = (FeedbackPanel) feedbackBox.get("feedback");
 
-            String errmsg = getString("claims.text.invalidCredentials", null, "Unable to sign you in");
-            feedback.error(errmsg);
-            feedback.setVisible(true);
-
-        } else if (((SSOWebSession)getSession()).getLastAppErrorId() != null){
-            
-            String lastAppErrorID = ((SSOWebSession)getSession()).getLastAppErrorId();
-
-            if (logger.isDebugEnabled())
-                logger.info("Found last app error ID : " +
-                    lastAppErrorID +
-                    " ("+lastAppErrorID+")");
-
-            feedbackBox.setVisible(true);
-
-            String errmsg = getString(lastAppErrorID, null, "Your session has expired, please try again");
-            feedback.error(errmsg);
-            feedback.setVisible(true);
-            
-        } else {
-            feedbackBox.setVisible(false);
-            feedback.setVisible(false);
-        }
-
+        // 2. Sign-In form
         // Add sign-in form to page, passing feedback panel as
-        // validation error handler
-        UsernamePasswordSignInForm form = new UsernamePasswordSignInForm("signInForm");
+        // validation error handler is required
+        form = buildSignInForm();
         add(form);
 
+        // If the form does not provide a feedbackBox, we should do it !
+        if (form.get("feedbackBox") == null)
+            add(feedbackBox);
+
+
     }
+
+    @Override
+    protected void onBeforeRender() {
+        super.onBeforeRender();
+    }
+
+    @Override
+    protected void onAfterRenderChildren() {
+        super.onAfterRenderChildren();
+    }
+
+    @Override
+    protected void onModelChanged() {
+        super.onModelChanged();
+    }
+
+    protected UsernamePasswordSignInForm buildSignInForm() {
+        UsernamePasswordSignInForm f = new UsernamePasswordSignInForm("signInForm");
+        f.setOutputMarkupId(true);
+        return f;
+    }
+
+    protected void onNoPreviousError() {
+        hideFeedback();
+    }
+
+    protected void onClearError() {
+        hideFeedback();
+    }
+
+
+    /**
+     * The received request contains previous error information
+     */
+    protected void onPreviousError() {
+        displayFeedbackMessage(getString("claims.text.invalidCredentials", null, "Unable to sign you in"));
+    }
+
+    /**
+     *
+     */
+    protected void onAppError(String appErrorID) {
+        displayFeedbackMessage(getString(appErrorID, null, "Your session has expired, please try again"));
+    }
+
+    protected void displayFeedbackMessage(String errmsg) {
+        feedbackBox.setVisible(true);
+        feedbackPanel.error(errmsg);
+        feedbackPanel.setVisible(true);
+    }
+
+    protected void hideFeedback() {
+        feedbackBox.setVisible(false);
+        feedbackPanel.setVisible(false);
+    }
+
+    /**
+     * Build the container for error messages
+     */
+    protected WebMarkupContainer buildFeedbackBox() {
+
+        // Create feedback panel and add it to page
+        feedbackBox = new WebMarkupContainer("feedbackBox");
+
+        feedbackPanel = new GtFeedbackPanel ("feedback");
+        feedbackPanel.setOutputMarkupId(true);
+        feedbackBox.add(feedbackPanel);
+
+        return feedbackBox;
+    }
+
+
 
     /**
      * Removes persisted form data for the signin panel (forget me)
@@ -209,7 +331,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
     }
 
     /**
-     * Sign in user if possible.
+     * Sign in user if possible. This sends credentials to the IDP
      *
      * @param username The username
      * @return True if sign-in was successful (doesn't imply that the credentials are valid!)
@@ -222,9 +344,12 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
 
         SSOWebSession session = (SSOWebSession) getSession();
 
-        if (session.getRetries() > 3)
-            synchronized (this) { try { wait(3000); } catch (InterruptedException e) { /**/ } }
+        // TODO: Delay the login form if retries
+        // if (session.getRetries() > 3)
+        //    synchronized (this) { try { wait(3000); } catch (InterruptedException e) { /**/ } }
+
         session.setRetries(session.getRetries() + 1);
+        session.setLastUsername(username);
 
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(new CredentialClaimImpl("username", username));
@@ -283,6 +408,9 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
 
         if (logger.isDebugEnabled())
             logger.debug("Returning claims to " + claimsEndpointUrl);
+
+        // The request has been used, remove it from the session
+        session.setCredentialClaimsRequest(null);
 
         return claimsEndpointUrl;
     }

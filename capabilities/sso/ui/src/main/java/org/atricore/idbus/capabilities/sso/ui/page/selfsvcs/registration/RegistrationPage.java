@@ -2,6 +2,7 @@ package org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration;
 
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
@@ -26,6 +27,6 @@ public class RegistrationPage extends BasePage {
         super.onInitialize();
         SSOWebSession session = (SSOWebSession) getSession();
         if (session.isAuthenticated())
-            throw new RestartResponseAtInterceptPageException(ProfilePage.class);
+            throw new RestartResponseAtInterceptPageException(((BaseWebApplication)getApplication()).resolvePage("SS/PROFILE"));
     }
 }

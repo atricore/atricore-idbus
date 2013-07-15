@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.PasswordUtil;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
@@ -300,7 +301,7 @@ public class RegistrationPanel extends Panel {
 
     protected void onRegisterSucceeded() {
         // Go to profile
-        form.setResponsePage(ProfilePage.class);
+        form.setResponsePage(((BaseWebApplication)getApplication()).resolvePage("SS/PROFILE"));
     }
 
     protected void onRegisterFailed(Exception e) {

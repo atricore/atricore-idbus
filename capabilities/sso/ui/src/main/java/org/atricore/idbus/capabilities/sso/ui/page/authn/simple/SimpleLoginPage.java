@@ -46,10 +46,13 @@ public class SimpleLoginPage extends LoginPage {
         super(parameters);
     }
 
-    protected Panel prepareSignInPanel(String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
+    protected Panel prepareSignInPanel(String id,
+                                       CredentialClaimsRequest credentialClaimsRequest,
+                                       MessageQueueManager artifactQueueManager,
                                        IdentityMediationUnitRegistry idsuRegistry) {
 
-
-        return new UsernamePasswordSignInPanel(id, credentialClaimsRequest, artifactQueueManager, idsuRegistry);
+        UsernamePasswordSignInPanel p = new UsernamePasswordSignInPanel(id, credentialClaimsRequest, artifactQueueManager, idsuRegistry);
+        p.setOutputMarkupId(true);
+        return p;
     }
 }

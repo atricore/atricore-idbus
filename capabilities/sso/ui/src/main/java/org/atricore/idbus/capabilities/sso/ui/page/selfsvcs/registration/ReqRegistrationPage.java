@@ -27,7 +27,7 @@ public class ReqRegistrationPage extends BasePage {
         super.onInitialize();
         SSOWebSession session = (SSOWebSession) getSession();
         if (session.isAuthenticated())
-            throw new RestartResponseAtInterceptPageException(ProfilePage.class);
+            throw new RestartResponseAtInterceptPageException(resolvePage("SS/PROFILE"));
 
 
     }

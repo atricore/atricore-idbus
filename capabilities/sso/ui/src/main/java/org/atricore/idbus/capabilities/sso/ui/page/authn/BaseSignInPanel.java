@@ -43,8 +43,12 @@ public class BaseSignInPanel extends Panel {
     private static final Log logger = LogFactory.getLog(BaseSignInPanel.class);
 
     protected CredentialClaimsRequest credentialClaimsRequest;
+
     protected MessageQueueManager artifactQueueManager;
+
     protected IdentityMediationUnitRegistry idsuRegistry;
+
+
 
     public BaseSignInPanel(String id) {
         super(id);

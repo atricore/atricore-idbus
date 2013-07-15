@@ -22,4 +22,7 @@ public class GtFeedbackPanel extends FeedbackPanel {
     protected String getCSSClass(FeedbackMessage message) {
         return super.getCSSClass(message);
     }
+
+
+
 }

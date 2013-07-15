@@ -5,10 +5,7 @@ import org.atricore.idbus.capabilities.sso.ui.spi.IPageHeaderContributor;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.context.BundleContextAware;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -33,7 +30,7 @@ public class WebBranding implements IClusterable, BundleContextAware {
     private Set<String> allowedResourcePatterns;
 
     private transient BundleContext bundleContext;
-    
+
     // List of bundle symbolic names that may contain web resources:
     private List<ResourcesBundle> resourceBundles;
 

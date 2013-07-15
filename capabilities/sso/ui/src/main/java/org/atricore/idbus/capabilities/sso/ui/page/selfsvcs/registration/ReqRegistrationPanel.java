@@ -18,6 +18,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.handler.render.PageRenderer;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
@@ -153,7 +154,7 @@ public class ReqRegistrationPanel extends Panel {
         // -----------------------------------------------------------
 
         String path = RequestCycle.get().getRequest().getFilterPath();
-        String pagePath = urlFor(RegistrationPage.class, new PageParameters().add("transactionId", transactionId)).toString();
+        String pagePath = urlFor(((BaseWebApplication)getApplication()).resolvePage("SS/CONFIRM"), new PageParameters().add("transactionId", transactionId)).toString();
         // This is a relative path !, now it's ../CONFIRM
         pagePath = pagePath.substring(2);
 
@@ -185,7 +186,7 @@ public class ReqRegistrationPanel extends Panel {
         submit.setEnabled(false);
         //error(getLocalizer().getString("reqRegistrationSucceeded", this, "Operation succeeded"));
         // error(confirmUrl);
-        throw new RestartResponseAtInterceptPageException(RegistrationStartedPage.class);
+        throw new RestartResponseAtInterceptPageException(((BaseWebApplication)getApplication()).resolvePage("SS/REGISTERED"));
     }
 
     protected void onReqRegistrationFailed() {

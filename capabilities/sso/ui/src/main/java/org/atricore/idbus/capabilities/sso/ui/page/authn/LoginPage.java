@@ -59,8 +59,8 @@ public abstract class LoginPage extends BasePage {
 
     @Override
     protected void onInitialize()  {
-
         super.onInitialize();
+
         CredentialClaimsRequest credentialClaimsRequest = null;
 
         if (artifactId != null) {
@@ -88,6 +88,7 @@ public abstract class LoginPage extends BasePage {
                 credentialClaimsRequest = ((SSOWebSession)getSession()).getCredentialClaimsRequest();
             }
         } else {
+            // Once used, remove the request from session ...(TODO: CHECK)
             credentialClaimsRequest = ((SSOWebSession)getSession()).getCredentialClaimsRequest();
         }
 
@@ -98,11 +99,11 @@ public abstract class LoginPage extends BasePage {
             WebBranding branding = ((BaseWebApplication) getApplication()).getBranding();
             if (branding.getFallbackUrl() != null) {
                 // Redirect to fall-back (session expired !)
-                throw new RestartResponseAtInterceptPageException(SessionExpiredPage.class);
+                throw new RestartResponseAtInterceptPageException(resolvePage("ERROR/SESSION"));
 
             }
             // Redirect to Session Expired Page
-            throw new RestartResponseAtInterceptPageException(SessionExpiredPage.class);
+            throw new RestartResponseAtInterceptPageException(resolvePage("ERROR/SESSION"));
         }
 
         // Add signIn panel to page

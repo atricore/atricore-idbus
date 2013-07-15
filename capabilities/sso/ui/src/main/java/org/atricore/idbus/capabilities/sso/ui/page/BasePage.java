@@ -32,7 +32,6 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
-import org.atricore.idbus.capabilities.sso.ui.agent.JossoLogoutPage;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.DashboardPage;
@@ -164,25 +163,25 @@ public class BasePage extends WebPage implements IHeaderContributor {
 
             // Dashboard
             if (this instanceof DashboardPage)
-                navBar.add(new BookmarkablePageLink<Void>("dashboard", DashboardPage.class).add(new AttributeAppender("class", "gt-active")));
+                navBar.add(new BookmarkablePageLink<Void>("dashboard", resolvePage("SS/HOME")).add(new AttributeAppender("class", "gt-active")));
             else
-                navBar.add(new BookmarkablePageLink<Void>("dashboard", DashboardPage.class));
+                navBar.add(new BookmarkablePageLink<Void>("dashboard", resolvePage("SS/HOME")));
 
             // Profile
             if (this instanceof  ProfilePage)
-                navBar.add(new BookmarkablePageLink<Void>("profile", ProfilePage.class).add(new AttributeAppender("class", "gt-active")));
+                navBar.add(new BookmarkablePageLink<Void>("profile", resolvePage("SS/PROFILE")).add(new AttributeAppender("class", "gt-active")));
             else
-                navBar.add(new BookmarkablePageLink<Void>("profile", ProfilePage.class));
+                navBar.add(new BookmarkablePageLink<Void>("profile", resolvePage("SS/PROFILE")));
 
 
             // Change Password
             if (this  instanceof PwdChangePage)
-                navBar.add(new BookmarkablePageLink<Void>("pwdChange", PwdChangePage.class).add(new AttributeAppender("class", "gt-active")));
+                navBar.add(new BookmarkablePageLink<Void>("pwdChange", resolvePage("SS/PWDCHANGE")).add(new AttributeAppender("class", "gt-active")));
             else
-                navBar.add(new BookmarkablePageLink<Void>("pwdChange", PwdChangePage.class));
+                navBar.add(new BookmarkablePageLink<Void>("pwdChange", resolvePage("SS/PWDCHANGE")));
 
             // Logout 1
-            navBar.add(new BookmarkablePageLink<Void>("logout", JossoLogoutPage.class));
+            navBar.add(new BookmarkablePageLink<Void>("logout", resolvePage("AGENT/LOGOUT")));
 
             // Logout 2
         }
@@ -222,12 +221,13 @@ public class BasePage extends WebPage implements IHeaderContributor {
 
         BaseWebApplication app = (BaseWebApplication) getApplication();
         if (branding != null) {
-
-            if (logger.isTraceEnabled())
-                logger.trace("Using 'variation' ["+branding.getSkin()+"] based on " + branding.getId());
-
-            if (branding.getSkin() != null)
-                setVariation(branding.getSkin());
+            if (branding.getSkin() != null) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Using 'variation/skin' ["+branding.getSkin()+"] based on " + branding.getId());
+                return branding.getSkin();
+            } else {
+                logger.error("Branding does not define a skin : " + branding.getId());
+            }
 
         } else {
             logger.error("No Branding found for application : " + app.getName());
@@ -243,6 +243,11 @@ public class BasePage extends WebPage implements IHeaderContributor {
             logger.error("No configuration found for Wicket application " + getApplication().getApplicationKey());
 
         return cfg;
+    }
+
+    public Class resolvePage(String path) {
+        BaseWebApplication app = (BaseWebApplication) getApplication();
+        return app.resolvePage(path);
     }
 
 }

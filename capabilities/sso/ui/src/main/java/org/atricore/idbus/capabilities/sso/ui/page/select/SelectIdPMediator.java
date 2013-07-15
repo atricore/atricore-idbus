@@ -106,11 +106,11 @@ public class SelectIdPMediator implements Serializable {
             WebBranding branding = getApplication().getBranding();
             if (branding.getFallbackUrl() != null) {
                 // Redirect to fall-back (session expired !)
-                throw new RestartResponseAtInterceptPageException(SessionExpiredPage.class);
+                throw new RestartResponseAtInterceptPageException(getApplication().resolvePage("ERROR/SESSION"));
 
             }
             // Redirect to Session Expired Page
-            throw new RestartResponseAtInterceptPageException(SessionExpiredPage.class);
+            throw new RestartResponseAtInterceptPageException(getApplication().resolvePage("ERROR/SESSION"));
         }
 
         // We have the SP that issued the entity selection request.

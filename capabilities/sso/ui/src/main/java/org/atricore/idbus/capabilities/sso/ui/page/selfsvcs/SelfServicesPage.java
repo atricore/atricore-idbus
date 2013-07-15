@@ -82,7 +82,7 @@ public abstract class SelfServicesPage extends BasePage {
         } catch (ProvisioningException e) {
             logger.error(e.getMessage(),  e);
             // TODO : Provide error information
-            throw new RestartResponseAtInterceptPageException(AppErrorPage.class);
+            throw new RestartResponseAtInterceptPageException(resolvePage("ERROR/APP"));
         }
     }
 

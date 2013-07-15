@@ -50,6 +50,7 @@ public class SSOWebSession extends WebSession {
 
     private RegistrationState  registrationState;
     private int retries;
+    private String lastUsername;
 
     public SSOWebSession(Request request) {
         super(request);
@@ -124,5 +125,13 @@ public class SSOWebSession extends WebSession {
 
     public void setUserClaimsRequest(UserClaimsRequest userClaimsRequest) {
         this.userClaimsRequest = userClaimsRequest;
+    }
+
+    public void setLastUsername(String lastUsername) {
+        this.lastUsername = lastUsername;
+    }
+
+    public String getLastUsername() {
+        return lastUsername;
     }
 }
