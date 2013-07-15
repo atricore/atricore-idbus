@@ -56,12 +56,12 @@
                 </s:DropDownList>
             </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.ssoApp')}:" labelWidth="280" required="true">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.ssoApp')}:" labelWidth="280" required="false">
                 <s:TextInput id="ssoApp" width="320" />
                 <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.applianceRebuildRequired')}"/>
             </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.ssoIdPApp')}:" labelWidth="280" required="true">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.ssoIdPApp')}:" labelWidth="280" required="false">
                 <s:TextInput id="ssoIdPApp" width="320" />
                 <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'config.branding.create.form.applianceRebuildRequired')}"/>
             </mx:FormItem>

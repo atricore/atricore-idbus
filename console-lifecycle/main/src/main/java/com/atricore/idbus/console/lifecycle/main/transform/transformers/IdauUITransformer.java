@@ -100,7 +100,7 @@ public class IdauUITransformer extends AbstractTransformer {
             Application ssoUiApp = new Application();
             ssoUiApp.setId(normalizeBeanName(ida.getName() + "-sso-ui"));
             ssoUiApp.setApplicationName(ida.getName().toLowerCase() + "-sso-ui");
-            ssoUiApp.setClazz(customSsoAppClazz != null ? customSsoAppClazz : parentClazz);
+            ssoUiApp.setClazz(customSsoAppClazz != null && !"".equals(customSsoAppClazz) ? customSsoAppClazz : parentClazz);
             ssoUiApp.setMountPoint(uiBasePath + "/" + ida.getName().toUpperCase() + "/SSO");
             ssoUiApp.setInjectionSource("spring");
 
