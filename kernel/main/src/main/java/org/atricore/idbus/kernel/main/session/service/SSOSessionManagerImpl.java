@@ -81,6 +81,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
     private String _metricsPrefix;
 
+    private String _auditCategory;
+
     private MonitoringServer _mServer;
 
     /**
@@ -558,6 +560,13 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         this._metricsPrefix = metricsPrefix;
     }
 
+    public String getAuditCategory() {
+        return _auditCategory;
+    }
+
+    public void setAuditCategory(String _auditCategory) {
+        this._auditCategory = _auditCategory;
+    }
 
     // ---------------------------------------------------------------
     // Some stats
