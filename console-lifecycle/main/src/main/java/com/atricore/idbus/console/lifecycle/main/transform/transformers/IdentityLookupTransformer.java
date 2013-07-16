@@ -15,7 +15,9 @@ import org.atricore.idbus.kernel.main.store.SSOIdentityManagerImpl;
 import org.atricore.idbus.kernel.main.store.identity.IdentityPartitionStore;
 import org.atricore.idbus.kernel.main.store.identity.SimpleIdentityStoreKeyAdapter;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
@@ -73,17 +75,39 @@ public class IdentityLookupTransformer extends AbstractTransformer {
             }
             providerBean = b.iterator().next();
 
-            // identityManager
-            Bean identityManager = newBean(providerBeans, providerBean.getName() + "-identity-manager", SSOIdentityManagerImpl.class);
-            setPropertyRef(identityManager, "identityStore", providerBean.getName() + "-identity-store");
-            setPropertyBean(identityManager, "identityStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));
 
             // identity store (TODO : Move to specific transformers)
+            if (getBeansOfType(providerBeans, SSOIdentityManagerImpl.class.getName()).size() < 1 ) {
+                // identityManager
+                Bean identityManager = newBean(providerBeans, providerBean.getName() + "-identity-manager", SSOIdentityManagerImpl.class);
+                setPropertyRef(identityManager, "identityStore", providerBean.getName() + "-identity-store");
+                setPropertyBean(identityManager, "identityStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));
+            }
+
+            Bean visb = null;
+            if (provider.getIdentityLookups().size() > 1) {
+                Collection<Bean> virtualIdentityStore = getBeansOfType(providerBeans, "org.atricore.idbus.idojos.virtualidentitystore.VirtualIdentityStore");
+
+                if (virtualIdentityStore.isEmpty()) {
+                    visb = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.virtualidentitystore.VirtualIdentityStore");
+                    setPropertyAsBeans(visb, "identitySources", new ArrayList<Bean>());
+                } else {
+                  visb = virtualIdentityStore.iterator().next();
+                }
+            }
+
+            List<Bean> identitySources = getPropertyBeans(providerBeans, visb, "identitySources");
+
             if (identitySource instanceof DbIdentitySource) {
                 Bean identityStore = null;
                 // DB
                 DbIdentitySource dbSource = (DbIdentitySource) identitySource;
-                identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.dbidentitystore.DynamicJDBCIdentityStore");
+                if (visb != null) {
+                    identityStore = newBean(providerBeans, providerBean.getName() + "-" + dbSource.getName() + "-identity-store", "org.atricore.idbus.idojos.dbidentitystore.DynamicJDBCIdentityStore");
+                } else {
+                    identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.dbidentitystore.DynamicJDBCIdentityStore");
+                    identitySources.add(identityStore);
+                }
 
                 setPropertyRef(identityStore, "manager", "jdbc-manager");
                 
@@ -103,7 +127,12 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 Bean identityStore = null;
                 // LDAP
                 LdapIdentitySource ldapSource = (LdapIdentitySource) identitySource;
-                identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.ldapidentitystore.LDAPBindIdentityStore");
+                if (visb != null) {
+                    identityStore = newBean(providerBeans, providerBean.getName() + "-" + ldapSource.getName() + "-identity-store", "org.atricore.idbus.idojos.ldapidentitystore.LDAPBindIdentityStore");
+                } else {
+                    identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.ldapidentitystore.LDAPBindIdentityStore");
+                    identitySources.add(identityStore);
+                }
                 setPropertyValue(identityStore, "initialContextFactory", ldapSource.getInitialContextFactory());
                 setPropertyValue(identityStore, "providerUrl", ldapSource.getProviderUrl());
                 setPropertyValue(identityStore, "securityPrincipal", ldapSource.getSecurityPrincipal());
@@ -120,8 +149,9 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 setPropertyValue(identityStore, "updateableCredentialAttribute", ldapSource.getUpdateableCredentialAttribute());
                 setPropertyValue(identityStore, "userPropertiesQueryString", ldapSource.getUserPropertiesQueryString());
             } else if (identitySource instanceof EmbeddedIdentitySource) {
-
+                // Identity Vault
                 EmbeddedIdentitySource embeddedSource = (EmbeddedIdentitySource) identitySource;
+
                 // TODO : For now only default PSP is supported : String pspName = embeddedSource.getPsp();
 
                 Reference identityStoreOsgi = new Reference();
@@ -130,6 +160,10 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 identityStoreOsgi.setCardinality("1..1");
                 identityStoreOsgi.setTimeout(60L);
                 providerBeans.getImportsAndAliasAndBeen().add(identityStoreOsgi);
+
+                if (visb != null) {
+                    // TODO: ...
+                }
 
                 // Add Provisioning target definition for IdPs
                 if (providerBean.getClazz().equals(IdentityProviderImpl.class.getName())) {
