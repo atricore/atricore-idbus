@@ -1317,28 +1317,33 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
                     if (provider is FederatedProvider) {
                         var locProv:FederatedProvider = provider as FederatedProvider;
-                        if(locProv.identityLookup != null && locProv.identityLookup.identitySource != null){
-                            var idSource:IdentitySource = locProv.identityLookup.identitySource;
-                            //TODO add identitySource and connection towards it
-                            var vaultExists:Boolean = false;
-                            for each (var tmpVaultGraphNode:IVisualNode in vaultNodes){
-                                if(tmpVaultGraphNode.data as IdentitySource == idSource){
-                                    GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode,
-                                            locProv.identityLookup ,EmbeddedIcons.identityLookupIcon,
-                                            resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"));
-                                    
-                                    vaultExists = true;
-                                }
-                            }
-                            if(!vaultExists){
-                                var newVaultNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode,
-                                        locProv.identityLookup, EmbeddedIcons.identityLookupIcon,
-                                        resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"), 
-                                        true, Constants.IDENTITY_VAULT_DEEP);
-                                //if vault doesn't exist in the vaults array, add it so other providers can find it
-                                vaultNodes.addItem(newVaultNode);
-                            }
+                        if(locProv.identityLookups != null){
+                            for each (var identityLookup:IdentityLookup in locProv.identityLookups) {
+                                var idSource:IdentitySource = identityLookup.identitySource;
 
+                                if (idSource == null)
+                                    continue;
+                                //TODO add identitySource and connection towards it
+                                var vaultExists:Boolean = false;
+                                for each (var tmpVaultGraphNode:IVisualNode in vaultNodes){
+                                    if(tmpVaultGraphNode.data as IdentitySource == idSource){
+                                        GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode,
+                                                identityLookup ,EmbeddedIcons.identityLookupIcon,
+                                                resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"));
+
+                                        vaultExists = true;
+                                    }
+                                }
+                                if(!vaultExists){
+                                    var newVaultNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode,
+                                            identityLookup, EmbeddedIcons.identityLookupIcon,
+                                            resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"),
+                                            true, Constants.IDENTITY_VAULT_DEEP);
+                                    //if vault doesn't exist in the vaults array, add it so other providers can find it
+                                    vaultNodes.addItem(newVaultNode);
+                                }
+
+                            }
                         }
                         //                            }
                         if(locProv is InternalSaml2ServiceProvider){
@@ -1494,8 +1499,15 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     updateGraphNodeData(provider);
                     if (provider is FederatedProvider) {
                         var locProv:FederatedProvider = provider as FederatedProvider;
-                        if (locProv.identityLookup != null) {
-                            updateGraphEdgeData(locProv.identityLookup);
+                        if (locProv.identityLookups != null) {
+                            for each (var identityLookup:IdentityLookup in locProv.identityLookups) {
+                                var idSource:IdentitySource = identityLookup.identitySource;
+
+                                if (idSource == null)
+                                    continue;
+
+                                updateGraphEdgeData(identityLookup);
+                            }
                         }
                         if (locProv is InternalSaml2ServiceProvider) {
                             var sp:InternalSaml2ServiceProvider = locProv as InternalSaml2ServiceProvider;

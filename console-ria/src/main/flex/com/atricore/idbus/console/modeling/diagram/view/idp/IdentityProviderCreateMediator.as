@@ -376,6 +376,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         }
         identityProvider.config = idpSamlConfig;
 
+        identityProvider.identityLookups = new ArrayCollection();
+
         _newIdentityProvider = identityProvider;
     }
 

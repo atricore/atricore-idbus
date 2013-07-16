@@ -45,7 +45,7 @@ public class ProviderDTO implements Serializable {
     // RFU
     private Set<ProfileDTO> activeProfiles = new HashSet<ProfileDTO>();
 
-    private IdentityLookupDTO identityLookup;
+    private Set<IdentityLookupDTO> identityLookups;
 
     private ResourceDTO metadata;
 
@@ -136,12 +136,12 @@ public class ProviderDTO implements Serializable {
         this.displayName = displayName;
     }
 
-    public IdentityLookupDTO getIdentityLookup() {
-        return identityLookup;
+    public Set<IdentityLookupDTO> getIdentityLookups() {
+        return identityLookups;
     }
 
-    public void setIdentityLookup(IdentityLookupDTO identityLookup) {
-        this.identityLookup = identityLookup;
+    public void setIdentityLookups(Set<IdentityLookupDTO> identityLookups) {
+        this.identityLookups = identityLookups;
     }
 
     public ResourceDTO getMetadata() {

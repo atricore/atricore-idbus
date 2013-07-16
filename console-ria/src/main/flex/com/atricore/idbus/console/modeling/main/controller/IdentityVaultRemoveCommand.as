@@ -23,6 +23,7 @@ package com.atricore.idbus.console.modeling.main.controller {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityLookup;
 
 import com.atricore.idbus.console.services.dto.IdentitySource;
 
@@ -58,8 +59,13 @@ public class IdentityVaultRemoveCommand extends IocSimpleCommand {
                 identityAppliance.idApplianceDefinition.identitySources.removeItemAt(i);
                 if (identityAppliance.idApplianceDefinition.providers != null) {
                     for each (var provider:Provider in identityAppliance.idApplianceDefinition.providers) {
-                        if (provider.identityLookup != null && provider.identityLookup.identitySource == identityVault) {
-                            provider.identityLookup = null;
+                        if (provider.identityLookups != null) {
+                            for (var j:int = 0; j < provider.identityLookups.length; j++) {
+                                if (provider.identityLookups[j].identitySource == identityVault) {
+                                    provider.identityLookups.removeItemAt(j);
+                                    break;
+                                }
+                            }
                         }
                     }
                 }

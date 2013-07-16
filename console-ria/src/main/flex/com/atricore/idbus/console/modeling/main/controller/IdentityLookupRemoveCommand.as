@@ -3,6 +3,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
@@ -15,7 +16,7 @@ import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleComma
 
 public class IdentityLookupRemoveCommand extends IocSimpleCommand {
 
-    public static const SUCCESS : String = "IdentityLookupRemoveCommand.SUCCESS";
+    public static const SUCCESS:String = "IdentityLookupRemoveCommand.SUCCESS";
 
     private var _projectProxy:ProjectProxy;
 
@@ -34,11 +35,20 @@ public class IdentityLookupRemoveCommand extends IocSimpleCommand {
     override public function execute(notification:INotification):void {
         var identityLookup:IdentityLookup = notification.getBody() as IdentityLookup;
 
-        //this should remove the lookup from the DB (dependent=true)
-        identityLookup.provider.identityLookup = null;
-//        provider.identityLookup = null;
-//        identityLookup.provider = null;
-//        identityLookup.identitySource = null;
+        var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
+
+        for (var i:int = identityAppliance.idApplianceDefinition.identitySources.length - 1; i >= 0; i--) {
+            if (identityAppliance.idApplianceDefinition.identitySources[i] == identityLookup.identitySource) {
+                if (identityAppliance.idApplianceDefinition.providers != null) {
+                    for each (var provider:Provider in identityAppliance.idApplianceDefinition.providers) {
+                        if (provider.identityLookups != null) {
+                            provider.identityLookups.removeItemAt(provider.identityLookups.getItemIndex(identityLookup));
+                        }
+                    }
+                }
+                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, identityLookup);
+            }
+        }
 
         projectProxy.currentIdentityApplianceElement = null;
         // reflect removal in views and diagram editor
