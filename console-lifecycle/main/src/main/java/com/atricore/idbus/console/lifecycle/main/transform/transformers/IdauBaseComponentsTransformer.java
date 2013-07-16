@@ -367,6 +367,18 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         idauBeansOsgi.getImportsAndAliasAndBeen().add(monitoringServer);
 
         // ----------------------------------------
+        // Auditing Server
+        // ----------------------------------------
+        Reference auditingServer = new Reference();
+        auditingServer.setId("auditing-server");
+        auditingServer.setCardinality("1..1");
+        auditingServer.setTimeout(60L);
+        auditingServer.setInterface("org.atricore.idbus.kernel.auditing.core.MonitoringServer");
+
+        idauBeansOsgi.getImportsAndAliasAndBeen().add(auditingServer);
+
+
+        // ----------------------------------------
         // Container for Identity Flow Components
         // ----------------------------------------
         Reference identityFlowContainer = new Reference();

@@ -146,7 +146,9 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         Bean idpMediator = newBean(idpBeans, idpBean.getName() + "-samlr2-mediator",
                 SSOIDPMediator.class.getName());
         setPropertyValue(idpMediator, "logMessages", true);
-        setPropertyValue(idpMediator, "metricsPrefix", appliance.getName() + "." + idpBean.getName());
+        setPropertyValue(idpMediator, "metricsPrefix", appliance.getName() + "/" + idpBean.getName());
+        setPropertyValue(idpMediator, "auditCategory", appliance.getNamespace().toLowerCase() + "." +
+                appliance.getName().toLowerCase() + "." + idpBean.getName().toLowerCase());
 
         // artifactQueueManager
         // setPropertyRef(idpMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
@@ -346,6 +348,11 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
 
         setPropertyRef(sessionManager, "monitoringServer", "monitoring-server");
         setPropertyValue(sessionManager, "metricsPrefix", appliance.getName() + "/" + idpBean.getName());
+
+        setPropertyRef(sessionManager, "auditingServer", "auditing-server");
+        setPropertyValue(sessionManager, "auditCategory",
+                appliance.getNamespace().toLowerCase() + "." + appliance.getName().toLowerCase() + "." + idpBean.getName().toLowerCase());
+
 
         // -------------------------------------------------------------
         // Register and configure default claim selection identity flow

@@ -218,6 +218,8 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
                 (execEnv != null ? execEnv.getName().toUpperCase() : svcResource.getName().toUpperCase());
 
         setPropertyValue(spMediator, "metricsPrefix", appliance.getName() + "/" + sp.getName());
+        setPropertyValue(spMediator, "auditCategory",
+                appliance.getNamespace().toLowerCase() + "." + appliance.getName().toLowerCase() + "." + sp.getName().toLowerCase());
 
         String bpLocation = resolveLocationBaseUrl(applianceDef.getLocation()) + bpLocationPath;
 
@@ -411,6 +413,8 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
                 "-" + sp.getName() + "-sessionsCache");
 
         setPropertyValue(sessionManager, "metricsPrefix", appliance.getName() + "/" + sp.getName());
+        setPropertyValue(sessionManager, "auditCategory", appliance.getNamespace().toLowerCase() + "." +
+                appliance.getName().toLowerCase() + "." + sp.getName().toLowerCase());
         
         // Wiring
         setPropertyBean(sessionManager, "sessionIdGenerator", sessionIdGenerator);
