@@ -351,6 +351,10 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/40x40/domino_resource.png")]
     public static var dominoResourceMiniIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/blackboard_resource.png")]
+    public static var blackboardResourceMiniIcon:Class;
+
    // Connections
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/federated_connection.png")]
@@ -553,6 +557,10 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/60x60/domino_resource.png")]
     public static var dominoResourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/blackboard_resource.png")]
+    public static var blackboardResourceIcon:Class;
 
     // Connections
     [Bindable]

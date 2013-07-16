@@ -277,6 +277,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.selfServicesResourceMiniIcon;
             case DiagramElementTypes.DOMINO_RESOURCE_ELEMENT_TYPE:
                 return EmbeddedIcons.dominoResourceMiniIcon;
+            case DiagramElementTypes.BLACKBOARD_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.blackboardResourceMiniIcon;
             case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.websphereEnvironmentMiniIcon;
             case DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
