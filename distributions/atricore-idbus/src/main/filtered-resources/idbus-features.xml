@@ -92,6 +92,7 @@
         <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.serializedsessionstore/${idbus.idojo.serializedsessionstore.version}</bundle>
         <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.impersonateusrauthscheme/${idbus.idojo.impusr.version}</bundle>
         <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.gateinidentitystore/${idbus.idojo.gateinidentitystore.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.virtualidentitystore/${idbus.idojo.virtualidentitystore.version}</bundle>
         <!--bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.strongauthscheme/${idbus.idojo.strongauthscheme.version}</bundle-->
     </feature>
 

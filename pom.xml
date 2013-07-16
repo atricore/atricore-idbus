@@ -79,6 +79,7 @@
         <!--module>idojos/idbus-strong-authscheme</module-->
         <module>idojos/idbus-impersonateusr-authscheme</module>
         <module>idojos/idbus-gatein-identitystore</module>
+        <module>idojos/idbus-virtual-identitystore</module>
 
         <module>connectors/idbus-jdo-identityvault</module>
 
