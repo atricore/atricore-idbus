@@ -38,6 +38,7 @@
         <idbus.idojo.memorysessionstore.version>${idbus.idojo.memorysessionstore.version}</idbus.idojo.memorysessionstore.version>
         <idbus.idojo.serializedsessionstore.version>${idbus.idojo.serializedsessionstore.version}</idbus.idojo.serializedsessionstore.version>
         <idbus.idojo.strongauthscheme.version>${idbus.idojo.strongauthscheme.version}</idbus.idojo.strongauthscheme.version>
+        <idbus.idojo.virtualidentitystore.version>${idbus.idojo.virtualidentitystore.version}</idbus.idojo.virtualidentitystore.version>
 
         <idbus.connector.jdoidentityvault.version>${idbus.connector.jdoidentityvault.version}</idbus.connector.jdoidentityvault.version>
 

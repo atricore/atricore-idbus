@@ -68,7 +68,7 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 providerBeans = (Beans) event.getContext().get("idpBeans");
                 b = getBeansOfType(providerBeans, IdentityProviderImpl.class.getName());
 
-            }
+            }                           
 
             if (b == null || b.size() != 1) {
                 throw new TransformException("Invalid provider definition count : " + (b != null ? b.size() : "<null>"));
@@ -90,13 +90,38 @@ public class IdentityLookupTransformer extends AbstractTransformer {
 
                 if (virtualIdentityStore.isEmpty()) {
                     visb = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.virtualidentitystore.VirtualIdentityStore");
+
+                    // property used to store embedded identity sources
                     setPropertyAsBeans(visb, "identitySources", new ArrayList<Bean>());
+
+                    // data mapping definition
+                    Bean mappingPolicy = newAnonymousBean("org.atricore.idbus.idojos.virtualidentitystore.RuleBasedIdentityDataMappingPolicy");
+                    setPropertyBean(visb, "identityDataMappingPolicy", mappingPolicy);
+
+                    Bean selectAllUsersRule = newAnonymousBean("org.atricore.idbus.idojos.virtualidentitystore.rule.SelectAllUsers");
+                    addPropertyBean(mappingPolicy, "userMappingRules", selectAllUsersRule);
+
+                    Bean mergePropertiesRule = newAnonymousBean("org.atricore.idbus.idojos.virtualidentitystore.rule.MergeProperties");
+                    addPropertyBean(mappingPolicy, "userMappingRules", mergePropertiesRule);
+
+                    Bean selectAllRoles = newAnonymousBean("org.atricore.idbus.idojos.virtualidentitystore.rule.SelectAllRoles");
+                    addPropertyBean(mappingPolicy, "roleMappingRules", selectAllRoles);
+
+                    Bean mergeRoles = newAnonymousBean("org.atricore.idbus.idojos.virtualidentitystore.rule.MergeRoles");
+                    addPropertyBean(mappingPolicy, "roleMappingRules", mergeRoles);
+
+                    Bean selectAllCredentials = newAnonymousBean("org.atricore.idbus.idojos.virtualidentitystore.rule.SelectAllCredentials");
+                    addPropertyBean(mappingPolicy, "credentialMappingRules", selectAllCredentials);
+
+                    Bean mergeCredentials = newAnonymousBean("org.atricore.idbus.idojos.virtualidentitystore.rule.MergeCredentials");
+                    addPropertyBean(mappingPolicy, "credentialMappingRules", mergeCredentials);
+
+                    Bean userExistsMappingRule = newAnonymousBean("org.atricore.idbus.idojos.virtualidentitystore.rule.UserExistsOnAnySource");
+                    addPropertyBean(mappingPolicy, "userExistsMappingRules", userExistsMappingRule);
                 } else {
                   visb = virtualIdentityStore.iterator().next();
                 }
             }
-
-            List<Bean> identitySources = getPropertyBeans(providerBeans, visb, "identitySources");
 
             if (identitySource instanceof DbIdentitySource) {
                 Bean identityStore = null;
@@ -104,9 +129,12 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 DbIdentitySource dbSource = (DbIdentitySource) identitySource;
                 if (visb != null) {
                     identityStore = newBean(providerBeans, providerBean.getName() + "-" + dbSource.getName() + "-identity-store", "org.atricore.idbus.idojos.dbidentitystore.DynamicJDBCIdentityStore");
+                    Bean isrc = newAnonymousBean("org.atricore.idbus.idojos.virtualidentitystore.IdentitySourceImpl");
+                    setPropertyValue(isrc, "alias", providerBean.getName() + "-" + dbSource.getName() + "-identity-source");
+                    setPropertyRef(isrc, "backingIdentityStore", identityStore.getName());
+                    addPropertyBean(visb, "identitySources", isrc);
                 } else {
                     identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.dbidentitystore.DynamicJDBCIdentityStore");
-                    identitySources.add(identityStore);
                 }
 
                 setPropertyRef(identityStore, "manager", "jdbc-manager");
@@ -129,9 +157,12 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 LdapIdentitySource ldapSource = (LdapIdentitySource) identitySource;
                 if (visb != null) {
                     identityStore = newBean(providerBeans, providerBean.getName() + "-" + ldapSource.getName() + "-identity-store", "org.atricore.idbus.idojos.ldapidentitystore.LDAPBindIdentityStore");
+                    Bean isrc = newAnonymousBean("org.atricore.idbus.idojos.virtualidentitystore.IdentitySourceImpl");
+                    setPropertyValue(isrc, "alias", providerBean.getName() + "-" + ldapSource.getName() + "-identity-source");
+                    setPropertyRef(isrc, "backingIdentityStore", identityStore.getName());
+                    addPropertyBean(visb, "identitySources", isrc);
                 } else {
                     identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.ldapidentitystore.LDAPBindIdentityStore");
-                    identitySources.add(identityStore);
                 }
                 setPropertyValue(identityStore, "initialContextFactory", ldapSource.getInitialContextFactory());
                 setPropertyValue(identityStore, "providerUrl", ldapSource.getProviderUrl());
