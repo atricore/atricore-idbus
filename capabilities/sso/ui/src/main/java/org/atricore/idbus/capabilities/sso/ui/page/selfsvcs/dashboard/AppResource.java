@@ -8,7 +8,7 @@ public enum AppResource {
 
     SUGAR_CRM("SugarCRM", "images/sso/sugar_crm_service_provider.png"),
     GOOGLE_APPS("GoogleApps", "images/sso/google_service_provider.png"),
-    SALESFORCE("SalesForce", "images/sso/salesforce_service_provider.png"),
+    SALESFORCE("SalesFokrce", "images/sso/salesforce_service_provider.png"),
     ALFRESCO("AlfrescorResource", "images/sso/alfresco_resource.png"),
     COLDFUSION("ColdfusionResource", "images/sso/alfresco_resource.png"),
     DOMINO("DominoResource", "images/sso/alfresco_resource.png"), // TODO : Is this available ?
@@ -18,6 +18,7 @@ public enum AppResource {
     JOSSO_2("JOSSO2Resource", "images/sso/josso2_resource.png"),
     LIFERAY("LiferayResource", "images/sso/liferay_resource.png"),
     MICROSTRATEGY("MicroStrategyResource", "images/sso/microstrategy_resource.png"),
+    BLACKBOARD("BlackBoardResource", "images/sso/blackboard_resource.png"),
     SAS("SASResource", "images/sso/sas_resource.png"),
     SELFSERVICES("SelfServicesResource", "images/sso/selfservices_resource.png"),
     SHAREPOINT("SharepointResource", "images/sso/sharepoint_resource.png"),
