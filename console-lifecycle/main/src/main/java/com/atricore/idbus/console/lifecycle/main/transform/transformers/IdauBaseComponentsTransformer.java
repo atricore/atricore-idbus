@@ -213,7 +213,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
 
         Bean entitySelectorLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         entitySelectorLogger.setName(entitySelectorProvider.getName() + "-mediation-logger");
-        setPropertyValue(entitySelectorLogger, "category", ida.getNamespace() + "." + ida.getName() + ".wire." + entitySelectorProvider.getName());
+        setPropertyValue(entitySelectorLogger, "category", ida.getNamespace() + ".wire." + entitySelectorProvider.getName());
         setPropertyAsBeans(entitySelectorLogger, "messageBuilders", entitySelectorLogBuilders);
         setPropertyBean(ssoEntitySelectorMediator, "logger", entitySelectorLogger);
 
@@ -373,7 +373,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         auditingServer.setId("auditing-server");
         auditingServer.setCardinality("1..1");
         auditingServer.setTimeout(60L);
-        auditingServer.setInterface("org.atricore.idbus.kernel.auditing.core.MonitoringServer");
+        auditingServer.setInterface("org.atricore.idbus.kernel.auditing.core.AuditingServer");
 
         idauBeansOsgi.getImportsAndAliasAndBeen().add(auditingServer);
 

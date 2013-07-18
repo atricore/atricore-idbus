@@ -203,7 +203,7 @@ public class BasicAuthenticationClaimsChannelTransformer extends AbstractTransfo
                 ccLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
 
                 Bean ccLogger = newBean(idpBeans, claimChannelBeanName + "-mediation-logger", DefaultMediationLogger.class.getName());
-                setPropertyValue(ccLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + claimChannelBeanName.toLowerCase());
+                setPropertyValue(ccLogger, "category", appliance.getNamespace() + ".wire." + claimChannelBeanName.toLowerCase());
                 setPropertyAsBeans(ccLogger, "messageBuilders", ccLogBuilders);
 
                 // logger

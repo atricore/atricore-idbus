@@ -290,7 +290,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
         Bean spLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         spLogger.setName(spProxyName + "-mediation-logger");
-        setPropertyValue(spLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + spProxyName);
+        setPropertyValue(spLogger, "category", appliance.getNamespace() + ".wire." + spProxyName);
         setPropertyAsBeans(spLogger, "messageBuilders", spLogBuilders);
         setPropertyBean(spMediator, "logger", spLogger);
 
@@ -543,7 +543,7 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
 
         Bean idpLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         idpLogger.setName(idpName + "-mediation-logger");
-        setPropertyValue(idpLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + idpProxyBean.getName());
+        setPropertyValue(idpLogger, "category", appliance.getNamespace() + ".wire." + idpProxyBean.getName());
         setPropertyAsBeans(idpLogger, "messageBuilders", idpLogBuilders);
         setPropertyBean(idpMediator, "logger", idpLogger);
 

@@ -146,9 +146,12 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         Bean idpMediator = newBean(idpBeans, idpBean.getName() + "-samlr2-mediator",
                 SSOIDPMediator.class.getName());
         setPropertyValue(idpMediator, "logMessages", true);
+
+        setPropertyRef(idpMediator, "monitoringServer", "monitoring-server");
         setPropertyValue(idpMediator, "metricsPrefix", appliance.getName() + "/" + idpBean.getName());
-        setPropertyValue(idpMediator, "auditCategory", appliance.getNamespace().toLowerCase() + "." +
-                appliance.getName().toLowerCase() + "." + idpBean.getName().toLowerCase());
+
+        setPropertyRef(idpMediator, "auditingServer", "auditing-server");
+        setPropertyValue(idpMediator, "auditCategory", appliance.getNamespace().toLowerCase() + ".audit." + idpBean.getName().toLowerCase());
 
         // artifactQueueManager
         // setPropertyRef(idpMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
@@ -166,7 +169,7 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
 
         Bean idpLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         idpLogger.setName(idpBean.getName() + "-mediation-logger");
-        setPropertyValue(idpLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + idpBean.getName());
+        setPropertyValue(idpLogger, "category", appliance.getNamespace() + ".wire." + idpBean.getName());
         setPropertyAsBeans(idpLogger, "messageBuilders", idpLogBuilders);
         setPropertyBean(idpMediator, "logger", idpLogger);
 
@@ -351,7 +354,7 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
 
         setPropertyRef(sessionManager, "auditingServer", "auditing-server");
         setPropertyValue(sessionManager, "auditCategory",
-                appliance.getNamespace().toLowerCase() + "." + appliance.getName().toLowerCase() + "." + idpBean.getName().toLowerCase());
+                appliance.getNamespace().toLowerCase() + ".audit." + idpBean.getName().toLowerCase());
 
 
         // -------------------------------------------------------------
