@@ -82,8 +82,8 @@ public class VirtualIdentityStore extends AbstractStore {
             	if (sourceUser != null) {
                     sourceUsers.add(sourceUser);
                 }
-            } catch (NoSuchUserException e) {
-            	// do nothing ?
+            } catch (Throwable t) {
+            	logger.warn("Error loading user from embedded identity source", t);
             }
         }
 
@@ -131,11 +131,17 @@ public class VirtualIdentityStore extends AbstractStore {
             IdentitySource identitySource = identitySourceIterator.next();
 
             BaseRole[] baseRoles;
-            baseRoles = identitySource.getBackingIdentityStore().findRolesByUserKey(key);
+            try {
+                baseRoles = identitySource.getBackingIdentityStore().findRolesByUserKey(key);
+                if (baseRoles != null) {
+                    virtualUserRoles.addAll(Arrays.asList(baseRoles));
+                }
 
-            if (baseRoles != null) {
-                virtualUserRoles.addAll(Arrays.asList(baseRoles));
+            } catch (Throwable t) {
+                logger.warn("Error find roles from embedded identity source", t);
+                                
             }
+
         }
 
         // Use the configured mapping policy to select role entries
@@ -178,10 +184,15 @@ public class VirtualIdentityStore extends AbstractStore {
             IdentitySource identitySource = identitySourceIterator.next();
 
             Credential[] Credentials;
-            Credentials = ((CredentialStore) identitySource.getBackingIdentityStore()).loadCredentials(key, cp);
+            
+            try {
+                Credentials = ((CredentialStore) identitySource.getBackingIdentityStore()).loadCredentials(key, cp);
 
-            if (Credentials != null) {
-                virtualUserCredentials.addAll(Arrays.asList(Credentials));
+                if (Credentials != null) {
+                    virtualUserCredentials.addAll(Arrays.asList(Credentials));
+                }
+            } catch (Throwable t) {
+                logger.warn("Cannot load credentials from embedded identity source", t);
             }
         }
 
@@ -227,8 +238,13 @@ public class VirtualIdentityStore extends AbstractStore {
 
         for (Iterator<IdentitySource> identitySourceIterator = getIdentitySources().iterator(); identitySourceIterator.hasNext();) {
             IdentitySource identitySource = identitySourceIterator.next();
-            boolean userExists = identitySource.getBackingIdentityStore().userExists(key);
-            sourceUserExistsOutcomes.add(new UserExistsOutcome(userExists));
+
+            try {
+                boolean userExists = identitySource.getBackingIdentityStore().userExists(key);
+                sourceUserExistsOutcomes.add(new UserExistsOutcome(userExists));
+            } catch (Throwable t) {
+                logger.warn("Cannot verify user existence for embedded source", t);
+            }
         }
 
         // Use the configured mapping policy to select user exists outcomes
