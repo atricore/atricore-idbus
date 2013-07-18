@@ -185,15 +185,15 @@ public class IdentityLookupTransformer extends AbstractTransformer {
 
                 // TODO : For now only default PSP is supported : String pspName = embeddedSource.getPsp();
 
-                Reference identityStoreOsgi = new Reference();
-                identityStoreOsgi.setId(providerBean.getName() + "-identity-store");
-                identityStoreOsgi.setInterface(IdentityPartitionStore.class.getName());
-                identityStoreOsgi.setCardinality("1..1");
-                identityStoreOsgi.setTimeout(60L);
-                providerBeans.getImportsAndAliasAndBeen().add(identityStoreOsgi);
 
-                if (visb != null) {
+                if (visb == null) {
                     // TODO: ...
+                    Reference identityStoreOsgi = new Reference();
+                    identityStoreOsgi.setId(providerBean.getName() + "-identity-store");
+                    identityStoreOsgi.setInterface(IdentityPartitionStore.class.getName());
+                    identityStoreOsgi.setCardinality("1..1");
+                    identityStoreOsgi.setTimeout(60L);
+                    providerBeans.getImportsAndAliasAndBeen().add(identityStoreOsgi);
                 }
 
                 // Add Provisioning target definition for IdPs
@@ -202,7 +202,6 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                     provisioningTargetOsgi.setId(providerBean.getName() + "-provisioning-target");
                     provisioningTargetOsgi.setInterface(ProvisioningTarget.class.getName());
                     provisioningTargetOsgi.setCardinality("1..1");
-                    identityStoreOsgi.setTimeout(60L);
                     providerBeans.getImportsAndAliasAndBeen().add(provisioningTargetOsgi);
 
                     setPropertyRef(providerBean, "provisioningTarget", providerBean.getName() + "-provisioning-target");
