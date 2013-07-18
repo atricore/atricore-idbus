@@ -204,11 +204,12 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
 
                 } else if (p instanceof IdentityProvider) {
                     IdentityProvider idp = (IdentityProvider) p;
-                    if (idp.getIdentityLookup() != null) {
-                        IdentityLookup idl = idp.getIdentityLookup();
-                        sb.append("\n");
-                        sb.append("            ");
-                        sb.append(getNameString(idl.getIdentitySource().getName(), 10));
+                    if (idp.getIdentityLookups() != null) {
+                        for (IdentityLookup idl : idp.getIdentityLookups()) {
+                            sb.append("\n");
+                            sb.append("            ");
+                            sb.append(getNameString(idl.getIdentitySource().getName(), 10));
+                        }
 
                         if (idp.getAuthenticationMechanisms() != null) {
                             for (AuthenticationMechanism authn : idp.getAuthenticationMechanisms()) {

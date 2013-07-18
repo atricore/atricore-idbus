@@ -141,6 +141,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
                 new PaletteEntry("Domino", EmbeddedIcons.dominoResourceMiniIcon, "Domino Resource Entry", DiagramElementTypes.DOMINO_RESOURCE_ELEMENT_TYPE)
         );
 
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("BlackBoard Learn", EmbeddedIcons.blackboardMiniIcon, "BlackBoard Learn Resource Entry", DiagramElementTypes.BLACKBOARD_RESOURCE_ELEMENT_TYPE)
+        );
+
         pr.add(resourcesPaletteDrawer);
 
         // Execution Environments drawer

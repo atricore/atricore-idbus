@@ -118,9 +118,11 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         }
 
         // Identity Lookup
-        if (node.getIdentityLookup() != null) {
-            setPropertyRef(providerBean, "identityLookup", node.getIdentityLookup().getName());
-        }
+        if (node.getIdentityLookups() != null) {
+            for (IdentityLookup il : node.getIdentityLookups()) {
+                addPropertyRefsToSet(providerBean, "identityLookups", il.getName() );
+            }
+       }
 
         // Location
         if (node.getLocation() != null)
@@ -196,8 +198,10 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         }
 
         // Identity Lookup
-        if (node.getIdentityLookup() != null) {
-            setPropertyRef(providerBean, "identityLookup", node.getIdentityLookup().getName());
+        if (node.getIdentityLookups() != null) {
+            for (IdentityLookup il : node.getIdentityLookups()) {
+                addPropertyRefsToSet(providerBean, "identityLookups", il.getName() );
+            }
         }
 
         // Location

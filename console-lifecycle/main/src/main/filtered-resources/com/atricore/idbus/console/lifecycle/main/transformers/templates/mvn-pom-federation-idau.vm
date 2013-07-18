@@ -190,8 +190,6 @@
             <scope>provided</scope>
         </dependency>
 
-
-
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sts</groupId>
             <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
@@ -267,6 +265,13 @@
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.gateinidentitystore</artifactId>
             <version>${idbus.idojo.gateinidentitystore.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.virtualidentitystore</artifactId>
+            <version>${idbus.idojo.virtualidentitystore.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -506,6 +511,7 @@
                            org.atricore.idbus.idojos.memoryidentitystore,
                            org.atricore.idbus.idojos.ldapidentitystore,
                            org.atricore.idbus.idojos.gateinidentitystore,
+                           org.atricore.idbus.idojos.virtualidentitystore,
                            com.atricore.idbus.console.twofactor.wikid.authscheme; resolution:="optional",
                            org.atricore.idbus.bundles.javax-jdo2-v2_3-ec,
                            <!-- some bundles that are key in runtime -->

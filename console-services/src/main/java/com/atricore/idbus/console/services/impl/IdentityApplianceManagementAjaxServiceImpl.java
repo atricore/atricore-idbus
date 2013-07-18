@@ -947,7 +947,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
             //set provider and lookup
             idLookup.setProvider(provider);
-            provider.setIdentityLookup(idLookup);
+            provider.getIdentityLookups().add(idLookup);
             //set IdentitySource and lookup
             idLookup.setIdentitySource(is);
         }

@@ -43,6 +43,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _jbosseppResourceCreateMediator:IIocMediator;
     private var _selfServicesResourceCreateMediator:IIocMediator;
     private var _dominoResourceCreateMediator:IIocMediator;
+    private var _blackboardResourceCreateMediator:IIocMediator;
     private var _wasceExecutionEnvironmentCreateMediator:IIocMediator;
     private var _apacheExecutionEnvironmentCreateMediator:IIocMediator;
     private var _alfrescoResourceCreateMediator:IIocMediator;
@@ -88,6 +89,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _liferayResourceRemoveCommand:IIocCommand;
     private var _selfServicesResourceRemoveCommand:IIocCommand;
     private var _dominoResourceRemoveCommand:IIocCommand;
+    private var _blackboardResourceRemoveCommand:IIocCommand;
     private var _lookupIdentityApplianceByIdCommand:IIocCommand;
     private var _identityApplianceUpdateCommand:IIocCommand;
     private var _identityVaultRemoveCommand:IIocCommand;
@@ -175,6 +177,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(activationMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(wikidCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(dominoCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(blackboardResourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(clientCertCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(directoryServiceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(jbosseppAuthenticationCreateMediator.getConfigName());
@@ -200,6 +203,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIFERAY_RESOURCE_REMOVE, liferayResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SELFSERVICES_RESOURCE_REMOVE, selfServicesResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DOMINO_RESOURCE_REMOVE, dominoResourceRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.BLACKBOARD_RESOURCE_REMOVE, blackboardResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_SOURCE_REMOVE, identityVaultRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATION_REMOVE, activationRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_CONNECTION_REMOVE, serviceConnectionRemoveCommand.getConfigName());
@@ -424,6 +428,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set dominoResourceCreateMediator(value:IIocMediator):void {
         _dominoResourceCreateMediator = value;
+    }
+
+    public function get blackboardResourceCreateMediator():IIocMediator {
+        return _blackboardResourceCreateMediator;
+    }
+
+    public function set blackboardResourceCreateMediator(value:IIocMediator):void {
+        _blackboardResourceCreateMediator = value;
     }
 
     public function get weblogicExecutionEnvironmentCreateMediator():IIocMediator {
@@ -811,6 +823,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set dominoResourceRemoveCommand(value:IIocCommand):void {
         _dominoResourceRemoveCommand = value;
+    }
+
+    public function get blackboardResourceRemoveCommand():IIocCommand {
+        return _blackboardResourceRemoveCommand;
+    }
+
+    public function set blackboardResourceRemoveCommand(value:IIocCommand):void {
+        _blackboardResourceRemoveCommand = value;
     }
 
     public function get lookupIdentityApplianceByIdCommand():IIocCommand {

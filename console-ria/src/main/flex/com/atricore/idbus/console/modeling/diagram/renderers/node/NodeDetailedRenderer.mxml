@@ -39,6 +39,7 @@
         import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
         import com.atricore.idbus.console.services.dto.AlfrescoResource;
         import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.BlackBoardResource;
         import com.atricore.idbus.console.services.dto.CaptiveExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.Channel;
         import com.atricore.idbus.console.services.dto.ColdfusionResource;
@@ -212,6 +213,8 @@
                     _linkIcon = EmbeddedIcons.selfServicesResourceIcon;
                 } else if (obj is DominoResource) {
                     _linkIcon = EmbeddedIcons.dominoResourceIcon;
+                } else if (obj is BlackBoardResource) {
+                    _linkIcon = EmbeddedIcons.blackboardResourceIcon;
                 } else if (obj is JOSSO2Resource) {
                     _linkIcon = EmbeddedIcons.josso2ResourceIcon;
                 } else if (obj is MicroStrategyResource) {

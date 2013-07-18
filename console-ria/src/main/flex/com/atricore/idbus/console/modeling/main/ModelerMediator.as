@@ -373,6 +373,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_JBOSSEPP_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_SELFSERVICES_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_DOMINO_RESOURCE_ELEMENT,
+            ApplicationFacade.CREATE_BLACKBOARD_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT,
@@ -627,6 +628,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.CREATE_DOMINO_RESOURCE_ELEMENT:
                 popupManager.showCreateDominoResourceWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_BLACKBOARD_RESOURCE_ELEMENT:
+                popupManager.showCreateBlackBoardResourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateWASCEExecutionEnvironmentWindow(notification);

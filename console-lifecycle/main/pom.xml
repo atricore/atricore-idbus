@@ -94,6 +94,7 @@
         <dependency>
             <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
             <artifactId>org.atricore.idbus.capabilities.idconfirmation.main</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
