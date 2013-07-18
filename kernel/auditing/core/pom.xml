@@ -39,7 +39,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.atricore.idbus.kernel.monitoring.core.*;version=${project.version}</Export-Package>
+                        <Export-Package>org.atricore.idbus.kernel.auditing.core.*;version=${project.version}</Export-Package>
                         <Import-Package>
                             *
                         </Import-Package>

@@ -111,11 +111,25 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
         kernelConfigCtx = kernelCfgCtxs.values().iterator().next();
 
         // Get Monitoring server
-        Map<String, MonitoringServer> mServers = applicationContext.getBeansOfType(MonitoringServer.class);
-        if (!mServers.isEmpty()) {
-            // We found a monitoring server, but it should be only one
-            assert mServers.values().size() == 1 : "Too many Monitoring Servers found " + kernelCfgCtxs.values().size();
-            mServer = mServers.values().iterator().next();
+        if (mServer == null) {
+            logger.warn("Auto-configuring Monitoring server");
+            Map<String, MonitoringServer> mServers = applicationContext.getBeansOfType(MonitoringServer.class);
+            if (!mServers.isEmpty()) {
+                // We found a monitoring server, but it should be only one
+                assert mServers.values().size() == 1 : "Too many Monitoring Servers found " + kernelCfgCtxs.values().size();
+                mServer = mServers.values().iterator().next();
+            }
+        }
+
+        // Get Auditing server
+        if (aServer == null) {
+            logger.warn("Auto-configuring Auditing server");
+            Map<String, AuditingServer> aServers = applicationContext.getBeansOfType(AuditingServer.class);
+            if (!aServers.isEmpty()) {
+                // We found an auditing server, but it should be only one
+                assert aServers.values().size() == 1 : "Too many Auditing Servers found " + kernelCfgCtxs.values().size();
+                aServer = aServers.values().iterator().next();
+            }
         }
 
         logger.info("Initialized Camel Mediator " + this.getClass().getName() + " with unitContainer " +

@@ -24,6 +24,7 @@ package org.atricore.idbus.kernel.main.session.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.session.*;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
@@ -84,6 +85,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
     private String _auditCategory;
 
     private MonitoringServer _mServer;
+
+    private AuditingServer _aServer;
 
     /**
      * This implementation uses a MemoryStore and a defaylt Session Id generator.
@@ -551,6 +554,13 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         this._mServer = mServer;
     }
 
+    public AuditingServer getAuditingServer() {
+        return _aServer;
+    }
+
+    public void setAuditingServer(AuditingServer _aServer) {
+        this._aServer = _aServer;
+    }
 
     public String getMetricsPrefix() {
         return _metricsPrefix;

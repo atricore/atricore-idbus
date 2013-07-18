@@ -51,6 +51,9 @@ import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.auditing.core.AuditingServer;
+import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerException;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -68,6 +71,7 @@ import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
+import java.security.Principal;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -152,7 +156,13 @@ public class SingleLogoutProducer extends SSOProducer {
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
 
+        Principal ssoUser = secCtx != null ? secCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next() : null;
+
         boolean partialLogout = performSlo(exchange, secCtx, null);
+
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+        AuditingServer aServer = mediator.getAuditingServer();
+        aServer.processAuditTrail(mediator.getAuditCategory(), "INFO", "SLO-TOUT", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : "UNKONW", new java.util.Date(), null, null);
 
         // Send status response!
         if (logger.isDebugEnabled())
@@ -179,12 +189,18 @@ public class SingleLogoutProducer extends SSOProducer {
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
 
         String ssoSessionId = secCtx != null ? secCtx.getSessionIndex() : "<NONE>";
+        Principal ssoUser = secCtx != null ? secCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next() : null;
 
         validateRequest(sloRequest, in.getMessage().getRawContent(), in.getMessage().getState());
 
+        // This will destroy the security context
         boolean partialLogout = performSlo(exchange, secCtx, sloRequest);
 
-        // We can send the response using any front-channel binding
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+        AuditingServer aServer = mediator.getAuditingServer();
+        aServer.processAuditTrail(mediator.getAuditCategory(), "INFO", "SLO", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : "UNKONW", new java.util.Date(), null, null);
+
+        // We can send the response using any front-channel binding                .
         // SSOBinding binding = SSOBinding.asEnum(endpoint.getBinding());
 
         // Send status response!

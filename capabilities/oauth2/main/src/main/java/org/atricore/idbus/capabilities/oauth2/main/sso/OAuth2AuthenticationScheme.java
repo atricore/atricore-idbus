@@ -44,9 +44,9 @@ public class OAuth2AuthenticationScheme extends AbstractAuthenticationScheme {
 
     public boolean authenticate() throws SSOAuthenticationException {
 
-        try {
+        String oauth2AccessToken = getOAuth2AccessToken(_inputCredentials);
 
-            String oauth2AccessToken = getOAuth2AccessToken(_inputCredentials);
+        try {
 
             AccessTokenResolverFactory atrf = new SecureAccessTokenResolverFactory();
 
@@ -69,7 +69,7 @@ public class OAuth2AuthenticationScheme extends AbstractAuthenticationScheme {
             if (logger.isDebugEnabled())
                 logger.debug("OAuth2 Authentication Failure : " + e.getMessage(), e);
 
-            throw new AuthenticationFailureException("Authentication failed : " + e.getMessage());
+            throw new AuthenticationFailureException("Authentication failed : " + e.getMessage(), "{OAUTH2}" + (oauth2AccessToken != null ? oauth2AccessToken : "N/A"));
 
         } catch (Exception e) {
             throw new SSOAuthenticationException(e);

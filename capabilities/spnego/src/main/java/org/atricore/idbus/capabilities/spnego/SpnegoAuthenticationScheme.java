@@ -46,9 +46,10 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
 
     public boolean authenticate() throws SSOAuthenticationException {
 
+        String spnegoToken = getSpnegoToken(_inputCredentials);
+
         try {
 
-            String spnegoToken = getSpnegoToken(_inputCredentials);
             byte[] binarySpnegoToken = Base64.decodeBase64(spnegoToken.getBytes());
 
             if (logger.isTraceEnabled())
@@ -58,7 +59,7 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
             if (spnegoToken.startsWith("TlRMT")) {
                 // This is an NTLM Token, looks like browser is not trusting the server ...
                 logger.error("NTLM Token received, cannot perform Spnego Authentication");
-                throw new AuthenticationFailureException("Authentication failed, NTLM token recieved " + spnegoToken);
+                throw new AuthenticationFailureException("Authentication failed ", "{SPNEGO}" + (spnegoToken != null ? spnegoToken : "N/A"));
             }
 
             // Create JAAS Login context for realm
@@ -97,7 +98,7 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
             if (logger.isDebugEnabled())
                 logger.debug("Spnego Authenticatio Failure : " + e.getMessage(), e);
 
-            throw new AuthenticationFailureException("Authentication failed : " + e.getMessage());
+            throw new AuthenticationFailureException("Authentication failed : " + e.getMessage(), "{SPNEGO}" + spnegoToken);
 
         } catch (Exception e) {
             throw new SSOAuthenticationException(e);
