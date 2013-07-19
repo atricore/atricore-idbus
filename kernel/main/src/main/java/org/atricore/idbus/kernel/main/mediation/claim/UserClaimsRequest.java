@@ -10,10 +10,6 @@ import java.util.Set;
  */
 public interface UserClaimsRequest extends ClaimsRequest {
 
-    Channel getIssuerChannel();
-
-    IdentityMediationEndpoint getIssuerEndpoint();
-
     Object getAttribute(String key);
 
     void setAttribute(String key, Object value);

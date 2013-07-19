@@ -25,12 +25,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.handler.RedirectRequestHandler;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
-import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 /**
@@ -42,7 +42,7 @@ public class BaseSignInPanel extends Panel {
 
     private static final Log logger = LogFactory.getLog(BaseSignInPanel.class);
 
-    protected CredentialClaimsRequest credentialClaimsRequest;
+    protected SSOCredentialClaimsRequest credentialClaimsRequest;
 
     protected MessageQueueManager artifactQueueManager;
 
@@ -68,7 +68,7 @@ public class BaseSignInPanel extends Panel {
         getRequestCycle().scheduleRequestHandlerAfterCurrent(new RedirectRequestHandler(claimsConsumerUrl));
     }
 
-    protected EndpointDescriptor resolveClaimsEndpoint(CredentialClaimsRequest requestCredential, AuthnCtxClass authnCtx) throws IdentityMediationException {
+    protected EndpointDescriptor resolveClaimsEndpoint(SSOCredentialClaimsRequest requestCredential, AuthnCtxClass authnCtx) throws IdentityMediationException {
 
         for (IdentityMediationEndpoint endpoint : requestCredential.getClaimsChannel().getEndpoints()) {
             // Look for unspecified claim endpoint using Artifacc binding

@@ -35,10 +35,6 @@ import java.util.Set;
  */
 public interface CredentialClaimsRequest extends ClaimsRequest {
 
-    Channel getIssuerChannel();
-
-    IdentityMediationEndpoint getIssuerEndpoint();
-
     Channel getClaimsChannel();
 
     Set<SSOPolicyEnforcementStatement> getSsoPolicyEnforcements();

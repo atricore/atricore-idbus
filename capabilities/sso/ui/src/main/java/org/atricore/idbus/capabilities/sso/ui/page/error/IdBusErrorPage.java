@@ -28,12 +28,12 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
-import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -56,7 +56,7 @@ public class IdBusErrorPage extends BasePage {
 
     public IdBusErrorPage(PageParameters parameters) throws Exception {
 
-        CredentialClaimsRequest credentialClaimsRequest = null;
+        SSOCredentialClaimsRequest credentialClaimsRequest = null;
         getSession().bind();
 
         if (parameters != null) {

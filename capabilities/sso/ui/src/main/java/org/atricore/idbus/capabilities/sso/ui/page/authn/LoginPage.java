@@ -26,15 +26,14 @@ import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
-import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
-import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 
 /**
  * Convenience login page meant to be extended for realizing authentication screens.
@@ -61,7 +60,7 @@ public abstract class LoginPage extends BasePage {
     protected void onInitialize()  {
         super.onInitialize();
 
-        CredentialClaimsRequest credentialClaimsRequest = null;
+        SSOCredentialClaimsRequest credentialClaimsRequest = null;
 
         if (artifactId != null) {
 
@@ -69,7 +68,7 @@ public abstract class LoginPage extends BasePage {
 
             // Lookup for ClaimsRequest!
             try {
-                credentialClaimsRequest = (CredentialClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
+                credentialClaimsRequest = (SSOCredentialClaimsRequest) artifactQueueManager.pullMessage(new ArtifactImpl(artifactId));
             } catch (Exception e) {
                 logger.error("Cannot resolve artifact id ["+artifactId+"] : " + e.getMessage(), e);
             }
@@ -85,7 +84,7 @@ public abstract class LoginPage extends BasePage {
 
             } else {
                 logger.debug("No claims request received, try stored value");
-                credentialClaimsRequest = ((SSOWebSession)getSession()).getCredentialClaimsRequest();
+                credentialClaimsRequest = (SSOCredentialClaimsRequest) ((SSOWebSession)getSession()).getCredentialClaimsRequest();
             }
         } else {
             // Once used, remove the request from session ...(TODO: CHECK)
@@ -110,6 +109,6 @@ public abstract class LoginPage extends BasePage {
         add(prepareSignInPanel("signIn", credentialClaimsRequest, artifactQueueManager, idsuRegistry));
     }
 
-    abstract protected Panel prepareSignInPanel(final String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
+    abstract protected Panel prepareSignInPanel(final String id, SSOCredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
                                                 final IdentityMediationUnitRegistry idsuRegistry);
 }

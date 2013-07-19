@@ -28,6 +28,7 @@ import org.apache.wicket.markup.html.form.StatelessForm;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.value.ValueMap;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.BaseSignInPanel;
@@ -112,7 +113,7 @@ public class UsernamePasscodeSignInPanel extends BaseSignInPanel {
      * @param id See Component constructor
      * @see org.apache.wicket.Component#Component(String)
      */
-    public UsernamePasscodeSignInPanel(final String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
+    public UsernamePasscodeSignInPanel(final String id, SSOCredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
                                        final IdentityMediationUnitRegistry idsuRegistry
     ) {
         super(id);

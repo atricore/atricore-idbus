@@ -23,14 +23,13 @@ package org.atricore.idbus.capabilities.sso.ui.page.authn.simple;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.IFormSubmitter;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.value.ValueMap;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.ui.components.GtFeedbackPanel;
@@ -43,7 +42,6 @@ import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import javax.servlet.http.HttpServletRequest;
-
 
 /**
  * Sign-in panel for simple authentication for collecting username and password credentials.
@@ -86,7 +84,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
      */
     public final class UsernamePasswordSignInForm extends StatelessForm<Void> {
 
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 3245927593457623741L;
 
         /**
          * Model for form.
@@ -190,7 +188,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
      * @param id See Component constructor
      * @see org.apache.wicket.Component#Component(String)
      */
-    public UsernamePasswordSignInPanel(final String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
+    public UsernamePasswordSignInPanel(final String id, SSOCredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
                                        final IdentityMediationUnitRegistry idsuRegistry) {
         super(id);
         this.credentialClaimsRequest = credentialClaimsRequest;

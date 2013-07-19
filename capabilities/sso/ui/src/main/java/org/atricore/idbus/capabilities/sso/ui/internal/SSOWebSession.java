@@ -25,8 +25,8 @@ import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
 import org.atricore.idbus.capabilities.sso.ui.agent.SecurityContext;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationState;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.common.sso._1_0.protocol.SelectEntityRequestType;
-import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaimsRequest;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
 
@@ -38,7 +38,7 @@ import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
  */
 public class SSOWebSession extends WebSession {
 
-    private CredentialClaimsRequest credentialClaimsRequest;
+    private SSOCredentialClaimsRequest credentialClaimsRequest;
 
     private UserClaimsRequest userClaimsRequest;
 
@@ -63,11 +63,11 @@ public class SSOWebSession extends WebSession {
         return (SSOWebSession) Session.get();
     }
 
-    public void setCredentialClaimsRequest(CredentialClaimsRequest credentialClaimsRequest) {
+    public void setCredentialClaimsRequest(SSOCredentialClaimsRequest credentialClaimsRequest) {
         this.credentialClaimsRequest = credentialClaimsRequest;
     }
 
-    public CredentialClaimsRequest getCredentialClaimsRequest() {
+    public SSOCredentialClaimsRequest getCredentialClaimsRequest() {
         return credentialClaimsRequest;
     }
 
