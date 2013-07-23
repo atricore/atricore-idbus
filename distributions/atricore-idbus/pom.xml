@@ -1307,6 +1307,37 @@
             <type>pom</type>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>auditing</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
+            <version>${idbus.kernel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.builtin</artifactId>
+            <version>${idbus.kernel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.builtin</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>kernel</artifactId>
