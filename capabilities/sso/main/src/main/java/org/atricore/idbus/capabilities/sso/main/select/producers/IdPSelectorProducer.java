@@ -140,10 +140,8 @@ public class IdPSelectorProducer extends SSOProducer {
                 // For now, artifact binding is required.
                 EndpointDescriptor ed = endpoints.get(idx);
 
-
                 // Send User Claims request
                 CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-
                 out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                         userClaimsReq,
                         "UserClaimsRequest",
@@ -234,6 +232,10 @@ public class IdPSelectorProducer extends SSOProducer {
                         channel,
                         endpoint,
                         state.getLocalState().getId());
+
+                // Original request, used to set the requesting SP
+                SelectEntityRequestType request = selectionState.getRequest();
+                attrReq.setAttribute("ServiceProvider", request.getIssuer());
 
                 // For now, artifact binding is required.
                 EndpointDescriptor ed = endpoints.get(idx);

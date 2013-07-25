@@ -115,122 +115,133 @@ public class SelectIdPMediator implements Serializable {
 
         // We have the SP that issued the entity selection request.
         String spName = (String) userClaimsReq.getAttribute("ServiceProvider");
+        if (spName == null)
+            logger.error("No 'ServiceProvider' attribute received in user claims request : " + userClaimsReq.getId() + "["+userClaimsReq+"]");
+
         ServiceProvider sp = null;
 
         // IdPs list
 
         String unitName = cfg.getUnitName();
         if(unitName != null) {
-            IdentityMediationUnit unit =  idsuRegistry.lookupUnit(unitName);
+            IdentityMediationUnit unit = idsuRegistry.lookupUnit(unitName);
 
-            for (Channel c: unit.getChannels()) {
-                if (c instanceof IdPChannel) {
-                    IdPChannel idpChannel = (IdPChannel) c;
+            if (unit == null) {
+                // TODO : Error
+                logger.error("No Identity Mediation Unit found for " + unitName + "(maybe unit was not started yet)");
+            } else {
 
-                    if (idpChannel.getProvider().getName().equals(spName)) {
-                        sp = (ServiceProvider) idpChannel.getProvider();
-                        break;
-                    }
-                }
-            }
-
-            if (sp != null) {
-
-                List<IdPChannel> idpChannels = new ArrayList<IdPChannel>();
-
-                if (sp.getChannel() instanceof  IdPChannel ) {
-                    idpChannels.add((IdPChannel) sp.getChannel());
-                }
-
-                for (Channel c : sp.getChannels()) {
+                for (Channel c: unit.getChannels()) {
                     if (c instanceof IdPChannel) {
-                        idpChannels.add((IdPChannel) c);
+                        IdPChannel idpChannel = (IdPChannel) c;
+
+                        if (idpChannel.getProvider().getName().equals(spName)) {
+                            sp = (ServiceProvider) idpChannel.getProvider();
+                            break;
+                        }
                     }
                 }
 
-                String spInitSso = null;
-                String spInitSlo = null;
-                for (IdentityMediationEndpoint endpoint : sp.getBindingChannel().getEndpoints()) {
+                if (sp != null) {
 
-                    if (logger.isTraceEnabled())
-                        logger.trace("Checking endpoint : " + endpoint.getName());
+                    List<IdPChannel> idpChannels = new ArrayList<IdPChannel>();
 
-                    if (endpoint.getType().equals(SSOService.SPInitiatedSingleSignOnService.toString())) {
-                        spInitSso = sp.getBindingChannel().getLocation() + endpoint.getLocation();
-                    } else if (endpoint.getType().equals(SSOService.SPInitiatedSingleLogoutService.toString())) {
-                        spInitSlo = sp.getBindingChannel().getLocation() + endpoint.getLocation();
+                    if (sp.getChannel() instanceof  IdPChannel ) {
+                        idpChannels.add((IdPChannel) sp.getChannel());
                     }
-                }
 
-                for (IdPChannel idpChannel : idpChannels) {
+                    for (Channel c : sp.getChannels()) {
+                        if (c instanceof IdPChannel) {
+                            idpChannels.add((IdPChannel) c);
+                        }
+                    }
 
-                    // SP Initiated SSO and SLO endpoint
+                    String spInitSso = null;
+                    String spInitSlo = null;
+                    for (IdentityMediationEndpoint endpoint : sp.getBindingChannel().getEndpoints()) {
 
-                    // Create IdP models, go through trusted providers (IDPs)
-                    Set<FederatedProvider> idps = idpChannel.getTrustedProviders();
-                    for (FederatedProvider p : idps) {
+                        if (logger.isTraceEnabled())
+                            logger.trace("Checking endpoint : " + endpoint.getName());
 
-                        String idpAlias = null;
-                        String providerType = null;
+                        if (endpoint.getType().equals(SSOService.SPInitiatedSingleSignOnService.toString())) {
+                            spInitSso = sp.getBindingChannel().getLocation() + endpoint.getLocation();
+                        } else if (endpoint.getType().equals(SSOService.SPInitiatedSingleLogoutService.toString())) {
+                            spInitSlo = sp.getBindingChannel().getLocation() + endpoint.getLocation();
+                        }
+                    }
 
-                        if (p instanceof FederatedRemoteProvider) {
-                            // Remote IdP has a single member descriptor
+                    for (IdPChannel idpChannel : idpChannels) {
 
-                            FederatedRemoteProvider idp = (FederatedRemoteProvider) p;
+                        // SP Initiated SSO and SLO endpoint
 
-                            // Get Entity ID and resource type
-                            CircleOfTrustMemberDescriptor d = idp.getMembers().get(0);
-                            idpAlias = d.getAlias();
-                            providerType = "SAML2IDPRemote";
+                        // Create IdP models, go through trusted providers (IDPs)
+                        Set<FederatedProvider> idps = idpChannel.getTrustedProviders();
+                        for (FederatedProvider p : idps) {
 
-                        } else if (p instanceof IdentityProvider) {
+                            String idpAlias = null;
+                            String providerType = null;
 
-                            providerType = "SAML2IDPLocal";
+                            if (p instanceof FederatedRemoteProvider) {
+                                // Remote IdP has a single member descriptor
 
-                            // Local IdPs may have dedicated channels to talk to us, with specific MD
+                                FederatedRemoteProvider idp = (FederatedRemoteProvider) p;
 
-                            IdentityProvider idp = (IdentityProvider) p;
-                            // Get the proper SP Channel and look for the entity ID.
+                                // Get Entity ID and resource type
+                                CircleOfTrustMemberDescriptor d = idp.getMembers().get(0);
+                                idpAlias = d.getAlias();
+                                providerType = "SAML2IDPRemote";
 
-                            for (Channel c : idp.getChannels()) {
-                                if (c instanceof SPChannel) {
-                                    SPChannel spChannel = (SPChannel) c;
-                                    if (spChannel.getTargetProvider() != null && spChannel.getTargetProvider().getName().equals(sp.getName())) {
-                                        idpAlias = spChannel.getMember().getAlias();
-                                        break;
+                            } else if (p instanceof IdentityProvider) {
+
+                                providerType = "SAML2IDPLocal";
+
+                                // Local IdPs may have dedicated channels to talk to us, with specific MD
+
+                                IdentityProvider idp = (IdentityProvider) p;
+                                // Get the proper SP Channel and look for the entity ID.
+
+                                for (Channel c : idp.getChannels()) {
+                                    if (c instanceof SPChannel) {
+                                        SPChannel spChannel = (SPChannel) c;
+                                        if (spChannel.getTargetProvider() != null && spChannel.getTargetProvider().getName().equals(sp.getName())) {
+                                            idpAlias = spChannel.getMember().getAlias();
+                                            break;
+                                        }
                                     }
                                 }
+
+                                // No override channel configured on IdP to talk to us, use default.
+                                if (idpAlias == null) {
+                                    // This better be an SP Channel ...
+                                    SPChannel spChannel = (SPChannel) idp.getChannel();
+                                    idpAlias = spChannel.getMember().getAlias();
+                                }
+
+
+                            } else {
+                                logger.error("Uknown Identity Provider type " + p.getClass().getName());
+                                continue;
                             }
 
-                            // No override channel configured on IdP to talk to us, use default.
-                            if (idpAlias == null) {
-                                // This better be an SP Channel ...
-                                SPChannel spChannel = (SPChannel) idp.getChannel();
-                                idpAlias = spChannel.getMember().getAlias();
-                            }
+                            // Create the IDP model
+                            IdPModel idpModel = new IdPModel(p.getName(),
+                                    p.getName(),
+                                    p.getDisplayName() != null ? p.getDisplayName() : p.getDescription(),
+                                    p.getDescription(),
+                                    idpAlias,
+                                    spInitSso + "?atricore_idp_alias=" + new String(Base64.encodeBase64(idpAlias.getBytes())),
+                                    spInitSlo,
+                                    providerType);
 
-
-                        } else {
-                            logger.error("Uknown Identity Provider type " + p.getClass().getName());
-                            continue;
+                            idpModels.add(idpModel);
                         }
 
-                        // Create the IDP model
-                        IdPModel idpModel = new IdPModel(p.getName(),
-                                p.getName(),
-                                p.getDisplayName() != null ? p.getDisplayName() : p.getDescription(),
-                                p.getDescription(),
-                                idpAlias,
-                                spInitSso + "?atricore_idp_alias=" + new String(Base64.encodeBase64(idpAlias.getBytes())),
-                                spInitSlo,
-                                providerType);
-
-                        idpModels.add(idpModel);
                     }
-
+                } else {
+                    logger.error("Invalid SP Name received in claims request : " + spName);
                 }
-            }
 
+            }
 
         } else {
             // TODO : Error
