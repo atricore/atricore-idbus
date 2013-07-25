@@ -64,7 +64,8 @@ public abstract class LoginPage extends BasePage {
 
         if (artifactId != null) {
 
-            logger.info("Artifact ID = " + artifactId);
+            if (logger.isDebugEnabled())
+                logger.debug("Artifact ID = " + artifactId);
 
             // Lookup for ClaimsRequest!
             try {
@@ -78,7 +79,7 @@ public abstract class LoginPage extends BasePage {
                 ((SSOWebSession)getSession()).setCredentialClaimsRequest(credentialClaimsRequest);
 
                 if (logger.isDebugEnabled())
-                    logger.info("Received claims request " + credentialClaimsRequest.getId() +
+                    logger.debug("Received claims request " + credentialClaimsRequest.getId() +
                             " from " + credentialClaimsRequest.getIssuerChannel() +
                             " at " + credentialClaimsRequest.getIssuerEndpoint());
 
@@ -91,7 +92,8 @@ public abstract class LoginPage extends BasePage {
             credentialClaimsRequest = ((SSOWebSession)getSession()).getCredentialClaimsRequest();
         }
 
-        logger.info("claimsRequest = " + credentialClaimsRequest);
+        if (logger.isDebugEnabled())
+            logger.debug("claimsRequest = " + credentialClaimsRequest);
         
         if (credentialClaimsRequest == null) {
             // No way to process this page, fall-back
