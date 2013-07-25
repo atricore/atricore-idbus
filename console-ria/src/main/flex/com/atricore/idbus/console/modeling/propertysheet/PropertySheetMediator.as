@@ -6013,9 +6013,9 @@ public class PropertySheetMediator extends IocMediator {
 
             if (_liferayResourceCoreSection.selectedHost.selectedItem.data == ExecEnvType.LOCAL.name) {
                 folders.addItem(_liferayResourceCoreSection.homeDirectory.text);
+                folders.addItem(_liferayResourceCoreSection.containerPath.text);
             }
 
-            folders.addItem(_liferayResourceCoreSection.containerPath.text);
             cf.folders = folders;
             cf.environmentName = "n/a";
             sendNotification(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, cf);

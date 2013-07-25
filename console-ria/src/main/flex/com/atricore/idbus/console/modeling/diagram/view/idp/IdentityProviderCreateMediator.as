@@ -551,10 +551,10 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             case IdentityFlowComponentsListCommand.SUCCESS:
                 if (view != null && view.parent != null) {
                     _identityFlowComponents = projectProxy.identityFlowComponents;
-                    for (var i:int=0; i < view.identityConfirmationPolicyCombo.dataProvider.length; i++) {
+                    for (var k:int=0; k < view.identityConfirmationPolicyCombo.dataProvider.length; k++) {
                         // hard-coded saml format string ...
-                        if (view.identityConfirmationPolicyCombo.dataProvider[i].name.toString() == "simple-claim-channel-selection") {
-                            view.identityConfirmationPolicyCombo.selectedIndex = i;
+                        if (view.identityConfirmationPolicyCombo.dataProvider[k].name.toString() == "simple-claim-channel-selection") {
+                            view.identityConfirmationPolicyCombo.selectedIndex = k;
                             break;
                         }
                     }
