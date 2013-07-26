@@ -84,6 +84,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const START_IDENTITY_APPLIANCE:String = "startIdentityAppliance";
     public static const STOP_IDENTITY_APPLIANCE:String = "stopIdentityAppliance";
     public static const DISPOSE_IDENTITY_APPLIANCE:String = "disposeIdentityAppliance";
+    public static const UNDISPOSE_IDENTITY_APPLIANCE:String = "undisposeIdentityAppliance";
     public static const IMPORT_IDENTITY_APPLIANCE:String = "importIdentityAppliance";
     public static const ADD_GROUP:String = "addGroup";
     public static const ADD_USER:String = "addUser";

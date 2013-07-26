@@ -17,6 +17,7 @@ import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceRemo
 import com.atricore.idbus.console.modeling.main.controller.StartIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.StopIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.UndeployIdentityApplianceCommand;
+import com.atricore.idbus.console.modeling.main.controller.UndisposeIdentityApplianceCommand;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentityApplianceState;
@@ -306,6 +307,8 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
             UndeployIdentityApplianceCommand.FAILURE,
             DisposeIdentityApplianceCommand.SUCCESS,
             DisposeIdentityApplianceCommand.FAILURE,
+            UndisposeIdentityApplianceCommand.SUCCESS,
+            UndisposeIdentityApplianceCommand.FAILURE,
             IdentityApplianceListLoadCommand.SUCCESS,
             IdentityApplianceRemoveCommand.SUCCESS,
             IdentityApplianceRemoveCommand.FAILURE,
@@ -424,6 +427,24 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                             resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.dispose"));
                 }
                 break;
+
+            case UndisposeIdentityApplianceCommand.SUCCESS:
+                if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(false);
+                    sendNotification(ProcessingMediator.STOP);
+                    // sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                    //       "Appliance has been successfully disposed.");
+                }
+                break;
+            case UndisposeIdentityApplianceCommand.FAILURE:
+                if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(true);
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.undispose"));
+                }
+                break;
+
             case IdentityApplianceListLoadCommand.SUCCESS:
                 initGrids();
                 break;
@@ -531,6 +552,12 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                 sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.dispose"));
                 sendNotification(ApplicationFacade.DISPOSE_IDENTITY_APPLIANCE, appliance.id.toString());
                 break;
+            case LifecycleGridButtonEvent.ACTION_UNDISPOSE :
+                appliance = event.data as IdentityAppliance;
+                sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.undispose"));
+                sendNotification(ApplicationFacade.UNDISPOSE_IDENTITY_APPLIANCE, appliance.id.toString());
+                break;
+
         }
     }
 
