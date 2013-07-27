@@ -45,6 +45,7 @@
                     <property name="name" value="requested-preferred-idp-selection"/>
                     <property name="description" value="Requested, then Preferred"/>
                     <property name="selectors">
+                        <!-- Ordered list of selectors -->
                         <list>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.RequestedIdPEntitySelector"/>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreferredIdPEntitySelector"/>
@@ -55,6 +56,7 @@
                     <property name="name" value="usr-selected-idp-selection"/>
                     <property name="description" value="Requested, then User Selected"/>
                     <property name="selectors">
+                        <!-- Ordered list of selectors -->
                         <list>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.RequestedIdPEntitySelector"/>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.UserSelectedIdPEntitySelector"/>
@@ -65,6 +67,7 @@
                     <property name="name" value="preferred-only-idp-selection"/>
                     <property name="description" value="Preferred only"/>
                     <property name="selectors">
+                        <!-- Ordered list of selectors -->
                         <list>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreferredIdPEntitySelector"/>
                         </list>

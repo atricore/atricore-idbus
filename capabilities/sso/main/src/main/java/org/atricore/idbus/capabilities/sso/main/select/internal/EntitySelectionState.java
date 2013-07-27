@@ -9,10 +9,12 @@ import org.atricore.idbus.common.sso._1_0.protocol.SelectEntityRequestType;
 public class EntitySelectionState implements java.io.Serializable {
 
     private ClaimSet userClaims;
-
     private SelectEntityRequestType request;
 
-    private Integer userClaimsEndpointIdx;
+    private int nextSelectorIdx;
+    private int nextSelectorEndpointIdx;
+
+    private String selectedCotMember;
 
     public ClaimSet getUserClaims() {
         return userClaims;
@@ -30,12 +32,27 @@ public class EntitySelectionState implements java.io.Serializable {
         this.request = request;
     }
 
-    public Integer getUserClaimsEndpointIdx() {
-        return userClaimsEndpointIdx;
+    public String getSelectedCotMember() {
+        return selectedCotMember;
     }
 
-    public void setUserClaimsEndpointIdx(Integer userClaimsEndpointIdx) {
-        this.userClaimsEndpointIdx = userClaimsEndpointIdx;
+    public void setSelectedCotMember(String selectedCotMember) {
+        this.selectedCotMember = selectedCotMember;
     }
 
+    public int getNextSelectorIdx() {
+        return nextSelectorIdx;
+    }
+
+    public void setNextSelectorIdx(int nextSelectorIdx) {
+        this.nextSelectorIdx = nextSelectorIdx;
+    }
+
+    public int getNextSelectorEndpointIdx() {
+        return nextSelectorEndpointIdx;
+    }
+
+    public void setNextSelectorEndpointIdx(int nextSelectorEndpointIdx) {
+        this.nextSelectorEndpointIdx = nextSelectorEndpointIdx;
+    }
 }

@@ -262,7 +262,7 @@ public class SelectIdPMediator implements Serializable {
         return idpModels;
     }
 
-    public void onSelectIdp(String name) {
+    public void onSelectIdp(String name, boolean rememberSelection) {
         // TODO : !
         // We need to send a browser redirect, with the artifact Id and the response!
 
@@ -271,8 +271,11 @@ public class SelectIdPMediator implements Serializable {
                 if (idp.getName().equals(name)) {
 
                     ClaimSet claims = new ClaimSetImpl();
-
                     claims.addClaim(new UserClaimImpl(UserSelectedIdPEntitySelector.SELECTED_IDP_ALIAS_ATTR, idp.getEntityId()));
+
+                    if (rememberSelection)
+                        claims.addClaim(new UserClaimImpl(UserSelectedIdPEntitySelector.REMEMBER_IDP_ATTR, "TRUE"));
+
 
                     UserClaimsResponse response = new UserClaimsResponseImpl(uuidGenerator.generateId(),
                             null,

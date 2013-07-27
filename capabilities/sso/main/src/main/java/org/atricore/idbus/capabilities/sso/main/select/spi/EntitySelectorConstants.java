@@ -16,6 +16,8 @@ public interface EntitySelectorConstants {
 
     public static final String SELECTED_IDP_ID_ATTR = "selected_atricore_idp_id";
 
+    public static final String REMEMBER_IDP_ATTR = "remember_idp";
+
     public static final String AUTHN_CTX_ATTR = "authnCtx";
 
 }

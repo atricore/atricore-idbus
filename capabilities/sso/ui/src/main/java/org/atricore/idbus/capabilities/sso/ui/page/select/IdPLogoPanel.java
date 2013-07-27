@@ -16,8 +16,19 @@ import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
  */
 public class IdPLogoPanel extends Panel {
 
+    private final IModel<IdPModel> model ;
+
+    private final SelectIdPMediator mediator;
+
     public IdPLogoPanel(String id, IModel<IdPModel> model, final SelectIdPMediator mediator) {
         super(id, model);
+        this.model = model;
+        this.mediator = mediator;
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
 
         Link idpLogo = new Link<IdPModel>("ssoLink", model) {
             @Override
@@ -25,7 +36,7 @@ public class IdPLogoPanel extends Panel {
                 // Send response back!
                 IdPModel idp = getModel().getObject();
                 idp.getName();
-                mediator.onSelectIdp(idp.getName());
+                mediator.onSelectIdp(idp.getName(), true);
             }
         };
 

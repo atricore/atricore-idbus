@@ -97,20 +97,34 @@ public class IdBusErrorPage extends BasePage {
         this.artifactQueueManager = artifactQueueManager;
     }
 
+    /**
+     * For now, only the root cause will be displayed
+     * @param cause
+     * @return
+     */
     protected List<String> buildCauses(Throwable cause) {
 
         List<String> causes = new ArrayList<String>();
 
+        Throwable rootCause = cause;
         while (cause != null) {
 
-            Writer errorWriter = new StringWriter();
-            PrintWriter errorPrintWriter = new PrintWriter(errorWriter);
+//            Writer errorWriter = new StringWriter();
+//            PrintWriter errorPrintWriter = new PrintWriter(errorWriter);
 
-            cause.printStackTrace(errorPrintWriter);
-            causes.add(errorWriter.toString());
+//            cause.printStackTrace(errorPrintWriter);
+//            causes.add(errorWriter.toString());
 
+            rootCause = cause;
             cause = cause.getCause();
         }
+
+        Writer errorWriter = new StringWriter();
+        PrintWriter errorPrintWriter = new PrintWriter(errorWriter);
+
+        rootCause.printStackTrace(errorPrintWriter);
+        causes.add(errorWriter.toString());
+
         return causes;
 
     }
