@@ -19,5 +19,5 @@ public interface EntitySelector {
 
     CircleOfTrustMemberDescriptor selectCotMember(EntitySelectionContext ctx, SelectorChannel channel) throws SSOException;
 
-    List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionState selectionState, SelectorChannel channel);
+    List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionContext ctx, SelectorChannel channel);
 }

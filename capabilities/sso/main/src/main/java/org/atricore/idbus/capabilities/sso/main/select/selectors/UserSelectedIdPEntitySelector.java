@@ -23,9 +23,13 @@ import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
+ * Selects an IdP based on user input (UserClaims).  It will also keep track of the selected IdP using a mediation state
+ * local variable (This is a browser session based state variable)
+ *
  * @author: sgonzalez@atriocore.com
  * @date: 6/12/13
  */
@@ -40,7 +44,13 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
 
     public CircleOfTrustMemberDescriptor selectCotMember(EntitySelectionContext ctx, SelectorChannel channel) throws SSOException {
 
-        CircleOfTrustMemberDescriptor idp = null;
+        CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) ctx.getMediationState().getLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:cotMember");
+        if (idp != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Using previously selected COT member : " + idp);
+                return idp;
+            }
+        }
 
         // Try with selected IDP alias first
         {
@@ -79,15 +89,30 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
             }
         }
 
-        return idp;
+        UserClaim rememberSelection = ctx.getUserClaim(REMEMBER_IDP_ATTR);
+        if (rememberSelection != null && idp != null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Storing selected COT member " + idp.getAlias());
+            ctx.getMediationState().setLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:cotMember", idp);
+        } else {
 
+            if (logger.isDebugEnabled())
+                logger.debug("Clearing selected COT member (if any)");
+
+            ctx.getMediationState().removeLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:cotMember");
+        }
+
+        return idp;
 
     }
 
     @Override
-    public List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionState selectionState, SelectorChannel channel) {
-        CircleOfTrustManager cotMgr = channel.getProvider().getCotManager();
+    public List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionContext ctx, SelectorChannel channel) {
 
+        if (ctx.getMediationState().getLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:cotMember") != null)
+            return Collections.EMPTY_LIST;
+
+        CircleOfTrustManager cotMgr = channel.getProvider().getCotManager();
 
         String applianceName = channel.getProvider().getUnitContainer().getName();
 

@@ -39,13 +39,11 @@ public class SelectIdPPanel extends Panel {
     protected void onInitialize() {
         super.onInitialize();
 
-        // Build idps table
+        // Build a table with all the available IdPs
         List<IColumn<IdPModel, String>> columns = new ArrayList<IColumn<IdPModel, String>>();
 
-        // Application ICON
-        //<td class="gt-avatar"><img src="images/gt/avatar.gif" alt="avatar" width="53" height="53"/></td>
-
-        columns.add(new PropertyColumn<IdPModel, String>(new Model<String>("Type"), "displayName") {
+        // First column contains the IdP logo
+        columns.add(new PropertyColumn<IdPModel, String>(new Model<String>(getString("idpTypeColumn", null, " ")), "displayName") {
 
             @Override
             public String getCssClass() {
@@ -61,7 +59,9 @@ public class SelectIdPPanel extends Panel {
         }
         );
 
-        columns.add(new PropertyColumn<IdPModel, String>(new Model<String>("Details"), "displayName") {
+        // Second column contains IdP description and sign-in link
+        columns.add(new PropertyColumn<IdPModel, String>(new Model<String>(getString("idpDetailsColumn", null, " ")), "displayName") {
+
             @Override
             public void populateItem(Item<ICellPopulator<IdPModel>> cellItem, String componentId,
                                      IModel<IdPModel> model) {
@@ -72,7 +72,8 @@ public class SelectIdPPanel extends Panel {
         });
 
 
-        columns.add(new PropertyColumn<IdPModel, String>(new Model<String>(" "), "displayName") {
+        // Third column contains IdP additional information (i.e. ID and Type)
+        columns.add(new PropertyColumn<IdPModel, String>(new Model<String>(getString("idpInformationColumn", null, " ")), "displayName") {
             @Override
             public void populateItem(Item<ICellPopulator<IdPModel>> cellItem, String componentId,
                                      IModel<IdPModel> model) {

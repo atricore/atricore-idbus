@@ -14,9 +14,10 @@ import java.util.List;
  */
 public interface EntitySelectorManager {
 
+    List<EntitySelector> resolveSelectors(EntitySelectionContext ctx, SelectorChannel channel, String strategyName) throws SSOException;
 
-    List<EndpointDescriptor> resolveUserClaimsEndpoints(EntitySelectionState selectionState, SelectorChannel channel, String realmName) throws SSOException;
+    List<EndpointDescriptor> resolveUserClaimsEndpoints(EntitySelectionContext ctx, SelectorChannel channel, String strategyName) throws SSOException;
 
-    CircleOfTrustMemberDescriptor selectEntity(String realmName, EntitySelectionContext ctx, SelectorChannel channel) throws SSOException;
+    CircleOfTrustMemberDescriptor selectEntity(String strategyName, EntitySelector selector, EntitySelectionContext ctx, SelectorChannel channel) throws SSOException;
 
 }

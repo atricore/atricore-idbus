@@ -21,7 +21,7 @@ public abstract class AbstractEntitySelector implements EntitySelector, EntitySe
         return true;
     }
 
-    public List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionState selectionState, SelectorChannel channel) {
+    public List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionContext ctx, SelectorChannel channel) {
         return userClaimsEndpoints;
     }
 

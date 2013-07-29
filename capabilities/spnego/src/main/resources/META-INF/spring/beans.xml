@@ -10,6 +10,7 @@
         <property name="name" value="wia-idp-selector"/>
         <property name="description" value="WIA, Requested then Preferred"/>
         <property name="selectors">
+            <!-- Ordered list of selectors -->
             <list>
                 <bean class="org.atricore.idbus.capabilities.spnego.selectors.SpnegoIdPSelector"/>
                 <!-- The SSO Capability must be always on -->
@@ -25,6 +26,7 @@
         <property name="name" value="wia-usr-idp-selection"/>
         <property name="description" value="WIA, Requested then User Selected"/>
         <property name="selectors">
+            <!-- Ordered list of selectors -->
             <list>
                 <bean class="org.atricore.idbus.capabilities.spnego.selectors.SpnegoIdPSelector"/>
                 <!-- The SSO Capability must be always on -->

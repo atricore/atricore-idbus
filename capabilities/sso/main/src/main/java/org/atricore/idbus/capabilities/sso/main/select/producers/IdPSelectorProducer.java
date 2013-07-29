@@ -51,6 +51,9 @@ public class IdPSelectorProducer extends SSOProducer {
 
         try {
 
+            // TODO : Keep track of Selected IdP (session)
+            // TODO : Remember Selected IdP (persistente cookie)
+
             // ------------------------------------------------------------------------------------------
             // Select Entity
             // ------------------------------------------------------------------------------------------
@@ -89,13 +92,22 @@ public class IdPSelectorProducer extends SSOProducer {
 
         // Do we need to collect more information to make a decision ?!
         SSOEntitySelectorMediator mediator = (SSOEntitySelectorMediator) channel.getIdentityMediator();
-        EntitySelectorManager manager = mediator.getSelectorManager();
+        EntitySelectorManager entitySelectorMgr = mediator.getSelectorManager();
 
-        // Information can be found:
+        CircleOfTrustMemberDescriptor selectedEntity = (CircleOfTrustMemberDescriptor) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY");
+
+        if (selectedEntity != null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Using previously selected entityh " + selectedEntity);
+            sendSelectionResponse(exchange, state, request, selectedEntity);
+            return;
+        }
+
+        // Information to make a decision can be obtain in the following ways:
 
         // 1. In the request (preferred IdP, requested IdP, etc)
         // 2. As provider state variables (user IP, user-agent, etc)
-        // 3. Provided as additional endpoints
+        // 3. Provided by additional endpoints as User Claims
 
         EntitySelectionState selectionState = new EntitySelectionState();
         ClaimSet userClaims = new ClaimSetImpl();
@@ -111,91 +123,56 @@ public class IdPSelectorProducer extends SSOProducer {
             selectionState.setUserClaims(userClaims);
         }
 
+        selectionState.setRequest(request);
+
+        EntitySelectionContext ctx = new EntitySelectionContext(state,
+                selectionState,
+                getCotManager(),
+                selectionState.getUserClaims(),
+                request);
+
         // We already have some attributes in the selection state
-        List<EndpointDescriptor> endpoints = manager.resolveUserClaimsEndpoints(selectionState, (SelectorChannel) channel, mediator.getPreferredStrategy());
-        if (endpoints != null) {
+        //List<EndpointDescriptor> endpoints = entitySelectorMgr.resolveUserClaimsEndpoints(ctx, (SelectorChannel) channel, mediator.getPreferredStrategy());
 
-            // Send Attributes Request
-            Integer idx = selectionState.getUserClaimsEndpointIdx();
-            if (idx == null) {
-                idx = 0;
-            } else {
-                idx ++;
-            }
-            selectionState.setUserClaimsEndpointIdx(idx);
+        List<EntitySelector> selectors = entitySelectorMgr.resolveSelectors(ctx, (SelectorChannel) channel, mediator.getPreferredStrategy());
 
-            if (idx < endpoints.size()) {
+        // Store selection state
+        state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE", selectionState);
 
-                // Store all state and send a 'select attrs request'
+        // Try to find an IdP
+        CircleOfTrustMemberDescriptor entity = null;
 
-                // We need to keep track of the endpoints, for now only one supported !!!
-                UserClaimsRequest userClaimsReq = new UserClaimsRequestImpl(
-                        uuidGenerator.generateId(),
-                        channel,
-                        endpoint,
-                        state.getLocalState().getId());
+        EntitySelector selector = processNextSelector(exchange, selectors, ctx);
+        while (selector != null && entity == null) {
 
-                userClaimsReq.setAttribute("ServiceProvider", request.getIssuer());
+            if (logger.isDebugEnabled())
+                logger.debug("Processing Selector: " + selector);
 
-                // For now, artifact binding is required.
-                EndpointDescriptor ed = endpoints.get(idx);
-
-
-                // Send User Claims request
-                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-
-                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                        userClaimsReq,
-                        "UserClaimsRequest",
-                        null,
-                        ed,
-                        state));
-
-                exchange.setOut(out);
-
-                selectionState.setRequest(request);
-                selectionState.setUserClaims(userClaims);
-
-                state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE", selectionState);
-
+            // This will process the next selector endpoint, if it returs true, it means that an endpoint was used
+            if (processNextSelectorEndpoint(exchange, selector, ctx))
                 return;
-            }
 
-            state.removeLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
+            // If we get here, it means that there are now more endpoints to process for this selector, try to select
+            // an entity now.
+
+            entity = entitySelectorMgr.selectEntity(mediator.getPreferredStrategy(), selector, ctx, (SelectorChannel) channel);
+
+            selector = processNextSelector(exchange, selectors, ctx);
         }
 
-        // Get selection strategies from mediator ...
-        EntitySelectionContext ctx = new EntitySelectionContext(getCotManager(), userClaims, request);
-        CircleOfTrustMemberDescriptor entity = manager.selectEntity(mediator.getPreferredStrategy(), ctx, (SelectorChannel) channel);
+        if (logger.isDebugEnabled())
+            logger.debug("Selected IdP " + (entity != null ? entity.getAlias() : "NULL"));
 
-        // TODO : Do something with the outcome
-        SelectEntityResponseType response = new SelectEntityResponseType();
+        // Send the selected entity, if any
+        sendSelectionResponse(exchange, state, selectionState.getRequest(), entity);
 
-        response.setEntityId(entity.getId());
-
-        String location = request.getReplyTo();
-        if (location == null)
-            throw new SSOException("Reply-To attribute is required for select entity request " + request.getID());
-
-        // For now, artifact binding is required.
-        EndpointDescriptor ed = new EndpointDescriptorImpl(
-                "IDPSelectorResponseEndpoint",
-                "EntitySelectorResponse",
-                SSOBinding.SSO_ARTIFACT.toString(),
-                request.getReplyTo(),
-                null);
-
-        // Send SAMLR2 Message back
-        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-
-        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                response,
-                "SelectEntityResponse",
-                null,
-                ed,
-                state));
-
-        exchange.setOut(out);
+        // Clear selection state
+        state.removeLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
+        if (entity != null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Storing selected entity " + entity.getAlias());
+            state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY", entity);
+        }
 
     }
 
@@ -203,74 +180,171 @@ public class IdPSelectorProducer extends SSOProducer {
 
         // Do we need to collect more information to make a decision ?!
         SSOEntitySelectorMediator mediator = (SSOEntitySelectorMediator) channel.getIdentityMediator();
-        EntitySelectorManager manager = mediator.getSelectorManager();
 
+        EntitySelectorManager entitySelectorMgr = mediator.getSelectorManager();
 
+        // Get selection state
         EntitySelectionState selectionState = (EntitySelectionState) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
+
         for (Claim c : userClaimsResp.getClaimSet().getClaims()) {
             selectionState.getUserClaims().addClaim(c);
         }
 
+        EntitySelectionContext ctx = new EntitySelectionContext(state,
+                selectionState,
+                getCotManager(),
+                selectionState.getUserClaims(),
+                selectionState.getRequest());
 
-        List<EndpointDescriptor> endpoints = manager.resolveUserClaimsEndpoints(selectionState, (SelectorChannel) channel, mediator.getPreferredStrategy());
-        if (endpoints != null) {
+        CircleOfTrustMemberDescriptor entity = null;
 
-            // Send Attributes Request
-            Integer idx = selectionState.getUserClaimsEndpointIdx();
-            if (idx == null) {
-                idx = 0;
-            } else {
-                idx ++;
-            }
+        List<EntitySelector> selectors = entitySelectorMgr.resolveSelectors(ctx, (SelectorChannel) channel, mediator.getPreferredStrategy());
 
-            selectionState.setUserClaimsEndpointIdx(idx);
+        // Current selector
+        EntitySelector selector = selectors.get(selectionState.getNextSelectorIdx() - 1);
+        while (selector != null && entity == null) {
 
-            if (idx < endpoints.size()) {
-                // Store all state and send a 'select attrs request'
-
-                // We need to keep track of the endpoints, for now only one supported !!!
-                UserClaimsRequest attrReq = new UserClaimsRequestImpl(
-                        uuidGenerator.generateId(),
-                        channel,
-                        endpoint,
-                        state.getLocalState().getId());
-
-                // For now, artifact binding is required.
-                EndpointDescriptor ed = endpoints.get(idx);
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Using UserClaims endpoint : " + ed.getLocation() + " ["+ed.getBinding()+"]");
-
-                // Send SAMLR2 Message back
-                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-
-                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                        attrReq,
-                        "UserClaimsRequest",
-                        null,
-                        ed,
-                        state));
-
-                exchange.setOut(out);
-
-                state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE", selectionState);
-
+            // This will process the next selector endpoint, if it returs true, it means that an endpoint was used
+            if (processNextSelectorEndpoint(exchange, selector, ctx))
                 return;
 
+            // If we get here, it means that there are now more endpoints to process for this selector, try to select
+            // an entity now.
+
+            entity = entitySelectorMgr.selectEntity(mediator.getPreferredStrategy(), selector, ctx, (SelectorChannel) channel);
+
+            selector = processNextSelector(exchange, selectors, ctx);
+        }
+
+
+        if (logger.isDebugEnabled())
+            logger.debug("Selected IdP " + (entity != null ? entity.getAlias() : "NULL"));
+
+        // Send the selected entity, if any
+        sendSelectionResponse(exchange, state, selectionState.getRequest(), entity);
+
+        // Clear selection state
+        state.removeLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
+        if (entity != null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Storing selected entity " + entity.getAlias());
+            state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY", entity);
+        }
+
+    }
+
+
+    protected EntitySelector processNextSelector(CamelMediationExchange exchange, List<EntitySelector> selectors, EntitySelectionContext ctx) {
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        MediationState state = in.getMessage().getState();
+        EntitySelectionState selectionState = (EntitySelectionState) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
+
+        int selectorIdx = selectionState.getNextSelectorIdx();
+
+        if (logger.isDebugEnabled())
+            logger.debug("Processing selector [" + selectorIdx + "] ");
+
+        EntitySelector selector = null;
+        if (selectorIdx < selectors.size()) {
+
+            selector = selectors.get(selectorIdx);
+
+            while (selector != null && !selector.canHandle(ctx)) {
+                selectorIdx ++;
+                if (selectorIdx < selectors.size())
+                    selector = selectors.get(selectorIdx);
+                else
+                    selector = null;
             }
         }
 
-        SelectEntityRequestType request = selectionState.getRequest();
-        state.removeLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
+        selectionState.setNextSelectorIdx(selectorIdx + 1);
+        // Reset endpoints index
+        selectionState.setNextSelectorEndpointIdx(0);
 
-        // Get selection strategies from mediator ...
-        EntitySelectionContext ctx = new EntitySelectionContext(getCotManager(), selectionState.getUserClaims(), request);
-        CircleOfTrustMemberDescriptor entity = manager.selectEntity(mediator.getPreferredStrategy(), ctx, (SelectorChannel) channel);
+        if (logger.isDebugEnabled())
+            logger.debug("Using selector [" + selectorIdx + "] " + selector);
+
+        return selector;
+
+    }
+
+    protected boolean processNextSelectorEndpoint(CamelMediationExchange exchange,
+                                                  EntitySelector selector,
+                                                  EntitySelectionContext ctx) {
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        MediationState state = in.getMessage().getState();
+        EntitySelectionState selectionState = (EntitySelectionState) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
+
+        List<EndpointDescriptor> endpoints = selector.getUserClaimsEndpoints(ctx, (SelectorChannel) channel);
+
+        if (endpoints == null) {
+            if (logger.isDebugEnabled())
+                logger.debug("No endpoints for selector " + selector);
+            return false;
+        }
+
+        // Send Attributes Request
+        int selectorEndpointIdx = selectionState.getNextSelectorEndpointIdx();
+
+        if (logger.isDebugEnabled())
+            logger.debug("Processing IDX ["+selectorEndpointIdx+"] for Endpoints [" + endpoints.size() + "] from Selector: " + selector);
+
+        if (selectorEndpointIdx < endpoints.size()) {
+
+            EndpointDescriptor ed = endpoints.get(selectorEndpointIdx);
+
+            selectionState.setNextSelectorEndpointIdx(selectorEndpointIdx + 1);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Sending User Claims Request to " + ed);
+
+            // We need to keep track of the endpoints, for now only one supported !!!
+            UserClaimsRequest userClaimsReq = new UserClaimsRequestImpl(
+                    uuidGenerator.generateId(),
+                    channel,
+                    endpoint,
+                    state.getLocalState().getId());
+
+            userClaimsReq.setAttribute("ServiceProvider", ctx.getRequest().getIssuer());
+
+            // Send User Claims request
+            CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                    userClaimsReq,
+                    "UserClaimsRequest",
+                    null,
+                    ed,
+                    state));
+
+            exchange.setOut(out);
+
+            return true;
+
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("No more endpoints found for " + selector);
+
+        return false;
+    }
+
+    protected void sendSelectionResponse(CamelMediationExchange exchange ,
+                                         MediationState state,
+                                         SelectEntityRequestType request,
+                                         CircleOfTrustMemberDescriptor selectedCotMembery) throws SSOException {
+
+        if (logger.isDebugEnabled())
+            logger.debug("Sending selection response with entity " + selectedCotMembery != null ? (selectedCotMembery.getId() + " " + selectedCotMembery.getAlias()) : "NULL");
 
         // Do something with the outcome
         SelectEntityResponseType response = new SelectEntityResponseType();
-
-        response.setEntityId(entity.getId());
+        response.setInReplayTo(request.getID());
+        response.setID(uuidGenerator.generateId());
+        if (selectedCotMembery != null)
+            response.setEntityId(selectedCotMembery.getId());
 
         String location = request.getReplyTo();
         if (location == null)

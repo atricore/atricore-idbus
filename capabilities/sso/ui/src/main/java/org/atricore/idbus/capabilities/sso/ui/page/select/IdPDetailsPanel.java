@@ -16,20 +16,23 @@ public class IdPDetailsPanel extends Panel {
 
     private final SelectIdPMediator mediator;
 
+    private final IModel<IdPModel> model;
+
     public IdPDetailsPanel(String id, final IModel<IdPModel> model, final SelectIdPMediator mediator) {
         super(id, model);
-
         this.mediator = mediator;
+        this.model = model;
+    }
 
-        //add(new Label("displayName", model.getObject().getDisplayName()));
+    @Override
+    protected void onInitialize() {
+
+        super.onInitialize();
+
+        // IDP Description
         add(new Label("description", model.getObject().getDescription()));
-        add(new CheckBox("rememberSelection") {
 
-            @Override
-            protected void onSelectionChanged(Boolean newSelection) {
-                super.onSelectionChanged(newSelection);
-            }
-        });
+        // IDP Initiated SSO link
         add(new Link<IdPModel>("ssoLink", model) {
 
             @Override
@@ -37,11 +40,9 @@ public class IdPDetailsPanel extends Panel {
                 // Send response back!
                 IdPModel idp = getModel().getObject();
                 idp.getName();
-                mediator.onSelectIdp(idp.getName());
+                mediator.onSelectIdp(idp.getName(), true);
             }
-        }
-
-        );
+        });
     }
 
 

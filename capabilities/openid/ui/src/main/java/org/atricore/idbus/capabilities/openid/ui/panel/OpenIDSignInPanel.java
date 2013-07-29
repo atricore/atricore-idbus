@@ -35,6 +35,7 @@ import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.apache.wicket.util.time.Duration;
 import org.apache.wicket.util.value.ValueMap;
 import org.apache.wicket.validation.validator.UrlValidator;
+import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.BaseSignInPanel;
@@ -107,7 +108,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
      * @param id See Component constructor
      * @see org.apache.wicket.Component#Component(String)
      */
-    public OpenIDSignInPanel(final String id, CredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
+    public OpenIDSignInPanel(final String id, SSOCredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
                              final IdentityMediationUnitRegistry idsuRegistry
     ) {
         super(id);

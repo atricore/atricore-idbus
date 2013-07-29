@@ -49,7 +49,7 @@ public class SpnegoIdPSelector extends AbstractEntitySelector implements Applica
     private ApplicationContext applicationContext;
 
     @Override
-    public List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionState selectionState, SelectorChannel channel) {
+    public List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionContext ctx, SelectorChannel channel) {
 
         CircleOfTrustManager cotMgr = channel.getProvider().getCotManager();
 

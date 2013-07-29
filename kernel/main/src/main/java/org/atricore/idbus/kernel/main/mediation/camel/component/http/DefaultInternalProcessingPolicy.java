@@ -53,24 +53,28 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
         if (logger.isTraceEnabled())
             logger.trace("Matching URL [" + redirectUrl+ "]");
 
-
         // Force includes/excludes
+
         for (String includedUrl : includedUrls) {
-            String prefix = redirectUrl.substring(0, includedUrl.length());
-            if (prefix.equals(includedUrl)) {
-                if (logger.isTraceEnabled())
-                    logger.trace("Following, Matching URL to [" + includedUrl + "]");
-                return true;
+            if (redirectUrl.length() >= includedUrl.length()) {
+                String prefix = redirectUrl.substring(0, includedUrl.length());
+                if (prefix.equals(includedUrl)) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Following, Matching URL to [" + includedUrl + "]");
+                    return true;
+                }
             }
         }
 
         for (String excludedUrl : excludedUrls) {
-            String prefix = redirectUrl.substring(0, excludedUrl.length());
-            if (prefix.equals(excludedUrl)) {
-                if (logger.isTraceEnabled())
-                    logger.trace("Not Following, Matching URL to ["+excludedUrl+"]");
+            if (redirectUrl.length() >= excludedUrl.length()) {
+                String prefix = redirectUrl.substring(0, excludedUrl.length());
+                if (prefix.equals(excludedUrl)) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Not Following, Matching URL to ["+excludedUrl+"]");
 
-                return false;
+                    return false;
+                }
             }
         }
 
@@ -112,21 +116,25 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
 
         // Force includes/excludes
         for (String includedUrl : includedUrls) {
-            String prefix = requestUrl.substring(0, includedUrl.length());
-            if (prefix.equals(includedUrl)) {
-                if (logger.isTraceEnabled())
-                    logger.trace("Following, Matching URL to [" + includedUrl + "]");
-                return true;
+            if (requestUrl.length() >= includedUrl.length()) {
+                String prefix = requestUrl.substring(0, includedUrl.length());
+                if (prefix.equals(includedUrl)) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Following, Matching URL to [" + includedUrl + "]");
+                    return true;
+                }
             }
         }
 
         for (String excludedUrl : excludedUrls) {
-            String prefix = requestUrl.substring(0, excludedUrl.length());
-            if (prefix.equals(excludedUrl)) {
-                if (logger.isTraceEnabled())
-                    logger.trace("Not Following, Matching URL to ["+excludedUrl+"]");
+            if (requestUrl.length() >= excludedUrl.length()) {
+                String prefix = requestUrl.substring(0, excludedUrl.length());
+                if (prefix.equals(excludedUrl)) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Not Following, Matching URL to ["+excludedUrl+"]");
 
-                return false;
+                    return false;
+                }
             }
         }
 

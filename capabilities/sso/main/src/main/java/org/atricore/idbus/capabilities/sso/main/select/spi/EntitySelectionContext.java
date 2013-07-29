@@ -1,7 +1,9 @@
 package org.atricore.idbus.capabilities.sso.main.select.spi;
 
+import org.atricore.idbus.capabilities.sso.main.select.internal.EntitySelectionState;
 import org.atricore.idbus.common.sso._1_0.protocol.SelectEntityRequestType;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
+import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.claim.Claim;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaim;
@@ -23,10 +25,20 @@ public class EntitySelectionContext {
 
     private CircleOfTrustManager cotManager;
 
-    public EntitySelectionContext(CircleOfTrustManager cotManager, ClaimSet userClaims, SelectEntityRequestType request) {
+    private EntitySelectionState selectionState;
+
+    private MediationState mediationState;
+
+    public EntitySelectionContext(MediationState mediationState,
+                                  EntitySelectionState selectionState,
+                                  CircleOfTrustManager cotManager,
+                                  ClaimSet userClaims,
+                                  SelectEntityRequestType request) {
         this.userClaims = userClaims;
         this.request = request;
         this.cotManager = cotManager;
+        this.mediationState = mediationState;
+        this.selectionState = selectionState;
         if (userClaims != null) {
             for (Claim attr : userClaims.getClaims()) {
                 UserClaim userAttr = (UserClaim) attr;
@@ -49,5 +61,25 @@ public class EntitySelectionContext {
 
     public CircleOfTrustManager getCotManager() {
         return cotManager;
+    }
+
+    public EntitySelectionState getSelectionState() {
+        return selectionState;
+    }
+
+    public void setSelectionState(EntitySelectionState selectionState) {
+        this.selectionState = selectionState;
+    }
+
+    public MediationState getMediationState() {
+        return mediationState;
+    }
+
+    public void setMediationState(MediationState mediationState) {
+        this.mediationState = mediationState;
+    }
+
+    public void setRequest(SelectEntityRequestType request) {
+        this.request = request;
     }
 }

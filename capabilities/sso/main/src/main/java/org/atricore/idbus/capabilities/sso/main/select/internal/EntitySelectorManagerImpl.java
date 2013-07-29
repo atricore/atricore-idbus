@@ -18,7 +18,16 @@ public class EntitySelectorManagerImpl implements EntitySelectorManager {
     // Selectors by concern
     private SelectionStrategiesRegistry registry;
 
-    public List<EndpointDescriptor> resolveUserClaimsEndpoints(EntitySelectionState selectionState, SelectorChannel channel, String strategyName) throws SSOException {
+    public List<EntitySelector> resolveSelectors(EntitySelectionContext ctx, SelectorChannel channel, String strategyName) throws SSOException {
+        List<EndpointDescriptor> endpoints = new ArrayList<EndpointDescriptor>();
+        SelectionStrategy strategy = registry.lookup(strategyName);
+        if (strategy == null)
+            throw new SSOException("Invalid selection strategy " + strategyName);
+
+        return strategy.getSelectors();
+    }
+
+    public List<EndpointDescriptor> resolveUserClaimsEndpoints(EntitySelectionContext ctx, SelectorChannel channel, String strategyName) throws SSOException {
 
         List<EndpointDescriptor> endpoints = new ArrayList<EndpointDescriptor>();
         SelectionStrategy strategy = registry.lookup(strategyName);
@@ -28,7 +37,7 @@ public class EntitySelectorManagerImpl implements EntitySelectorManager {
         for (int i = 0; i < strategy.getSelectors().size(); i++) {
             EntitySelector selector = strategy.getSelectors().get(i);
 
-            Collection<EndpointDescriptor> se = selector.getUserClaimsEndpoints(selectionState, channel);
+            Collection<EndpointDescriptor> se = selector.getUserClaimsEndpoints(ctx, channel);
             if (se != null) {
                 endpoints.addAll(se);
             }
@@ -36,7 +45,7 @@ public class EntitySelectorManagerImpl implements EntitySelectorManager {
         return endpoints;
     }
 
-    public CircleOfTrustMemberDescriptor selectEntity(String strategyName, EntitySelectionContext ctx, SelectorChannel channel) throws SSOException {
+    public CircleOfTrustMemberDescriptor selectEntity(String strategyName, EntitySelector preferedSelector,  EntitySelectionContext ctx, SelectorChannel channel) throws SSOException {
         SelectionStrategy strategy = registry.lookup(strategyName);
         if (strategy == null)
             throw new SSOException("Invalid selection strategy " + strategyName);
@@ -44,7 +53,7 @@ public class EntitySelectorManagerImpl implements EntitySelectorManager {
         for (int i = 0; i < strategy.getSelectors().size(); i++) {
             EntitySelector selector = strategy.getSelectors().get(i);
 
-            if (!selector.canHandle(ctx))
+            if (!selector.equals(preferedSelector))
                 continue;
 
             CircleOfTrustMemberDescriptor m = selector.selectCotMember(ctx, channel);
