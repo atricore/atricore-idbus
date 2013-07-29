@@ -467,6 +467,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 // TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_REMOVE, ria.identityAppliance);
                 break;
+
             case ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT:
                 popupManager.showCreateIdentityProviderWindow(notification);
                 break;

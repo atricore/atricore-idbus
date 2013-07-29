@@ -17,6 +17,7 @@ public class LifecycleStartUpCommand extends AppSectionStartUpCommand {
     private var _startIdentityApplianceCommand:IIocCommand;
     private var _stopIdentityApplianceCommand:IIocCommand;
     private var _disposeIdentityApplianceCommand:IIocCommand;
+    private var _undisposeIdentityApplianceCommand:IIocCommand;
 
     public function LifecycleStartUpCommand() {
     }
@@ -41,6 +42,7 @@ public class LifecycleStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.START_IDENTITY_APPLIANCE, startIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.STOP_IDENTITY_APPLIANCE, stopIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DISPOSE_IDENTITY_APPLIANCE, disposeIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.UNDISPOSE_IDENTITY_APPLIANCE, undisposeIdentityApplianceCommand.getConfigName());
     }
 
     public function get buildIdentityApplianceCommand():IIocCommand {
@@ -89,6 +91,15 @@ public class LifecycleStartUpCommand extends AppSectionStartUpCommand {
 
     public function set disposeIdentityApplianceCommand(value:IIocCommand):void {
         _disposeIdentityApplianceCommand = value;
+    }
+
+
+    public function get undisposeIdentityApplianceCommand():IIocCommand {
+        return _undisposeIdentityApplianceCommand;
+    }
+
+    public function set undisposeIdentityApplianceCommand(value:IIocCommand):void {
+        _undisposeIdentityApplianceCommand = value;
     }
 }
 }

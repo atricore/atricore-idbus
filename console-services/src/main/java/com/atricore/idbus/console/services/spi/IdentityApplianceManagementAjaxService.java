@@ -40,6 +40,8 @@ public interface IdentityApplianceManagementAjaxService {
     StopIdentityApplianceResponse stopIdentityAppliance(StopIdentityApplianceRequest req) throws IdentityServerException;
 
     DisposeIdentityApplianceResponse disposeIdentityAppliance(DisposeIdentityApplianceRequest req) throws IdentityServerException;
+
+    UndisposeIdentityApplianceResponse undisposeIdentityAppliance(UndisposeIdentityApplianceRequest req) throws IdentityServerException;
     
     ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException;
 

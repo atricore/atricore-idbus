@@ -61,6 +61,9 @@
             </completers>
         </command>
 
+        <command name="appliance/undispose">
+            <action class="com.atricore.idbus.console.lifecycle.command.UndisposeApplianceCommand"/>
+        </command>
 
         <command name="appliance/remove">
             <action class="com.atricore.idbus.console.lifecycle.command.RemoveApplianceCommand"/>

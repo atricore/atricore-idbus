@@ -259,6 +259,12 @@
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
                                                                toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.removeAppliance')}"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
+                                        <components:IconButton iconUp="{EmbeddedIcons.undeployApplianceIcon}"
+                                                               iconWidth="22" iconHeight="22"
+                                                               paddingTop="3" paddingLeft="3"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.undisposeAppliance')}"
+                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_UNDISPOSE));"/>
                                     </s:HGroup>
                                 </s:MXAdvancedDataGridItemRenderer>
                             </fx:Component>

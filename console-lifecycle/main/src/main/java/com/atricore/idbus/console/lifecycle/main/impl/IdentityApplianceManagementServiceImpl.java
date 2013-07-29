@@ -334,6 +334,20 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     @Transactional
+    public UndisposeIdentityApplianceResponse undisposeIdentityAppliance(UndisposeIdentityApplianceRequest req) throws IdentityServerException {
+        try {
+            syncAppliances();
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(req.getId()));
+            appliance = undisposeAppliance(appliance);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
+            return new UndisposeIdentityApplianceResponse(appliance);
+        } catch (Exception e){
+            logger.error("Error disposing identity appliance", e);
+            throw new IdentityServerException(e);
+        }
+    }
+
+    @Transactional
     public ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException {
         try {
 
@@ -2172,6 +2186,20 @@ public class IdentityApplianceManagementServiceImpl implements
         return appliance;
     }
 
+    protected IdentityAppliance undisposeAppliance(IdentityAppliance appliance) throws IdentityServerException {
+        if (logger.isDebugEnabled())
+            logger.debug("Un-disposing Identity Appliance " + appliance.getId());
+
+        if (!appliance.getState().equals(IdentityApplianceState.DISPOSED.toString()))
+            throw new IllegalStateException("Appliance in state " + appliance.getState() + " cannot be un-disposed");
+
+        appliance.setState(IdentityApplianceState.PROJECTED.toString());
+        appliance = identityApplianceDAO.save(appliance);
+
+        return appliance;
+    }
+
+
     protected void removeAppliance(IdentityAppliance appliance) throws IdentityServerException {
 
         try {
@@ -2182,53 +2210,7 @@ public class IdentityApplianceManagementServiceImpl implements
                     && !appliance.getState().equals(IdentityApplianceState.PROJECTED.toString()))
                 throw new IllegalStateException("Appliance in state " + appliance.getState() + " cannot be deleted");
 
-            /*
-            IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
-            IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
-
-            if (applianceDep != null)
-                identityApplianceDeploymentDAO.delete(applianceDep.getId());
-
-            appliance.setIdApplianceDeployment(null);
-
-            Set<Long> fcIds = new HashSet<Long>();
-            for (Provider p : applianceDef.getProviders()) {
-
-                if (p instanceof FederatedProvider) {
-                    FederatedProvider fp = (FederatedProvider) p;
-                    for (FederatedConnection fcA : fp.getFederatedConnectionsA()) {
-                        fcIds.add(fcA.getId());
-                    }
-
-                    for (FederatedConnection fcB : fp.getFederatedConnectionsB()) {
-                        fcIds.add(fcB.getId());
-                    }
-                    fp.getFederatedConnectionsA().clear();
-                    fp.getFederatedConnectionsB().clear();
-                }
-            }
-            */
-
-            // TODO: fix jdo mapping so that idaus will be cascade deleted (currently only records from join table are removed)?
-            /*List<Long> idauIDs = new ArrayList<Long>();
-            IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
-            if (applianceDep != null && applianceDep.getIdaus() != null) {
-                for (IdentityApplianceUnit idaUnit : applianceDep.getIdaus()) {
-                    idauIDs.add(idaUnit.getId());
-                }
-            }*/
-
-            // some units are left unremoved, e.g. after appliance is deployed/undeployed/deployed, so we have to remove all
-            // units with the given group
-            String unitsGroup = appliance.getNamespace() + "." + appliance.getName();
-
             identityApplianceDAO.delete(appliance.getId());
-
-            // identityApplianceUnitDAO.deleteUnitsByGroup(unitsGroup);
-
-            /*for (Long idauID : idauIDs) {
-                identityApplianceUnitDAO.delete(idauID);
-            }*/
 
         } catch (Exception e) {
             logger.error("Cannot delete identity appliance " + appliance.getId());

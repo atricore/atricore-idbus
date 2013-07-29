@@ -76,6 +76,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _identityApplianceCreateCommand:IIocCommand;
     private var _identityApplianceImportCommand:IIocCommand;
     private var _identityApplianceRemoveCommand:IIocCommand;
+    private var _identityApplianceUndisposeCommand:IIocCommand;
     private var _identityProviderRemoveCommand:IIocCommand;
     private var _internalSaml2ServiceProviderRemoveCommand:IIocCommand;
     private var _externalSaml2IdentityProviderRemoveCommand:IIocCommand;
@@ -718,6 +719,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set identityApplianceRemoveCommand(value:IIocCommand):void {
         _identityApplianceRemoveCommand = value;
+    }
+
+    public function get identityApplianceUndisposeCommand():IIocCommand {
+        return _identityApplianceUndisposeCommand;
+    }
+
+    public function set identityApplianceUndisposeCommand(value:IIocCommand):void {
+        _identityApplianceUndisposeCommand = value;
     }
 
     public function get identityProviderRemoveCommand():IIocCommand {
