@@ -72,6 +72,9 @@ public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
                         logger.error("Name ID Format unsupported " + fmt);
                         break;
                 }
+            } else {
+                // If no format is specified, take it as it is
+                return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.UNSPECIFIED.getValue());
             }
 
         }
