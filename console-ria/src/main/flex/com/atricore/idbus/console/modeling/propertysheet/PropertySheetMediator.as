@@ -114,6 +114,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.saml2.sp.internal.
 import com.atricore.idbus.console.modeling.propertysheet.view.saml2.sp.internal.InternalSaml2ServiceProviderSaml2Section;
 import com.atricore.idbus.console.modeling.propertysheet.view.sugarcrm.SugarCRMContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sugarcrm.SugarCRMCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.wsfed.sp.external.ExternalWSFederationServiceProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.xmlidentitysource.XmlIdentitySourceCoreSection;
 import com.atricore.idbus.console.services.dto.AccountLinkEmitterType;
 import com.atricore.idbus.console.services.dto.AlfrescoResource;
@@ -136,6 +137,7 @@ import com.atricore.idbus.console.services.dto.Extension;
 import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
+import com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.GoogleAppsServiceProvider;
 import com.atricore.idbus.console.services.dto.IdBusExecutionEnvironment;
@@ -248,6 +250,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _openIDIdpCoreSection:ExternalOpenIDIdentityProviderCoreSection;
     private var _oauth2IdpCoreSection:OAuth2IdentityProviderCoreSection;
     private var _oauth2SpCoreSection:OAuth2ServiceProviderCoreSection;
+    private var _externalWSFedSpCoreSection:ExternalWSFederationServiceProviderCoreSection;
     private var _salesforceCoreSection:SalesforceCoreSection;
     private var _salesforceContractSection:SalesforceContractSection;
     private var _googleAppsCoreSection:GoogleAppsCoreSection;
@@ -506,6 +509,8 @@ public class PropertySheetMediator extends IocMediator {
                     enableOAuth2IdentityProviderPropertyTabs();
                 } else if (_currentIdentityApplianceElement is OAuth2ServiceProvider) {
                     enableOAuth2ServiceProviderPropertyTabs();
+                } else if (_currentIdentityApplianceElement is ExternalWSFederationServiceProvider) {
+                    enableExternalWSFederationServiceProviderPropertyTabs();
                 } else if (_currentIdentityApplianceElement is WikidAuthenticationService) {
                     enableWikidAuthnServicePropertyTabs();
                 } else if (_currentIdentityApplianceElement is DirectoryAuthenticationService) {
@@ -3112,6 +3117,68 @@ public class PropertySheetMediator extends IocMediator {
             serviceProvider.location.port = parseInt(_oauth2SpCoreSection.spLocationPort.text);
             serviceProvider.location.context = _oauth2SpCoreSection.spLocationContext.text;
             serviceProvider.location.uri = _oauth2SpCoreSection.spLocationPath.text;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }
+
+    protected function enableExternalWSFederationServiceProviderPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        // Core Tab
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _externalWSFedSpCoreSection = new ExternalWSFederationServiceProviderCoreSection();
+        corePropertyTab.addElement(_externalWSFedSpCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _externalWSFedSpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalWSFederationServiceProviderCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalWSFederationServiceProviderCorePropertyTabRollOut);
+    }
+
+    private function handleExternalWSFederationServiceProviderCorePropertyTabCreationComplete(event:Event):void {
+        var serviceProvider:ExternalWSFederationServiceProvider = _currentIdentityApplianceElement as ExternalWSFederationServiceProvider;
+
+        // if serviceProvider is null that means some other element was selected before completing this
+        if (serviceProvider != null) {
+            // bind view
+            _externalWSFedSpCoreSection.serviceProvName.text = serviceProvider.name;
+            _externalWSFedSpCoreSection.serviceProvDescription.text = serviceProvider.description;
+            _externalWSFedSpCoreSection.realm.text = serviceProvider.realm;
+
+            for (var j:int = 0; j < _externalWSFedSpCoreSection.tokenFormat.dataProvider.length; j++) {
+                if (_externalWSFedSpCoreSection.tokenFormat.dataProvider[j].data == serviceProvider.tokenFormat) {
+                    _externalWSFedSpCoreSection.tokenFormat.selectedIndex = j;
+                    break;
+                }
+            }
+
+            //clear all existing validators and add sp core section validators
+            _validators = [];
+            _validators.push(_externalWSFedSpCoreSection.nameValidator);
+        }
+    }
+
+    private function handleExternalWSFederationServiceProviderCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+
+            var serviceProvider:ExternalWSFederationServiceProvider = _currentIdentityApplianceElement as ExternalWSFederationServiceProvider;
+
+            serviceProvider.name = _externalWSFedSpCoreSection.serviceProvName.text;
+            serviceProvider.description = _externalWSFedSpCoreSection.serviceProvDescription.text;
+            serviceProvider.realm = _externalWSFedSpCoreSection.realm.text;
+            serviceProvider.returnUrl = _externalWSFedSpCoreSection.returnUrl.text;
+            serviceProvider.tokenFormat = _externalWSFedSpCoreSection.tokenFormat.selectedItem.data;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

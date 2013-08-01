@@ -117,6 +117,18 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;
     }
 
+    public void arrive(ExternalWSFederationServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(ExternalWSFederationServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(ExternalWSFederationServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
     public void arrive(SalesforceServiceProvider node) throws Exception {
 
     }

@@ -38,6 +38,7 @@ import com.atricore.idbus.console.services.dto.BindAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
+import com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityMappingType;
@@ -127,7 +128,9 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
     private function reflectSPSettingsInIdpChannelTab():void {
         if (_roleA is ExternalSaml2ServiceProvider || _roleB is ExternalSaml2ServiceProvider
                 || _roleA is ExternalSaml2ServiceProvider || _roleB is ExternalSaml2ServiceProvider
-                || _roleA is OAuth2ServiceProvider || _roleB is OAuth2ServiceProvider) {
+                || _roleA is OAuth2ServiceProvider || _roleB is OAuth2ServiceProvider
+                || _roleA is ExternalWSFederationServiceProvider || _roleB is ExternalWSFederationServiceProvider
+                ) {
             view.idpChannelTab.enabled = false;
             view.channelNavigator.selectedIndex = 1;
             return;
@@ -274,6 +277,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             _spName = (_roleB as ExternalSaml2ServiceProvider).name;
         } else if (_roleB is OAuth2ServiceProvider) {
             _spName = (_roleB as OAuth2ServiceProvider).name;
+        } else if (_roleB is ExternalWSFederationServiceProvider) {
+            _spName = (_roleB as ExternalWSFederationServiceProvider).name;
         }
 
         view.wantAuthnRequestsSignedCheck.selected = idp.wantAuthnRequestsSigned;
@@ -574,7 +579,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             spChannel.location = newLoc;
         }
 
-        if((_roleA is InternalSaml2ServiceProvider || _roleA is ExternalSaml2ServiceProvider || _roleA is ExternalSaml2ServiceProvider || _roleA is OAuth2ServiceProvider)
+        if((_roleA is InternalSaml2ServiceProvider || _roleA is ExternalSaml2ServiceProvider || _roleA is ExternalSaml2ServiceProvider || _roleA is OAuth2ServiceProvider || _roleA is ExternalWSFederationServiceProvider)
                 && (_roleB is IdentityProvider || _roleB is ExternalSaml2IdentityProvider || _roleB is ExternalSaml2IdentityProvider || _roleB is ExternalOpenIDIdentityProvider || _roleB is OAuth2IdentityProvider)){
             if(idpChannel.preferred){
                 //if idpchannel is preferred, go through all the idp channels in a SP and deselect previously preferred
@@ -603,7 +608,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             spChannel.connectionB = federatedConnection;
             federatedConnection.channelB = spChannel;
         } else if((_roleA is IdentityProvider || _roleA is ExternalSaml2IdentityProvider || _roleA is ExternalSaml2IdentityProvider || _roleA is ExternalOpenIDIdentityProvider || _roleA is OAuth2IdentityProvider)
-                && (_roleB is InternalSaml2ServiceProvider || _roleB is ExternalSaml2ServiceProvider || _roleB is ExternalSaml2ServiceProvider || _roleB is OAuth2ServiceProvider)){
+                && (_roleB is InternalSaml2ServiceProvider || _roleB is ExternalSaml2ServiceProvider || _roleB is ExternalSaml2ServiceProvider || _roleB is OAuth2ServiceProvider || _roleB is ExternalWSFederationServiceProvider)){
             if(idpChannel.preferred){
                 //if idpchannel is preferred, go through all the idp channels in a SP and deselect previously preferred
                 for each(conn in _roleB.federatedConnectionsA){

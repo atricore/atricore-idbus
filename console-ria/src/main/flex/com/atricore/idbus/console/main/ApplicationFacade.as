@@ -59,6 +59,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const OPENID_SERVICE_PROVIDER_REMOVE:String = "openIDServiceProviderRemove";
     public static const OAUTH2_IDENTITY_PROVIDER_REMOVE:String = "oauth2IdentityProviderRemove";
     public static const OAUTH2_SERVICE_PROVIDER_REMOVE:String = "oauth2ServiceProviderRemove";
+    public static const EXTERNAL_WSFED_SERVICE_PROVIDER_REMOVE:String = "externalWSFedServiceProviderRemove";
     public static const JOSSO1_RESOURCE_REMOVE:String = "josso1ResourceRemove";
     public static const JOSSO2_RESOURCE_REMOVE:String = "josso2ResourceRemove";
     public static const JBOSSEPP_RESOURCE_REMOVE:String = "jbosseppResourceRemove";
@@ -182,6 +183,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_OPENID_SERVICE_PROVIDER_ELEMENT:String = "createOpenIdServiceProviderElement";
     public static const CREATE_OAUTH_2_IDENTITY_PROVIDER_ELEMENT:String = "createOAuth2IdentityProviderElement";
     public static const CREATE_OAUTH_2_SERVICE_PROVIDER_ELEMENT:String = "createOAuth2ServiceProviderElement";
+    public static const CREATE_EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT:String = "createExternalWSFedServiceProviderElement";
     public static const CREATE_SALESFORCE_ELEMENT:String = "createSalesforceElement";
     public static const CREATE_GOOGLE_APPS_ELEMENT:String = "createGoogleAppsElement";
     public static const CREATE_SUGAR_CRM_ELEMENT:String = "createSugarCRMElement";
@@ -202,6 +204,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const REMOVE_OPENID_SERVICE_PROVIDER_ELEMENT:String = "removeOpenIDServiceProviderElement";
     public static const REMOVE_OAUTH2_IDENTITY_PROVIDER_ELEMENT:String = "removeOAuth2IdentityProviderElement";
     public static const REMOVE_OAUTH2_SERVICE_PROVIDER_ELEMENT:String = "removeOAuth2ServiceProviderElement";
+    public static const REMOVE_EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT:String = "removeExternalWSFedServiceProviderElement";
     public static const REMOVE_JOSSO1_RESOURCE_ELEMENT:String = "removeJOSSO1ResourceElement";
     public static const REMOVE_JOSSO2_RESOURCE_ELEMENT:String = "removeJOSSO2ResourceElement";
 //    public static const CREATE_IDP_CHANNEL_ELEMENT:String = "createIdpChannelElement";

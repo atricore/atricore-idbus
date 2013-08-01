@@ -8,6 +8,7 @@ import com.atricore.idbus.console.services.dto.CaptiveExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalOpenIDIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
+import com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProvider;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JBossEPPResource;
@@ -45,7 +46,7 @@ public class DiagramUtil {
             if ((node1.data is InternalSaml2ServiceProvider && (node2.data is IdentityProvider || node2.data is ExternalSaml2IdentityProvider
                             || node2.data is ExternalOpenIDIdentityProvider || node2.data is OAuth2IdentityProvider))
                     || (node1.data is IdentityProvider && (node2.data is InternalSaml2ServiceProvider || node2.data is ExternalSaml2ServiceProvider
-                            || node2.data is OAuth2ServiceProvider))
+                            || node2.data is OAuth2ServiceProvider || node2.data is ExternalWSFederationServiceProvider))
                     || ((node1.data is ExternalSaml2ServiceProvider ||  node1.data is OAuth2ServiceProvider)
                             && node2.data is IdentityProvider)
                     || ((node1.data is ExternalSaml2IdentityProvider || node1.data is ExternalOpenIDIdentityProvider || node1.data is OAuth2IdentityProvider)

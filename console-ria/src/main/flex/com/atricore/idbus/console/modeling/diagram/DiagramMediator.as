@@ -46,6 +46,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecution
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalSaml2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalSaml2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalSaml2ServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalWSFederationServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateGoogleAppsElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
@@ -75,6 +76,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDominoRes
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2IdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalSaml2ServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalWSFederationServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveGoogleAppsElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
@@ -116,6 +118,8 @@ import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
+import com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProvider;
+import com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProvider;
 import com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
@@ -467,6 +471,24 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
 
                         break;
+                    case DiagramElementTypes.EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT_TYPE:
+                        // assert that source end is an Identity Appliance
+                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
+                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                        var extWSFedSpOwnerAppliance:IdentityAppliance = _identityAppliance;
+
+                        var cewsfedsp:CreateExternalWSFederationServiceProviderElementRequest = new CreateExternalWSFederationServiceProviderElementRequest(
+                                extWSFedSpOwnerAppliance,
+                                //                                        _currentlySelectedNode.stringid
+                                null
+                        );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT, cewsfedsp);
+                        //                            }
+                        break;
+
                     case DiagramElementTypes.SALESFORCE_ELEMENT_TYPE:
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
@@ -926,6 +948,15 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_OAUTH2_SERVICE_PROVIDER_ELEMENT, roa2sp);
+                            break;
+                        case DiagramElementTypes.EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT_TYPE:
+                            var externalWSFedServiceProvider:ExternalWSFederationServiceProvider = _currentlySelectedNode.data as ExternalWSFederationServiceProvider;
+
+                            var rewsfedsp:RemoveExternalWSFederationServiceProviderElementRequest = new RemoveExternalWSFederationServiceProviderElementRequest(externalWSFedServiceProvider);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT, rewsfedsp);
                             break;
                         case DiagramElementTypes.SALESFORCE_ELEMENT_TYPE:
                             var salesforceProvider:SalesforceServiceProvider = _currentlySelectedNode.data as SalesforceServiceProvider;

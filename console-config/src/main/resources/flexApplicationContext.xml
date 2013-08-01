@@ -67,6 +67,7 @@
         <property name="externalOpenIDIdentityProviderCreateMediator" ref="externalOpenIDIdentityProviderCreateMediator"/>
         <property name="oauth2IdentityProviderCreateMediator" ref="oauth2IdentityProviderCreateMediator"/>
         <property name="oauth2ServiceProviderCreateMediator" ref="oauth2ServiceProviderCreateMediator"/>
+        <property name="externalWSFederationServiceProviderCreateMediator" ref="externalWSFederationServiceProviderCreateMediator"/>
         <property name="salesforceCreateMediator" ref="salesforceCreateMediator"/>
         <property name="googleAppsCreateMediator" ref="googleAppsCreateMediator"/>
         <property name="sugarCRMCreateMediator" ref="sugarCRMCreateMediator"/>
@@ -126,6 +127,7 @@
         <property name="externalSaml2IdentityProviderRemoveCommand" ref="externalSaml2IdentityProviderRemoveCommand"/>
         <property name="externalSaml2ServiceProviderRemoveCommand" ref="externalSaml2ServiceProviderRemoveCommand"/>
         <property name="externalOpenIDIdentityProviderRemoveCommand" ref="externalOpenIDIdentityProviderRemoveCommand"/>
+        <property name="externalWSFederationServiceProviderRemoveCommand" ref="externalWSFederationServiceProviderRemoveCommand"/>
         <property name="oauth2IdentityProviderRemoveCommand" ref="oauth2IdentityProviderRemoveCommand"/>
         <property name="oauth2ServiceProviderRemoveCommand" ref="oauth2ServiceProviderRemoveCommand"/>
         <property name="josso1ResourceRemoveCommand" ref="josso1ResourceRemoveCommand"/>
@@ -373,6 +375,10 @@
     </object>
     <object id="oauth2ServiceProviderRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.OAuth2ServiceProviderRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="externalWSFederationServiceProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExternalWSFederationServiceProviderRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="josso1ResourceRemoveCommand"
@@ -857,6 +863,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.saml2.idp.external.ExternalSaml2IdentityProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="externalWSFederationServiceProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.wsfed.sp.external.ExternalWSFederationServiceProviderCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="salesforceCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.salesforce.SalesforceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -1097,6 +1107,7 @@
         <property name="externalOpenIDIdentityProviderCreateMediator" ref="externalOpenIDIdentityProviderCreateMediator"/>
         <property name="oauth2IdentityProviderCreateMediator" ref="oauth2IdentityProviderCreateMediator"/>
         <property name="oauth2ServiceProviderCreateMediator" ref="oauth2ServiceProviderCreateMediator"/>
+        <property name="externalWSFederationServiceProviderCreateMediator" ref="externalWSFederationServiceProviderCreateMediator"/>
         <property name="salesforceCreateMediator" ref="salesforceCreateMediator"/>
         <property name="googleAppsCreateMediator" ref="googleAppsCreateMediator"/>
         <property name="sugarCRMCreateMediator" ref="sugarCRMCreateMediator"/>

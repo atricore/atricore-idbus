@@ -33,7 +33,8 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingProvider
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalWSFederationServiceProvider
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
@@ -46,7 +47,8 @@
                 com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.BindingProviderDTO
+                com.atricore.idbus.console.services.dto.BindingProviderDTO,
+                com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProviderDTO
             </b-hint>
         </field>
     </mapping>
@@ -69,7 +71,8 @@
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.UserDashboardBranding,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalWSFederationServiceProvider
               </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
@@ -83,7 +86,8 @@
                 com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.UserDashboardBrandingDTO
+                com.atricore.idbus.console.services.dto.UserDashboardBrandingDTO,
+                com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProviderDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -305,6 +309,11 @@
     </mapping>
 
     <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalWSFederationServiceProvider</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProviderDTO</class-b>
+    </mapping>
+
+    <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.AuthenticationService</class-a>
         <class-b>com.atricore.idbus.console.services.dto.AuthenticationServiceDTO</class-b>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -424,7 +433,8 @@
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalWSFederationServiceProvider
               </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
@@ -437,7 +447,8 @@
                 com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO
+                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProviderDTO
             </b-hint>
         </field>
     </mapping>
@@ -789,7 +800,8 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalWSFederationServiceProvider
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
@@ -802,7 +814,8 @@
                 com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO
+                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProviderDTO
             </b-hint>
         </field>
         <field>
@@ -819,7 +832,8 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.SugarCRMServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ExternalWSFederationServiceProvider
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
@@ -832,7 +846,8 @@
                 com.atricore.idbus.console.services.dto.SalesforceServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.GoogleAppsServiceProviderDTO,
                 com.atricore.idbus.console.services.dto.SugarCRMServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO
+                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO,
+                com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProviderDTO
             </b-hint>
         </field>
         <field>

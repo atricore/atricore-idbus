@@ -23,4 +23,32 @@ package com.atricore.idbus.console.services.dto;
 
 public class ExternalWSFederationServiceProviderDTO extends FederatedProviderDTO {
 
+    private String realm;
+    private String returnUrl;
+    private String tokenFormat;
+
+    public String getRealm() {
+        return realm;
+    }
+
+    public void setRealm(String realm) {
+        this.realm = realm;
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
+    }
+
+    public String getTokenFormat() {
+        return tokenFormat;
+    }
+
+    public void setTokenFormat(String tokenFormat) {
+        this.tokenFormat = tokenFormat;
+    }
+
 }

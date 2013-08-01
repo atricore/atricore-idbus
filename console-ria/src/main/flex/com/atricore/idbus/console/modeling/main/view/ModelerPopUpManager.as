@@ -111,6 +111,8 @@ import com.atricore.idbus.console.modeling.diagram.view.saml2.sp.internal.Intern
 import com.atricore.idbus.console.modeling.diagram.view.saml2.sp.internal.InternalSaml2ServiceProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.sugarcrm.SugarCRMCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.sugarcrm.SugarCRMCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.wsfed.sp.external.ExternalWSFederationServiceProviderCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.wsfed.sp.external.ExternalWSFederationServiceProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateMediator;
 import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardView;
@@ -131,6 +133,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetad
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataView;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateMediator;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateView;
+import com.atricore.idbus.console.services.dto.ExternalWSFederationServiceProvider;
 
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
@@ -151,6 +154,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _externalOpenIDIdentityProviderCreateMediator:ExternalOpenIDIdentityProviderCreateMediator;
     private var _oauth2IdentityProviderCreateMediator:OAuth2IdentityProviderCreateMediator;
     private var _oauth2ServiceProviderCreateMediator:OAuth2ServiceProviderCreateMediator;
+    private var _externalWSFederationServiceProviderCreateMediator:ExternalWSFederationServiceProviderCreateMediator;
     private var _salesforceCreateMediator:SalesforceCreateMediator;
     private var _googleAppsCreateMediator:GoogleAppsCreateMediator;
     private var _sugarCRMCreateMediator:SugarCRMCreateMediator;
@@ -206,6 +210,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _externalOpenIDIdentityProviderCreateForm:ExternalOpenIDIdentityProviderCreateForm;
     private var _oauth2IdentityProviderCreateForm:OAuth2IdentityProviderCreateForm;
     private var _oauth2ServiceProviderCreateForm:OAuth2ServiceProviderCreateForm;
+    private var _externalWSFederationServiceProviderCreateForm:ExternalWSFederationServiceProviderCreateForm;
     private var _salesforceCreateForm:SalesforceCreateForm;
     private var _googleAppsCreateForm:GoogleAppsCreateForm;
     private var _sugarCRMCreateForm:SugarCRMCreateForm;
@@ -339,6 +344,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set oauth2ServiceProviderCreateMediator(value:OAuth2ServiceProviderCreateMediator):void {
         _oauth2ServiceProviderCreateMediator = value;
+    }
+
+    public function get externalWSFederationServiceProviderCreateMediator():ExternalWSFederationServiceProviderCreateMediator {
+        return _externalWSFederationServiceProviderCreateMediator;
+    }
+
+    public function set externalWSFederationServiceProviderCreateMediator(value:ExternalWSFederationServiceProviderCreateMediator):void {
+        _externalWSFederationServiceProviderCreateMediator = value;
     }
 
     public function get salesforceCreateMediator():SalesforceCreateMediator {
@@ -877,6 +890,28 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleOAuth2ServiceProviderCreateFormCreated(event:FlexEvent):void {
         oauth2ServiceProviderCreateMediator.setViewComponent(_oauth2ServiceProviderCreateForm);
         oauth2ServiceProviderCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateExternalWSFederationServiceProviderWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createExternalWSFederationServiceProviderCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.externalWsfedsp");
+        _popup.width = 660;
+        _popup.height = 250;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_externalWSFederationServiceProviderCreateForm);
+        //on show call bindForm()
+    }
+
+    private function createExternalWSFederationServiceProviderCreateForm():void {
+        _externalWSFederationServiceProviderCreateForm = new ExternalWSFederationServiceProviderCreateForm();
+        _externalWSFederationServiceProviderCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalWSFederationServiceProviderCreateFormCreated);
+    }
+
+    private function handleExternalWSFederationServiceProviderCreateFormCreated(event:FlexEvent):void {
+        externalWSFederationServiceProviderCreateMediator.setViewComponent(_externalWSFederationServiceProviderCreateForm);
+        externalWSFederationServiceProviderCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateSalesforceWindow(notification:INotification):void {

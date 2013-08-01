@@ -343,12 +343,14 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_OPENID_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_OAUTH_2_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_OAUTH_2_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.CREATE_EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_EXTERNAL_SAML2_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_EXTERNAL_OPENID_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_OPENID_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_OAUTH2_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_OAUTH2_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_SALESFORCE_ELEMENT,
             ApplicationFacade.REMOVE_GOOGLE_APPS_ELEMENT,
             ApplicationFacade.REMOVE_SUGAR_CRM_ELEMENT,
@@ -513,6 +515,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.CREATE_OAUTH_2_SERVICE_PROVIDER_ELEMENT:
                 popupManager.showCreateOAuth2ServiceProviderWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_EXTERNAL_WSFED_SERVICE_PROVIDER_ELEMENT:
+                popupManager.showCreateExternalWSFederationServiceProviderWindow(notification);
                 break;
             case ApplicationFacade.CREATE_SALESFORCE_ELEMENT:
                 popupManager.showCreateSalesforceWindow(notification);

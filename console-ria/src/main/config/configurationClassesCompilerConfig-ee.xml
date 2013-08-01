@@ -84,6 +84,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExternalOpenIDIdentityProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.OAuth2IdentityProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.OAuth2ServiceProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.ExternalWSFederationServiceProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.JOSSO1ResourceRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.JOSSO2ResourceRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.LiferayResourceRemoveCommand</symbol>
@@ -174,6 +175,7 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.openid.idp.ExternalOpenIDIdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.oauth2.idp.OAuth2IdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.oauth2.sp.OAuth2ServiceProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.wsfed.sp.external.ExternalWSFederationServiceProviderCreateMediator</symbol>
 
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.josso1.JOSSO1ResourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.josso2.JOSSO2ResourceCreateMediator</symbol>

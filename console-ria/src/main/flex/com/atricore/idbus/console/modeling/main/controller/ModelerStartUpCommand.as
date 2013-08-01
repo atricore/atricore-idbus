@@ -26,6 +26,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _externalOpenIDIdentityProviderCreateMediator:IIocMediator;
     private var _oauth2IdentityProviderCreateMediator:IIocMediator;
     private var _oauth2ServiceProviderCreateMediator:IIocMediator;
+    private var _externalWSFederationServiceProviderCreateMediator:IIocMediator;
     private var _salesforceCreateMediator:IIocMediator;
     private var _googleAppsCreateMediator:IIocMediator;
     private var _sugarCRMCreateMediator:IIocMediator;
@@ -83,6 +84,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _externalOpenIDIdentityProviderRemoveCommand:IIocCommand;
     private var _oauth2IdentityProviderRemoveCommand:IIocCommand;
     private var _oauth2ServiceProviderRemoveCommand:IIocCommand;
+    private var _externalWSFederationServiceProviderRemoveCommand:IIocCommand;
     private var _josso1ResourceRemoveCommand:IIocCommand;
     private var _josso2ResourceRemoveCommand:IIocCommand;
     private var _jbosseppResourceRemoveCommand:IIocCommand;
@@ -179,7 +181,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(clientCertCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(directoryServiceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(jbosseppAuthenticationCreateMediator.getConfigName());
-
+        iocFacade.registerMediatorByConfigName(externalWSFederationServiceProviderCreateMediator.getConfigName());
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
@@ -195,6 +197,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.OPENID_IDENTITY_PROVIDER_REMOVE, externalOpenIDIdentityProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.OAUTH2_IDENTITY_PROVIDER_REMOVE, oauth2IdentityProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.OAUTH2_SERVICE_PROVIDER_REMOVE, oauth2ServiceProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.EXTERNAL_WSFED_SERVICE_PROVIDER_REMOVE, externalWSFederationServiceProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.JOSSO1_RESOURCE_REMOVE, josso1ResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.JOSSO2_RESOURCE_REMOVE, josso2ResourceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.JBOSSEPP_RESOURCE_REMOVE, jbosseppResourceRemoveCommand.getConfigName());
@@ -329,6 +332,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set oauth2ServiceProviderCreateMediator(value:IIocMediator):void {
         _oauth2ServiceProviderCreateMediator = value;
+    }
+
+    public function get externalWSFederationServiceProviderCreateMediator():IIocMediator {
+        return _externalWSFederationServiceProviderCreateMediator;
+    }
+
+    public function set externalWSFederationServiceProviderCreateMediator(value:IIocMediator):void {
+        _externalWSFederationServiceProviderCreateMediator = value;
     }
 
     public function get salesforceCreateMediator():IIocMediator {
@@ -771,6 +782,14 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set oauth2ServiceProviderRemoveCommand(value:IIocCommand):void {
         _oauth2ServiceProviderRemoveCommand = value;
+    }
+
+    public function get externalWSFederationServiceProviderRemoveCommand():IIocCommand {
+        return _externalWSFederationServiceProviderRemoveCommand;
+    }
+
+    public function set externalWSFederationServiceProviderRemoveCommand(value:IIocCommand):void {
+        _externalWSFederationServiceProviderRemoveCommand = value;
     }
 
     public function get josso1ResourceRemoveCommand():IIocCommand {
