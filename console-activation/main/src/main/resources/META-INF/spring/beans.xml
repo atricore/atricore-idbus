@@ -44,11 +44,11 @@
         <property name="printer" ref="printerServiceBean"/>
         <property name="installers">
             <list>
-
                 <ref bean="tc70-installer"/>
                 <ref bean="tc60-installer"/>
                 <ref bean="tc55-installer"/>
                 <ref bean="tc50-installer"/>
+                <ref bean="jb7-installer"/>
                 <ref bean="jb6-installer"/>
                 <ref bean="jb5-installer"/>
                 <ref bean="jb42-installer"/>
@@ -192,6 +192,34 @@
         <property name="JOSSOWarExploded" value="true"/>
 
     </bean>
+
+    <!-- JBoss 7.x -->
+    <bean name="jb7-installer" class="org.josso.tooling.gshell.install.installer.JBossWildFlyInstaller">
+        <constructor-arg index="0" ref="jb7"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="jb7" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="jb7"/>
+        <property name="family" value="jboss"/>
+        <property name="platformName" value="JBoss WildFly"/>
+        <property name="version" value="7.x"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/modules"/>
+        <property name="configDir" value="${target}/${instance}/configuration"/>
+        <property name="deployDir" value="${target}/${instance}/deployments"/>
+        <property name="endorsedLibDir" value="${target}/modules"/>
+
+        <property name="JOSSOConfDir" value="${target}/modules/org/josso/main/config"/>
+        <property name="JOSSOLibDir" value="${target}/modules/org/josso/main"/>
+        <property name="JOSSOSharedLibDir" value="${target}/modules/org/josso/main"/>
+
+        <property name="JOSSOWarName" value="josso.war"/>
+        <property name="JOSSOWarExploded" value="true"/>
+
+    </bean>
+
 
     <!-- JBoss 6.x -->
     <bean name="jb6-installer" class="org.josso.tooling.gshell.install.installer.JBossInstaller">
