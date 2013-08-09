@@ -207,8 +207,8 @@
 
         <property name="binDir" value="${target}/bin"/>
         <property name="libDir" value="${target}/modules"/>
-        <property name="configDir" value="${target}/${instance}/configuration"/>
-        <property name="deployDir" value="${target}/${instance}/deployments"/>
+        <property name="configDir" value="${target}/standalone/configuration"/>
+        <property name="deployDir" value="${target}/standalone/deployments"/>
         <property name="endorsedLibDir" value="${target}/modules"/>
 
         <property name="JOSSOConfDir" value="${target}/modules/org/josso/main/config"/>
