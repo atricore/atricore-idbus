@@ -4,8 +4,8 @@
 #set ($apacheDir = $apacheDir.substring(0, $apacheDirLength))
 #end
 #foreach($activation in $execEnv.getActivations())
-#set ($partnerappID = $activation.getPartnerAppId())
-#set ($partnerapp = $activation.getPartnerAppLocation().getContext())
+#set ($partnerappID = $activation.getResource().getServiceConnection().getSp().getName())
+#set ($partnerapp = $activation.getResource().getPartnerAppLocation().getContext())
 <Directory "$apacheDir/$partnerapp">
     AuthType JOSSO
     AuthName "$partnerapp"
