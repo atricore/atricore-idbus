@@ -75,6 +75,10 @@ public class IdBusErrorPage extends BasePage {
                     add(new Label("secStatus", getString(err.getSecFaultCode(), null, "")));
                     add(new Label("details", getString(err.getStatusDetails(), null, "N/A")));
                     fillCausesList(new CausesModel(causes));
+                } else {
+                    add(new Label("status", "N/A"));
+                    add(new Label("secStatus", ""));
+                    add(new Label("details", "N/A"));
                 }
 
             } catch (Exception e) {
