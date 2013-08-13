@@ -89,6 +89,11 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
         // This should give us the position of the "/" after the context
         int ctxEnd = originalUrl.indexOf(ctxPath) + ctxPath.length() + 1;
 
+        // The URL we're going to is shorter that the original + the context path
+        if (ctxEnd > redirectUrl.length()) {
+            return false;
+        }
+
         String originalBase = originalUrl.substring(0, ctxEnd);
         String redirectBase = redirectUrl.substring(0, ctxEnd);
 
