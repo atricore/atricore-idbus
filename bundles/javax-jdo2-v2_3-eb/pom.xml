@@ -29,13 +29,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.3.1-SNAPSHOT</version>
+        <version>1.3.1</version>
     </parent>
     
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-eb</artifactId>
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.3.1</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Bundle : Java JDO2 Api v2.3-eb OSGi</name>
 

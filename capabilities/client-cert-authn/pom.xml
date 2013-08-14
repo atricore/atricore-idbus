@@ -28,20 +28,20 @@
     <parent>
             <groupId>org.atricore.idbus</groupId>
             <artifactId>all</artifactId>
-            <version>1.3.1-SNAPSHOT</version>
+            <version>1.3.1</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.clientcertauthn</groupId>
     <artifactId>org.atricore.idbus.capabilities.clientcertauthn</artifactId>
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.3.1</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : Client Certificate Authentication</name>
 
     <properties>
-        <idbus.kernel.version>1.3.1-SNAPSHOT</idbus.kernel.version>
-        <idbus.sts.version>1.3.1-SNAPSHOT</idbus.sts.version>
-        <idbus.sso.version>1.3.1-SNAPSHOT</idbus.sso.version>
-        <idbus.bundle.ini4j-v0_5_1.version>1.3.1-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
+        <idbus.kernel.version>1.3.1</idbus.kernel.version>
+        <idbus.sts.version>1.3.1</idbus.sts.version>
+        <idbus.sso.version>1.3.1</idbus.sso.version>
+        <idbus.bundle.ini4j-v0_5_1.version>1.3.1</idbus.bundle.ini4j-v0_5_1.version>
         <karaf.version>2.2.3</karaf.version>
         <camel.version>1.6.1</camel.version>
         <spring.version>3.0.6.RELEASE</spring.version>

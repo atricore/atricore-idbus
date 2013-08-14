@@ -10,41 +10,41 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.3.1-SNAPSHOT</version>
+        <version>1.3.1</version>
     </parent>
 
     <groupId>org.atricore.idbus.examples.simple-openid</groupId>
     <artifactId>org.atricore.idbus.examples.simple-openid.project</artifactId>
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.3.1</version>
     <packaging>pom</packaging>
     <name>Atricore IDBus :: Example : Simple OpenID Identity Appliance Project</name>
     <properties>
 
-        <atricore.idbus.version>1.3.1-SNAPSHOT</atricore.idbus.version>
+        <atricore.idbus.version>1.3.1</atricore.idbus.version>
 
         <!-- Atricore Kernel -->
-        <idbus.kernel.version>1.3.1-SNAPSHOT</idbus.kernel.version>
+        <idbus.kernel.version>1.3.1</idbus.kernel.version>
 
         <!-- Atricore Capabilities -->
-        <idbus.cap.josso.version>1.3.1-SNAPSHOT</idbus.cap.josso.version>
-        <idbus.cap.saml2.version>1.3.1-SNAPSHOT</idbus.cap.saml2.version>
-        <idbus.cap.sts.version>1.3.1-SNAPSHOT</idbus.cap.sts.version>
-        <idbus.cap.spml2.version>1.3.1-SNAPSHOT</idbus.cap.spml2.version>
-        <idbus.cap.spnego.version>1.3.1-SNAPSHOT</idbus.cap.spnego.version>
+        <idbus.cap.josso.version>1.3.1</idbus.cap.josso.version>
+        <idbus.cap.saml2.version>1.3.1</idbus.cap.saml2.version>
+        <idbus.cap.sts.version>1.3.1</idbus.cap.sts.version>
+        <idbus.cap.spml2.version>1.3.1</idbus.cap.spml2.version>
+        <idbus.cap.spnego.version>1.3.1</idbus.cap.spnego.version>
 
         <!-- Atricore IDOJOs -->
-        <idbus.idojo.dbidentitystore.version>1.3.1-SNAPSHOT</idbus.idojo.dbidentitystore.version>
-        <idbus.idojo.ehcachesessionstore.version>1.3.1-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
-        <idbus.idojo.ldapidentitystore.version>1.3.1-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
-        <idbus.idojo.memoryidentitystore.version>1.3.1-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
-        <idbus.idojo.memorysessionstore.version>1.3.1-SNAPSHOT</idbus.idojo.memorysessionstore.version>
-        <idbus.idojo.serializedsessionstore.version>1.3.1-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
-        <idbus.idojo.strongauthscheme.version>1.3.1-SNAPSHOT</idbus.idojo.strongauthscheme.version>
+        <idbus.idojo.dbidentitystore.version>1.3.1</idbus.idojo.dbidentitystore.version>
+        <idbus.idojo.ehcachesessionstore.version>1.3.1</idbus.idojo.ehcachesessionstore.version>
+        <idbus.idojo.ldapidentitystore.version>1.3.1</idbus.idojo.ldapidentitystore.version>
+        <idbus.idojo.memoryidentitystore.version>1.3.1</idbus.idojo.memoryidentitystore.version>
+        <idbus.idojo.memorysessionstore.version>1.3.1</idbus.idojo.memorysessionstore.version>
+        <idbus.idojo.serializedsessionstore.version>1.3.1</idbus.idojo.serializedsessionstore.version>
+        <idbus.idojo.strongauthscheme.version>1.3.1</idbus.idojo.strongauthscheme.version>
 
-        <idbus.connector.jdoidentityvault.version>1.3.1-SNAPSHOT</idbus.connector.jdoidentityvault.version>
+        <idbus.connector.jdoidentityvault.version>1.3.1</idbus.connector.jdoidentityvault.version>
 
         <!-- Atricore Bundles -->
-        <idbus.bundle.josso-ws-v1_2.version>1.3.1-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
+        <idbus.bundle.josso-ws-v1_2.version>1.3.1</idbus.bundle.josso-ws-v1_2.version>
 
         <felix.plugin.version>2.1.0</felix.plugin.version>
 
