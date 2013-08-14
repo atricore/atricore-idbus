@@ -117,7 +117,11 @@
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
         <jaxws.api.version>2.1</jaxws.api.version>
+<<<<<<< HEAD
         <josso1.version>1.8.8-SNAPSHOT</josso1.version>
+=======
+        <josso1.version>1.8.8</josso1.version>
+>>>>>>> 64e9259... * FIX : Josso 1 version set to 1.8.8
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.14</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
