@@ -3,22 +3,55 @@
 #set ($apacheDirLength = $apacheDir.length() - 1)
 #set ($apacheDir = $apacheDir.substring(0, $apacheDirLength))
 #end
+
+# -------------------------------------------------------------------
+# Shared Memory configuration (do not palce this inside a VHost definition!)
+# -------------------------------------------------------------------
+#   Filename of shared segment, or NULL for anonymous shared memory
+#   ShmSSOFile logs/ShmSSOFile
+#   ShmSSOLockfile logs/ShmSSOLockfile
+#   ShmSSOSessions "10000"
+
+
 #foreach($activation in $execEnv.getActivations())
 #set ($partnerappID = $activation.getResource().getServiceConnection().getSp().getName())
 #set ($partnerapp = $activation.getResource().getPartnerAppLocation().getContext())
 <Directory "$apacheDir/$partnerapp">
     AuthType JOSSO
     AuthName "$partnerapp"
-    #Require role role1
+
     GatewayLoginUrl "$gatewayLoginUrl"
     GatewayLogoutUrl "$gatewayLogoutUrl"
+
+# Agent back-channel setup (web-services)
+
     GatewayEndpoint "$endpointHost" $endpointPort
     SessionManagerServicePath "$sessionManagerServicePath"
     IdentityManagerServicePath "$identityManagerServicePath"
     IdentityProviderServicePath "$identityProviderServicePath"
+
+    SessionAccessMinInterval 60000
+
     DefaultResource /$partnerapp
     PartnerApplicationID "$partnerappID"
     PHP5SecurityContext On
+
+# -------------------------------------------------------------------
+# Authorization setup, list of required roles to access the resource
+# Configuration option for roles MUST be 'Require role', otherwise
+# usernames will be enforced
+# -------------------------------------------------------------------
+#    Require role {roleA} {roleB}
+
+# -------------------------------------------------------------------
+# Auto-login strtategy configuration
+# -------------------------------------------------------------------
+#   AutoLoginDisabled On
+#   DefaultAutoLoginStrategy DEFAULT
+
+# -------------------------------------------------------------------
+#   Set to 'On' to force unsecure SSO Cookies on HTTPS connections" "(default is Off).
+#   ForceUnsecureSSOCookie Off
 
 #if ($transportSecurity.equals("confidential"))
     GatewayEndpointSSLEnable On
