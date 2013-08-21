@@ -3141,6 +3141,11 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.addElement(_externalWSFedSpCoreSection);
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
+        _externalWSFedSpCoreSection.serviceProvName.addEventListener(Event.CHANGE, handleSectionChange);
+        _externalWSFedSpCoreSection.serviceProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _externalWSFedSpCoreSection.realm.addEventListener(Event.CHANGE, handleSectionChange);
+        _externalWSFedSpCoreSection.returnUrl.addEventListener(Event.CHANGE,  handleSectionChange);
+        _externalWSFedSpCoreSection.tokenFormat.addEventListener(Event.CHANGE, handleSectionChange);
 
         _externalWSFedSpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalWSFederationServiceProviderCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalWSFederationServiceProviderCorePropertyTabRollOut);
@@ -3155,6 +3160,7 @@ public class PropertySheetMediator extends IocMediator {
             _externalWSFedSpCoreSection.serviceProvName.text = serviceProvider.name;
             _externalWSFedSpCoreSection.serviceProvDescription.text = serviceProvider.description;
             _externalWSFedSpCoreSection.realm.text = serviceProvider.realm;
+            _externalWSFedSpCoreSection.returnUrl.text = serviceProvider.returnUrl;
 
             for (var j:int = 0; j < _externalWSFedSpCoreSection.tokenFormat.dataProvider.length; j++) {
                 if (_externalWSFedSpCoreSection.tokenFormat.dataProvider[j].data == serviceProvider.tokenFormat) {
