@@ -7,10 +7,12 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.main.sso.OAuth2ClaimsMediator;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
@@ -19,6 +21,7 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -89,7 +92,7 @@ public class OAuth2AuthenticationClaimsChannelTransformer extends AbstractTransf
         Bean claimChannelBean = null;
         claimChannelBean = newBean(idpBeans, claimChannelBeanName, ClaimChannelImpl.class);
 
-        setPropertyValue(claimChannelBean, "priority", "1");
+        setPropertyValue(claimChannelBean, "priority", "0");
         setPropertyValue(claimChannelBean, "name", claimChannelBean.getName());
 
         // location
@@ -103,8 +106,8 @@ public class OAuth2AuthenticationClaimsChannelTransformer extends AbstractTransf
         ccOAuth2Artifact.setName(idpBean.getName() + "-cc-oauth2-artifact");
         setPropertyValue(ccOAuth2Artifact, "name", ccOAuth2Artifact.getName());
         setPropertyValue(ccOAuth2Artifact, "binding", SSOBinding.SSO_ARTIFACT.getValue());
-        setPropertyValue(ccOAuth2Artifact, "location", "/OAUTH2/ARTIFACT");
-        setPropertyValue(ccOAuth2Artifact, "type", "urn:org:atricore:idbus:ac:classes:OAuth2");
+        setPropertyValue(ccOAuth2Artifact, "location", "/PRE-AUTHN/ARTIFACT");
+        setPropertyValue(ccOAuth2Artifact, "type", AuthnCtxClass.OAUTH2_AUTHN_CTX.getValue());
         ccEndpoints.add(ccOAuth2Artifact);
 
         setPropertyAsBeans(claimChannelBean, "endpoints", ccEndpoints);
@@ -134,6 +137,23 @@ public class OAuth2AuthenticationClaimsChannelTransformer extends AbstractTransf
 
         // logger
         setPropertyBean(ccMediator, "logger", ccLogger);
+
+        // Provisioning target (default)
+        Reference provisioningTargetOsgi = new Reference();
+        provisioningTargetOsgi.setId(ccMediator.getName() + "-provisioning-target");
+        provisioningTargetOsgi.setInterface(ProvisioningTarget.class.getName());
+        provisioningTargetOsgi.setCardinality("1..1");
+
+        idpBeans.getImportsAndAliasAndBeen().add(provisioningTargetOsgi);
+
+        setPropertyRef(ccMediator, "provisioningTarget", ccMediator.getName() + "-provisioning-target");
+
+        // errorUrl
+        setPropertyValue(ccMediator, "errorUrl", resolveUiErrorLocation(appliance, provider));
+
+        // warningUrl
+        setPropertyValue(ccMediator, "warningUrl", resolveUiWarningLocation(appliance, provider));
+
 
         // identityMediator
         setPropertyRef(claimChannelBean, "identityMediator", ccMediator.getName());

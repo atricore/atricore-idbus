@@ -73,7 +73,7 @@ public class OAuth2AuthenticationTransformer extends AbstractTransformer {
         setPropertyValue(oauthAuthn, "sharedSecret", provider.getOauth2Key());
         setPropertyValue(oauthAuthn, "signKey", provider.getOauth2Key());
         setPropertyValue(oauthAuthn, "encryptKey", provider.getOauth2Key());
-        setPropertyValue(oauthAuthn, "accessTokenValidityInterval", "300");
+        setPropertyValue(oauthAuthn, "accessTokenValidityInterval", "-1"); // TODO : Take this from the console
 
     }
 

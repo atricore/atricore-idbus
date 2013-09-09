@@ -130,6 +130,7 @@
         <property name="groupDao" ref="group-dao"/>
         <property name="aclDao" ref="acl-dao"/>
         <property name="aclEntryDao" ref="acl-entry-dao"/>
+        <property name="securityTokenDao" ref="security-token-dao"/>
         <!--property name="schemaManager" ref="schema-manager-default"/-->
         <property name="usrAttrValDao" ref="user-attribute-value-dao"/>
         <property name="grpAttrValDao" ref="group-attribute-value-dao"/>
@@ -182,6 +183,10 @@
     </bean>
 
     <bean name="acl-entry-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOAclEntryDAOImpl">
+        <property name="persistenceManagerFactory" ref="default-pmf"/>
+    </bean>
+
+    <bean name="security-token-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOSecurityTokenDAOImpl">
         <property name="persistenceManagerFactory" ref="default-pmf"/>
     </bean>
 

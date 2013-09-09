@@ -715,9 +715,26 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
 
         // The same Claim Providers and STS are used for the IDP in all channels!
 
-        // wire claim channels to sp channel
+        // wire claim channels to sp channel, sort them using priority field
         String claimChannelName = idpBean.getName() + "-claim-channel";
-        Collection<Bean> claimChannels = getBeansOfType(idpBeans, ClaimChannelImpl.class.getName());
+        Collection<Bean> ccs = getBeansOfType(idpBeans, ClaimChannelImpl.class.getName());
+
+        Comparator<Bean> comparator = new Comparator<Bean>() {
+            public int compare(Bean ccb1, Bean ccb2) {
+                String ccp1Str = getPropertyValue(ccb1, "priority");
+                String ccp2Str = getPropertyValue(ccb2, "priority");
+
+                int p1 = ccp1Str != null ? Integer.parseInt(ccp1Str) : Integer.MAX_VALUE;
+                int p2 = ccp2Str != null ? Integer.parseInt(ccp2Str) : Integer.MAX_VALUE;
+
+                return p1 - p2;
+            }
+        };
+
+        List<Bean> claimChannels = new ArrayList<Bean>();
+        claimChannels.addAll(ccs);
+
+        Collections.sort(claimChannels, comparator);
 
         for (Bean claimChannel : claimChannels) {
             if (claimChannel == null)

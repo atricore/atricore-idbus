@@ -210,7 +210,7 @@
         </property>
     </bean>
 
-    <!-- Expose JDO Properties as OSGi configuration properties -->
+    <!-- -->
     <osgix:cm-properties id="lifecycleProps"
                          persistent-id="com.atricore.idbus.console.lifecycle">
         <prop key="maven.proxy.host">localhost</prop>

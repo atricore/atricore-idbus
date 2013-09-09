@@ -173,6 +173,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         setPropertyRef(stateManager, "cacheManager", cacheManager.getName());
         setPropertyValue(stateManager, "cacheName", module.getName() + "-psm-cache");  //cache name needs to be unique
         setPropertyValue(stateManager, "forceNonDirtyStorage", false);
+        setPropertyValue(stateManager, "namespace", appliance.getName());
 
         // -------------------------------------------------------
         // Define Entity Selector Provider
