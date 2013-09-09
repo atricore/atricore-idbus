@@ -385,5 +385,24 @@
 
         </class>
 
+        <class name="JDOSecurityToken" table="ATC_SECURITY_TOKEN" >
+
+            <field name="contentBin">
+                <!--column jdbc-type="LONGVARCHAR" /-->
+                <column jdbc-type="CLOB" length="204800" />
+            </field>
+
+            <field name="serializedContent">
+                <!--column jdbc-type="LONGVARCHAR" /-->
+                <column jdbc-type="CLOB" length="204800" />
+            </field>
+
+            <field name="tokenId">
+                <column jdbc-type="VARCHAR" length="32"/>
+                <index name="TOKEN_ID_IDX" unique="true"/>
+            </field>
+
+        </class>
+
     </package>
 </orm>

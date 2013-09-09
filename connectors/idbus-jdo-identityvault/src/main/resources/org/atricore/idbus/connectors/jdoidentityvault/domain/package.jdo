@@ -125,6 +125,19 @@
             <field name="name" />
             <field name="value"/>
         </class>
+
+        <class name="JDOSecurityToken">
+            <inheritance strategy="new-table"/>
+            <field name="id" primary-key="true" value-strategy="native"/>
+            <field name="tokenId" />
+            <field name="nameIdentifier"/>
+            <field name="serializedContent"/>
+            <field name="content" persistence-modifier="none" />
+            <field name="contentBin"/>
+            <field name="issueInstant"/>
+            <field name="expiresOn" />
+        </class>
+
     </package>
 
 

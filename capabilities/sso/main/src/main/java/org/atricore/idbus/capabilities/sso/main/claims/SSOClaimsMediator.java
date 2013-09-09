@@ -31,6 +31,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 
 import java.util.Collection;
 
@@ -48,6 +49,8 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
     private String basicAuthnUILocation;
 
     private String twoFactorAuthnUILocation;
+
+    private ProvisioningTarget provisioningTarget;
 
     @Deprecated //TODO : EACH CAPABILITY SHOULD HAVE ITS OWN CLAIMS MEDIATOR !!!
     private String openIDUILocation;
@@ -74,6 +77,14 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     public void setOpenIDUILocation(String openIDUILocation) {
         this.openIDUILocation = openIDUILocation;
+    }
+
+    public ProvisioningTarget getProvisioningTarget() {
+        return provisioningTarget;
+    }
+
+    public void setProvisioningTarget(ProvisioningTarget provisioningTarget) {
+        this.provisioningTarget = provisioningTarget;
     }
 
     @Override

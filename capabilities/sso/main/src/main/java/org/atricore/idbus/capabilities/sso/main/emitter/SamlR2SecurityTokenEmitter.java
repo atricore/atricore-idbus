@@ -34,6 +34,7 @@ import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
+import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.atricore.idbus.kernel.planning.IdentityArtifactImpl;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
@@ -167,4 +168,8 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
         this.encrypter = encrypter;
     }
 
+    @Override
+    protected SecurityToken doMakeToken(String uuid, Object content) {
+        return new SecurityTokenImpl(uuid, WSTConstants.WST_SAMLR2_TOKEN_TYPE, content);
+    }
 }

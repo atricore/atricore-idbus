@@ -176,7 +176,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 doProcessProxyResponse(exchange, (SPAuthnResponseType) content);
 
             } else {
-                metric += "Unknonw";
+                metric += "Unknown";
 
                 throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                         null,
@@ -631,6 +631,10 @@ public class SingleSignOnProducer extends SSOProducer {
      */
     @Deprecated
     public void doProcessAssertIdentityWithBasicAuth(CamelMediationExchange exchange, SecTokenAuthnRequestType authnRequest) throws Exception {
+
+        if (true)
+            throw new UnsupportedOperationException("Please, use pre-authentication service instead");
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
         AuthenticationState authnState = this.getAuthnState(exchange);
@@ -678,7 +682,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
         // Create a new SSO Session
-        IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion);
+        IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
 
         // Associate the SP with the new session, including relay state!
         // TODO : Instead of authnRequest, use metadata to get issuer!
@@ -728,7 +732,7 @@ public class SingleSignOnProducer extends SSOProducer {
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         MediationState state = in.getMessage().getState();
 
-        // TODO : On IDP Initiated, there is no AuthnRequest
+
         AuthenticationState authnState = getAuthnState(exchange);
         AuthnRequestType authnRequest = authnState.getAuthnRequest();
         IdentityMediationEndpoint prevClaimsEndpoint = authnState.getCurrentClaimsEndpoint();
@@ -778,13 +782,13 @@ public class SingleSignOnProducer extends SSOProducer {
             // and emit a SAML 2.0 Assertion
             // ----------------------------------------------------------------------------------------
 
-            SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
+            securityTokenEmissionCtx = emitAssertionFromClaims(exchange,
                     securityTokenEmissionCtx,
                     claimsResponse.getClaimSet(),
                     sp);
 
 
-            if ( ((IdentityProvider)getProvider()).isIdentityConfirmationEnabled()) {
+            if (((IdentityProvider)getProvider()).isIdentityConfirmationEnabled()) {
                 // --------------------------------------------------------------------
                 // Confirm user's identity in case needed
                 // --------------------------------------------------------------------
@@ -845,15 +849,15 @@ public class SingleSignOnProducer extends SSOProducer {
                 }
             }
 
-            AssertionType assertion = cxt.getAssertion();
-            Subject authnSubject = cxt.getSubject();
+            AssertionType assertion = securityTokenEmissionCtx.getAssertion();
+            Subject authnSubject = securityTokenEmissionCtx.getSubject();
 
             if (logger.isDebugEnabled())
                 logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                         (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
             // Create a new SSO Session
-            IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion);
+            IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, claimsResponse.getClaimSet());
 
             // Associate the SP with the new session, including relay state!
             // We already validated authn request issuer, so we can use it.
@@ -1154,7 +1158,7 @@ public class SingleSignOnProducer extends SSOProducer {
                         (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
                 // Create a new SSO Session
-                IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion);
+                IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
 
                 // Associate the SP with the new session, including relay state!
                 // We already validated authn request issuer, so we can use it.
@@ -1663,7 +1667,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
     protected IdPSecurityContext createSecurityContext(CamelMediationExchange exchange,
                                                        Subject authnSubject,
-                                                       AssertionType assertion) throws Exception {
+                                                       AssertionType assertion,
+                                                       ClaimSet claims) throws Exception {
 
         // -------------------------------------------------------
         // Create the SSO Session, using authnStatusment as security token
@@ -1692,6 +1697,53 @@ public class SingleSignOnProducer extends SSOProducer {
         // Initiate SSO Session
         String ssoSessionId = ((SPChannel) channel).getSessionManager().initiateSession(userId.getName(), st);
         assert ssoSessionId.equals(st.getId()) : "SSO Session Manager MUST use security token ID as session ID";
+
+        boolean rememberMe = false;
+        for (Claim c : claims.getClaims()) {
+            if (c instanceof CredentialClaim) {
+                CredentialClaim cc = (CredentialClaim) c;
+                if (cc.getValue() instanceof UsernameTokenType) {
+                    UsernameTokenType ut = (UsernameTokenType) cc.getValue();
+                    String rememberMeStr = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+                    if (rememberMeStr != null)
+                        rememberMe = Boolean.parseBoolean(rememberMeStr);
+                }
+            }
+        }
+
+        if (rememberMe) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Creating remember-me security contenxt information");
+
+            String preAuthnTokenId = null;
+
+            for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
+                if (stmt instanceof AttributeStatementType) {
+                    AttributeStatementType attrStmt = (AttributeStatementType) stmt;
+                    for (Object o : attrStmt.getAttributeOrEncryptedAttribute()) {
+                        // TODO : What if assertion is encrypted ?! (improve!)
+                        if (o instanceof AttributeType) {
+                            AttributeType attr = (AttributeType) o;
+                            if (attr.getName().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE + "_ID")) {
+                                preAuthnTokenId = (String) attr.getAttributeValue().get(0);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (preAuthnTokenId != null) {
+                String varName = getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM";
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Creating remote variable (" + varName  + ") with token id " + preAuthnTokenId);
+
+                CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+                MediationState state = in.getMessage().getState();
+                state.setRemoteVariable(varName, preAuthnTokenId, System.currentTimeMillis() + (1000L * 60L * 60L * 24L * 30L)); // TODO : Configure!
+            }
+        }
 
         return new IdPSecurityContext(authnSubject, ssoSessionId, authnStmt);
     }

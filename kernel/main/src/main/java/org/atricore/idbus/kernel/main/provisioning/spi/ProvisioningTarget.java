@@ -97,6 +97,29 @@ public interface ProvisioningTarget {
 
     RemoveAclEntryResponse removeAclEntry(RemoveAclEntryRequest aclEntryRequest) throws ProvisioningException;
 
+    //<--------------- Security Tokens-------------------->
+
+    AddSecurityTokenResponse addSecurityToken(AddSecurityTokenRequest addSecurityTokenRequest)
+            throws ProvisioningException;
+
+    UpdateSecurityTokenResponse updateSecurityToken(UpdateSecurityTokenRequest updateSecurityTokenRequest)
+            throws ProvisioningException;
+
+
+    RemoveSecurityTokenResponse removeSecurityToken(RemoveSecurityTokenRequest removeSecurityTokenRequest)
+            throws ProvisioningException;
+
+
+    FindSecurityTokenByTokenIdResponse findSecurityTokenByTokenId(FindSecurityTokenByTokenIdRequest findSecurityTokenByTokenIdRequest)
+            throws ProvisioningException;
+
+    FindSecurityTokensByExpiresOnBeforeResponse findSecurityTokensByExpiresOnBefore(FindSecurityTokensByExpiresOnBeforeRequest findSecurityTokensByExpiresOnBeforeRequest)
+            throws ProvisioningException;
+
+    FindSecurityTokensByIssueInstantBeforeResponse findSecurityTokensByIssueInstantBefore(FindSecurityTokensByIssueInstantBeforeRequest findSecurityTokensByIssueInstantBeforeRequest)
+            throws ProvisioningException;
+
+
     //<--------------- Schema -------------------->
 
     AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest)

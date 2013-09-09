@@ -14,7 +14,6 @@ public class OAuth2Client {
 
     // TODO : other OAuth2 properties  (URLs, etc) ....
 
-
     public OAuth2Client() {
     }
 

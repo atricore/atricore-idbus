@@ -297,12 +297,23 @@ setupDefaults() {
     # DEFAULT_JAVA_DEBUG_OPTS="-agentlib:yjpagent -Dorg.osgi.framework.bootdelegation=com.yourkit.*,sun.*,com.sun.*"
 }
 
+
 cleanUp() {
     rm -rf $KARAF_BASE/data/activemq-idbus
+    rm -rf $KARAF_BASE/data/tmp
+
+    # Clear persistent state
     rm -rf $KARAF_BASE/data/ehcache
+
+    # Clear bundles cache
     rm -rf $KARAF_BASE/data/cache
+}
+
+cleanUpFast() {
+    rm -rf $KARAF_BASE/data/activemq-idbus
     rm -rf $KARAF_BASE/data/tmp
 }
+
 
 init() {
     # Determine if there is special OS handling we must perform
@@ -339,6 +350,9 @@ init() {
     setupMonitoringOptions
 
     # Clean up state from previous runs
+
+    # For faster restart on production servers
+    # cleanUpFast
     cleanUp
 
 }

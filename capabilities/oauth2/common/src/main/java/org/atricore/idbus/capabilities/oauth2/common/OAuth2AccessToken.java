@@ -19,6 +19,8 @@ public class OAuth2AccessToken implements java.io.Serializable {
 
     private long rnd;
 
+    private long expiresOn;
+
     private List<OAuth2Claim> claims = new ArrayList<OAuth2Claim>();
 
     public List<OAuth2Claim> getClaims() {
@@ -43,6 +45,14 @@ public class OAuth2AccessToken implements java.io.Serializable {
 
     public void setRnd(long rnd) {
         this.rnd = rnd;
+    }
+
+    public long getExpiresOn() {
+        return expiresOn;
+    }
+
+    public void setExpiresOn(long expiresOn) {
+        this.expiresOn = expiresOn;
     }
 }
 

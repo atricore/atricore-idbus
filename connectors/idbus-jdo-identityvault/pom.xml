@@ -378,6 +378,9 @@
                             org.apache.tools.ant.taskdefs;resolution:=optional,
                             oracle.*;resolution:=optional,
                             javax.jdo.*; version="${javax.jdo.osgi.version}",
+                            org.atricore.idbus.common.oauth._2_0.protocol,
+                            oasis.names.tc.saml._2_0.assertion,
+                            oasis.names.tc.saml._2_0.protocol,
                             *
                         </Import-Package>
                         <Require-Bundle>

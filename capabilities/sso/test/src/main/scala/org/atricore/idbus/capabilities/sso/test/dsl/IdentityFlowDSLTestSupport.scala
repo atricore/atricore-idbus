@@ -288,6 +288,18 @@ object MockProvisioningTarget extends ProvisioningTarget {
   def findGroupAttributeByName(groupAttributeRequest: FindGroupAttributeByNameRequest): FindGroupAttributeByNameResponse = null
 
   def listGroupAttributes(groupAttributeRequest: ListGroupAttributesRequest): ListGroupAttributesResponse = null
+
+  def addSecurityToken(addSecurityTokenRequest: AddSecurityTokenRequest): AddSecurityTokenResponse = null
+
+  def updateSecurityToken(updateSecurityTokenRequest: UpdateSecurityTokenRequest): UpdateSecurityTokenResponse = null
+
+  def removeSecurityToken(removeSecurityTokenRequest: RemoveSecurityTokenRequest): RemoveSecurityTokenResponse = null
+
+  def findSecurityTokenByTokenId(findSecurityTokenByTokenIdRequest: FindSecurityTokenByTokenIdRequest): FindSecurityTokenByTokenIdResponse = null
+
+  def findSecurityTokensByExpiresOnBefore(findSecurityTokensByExpiresOnBeforeRequest: FindSecurityTokensByExpiresOnBeforeRequest): FindSecurityTokensByExpiresOnBeforeResponse = null
+
+  def findSecurityTokensByIssueInstantBefore(findSecurityTokensByIssueInstantBeforeRequest: FindSecurityTokensByIssueInstantBeforeRequest): FindSecurityTokensByIssueInstantBeforeResponse = null
 }
 
 object MockMailService extends MailService {

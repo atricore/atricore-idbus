@@ -72,6 +72,9 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         if (ssoAuthnReq instanceof PreAuthenticatedIDPInitiatedAuthnRequestType) {
             PreAuthenticatedIDPInitiatedAuthnRequestType preAuthnReq = (PreAuthenticatedIDPInitiatedAuthnRequestType) ssoAuthnReq;
             securityToken = preAuthnReq.getSecurityToken();
+
+            // TODO : check if token must be resolved
+
             reqAuthnCtx = new RequestedAuthnContextType();
             reqAuthnCtx.getAuthnContextClassRef().add(preAuthnReq.getAuthnCtxClass());
             log.trace("Issuing SAML2 Authentication Request for Preauthenticated Token [" + securityToken  + "] and " +
@@ -86,9 +89,6 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         IdentityMediationEndpoint endpoint = (IdentityMediationEndpoint ) executionContext.getContextInstance().getVariable(VAR_ENDPOINT);
 
         CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
-
-
-
 
         SSOIDPMediator mediator = (SSOIDPMediator) spChannel.getIdentityMediator();
 

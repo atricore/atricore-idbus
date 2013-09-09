@@ -19,9 +19,19 @@ public class MemoryProviderStateManagerImpl implements ProviderStateManager {
 
     private UUIDGenerator idGen = new UUIDGenerator();
 
+    private String namespace;
+
     public MemoryProviderStateManagerImpl () {
         cache = new Cache(idGen.generateId());
         logger.debug("Created internal cache instance with ID " + cache.getId());
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public void store(ProviderStateContext ctx, LocalState value) {

@@ -23,10 +23,19 @@ package org.atricore.idbus.capabilities.sts.main;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
+import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.AddSecurityTokenRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.FindSecurityTokensByExpiresOnBeforeRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.RemoveSecurityTokenRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.AddSecurityTokenResponse;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.FindSecurityTokensByExpiresOnBeforeResponse;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestedSecurityTokenType;
@@ -34,8 +43,11 @@ import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenServiceImpl;
 
 import javax.security.auth.Subject;
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is the default WS-Trust-compliant STS implementation.
@@ -57,6 +69,32 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
     private Collection<SecurityTokenAuthenticator> authenticators = new ArrayList<SecurityTokenAuthenticator>();
 
     private MessageQueueManager artifactQueueManager;
+
+    private String name;
+
+    /**
+     * The provisioning target selected for this STS instance.
+     */
+    private ProvisioningTarget provisioningTarget;
+
+    private TokenMonitor tokenMonitor;
+
+    private ScheduledThreadPoolExecutor stpe;
+
+    private long tokenMonitorInterval = 1000L * 60L * 10L ;
+
+    public void init() {
+        tokenMonitor = new TokenMonitor(this, getTokenMonitorInterval());
+
+        stpe = new ScheduledThreadPoolExecutor(3);
+        stpe.scheduleAtFixedRate(tokenMonitor, getTokenMonitorInterval(),
+                getTokenMonitorInterval(),
+                TimeUnit.MILLISECONDS);
+
+        // Register sessions in security domain !
+        logger.info("[initialize()] : WST Security Token Service =" + getName());
+
+    }
 
     public RequestSecurityTokenResponseType requestSecurityToken(RequestSecurityTokenType rst) {
 
@@ -103,7 +141,6 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             // -----------------------------------------
             // 1. Authenticate
             // -----------------------------------------
-
             subject = authenticate(requestToken.getValue(), tokenType.getValue());
             if (logger.isDebugEnabled())
                 logger.debug( "User " + subject + " authenticated successfully" );
@@ -124,6 +161,12 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
             }
 
+            // -----------------------------------------
+            // Some token processing
+            // -----------------------------------------
+            for (SecurityToken emitted : processingContext.getEmittedTokens()) {
+                postProcess(processingContext, requestToken.getValue(), tokenType.getValue(), emitted);
+            }
 
         } catch(SecurityTokenAuthenticationFailure e) {
             throw e;
@@ -179,6 +222,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                             "[" + selectedAuthenticator.getId() + "]");
 
                     // Return the authenticated subject
+
                     return authenticator.authenticate(requestToken);
 
                 } catch (SecurityTokenAuthenticationFailure e) {
@@ -214,8 +258,6 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
             if(logger.isDebugEnabled())
                 logger.debug( "Testing emitter " + emitter.getId() );
-
-
 
             try {
 
@@ -262,6 +304,47 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     }
 
+    protected void postProcess(SecurityTokenProcessingContext ctx, Object requestToken, String tokenType, SecurityToken emitted) {
+
+        if (provisioningTarget == null) {
+            logger.error("No provisioning target configured !");
+            return;
+        }
+
+        // Check whether we have to persist the token or not.
+        if (requestToken instanceof UsernameTokenType) {
+
+            UsernameTokenType ut = (UsernameTokenType) requestToken;
+
+            // When the requested token has a remember-me attribute, we must persist the token
+            String rememberMe = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+
+            if (rememberMe != null && Boolean.parseBoolean(rememberMe)) {
+
+                // User requested to be remembered, check weather this is the token to store.
+                String nm = emitted.getNameIdentifier();
+
+                if (nm != null && nm.equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE)) {
+                    // Persist this token
+                    AddSecurityTokenRequest req = new AddSecurityTokenRequest();
+                    req.setTokenId(emitted.getId());
+                    req.setNameIdentifier(emitted.getNameIdentifier());
+                    req.setContent(emitted.getContent());
+                    req.setSerializedContent(emitted.getSerializedContent());
+                    req.setIssueInstant(emitted.getIssueInstant());
+
+                    try {
+                        AddSecurityTokenResponse resp = provisioningTarget.addSecurityToken(req);
+                    } catch (ProvisioningException e) {
+                        logger.error("Cannot store emitted token " + emitted, e);
+                    }
+                }
+            }
+
+        }
+
+    }
+
     /**
      * @org.apache.xbean.Property alias="artifact-queue-mgr"
      * @return
@@ -294,5 +377,57 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     public void setAuthenticators(Collection<SecurityTokenAuthenticator> authenticators) {
         this.authenticators = authenticators;
+    }
+
+    public ProvisioningTarget getProvisioningTarget() {
+        return provisioningTarget;
+    }
+
+    public void setProvisioningTarget(ProvisioningTarget provisioningTarget) {
+        this.provisioningTarget = provisioningTarget;
+    }
+
+    public long getTokenMonitorInterval() {
+        return tokenMonitorInterval;
+    }
+
+    public void setTokenMonitorInterval(long tokenMonitorInterval) {
+        this.tokenMonitorInterval = tokenMonitorInterval;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    protected void checkExpiredTokens() {
+
+        try {
+            long now = System.currentTimeMillis();
+
+            FindSecurityTokensByExpiresOnBeforeRequest req = new FindSecurityTokensByExpiresOnBeforeRequest();
+            req.setExpiresOnBefore(now);
+            FindSecurityTokensByExpiresOnBeforeResponse resp = this.provisioningTarget.findSecurityTokensByExpiresOnBefore(req);
+
+            if (resp.getSecurityTokens() != null) {
+                for (SecurityToken expired : resp.getSecurityTokens()) {
+                    RemoveSecurityTokenRequest removeReq = new RemoveSecurityTokenRequest();
+                    removeReq.setTokenId(expired.getId());
+
+                    try {
+                        this.provisioningTarget.removeSecurityToken(removeReq);
+                    } catch (ProvisioningException e) {
+                        logger.error("Cannot remove expired token : " + expired.getId() + " : " + e.getMessage(), e);
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
     }
 }

@@ -67,8 +67,14 @@ public interface MediationState {
 
     void setRemoteVariable(String name, String value);
 
+    /**
+     * @param expires expiration time (GMT)
+     */
+    void setRemoteVariable(String name, String value, long expires);
+
     void removeRemoteVariable(String name);
 
+    long getRemoteVarExpiration(String name);
 
     Collection<String> getLocalVarNames();
 

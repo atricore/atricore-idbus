@@ -136,7 +136,8 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
             Object content = ex.getOut().getContent();
 
             // Create a security token using the OUT artifact content.
-            SecurityToken st = new SecurityTokenImpl(uuid, content);
+
+            SecurityToken st = doMakeToken(uuid, content);
 
             logger.debug("Created new security token [" + uuid + "] with content " + (content.getClass().getSimpleName()));
 
@@ -171,6 +172,10 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
 
     protected IdentityPlanExecutionExchange createIdentityPlanExecutionExchange(SecurityTokenProcessingContext context) {
         return new IdentityPlanExecutionExchangeImpl();
+    }
+
+    protected SecurityToken doMakeToken(String uuid, Object content) {
+        return new SecurityTokenImpl(uuid, content);
     }
 
 

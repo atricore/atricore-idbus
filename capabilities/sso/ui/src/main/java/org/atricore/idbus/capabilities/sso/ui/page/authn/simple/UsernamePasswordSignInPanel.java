@@ -23,6 +23,7 @@ package org.atricore.idbus.capabilities.sso.ui.page.authn.simple;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
@@ -79,6 +80,8 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
      */
     protected UsernamePasswordSignInForm form;
 
+    protected CheckBox rememberMe;
+
     /**
      * Sign in form.
      */
@@ -117,6 +120,9 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
                     "password")));
             password.setType(String.class);
             password.setRequired(false);
+
+            add(rememberMe = new CheckBox("rememberMe", new PropertyModel<Boolean>(properties, "rememberMe")));
+
         }
 
         @Override
@@ -173,7 +179,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         public final void onSubmit() {
 
             try {
-                String claimsConsumerUrl = signIn(getUsername(), getPassword());
+                String claimsConsumerUrl = signIn(getUsername(), getPassword(), isRememberMe());
                 onSignInSucceeded(claimsConsumerUrl);
             } catch (Exception e) {
                 logger.error("Fatal error during signIn : " + e.getMessage(), e);
@@ -318,6 +324,10 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         return password.getDefaultModelObjectAsString();
     }
 
+    public boolean isRememberMe() {
+        return (Boolean) rememberMe.getDefaultModelObject();
+    }
+
     /**
      * Convenience method set persistence for username and password.
      *
@@ -334,7 +344,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
      * @param username The username
      * @return True if sign-in was successful (doesn't imply that the credentials are valid!)
      */
-    public String signIn(String username, String password) throws Exception {
+    public String signIn(String username, String password, boolean rememberMe) throws Exception {
 
         UUIDGenerator idGenerator = new UUIDGenerator();
 
@@ -352,6 +362,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(new CredentialClaimImpl("username", username));
         claims.addClaim(new CredentialClaimImpl("password", password));
+        claims.addClaim(new UserClaimImpl("rememberMe", rememberMe));
 
         //claims.addClaim(new ClaimImpl("rememberMe", cmd.isRememberMe()));
 

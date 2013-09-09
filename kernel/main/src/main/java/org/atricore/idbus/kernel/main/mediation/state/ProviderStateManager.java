@@ -8,6 +8,8 @@ import java.util.Collection;
  */
 public interface ProviderStateManager {
 
+    String getNamespace();
+
     void store(ProviderStateContext ctx, LocalState state);
 
     LocalState retrieve(ProviderStateContext ctx, String key);

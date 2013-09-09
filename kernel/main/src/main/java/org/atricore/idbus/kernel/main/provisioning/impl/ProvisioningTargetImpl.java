@@ -3,6 +3,8 @@ package org.atricore.idbus.kernel.main.provisioning.impl;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.authn.SecurityToken;
+import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.*;
@@ -644,6 +646,110 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             throw new ProvisioningException(e);
         }
     }
+
+    // ------------------------------------------------------------------------------------
+
+    public AddSecurityTokenResponse addSecurityToken(AddSecurityTokenRequest addSecurityTokenRequest) throws ProvisioningException {
+        try {
+            SecurityToken securityToken = new SecurityTokenImpl(addSecurityTokenRequest.getTokenId(),
+                    addSecurityTokenRequest.getNameIdentifier(),
+                    addSecurityTokenRequest.getContent(),
+                    addSecurityTokenRequest.getSerializedContent(),
+                    addSecurityTokenRequest.getIssueInstant());
+
+            securityToken = identityPartition.addSecurityToken(securityToken);
+
+            AddSecurityTokenResponse resp = new AddSecurityTokenResponse();
+            resp.setSecurityToken(securityToken);
+            return resp;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public UpdateSecurityTokenResponse updateSecurityToken(UpdateSecurityTokenRequest req) throws ProvisioningException {
+        try {
+            SecurityTokenImpl st = (SecurityTokenImpl) identityPartition.findSecurityTokenByTokenId(req.getTokenId());
+            st.setContent(req.getContent());
+            st.setSerializedContent(req.getSerializedContent());
+            st.setIssueInstant(req.getIssueInstant());
+            st.setNameIdentifier(req.getNameIdentifier());
+
+            st = (SecurityTokenImpl) identityPartition.updateSecurityToken(st);
+
+            UpdateSecurityTokenResponse resp = new UpdateSecurityTokenResponse();
+            resp.setSecurityToken(st);
+            return resp;
+        } catch (SecurityTokenNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public RemoveSecurityTokenResponse removeSecurityToken(RemoveSecurityTokenRequest req) throws ProvisioningException {
+        try {
+            SecurityTokenImpl st = (SecurityTokenImpl) identityPartition.findSecurityTokenByTokenId(req.getTokenId());
+            identityPartition.deleteSecurityToken(st.getId());
+            RemoveSecurityTokenResponse resp = new RemoveSecurityTokenResponse();
+
+            return resp;
+
+        } catch (SecurityTokenNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public FindSecurityTokenByTokenIdResponse findSecurityTokenByTokenId(FindSecurityTokenByTokenIdRequest req) throws ProvisioningException {
+        try {
+            SecurityToken st = identityPartition.findSecurityTokenByTokenId(req.getTokenId());
+            FindSecurityTokenByTokenIdResponse resp = new FindSecurityTokenByTokenIdResponse();
+            resp.setSecurityToken(st);
+            return resp;
+        } catch (SecurityTokenNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public FindSecurityTokensByExpiresOnBeforeResponse findSecurityTokensByExpiresOnBefore(FindSecurityTokensByExpiresOnBeforeRequest req) throws ProvisioningException {
+        try {
+            Collection<SecurityToken> st = identityPartition.findSecurityTokensByExpiresOnBefore(req.getExpiresOnBefore());
+            FindSecurityTokensByExpiresOnBeforeResponse resp = new FindSecurityTokensByExpiresOnBeforeResponse();
+            if (st != null)
+                resp.setSecurityTokens(st.toArray(new SecurityToken[st.size()]));
+            else
+                resp.setSecurityTokens(new SecurityToken[0]);
+            return resp;
+        } catch (SecurityTokenNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public FindSecurityTokensByIssueInstantBeforeResponse findSecurityTokensByIssueInstantBefore(FindSecurityTokensByIssueInstantBeforeRequest req) throws ProvisioningException {
+        try {
+            Collection<SecurityToken> st = identityPartition.findSecurityTokensByIssueInstantBefore(req.getIssueInstant());
+            FindSecurityTokensByIssueInstantBeforeResponse resp = new FindSecurityTokensByIssueInstantBeforeResponse();
+            if (st != null)
+                resp.setSecurityTokens(st.toArray(new SecurityToken[st.size()]));
+            else
+                resp.setSecurityTokens(new SecurityToken[0]);
+            return resp;
+        } catch (SecurityTokenNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+
+    }
+
+
+    // ------------------------------------------------------------------------------------
 
     public AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest) throws ProvisioningException {
         try {

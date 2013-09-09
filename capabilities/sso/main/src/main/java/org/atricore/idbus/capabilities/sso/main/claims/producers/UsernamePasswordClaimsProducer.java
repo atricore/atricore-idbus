@@ -163,17 +163,24 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
 
         String password = null;
         String username = null;
+        boolean rememberMe = false;
 
         // Addapt received simple claims to SAMLR Required token
         for (Claim c : receivedClaims.getClaims()) {
 
-            CredentialClaim credentialClaim = (CredentialClaim) c;
+            if (c instanceof CredentialClaim) {
+                CredentialClaim credentialClaim = (CredentialClaim) c;
 
-            if (credentialClaim.getQualifier().equalsIgnoreCase("username"))
-                username = (String) c.getValue();
+                if (credentialClaim.getQualifier().equalsIgnoreCase("username"))
+                    username = (String) c.getValue();
 
-            if (credentialClaim.getQualifier().equalsIgnoreCase("password"))
-                password = (String) c.getValue();
+                if (credentialClaim.getQualifier().equalsIgnoreCase("password"))
+                    password = (String) c.getValue();
+            } else if (c instanceof UserClaim) {
+                UserClaim userClaim = (UserClaim) c;
+                if (userClaim.getName().equalsIgnoreCase("rememberMe"))
+                    rememberMe = (Boolean) userClaim.getValue();
+            }
         }
 
         // Build a SAMLR2 Compatible Security token
@@ -182,8 +189,9 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
         usernameString.setValue( username );
 
         usernameToken.setUsername( usernameString );
-        usernameToken.getOtherAttributes().put( new QName( Constants.PASSWORD_NS), password );
+        usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password );
         usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+        usernameToken.getOtherAttributes().put(new QName(Constants.REMEMBERME_NS), rememberMe ? "TRUE" : "FALSE");
 
         CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
         ClaimSet claims = new ClaimSetImpl();

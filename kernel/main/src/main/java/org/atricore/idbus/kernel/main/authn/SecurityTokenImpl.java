@@ -31,6 +31,8 @@ public class SecurityTokenImpl<T> implements SecurityToken<T> {
     private String nameIdentifier;
     private T content;
     private String serializedContent;
+    private long issueInstant;
+    private long expiresOn;
 
 
     public SecurityTokenImpl(String id, T content) {
@@ -41,6 +43,8 @@ public class SecurityTokenImpl<T> implements SecurityToken<T> {
         this.id = id;
         this.nameIdentifier = nameIdentifier;
         this.content = content;
+        this.issueInstant = System.currentTimeMillis();
+        this.expiresOn = -1;
     }
 
     public SecurityTokenImpl(String id, String nameIdentifier, T content, String serializedContent) {
@@ -48,6 +52,17 @@ public class SecurityTokenImpl<T> implements SecurityToken<T> {
         this.nameIdentifier = nameIdentifier;
         this.content = content;
         this.serializedContent = serializedContent;
+        this.issueInstant = System.currentTimeMillis();
+        this.expiresOn = -1;
+    }
+
+    public SecurityTokenImpl(String id, String nameIdentifier, T content, String serializedContent, long issueInstant) {
+        this.id = id;
+        this.nameIdentifier = nameIdentifier;
+        this.content = content;
+        this.serializedContent = serializedContent;
+        this.issueInstant = issueInstant;
+        this.expiresOn = -1;
     }
 
     public String getId() {
@@ -64,5 +79,38 @@ public class SecurityTokenImpl<T> implements SecurityToken<T> {
 
     public String getSerializedContent() {
         return serializedContent;
+    }
+
+    public long getIssueInstant() {
+        return issueInstant;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setNameIdentifier(String nameIdentifier) {
+        this.nameIdentifier = nameIdentifier;
+    }
+
+    public void setContent(T content) {
+        this.content = content;
+    }
+
+    public void setSerializedContent(String serializedContent) {
+        this.serializedContent = serializedContent;
+    }
+
+    public void setIssueInstant(long issueInstant) {
+        this.issueInstant = issueInstant;
+    }
+
+
+    public long getExpiresOn() {
+        return expiresOn;
+    }
+
+    public void setExpiresOn(long expiresOn) {
+        this.expiresOn = expiresOn;
     }
 }

@@ -47,6 +47,8 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     private ApplicationContext applicationContext;
 
+    private String namespace;
+
     public EHCacheProviderStateManagerImpl() {
     }
 
@@ -96,6 +98,14 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     public void setReceiveRetries(int receiveRetries) {
         this.receiveRetries = receiveRetries;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public void afterPropertiesSet() throws Exception {

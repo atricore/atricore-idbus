@@ -46,8 +46,12 @@ import javax.xml.namespace.QName;
 import java.io.*;
 import java.lang.Object;
 import java.net.URLDecoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -56,6 +60,13 @@ import java.util.StringTokenizer;
 public abstract class AbstractMediationHttpBinding extends AbstractMediationBinding {
 
     private static final Log logger = LogFactory.getLog(AbstractMediationHttpBinding.class);
+
+    private static DateFormat cookieDf = null;
+
+    static {
+        cookieDf = new SimpleDateFormat("dd MMM yyyy kk:mm:ss z");
+        cookieDf.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
     public AbstractMediationHttpBinding(String binding, Channel channel) {
         super(binding, channel);
@@ -168,7 +179,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         if (provider != null) {
 
-            String localStateVarName = provider.getName().toUpperCase() + "_STATE";
+            String localStateVarName = provider.getStateManager().getNamespace().toUpperCase() + "_" + provider.getName().toUpperCase() + "_STATE";
 
             if (logger.isDebugEnabled())
                 logger.debug("Using Provider State manager to store local state (" + provider.getName() + "). Channel (" + channel.getName() + ")");
@@ -194,17 +205,38 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         }
 
-        // Remove Variables are supported by cookies in HTTP
+        // Remote Variables are supported by cookies in HTTP
         for (String name : state.getRemoteVarNames()) {
 
             String value = (String) exchange.getIn().getHeader("org.atricore.idbus.http.Cookie." + name);
 
             if (value == null || !value.equals(state.getRemoteVariable(name))) {
                 // Set the cookie because value is not present or is different than what is store locally.
-                exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
+
+                if (state.getRemoteVarExpiration(name) > 0) {
+                    // Persistent cookie
+                    // Session cookie
+                    long expiration = state.getRemoteVarExpiration(name);
+                    Date exp = new Date(expiration);
+                    String expirationStr = cookieDf.format(exp);
+                    exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
+                            state.getRemoteVariable(name) + ";Path=/;Expires=" + expirationStr);
+                } else {
+                    // Session cookie
+                    exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
                         state.getRemoteVariable(name) + ";Path=/");
+                }
 
             }
+
+        }
+
+        for (String name : state.getRemovedRemoteVarNames()) {
+            // Removed
+            Date exp = new Date(0);
+            String expirationStr = cookieDf.format(exp);
+            exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
+                    "-" + ";Path=/;Expires=" + expirationStr);
         }
     }
 
@@ -220,7 +252,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             if (logger.isDebugEnabled())
                 logger.debug("Using Provider State manager to store local state (" + p.getName() + "). Channel (" + channel.getName() + ")");
 
-            String localStateVarName = p.getName().toUpperCase() + "_STATE";
+            String localStateVarName = p.getStateManager().getNamespace().toUpperCase() + "_" + p.getName().toUpperCase() + "_STATE";
             String localStateId = (String) exchange.getIn().getHeader("org.atricore.idbus.http.Cookie." + localStateVarName);
 
             if (logger.isDebugEnabled())
@@ -283,7 +315,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                 String varValue = exchange.getIn().getHeader(headerName, String.class);
 
                 logger.debug("Remote Variable from HTTP Cookie (" + headerName + ") " + varName + "=" + varValue);
-                state.getRemoteVars().put(varName, varValue);
+                state.setRemoteVariable(varName, varValue);
             }
 
         }
@@ -296,7 +328,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             if (exchange.getIn().getHeader("http.requestMethod").equals("POST"))
                 params.putAll(getParameters((InputStream) exchange.getIn().getBody()));
 
-            state.getTransientVars().putAll(params);
+            state.setTransientVars(params);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -307,7 +339,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         if (remoteAddress != null) {
             String remoteAddrValue = exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress", String.class);
 
-            state.getTransientVars().put("RemoteAddress", remoteAddrValue);
+            state.setTransientVar("RemoteAddress", remoteAddrValue);
         }
 
         return state;

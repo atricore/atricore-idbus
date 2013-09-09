@@ -38,4 +38,8 @@ public interface SecurityToken<T> extends Serializable {
 
     String getSerializedContent();
 
+    long getIssueInstant();
+
+    long getExpiresOn();
+
 }

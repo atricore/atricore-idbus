@@ -115,7 +115,7 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
 
         if (p != null) {
 
-            String localStateVarName = p.getName().toUpperCase() + "_STATE";
+            String localStateVarName = p.getStateManager().getNamespace().toUpperCase() + "_" + p.getName().toUpperCase() + "_STATE";
 
             if (logger.isDebugEnabled())
                 logger.debug("Using Provider State manager to store local state ("+p.getName()+"). Channel ("+channel.getName()+")");
@@ -170,7 +170,7 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
             if (logger.isDebugEnabled())
                 logger.debug("Using Provider State manager to store local state ("+p.getName()+"). Channel ("+channel.getName()+")");
 
-            //String localStateVarName = p.getName().toUpperCase() + "_STATE";
+            //String localStateVarName = p.getStateManager().getNamespace().toUpperCase() + "_" + p.getName().toUpperCase() + "_STATE";
             ProviderStateContext ctx = createProviderStateContext();
             LocalState lState = ctx.createState();
             String localStateId = lState.getId();

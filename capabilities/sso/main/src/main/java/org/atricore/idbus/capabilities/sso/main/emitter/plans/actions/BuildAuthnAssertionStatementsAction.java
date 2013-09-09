@@ -92,19 +92,48 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSSOAssertionAct
         for (SecurityToken otherToken : stsCtx.getEmittedTokens()) {
             if (otherToken.getSerializedContent() != null &&
                 otherToken.getNameIdentifier() != null) {
-                // This should be properly encoded !!
-                AttributeType attrToken = new AttributeType();
 
-                if (otherToken.getNameIdentifier() != null) {
-                    String frieandlyName = otherToken.getSerializedContent().substring(otherToken.getNameIdentifier().lastIndexOf(":"));
-                    attrToken.setFriendlyName(frieandlyName);
+                // Token Value
+                {
+                    // This should be properly encoded !!
+                    AttributeType attrToken = new AttributeType();
+
+                    if (otherToken.getNameIdentifier() != null) {
+                        if (otherToken.getNameIdentifier().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE)) {
+                            attrToken.setFriendlyName("OAUTH2");
+                        } else {
+                            attrToken.setFriendlyName(otherToken.getNameIdentifier());
+                        }
+
+                    }
+
+                    // Token by name identifier
+                    attrToken.setName(otherToken.getNameIdentifier());
+                    attrToken.setNameFormat(AttributeNameFormat.URI.getValue());
+                    attrToken.getAttributeValue().add(otherToken.getSerializedContent());
+
+                    attrTokens.add(attrToken);
                 }
 
-                attrToken.setName(otherToken.getNameIdentifier());
-                attrToken.setNameFormat(AttributeNameFormat.URI.getValue());
-                attrToken.getAttributeValue().add(otherToken.getSerializedContent());
+                // Token ID
+                {
+                    AttributeType attrTokenById = new AttributeType();
 
-                attrTokens.add(attrToken);
+                    if (otherToken.getNameIdentifier() != null) {
+                        if (otherToken.getNameIdentifier().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE)) {
+                            attrTokenById.setFriendlyName("OAUTH2_ID");
+                        } else {
+                            attrTokenById.setFriendlyName(otherToken.getNameIdentifier() + "_ID");
+                        }
+                    }
+
+                    // Token by name identifier
+                    attrTokenById.setName(otherToken.getNameIdentifier() + "_ID");
+                    attrTokenById.setNameFormat(AttributeNameFormat.URI.getValue());
+                    attrTokenById.getAttributeValue().add(otherToken.getId());
+
+                    attrTokens.add(attrTokenById);
+                }
             } else {
                 logger.debug("Ignoring token " + otherToken.getNameIdentifier());
             }

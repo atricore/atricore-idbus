@@ -83,6 +83,7 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
         String relayState = state.getTransientVariable("RelayState");
 
         String securityToken = state.getTransientVariable("atricore_security_token");
+        // TODO : Token can also be stored in a cookie
 
         IDPInitiatedAuthnRequestType idpInitReq = null;
         if (securityToken != null) {

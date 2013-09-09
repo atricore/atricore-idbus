@@ -40,7 +40,8 @@ public class MediationStateImpl implements MediationState {
 
     private Map<String, String> transientVars = new HashMap<String, String>();
 
-    private Map<String, String> remoteVars = new HashMap<String, String>();
+    private Map<String, RemoteVar> remoteVars = new HashMap<String, RemoteVar>();
+
     private Set<String> removedRemoteVars = new HashSet<String>();
 
     private LocalState localState;
@@ -90,11 +91,34 @@ public class MediationStateImpl implements MediationState {
     }
 
     public String getRemoteVariable(String name) {
-        return remoteVars.get(name);
+        RemoteVar v = remoteVars.get(name);
+        if (v != null)
+            return v.getValue();
+        return null;
+    }
+
+    public long getRemoteVarExpiration(String name) {
+        RemoteVar v = remoteVars.get(name);
+        if (v != null)
+            return v.getExpires();
+        return -1;
     }
 
     public void setRemoteVariable(String name, String value) {
-        remoteVars.put(name, value);
+        setRemoteVariable(name, value, 0);
+    }
+
+    public void setRemoteVariable(String name, String value, long expires) {
+        RemoteVar v = remoteVars.get(name);
+        if (v == null) {
+            v = new RemoteVar(name, value, expires);
+        } else {
+            v.setValue(value);
+            // Do not replace expiration value
+            // v.setExpires(expires);
+        }
+
+        remoteVars.put(name, v);
     }
 
     public void removeRemoteVariable(String name) {
@@ -118,16 +142,49 @@ public class MediationStateImpl implements MediationState {
         return removedRemoteVars;
     }
 
-    public Map<String, String> getRemoteVars() {
-        return remoteVars;
+    public void setTransientVar(String name, String value) {
+        transientVars.put(name, value);
     }
 
-    public Map<String, String> getTransientVars() {
-        return transientVars;
+    public void setTransientVars(Map<String, String> vars) {
+        transientVars.putAll(vars);
     }
 
     public LocalState getLocalState() {
         return localState;
+    }
+
+    public class RemoteVar implements java.io.Serializable {
+        private String name;
+        private String value;
+
+        private long expires;
+
+        public RemoteVar(String name, String value, long expires) {
+            this.name = name;
+            this.value = value;
+            this.expires = expires;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public long getExpires() {
+            return expires;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public void setExpires(long expires) {
+            this.expires = expires;
+        }
     }
 }
 

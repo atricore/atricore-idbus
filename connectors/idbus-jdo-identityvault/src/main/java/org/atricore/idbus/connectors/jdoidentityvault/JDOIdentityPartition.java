@@ -1,18 +1,13 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
+import org.apache.commons.codec.binary.Base64;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.*;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.*;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOAclDAOImpl;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOAclEntryDAOImpl;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOSecurityQuestionDAOImpl;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
+import org.atricore.idbus.kernel.main.authn.SecurityToken;
+import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.main.provisioning.domain.*;
-import org.atricore.idbus.kernel.main.provisioning.exception.AclEntryNotFoundException;
-import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
-import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
-import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
+import org.atricore.idbus.kernel.main.provisioning.exception.*;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractIdentityPartition;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.FetchPlan;
 import javax.jdo.JDOObjectNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -44,6 +40,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     private JDOUserAttributeValueDAO usrAttrValDao;
     private JDOGroupAttributeValueDAO grpAttrValDao;
     private JDOUserSecurityQuestionDAO usrSecQuestionDao;
+    private JDOSecurityTokenDAO securityTokenDao;
 
     private JDOSchemaManager schemaManager;
 
@@ -103,7 +100,15 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         this.aclDao = aclDao;
     }
 
-   public void setUsrAttrValDao(JDOUserAttributeValueDAO usrAttrValDao) {
+    public JDOSecurityTokenDAO getSecurityTokenDao() {
+        return securityTokenDao;
+    }
+
+    public void setSecurityTokenDao(JDOSecurityTokenDAO securityTokenDao) {
+        this.securityTokenDao = securityTokenDao;
+    }
+
+    public void setUsrAttrValDao(JDOUserAttributeValueDAO usrAttrValDao) {
         this.usrAttrValDao = usrAttrValDao;
     }
 
@@ -254,6 +259,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             throw new ProvisioningException(e);
         }
     }
+
     @Transactional
     public void deleteGroup(long id) throws ProvisioningException {
         try {
@@ -487,9 +493,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         } catch (JdoObjectRetrievalFailureException e) {
             throw new AclEntryNotFoundException(aclEntry.getId());
         } catch (JDOObjectNotFoundException e) {
-            throw new GroupNotFoundException(aclEntry.getId());
+            throw new AclEntryNotFoundException(aclEntry.getId());
         } catch (NucleusObjectNotFoundException e) {
-            throw new GroupNotFoundException(aclEntry.getId());
+            throw new AclEntryNotFoundException(aclEntry.getId());
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -515,7 +521,103 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     }
 
-// -------------------------------------------< Utils >
+    // -------------------------------------< SecurityTokens >
+
+    @Transactional
+    public SecurityToken addSecurityToken(SecurityToken securityToken) throws ProvisioningException {
+        try {
+            JDOSecurityToken jdoSecurityToken = toJDOSecurityToken(securityToken);
+            jdoSecurityToken = securityTokenDao.save(jdoSecurityToken);
+            jdoSecurityToken = securityTokenDao.detachCopy(jdoSecurityToken, FetchPlan.FETCH_SIZE_GREEDY);
+            return toSecurityToken(jdoSecurityToken);
+
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+
+    }
+
+    @Transactional
+    public SecurityToken updateSecurityToken(SecurityToken securityToken) throws ProvisioningException {
+        try {
+            JDOSecurityToken jdoSecurityToken = securityTokenDao.findByTokenId(securityToken.getId());
+            jdoSecurityToken = toJDOSecurityToken(jdoSecurityToken, securityToken);
+            jdoSecurityToken = securityTokenDao.save(jdoSecurityToken);
+            jdoSecurityToken = securityTokenDao.detachCopy(jdoSecurityToken, FetchPlan.FETCH_SIZE_GREEDY);
+            return toSecurityToken(jdoSecurityToken);
+        } catch (JdoObjectRetrievalFailureException e) {
+            throw new SecurityTokenNotFoundException(securityToken.getId());
+        } catch (JDOObjectNotFoundException e) {
+            throw new SecurityTokenNotFoundException(securityToken.getId());
+        } catch (NucleusObjectNotFoundException e) {
+            throw new SecurityTokenNotFoundException(securityToken.getId());
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+
+    }
+
+    @Transactional
+    public void deleteSecurityToken(String tokenId) throws ProvisioningException {
+        try {
+            JDOSecurityToken jdoSecurityToken = securityTokenDao.findByTokenId(tokenId);
+            if (jdoSecurityToken != null) {
+                securityTokenDao.delete(jdoSecurityToken.getId());
+            }
+        } catch (JdoObjectRetrievalFailureException e) {
+            throw new AclEntryNotFoundException(tokenId);
+        } catch (JDOObjectNotFoundException e) {
+            throw new AclEntryNotFoundException(tokenId);
+        } catch (NucleusObjectNotFoundException e) {
+            throw new AclEntryNotFoundException(tokenId);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    @Transactional
+    public SecurityToken findSecurityTokenByTokenId(String tokenId) throws ProvisioningException{
+        try {
+            JDOSecurityToken jdoSecurityToken = securityTokenDao.findByTokenId(tokenId);
+            jdoSecurityToken = securityTokenDao.detachCopy(jdoSecurityToken, FetchPlan.FETCH_SIZE_GREEDY);
+            return toSecurityToken(jdoSecurityToken);
+
+        } catch (IncorrectResultSizeDataAccessException e) {
+            if (e.getActualSize() == 0)
+                throw new SecurityTokenNotFoundException(tokenId);
+
+            throw new ProvisioningException(e);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    @Transactional
+    public Collection<SecurityToken> findSecurityTokensByIssueInstantBefore(long issueInstant ) throws ProvisioningException {
+
+        try {
+            Collection<JDOSecurityToken> jdoSecurityTokens = securityTokenDao.findByIssueInstantBefore(issueInstant);
+            jdoSecurityTokens = securityTokenDao.detachCopyAll(jdoSecurityTokens, FetchPlan.FETCH_SIZE_GREEDY);
+            return toSecurityTokens(jdoSecurityTokens);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    @Transactional
+    public Collection<SecurityToken> findSecurityTokensByExpiresOnBefore(long expiresOn ) throws ProvisioningException {
+
+        try {
+            Collection<JDOSecurityToken> jdoSecurityTokens = securityTokenDao.findByExpiresOnBefore(expiresOn);
+            jdoSecurityTokens = securityTokenDao.detachCopyAll(jdoSecurityTokens, FetchPlan.FETCH_SIZE_GREEDY);
+            return toSecurityTokens(jdoSecurityTokens);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+
+    // -------------------------------------------< Utils >
 
     protected JDOGroup toJDOGroup(Group group) {
         JDOGroup jdoGroup = toJDOGroup(new JDOGroup(), group);
@@ -881,6 +983,95 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         return aclEntry;
 
     }
+
+    protected JDOSecurityToken toJDOSecurityToken(SecurityToken securityToken) throws IOException {
+        JDOSecurityToken jdoUser = new JDOSecurityToken();
+        //jdoUser.setId(securityToken.getId());
+        return toJDOSecurityToken(jdoUser, securityToken);
+    }
+
+
+    protected JDOSecurityToken toJDOSecurityToken(JDOSecurityToken jdoSecurityToken, SecurityToken securityToken) throws IOException {
+
+        jdoSecurityToken.setTokenId(securityToken.getId());
+        jdoSecurityToken.setNameIdentifier(securityToken.getNameIdentifier());
+        jdoSecurityToken.setContent(securityToken.getContent());
+        jdoSecurityToken.setSerializedContent(securityToken.getSerializedContent());
+        jdoSecurityToken.setIssueInstant(securityToken.getIssueInstant());
+        jdoSecurityToken.setExpiresOn(securityToken.getExpiresOn());
+
+        jdoSecurityToken = marshall(jdoSecurityToken);
+
+        return jdoSecurityToken;
+    }
+
+    protected Collection<SecurityToken> toSecurityTokens(Collection<JDOSecurityToken> jdoSecurityTokens) throws IOException, ClassNotFoundException {
+        List<SecurityToken> securityTokens = new ArrayList<SecurityToken>(jdoSecurityTokens.size());
+        for (JDOSecurityToken jdoSecurityToken : jdoSecurityTokens) {
+            securityTokens.add(toSecurityToken(jdoSecurityToken));
+        }
+
+        return securityTokens;
+
+    }
+
+
+    protected SecurityToken toSecurityToken(JDOSecurityToken jdoSecurityToken) throws IOException, ClassNotFoundException {
+
+        jdoSecurityToken = unmarshal(jdoSecurityToken);
+
+        SecurityTokenImpl st = new SecurityTokenImpl(jdoSecurityToken.getTokenId(),
+                jdoSecurityToken.getNameIdentifier(),
+                jdoSecurityToken.getContent(),
+                jdoSecurityToken.getSerializedContent(),
+                jdoSecurityToken.getIssueInstant());
+
+        st.setExpiresOn(jdoSecurityToken.getExpiresOn());
+
+        return st;
+    }
+
+    public JDOSecurityToken unmarshal(JDOSecurityToken a) throws IOException, ClassNotFoundException {
+
+        // TODO : Let specific capabilities (saml, oauth2, etc) contribute soken serializers to avoid classloader issues
+
+        String contentStr = a.getContentBin();
+
+        if (contentStr != null) {
+            byte[] contentBytes = Base64.decodeBase64(contentStr.getBytes());
+            ByteArrayInputStream contentBais = new ByteArrayInputStream(contentBytes);
+            ObjectInputStream contentOis;
+            contentOis = new ObjectInputStream(contentBais);
+
+            Object definition = (Object) contentOis.readObject();
+            a.setContent(definition);
+        }
+
+        return a;
+    }
+
+    public JDOSecurityToken marshall(JDOSecurityToken a) throws IOException {
+
+        // TODO : Let specific capabilities (saml, oauth2, etc) contribute soken serializers to avoid classloader issues
+
+        Object content = a.getContent();
+        if (content != null) {
+
+            ByteArrayOutputStream contentBaos = new ByteArrayOutputStream();
+            ObjectOutputStream contentOs = new ObjectOutputStream(contentBaos);
+            contentOs.writeObject(content);
+            byte[] contentBytes = contentBaos.toByteArray();
+            byte[] contentEnc = Base64.encodeBase64(contentBytes);
+            String contentStr = new String(contentEnc);
+
+            a.setContentBin(contentStr);
+            a.setContent(null);
+        }
+
+
+        return a;
+    }    
+
 
 }
 

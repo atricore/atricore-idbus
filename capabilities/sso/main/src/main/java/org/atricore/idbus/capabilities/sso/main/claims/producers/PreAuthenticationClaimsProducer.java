@@ -33,14 +33,24 @@ import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2MessagingConstants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.core.SSORequestException;
+import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
+import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
+import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.provisioning.exception.SecurityTokenNotFoundException;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.FindSecurityTokenByTokenIdRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.FindSecurityTokenByTokenIdResponse;
+import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
 
 /**
@@ -63,49 +73,57 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
             logger.debug("Collecting security token claim");
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        Object content = in.getMessage().getContent();
 
-        // -------------------------------------------------------------------------
-        // Collect claims
-        // -------------------------------------------------------------------------
-        if (logger.isDebugEnabled())
-            logger.debug("Starting to collect security token claims");
-        SSOCredentialClaimsRequest claimsRequest = (SSOCredentialClaimsRequest) in.getMessage().getContent();
+        try {
 
-        if (logger.isDebugEnabled()) {
-            if (claimsRequest.getPreauthenticationSecurityToken() != null) {
-                logger.debug("Preauthentication Security Token for Claims Request " + claimsRequest.getId() + " is " +
-                        claimsRequest.getPreauthenticationSecurityToken());
-            }
-        } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No preauthentication Security Token Received for Claims Request " + claimsRequest.getId());
-            }
+            // -------------------------------------------------------------------------
+            // Collect claims
+            // -------------------------------------------------------------------------
+            if (logger.isDebugEnabled())
+                logger.debug("Starting to collect security token claims");
+
+            SSOCredentialClaimsRequest claimsRequest = (SSOCredentialClaimsRequest) in.getMessage().getContent();
+
+            doProcessReceivedSecurityTokenClaim(exchange, claimsRequest);
+        } catch (SSORequestException e) {
+
+            throw new IdentityMediationFault(
+                    e.getTopLevelStatusCode() != null ? e.getTopLevelStatusCode().getValue() : StatusCode.TOP_RESPONDER.getValue(),
+                    e.getSecondLevelStatusCode() != null ? e.getSecondLevelStatusCode().getValue() : null,
+                    e.getStatusDtails() != null ? e.getStatusDtails().getValue() : StatusDetails.UNKNOWN_REQUEST.getValue(),
+                    e.getErrorDetails() != null ? e.getErrorDetails() : content.getClass().getName(),
+                    e);
+
+        } catch (SSOException e) {
+
+            throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                    null,
+                    StatusDetails.INTERNAL_ERROR.getValue(),
+                    content.getClass().getName(),
+                    e);
+
         }
-
-        if (logger.isDebugEnabled())
-            logger.debug("Storing claims request as local variable, id:" + claimsRequest.getId());
-        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:credential-claims-request", claimsRequest);
-
-
-        doProcessReceivedSecurityTokenClaim(exchange, claimsRequest);
 
     }
 
     protected void doProcessReceivedSecurityTokenClaim(CamelMediationExchange exchange,
-                                           CredentialClaimsRequest credentialClaimsRequest) throws Exception {
+                                           CredentialClaimsRequest claimsRequest) throws Exception {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         SSOClaimsMediator mediator = ((SSOClaimsMediator) channel.getIdentityMediator());
 
         // This is the binding we're using to send the response
         SSOBinding binding = SSOBinding.SSO_ARTIFACT;
-        Channel issuer = credentialClaimsRequest.getIssuerChannel();
+        Channel issuer = claimsRequest.getIssuerChannel();
 
         IdentityMediationEndpoint claimsProcessingEndpoint = null;
 
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:credential-claims-request", claimsRequest);
+
         // Look for an endpoint to send the response
         for (IdentityMediationEndpoint endpoint : issuer.getEndpoints()) {
-            if (endpoint.getType().equals(credentialClaimsRequest.getIssuerEndpoint().getType()) &&
+            if (endpoint.getType().equals(claimsRequest.getIssuerEndpoint().getType()) &&
                     endpoint.getBinding().equals(binding.getValue())) {
                 claimsProcessingEndpoint = endpoint;
                 break;
@@ -114,21 +132,65 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
         if (claimsProcessingEndpoint == null) {
             throw new SSOException("No endpoint supporting " + binding + " of type " +
-                    credentialClaimsRequest.getIssuerEndpoint().getType() + " found in channel " + credentialClaimsRequest.getIssuerChannel().getName());
+                    claimsRequest.getIssuerEndpoint().getType() + " found in channel " + claimsRequest.getIssuerChannel().getName());
         }
 
-        EndpointDescriptor ed = mediator.resolveEndpoint(credentialClaimsRequest.getIssuerChannel(),
+        EndpointDescriptor ed = mediator.resolveEndpoint(claimsRequest.getIssuerChannel(),
                 claimsProcessingEndpoint);
 
+        String preAuthnToken = claimsRequest.getPreauthenticationSecurityToken();
+
+        // No pre-authn token received, looking for remember-me token id
+        if (preAuthnToken == null) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Pre-authn token not found in CredentialClaimsRequest " + claimsRequest.getId());
+
+            // try to get the token from the provider state:
+            MediationState state = in.getMessage().getState();
+            String preAuthnTokenIdVar = getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM";
+            String preAuthnTokenId = state.getRemoteVariable(preAuthnTokenIdVar);
+
+            if (preAuthnTokenId != null) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Pre-authn token id found as remote variable (cookie) :  " + preAuthnTokenIdVar + ", ID: " + preAuthnTokenId);
+
+                ProvisioningTarget t = mediator.getProvisioningTarget();
+                FindSecurityTokenByTokenIdRequest req = new FindSecurityTokenByTokenIdRequest();
+                req.setTokenId(preAuthnTokenId);
+                try {
+                    FindSecurityTokenByTokenIdResponse resp = t.findSecurityTokenByTokenId(req);
+                    if (logger.isDebugEnabled())
+                        logger.debug("Pre-authn token id found :  " + preAuthnTokenId + " [" + resp.getSecurityToken().getNameIdentifier() + "]");
+                    preAuthnToken = resp.getSecurityToken().getSerializedContent();
+                } catch (SecurityTokenNotFoundException e) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Pre-authn token id not found (no longer valid)  :  " + preAuthnTokenId);
+                }
+
+            } else {
+                if (logger.isDebugEnabled())
+                    logger.debug("Pre-authn token id not found as remote variable (cookie) :  " + preAuthnTokenIdVar);
+
+            }
+        } else {
+            if (logger.isDebugEnabled())
+                logger.debug("Pre-authn token found in CredentialClaimsRequest " + claimsRequest.getId());
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Pre-authn token :  " + (preAuthnToken == null ? "NULL" : preAuthnToken));
+
         PasswordString token = new PasswordString();
-        token.setValue(credentialClaimsRequest.getPreauthenticationSecurityToken());
+        token.setValue(preAuthnToken);
 
         CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.OAUTH2_AUTHN_CTX.getValue(), token);
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(credentialClaim);
 
-        SSOCredentialClaimsResponse claimsResponse = new SSOCredentialClaimsResponse(credentialClaimsRequest.getId() /* TODO : Generate new ID !*/,
-                channel, credentialClaimsRequest.getId(), claims, credentialClaimsRequest.getRelayState());
+        SSOCredentialClaimsResponse claimsResponse = new SSOCredentialClaimsResponse(claimsRequest.getId() /* TODO : Generate new ID !*/,
+                channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 

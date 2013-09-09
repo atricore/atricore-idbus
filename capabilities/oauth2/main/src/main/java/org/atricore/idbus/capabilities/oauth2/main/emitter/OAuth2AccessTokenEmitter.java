@@ -13,9 +13,11 @@ import org.atricore.idbus.common.oauth._2_0.protocol.ObjectFactory;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
 
 import javax.security.auth.Subject;
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Arrays;
@@ -37,6 +39,12 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
     private TokenEncrypter tokenEncrypter;
 
     private Random randomGenerator = new Random();
+
+    // Default to 30 days
+    private long rememberMeTokenValidityMins = 60L * 24L * 30L;
+
+    // Default to 10 minutes
+    private long tokenValiditySecs = 60L * 10L;
 
     @Override
     public boolean isTargetedEmitter(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
@@ -60,7 +68,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                 logger.trace("Building OAuth2 Token from " + subject);
 
             // Build an access token for the subject,
-            OAuth2AccessToken token = buildOAuth2AccessToken(subject);
+            OAuth2AccessToken token = buildOAuth2AccessToken(subject, requestToken);
 
             OAuth2AccessTokenEnvelope envelope = buildOAuth2AccessTokenEnvelope(token);
 
@@ -72,14 +80,15 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             oauthToken.setTokenType("bearer");
             oauthToken.setAccessToken(tokenValue);
 
-            // Ten minutes, TODO : make configurable!
-            oauthToken.setExpiresIn(1000L * 60L * 10L);
 
             // Create a security token using the OUT artifact content.
-            SecurityToken st = new SecurityTokenImpl(uuid,
+            SecurityTokenImpl st = new SecurityTokenImpl(uuid,
                     WSTConstants.WST_OAUTH2_TOKEN_TYPE,
                     oauthToken,
                     tokenValue);
+
+            // Set token expiration
+            st.setExpiresOn(token.getExpiresOn());
 
             logger.debug("Created new security token [" + uuid + "] with content " + (oauthToken.getClass().getSimpleName()));
 
@@ -117,7 +126,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         return new OAuth2AccessTokenEnvelope (encryptAlg, sigAlg, sigValue, tokenValue, true);
     }
 
-    protected OAuth2AccessToken buildOAuth2AccessToken(Subject subject) {
+    protected OAuth2AccessToken buildOAuth2AccessToken(Subject subject, Object requestToken) {
 
         // User
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
@@ -140,6 +149,26 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                 at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), property.getName(), property.getValue()));
             }
         }
+
+
+        long expiresIn = tokenValiditySecs;
+        if (requestToken instanceof UsernameTokenType) {
+
+            UsernameTokenType ut = (UsernameTokenType) requestToken;
+
+            // When the requested token has a remember-me attribute, we must persist the token
+            String rememberMe = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+            if (rememberMe != null && Boolean.parseBoolean(rememberMe)) {
+                // 30 days for remember-me tokens
+                // Mark the token as used for remember-me.
+                expiresIn = 1000L * 60L * rememberMeTokenValidityMins;
+                at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.name(), Constants.REMEMBERME_NS, "TRUE"));
+
+            }
+        }
+
+        at.setExpiresOn(at.getTimeStamp() + expiresIn);
+
 
         // User properties
         // TODO:
@@ -251,5 +280,21 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
     public void setTokenEncrypter(TokenEncrypter tokenEncrypter) {
         this.tokenEncrypter = tokenEncrypter;
+    }
+
+    public long getRememberMeTokenValidityMins() {
+        return rememberMeTokenValidityMins;
+    }
+
+    public void setRememberMeTokenValidityMins(long rememberMeTokenValidityMins) {
+        this.rememberMeTokenValidityMins = rememberMeTokenValidityMins;
+    }
+
+    public long getTokenValiditySecs() {
+        return tokenValiditySecs;
+    }
+
+    public void setTokenValiditySecs(long tokenValiditySecs) {
+        this.tokenValiditySecs = tokenValiditySecs;
     }
 }
