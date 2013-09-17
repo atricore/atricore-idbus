@@ -111,18 +111,20 @@ public class OAuth2Client {
      * @param pwd the password used to issue the access token
      */
     public String getIdPPreAuthnUrl(String usr, String pwd) throws OAuth2ClientException {
+        String spAlias = config.getProperty("oauth2.serviceProviderAlias");
+        return getIdPPreAuthnUrl(spAlias, usr, pwd)
+    }
+
+    public String getIdPPreAuthnUrl(String spAlias, String usr, String pwd) throws OAuth2ClientException {
 
         try {
             String accessToken = requestToken(usr, pwd);
-
-            String spAlias = config.getProperty("oauth2.serviceProviderAlias");
             String resourceServerEndpoint = config.getProperty("oauth2.identityProviderPreAuthnEndpoint");
-
             String preauthUrl =
                     String.format("%s?atricore_sp_alias=%s&atricore_security_token=%s",
-                        resourceServerEndpoint,
-                        spAlias,
-                        URLEncoder.encode(accessToken, "UTF-8")
+                            resourceServerEndpoint,
+                            spAlias,
+                            URLEncoder.encode(accessToken, "UTF-8")
                     );
 
             return preauthUrl;
@@ -130,6 +132,7 @@ public class OAuth2Client {
             throw new OAuth2ClientException(e);
         }
     }
+
 
     /**
      * Builds a resource Url for the configured username and password.

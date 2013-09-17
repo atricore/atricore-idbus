@@ -80,6 +80,9 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
      */
     protected UsernamePasswordSignInForm form;
 
+    /**
+     * Field for remember me option
+     */
     protected CheckBox rememberMe;
 
     /**
