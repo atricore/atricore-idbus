@@ -343,6 +343,13 @@
                         <scope>runtime</scope>
                     </dependency>
 
+                    <dependency>
+                        <groupId>javax.jdo</groupId>
+                        <artifactId>jdo-api</artifactId>
+                        <version>3.0.1</version>
+                        <scope>runtime</scope>
+                    </dependency>
+
                 </dependencies>
             </plugin>
 
