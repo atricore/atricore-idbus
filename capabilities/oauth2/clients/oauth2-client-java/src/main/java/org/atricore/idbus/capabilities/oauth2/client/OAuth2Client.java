@@ -112,7 +112,7 @@ public class OAuth2Client {
      */
     public String getIdPPreAuthnUrl(String usr, String pwd) throws OAuth2ClientException {
         String spAlias = config.getProperty("oauth2.serviceProviderAlias");
-        return getIdPPreAuthnUrl(spAlias, usr, pwd)
+        return getIdPPreAuthnUrl(spAlias, usr, pwd);
     }
 
     public String getIdPPreAuthnUrl(String spAlias, String usr, String pwd) throws OAuth2ClientException {
