@@ -1412,11 +1412,13 @@ public class IdentityApplianceManagementServiceImpl implements
         return response;
     }
 
+    @Transactional
     public ExportMetadataResponse exportMetadata(ExportMetadataRequest request) throws IdentityServerException {
         ExportMetadataResponse response = new ExportMetadataResponse();
         try {
             syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
+            identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             response.setMetadata(builder.exportMetadata(appliance, request.getProviderName(), request.getChannelName()));
         } catch (Exception e){
             logger.error("Error exporting SAML metadata", e);
@@ -1425,6 +1427,7 @@ public class IdentityApplianceManagementServiceImpl implements
         return response;
     }
 
+    @Transactional
     public ExportAgentConfigResponse exportAgentConfig(ExportAgentConfigRequest request) throws IdentityServerException {
         ExportAgentConfigResponse response = new ExportAgentConfigResponse();
         try {
