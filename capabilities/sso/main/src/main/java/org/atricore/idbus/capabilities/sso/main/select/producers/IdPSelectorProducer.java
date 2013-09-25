@@ -94,14 +94,10 @@ public class IdPSelectorProducer extends SSOProducer {
         SSOEntitySelectorMediator mediator = (SSOEntitySelectorMediator) channel.getIdentityMediator();
         EntitySelectorManager entitySelectorMgr = mediator.getSelectorManager();
 
-        CircleOfTrustMemberDescriptor selectedEntity = (CircleOfTrustMemberDescriptor) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY");
+        CircleOfTrustMemberDescriptor previouslySelectedCotMember = (CircleOfTrustMemberDescriptor) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY");
 
-        if (selectedEntity != null) {
-            if (logger.isDebugEnabled())
-                logger.debug("Using previously selected entityh " + selectedEntity);
-            sendSelectionResponse(exchange, state, request, selectedEntity);
-            return;
-        }
+        if (logger.isDebugEnabled())
+            logger.debug("Found previously selected entity " + previouslySelectedCotMember);
 
         // Information to make a decision can be obtain in the following ways:
 
@@ -121,6 +117,8 @@ public class IdPSelectorProducer extends SSOProducer {
                 }
             }
             selectionState.setUserClaims(userClaims);
+            if (previouslySelectedCotMember != null)
+                selectionState.setPreviousCotMember(previouslySelectedCotMember.getAlias());
         }
 
         selectionState.setRequest(request);

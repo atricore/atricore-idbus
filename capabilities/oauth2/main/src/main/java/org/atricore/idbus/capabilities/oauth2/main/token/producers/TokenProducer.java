@@ -282,7 +282,7 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
     }
 
     protected boolean authenticateRequest(OAuth2Client client, AccessTokenRequestType atReq, AccessTokenResponseType atRes) throws OAuth2ServerException {
-
+        // TODO : Improve: support other authn methods (user grant permission), strong authn, add password hashing, etc
         if (logger.isTraceEnabled()) {
             logger.trace("Authenticating req "+atReq.getClientId()+" for client " + client);
         }

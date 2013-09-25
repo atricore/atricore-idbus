@@ -52,6 +52,25 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
             }
         }
 
+        // Try previous COT member
+        {
+            String idpAliasValue = ctx.getSelectionState().getPreviousCotMember();
+            if (idpAliasValue != null) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Using IdP alias " + idpAliasValue);
+
+                // Support both encoded and decoded IDP alias values
+                idp = ctx.getCotManager().lookupMemberByAlias(idpAliasValue);
+                if (idp == null) {
+                    String decodedIdpAlias = new String(Base64.decodeBase64(idpAliasValue.getBytes()));
+                    idp = ctx.getCotManager().lookupMemberByAlias(decodedIdpAlias);
+                }
+
+            }
+
+        }
+
         // Try with selected IDP alias first
         {
             UserClaim idpAlias = ctx.getUserClaim(SELECTED_IDP_ALIAS_ATTR);

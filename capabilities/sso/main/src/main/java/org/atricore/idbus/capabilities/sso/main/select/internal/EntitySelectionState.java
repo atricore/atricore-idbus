@@ -16,6 +16,8 @@ public class EntitySelectionState implements java.io.Serializable {
 
     private String selectedCotMember;
 
+    private String previousCotMember;
+
     public ClaimSet getUserClaims() {
         return userClaims;
     }
@@ -54,5 +56,13 @@ public class EntitySelectionState implements java.io.Serializable {
 
     public void setNextSelectorEndpointIdx(int nextSelectorEndpointIdx) {
         this.nextSelectorEndpointIdx = nextSelectorEndpointIdx;
+    }
+
+    public String getPreviousCotMember() {
+        return previousCotMember;
+    }
+
+    public void setPreviousCotMember(String previousCotMember) {
+        this.previousCotMember = previousCotMember;
     }
 }
