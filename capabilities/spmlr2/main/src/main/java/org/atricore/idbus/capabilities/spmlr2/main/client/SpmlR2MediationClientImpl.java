@@ -5,6 +5,7 @@ import oasis.names.tc.spml._2._0.async.CancelRequestType;
 import oasis.names.tc.spml._2._0.async.CancelResponseType;
 import oasis.names.tc.spml._2._0.async.StatusRequestType;
 import oasis.names.tc.spml._2._0.async.StatusResponseType;
+import oasis.names.tc.spml._2._0.atricore.ReplacePasswordRequestType;
 import oasis.names.tc.spml._2._0.batch.BatchRequestType;
 import oasis.names.tc.spml._2._0.batch.BatchResponseType;
 import oasis.names.tc.spml._2._0.bulk.BulkModifyRequestType;
@@ -79,6 +80,14 @@ public class SpmlR2MediationClientImpl implements SpmlR2Client, InitializingBean
     public UpdatesResponseType spmlUpdatesIterateRequest(IterateRequestType request) {
         try {
             return (UpdatesResponseType) mediator.sendMessage(request, doMakeDestination(request), psp.getChannel());
+        } catch (IdentityMediationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ResponseType spmlReplacePasswordRequest(ReplacePasswordRequestType request) {
+        try {
+            return (ResponseType) mediator.sendMessage(request, doMakeDestination(request), psp.getChannel());
         } catch (IdentityMediationException e) {
             throw new RuntimeException(e);
         }

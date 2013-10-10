@@ -1,10 +1,7 @@
 package org.atricore.idbus.capabilities.spmlr2.main.psp.producers;
 
 import oasis.names.tc.spml._2._0.*;
-import oasis.names.tc.spml._2._0.atricore.GroupAttributeType;
-import oasis.names.tc.spml._2._0.atricore.GroupType;
-import oasis.names.tc.spml._2._0.atricore.UserAttributeType;
-import oasis.names.tc.spml._2._0.atricore.UserType;
+import oasis.names.tc.spml._2._0.atricore.*;
 import oasis.names.tc.spml._2._0.password.ResetPasswordRequestType;
 import oasis.names.tc.spml._2._0.password.SetPasswordRequestType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
@@ -80,6 +77,8 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse = doProcessDeleteRequest(exchange, (DeleteRequestType) content);
         } else if (content instanceof SetPasswordRequestType) {
             spmlResponse = doProcessSetPassword(exchange, (SetPasswordRequestType) content);
+        } else if (content instanceof ReplacePasswordRequestType) {
+            spmlResponse = doProcessReplacePassword(exchange, (ReplacePasswordRequestType) content);
         } else if (content instanceof ResetPasswordRequestType) {
             // TODO :
             logger.error("Unknown SPML Request type : " + content.getClass().getName());
@@ -765,6 +764,31 @@ public class PSPProducer extends SpmlR2Producer {
 
         return spmlResponse;
     }
+
+    public ResponseType doProcessReplacePassword(CamelMediationExchange exchange, ReplacePasswordRequestType spmlRequest) {
+
+        ResponseType spmlResponse = new ResponseType();
+        try {
+
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+            long userId = Long.parseLong(spmlRequest.getPsoID().getID());
+            String newPwd = spmlRequest.getNewPassword();
+
+            User user = this.lookupUser(target, userId);
+
+            ResetPasswordRequest req = new ResetPasswordRequest (user);
+            req.setNewPassword(newPwd);
+            target.resetPassword(req);
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+        } catch (ProvisioningException e) {
+            logger.error(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+        }
+
+        return spmlResponse;
+    }
+
 
     public class TargetContainer {
 

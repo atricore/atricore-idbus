@@ -5,6 +5,7 @@ import oasis.names.tc.spml._2._0.async.CancelRequestType;
 import oasis.names.tc.spml._2._0.async.CancelResponseType;
 import oasis.names.tc.spml._2._0.async.StatusRequestType;
 import oasis.names.tc.spml._2._0.async.StatusResponseType;
+import oasis.names.tc.spml._2._0.atricore.ReplacePasswordRequestType;
 import oasis.names.tc.spml._2._0.batch.BatchRequestType;
 import oasis.names.tc.spml._2._0.batch.BatchResponseType;
 import oasis.names.tc.spml._2._0.bulk.BulkModifyRequestType;
@@ -41,6 +42,10 @@ public class SpmlR2ServiceImpl implements SPMLRequestPortType {
     }
 
     public UpdatesResponseType spmlUpdatesIterateRequest(@WebParam(partName = "body", name = "iterateRequest", targetNamespace = "urn:oasis:names:tc:SPML:2:0:updates") IterateRequestType body) {
+        throw new UnsupportedOperationException("This service is not meant to be invoked");
+    }
+
+    public ResponseType spmlReplacePasswordRequest(@WebParam(partName = "body", name = "replacePasswordRequest", targetNamespace = "urn:oasis:names:tc:SPML:2:0:atricore") ReplacePasswordRequestType body) {
         throw new UnsupportedOperationException("This service is not meant to be invoked");
     }
 

@@ -538,6 +538,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         try {
             User user = identityPartition.findUserById(resetPwdRequest.getUser().getId());
+            User providedUser = resetPwdRequest.getUser();
+            if (!user.getUserName().equals(providedUser.getUserName()))
+                throw new ProvisioningException("Invalid user information");
 
             String pwdHash = createPasswordHash(pwd);
             user.setUserPassword(pwdHash);

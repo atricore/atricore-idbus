@@ -222,6 +222,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
     }
 
     public BaseSession[] loadByValid(boolean valid) throws SSOSessionException {
+        // TODO : Optimize this !!!
         List<BaseSession> byValid = new ArrayList<BaseSession>();
 
         BaseSession[] all = loadAll();

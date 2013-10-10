@@ -180,6 +180,14 @@
     </wsdl:message>
 
     <!-- password message definitions -->
+    <wsdl:message name="SPMLReplacePasswordRequestMessage">
+        <wsdl:part name="body" element="spmlatc:replacePasswordRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLReplacePasswordResponseMessage">
+        <wsdl:part name="body" element="spmlatc:replacePasswordResponse"/>
+    </wsdl:message>
+
     <wsdl:message name="SPMLSetPasswordRequestMessage">
         <wsdl:part name="body" element="spmlpassword:setPasswordRequest"/>
     </wsdl:message>
@@ -361,6 +369,14 @@
         </wsdl:operation>
 
         <!-- password abstract operations -->
+        <wsdl:operation name="SPMLReplacePasswordRequest">
+            <wsdl:input name="SPMLReplacePasswordRequestInput"
+                        message="tns:SPMLReplacePasswordRequestMessage"/>
+            <wsdl:output name="SPMLReplacePasswordRequestOutput"
+                         message="tns:SPMLReplacePasswordResponseMessage"/>
+        </wsdl:operation>
+
+
         <wsdl:operation name="SPMLSetPasswordRequest">
             <wsdl:input name="SPMLSetPasswordRequestInput"
                         message="tns:SPMLSetPasswordRequestMessage"/>
@@ -567,6 +583,18 @@
         </wsdl:operation>
 
         <!-- SOAP binding for password operations -->
+        <wsdl:operation name="SPMLReplacePasswordRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/replacePasswordRequest"/>
+            <wsdl:input name="SPMLReplacePasswordRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLReplacePasswordRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+
         <wsdl:operation name="SPMLSetPasswordRequest">
             <soap:operation style="document"
                             soapAction="urn:oasis:names:tc:SPML:2:0:req/setPasswordRequest"/>

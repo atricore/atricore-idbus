@@ -432,6 +432,15 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         return psoGroupAttribute;
     }
 
+    protected User lookupUser(ProvisioningTarget target, long userId) throws ProvisioningException {
+        FindUserByIdRequest req = new FindUserByIdRequest();
+        req.setId(userId);
+        FindUserByIdResponse res = target.findUserById(req);
+
+        return res.getUser();
+    }
+
+
     protected User lookupUser(ProvisioningTarget target, String username) throws ProvisioningException {
         FindUserByUsernameRequest req = new FindUserByUsernameRequest ();
         req.setUsername(username);

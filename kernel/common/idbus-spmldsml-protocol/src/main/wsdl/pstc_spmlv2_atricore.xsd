@@ -29,6 +29,17 @@
 
     <import namespace="urn:oasis:names:tc:SPML:2:0"
             schemaLocation="pstc_spmlv2_core.xsd"/>
+
+    <complexType name="ReplacePasswordRequestType">
+        <complexContent>
+            <extension base="spml:RequestType">
+                <sequence>
+                    <element name="psoID" type="spml:PSOIdentifierType"/>
+                    <element name="newPassword" type="string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
     
     <complexType name="GroupType">
         <complexContent>
@@ -151,6 +162,8 @@
 	    </xsd:restriction>
 	</xsd:simpleType>
 
+    <element name="replacePasswordRequest" type="spmlatc:ReplacePasswordRequestType"/>
+    <element name="replacePasswordResponse" type="spml:ResponseType"/>
     <element name="attributeValue" type="spmlatc:AttributeValueType"/>
     <element name="group" type="spmlatc:GroupType"/>
     <element name="user" type="spmlatc:UserType"/>
