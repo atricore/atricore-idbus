@@ -33,7 +33,10 @@ import com.atricore.idbus.console.services.spi.response.*;
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.AttributeValueType;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
+import oasis.names.tc.spml._2._0.atricore.ReplacePasswordRequestType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
+import oasis.names.tc.spml._2._0.password.ResetPasswordRequestType;
+import oasis.names.tc.spml._2._0.password.SetPasswordRequestType;
 import oasis.names.tc.spml._2._0.search.ScopeType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
@@ -44,6 +47,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.ResetPasswordRequest;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -714,8 +718,22 @@ public class UserProvisioningAjaxServiceImpl implements
                 logger.error("SPML Status Code " + resp.getStatus() + " received while updating user " + userRequest.getId());
                 throw new UserProvisioningAjaxException("Error updating User [" + userRequest.getId() + "]");
             }
-            UpdateUserResponse response = new UpdateUserResponse();
 
+
+            if (userRequest.getUserPassword() != null) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Updating user password for " + psoUser.getPsoID().getTargetID());
+
+                ReplacePasswordRequestType pwdReq = new ReplacePasswordRequestType();
+                pwdReq.setPsoID(psoUser.getPsoID());
+                pwdReq.setNewPassword(userRequest.getUserPassword());
+
+                ResponseType pwdRes = spmlService.spmlReplacePasswordRequest(pwdReq);
+
+            }
+
+            UpdateUserResponse response = new UpdateUserResponse();
             return response;
         } catch (Exception e) {
             // Log the error ant throw an exception to the Ajax layer.
@@ -740,8 +758,6 @@ public class UserProvisioningAjaxServiceImpl implements
 
         if (usersByGroupRequest.getGroup() != null)
             qry = "/users[group='"+usersByGroupRequest.getGroup()+"']";
-
-
 
         spmlSelect.setPath(qry);
         spmlSelect.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");

@@ -68,7 +68,7 @@
                     <property name="location" value="local:/PSP-1/SPML2/LOCAL"/>
                 </bean>
 
-                <!-- DO NOT USE YET
+                <!-- DO NOT USE YET, we need a we to secure service calls !!
                 <bean name="psp-default-soap-endpoint" class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl">
                     <property name="name" value="psp-default-soap-endpoint"/>
                     <property name="type" value="{urn:oasis:names:tc:SPML:2:0}PSPService" />
