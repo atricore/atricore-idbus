@@ -3,6 +3,7 @@ package org.atricore.idbus.idojos.ehcachesessionstore;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import net.sf.ehcache.event.CacheEventListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.session.BaseSession;
@@ -43,6 +44,8 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
     
     private ApplicationContext applicationContext;
 
+    private List<CacheEventListener> listeners;
+
     public void afterPropertiesSet() throws Exception {
         init();
     }
@@ -61,6 +64,14 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
 
     public void setNode(String node) {
         this.node = node;
+    }
+
+    public List<CacheEventListener> getListeners() {
+        return listeners;
+    }
+
+    public void setListeners(List<CacheEventListener> listeners) {
+        this.listeners = listeners;
     }
 
     public CacheManager getCacheManager() {
@@ -116,6 +127,12 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
                     logger.error("No chache definition found with name '" + cacheName + "'");
                     return;
                 } else {
+
+                    for (CacheEventListener listener : listeners) {
+                        logger.trace("Cache listener : " + listener);
+                        cache.getCacheEventNotificationService().registerListener(listener);
+                    }
+
                     if (logger.isTraceEnabled()) {
 
                         logger.trace("Initialized EHCache Session store using cache : " + cache);
@@ -182,8 +199,14 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             if (e != null) {
                 Object value = e.getValue();
                 // We have different type of entries,
-                if (value instanceof BaseSession)
-                    return (BaseSession) value;
+                if (value instanceof BaseSession) {
+
+                    BaseSession s = (BaseSession) value;
+                    // Refresh user sessions when ever a session is accessed.
+                    cache.getQuiet(s.getUsername());
+
+                    return s;
+                }
             }
 
             return null;
@@ -239,11 +262,10 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
             BaseSession s = load(id);
-            if (s == null)
-                return;
-
-            cache.remove(id);
-            cache.remove(s.getUsername());
+            if (s != null) {
+                cache.remove(s.getUsername());
+                cache.remove(id);
+            }
         } finally {
             Thread.currentThread().setContextClassLoader(orig);
         }
@@ -265,12 +287,18 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
             Element s = new Element(session.getId(), session);
+            s.setTimeToIdle(session.getMaxInactiveInterval());
+            s.setTimeToLive(0);
+
             Element u = cache.get(session.getUsername());
             if (u == null) {
                 u = new Element(session.getUsername(), new ArrayList<BaseSession>());
             }
 
             ((List<BaseSession>)u.getValue()).add(session);
+
+            if (s.getTimeToIdle() > u.getTimeToIdle())
+                u.setTimeToIdle(s.getTimeToIdle());
 
             cache.put(s);
             cache.put(u);

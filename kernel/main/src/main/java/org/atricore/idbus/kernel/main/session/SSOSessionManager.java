@@ -26,6 +26,8 @@ import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
 import org.atricore.idbus.kernel.main.session.exceptions.TooManyOpenSessionsException;
+import org.atricore.idbus.kernel.main.session.service.SSOSessionMonitor;
+import org.atricore.idbus.kernel.main.session.service.SSOSessionStats;
 import org.atricore.idbus.kernel.main.store.session.SessionStore;
 
 import java.util.Collection;
@@ -132,6 +134,12 @@ public interface SSOSessionManager extends java.io.Serializable {
     void checkValidSessions();
 
     /**
+     * Check all sessions and remove those that are not valid from the store.
+     * This method is invoked periodically to update sessions state.
+     */
+    void checkValidSessions(BaseSession[] sessions);
+
+    /**
      * SessionStore instance is injected before initializing the manager.
      */
     void setSessionStore(SessionStore ss);
@@ -163,4 +171,8 @@ public interface SSOSessionManager extends java.io.Serializable {
     long getStatsDestroyedSessions();
 
     long getStatsCurrentSessions();
+
+    void setStats(SSOSessionStats stats);
+
+    void setMonitor(SSOSessionMonitor monitor);
 }

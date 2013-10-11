@@ -62,6 +62,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
     private boolean _invalidateExceedingSessions = false;
 
+    private SSOSessionStats _stats;
+
     @Deprecated
     private String _securityDomainName;
 
@@ -69,19 +71,6 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
     private ConfigurationContext _config;
 
-    // Some statistical information:
-
-    private long _statsMaxSessions;
-
-    private long _statsCreatedSessions;
-
-    private long _statsDestroyedSessions;
-
-    private long _statsCurrentSessions;
-
-    private String _metricsPrefix;
-
-    private MonitoringServer _mServer;
 
     /**
      * This implementation uses a MemoryStore and a defaylt Session Id generator.
@@ -98,9 +87,9 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
     }
 
     public void destroy() throws Exception {
-        if (stpe != null) {
+        if (_monitor != null) {
             try {
-                stpe.shutdown();
+                _monitor.stop();
             } catch (Exception e) {
                 /* Ignore this*/
             }
@@ -115,9 +104,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
     private SessionIdGenerator _idGen;
 
     // SSO Sessions monitor
-    private SessionMonitor _monitor;
-
-    private ScheduledThreadPoolExecutor stpe;
+    private SSOSessionMonitor _monitor;
 
     //------------------------------------------------------
     // SSO Session Manager
@@ -150,17 +137,10 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         logger.info("[initialize()] : InvalidateExceedingSessions.=" + _invalidateExceedingSessions);
         logger.info("[initialize()] : SesisonMonitorInteval.......=" + _sessionMonitorInterval);
         logger.info("[initialize()] : Node........................=" + _node);
-        logger.info("[initialize()] : Monitoring Server...........=" + (_mServer != null ? "FOUND" : "NOT FOUND"));
 
         // Start session monitor.
+        _monitor.start();
 
-
-        _monitor = new SessionMonitor(this, getSessionMonitorInterval());
-
-        stpe = new ScheduledThreadPoolExecutor(3);
-        stpe.scheduleAtFixedRate(_monitor, getSessionMonitorInterval(),
-                getSessionMonitorInterval(),
-                TimeUnit.MILLISECONDS);
 
         // Register sessions in security domain !
         logger.info("[initialize()] : Restore Sec.Domain Registry.=" + _securityDomainName);
@@ -236,22 +216,6 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         _store.save(session);
 
         // Update statistics:
-
-        // Number of created sessions
-        _statsCreatedSessions ++;
-
-        // Number of valid sessions (should match the store count!)
-        _statsCurrentSessions ++;
-        if (_mServer != null) {
-            _mServer.recordMetric(_metricsPrefix + "/SsoSessions/Total", _statsCurrentSessions);
-            _mServer.incrementCounter(_metricsPrefix + "/SsoSessions/Created");
-        }
-
-        // Max number of concurrent sessions
-        if (_statsMaxSessions < _statsCurrentSessions) {
-            _statsMaxSessions = _statsCurrentSessions;
-            logger.info("Max concurrent SSO Sessions ["+ _metricsPrefix +"] " + _statsMaxSessions);
-        }
 
         session.fireSessionEvent(BaseSession.SESSION_CREATED_EVENT, null);
 
@@ -379,18 +343,6 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
         // Remove it from the store
         try {
-
-
-            // Update statistics:
-            // Number of destroyed sessions
-            _statsDestroyedSessions ++;
-
-            // Number of valid sessions (should match the store count!)
-            _statsCurrentSessions --;
-            if (_mServer != null) {
-                _mServer.recordMetric(_metricsPrefix + "/SsoSessions/Total", _statsCurrentSessions);
-                _mServer.incrementCounter(_metricsPrefix + "/SsoSessions/Destroyed");
-            }
             _store.remove(sessionId);
 
         } catch (SSOSessionException e) {
@@ -440,7 +392,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
     }
 
-    protected void checkValidSessions(BaseSession[] sessions) {
+    public void checkValidSessions(BaseSession[] sessions) {
         for (int i = 0; i < sessions.length; i++) {
             try {
 
@@ -541,21 +493,20 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
     }
 
-    public MonitoringServer getMonitoringServer() {
-        return _mServer;
+    public SSOSessionStats getStats() {
+        return _stats;
     }
 
-    public void setMonitoringServer(MonitoringServer mServer) {
-        this._mServer = mServer;
+    public void setStats(SSOSessionStats _stats) {
+        this._stats = _stats;
     }
 
-
-    public String getMetricsPrefix() {
-        return _metricsPrefix;
+    public SSOSessionMonitor getMonitor() {
+        return _monitor;
     }
 
-    public void setMetricsPrefix(String metricsPrefix) {
-        this._metricsPrefix = metricsPrefix;
+    public void setMonitor(SSOSessionMonitor monitor) {
+        _monitor = monitor;
     }
 
 
@@ -564,19 +515,31 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
     // ---------------------------------------------------------------
 
     public long getStatsMaxSessions() {
-        return _statsMaxSessions;
+        if (_stats != null)
+            return _stats.getMaxSessions();
+
+        return -1;
     }
 
     public long getStatsCreatedSessions() {
-        return _statsCreatedSessions;
+        if (_stats != null)
+            return _stats.getCreatedSessions();
+
+        return -1;
     }
 
     public long getStatsDestroyedSessions() {
-        return _statsDestroyedSessions;
+        if (_stats != null)
+            return _stats.getDestroyedSessions();
+
+        return -1;
     }
 
     public long getStatsCurrentSessions() {
-        return _statsCurrentSessions;
+        if (_stats != null)
+            return _stats.getCurrentSessions();
+
+        return -1;
     }
 
 

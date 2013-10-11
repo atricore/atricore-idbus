@@ -46,6 +46,7 @@
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
+        <idbus-kernel.version>1.4.0-SNAPSHOT</idbus-kernel.version>
     </properties>
 
     <build>
@@ -88,7 +89,14 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
-            <version>${project.version}</version>
+            <version>${idbus-kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.monitoring</groupId>
+            <artifactId>org.atricore.idbus.kernel.monitoring.core</artifactId>
+            <version>${idbus-kernel.version}</version>
             <scope>provided</scope>
         </dependency>
 

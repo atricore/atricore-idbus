@@ -120,7 +120,7 @@ public class ServiceProviderMBeanImpl extends AbstractProviderMBean implements S
 
     public long getSessionsCount() {
         try {
-            SPChannel channel = (SPChannel) serviceProvider.getChannel();
+            IdPChannel channel = (IdPChannel) serviceProvider.getChannel();
             SSOSessionManager mgr = channel.getSessionManager();
 
             return mgr.getStatsCurrentSessions();
@@ -133,7 +133,7 @@ public class ServiceProviderMBeanImpl extends AbstractProviderMBean implements S
 
     public long getTotalCreatedSessions() {
         try {
-            SPChannel channel = (SPChannel) serviceProvider.getChannel();
+            IdPChannel channel = (IdPChannel) serviceProvider.getChannel();
             SSOSessionManager mgr = channel.getSessionManager();
 
             return mgr.getStatsCreatedSessions();
@@ -146,10 +146,10 @@ public class ServiceProviderMBeanImpl extends AbstractProviderMBean implements S
 
     public long getTotalDestroyedSessions() {
         try {
-            SPChannel channel = (SPChannel) serviceProvider.getChannel();
+            IdPChannel channel = (IdPChannel) serviceProvider.getChannel();
             SSOSessionManager mgr = channel.getSessionManager();
 
-            return mgr.getStatsCreatedSessions();
+            return mgr.getStatsDestroyedSessions();
         } catch (Exception e) {
             logger.error("Cannot find SSO destroyed count");
             return -1;
@@ -159,7 +159,7 @@ public class ServiceProviderMBeanImpl extends AbstractProviderMBean implements S
 
     public long getMaxSessionsCount() {
         try {
-            SPChannel channel = (SPChannel) serviceProvider.getChannel();
+            IdPChannel channel = (IdPChannel) serviceProvider.getChannel();
             SSOSessionManager mgr = channel.getSessionManager();
 
             return mgr.getStatsMaxSessions();
