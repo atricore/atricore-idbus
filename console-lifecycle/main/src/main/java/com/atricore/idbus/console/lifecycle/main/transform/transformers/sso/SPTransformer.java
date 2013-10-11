@@ -43,6 +43,7 @@ import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil.isIdPProxyRequired;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
@@ -393,7 +394,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         // Properties (take from config!)
         // FOR SPs, the session timeout should be long enough ...
-        setPropertyValue(sessionManager, "maxInactiveInterval", "500");
+        setPropertyValue(sessionManager, "maxInactiveInterval", "30");
         setPropertyValue(sessionManager, "maxSessionsPerUser", "-1");
         setPropertyValue(sessionManager, "invalidateExceedingSessions", "false");
         setPropertyValue(sessionManager, "sessionMonitorInterval", "10000");
@@ -404,17 +405,35 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         // Session Store
         //Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.memorysessionstore.MemorySessionStore");
+        String cacheName = internalSaml2ServiceProvider.getIdentityAppliance().getName() + "-" + sp.getName() + "-sessionsCache";
+
         Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStore");
         sessionStore.setInitMethod("init");
         setPropertyRef(sessionStore, "cacheManager", internalSaml2ServiceProvider.getIdentityAppliance().getName() + "-cache-manager");
-        setPropertyValue(sessionStore, "cacheName", internalSaml2ServiceProvider.getIdentityAppliance().getName() +
-                "-" + sp.getName() + "-sessionsCache");
+        setPropertyValue(sessionStore, "cacheName", cacheName);
 
-        setPropertyValue(sessionManager, "metricsPrefix", appliance.getName() + "/" + sp.getName());
-        
+        // Session Monitor
+        Bean sessionMonitor = newBean(spBeans, sessionManager.getName() + "-monitor", "org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionMonitor");
+        setPropertyValue(sessionMonitor, "cacheName", cacheName);
+        setPropertyRef(sessionMonitor, "manager", sessionManager.getName());
+
+        // Session statistics
+        Bean sessionStats = newBean(spBeans, sessionManager.getName() + "-stats", "org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStatistics");
+        setPropertyValue(sessionStats, "cacheName", cacheName);
+        setPropertyValue(sessionStats, "metricsPrefix", appliance.getName() + "/" + sp.getName());
+        setPropertyRef(sessionStats, "monitoringServer", "monitoring-server");
+
+        List<Bean> cacheListeners = new ArrayList<Bean>();
+        cacheListeners.add(sessionMonitor);
+        cacheListeners.add(sessionStats);
+        setPropertyAsRefs(sessionStore, "listeners", cacheListeners);
+
         // Wiring
         setPropertyBean(sessionManager, "sessionIdGenerator", sessionIdGenerator);
         setPropertyBean(sessionManager, "sessionStore", sessionStore);
+        setPropertyRef(sessionManager, "stats", sessionStats.getName());
+        setPropertyRef(sessionManager, "monitor", sessionMonitor.getName());
+
     }
 
     @Override
