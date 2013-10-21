@@ -68,6 +68,8 @@ import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -427,41 +429,77 @@ public class SingleLogoutProducer extends SSOProducer {
                             pSecCtx.getProviderId().getValue().equals(sloRequest.getIssuer().getValue())) {
 
                         if (logger.isDebugEnabled())
-                            logger.debug("SP requested SLO, avoid sending backchannel request" + sloRequest.getIssuer().getValue());
+                            logger.debug("SP requested SLO, avoid sending back-channel request" + sloRequest.getIssuer().getValue());
                         continue;
 
                     }
 
-                    // Try to send back channel requests, otherwise try http bindings (post, artifact, redirect NOT IMPLEMENTED YET!)
-                    EndpointDescriptor ed = resolveSpSloEndpoint(pSecCtx.getProviderId(),
-                            new SSOBinding[] { SSOBinding.SAMLR2_LOCAL, SSOBinding.SAMLR2_SOAP }, true);
+                    CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(pSecCtx.getProviderId());
+                    boolean sloPerformed = false;
 
-                    if (ed == null) {
-                        // Ignore this SP
+                    // Build a list with all supported back-channel endpoints for the SP
+                    List<EndpointDescriptor> eds = new ArrayList<EndpointDescriptor>();
+
+                    EndpointDescriptor localEd = resolveSpSloEndpoint(pSecCtx.getProviderId(),
+                            new SSOBinding[] { SSOBinding.SAMLR2_LOCAL}, true);
+
+                    if (localEd != null) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("Adding SLO endpoint " + localEd.getName() + " for " + pSecCtx.getProviderId());
+
+                        eds.add(localEd);
+                    }
+
+                    EndpointDescriptor soapEd = resolveSpSloEndpoint(pSecCtx.getProviderId(),
+                            new SSOBinding[] { SSOBinding.SAMLR2_SOAP}, true);
+
+                    if (soapEd != null) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("Adding SLO endpoint " + soapEd.getName() + " for " + pSecCtx.getProviderId());
+                        eds.add(soapEd);
+                    }
+
+                    if (eds.size() == 0) {
                         if (logger.isTraceEnabled())
                             logger.trace("Ignoring SP : No SLO endpoint found : " + pSecCtx.getProviderId());
                         continue;
                     }
 
-                    CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(pSecCtx.getProviderId());
 
-                    LogoutRequestType spSloRequest = buildSamlSloRequest(exchange, secCtx, sloRequest, sp, ed);
-                    if (logger.isDebugEnabled())
-                        logger.debug("Sending SLO Request " + spSloRequest.getID() +
-                                " to SP " + sp.getAlias() +
-                                " using endpoint " + ed.getLocation());
+                    // Try each endpoint on the list
+                    for (EndpointDescriptor ed : eds) {
 
-                    try {
-                        // Response from SP
-                        StatusResponseType spSloResponse =
-                                (StatusResponseType) channel.getIdentityMediator().sendMessage(spSloRequest, ed, channel);
+                        // Build SLO Request
 
-                        //
-                        validateResponse(spSloRequest, spSloResponse, null);
+                        LogoutRequestType spSloRequest = buildSamlSloRequest(exchange, secCtx, sloRequest, sp, ed);
 
-                    } catch (Exception e) {
-                        logger.error("Error performing SLO for SP : " + sp.getAlias(), e);
+                        try {
+
+                            if (logger.isDebugEnabled())
+                                logger.debug("Sending SLO Request " + spSloRequest.getID() +
+                                        " to SP " + sp.getAlias() +
+                                        " using endpoint " + ed.getLocation());
+
+                            // Send request and process response
+                            StatusResponseType spSloResponse =
+                                    (StatusResponseType) channel.getIdentityMediator().sendMessage(spSloRequest, ed, channel);
+                            validateResponse(spSloRequest, spSloResponse, null);
+
+                            // Successfully performed SLO for this SP
+                            sloPerformed = true;
+                            break;
+
+                        } catch (Exception e) {
+                            logger.error("Error performing SLO for SP : " + sp.getAlias(), e);
+                        }
+
+                    }
+
+                    if (!sloPerformed) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("No back-channel SLO performed for " + pSecCtx.getProviderId());
                         partialLogout = true;
+                        continue;
                     }
 
                 }
