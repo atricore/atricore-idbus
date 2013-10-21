@@ -529,7 +529,9 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // Send SP relay state
                 claimsRequest.setTargetRelayState(in.getMessage().getRelayState());
-                claimsRequest.setSpAlias(authnRequest.getIssuer().getValue());
+
+                if (authnRequest.getIssuer() != null)
+                    claimsRequest.setSpAlias(authnRequest.getIssuer().getValue());
 
                 // Set requested authn class
                 claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
@@ -974,7 +976,9 @@ public class SingleSignOnProducer extends SSOProducer {
             }
 
             // We have another Claim endpoint to try, let's send the request.
-            logger.debug("Selecting claims endpoint : " + endpoint.getName());
+            if (logger.isDebugEnabled())
+                logger.debug("Selecting claims endpoint : " + endpoint.getName());
+
             SSOCredentialClaimsRequest claimsRequest = new SSOCredentialClaimsRequest(authnRequest.getID(),
                     channel,
                     endpoint,
@@ -991,6 +995,10 @@ public class SingleSignOnProducer extends SSOProducer {
             // Update authentication state
             claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
             authnState.setAuthnRequest(authnRequest);
+
+            // Set SP information
+            if (authnRequest.getIssuer() != null)
+                claimsRequest.setSpAlias(authnRequest.getIssuer().getValue());
 
             // --------------------------------------------------------------------
             // Send claims request
