@@ -151,9 +151,9 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // -------------------------------------------------------
         // Define Session Event Manager
         // -------------------------------------------------------
-        Bean sessionEventManager = newBean(idauBeans, "session-event-manager",
-                "org.atricore.idbus.kernel.main.session.SSOSessionEventManager");
-        sessionEventManager.setFactoryMethod("getInstance");
+        //Bean sessionEventManager = newBean(idauBeans, "session-event-manager",
+        //        "org.atricore.idbus.kernel.main.session.SSOSessionEventManager");
+        //sessionEventManager.setFactoryMethod("getInstance");
 
         // -------------------------------------------------------
         // Define Cache Manager bean

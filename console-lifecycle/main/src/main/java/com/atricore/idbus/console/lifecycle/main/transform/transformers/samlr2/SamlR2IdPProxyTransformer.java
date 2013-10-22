@@ -12,6 +12,7 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Description;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Entry;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Service;
 import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +40,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLo
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedRemoteProviderImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
-import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
+//import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
+import org.atricore.idbus.kernel.main.session.SSOSessionEventListener;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
@@ -739,13 +741,23 @@ public class SamlR2IdPProxyTransformer extends AbstractSPChannelTransformer impl
         }
 
         // Wire session event listener
-        Collection<Bean> sessionEventManagers = getBeansOfType(baseBeans, SSOSessionEventManager.class.getName());
-        if (sessionEventManagers.size() == 1) {
-            Bean sessionEventManager = sessionEventManagers.iterator().next();
-            Bean idpListener = newAnonymousBean(IdPSessionEventListener.class);
-            setPropertyRef(idpListener, "identityProvider", idpProxyBean.getName());
-            addPropertyBean(sessionEventManager, "listeners", idpListener);
-        }
+
+        Bean idpListener = newBean(idpProxyBeans, idpProxyBean.getName() + "-session-listener", IdPSessionEventListener.class);
+        setPropertyRef(idpListener, "identityProvider", idpProxyBean.getName());
+
+        Service idpListenerSvc = new Service();
+        idpListenerSvc.setId(idpListener.getName() + "-exporter");
+        idpListenerSvc.setRef(idpListener.getName());
+        idpListenerSvc.setInterface(SSOSessionEventListener.class.getName());
+        idpBeans.getImportsAndAliasAndBeen().add(idpListenerSvc);
+
+        //Collection<Bean> sessionEventManagers = getBeansOfType(baseBeans, SSOSessionEventManager.class.getName());
+        //if (sessionEventManagers.size() == 1) {
+        //    Bean sessionEventManager = sessionEventManagers.iterator().next();
+        //    Bean idpListener = newAnonymousBean(IdPSessionEventListener.class);
+        //    setPropertyRef(idpListener, "identityProvider", idpProxyBean.getName());
+        //    addPropertyBean(sessionEventManager, "listeners", idpListener);
+        //}
 
 
         IdProjectResource<Beans> rBeans =  new IdProjectResource<Beans>(idGen.generateId(), idpBean.getName(), configName, "spring-beans", idpProxyBeans);

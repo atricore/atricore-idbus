@@ -36,8 +36,10 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLog
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
+import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
-import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
+//import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
+import org.atricore.idbus.kernel.main.session.SSOSessionEventListener;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.*;
@@ -430,13 +432,24 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         }
 
         // Wire session event listener
-        Collection<Bean> sessionEventManagers = getBeansOfType(baseBeans, SSOSessionEventManager.class.getName());
-        if (sessionEventManagers.size() == 1) {
-            Bean sessionEventManager = sessionEventManagers.iterator().next();
-            Bean idpListener = newAnonymousBean(IdPSessionEventListener.class);
-            setPropertyRef(idpListener, "identityProvider", idpBean.getName());
-            addPropertyBean(sessionEventManager, "listeners", idpListener);
-        }
+        Bean idpListener = newBean(idpBeans, idpBean.getName() + "-session-listener", IdPSessionEventListener.class);
+        setPropertyRef(idpListener, "identityProvider", idpBean.getName());
+
+        Service idpListenerSvc = new Service();
+        idpListenerSvc.setId(idpListener.getName() + "-exporter");
+        idpListenerSvc.setRef(idpListener.getName());
+        idpListenerSvc.setInterface(SSOSessionEventListener.class.getName());
+        idpBeans.getImportsAndAliasAndBeen().add(idpListenerSvc);
+
+        // Collection<Bean> sessionEventManagers = getBeansOfType(baseBeans, SSOSessionEventManager.class.getName());
+        //if (sessionEventManagers.size() == 1) {
+        //    Bean sessionEventManager = sessionEventManagers.iterator().next();
+        //    Bean idpListener = newAnonymousBean(IdPSessionEventListener.class);
+        //    setPropertyRef(idpListener, "identityProvider", idpBean.getName());
+        //    addPropertyBean(sessionEventManager, "listeners", idpListener);
+        //}
+
+
 
         IdProjectResource<Beans> rBeans = new IdProjectResource<Beans>(idGen.generateId(), idpBean.getName(), idpBean.getName(), "spring-beans", idpBeans);
         rBeans.setClassifier("jaxb");
