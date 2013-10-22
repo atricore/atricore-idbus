@@ -23,28 +23,28 @@ public class OsgiSelectionStrategiesRegistry {
     }
 
     public void register(final SelectionStrategy strategy, final Map<String, ?> properties) {
-        logger.info("Selection Streategy registered : " + strategy.getName());
+        logger.info("Selection Strategy registered : " + strategy.getName());
         if (logger.isDebugEnabled()) {
-            logger.debug("Selection Streategy registered " + strategy);
+            logger.debug("Selection Strategy registered " + strategy);
         }
 
         try {
             registry.registerStrategy(strategy);
         } catch (SSOException e) {
-            logger.error("Cannot regiser selection strategy " + strategy.getName());
+            logger.error("Cannot register selection strategy " + strategy.getName());
         }
     }
 
     public void unregister(final SelectionStrategy strategy, final Map<String, ?> properties) {
-        logger.info("Selection Streategy unregistered : " + strategy.getName());
+        logger.info("Selection Strategy unregistered : " + strategy.getName());
         if (logger.isDebugEnabled()) {
-            logger.debug("Selection Streategy unregistered " + strategy);
+            logger.debug("Selection Strategy unregistered " + strategy);
         }
 
         try {
-            registry.registerStrategy(strategy);
+            registry.unregisterStrategy(strategy);
         } catch (SSOException e) {
-            logger.error("Cannot unregiser selection strategy " + strategy.getName());
+            logger.error("Cannot unregister selection strategy " + strategy.getName());
         }
     }
 }

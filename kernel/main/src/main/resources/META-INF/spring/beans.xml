@@ -74,6 +74,16 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <osgi:service id="cacheManagerFactoryExporter" ref="cacheManagerFactory"
                   interface="org.atricore.idbus.bundles.ehcache.CacheManagerFactory"/>
 
+    <bean factory-method="getInstance" class="org.atricore.idbus.kernel.main.session.SSOSessionEventManager" name="session-event-manager"/>
+
+    <bean id="osgi-session-event-manager" class="org.atricore.idbus.kernel.main.session.OsgiSSOSessionEventListenerRegistry">
+        <constructor-arg ref="session-event-manager" />
+    </bean>
+
+    <osgi:list id="ssoSessionEventListeners" interface="org.atricore.idbus.kernel.main.session.SSOSessionEventListener"
+               cardinality="0..N" >
+        <osgi:listener ref="osgi-session-event-manager" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
 
     <!-- =================================================================== -->
     <!-- Mail Service with default configuration -->

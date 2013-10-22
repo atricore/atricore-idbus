@@ -216,7 +216,8 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
-            Element e = cache.get(ctx.getProvider().getName() + ":" + keyName + ":" + key);
+            String elementKey = ctx.getProvider().getName() + ":" + keyName + ":" + key;
+            Element e = cache.get(elementKey);
             if (e == null) {
 
                 int retry = 0;
@@ -233,13 +234,13 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
             if (e != null) {
                 if (logger.isTraceEnabled())
-                    logger.trace("LocalState instance found for key " + key);
+                    logger.trace("LocalState instance found for key " + elementKey);
 
                 return (LocalState) e.getValue();
             }
 
             if (logger.isTraceEnabled())
-                logger.trace("LocalState instance not found for key " + key);
+                logger.trace("LocalState instance not found for key " + elementKey);
 
             return null;
         } finally {

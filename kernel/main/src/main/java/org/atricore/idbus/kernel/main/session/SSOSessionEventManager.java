@@ -37,4 +37,12 @@ public class SSOSessionEventManager {
             listener.handleEvent(type, session, data);
         }
     }
+
+    public void register(SSOSessionEventListener listener) {
+        listeners.add(listener);
+    }
+
+    public void unregister(SSOSessionEventListener listener) {
+        listeners.remove(listener);
+    }
 }

@@ -115,7 +115,7 @@ public class SessionHeartBeatProducer extends SSOProducer {
 
                 } else {
                     if (logger.isTraceEnabled())
-                        logger.debug("IDP Session heart beat not necessary");
+                        logger.debug("IDP Session heart beat not necessary ["+secCtx.getIdpSsoSession()+"]");
                     response.setValid(true);
                 }
 
