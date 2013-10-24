@@ -960,7 +960,8 @@ public class SingleSignOnProducer extends SSOProducer {
             // No more claim endpoints available, the authentication process is over.
             if (claimEndpoint == null) {
                 // Authentication failure, no more endpoints available, consider proxying to another IDP.
-                logger.error("No claims endpoint found for authn request : " + authnRequest.getID());
+                if (logger.isDebugEnabled())
+                    logger.error("No claims endpoint found for authn request : " + authnRequest.getID());
 
                 // Send failure response
                 EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);

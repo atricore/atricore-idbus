@@ -75,7 +75,13 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
 
         String backTo = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_BACK_TO_VAR);
         String cmd = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_CMD_VAR);
-        String appId = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_APPID_VAR).toLowerCase(); // App-id is case-insensitive
+
+        String appId = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_APPID_VAR);
+        if (appId == null)
+            throw new JossoException("Application ID parameter value not found");
+
+        appId = appId.toLowerCase();
+
         String idpAliasB64 = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_IDPALIAS_VAR);
         String idpAlias = null;
 
