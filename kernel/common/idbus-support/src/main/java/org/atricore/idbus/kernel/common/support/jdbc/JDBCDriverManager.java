@@ -12,6 +12,7 @@ import java.io.FileFilter;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -446,6 +447,10 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
         /*
            * @see java.sql.Driver#connect(java.lang.String, java.util.Properties)
            */
+
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            throw new SQLFeatureNotSupportedException();
+        }
 
         public java.sql.Connection connect(String u, Properties p) throws SQLException {
 
