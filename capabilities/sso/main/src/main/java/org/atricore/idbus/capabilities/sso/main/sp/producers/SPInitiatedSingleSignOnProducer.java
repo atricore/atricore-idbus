@@ -122,7 +122,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
             if (secCtx != null && secCtx.getSessionIndex() != null) {
 
                 // Support no authentication request !
-                if (ssoAuthnReq != null && ssoAuthnReq.isForceAuthn() != null && !ssoAuthnReq.isForceAuthn()) {
+                if (ssoAuthnReq != null && ssoAuthnReq.getForceAuthn() != null && !ssoAuthnReq.getForceAuthn()) {
 
                     // TODO ! Check that the session belongs to the IdP associated with this request
                     logger.debug("SSO Session found " + secCtx.getSessionIndex());

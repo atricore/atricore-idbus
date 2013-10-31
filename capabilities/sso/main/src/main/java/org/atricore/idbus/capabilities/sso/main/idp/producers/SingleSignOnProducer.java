@@ -28,7 +28,6 @@ import oasis.names.tc.saml._2_0.idbus.PreAuthenticatedAuthnRequestType;
 import oasis.names.tc.saml._2_0.idbus.SecTokenAuthnRequestType;
 import oasis.names.tc.saml._2_0.metadata.*;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
-import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
@@ -430,7 +429,7 @@ public class SingleSignOnProducer extends SSOProducer {
         authnState.setResponseMode(responseMode);
         authnState.setResponseFormat(responseFormat);
 
-        if (authnRequest.isForceAuthn() != null && authnRequest.isForceAuthn()) {
+        if (authnRequest.getForceAuthn() != null && authnRequest.getForceAuthn()) {
 
             if (logger.isDebugEnabled())
                 logger.debug("Forcing authentication for request " + authnRequest.getID());
@@ -1332,8 +1331,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
         // SAML Want AuthnRequest signed has precedence over want requests signed
         boolean validateSignature = mediator.isValidateRequestsSignature();
-        if (saml2IdpMd.isWantAuthnRequestsSigned() != null)
-            validateSignature = saml2IdpMd.isWantAuthnRequestsSigned();
+        if (saml2IdpMd.getWantAuthnRequestsSigned() != null)
+            validateSignature = saml2IdpMd.getWantAuthnRequestsSigned();
 
         // XML Signature, saml2 core, section 5
         if (validateSignature) {
@@ -1987,7 +1986,7 @@ public class SingleSignOnProducer extends SSOProducer {
                     }
                 }
 
-                if (ac.isIsDefault() != null && ac.isIsDefault()) {
+                if (ac.getIsDefault() != null && ac.getIsDefault()) {
                     if (ac.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
                         logger.warn("Invalid default SP ACS Binding at " + ac.getLocation() + ", Ignoring endpoint" );
                     } else {
@@ -2550,8 +2549,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
         SPInitiatedAuthnRequestType target = new SPInitiatedAuthnRequestType();
         target.setID(uuidGenerator.generateId());
-        target.setPassive(source.isIsPassive() != null ? source.isIsPassive() : false);
-        target.setForceAuthn(source.isForceAuthn() != null ? source.isForceAuthn() : false);
+        target.setPassive(source.getIsPassive() != null ? source.getIsPassive() : false);
+        target.setForceAuthn(source.getForceAuthn() != null ? source.getForceAuthn() : false);
 
         if (source.getIssuer() != null) {
             NameIDType issuer = source.getIssuer();

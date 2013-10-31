@@ -171,7 +171,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                 logger.debug("IDP Reports Passive login failed");
 
             // if This is  SP initiated SSO or  we did not requested passive authentication
-            if (authnRequest == null || authnRequest.isForceAuthn()) {
+            if (authnRequest == null || authnRequest.getForceAuthn()) {
                 throw new SSOException("IDP Sent " + StatusCode.NO_PASSIVE + " but passive was not requested.");
             }
 
@@ -1057,7 +1057,7 @@ public class AssertionConsumerProducer extends SSOProducer {
             // If the response does not have a signature, assertions MUST be signed, otherwise relay on MD configuration to require a signature
             if(
                // Do we required signed assertions ?
-               (saml2SpMd.isWantAssertionsSigned() != null && saml2SpMd.isWantAssertionsSigned()) ||
+               (saml2SpMd.getWantAssertionsSigned() != null && saml2SpMd.getWantAssertionsSigned()) ||
                // Does response have a signature for bindings that require it ?
                (response.getSignature() == null && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()) && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue()) && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue())) ||
                // Does redirect binding have an outbound signature ?

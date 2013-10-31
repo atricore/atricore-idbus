@@ -75,8 +75,8 @@ public class SignResponseAction extends AbstractSSOAction {
                     if (role instanceof SPSSODescriptorType) {
                         SPSSODescriptorType spRole = (SPSSODescriptorType) role;
 
-                        if (spRole.isWantAssertionsSigned() != null)
-                            signAssertion = spRole.isWantAssertionsSigned();
+                        if (spRole.getWantAssertionsSigned() != null)
+                            signAssertion = spRole.getWantAssertionsSigned();
                         break;
                     }
                 }

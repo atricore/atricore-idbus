@@ -13,7 +13,6 @@ import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
-import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
@@ -24,12 +23,9 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.planning.*;
-import org.w3._1999.xhtml.Html;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-
-import java.io.ByteArrayInputStream;
 
 import static org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants.*;
 
@@ -294,8 +290,8 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
 
                 for (IndexedEndpointType samlIdxEndpoint : ssoDescriptor.getArtifactResolutionService()) {
 
-                    if (samlIdxEndpoint.isIsDefault() != null &&
-                            samlIdxEndpoint.isIsDefault() &&
+                    if (samlIdxEndpoint.getIsDefault() != null &&
+                            samlIdxEndpoint.getIsDefault() &&
                             (samlIdxEndpoint.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue())
                             || samlIdxEndpoint.getBinding().equals(SSOBinding.SAMLR2_SOAP.getValue()))) {
 

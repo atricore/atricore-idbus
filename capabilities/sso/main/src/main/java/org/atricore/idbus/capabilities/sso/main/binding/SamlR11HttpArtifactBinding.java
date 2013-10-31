@@ -262,8 +262,8 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
                 for (IndexedEndpointType samlIdxEndpoint : ssoDescriptor.getArtifactResolutionService()) {
 
 
-                    if (samlIdxEndpoint.isIsDefault() != null &&
-                            samlIdxEndpoint.isIsDefault() &&
+                    if (samlIdxEndpoint.getIsDefault() != null &&
+                            samlIdxEndpoint.getIsDefault() &&
                             (samlIdxEndpoint.getBinding().equals(SSOBinding.SAMLR11_SOAP.getValue()))) {
 
                         defaultSamlEndpoint = samlIdxEndpoint;
