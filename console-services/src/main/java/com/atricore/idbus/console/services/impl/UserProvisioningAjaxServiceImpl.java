@@ -985,10 +985,10 @@ public class UserProvisioningAjaxServiceImpl implements
         u.setPostalCode(usr.getPostalCode());
         u.setPostOfficeBox(usr.getPostOfficeBox());
         u.setLanguage(usr.getLanguage());
-        u.setAccountDisabled(usr.isAccountDisabled());
-        u.setAccountExpires(usr.isAccountExpires());
+        u.setAccountDisabled(usr.getAccountDisabled());
+        u.setAccountExpires(usr.getAccountExpires());
         //u.setAccountExpirationDate(usr.getAccountExpirationDate());
-        u.setLimitSimultaneousLogin(usr.isLimitSimultaneousLogin());
+        u.setLimitSimultaneousLogin(usr.getLimitSimultaneousLogin());
         u.setMaximunLogins(usr.getMaximunLogins());
         //u.setTerminatePreviousSession(usr.getTerminatePreviousSession());
         //u.setPreventNewSession(usr.getPreventNewSession());
