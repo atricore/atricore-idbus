@@ -72,6 +72,8 @@ public abstract class AbstractSecurityTokenAuthenticator implements SecurityToke
 
 
         } catch (AuthenticationFailureException e) {
+
+
             throw new SecurityTokenAuthenticationFailure(getScheme(), e.getSSOPolicies(), e);
 
         } catch (SSOAuthenticationException e) {

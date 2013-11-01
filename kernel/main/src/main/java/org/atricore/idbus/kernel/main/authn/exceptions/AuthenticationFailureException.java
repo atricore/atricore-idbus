@@ -35,6 +35,8 @@ import java.util.Set;
  */
 public class AuthenticationFailureException extends SSOAuthenticationException {
 
+    private String principalName;
+
     /**
      * This stores the error type detected during authentication, for example AUTH_FAILED.
      */
@@ -48,7 +50,7 @@ public class AuthenticationFailureException extends SSOAuthenticationException {
      * @param message El mensaje asociado al error.
      */
     public AuthenticationFailureException(String message) {
-        this(message, "AUTH_FAILED");
+        this.errorType = "AUTHN_FAILED";
     }
 
     /**
@@ -56,9 +58,10 @@ public class AuthenticationFailureException extends SSOAuthenticationException {
      *
      * @param message El mensaje asociado al error.
      */
-    public AuthenticationFailureException(String message, Set<SSOPolicyEnforcementStatement> policyEnforcements) {
-        this(message, "AUTH_FAILED");
+    public AuthenticationFailureException(String message, String principalName, Set<SSOPolicyEnforcementStatement> policyEnforcements) {
+        this.errorType = "AUTHN_FAILED";
         this.policyEnforcements.addAll(policyEnforcements);
+        this.principalName = principalName;
     }
 
 
@@ -68,9 +71,11 @@ public class AuthenticationFailureException extends SSOAuthenticationException {
      * @param message   The error message
      * @param errorType The error type
      */
-    public AuthenticationFailureException(String message, String errorType) {
-        super(message);
-        this.errorType = errorType;
+    public AuthenticationFailureException(String message, String principalName) {
+        this.errorType = "AUTHN_FAILED";
+        this.principalName = principalName;
+
+
     }
 
     public String getErrorType() {
@@ -79,5 +84,9 @@ public class AuthenticationFailureException extends SSOAuthenticationException {
 
     public Set<SSOPolicyEnforcementStatement> getSSOPolicies() {
         return policyEnforcements;
+    }
+
+    public String getPrincipalName() {
+        return principalName;
     }
 }

@@ -19,6 +19,7 @@
         <feature version="${version}">atricore-idconfirmation</feature>
         <feature version="${version}">atricore-idbus-ui</feature>
         <feature version="${version}">atricore-monitoring</feature>
+        <feature version="${version}">atricore-auditing</feature>
     </feature>
 
     <feature name="atricore-monitoring" version="${version}">
@@ -26,12 +27,24 @@
     </feature>
 
     <feature name="atricore-monitoring-core" version="${version}">
-        <bundle>mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.core/${idbus.kernel.version}</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.core/${idbus.kernel.version}</bundle>
     </feature>
 
     <feature name="atricore-monitoring-builtin" version="${version}">
-        <bundle>mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.builtin/${idbus.kernel.version}</bundle>
-        <bundle>mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.command/${idbus.kernel.version}</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.builtin/${idbus.kernel.version}</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.command/${idbus.kernel.version}</bundle>
+    </feature>
+
+    <feature name="atricore-auditing" version="${version}">
+        <feature version="${version}">atricore-auditing-core</feature>
+    </feature>
+
+    <feature name="atricore-auditing-core" version="${version}">
+        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.core/1.4.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="atricore-auditing-builtin" version="${version}">
+        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.builtin/1.4.0-SNAPSHOT</bundle>
     </feature>
 
     <feature name="atricore-ha" version="${version}">
@@ -92,6 +105,7 @@
         <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.serializedsessionstore/${idbus.idojo.serializedsessionstore.version}</bundle>
         <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.impersonateusrauthscheme/${idbus.idojo.impusr.version}</bundle>
         <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.gateinidentitystore/${idbus.idojo.gateinidentitystore.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.virtualidentitystore/${idbus.idojo.virtualidentitystore.version}</bundle>
         <!--bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.strongauthscheme/${idbus.idojo.strongauthscheme.version}</bundle-->
     </feature>
 

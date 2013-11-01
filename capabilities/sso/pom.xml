@@ -92,6 +92,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.atricore.idbus.kernel.auditing</groupId>
+                <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
+                <version>${idbus.kernel.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.atricore.idbus.kernel</groupId>
                 <artifactId>org.atricore.idbus.kernel.planning</artifactId>
                 <version>${idbus.kernel.version}</version>

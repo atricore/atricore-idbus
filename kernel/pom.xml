@@ -107,6 +107,7 @@
         <module>authz</module>
         <module>proxy</module>
         <module>monitoring</module>
+        <module>auditing</module>
         <!--
         <module>agent</module>
         -->
@@ -125,6 +126,12 @@
             <dependency>
                 <groupId>org.atricore.idbus.kernel.monitoring</groupId>
                 <artifactId>org.atricore.idbus.kernel.monitoring.core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.kernel.auditing</groupId>
+                <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

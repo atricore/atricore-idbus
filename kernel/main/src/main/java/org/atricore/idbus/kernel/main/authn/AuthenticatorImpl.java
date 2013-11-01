@@ -95,7 +95,7 @@ public class AuthenticatorImpl implements Authenticator {
         }
         // Send SSO Policies with Authn error
         _authFailures++;
-        throw new AuthenticationFailureException(lastPrincipal, ssoPolicies);
+        throw new AuthenticationFailureException(lastPrincipal, lastPrincipal, ssoPolicies);
 
     }
 

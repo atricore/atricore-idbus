@@ -63,6 +63,8 @@ import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailu
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -788,6 +790,19 @@ public class SingleSignOnProducer extends SSOProducer {
                     claimsResponse.getClaimSet(),
                     sp);
 
+            AssertionType assertion = securityTokenEmissionCtx.getAssertion();
+            Subject authnSubject = securityTokenEmissionCtx.getSubject();
+
+            SimplePrincipal principal = authnSubject.getPrincipals(SimplePrincipal.class).iterator().next();
+
+            if (logger.isDebugEnabled())
+                logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
+                        (authnRequest != null ? authnRequest.getID() : "<NULL>"));
+
+            // Generate audit trail
+            AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+            AuditingServer aServer = mediator.getAuditingServer();
+            aServer.processAuditTrail(mediator.getAuditCategory(), "INFO", "SSO", ActionOutcome.SUCCESS, principal != null ? principal.getName() : "UNKNOWN", new java.util.Date(), null, null);
 
             if (((IdentityProvider)getProvider()).isIdentityConfirmationEnabled()) {
                 // --------------------------------------------------------------------
@@ -796,7 +811,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("Confirming user's identity with claims [" + claimsResponse.getClaimSet().getClaims() + "] and " +
                              "subject [" + securityTokenEmissionCtx.getSubject() + "]");
 
-                SimplePrincipal principal = securityTokenEmissionCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next();
+
                 UsernameTokenType usernameToken = new UsernameTokenType ();
                 AttributedString usernameString = new AttributedString();
                 usernameString.setValue( principal.getName() );
@@ -849,9 +864,6 @@ public class SingleSignOnProducer extends SSOProducer {
                     logger.debug("There is no endpoint available for identity confirmation. Skipping.");
                 }
             }
-
-            AssertionType assertion = securityTokenEmissionCtx.getAssertion();
-            Subject authnSubject = securityTokenEmissionCtx.getSubject();
 
             if (logger.isDebugEnabled())
                 logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
@@ -940,6 +952,13 @@ public class SingleSignOnProducer extends SSOProducer {
             exchange.setOut(out);
 
         } catch (SecurityTokenAuthenticationFailure e) {
+
+            // Generate audit trail
+
+
+            AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+            AuditingServer aServer = mediator.getAuditingServer();
+            aServer.processAuditTrail(mediator.getAuditCategory(), "WARN", "SSO", ActionOutcome.FAILURE, e.getPrincipalName() != null ? e.getPrincipalName() : "UNKNOWN", new java.util.Date(), null, null);
 
             // The authentication failed, let's see what needs to be done.
 
@@ -1099,6 +1118,7 @@ public class SingleSignOnProducer extends SSOProducer {
             // Resolve SP endpoint
             EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
 
+            AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
 
             List<SSOPolicyEnforcementStatement> stmts = null;
             AssertionType assertion = null;

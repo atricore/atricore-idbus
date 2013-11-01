@@ -158,6 +158,7 @@
         <idbus.idojo.strongauthscheme.version>1.4.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
         <idbus.idojo.impusr.version>1.4.0-SNAPSHOT</idbus.idojo.impusr.version>
         <idbus.idojo.gateinidentitystore.version>1.4.0-SNAPSHOT</idbus.idojo.gateinidentitystore.version>
+        <idbus.idojo.virtualidentitystore.version>1.4.0-SNAPSHOT</idbus.idojo.virtualidentitystore.version>
 
         <idbus.fragment.mysql-connector-java_v5_1_10.version>1.4.0-SNAPSHOT</idbus.fragment.mysql-connector-java_v5_1_10.version>
 
@@ -1308,6 +1309,37 @@
             <type>pom</type>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>auditing</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
+            <version>${idbus.kernel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.builtin</artifactId>
+            <version>${idbus.kernel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.builtin</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>kernel</artifactId>
@@ -1973,6 +2005,18 @@
             <version>${idbus.idojo.gateinidentitystore.version}</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.virtualidentitystore</artifactId>
+            <version>${idbus.idojo.virtualidentitystore.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.virtualidentitystore</artifactId>
+            <version>${idbus.idojo.virtualidentitystore.version}</version>
+            <type>pom</type>
+        </dependency>
+
 
         <!-- =============================== -->
         <!-- Other dependencies              -->

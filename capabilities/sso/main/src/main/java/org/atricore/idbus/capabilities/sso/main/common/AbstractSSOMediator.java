@@ -62,6 +62,8 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
 
     private String metricsPrefix = "";
 
+    private String auditCategory = "";
+
     private IdentityFlowContainer identityFlowContainer;
 
     protected AbstractSSOMediator() {
@@ -277,6 +279,14 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
 
     public void setMetricsPrefix(String metricsPrefix) {
         this.metricsPrefix = metricsPrefix;
+    }
+
+    public String getAuditCategory() {
+        return auditCategory;
+    }
+
+    public void setAuditCategory(String auditCategory) {
+        this.auditCategory = auditCategory;
     }
 
     public IdentityFlowContainer getIdentityFlowContainer() {
