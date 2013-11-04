@@ -132,7 +132,7 @@ public class OAuth2AuthenticationClaimsChannelTransformer extends AbstractTransf
         ccLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
 
         Bean ccLogger = newBean(idpBeans, claimChannelBeanName + "-mediation-logger", DefaultMediationLogger.class.getName());
-        setPropertyValue(ccLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire.cc1");
+        setPropertyValue(ccLogger, "category", appliance.getNamespace() + ".wire.cc1");
         setPropertyAsBeans(ccLogger, "messageBuilders", ccLogBuilders);
 
         // logger

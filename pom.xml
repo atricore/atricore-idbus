@@ -71,6 +71,7 @@
         <idbus.idojo.ehcachesessionstore.version>1.4.0-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
 
         <idbus.idojo.strongauthscheme.version>1.4.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
+        <idbus.idojo.virtualidentitystore.version>1.4.0-SNAPSHOT</idbus.idojo.virtualidentitystore.version>
 
         <!-- 3rd party -->
         <apache.derby.version>10.5.3.0_1</apache.derby.version>

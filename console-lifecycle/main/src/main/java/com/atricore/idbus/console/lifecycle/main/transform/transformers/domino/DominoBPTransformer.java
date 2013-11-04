@@ -190,7 +190,7 @@ public class DominoBPTransformer extends AbstractTransformer {
 
         Bean bpLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         bpLogger.setName(bpBean.getName() + "-mediation-logger");
-        setPropertyValue(bpLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + bpBean.getName());
+        setPropertyValue(bpLogger, "category", appliance.getNamespace() + ".wire." + bpBean.getName());
         setPropertyAsBeans(bpLogger, "messageBuilders", bpLogBuilders);
         setPropertyBean(bindingMediator, "logger", bpLogger);
 

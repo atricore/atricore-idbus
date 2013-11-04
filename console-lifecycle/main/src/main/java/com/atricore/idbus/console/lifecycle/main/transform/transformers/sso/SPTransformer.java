@@ -218,7 +218,12 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         String bpLocationPath = resolveLocationPath(applianceDef.getLocation()) + "/" +
                 (execEnv != null ? execEnv.getName().toUpperCase() : svcResource.getName().toUpperCase());
 
+        setPropertyRef(spMediator, "monitoringServer", "monitoring-server");
         setPropertyValue(spMediator, "metricsPrefix", appliance.getName() + "/" + sp.getName());
+
+        setPropertyRef(spMediator, "auditingServer", "auditing-server");
+        setPropertyValue(spMediator, "auditCategory",
+                appliance.getNamespace().toLowerCase() + ".audit." + sp.getName().toLowerCase());
 
         String bpLocation = resolveLocationBaseUrl(applianceDef.getLocation()) + bpLocationPath;
 
@@ -244,7 +249,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         Bean spLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         spLogger.setName(sp.getName() + "-mediation-logger");
-        setPropertyValue(spLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + sp.getName());
+        setPropertyValue(spLogger, "category", appliance.getNamespace() + ".wire." + sp.getName());
         setPropertyAsBeans(spLogger, "messageBuilders", spLogBuilders);
         setPropertyBean(spMediator, "logger", spLogger);
 
@@ -358,7 +363,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         // accountLinkLifecycle
         Bean accountLinkLifecycle = newBean(spBeans, sp.getName() + "-account-link-lifecycle", AccountLinkLifecycleImpl.class);
-        if (internalSaml2ServiceProvider.getIdentityLookup() != null) {
+        if (internalSaml2ServiceProvider.getIdentityLookups() != null) {
             setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
         }
 
@@ -428,6 +433,9 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         cacheListeners.add(sessionStats);
         setPropertyAsRefs(sessionStore, "listeners", cacheListeners);
 
+        setPropertyRef(sessionManager, "auditingServer", "auditing-server");
+        setPropertyValue(sessionManager, "auditCategory", appliance.getNamespace().toLowerCase() + ".audit." + sp.getName().toLowerCase());
+        
         // Wiring
         setPropertyBean(sessionManager, "sessionIdGenerator", sessionIdGenerator);
         setPropertyBean(sessionManager, "sessionStore", sessionStore);

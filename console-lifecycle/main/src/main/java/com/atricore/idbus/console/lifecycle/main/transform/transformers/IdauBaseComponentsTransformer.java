@@ -214,7 +214,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
 
         Bean entitySelectorLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         entitySelectorLogger.setName(entitySelectorProvider.getName() + "-mediation-logger");
-        setPropertyValue(entitySelectorLogger, "category", ida.getNamespace() + "." + ida.getName() + ".wire." + entitySelectorProvider.getName());
+        setPropertyValue(entitySelectorLogger, "category", ida.getNamespace() + ".wire." + entitySelectorProvider.getName());
         setPropertyAsBeans(entitySelectorLogger, "messageBuilders", entitySelectorLogBuilders);
         setPropertyBean(ssoEntitySelectorMediator, "logger", entitySelectorLogger);
 
@@ -366,6 +366,18 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         monitoringServer.setInterface("org.atricore.idbus.kernel.monitoring.core.MonitoringServer");
 
         idauBeansOsgi.getImportsAndAliasAndBeen().add(monitoringServer);
+
+        // ----------------------------------------
+        // Auditing Server
+        // ----------------------------------------
+        Reference auditingServer = new Reference();
+        auditingServer.setId("auditing-server");
+        auditingServer.setCardinality("1..1");
+        auditingServer.setTimeout(60L);
+        auditingServer.setInterface("org.atricore.idbus.kernel.auditing.core.AuditingServer");
+
+        idauBeansOsgi.getImportsAndAliasAndBeen().add(auditingServer);
+
 
         // ----------------------------------------
         // Container for Identity Flow Components

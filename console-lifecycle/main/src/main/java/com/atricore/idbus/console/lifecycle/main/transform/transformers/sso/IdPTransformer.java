@@ -150,6 +150,9 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         setPropertyValue(idpMediator, "logMessages", true);
         setPropertyValue(idpMediator, "metricsPrefix", appliance.getName() + "/" + idpBean.getName());
 
+        setPropertyRef(idpMediator, "auditingServer", "auditing-server");
+        setPropertyValue(idpMediator, "auditCategory", appliance.getNamespace().toLowerCase() + ".audit." + idpBean.getName().toLowerCase());
+
         // artifactQueueManager
         // setPropertyRef(idpMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
         setPropertyRef(idpMediator, "artifactQueueManager", "artifactQueueManager");
@@ -166,7 +169,7 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
 
         Bean idpLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         idpLogger.setName(idpBean.getName() + "-mediation-logger");
-        setPropertyValue(idpLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + idpBean.getName());
+        setPropertyValue(idpLogger, "category", appliance.getNamespace() + ".wire." + idpBean.getName());
         setPropertyAsBeans(idpLogger, "messageBuilders", idpLogBuilders);
         setPropertyBean(idpMediator, "logger", idpLogger);
 
@@ -363,6 +366,11 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         setPropertyBean(sessionManager, "sessionStore", sessionStore);
         setPropertyRef(sessionManager, "stats", sessionStats.getName());
         setPropertyRef(sessionManager, "monitor", sessionMonitor.getName());
+
+        setPropertyRef(sessionManager, "auditingServer", "auditing-server");
+        setPropertyValue(sessionManager, "auditCategory",
+                appliance.getNamespace().toLowerCase() + ".audit." + idpBean.getName().toLowerCase());
+
 
         // -------------------------------------------------------------
         // Register and configure default claim selection identity flow

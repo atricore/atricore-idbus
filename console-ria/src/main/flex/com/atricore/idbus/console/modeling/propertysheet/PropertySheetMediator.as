@@ -122,6 +122,7 @@ import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.BindAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
+import com.atricore.idbus.console.services.dto.BlackBoardResource;
 import com.atricore.idbus.console.services.dto.Channel;
 import com.atricore.idbus.console.services.dto.ColdfusionResource;
 import com.atricore.idbus.console.services.dto.Connection;
@@ -536,6 +537,8 @@ public class PropertySheetMediator extends IocMediator {
                         enableSelfServicesResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is DominoResource) {
                         enableDominoResourcePropertyTabs();
+                    } else if (_currentIdentityApplianceElement is BlackBoardResource) {
+                        enableBlackboardResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is JOSSO2Resource) {
                         enableJOSSO2ResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is SharepointResource) {
@@ -6433,6 +6436,10 @@ public class PropertySheetMediator extends IocMediator {
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
         _applianceSaved = false;
         _dirty = false;
+    }
+
+    private function enableBlackboardResourcePropertyTabs():void {
+        // TODO
     }
 
     private function enableWASCEExecEnvPropertyTabs():void {

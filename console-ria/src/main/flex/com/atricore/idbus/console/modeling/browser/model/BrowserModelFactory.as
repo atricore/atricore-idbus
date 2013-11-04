@@ -26,6 +26,7 @@ import com.atricore.idbus.console.services.dto.Activation;
 import com.atricore.idbus.console.services.dto.AlfrescoResource;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
+import com.atricore.idbus.console.services.dto.BlackBoardResource;
 import com.atricore.idbus.console.services.dto.ColdfusionResource;
 import com.atricore.idbus.console.services.dto.BindingProvider;
 import com.atricore.idbus.console.services.dto.ClientCertAuthnService;
@@ -222,6 +223,8 @@ public class BrowserModelFactory {
                 resourceNode.icon = EmbeddedIcons.selfServicesResourceMiniIcon;
             } else if (serviceResource is DominoResource) {
                 resourceNode.icon = EmbeddedIcons.dominoResourceMiniIcon;
+            } else if (serviceResource is BlackBoardResource) {
+                resourceNode.icon = EmbeddedIcons.blackboardResourceMiniIcon;
             } else if (serviceResource is JOSSO2Resource) {
                 resourceNode.icon = EmbeddedIcons.josso2ResourceMiniIcon;
             } else if (serviceResource is MicroStrategyResource) {
