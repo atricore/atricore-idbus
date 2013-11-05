@@ -36,6 +36,6 @@ public class IdBusRequestCycle extends RequestCycle {
     @Override
     protected void onEndRequest() {
         super.onEndRequest();
-        ((WebResponse) getResponse()).setHeader("X-FollowRedirect", "FALSE" );
+        ((WebResponse) getResponse()).setHeader("X-IdBus-FollowRedirect", "FALSE" );
     }
 }

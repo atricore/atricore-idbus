@@ -26,6 +26,7 @@ import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
@@ -36,6 +37,8 @@ import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.util.ProtocolUtils;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectType;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -58,6 +61,7 @@ import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchangeImpl;
 import javax.security.auth.Subject;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -394,6 +398,37 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
             throw new SSOException(e);
         }
 
+    }
+
+    protected void recordInfoAuditTrail(String action, ActionOutcome actionOutcome, String principal, CamelMediationExchange exchange) {
+        recordInfoAuditTrail(action, actionOutcome, principal, exchange, null);
+    }
+
+    protected void recordInfoAuditTrail(String action, ActionOutcome actionOutcome, String principal, CamelMediationExchange exchange, Properties otherProps) {
+
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+        AuditingServer aServer = mediator.getAuditingServer();
+
+        Properties props = null;
+
+        String remoteAddr = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
+        if (remoteAddr != null) {
+            if (props == null) props = new Properties();
+            props.setProperty("remoteAddress", remoteAddr);
+        }
+
+        String session = (String) exchange.getIn().getHeader("org.atricore.idbus.http.Cookie.JSESSIONID");
+        if (session != null) {
+            if (props == null) props = new Properties();
+            props.setProperty("httpSession", session);
+        }
+
+        if (otherProps != null) {
+            if (props == null) props = new Properties();
+            props.putAll(otherProps);
+        }
+
+        aServer.processAuditTrail(mediator.getAuditCategory(), "INFO", action, actionOutcome, principal != null ? principal : "UNKNOWN", new java.util.Date(), null, props);
     }
 
     

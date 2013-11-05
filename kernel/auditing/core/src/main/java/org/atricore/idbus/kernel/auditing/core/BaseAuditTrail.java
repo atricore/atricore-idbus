@@ -57,7 +57,7 @@ public class BaseAuditTrail implements AuditTrail {
         return outcome;
     }
 
-    public String getSubject() {
+    public String getPrincipal() {
         return subject;
     }
 

@@ -105,7 +105,7 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
     public boolean match(HttpServletRequest req) {
 
         // Already internal, ignore it.
-        if (req.getHeader("IDBUS-PROXIED-REQUEST") != null)
+        if (req.getHeader("X-IdBusProxiedRequest") != null)
             return false;
 
         // Do not proxy POST methods

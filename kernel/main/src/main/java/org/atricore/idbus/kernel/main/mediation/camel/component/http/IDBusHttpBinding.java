@@ -54,6 +54,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
     @Override
     public void readRequest(HttpServletRequest httpServletRequest, HttpMessage httpMessage) {
 
+
         logger.trace("Reading HTTP Servlet Request");
         super.readRequest(httpServletRequest, httpMessage);
 
@@ -67,9 +68,27 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         // Export additional information in CAMEL headers
         httpMessage.getHeaders().put("org.atricore.idbus.http.RequestURL", httpServletRequest.getRequestURL().toString());
         httpMessage.getHeaders().put("org.atricore.idbus.http.QueryString", httpServletRequest.getQueryString());
-        httpMessage.getHeaders().put("org.atricore.idbus.http.RemoteAddress", httpServletRequest.getRemoteAddr());
+
+        String remoteAddr = null;
+        String remoteHost = null;
+        String parentThread = httpServletRequest.getHeader("X-IdBusProxiedRequest");
+        if (parentThread == null) {
+            remoteAddr = httpServletRequest.getRemoteAddr();
+            remoteHost = httpServletRequest.getRemoteHost();
+            if (logger.isTraceEnabled())
+                logger.trace("Using request remote address/host : ["+remoteAddr+"/" + remoteHost + "]");
+        } else {
+            remoteAddr = httpServletRequest.getHeader("X-IdBusRemoteAddress");
+            remoteHost = httpServletRequest.getHeader("X-IdBusRemoteHost");
+            if (logger.isTraceEnabled())
+                logger.trace("Using X-IdBus header remote address/host : ["+remoteAddr+"/" + remoteHost + "]");
+        }
+
+        httpMessage.getHeaders().put("org.atricore.idbus.http.RemoteAddress", remoteAddr);
+        httpMessage.getHeaders().put("org.atricore.idbus.http.RemoteHost", remoteHost);
 
         logger.debug("Publishing HTTP Session as Camel header org.atricore.idbus.http.HttpSession");
+
         httpMessage.getHeaders().put("org.atricore.idbus.http.HttpSession", httpServletRequest.getSession(true));
     }
 
@@ -102,3 +121,4 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         super.doWriteResponse(message, httpServletResponse);
     }
 }
+

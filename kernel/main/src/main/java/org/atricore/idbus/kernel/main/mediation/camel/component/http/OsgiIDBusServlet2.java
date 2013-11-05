@@ -135,7 +135,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             }
         } finally {
             long ended = System.currentTimeMillis();
-            String parentThread = req.getHeader("IDBUS-PROXIED-REQUEST");
+            String parentThread = req.getHeader("X-IdBusProxiedRequest");
             if (parentThread == null) {
                 mServer.recordResponseTimeMetric(ATRICORE_WEB_BROWSER_PROCESSING_TIME_MS_METRIC_NAME, ended - started);
             }
@@ -148,7 +148,18 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
     protected void doProxyInternally(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        HttpRequestBase proxyReq = buildProxyRequest(req);
+        String remoteAddr = null;
+        String remoteHost = null;
+        String parentThread = req.getHeader("X-IdBusProxiedRequest");
+        if (parentThread == null) {
+            remoteAddr = req.getRemoteAddr();
+            remoteHost = req.getRemoteHost();
+        } else {
+            remoteAddr = req.getHeader("X-IdBusRemoteAddress");
+            remoteHost = req.getHeader("X-IdBusRemoteHost");
+        }
+
+        HttpRequestBase proxyReq = buildProxyRequest(req, remoteAddr, remoteHost);
         URI reqUri = proxyReq.getURI();
         String cookieDomain = reqUri.getHost();
 
@@ -218,12 +229,11 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                     continue;
                 }
 
-                if (header.getName().equals("X-FollowRedirect")) {
+                if (header.getName().equals("X-IdBus-FollowRedirect")) {
                     // Set 'followTargetUrl' to false
                     followTargetUrl = false;
                     continue;
                 }
-
 
                 storedHeaders.add(header);
 
@@ -366,7 +376,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             }
 
             if (followTargetUrl) {
-                proxyReq = buildProxyRequest(targetUrl);
+                proxyReq = buildProxyRequest(targetUrl, remoteAddr, remoteHost);
                 // Clear context, we many need a new instance
                 httpContext = null;
             }
@@ -378,7 +388,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
     }
 
-    protected HttpRequestBase buildProxyRequest(String targetUrl) throws MalformedURLException {
+    protected HttpRequestBase buildProxyRequest(String targetUrl, String remoteAddr, String remoteHost) throws MalformedURLException {
 
         if (localTargetBaseUrl != null) {
             URL url = new URL(targetUrl);
@@ -397,12 +407,14 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         // Cookies are automatically managed by the client :)
         // Mark request as PROXIED, so that we don't get into an infinite loop
         HttpRequestBase proxyReq = new HttpGet(targetUrl);
-        proxyReq.addHeader("IDBUS-PROXIED-REQUEST", Thread.currentThread().getName());
+        proxyReq.addHeader("X-IdBusRemoteAddress", remoteAddr);
+        proxyReq.addHeader("X-IdBusRemoteHost", remoteHost);
+        proxyReq.addHeader("X-IdBusProxiedRequest", "TRUE");
 
         return proxyReq;
     }
 
-    protected HttpRequestBase buildProxyRequest(HttpServletRequest req) throws ServletException {
+    protected HttpRequestBase buildProxyRequest(HttpServletRequest req, String remoteAddr, String remoteHost) throws ServletException {
 
         HttpRequestBase proxyReq = null;
 
@@ -427,15 +439,22 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
         proxyReq = new HttpGet(targetUrl.toString());
         // Mark request as PROXIED, so that we don't get into an infinite loop
-        proxyReq.addHeader("IDBUS-PROXIED-REQUEST", Thread.currentThread().getName());
-        // Add incoming headers, like cookies!
+
         Enumeration<String> hNames = req.getHeaderNames();
         while (hNames.hasMoreElements()) {
             String hName = hNames.nextElement();
-            proxyReq.addHeader(hName, req.getHeader(hName));
+            String hValue = req.getHeader(hName);
 
             // Received cookies will be added to HTTP Client cookie store by our own cookie interceptor
+//            if (hName.equals("Cookie"))
+//                continue;
+
+            proxyReq.addHeader(hName, hValue);
         }
+
+        proxyReq.addHeader("X-IdBusRemoteAddress", remoteAddr);
+        proxyReq.addHeader("X-IdBusRemoteHost", remoteHost);
+        proxyReq.addHeader("X-IdBusProxiedRequest", "TRUE");
 
         return proxyReq;
 
@@ -467,7 +486,6 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         } catch (ServiceProxyDestroyedException e) {
             registry = lookupIdentityMediationUnitRegistry();
         }
-
 
         HttpConsumer consumer = resolveConsumer(req);
         if (consumer == null) {

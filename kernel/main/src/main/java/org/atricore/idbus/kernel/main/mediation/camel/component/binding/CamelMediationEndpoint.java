@@ -309,6 +309,13 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
                 MediationMessage body = (MediationMessage) camelMediationExchange.getIn().getBody();
                 camelMediationExchange.getIn().setBody(body);
                 // Process Exchange
+
+                if (exchange.getIn().getHeaders() != null) {
+                    for (String hName : exchange.getIn().getHeaders().keySet()) {
+                        if (hName.startsWith("org.atricore"))
+                            camelMediationExchange.getIn().getHeaders().put(hName, exchange.getIn().getHeader(hName));
+                    }
+                }
                 idBusBindingConsumer.getProcessor().process(camelMediationExchange);
 
             } catch (IdentityMediationFault e) {
@@ -346,7 +353,6 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
                 } else {
                     logger.error(e.getMessage(), e);
                 }
-
 
 
             }

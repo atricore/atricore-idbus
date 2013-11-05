@@ -33,7 +33,7 @@ public interface AuditTrail extends java.io.Serializable {
     /**
      * The subject name that performed the action.
      */
-    String getSubject();
+    String getPrincipal();
 
     /**
      * The time when the action was performed.

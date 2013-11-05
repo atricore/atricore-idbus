@@ -759,6 +759,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
         try {
 
+            authnState.setSsoAttepmts(authnState.getSsoAttepmts() + 1);
+
             // Resolve SP endpoint
             EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
 
@@ -802,7 +804,10 @@ public class SingleSignOnProducer extends SSOProducer {
             // Generate audit trail
             AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
             AuditingServer aServer = mediator.getAuditingServer();
-            aServer.processAuditTrail(mediator.getAuditCategory(), "INFO", "SSO", ActionOutcome.SUCCESS, principal != null ? principal.getName() : "UNKNOWN", new java.util.Date(), null, null);
+
+            Properties auditProps = new Properties();
+            auditProps.put("attempt", authnState.getSsoAttepmts() + "");
+            recordInfoAuditTrail("SSO", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
             if (((IdentityProvider)getProvider()).isIdentityConfirmationEnabled()) {
                 // --------------------------------------------------------------------
@@ -954,11 +959,9 @@ public class SingleSignOnProducer extends SSOProducer {
         } catch (SecurityTokenAuthenticationFailure e) {
 
             // Generate audit trail
-
-
-            AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
-            AuditingServer aServer = mediator.getAuditingServer();
-            aServer.processAuditTrail(mediator.getAuditCategory(), "WARN", "SSO", ActionOutcome.FAILURE, e.getPrincipalName() != null ? e.getPrincipalName() : "UNKNOWN", new java.util.Date(), null, null);
+            Properties auditProps = new Properties();
+            auditProps.put("attempt", authnState.getSsoAttepmts() + "");
+            recordInfoAuditTrail("SSO", ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
 
             // The authentication failed, let's see what needs to be done.
 

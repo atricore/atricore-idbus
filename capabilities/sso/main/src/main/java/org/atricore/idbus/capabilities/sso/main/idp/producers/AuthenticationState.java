@@ -35,6 +35,7 @@ import java.util.Set;
 public class AuthenticationState implements java.io.Serializable {
 
     public AuthenticationState() {
+
     }
 
     /**
@@ -57,6 +58,8 @@ public class AuthenticationState implements java.io.Serializable {
     private String responseMode;
 
     private String responseFormat;
+
+    private int ssoAttepmts;
 
     // The last authn request
     private AuthnRequestType authnRequest;
@@ -142,5 +145,13 @@ public class AuthenticationState implements java.io.Serializable {
 
     public void setResponseFormat(String responseFormat) {
         this.responseFormat = responseFormat;
+    }
+
+    public int getSsoAttepmts() {
+        return ssoAttepmts;
+    }
+
+    public void setSsoAttepmts(int ssoAttepmts) {
+        this.ssoAttepmts = ssoAttepmts;
     }
 }

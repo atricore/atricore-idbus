@@ -117,7 +117,7 @@ public class SingleLogoutProducer extends SSOProducer {
             } else {
                 metric += "Unknonw";
             }
-                                              j
+
         } catch (SSORequestException e) {
 
             throw new IdentityMediationFault(
@@ -164,7 +164,8 @@ public class SingleLogoutProducer extends SSOProducer {
 
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         AuditingServer aServer = mediator.getAuditingServer();
-        aServer.processAuditTrail(mediator.getAuditCategory(), "INFO", "SLO-TOUT", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : "UNKONW", new java.util.Date(), null, null);
+
+        recordInfoAuditTrail("SLO-TOUT", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);
 
         // Send status response!
         if (logger.isDebugEnabled())
@@ -200,7 +201,8 @@ public class SingleLogoutProducer extends SSOProducer {
 
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         AuditingServer aServer = mediator.getAuditingServer();
-        aServer.processAuditTrail(mediator.getAuditCategory(), "INFO", "SLO", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : "UNKONW", new java.util.Date(), null, null);
+
+        recordInfoAuditTrail("SLO", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);
 
         // We can send the response using any front-channel binding                .
         // SSOBinding binding = SSOBinding.asEnum(endpoint.getBinding());
