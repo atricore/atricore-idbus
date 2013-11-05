@@ -370,6 +370,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // ----------------------------------------
         // Auditing Server
         // ----------------------------------------
+        // TODO : Support extensions
         Reference auditingServer = new Reference();
         auditingServer.setId("auditing-server");
         auditingServer.setCardinality("1..1");
