@@ -10,6 +10,8 @@ import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 
+import mx.collections.ArrayCollection;
+
 import mx.rpc.Fault;
 import mx.rpc.IResponder;
 
@@ -49,6 +51,8 @@ public class CreateIdentityLookupCommand extends IocSimpleCommand implements IRe
             identityLookup.name = car.provider.name + "-" + car.identitySource.name + "-idlookup";
             identityLookup.provider = provider;
             identityLookup.identitySource = _projectProxy.currentIdentityAppliance.idApplianceDefinition.identitySources[index];
+            if (provider.identityLookups == null)
+                provider.identityLookups = new ArrayCollection();
             provider.identityLookups.addItem(identityLookup);
             _projectProxy.currentIdentityApplianceElement = identityLookup;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
