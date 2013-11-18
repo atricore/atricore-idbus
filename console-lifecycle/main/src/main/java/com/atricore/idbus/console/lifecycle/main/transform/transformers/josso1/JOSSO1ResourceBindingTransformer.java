@@ -25,10 +25,13 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        logger.trace("JOSSO1ResourceBinding: " + event.getData() + ", " + event.getContext().getParentNode()  );
+        if (logger.isTraceEnabled())
+            logger.trace("JOSSO1ResourceBinding: " + event.getData() + ", " + event.getContext().getParentNode()  );
 
-        if (event.getData() instanceof Activation) {
-            logger.trace("JOSSO1ResourceBinding: activation resource = " + ((Activation)event.getData()).getResource());
+        if (logger.isTraceEnabled()) {
+            if (event.getData() instanceof Activation) {
+                logger.trace("JOSSO1ResourceBinding: activation resource = " + ((Activation)event.getData()).getResource());
+            }
         }
 
         return event.getData() instanceof Activation  &&
@@ -37,7 +40,9 @@ public class JOSSO1ResourceBindingTransformer extends AbstractTransformer {
 
     @Override
     public void before(TransformEvent event) throws TransformException {
-        logger.trace("Entered JOSSO1ResourceBindingTransformer::before");
+        if (logger.isTraceEnabled())
+            logger.trace("Entered JOSSO1ResourceBindingTransformer::before");
+
         // Define partner apps in Binding provider
         JOSSO1Resource josso1Resource = (JOSSO1Resource) ((Activation)event.getData()).getResource();
         InternalSaml2ServiceProvider sp = josso1Resource.getServiceConnection().getSp();

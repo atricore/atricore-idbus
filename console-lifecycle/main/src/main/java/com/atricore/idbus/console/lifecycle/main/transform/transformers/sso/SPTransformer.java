@@ -363,7 +363,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         // accountLinkLifecycle
         Bean accountLinkLifecycle = newBean(spBeans, sp.getName() + "-account-link-lifecycle", AccountLinkLifecycleImpl.class);
-        if (internalSaml2ServiceProvider.getIdentityLookups() != null) {
+        if (internalSaml2ServiceProvider.getIdentityLookups() != null && internalSaml2ServiceProvider.getIdentityLookups().size() > 0) {
             setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
         }
 
