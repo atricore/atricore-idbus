@@ -110,9 +110,9 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
             logger.debug("Starting JOSSO 1 SSO, requester [" + appId + "] cmd ["+cmd+"], " +
                     "back_to ["+backTo+"] idpAlias ["+idpAlias+"]");
 
-        BindingChannel spChannel = resolveSpBindingChannel(bChannel, appId);
+        BindingChannel spBindingChannel = resolveSpBindingChannel(bChannel, appId);
 
-        EndpointDescriptor destination = resolveSPInitiatedSSOEndpointDescriptor(exchange, spChannel);
+        EndpointDescriptor destination = resolveSPInitiatedSSOEndpointDescriptor(exchange, spBindingChannel);
 
         // Create SP AuthnRequest
         // TODO : Support on_error ?
@@ -226,13 +226,14 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
 
 
     protected EndpointDescriptor resolveSPInitiatedSSOEndpointDescriptor(CamelMediationExchange exchange,
-                                                                         BindingChannel sp) throws JossoException {
+                                                                         BindingChannel bChannel) throws JossoException {
 
         try {
 
-            logger.debug("Looking for " + SSOService.SPInitiatedSingleSignOnService.toString());
+            if(logger.isDebugEnabled())
+                logger.debug("Looking for " + SSOService.SPInitiatedSingleSignOnService.toString() + " on channel " + bChannel.getName());
 
-            for (IdentityMediationEndpoint endpoint : sp.getEndpoints()) {
+            for (IdentityMediationEndpoint endpoint : bChannel.getEndpoints()) {
 
                 logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
 
@@ -240,7 +241,7 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
 
                     if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
                         // This is the endpoint we're looking for
-                        return  sp.getIdentityMediator().resolveEndpoint(sp, endpoint);
+                        return  bChannel.getIdentityMediator().resolveEndpoint(bChannel, endpoint);
                     }
                 }
             }
