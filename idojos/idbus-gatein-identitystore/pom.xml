@@ -44,7 +44,10 @@
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
-        <commons-httpclient.version>3.1</commons-httpclient.version>
+        <!--commons-httpclient.version>3.1</commons-httpclient.version-->
+        <httpclient.version>4.1.2</httpclient.version>
+        <commons-codec.version>1.3</commons-codec.version>
+
     </properties>
 
     <build>
@@ -79,11 +82,12 @@
                         <Import-Package>
                                org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
                                org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                               org.apache.commons.codec.binary; version="1.3",
                                *
                         </Import-Package>
-                        <Embed-Dependency>
+                        <!--Embed-Dependency>
                             *;artifactId=commons-httpclient
-                        </Embed-Dependency>
+                        </Embed-Dependency-->
 
                     </instructions>
                 </configuration>
@@ -137,10 +141,17 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient-osgi</artifactId>
+            <version>${httpclient.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>${commons-httpclient.version}</version>
-        </dependency>
+        </dependency-->
 
         <dependency>
             <groupId>junit</groupId>
@@ -162,6 +173,14 @@
             <version>1.5.8</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
 
     </dependencies>
 </project>
