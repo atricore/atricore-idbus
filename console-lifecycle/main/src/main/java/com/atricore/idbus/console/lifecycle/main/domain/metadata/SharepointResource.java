@@ -1,11 +1,14 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+import com.atricore.idbus.console.lifecycle.main.transform.annotations.ReEntrant;
+
 /**
  *
  * Sharepoint Server 2010 execution environment, very specifc.
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
+@ReEntrant
 public class SharepointResource extends JOSSO1Resource {
 
     private static final long serialVersionUID = 873640871223858432L;
