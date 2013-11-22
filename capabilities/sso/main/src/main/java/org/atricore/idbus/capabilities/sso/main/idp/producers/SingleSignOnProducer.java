@@ -807,6 +807,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
             Properties auditProps = new Properties();
             auditProps.put("attempt", authnState.getSsoAttepmts() + "");
+            if (authnState.getCurrentAuthnCtxClass() != null)
+                auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
             recordInfoAuditTrail("SSO", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
             if (((IdentityProvider)getProvider()).isIdentityConfirmationEnabled()) {
@@ -961,6 +963,8 @@ public class SingleSignOnProducer extends SSOProducer {
             // Generate audit trail
             Properties auditProps = new Properties();
             auditProps.put("attempt", authnState.getSsoAttepmts() + "");
+            if (authnState.getCurrentAuthnCtxClass() != null)
+                auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
             recordInfoAuditTrail("SSO", ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
 
             // The authentication failed, let's see what needs to be done.

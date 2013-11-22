@@ -269,7 +269,9 @@ public class SingleLogoutProducer extends SSOProducer {
             }
         }
 
-        destroySPSecurityContext(exchange, secCtx);
+        // Only destroy the security context if present
+        if (secCtx != null)
+            destroySPSecurityContext(exchange, secCtx);
 
         logger.debug("Sending JOSSO SLO Response to " + destination);
 
