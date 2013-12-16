@@ -8,7 +8,7 @@ import java.util.Set;
 @ReEntrant
 public class DominoResource extends ServiceResource {
 
-    private static final long serialVersionUID = -206643640681397571L;
+    private static final long serialVersionUID = -2066436406813922381L;
 
     private Location homeLocation;
 
