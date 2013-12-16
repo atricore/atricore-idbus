@@ -28,6 +28,7 @@ import oasis.names.tc.saml._2_0.idbus.PreAuthenticatedAuthnRequestType;
 import oasis.names.tc.saml._2_0.idbus.SecTokenAuthnRequestType;
 import oasis.names.tc.saml._2_0.metadata.*;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
+import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
@@ -1523,7 +1524,12 @@ public class SingleSignOnProducer extends SSOProducer {
                 usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
                 usernameToken.getOtherAttributes().put(new QName(Constants.PREVIOUS_SESSION_NS), "TRUE");
 
-                // TODO : We should honor the provided authn. context if any
+                RequestedAuthnContextType reqAuthn = authnRequest.getRequestedAuthnContext();
+                if (reqAuthn != null) {
+                    // TODO : We should honor the requested authn!
+                    logger.warn("Requested Authentication context class ignored" + reqAuthn);
+                }
+
                 CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
                 claims.addClaim(credentialClaim);
             }

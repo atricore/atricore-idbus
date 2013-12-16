@@ -27,6 +27,7 @@ import oasis.names.tc.saml._2_0.assertion.AuthnStatementType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
@@ -93,11 +94,37 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertion
 
         } else {
 
+            String authnCtxClass = AuthnCtxClass.PREVIOUS_SESSION_AUTHN_CTX.getValue();
+
+            // Try to use the original authn context class
+            if (ctx.getSsoSession().getSecurityToken().getContent() instanceof AuthnStatementType) {
+                // This is the original authn statement
+                AuthnStatementType authnStmtOrig = (AuthnStatementType) ctx.getSsoSession().getSecurityToken().getContent();
+                if (authnStmtOrig.getAuthnContext().getContent() != null) {
+                    Object o = authnStmtOrig.getAuthnContext().getContent().iterator().next();
+                    if (o instanceof JAXBElement) {
+                        JAXBElement jaxb = (JAXBElement) o;
+
+                        if (jaxb.getValue() instanceof java.lang.String) {
+
+                            try {
+                                authnCtxClass = AuthnCtxClass.asEnum((String) jaxb.getValue()).getValue();
+                            } catch (IllegalArgumentException e) {
+                                // Ignore this
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (logger.isDebugEnabled())
+                logger.debug("Using authnContextClass" + authnCtxClass + " for existing SSO session " + ctx.getSsoSession().getId());
+
             // Having no authentication context means that we've authenticated using the previously established session
             AuthnContextType authnContext = new AuthnContextType();
 
             JAXBElement<String> authnCtx= samlObjectFactory.createAuthnContextClassRef(
-                    "urn:oasis:names:tc:SAML:2.0:ac:classes:PreviousSession"
+                authnCtxClass
             );
             authnContext.getContent().add(authnCtx);
             authnStatement.setAuthnContext(authnContext);
