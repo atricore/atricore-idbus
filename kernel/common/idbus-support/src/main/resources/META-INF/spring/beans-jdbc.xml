@@ -32,7 +32,7 @@
     <osgi:service id="jdbcDriverManagerExporter" ref="jdbcDriverManager"
                   interface="org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager"/>
 
-    <bean name="jdbcDriverManager" class="org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager">
+    <bean name="jdbcDriverManager" class="org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager" >
 
         <property name="loadDefaultDrivers" value="true"/>
 

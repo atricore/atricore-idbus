@@ -30,11 +30,11 @@ import org.atricore.idbus.kernel.main.store.SimpleUserKey;
 import org.atricore.idbus.kernel.main.store.UserKey;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+//import org.springframework.stereotype.Repository;
+//import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+//import javax.persistence.EntityManager;
+//import javax.persistence.PersistenceContext;
 import javax.security.auth.Subject;
 import java.security.Principal;
 import java.util.List;
@@ -49,22 +49,25 @@ import java.util.List;
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id: ResourceCircleOfTrustMemberDescriptorImpl.java 1269 2009-06-11 16:28:55Z sgonzalez $
  */
-@Repository
-@Transactional
+//@Repository
+// TODO : Implement persistence support @Transactional
 public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
 
     private static final Log logger = LogFactory.getLog(AccountLinkLifecycleImpl.class);
 
     private IdentityStore identityStore;
     
-	private EntityManager entityManager;
+	//private EntityManager entityManager;
 
     public PersistentAccountLink establishPersistent(Subject idpSubject, String localSubjectNameIdentifier) {
+        throw new UnsupportedOperationException("Unsupported Account Link Lifecycle Operation");
+        /*
         PersistentAccountLink pal = new PersistentAccountLinkImpl(idpSubject,
                 localSubjectNameIdentifier,
                 "PERSISTENT");
         entityManager.persist(pal);
         return pal;
+        */
     }
 
 
@@ -84,6 +87,8 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
     }
 
     public AccountLink findByIDPAccount(Subject idpSubject) {
+        throw new UnsupportedClassVersionError("Unsupported Account Link Lifecycle Operation");
+        /*
     	AccountLink accountLink = null;
     	SubjectNameID subjectNameID = null;
     	for(Principal absPrincipal : idpSubject.getPrincipals()){
@@ -101,9 +106,12 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
 	        }
     	} 
         return accountLink;
+        */
     }
 
     public AccountLink findByLocalAccount(Subject localSubject) {
+        throw new UnsupportedClassVersionError("Unsupported Account Link Lifecycle Operation");
+        /*
     	AccountLink accountLink = null;
     	SubjectNameID subjectNameID = null;
     	for(Principal absPrincipal : localSubject.getPrincipals()){
@@ -121,6 +129,7 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
 	        }
     	} 
         return accountLink;
+        */
     }
 
     public Subject resolve(AccountLink accountLink) throws AccountLinkageException {
@@ -185,37 +194,49 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
     }
 
     public AccountLink disable(AccountLink accountLink) {
+
+
     	if(accountLink instanceof PersistentAccountLinkImpl){
+            throw new UnsupportedClassVersionError("Unsupported Account Link Lifecycle Operation");
+            /*
     		//we want to update only 'enabled' property
     		accountLink = entityManager.find(PersistentAccountLinkImpl.class, ((PersistentAccountLinkImpl)accountLink).getPersistanceId());
     		if(accountLink != null){
     			accountLink.setEnabled(false);
     			accountLink = entityManager.merge(accountLink);
-    		}
+    		} */
     	}
     	return accountLink;
+
     	
     }
 
     public AccountLink enable(AccountLink accountLink) {
+
     	if(accountLink instanceof PersistentAccountLinkImpl){
+            throw new UnsupportedClassVersionError("Unsupported Account Link Lifecycle Operation");
+            /*
     		//we want to update only 'enabled' property
     		accountLink = entityManager.find(PersistentAccountLinkImpl.class, ((PersistentAccountLinkImpl)accountLink).getPersistanceId());
     		if(accountLink != null){
 		    	accountLink.setEnabled(true);
 		    	accountLink = entityManager.merge(accountLink);
     		}
+    		*/
     	}
     	return accountLink;
     }
 
     public AccountLink dispose(AccountLink accountLink) {
     	if(accountLink instanceof PersistentAccountLinkImpl){
+            throw new UnsupportedClassVersionError("Unsupported Account Link Lifecycle Operation");
+            /*
     		accountLink = entityManager.find(PersistentAccountLinkImpl.class, ((PersistentAccountLinkImpl)accountLink).getPersistanceId());
     		if(accountLink != null){
 		    	accountLink.setDeleted(true);
 		    	accountLink = entityManager.merge(accountLink);
     		}
+    		*/
     	}
     	return accountLink;    	
     }
@@ -232,10 +253,11 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
         this.identityStore = identityStore;
     }
 
+    /*
     @PersistenceContext
 	public void setEntityManager(EntityManager entityManager) {
 		this.entityManager = entityManager;
-	}
+	} */
 
     
 }

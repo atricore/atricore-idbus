@@ -18,7 +18,10 @@ import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.orm.jdo.JdoObjectRetrievalFailureException;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.jdo.FetchPlan;
 import javax.jdo.JDOObjectNotFoundException;
@@ -39,20 +42,41 @@ public class JDOSchemaManager extends AbstractSchemaManager {
 
     private JDOGroupAttributeValueDAO grpAttrValDao;
 
-    @Transactional
+    // Spring transaction management
+    private PlatformTransactionManager transactionManager;
+
+    public PlatformTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
+//    @Transactional
     public UserAttributeDefinition addUserAttribute(UserAttributeDefinition attrDef) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOUserAttributeDefinition jdoUserAttribute = toJDOUserAttribute(attrDef);
             jdoUserAttribute = usrAttrDefDao.save(jdoUserAttribute);
             jdoUserAttribute = usrAttrDefDao.detachCopy(jdoUserAttribute, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toUserAttribute(jdoUserAttribute);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public UserAttributeDefinition updateUserAttribute(UserAttributeDefinition attrDef) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOUserAttributeDefinition jdoUserAttribute = usrAttrDefDao.findById(attrDef.getId());
             if (!jdoUserAttribute.getName().equals(attrDef.getName())) {
@@ -61,98 +85,145 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             jdoUserAttribute = toJDOUserAttribute(jdoUserAttribute, attrDef);
             jdoUserAttribute = usrAttrDefDao.save(jdoUserAttribute);
             jdoUserAttribute = usrAttrDefDao.detachCopy(jdoUserAttribute, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toUserAttribute(jdoUserAttribute);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(attrDef.getId());
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(attrDef.getId());
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(attrDef.getId());
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public void deleteUserAttribute(long id) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOUserAttributeDefinition jdoUserAttribute = usrAttrDefDao.findById(id);
             if (jdoUserAttribute != null) {
                 usrAttrValDao.deleteValues(jdoUserAttribute.getName());
                 usrAttrDefDao.delete(id);
             }
+            transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public UserAttributeDefinition findUserAttributeById(long id) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOUserAttributeDefinition jdoUserAttribute = usrAttrDefDao.findById(id);
             jdoUserAttribute = usrAttrDefDao.detachCopy(jdoUserAttribute, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toUserAttribute(jdoUserAttribute);
         } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new UserAttributeNotFoundException(id);
             throw new ProvisioningException(e);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public UserAttributeDefinition findUserAttributeByName(String name) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOUserAttributeDefinition jdoUserAttribute = usrAttrDefDao.findByName(name);
             jdoUserAttribute = usrAttrDefDao.detachCopy(jdoUserAttribute, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toUserAttribute(jdoUserAttribute);
         } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new UserAttributeNotFoundException(name);
             throw new ProvisioningException(e);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public Collection<UserAttributeDefinition> listUserAttributes() throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             Collection<JDOUserAttributeDefinition> jdoUserAttributes = usrAttrDefDao.findAll();
             jdoUserAttributes = usrAttrDefDao.detachCopyAll(jdoUserAttributes, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toUserAttributes(jdoUserAttributes);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public GroupAttributeDefinition addGroupAttribute(GroupAttributeDefinition attrDef) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOGroupAttributeDefinition jdoGroupAttribute = toJDOGroupAttribute(attrDef);
             jdoGroupAttribute = grpAttrDefDao.save(jdoGroupAttribute);
             jdoGroupAttribute = grpAttrDefDao.detachCopy(jdoGroupAttribute, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toGroupAttribute(jdoGroupAttribute);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public GroupAttributeDefinition updateGroupAttribute(GroupAttributeDefinition attrDef) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOGroupAttributeDefinition jdoGroupAttribute = grpAttrDefDao.findById(attrDef.getId());
             if (!jdoGroupAttribute.getName().equals(attrDef.getName())) {
@@ -161,80 +232,117 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             jdoGroupAttribute = toJDOGroupAttribute(jdoGroupAttribute, attrDef);
             jdoGroupAttribute = grpAttrDefDao.save(jdoGroupAttribute);
             jdoGroupAttribute = grpAttrDefDao.detachCopy(jdoGroupAttribute, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toGroupAttribute(jdoGroupAttribute);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(attrDef.getId());
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(attrDef.getId());
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(attrDef.getId());
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public void deleteGroupAttribute(long id) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOGroupAttributeDefinition jdoGroupAttribute = grpAttrDefDao.findById(id);
             if (jdoGroupAttribute != null) {
                 grpAttrValDao.deleteValues(jdoGroupAttribute.getName());
                 grpAttrDefDao.delete(id);
             }
+            transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public GroupAttributeDefinition findGroupAttributeById(long id) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOGroupAttributeDefinition jdoGroupAttribute = grpAttrDefDao.findById(id);
             jdoGroupAttribute = grpAttrDefDao.detachCopy(jdoGroupAttribute, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toGroupAttribute(jdoGroupAttribute);
         } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new GroupAttributeNotFoundException(id);
             throw new ProvisioningException(e);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public GroupAttributeDefinition findGroupAttributeByName(String name) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOGroupAttributeDefinition jdoGroupAttribute = grpAttrDefDao.findByName(name);
             jdoGroupAttribute = grpAttrDefDao.detachCopy(jdoGroupAttribute, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toGroupAttribute(jdoGroupAttribute);
         } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new GroupAttributeNotFoundException(name);
             throw new ProvisioningException(e);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public Collection<GroupAttributeDefinition> listGroupAttributes() throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             Collection<JDOGroupAttributeDefinition> jdoGroupAttributes = grpAttrDefDao.findAll();
             jdoGroupAttributes = grpAttrDefDao.detachCopyAll(jdoGroupAttributes, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toGroupAttributes(jdoGroupAttributes);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }

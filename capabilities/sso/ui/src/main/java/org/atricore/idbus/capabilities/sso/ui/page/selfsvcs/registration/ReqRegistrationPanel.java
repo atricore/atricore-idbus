@@ -150,7 +150,6 @@ public class ReqRegistrationPanel extends Panel {
         // Create and send email using transaction ID
         String transactionId = resp.getTransactionId();
 
-
         // -----------------------------------------------------------
 
         String path = RequestCycle.get().getRequest().getFilterPath();
@@ -171,8 +170,6 @@ public class ReqRegistrationPanel extends Panel {
                 username,
                 "Registration", buildEMailText(registration, resp, transactionId, confirmUrl).toString(),
                 "text/html");
-
-
 
     }
 

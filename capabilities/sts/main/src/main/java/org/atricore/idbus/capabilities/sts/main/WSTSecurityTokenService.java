@@ -142,8 +142,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             // 1. Authenticate
             // -----------------------------------------
             subject = authenticate(requestToken.getValue(), tokenType.getValue());
-            if (logger.isDebugEnabled())
-                logger.debug( "User " + subject + " authenticated successfully" );
+            if (logger.isTraceEnabled())
+                logger.trace( "User " + subject + " authenticated successfully" );
 
             processingContext.setProperty(SUBJECT_PROP, subject);
 

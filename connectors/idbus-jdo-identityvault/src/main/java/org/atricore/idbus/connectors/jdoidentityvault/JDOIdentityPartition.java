@@ -1,6 +1,8 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.*;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.*;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
@@ -15,7 +17,11 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.orm.jdo.JdoObjectRetrievalFailureException;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.jdo.FetchPlan;
 import javax.jdo.JDOObjectNotFoundException;
@@ -32,6 +38,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         DisposableBean,
         IdentityServiceLifecycle {
 
+    private static final Log logger = LogFactory.getLog(JDOIdentityPartition.class);
+
     private JDOUserDAO userDao;
     private JDOGroupDAO groupDao;
     private JDOAclDAO aclDao;
@@ -43,6 +51,17 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     private JDOSecurityTokenDAO securityTokenDao;
 
     private JDOSchemaManager schemaManager;
+
+    // Spring transaction management
+    private PlatformTransactionManager transactionManager;
+
+    public PlatformTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
 
     public JDOSchemaManager getSchemaManager() {
         return schemaManager;
@@ -140,75 +159,106 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     // -------------------------------------< Group >
 
-    @Transactional
+//    @Transactional
     public Group findGroupById(long id) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
             JDOGroup jdoGroup = groupDao.findById(id);
             jdoGroup = groupDao.detachCopy(jdoGroup, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toGroup(jdoGroup);
 
         } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new GroupNotFoundException(id);
 
             throw new ProvisioningException(e);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public Group findGroupByName(String name) throws ProvisioningException {
 
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+        
         try {
             JDOGroup jdoGroup = groupDao.findByName(name);
             jdoGroup = groupDao.detachCopy(jdoGroup, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toGroup(jdoGroup);
 
         } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new GroupNotFoundException(name);
 
             throw new ProvisioningException(e);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public Collection<Group> findGroupsByUserName(String userName) throws ProvisioningException {
+        
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
             Collection<JDOGroup> jdoGroups = groupDao.findByUserName(userName);
             jdoGroups = groupDao.detachCopyAll(jdoGroups, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toGroups(jdoGroups);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
 
-    @Transactional
+//    @Transactional
     public Collection<Group> findAllGroups() throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             Collection<JDOGroup> jdoGroups = groupDao.findAll();
             jdoGroups = groupDao.detachCopyAll(jdoGroups, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toGroups(jdoGroups);
 
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public Group updateGroup(Group group) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOGroup jdoGroup = groupDao.findById(group.getId());
             jdoGroup = groupDao.detachCopy(jdoGroup, FetchPlan.FETCH_SIZE_GREEDY);
@@ -234,34 +284,49 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             grpAttrValDao.deleteRemovedValues(oldAttrs, jdoGroup.getAttrs());
             jdoGroup = groupDao.detachCopy(jdoGroup, 99);
 
+            transactionManager.commit(status);
+
             return toGroup(jdoGroup);
 
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new GroupNotFoundException(group.getId());
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupNotFoundException(group.getId());
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupNotFoundException(group.getId());
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public Group addGroup(Group group) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
             JDOGroup jdoGroup = toJDOGroup(group);
             jdoGroup = groupDao.save(jdoGroup);
             jdoGroup = groupDao.detachCopy(jdoGroup, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toGroup(jdoGroup);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public void deleteGroup(long id) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOGroup jdoGroup = groupDao.findById(id);
             if (jdoGroup != null) {
@@ -275,13 +340,18 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                         grpAttrValDao.delete(value.getId());
                 }
             }
+            transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
 
@@ -290,42 +360,57 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     // -------------------------------------< User >
 
-    @Transactional
+//    @Transactional
     public Collection<User> getUsersByGroup(Group group) throws ProvisioningException {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-    @Transactional
+//    @Transactional
     public User findUserById(long id) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
 
             JDOUser jdoUser = userDao.findById(id);
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toUser(jdoUser, true);
         } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new UserNotFoundException(id);
 
             throw new ProvisioningException(e);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public User findUserByUserName(String username) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
             JDOUser jdoUser = userDao.findByUserName(username);
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toUser(jdoUser, true);
         } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new UserNotFoundException(username);
 
@@ -335,32 +420,48 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         }
     }
 
-    @Transactional
+//    @Transactional
     public Collection<User> findAllUsers() throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             Collection<JDOUser> jdoUsers = userDao.findAll();
             jdoUsers = userDao.detachCopyAll(jdoUsers, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toUsers(jdoUsers, true);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public User addUser(User user) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOUser jdoUser = toJDOUser(user, false);
             jdoUser = userDao.save(jdoUser);
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toUser(jdoUser, true);
 
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public User updateUser(User user) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOUser jdoUser = userDao.findById(user.getId());
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
@@ -387,20 +488,29 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             jdoUser = userDao.save(jdoUser);
             usrAttrValDao.deleteRemovedValues(oldAttrs, jdoUser.getAttrs());
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toUser(jdoUser, true);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new UserNotFoundException(user.getId());
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserNotFoundException(user.getId());
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserNotFoundException(user.getId());
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public void deleteUser(long id) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOUser jdoUser = userDao.findById(id);
             if (jdoUser != null) {
@@ -426,96 +536,137 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
 
             }
+            transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
     // -------------------------------------------< SecurityQuestion >
-    @Transactional
+//    @Transactional
     public Collection<SecurityQuestion> findAllSecurityQuestions() throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             Collection<JDOSecurityQuestion> securityQuestions = securityQuestionDAO.findAll();
+            transactionManager.commit(status);
             return toSecurityQuestion(securityQuestions);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
     // -------------------------------------< ACLs >
 
-    @Transactional
+//    @Transactional
     public AclEntry findAclEntryByApprovalToken(String approvalToken) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
             JDOAclEntry jdoAclEntry = aclEntryDao.findByApprovalToken(approvalToken);
             jdoAclEntry = aclEntryDao.detachCopy(jdoAclEntry, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toAclEntry(jdoAclEntry);
         } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new AclEntryNotFoundException(approvalToken);
             throw new ProvisioningException(e);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public AclEntry findAclEntryById(long id) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
             JDOAclEntry jdoAclEntry = aclEntryDao.findById(id);
             jdoAclEntry = aclEntryDao.detachCopy(jdoAclEntry, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toAclEntry(jdoAclEntry);
         } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new AclEntryNotFoundException(id);
             throw new ProvisioningException(e);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public AclEntry updateAclEntry(AclEntry aclEntry) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOAclEntry jdoAclEntry = aclEntryDao.findById(aclEntry.getId());
             jdoAclEntry = toJDOAclEntry(jdoAclEntry, aclEntry);
             jdoAclEntry = aclEntryDao.save(jdoAclEntry);
             jdoAclEntry = aclEntryDao.detachCopy(jdoAclEntry, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toAclEntry(jdoAclEntry);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new AclEntryNotFoundException(aclEntry.getId());
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new AclEntryNotFoundException(aclEntry.getId());
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new AclEntryNotFoundException(aclEntry.getId());
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
 
     }
 
-    @Transactional
+//    @Transactional
     public void deleteAclEntry(long id) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOAclEntry jdoAclEntry = aclEntryDao.findById(id);
             if (jdoAclEntry != null) {
                 aclEntryDao.delete(id);
             }
+            transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new AclEntryNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new AclEntryNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new AclEntryNotFoundException(id);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
 
@@ -523,95 +674,136 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     // -------------------------------------< SecurityTokens >
 
-    @Transactional
+//    @Transactional
     public SecurityToken addSecurityToken(SecurityToken securityToken) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOSecurityToken jdoSecurityToken = toJDOSecurityToken(securityToken);
             jdoSecurityToken = securityTokenDao.save(jdoSecurityToken);
             jdoSecurityToken = securityTokenDao.detachCopy(jdoSecurityToken, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toSecurityToken(jdoSecurityToken);
 
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
 
     }
 
-    @Transactional
+//    @Transactional
     public SecurityToken updateSecurityToken(SecurityToken securityToken) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOSecurityToken jdoSecurityToken = securityTokenDao.findByTokenId(securityToken.getId());
             jdoSecurityToken = toJDOSecurityToken(jdoSecurityToken, securityToken);
             jdoSecurityToken = securityTokenDao.save(jdoSecurityToken);
             jdoSecurityToken = securityTokenDao.detachCopy(jdoSecurityToken, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toSecurityToken(jdoSecurityToken);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new SecurityTokenNotFoundException(securityToken.getId());
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new SecurityTokenNotFoundException(securityToken.getId());
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new SecurityTokenNotFoundException(securityToken.getId());
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
 
     }
 
-    @Transactional
+//    @Transactional
     public void deleteSecurityToken(String tokenId) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOSecurityToken jdoSecurityToken = securityTokenDao.findByTokenId(tokenId);
             if (jdoSecurityToken != null) {
                 securityTokenDao.delete(jdoSecurityToken.getId());
             }
+            transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
             throw new AclEntryNotFoundException(tokenId);
         } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new AclEntryNotFoundException(tokenId);
         } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
             throw new AclEntryNotFoundException(tokenId);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public SecurityToken findSecurityTokenByTokenId(String tokenId) throws ProvisioningException{
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
         try {
             JDOSecurityToken jdoSecurityToken = securityTokenDao.findByTokenId(tokenId);
             jdoSecurityToken = securityTokenDao.detachCopy(jdoSecurityToken, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toSecurityToken(jdoSecurityToken);
 
         } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new SecurityTokenNotFoundException(tokenId);
 
             throw new ProvisioningException(e);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public Collection<SecurityToken> findSecurityTokensByIssueInstantBefore(long issueInstant ) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
             Collection<JDOSecurityToken> jdoSecurityTokens = securityTokenDao.findByIssueInstantBefore(issueInstant);
             jdoSecurityTokens = securityTokenDao.detachCopyAll(jdoSecurityTokens, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toSecurityTokens(jdoSecurityTokens);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-    @Transactional
+//    @Transactional
     public Collection<SecurityToken> findSecurityTokensByExpiresOnBefore(long expiresOn ) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
             Collection<JDOSecurityToken> jdoSecurityTokens = securityTokenDao.findByExpiresOnBefore(expiresOn);
             jdoSecurityTokens = securityTokenDao.detachCopyAll(jdoSecurityTokens, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
             return toSecurityTokens(jdoSecurityTokens);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }

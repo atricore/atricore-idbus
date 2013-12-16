@@ -160,6 +160,15 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     </osgi:list>
 
     <!-- =================================================================== -->
+    <!-- Identity Vaults registry                                            -->
+    <!-- =================================================================== -->
+    <bean id="idVaultManager" init-method="init" destroy-method="shutdown"
+          class="org.atricore.idbus.kernel.main.provisioning.impl.EmbeddedIdentityVaultManagerImpl"/>
+
+    <osgi:service id="idVaultManagerExporter" ref="idVaultManager"
+                  interface="org.atricore.idbus.kernel.main.provisioning.spi.IdentityVaultManager" />
+
+    <!-- =================================================================== -->
     <!-- Configuration Admin entry                                           -->
     <!-- =================================================================== -->
 
