@@ -42,6 +42,7 @@ public class DiagramElementTypes {
     public static const WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int = 18;
     public static const WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int = 19;
     public static const IDENTITY_VAULT_ELEMENT_TYPE:int = 20;
+    public static const DB_IDENTITY_VAULT_ELEMENT_TYPE:int = 201;
     public static const XML_IDENTITY_SOURCE_ELEMENT_TYPE:int = 21;
     public static const JBOSS_PORTAL_RESOURCE_ELEMENT_TYPE:int = 22;
     public static const IDENTITY_SOURCE_ELEMENT_TYPE:int = 23;

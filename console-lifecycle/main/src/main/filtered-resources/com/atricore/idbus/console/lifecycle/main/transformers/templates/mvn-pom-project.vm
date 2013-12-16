@@ -12,7 +12,7 @@
     <version>$module.getVersion()</version>
     <packaging>pom</packaging>
 
-    <name>$applianceDef.getDescription()</name>
+    <name>$applianceDef.getDisplayName() :: Project</name>
 
     <properties>
 

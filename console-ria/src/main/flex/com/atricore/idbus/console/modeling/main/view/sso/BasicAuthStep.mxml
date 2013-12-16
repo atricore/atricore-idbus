@@ -34,7 +34,7 @@
         <![CDATA[           
 
             import com.atricore.idbus.console.services.dto.DbIdentitySource;
-            import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+            import com.atricore.idbus.console.services.dto.EmbeddedIdentityVault;
             import com.atricore.idbus.console.services.dto.IdentitySource;
             import com.atricore.idbus.console.services.dto.LdapIdentitySource;
             import com.atricore.idbus.console.services.dto.XmlIdentitySource;
@@ -58,7 +58,7 @@
                 }
 
                 if (embedded.selected) {
-                    identitySource = new EmbeddedIdentitySource();
+                    identitySource = new EmbeddedIdentityVault();
                     readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.step1.create.embedded"));
                 } else {
                     readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.step1.create.external"));                    
@@ -74,7 +74,7 @@
                 identitySource.name = userRepositoryName.text;
                 readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.step2.repository.name") + ": " + identitySource.name);
 
-                if (!(identitySource is EmbeddedIdentitySource)) {
+                if (!(identitySource is EmbeddedIdentityVault)) {
                     readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.step2.repository.type") + ": " + externalRepositoryType.labelDisplay.text);
                 }
                 

@@ -107,6 +107,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.EmbeddedIdentityVaultsListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExportIdentityApplianceCommand</symbol>
@@ -155,7 +156,7 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.domino.DominoResourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.blackboard.BlackBoardResourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.identityvault.EmbeddedIdentityVaultCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateMediator</symbol>

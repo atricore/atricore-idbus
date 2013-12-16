@@ -1,23 +1,36 @@
-package com.atricore.idbus.console.modeling.diagram.view.identityvault {
+/**
+ * @author: sgonzalez@atriocore.com
+ * @date: 12/9/13
+ */
+package com.atricore.idbus.console.modeling.diagram.view.dbidentityvault {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
+import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
-import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+import com.atricore.idbus.console.services.dto.DbIdentityVault;
+
+import flash.events.Event;
 
 import flash.events.MouseEvent;
 
+import mx.binding.utils.BindingUtils;
+
+import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class IdentityVaultCreateMediator extends IocFormMediator {
+public class DbIdentityVaultCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
-    private var _newIdentityVault:EmbeddedIdentitySource;
+    private var _newIdentityVault:DbIdentityVault;
 
-    public function IdentityVaultCreateMediator(name:String = null, viewComp:IdentityVaultCreateForm = null) {
+    [Bindable]
+    public var _jdbcDrivers:ArrayCollection;
+
+    public function DbIdentityVaultCreateMediator(name:String = null, viewComp:DbIdentityVaultCreateForm = null) {
         super(name, viewComp);
 
     }
@@ -34,6 +47,7 @@ public class IdentityVaultCreateMediator extends IocFormMediator {
         if (getViewComponent() != null) {
             view.btnOk.removeEventListener(MouseEvent.CLICK, handleIdentityVaultSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
+            view.driver.removeEventListener(Event.CHANGE, handleDriverChange);
         }
 
         super.setViewComponent(viewComponent);
@@ -44,6 +58,11 @@ public class IdentityVaultCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleIdentityVaultSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+
+        BindingUtils.bindProperty(view.driver, "dataProvider", this, "_jdbcDrivers");
+        view.driver.addEventListener(Event.CHANGE, handleDriverChange);
+        sendNotification(ApplicationFacade.LIST_JDBC_DRIVERS);
+
         view.focusManager.setFocus(view.identityVaultName);
     }
 
@@ -55,13 +74,16 @@ public class IdentityVaultCreateMediator extends IocFormMediator {
     }
 
     override public function bindModel():void {
-        var identityVault:EmbeddedIdentitySource = new EmbeddedIdentitySource();
+        var identityVault:DbIdentityVault = new DbIdentityVault();
 
         identityVault.name = view.identityVaultName.text;
         identityVault.description = view.identityVaultDescription.text;
-        identityVault.idau = "idau-default";
-        identityVault.psp = "psp-default";
-        identityVault.pspTarget = "pst-default";
+        identityVault.username = view.username.text;
+        identityVault.password = view.password.text;
+        identityVault.externalDB = view.externalDB.selected;
+        if (view.driver.selectedItem != null)
+            identityVault.driverName = view.driver.selectedItem.className;
+        identityVault.connectionUrl = view.connectionUrl.text;
 
         _newIdentityVault = identityVault;
     }
@@ -81,6 +103,10 @@ public class IdentityVaultCreateMediator extends IocFormMediator {
         }
     }
 
+    private function handleDriverChange(event:Event):void {
+        view.connectionUrl.text = view.driver.selectedItem.defaultUrl;
+    }
+
     private function handleCancel(event:MouseEvent):void {
         closeWindow();
     }
@@ -91,22 +117,28 @@ public class IdentityVaultCreateMediator extends IocFormMediator {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
-    protected function get view():IdentityVaultCreateForm {
-        return viewComponent as IdentityVaultCreateForm;
+    protected function get view():DbIdentityVaultCreateForm {
+        return viewComponent as DbIdentityVaultCreateForm;
     }
 
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
+        _validators.push(view.pwvPasswords);
     }
 
 
     override public function listNotificationInterests():Array {
-        return super.listNotificationInterests();
+        return [JDBCDriversListCommand.SUCCESS,
+            JDBCDriversListCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
-        super.handleNotification(notification);
+        switch (notification.getName()) {
+            case JDBCDriversListCommand.SUCCESS:
+                _jdbcDrivers = projectProxy.jdbcDrivers;
+                break;
+        }
     }
 }
 }

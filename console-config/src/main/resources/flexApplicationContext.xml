@@ -70,7 +70,8 @@
         <property name="salesforceCreateMediator" ref="salesforceCreateMediator"/>
         <property name="googleAppsCreateMediator" ref="googleAppsCreateMediator"/>
         <property name="sugarCRMCreateMediator" ref="sugarCRMCreateMediator"/>
-        <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator"/>
+        <property name="embeddedIdentityVaultCreateMediator" ref="embeddedIdentityVaultCreateMediator"/>
+        <property name="dbIdentityVaultCreateMediator" ref="dbIdentityVaultCreateMediator"/>
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator"/>
         <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator"/>
@@ -150,6 +151,7 @@
         <property name="folderExistsCommand" ref="folderExistsCommand" />
         <property name="foldersExistsCommand" ref="foldersExistsCommand" />
         <property name="jdbcDriversListCommand" ref="jdbcDriversListCommand"/>
+        <property name="embeddedIdentityVaultsListCommand" ref="embeddedIdentityVaultsListCommand" />
         <property name="getMetadataInfoCommand" ref="getMetadataInfoCommand"/>
         <property name="getCertificateInfoCommand" ref="getCertificateInfoCommand"/>
         <property name="exportProviderCertificateCommand" ref="exportProviderCertificateCommand"/>
@@ -544,6 +546,11 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="embeddedIdentityVaultsListCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.EmbeddedIdentityVaultsListCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="getMetadataInfoCommand"
             class="com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -739,8 +746,12 @@
             class="com.atricore.idbus.console.modeling.diagram.view.oauth2.sp.OAuth2ServiceProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="identityVaultCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator">
+    <object id="embeddedIdentityVaultCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.identityvault.EmbeddedIdentityVaultCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="dbIdentityVaultCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="dbIdentitySourceCreateMediator"
@@ -1118,7 +1129,8 @@
         <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
         <property name="deployApplianceMediator" ref="deployApplianceMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
-        <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator"/>
+        <property name="embeddedIdentityVaultCreateMediator" ref="embeddedIdentityVaultCreateMediator"/>
+        <property name="dbIdentityVaultCreateMediator" ref="dbIdentityVaultCreateMediator"/>
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator"/>
         <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator"/>
         <property name="josso1ResourceCreateMediator" ref="josso1ResourceCreateMediator"/>

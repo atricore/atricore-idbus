@@ -44,6 +44,7 @@
         import com.atricore.idbus.console.services.dto.Channel;
         import com.atricore.idbus.console.services.dto.ColdfusionResource;
         import com.atricore.idbus.console.services.dto.DbIdentitySource;
+        import com.atricore.idbus.console.services.dto.DbIdentityVault;
         import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
         import com.atricore.idbus.console.services.dto.DominoResource;
         import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
@@ -202,6 +203,8 @@
                     _linkIcon = EmbeddedIcons.ldapIdentitySourceIcon;
                 } else if (obj is XmlIdentitySource) {
                     _linkIcon = EmbeddedIcons.xmlIdentitySourceIcon;
+                } else if (obj is DbIdentityVault) {
+                    _linkIcon = EmbeddedIcons.dbVaultIcon;
                 } else {
                     _linkIcon = EmbeddedIcons.vaultIcon;
                 }

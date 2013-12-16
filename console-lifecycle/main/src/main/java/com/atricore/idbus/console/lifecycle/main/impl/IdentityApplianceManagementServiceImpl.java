@@ -64,6 +64,9 @@ import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
+import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.spi.IdentityConnector;
+import org.atricore.idbus.kernel.main.provisioning.spi.IdentityVaultManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3._2000._09.xmldsig_.X509DataType;
@@ -104,6 +107,8 @@ public class IdentityApplianceManagementServiceImpl implements
     private ApplianceMarshaller marshaller;
 
     private JDBCDriverManager jdbcDriverManager;
+
+    private IdentityVaultManager embeddedIdVaultsManger;
 
     private IdentityApplianceDAO identityApplianceDAO;
 
@@ -872,6 +877,23 @@ public class IdentityApplianceManagementServiceImpl implements
         ListAvailableJDBCDriversResponse response = new ListAvailableJDBCDriversResponse();
         response.setDrivers(jdbcDss);
         return response;
+    }
+
+    @Transactional
+    public ListAvailableEmbeddedIdentityVaultsResponse listAvailableEmbeddedIdentityVaults(ListAvailableEmbeddedIdentityVaultsRequest req) throws IdentityServerException {
+        try {
+            List<IdentityConnector> embeddedIdentityVaults = new ArrayList<IdentityConnector>();
+
+            Collection<IdentityConnector> c = embeddedIdVaultsManger.getRegisteredConnectors();
+            if (c != null)
+                embeddedIdentityVaults.addAll(c);
+
+            ListAvailableEmbeddedIdentityVaultsResponse response = new ListAvailableEmbeddedIdentityVaultsResponse();
+            response.setEmbeddedIdentityVaults(embeddedIdentityVaults);
+            return response;
+        } catch (ProvisioningException e) {
+            throw new IdentityServerException(e);
+        }
     }
 
 
@@ -1792,6 +1814,14 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setJdbcDriverManager(JDBCDriverManager jdbcDriverManager) {
         this.jdbcDriverManager = jdbcDriverManager;
+    }
+
+    public IdentityVaultManager getEmbeddedIdVaultsManger() {
+        return embeddedIdVaultsManger;
+    }
+
+    public void setEmbeddedIdVaultsManger(IdentityVaultManager embeddedIdVaultsManger) {
+        this.embeddedIdVaultsManger = embeddedIdVaultsManger;
     }
 
     public Keystore getSampleKeystore() {

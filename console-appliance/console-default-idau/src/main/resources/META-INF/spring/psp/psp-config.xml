@@ -37,6 +37,16 @@
 
     <tx:annotation-driven/>
 
+    <bean name="connector-default" class="org.atricore.idbus.kernel.main.provisioning.spi.IdentityConnector">
+        <property name="name" value="connector-default"/>
+        <property name="storeName" value="store-default"/>
+        <property name="description" value="Default Identity Vault"/>
+        <property name="vault" ref="idvault-default"/>
+        <property name="target" ref="pst-default"/>
+        <property name="partition" ref="idpart-default"/>
+        <property name="shared" value="true"/>
+    </bean>
+
     <bean name="psp-default" class="org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProviderImpl">
         <property name="name" value="psp-default"/>
         <property name="description" value="Provisioning Service Provider One"/>
@@ -68,7 +78,7 @@
                     <property name="location" value="local:/PSP-1/SPML2/LOCAL"/>
                 </bean>
 
-                <!-- DO NOT USE YET, we need a we to secure service calls !!
+                <!-- DO NOT USE YET, we need a way to secure service calls !!
                 <bean name="psp-default-soap-endpoint" class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl">
                     <property name="name" value="psp-default-soap-endpoint"/>
                     <property name="type" value="{urn:oasis:names:tc:SPML:2:0}PSPService" />
@@ -97,6 +107,7 @@
     <!-- ============================================================= -->
     <bean name="pst-default" class="org.atricore.idbus.kernel.main.provisioning.impl.ProvisioningTargetImpl" init-method="init" destroy-method="shutDown">
         <property name="name" value="pst-default"/>
+        <property name="description" value="Default Embedded Provisioning Target"/>
         <property name="hashAlgorithm" value="MD5"/>
         <property name="hashEncoding" value="HEX"/>
 
@@ -136,6 +147,7 @@
         <property name="grpAttrValDao" ref="group-attribute-value-dao"/>
         <property name="securityQuestionDAO" ref="sec-question-dao"/>
         <property name="usrSecQuestionDao" ref="user-sec-question-dao"/>
+        <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
     <bean name="schema-manager-default" class="org.atricore.idbus.connectors.jdoidentityvault.JDOSchemaManager">
@@ -144,6 +156,7 @@
         <property name="grpAttrDefDao" ref="group-attribute-dao"/>
         <property name="usrAttrValDao" ref="user-attribute-value-dao"/>
         <property name="grpAttrValDao" ref="group-attribute-value-dao"/>
+        <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
     <bean name="sec-question-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOSecurityQuestionDAOImpl">

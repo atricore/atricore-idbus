@@ -283,6 +283,11 @@ public class EmbeddedIcons {
     public static var vaultMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/db_identity_vault.png")]
+    public static var dbVaultMiniIcon:Class;
+
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/40x40/ldap_identity_source.png")]
     public static var ldapIdentitySourceMiniIcon:Class;
 
@@ -488,6 +493,11 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/60x60/identity_vault.png")]
     public static var vaultIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/db_identity_vault.png")]
+    public static var dbVaultIcon:Class;
+
 
     [Bindable]
     [Embed(source="/assets/icons/notation/60x60/ldap_identity_source.png")]

@@ -43,6 +43,8 @@ import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdent
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.alfresco.AlfrescoResourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.resources.alfresco.AlfrescoResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateForm;
@@ -87,8 +89,8 @@ import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.Fede
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.googleapps.GoogleAppsCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.googleapps.GoogleAppsCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.identityvault.EmbeddedIdentityVaultCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.identityvault.EmbeddedIdentityVaultCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateForm;
@@ -156,7 +158,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _salesforceCreateMediator:SalesforceCreateMediator;
     private var _googleAppsCreateMediator:GoogleAppsCreateMediator;
     private var _sugarCRMCreateMediator:SugarCRMCreateMediator;
-    private var _identityVaultCreateMediator:IdentityVaultCreateMediator;
+    private var _embeddedIdentityVaultCreateMediator:EmbeddedIdentityVaultCreateMediator;
+    private var _dbIdentityVaultCreateMediator:DbIdentityVaultCreateMediator;
     private var _dbIdentitySourceCreateMediator:DbIdentitySourceCreateMediator;
     private var _ldapIdentitySourceCreateMediator:LdapIdentitySourceCreateMediator;
     private var _xmlIdentitySourceCreateMediator:XmlIdentitySourceCreateMediator;
@@ -212,7 +215,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _salesforceCreateForm:SalesforceCreateForm;
     private var _googleAppsCreateForm:GoogleAppsCreateForm;
     private var _sugarCRMCreateForm:SugarCRMCreateForm;
-    private var _identityVaultCreateForm:IdentityVaultCreateForm;
+    private var _embeddedIdentityVaultCreateForm:EmbeddedIdentityVaultCreateForm;
+    private var _dbIdentityVaultCreateForm:DbIdentityVaultCreateForm;
     private var _dbIdentitySourceCreateForm:DbIdentitySourceCreateForm;
     private var _ldapIdentitySourceCreateForm:LdapIdentitySourceCreateForm;
     private var _xmlIdentitySourceCreateForm:XmlIdentitySourceCreateForm;
@@ -369,12 +373,21 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _sugarCRMCreateMediator = value;
     }
 
-    public function get identityVaultCreateMediator():IdentityVaultCreateMediator {
-        return _identityVaultCreateMediator;
+    public function get embeddedIdentityVaultCreateMediator():EmbeddedIdentityVaultCreateMediator {
+        return _embeddedIdentityVaultCreateMediator;
     }
 
-    public function set identityVaultCreateMediator(value:IdentityVaultCreateMediator):void {
-        _identityVaultCreateMediator = value;
+    public function set embeddedIdentityVaultCreateMediator(value:EmbeddedIdentityVaultCreateMediator):void {
+        _embeddedIdentityVaultCreateMediator = value;
+    }
+
+
+    public function get dbIdentityVaultCreateMediator():DbIdentityVaultCreateMediator {
+        return _dbIdentityVaultCreateMediator;
+    }
+
+    public function set dbIdentityVaultCreateMediator(value:DbIdentityVaultCreateMediator):void {
+        _dbIdentityVaultCreateMediator = value;
     }
 
     public function get dbIdentitySourceCreateMediator():DbIdentitySourceCreateMediator {
@@ -954,26 +967,49 @@ public class ModelerPopUpManager extends BasePopUpManager {
         sugarCRMCreateMediator.handleNotification(_lastWindowNotification);
     }
 
-    public function showCreateIdentityVaultWindow(notification:INotification):void {
+    public function showCreateEmbeddedIdentityVaultWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        createIdentityVaultCreateForm();
+        createEmbeddedIdentityVaultCreateForm();
         _popup.title = "Create Identity Vault";
-        _popup.width = 410;
-        _popup.height = 140;
+        _popup.width = 640;
+        _popup.height = 320;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
-        showPopup(_identityVaultCreateForm);
+        showPopup(_embeddedIdentityVaultCreateForm);
     }
 
-    private function createIdentityVaultCreateForm():void {
-        _identityVaultCreateForm = new IdentityVaultCreateForm();
-        _identityVaultCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityVaultCreateFormCreated);
+    private function createEmbeddedIdentityVaultCreateForm():void {
+        _embeddedIdentityVaultCreateForm = new EmbeddedIdentityVaultCreateForm();
+        _embeddedIdentityVaultCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleEmbeddedIdentityVaultCreateFormCreated);
     }
 
-    private function handleIdentityVaultCreateFormCreated(event:FlexEvent):void {
-        identityVaultCreateMediator.setViewComponent(_identityVaultCreateForm);
-        identityVaultCreateMediator.handleNotification(_lastWindowNotification);
+    private function handleEmbeddedIdentityVaultCreateFormCreated(event:FlexEvent):void {
+        embeddedIdentityVaultCreateMediator.setViewComponent(_embeddedIdentityVaultCreateForm);
+        embeddedIdentityVaultCreateMediator.handleNotification(_lastWindowNotification);
     }
+
+    public function showCreateDbIdentityVaultWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createDbIdentityVaultCreateForm();
+        _popup.title = "Create Database Identity Vault";
+        _popup.width = 640;
+        _popup.height = 480;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_dbIdentityVaultCreateForm);
+    }
+
+
+    private function createDbIdentityVaultCreateForm():void {
+        _dbIdentityVaultCreateForm = new DbIdentityVaultCreateForm();
+        _dbIdentityVaultCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleDbIdentityVaultCreateFormCreated);
+    }
+
+    private function handleDbIdentityVaultCreateFormCreated(event:FlexEvent):void {
+        dbIdentityVaultCreateMediator.setViewComponent(_dbIdentityVaultCreateForm);
+        dbIdentityVaultCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
 
     public function showCreateDbIdentitySourceWindow(notification:INotification):void {
         _lastWindowNotification = notification;

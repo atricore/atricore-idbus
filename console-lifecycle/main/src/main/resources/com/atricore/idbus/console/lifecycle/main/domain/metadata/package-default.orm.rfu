@@ -55,7 +55,7 @@
             </field>
         </class>
         <class name="DbIdentitySource" table="ATC_DB_ID_SOURCE"/>
-        <class name="EmbeddedIdentitySource" table="ATC_EMBEDDED_ID_SOURCE"/>
+        <class name="EmbeddedIdentityVault" table="ATC_EMBEDDED_ID_SOURCE"/>
         <class name="ExecutionEnvironment" table="ATC_EXECUTION_ENV"/>
         <class name="Feature" table="ATC_FEATURE"/>
         <class name="FederatedChannel" table="ATC_FEDERATED_CHANNEL"/>

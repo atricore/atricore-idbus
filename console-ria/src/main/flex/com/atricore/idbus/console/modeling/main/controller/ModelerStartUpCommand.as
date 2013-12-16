@@ -29,7 +29,8 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _salesforceCreateMediator:IIocMediator;
     private var _googleAppsCreateMediator:IIocMediator;
     private var _sugarCRMCreateMediator:IIocMediator;
-    private var _identityVaultCreateMediator:IIocMediator;
+    private var _embeddedIdentityVaultCreateMediator:IIocMediator;
+    private var _dbIdentityVaultCreateMediator:IIocMediator;
     private var _dbIdentitySourceCreateMediator:IIocMediator;
     private var _ldapIdentitySourceCreateMediator:IIocMediator;
     private var _xmlIdentitySourceCreateMediator:IIocMediator;
@@ -109,6 +110,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     private var _folderExistsCommand:IIocCommand;
     private var _foldersExistsCommand:IIocCommand;
     private var _jdbcDriversListCommand:IIocCommand;
+    private var _embeddedIdentityVaultsListCommand:IIocCommand;
     private var _getMetadataInfoCommand:IIocCommand;
     private var _getCertificateInfoCommand:IIocCommand;
     private var _exportIdentityApplianceCommand:IIocCommand;
@@ -146,7 +148,8 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(salesforceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(googleAppsCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(sugarCRMCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(identityVaultCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(embeddedIdentityVaultCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(dbIdentityVaultCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(dbIdentitySourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(ldapIdentitySourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(xmlIdentitySourceCreateMediator.getConfigName());
@@ -224,6 +227,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, folderExistsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, foldersExistsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_JDBC_DRIVERS, jdbcDriversListCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_EMBEDDED_IDVAUTLS, embeddedIdentityVaultsListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_METADATA_INFO, getMetadataInfoCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_CERTIFICATE_INFO, getCertificateInfoCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_EXPORT, exportIdentityApplianceCommand.getConfigName());
@@ -359,12 +363,20 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
         _sugarCRMCreateMediator = value;
     }
 
-    public function get identityVaultCreateMediator():IIocMediator {
-        return _identityVaultCreateMediator;
+    public function get embeddedIdentityVaultCreateMediator():IIocMediator {
+        return _embeddedIdentityVaultCreateMediator;
     }
 
-    public function set identityVaultCreateMediator(value:IIocMediator):void {
-        _identityVaultCreateMediator = value;
+    public function set embeddedIdentityVaultCreateMediator(value:IIocMediator):void {
+        _embeddedIdentityVaultCreateMediator = value;
+    }
+
+    public function get dbIdentityVaultCreateMediator():IIocMediator {
+        return _dbIdentityVaultCreateMediator;
+    }
+
+    public function set dbIdentityVaultCreateMediator(value:IIocMediator):void {
+        _dbIdentityVaultCreateMediator = value;
     }
 
     public function get dbIdentitySourceCreateMediator():IIocMediator {
@@ -984,6 +996,15 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     public function set jdbcDriversListCommand(value:IIocCommand):void {
         _jdbcDriversListCommand = value;
+    }
+
+
+    public function get embeddedIdentityVaultsListCommand():IIocCommand {
+        return _embeddedIdentityVaultsListCommand;
+    }
+
+    public function set embeddedIdentityVaultsListCommand(value:IIocCommand):void {
+        _embeddedIdentityVaultsListCommand = value;
     }
 
     public function get getMetadataInfoCommand():IIocCommand {

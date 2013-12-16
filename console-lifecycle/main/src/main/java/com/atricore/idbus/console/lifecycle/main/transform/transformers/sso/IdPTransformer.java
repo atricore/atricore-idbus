@@ -457,8 +457,6 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         //    addPropertyBean(sessionEventManager, "listeners", idpListener);
         //}
 
-
-
         IdProjectResource<Beans> rBeans = new IdProjectResource<Beans>(idGen.generateId(), idpBean.getName(), idpBean.getName(), "spring-beans", idpBeans);
         rBeans.setClassifier("jaxb");
         rBeans.setNameSpace(idpBean.getName());

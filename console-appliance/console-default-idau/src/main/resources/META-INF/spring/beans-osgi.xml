@@ -25,11 +25,26 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     <osgi:service id="osgi-idstore-default"
                   ref="idstore-default"
-                  interface="org.atricore.idbus.kernel.main.store.identity.IdentityPartitionStore"/>
+                  interface="org.atricore.idbus.kernel.main.store.identity.IdentityPartitionStore">
+        <service-properties>
+            <!-- This MUST match the Identity Connector Bean property named 'storeName' -->
+            <entry key="storeName" value="store-default"/>
+        </service-properties>
+    </osgi:service>
 
     <osgi:service id="osgi-pst-default"
                   ref="pst-default"
-                  interface="org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget"/>
+                  interface="org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget">
+
+        <service-properties>
+            <!-- This MUST match the PST Bean property named 'name' -->
+            <entry key="pstName" value="pst-default"/>
+        </service-properties>
+    </osgi:service>
+
+    <osgi:service id="osgi-connector-default"
+                  ref="connector-default"
+                  interface="org.atricore.idbus.kernel.main.provisioning.spi.IdentityConnector"/>
 
 
     <!-- Export Default JDBC DS as OSGi service -->

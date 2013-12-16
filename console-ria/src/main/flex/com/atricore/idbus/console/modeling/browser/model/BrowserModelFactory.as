@@ -32,6 +32,7 @@ import com.atricore.idbus.console.services.dto.BindingProvider;
 import com.atricore.idbus.console.services.dto.ClientCertAuthnService;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.DbIdentityVault;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.DominoAuthenticationService;
@@ -203,6 +204,8 @@ public class BrowserModelFactory {
                 identityVaultNode.icon = EmbeddedIcons.ldapIdentitySourceMiniIcon;
             } else if(identitySource is XmlIdentitySource){
                 identityVaultNode.icon = EmbeddedIcons.xmlIdentitySourceMiniIcon;
+            } else if(identitySource is DbIdentityVault){
+                identityVaultNode.icon = EmbeddedIcons.dbVaultMiniIcon;
             } else {
                 identityVaultNode.icon = EmbeddedIcons.vaultMiniIcon;
             }

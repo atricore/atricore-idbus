@@ -235,6 +235,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.clientAuthenticationServiceMiniCertIcon;
             case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                 return EmbeddedIcons.vaultMiniIcon;
+            case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
+                return EmbeddedIcons.dbVaultMiniIcon;
             case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
                 return EmbeddedIcons.dbIdentitySourceMiniIcon;
             case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:

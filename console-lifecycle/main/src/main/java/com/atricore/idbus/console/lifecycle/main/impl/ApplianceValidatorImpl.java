@@ -561,7 +561,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
-    public void arrive(EmbeddedIdentitySource node) throws Exception {
+    public void arrive(EmbeddedIdentityVault node) throws Exception {
         validateName("Embedded Identity Source name" , node.getName(), node);
         validateDisplayName("Ebmedded Identity Source display name" , node.getDisplayName());
         // TODO !

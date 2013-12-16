@@ -93,13 +93,15 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.DbIdentitySource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.LdapIdentitySource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.XmlIdentitySource,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentitySource
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentityVault,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DbIdentityVault
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.DbIdentitySourceDTO,
                 com.atricore.idbus.console.services.dto.LdapIdentitySourceDTO,
                 com.atricore.idbus.console.services.dto.XmlIdentitySourceDTO,
-                com.atricore.idbus.console.services.dto.EmbeddedIdentitySourceDTO
+                com.atricore.idbus.console.services.dto.EmbeddedIdentityVaultDTO,
+                com.atricore.idbus.console.services.dto.DbIdentityVaultDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -506,14 +508,12 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.DbIdentitySource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.LdapIdentitySource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.XmlIdentitySource,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentitySource
-            </a-hint>
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentityVault            </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.DbIdentitySourceDTO,
                 com.atricore.idbus.console.services.dto.LdapIdentitySourceDTO,
                 com.atricore.idbus.console.services.dto.XmlIdentitySourceDTO,
-                com.atricore.idbus.console.services.dto.EmbeddedIdentitySourceDTO
-            </b-hint>
+                com.atricore.idbus.console.services.dto.EmbeddedIdentityVaultDTO            </b-hint>
         </field-->
     </mapping>
 
@@ -777,9 +777,15 @@
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentitySource</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.EmbeddedIdentitySourceDTO</class-b>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentityVault</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.EmbeddedIdentityVaultDTO</class-b>
     </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DbIdentityVault</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.DbIdentityVaultDTO</class-b>
+    </mapping>
+
 
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.FederatedChannel</class-a>
@@ -898,14 +904,16 @@
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.DbIdentitySource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.LdapIdentitySource,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.XmlIdentitySource,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentitySource,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentityVault,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DbIdentityVault,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossEPPAuthenticationService
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.DbIdentitySourceDTO,
                 com.atricore.idbus.console.services.dto.LdapIdentitySourceDTO,
                 com.atricore.idbus.console.services.dto.XmlIdentitySourceDTO,
-                com.atricore.idbus.console.services.dto.EmbeddedIdentitySourceDTO,
+                com.atricore.idbus.console.services.dto.EmbeddedIdentityVaultDTO,
+                com.atricore.idbus.console.services.dto.DbIdentityVaultDTO,
                 com.atricore.idbus.console.services.dto.JBossEPPAuthenticationServiceDTO
             </b-hint>
         </field>

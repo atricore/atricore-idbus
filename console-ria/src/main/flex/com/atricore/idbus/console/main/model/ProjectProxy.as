@@ -50,6 +50,7 @@ public class ProjectProxy extends IocProxy implements IDisposable
     private var _identityFlowComponents:ArrayCollection;
     private var _subjectNameIdentifierPolicies:ArrayCollection;
     private var _impersonateUserPolicies:ArrayCollection;
+    private var _embeddedIdentityVaults:ArrayCollection;
 
     public function ProjectProxy()
     {
@@ -184,6 +185,15 @@ public class ProjectProxy extends IocProxy implements IDisposable
         _impersonateUserPolicies = value;
     }
 
+
+    public function get embeddedIdentityVaults():ArrayCollection {
+        return _embeddedIdentityVaults;
+    }
+
+    public function set embeddedIdentityVaults(value:ArrayCollection):void {
+        _embeddedIdentityVaults = value;
+    }
+
     public function dispose():void {
         _viewAction = 0;
         _currentIdentityAppliance = null;
@@ -193,6 +203,7 @@ public class ProjectProxy extends IocProxy implements IDisposable
         _commandResultIdentityAppliance = null;
         _identityApplianceValidationErrors = null;
         _jdbcDrivers = null;
+        _embeddedIdentityVaults = null;
     }
 
 }

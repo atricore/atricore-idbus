@@ -189,15 +189,15 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;  
     }
 
-    public void arrive(EmbeddedIdentitySource node) throws Exception {
+    public void arrive(EmbeddedIdentityVault node) throws Exception {
         
     }
 
-    public Object[] leave(EmbeddedIdentitySource node, Object[] results) throws Exception {
+    public Object[] leave(EmbeddedIdentityVault node, Object[] results) throws Exception {
         return new Object[0];  
     }
 
-    public boolean walkNextChild(EmbeddedIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(EmbeddedIdentityVault node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;  
     }
 

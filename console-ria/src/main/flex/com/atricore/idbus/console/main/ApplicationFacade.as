@@ -112,6 +112,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CHECK_INSTALL_FOLDER_EXISTENCE:String = "checkInstallFolderExistence";
     public static const CHECK_FOLDERS_EXISTENCE:String = "checkFoldersExistence";
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
+    public static const LIST_EMBEDDED_IDVAUTLS:String = "listEmbeddedIdentityVaults";
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
     public static const ACTIVATE_LICENSE:String = "activateLicense";
@@ -219,6 +220,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:String = "createLdapIdentitySourceElement";
     public static const CREATE_XML_IDENTITY_SOURCE_ELEMENT:String = "createXmlIdentitySourceElement";
     public static const CREATE_IDENTITY_VAULT_ELEMENT:String = "createIdentityVaultElement";
+    public static const CREATE_DB_IDENTITY_VAULT_ELEMENT:String = "createDbIdentityVaultElement";
     public static const REMOVE_SAML2_SERVICE_PROVIDER_ELEMENT:String = "removeSaml2ServiceProviderElement";
     public static const REMOVE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT:String = "removeExternalServiceProviderElement";
     public static const REMOVE_SALESFORCE_ELEMENT:String = "removeSalesforceElement";

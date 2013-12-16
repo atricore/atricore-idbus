@@ -33,7 +33,7 @@ import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListComman
 import com.atricore.idbus.console.modeling.main.controller.UserDashboardBrandingsListCommand;
 import com.atricore.idbus.console.modeling.main.view.sso.event.SsoEvent;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
-import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+import com.atricore.idbus.console.services.dto.EmbeddedIdentityVault;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentitySource;
@@ -295,11 +295,11 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
     private function createIdentityVault():IdentitySource {
         var data:IdentitySource;
-        if (_wizardDataModel.authData is EmbeddedIdentitySource) {
-            var embeddedIdentitySource:EmbeddedIdentitySource = _wizardDataModel.authData as EmbeddedIdentitySource;
-            embeddedIdentitySource.idau = "default-idau";
-            embeddedIdentitySource.psp = "default-psp";
-            embeddedIdentitySource.pspTarget = "default-pspTarget";
+        if (_wizardDataModel.authData is EmbeddedIdentityVault) {
+            var embeddedIdentitySource:EmbeddedIdentityVault = _wizardDataModel.authData as EmbeddedIdentityVault;
+///            embeddedIdentitySource.idau = "default-idau";
+///            embeddedIdentitySource.psp = "default-psp";
+///            embeddedIdentitySource.pspTarget = "default-pspTarget";
             data = embeddedIdentitySource;
         } else if (_wizardDataModel.authData is DbIdentitySource) {
             data = _wizardDataModel.databaseData as DbIdentitySource;

@@ -1,9 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers.authn;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ImpersonateUserPolicy;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ImpersonateUserPolicyType;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
@@ -46,8 +43,20 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
         }
         idpBean = b.iterator().next();
 
+        IdentityProvider idp = (IdentityProvider) event.getContext().getParentNode();
+
+        String storeName = null;
+        if (idp.getIdentityLookups().size() > 1) {
+            storeName = idpBean.getName() + "-identity-store";
+        } else if (idp.getIdentityLookups().size() == 1) {
+            IdentityLookup idl = idp.getIdentityLookups().iterator().next();
+            storeName = normalizeBeanName(idl.getIdentitySource().getName() + "-identity-store");
+        } else {
+            throw new TransformException("Provider MUST have a store if basic authentication is used");
+        }
+
         if (logger.isTraceEnabled())
-            logger.trace("Generating Basic Authentication Scheme for IdP " + idpBean.getName());
+            logger.trace("Generating Basic Authentication Scheme for IdP " + idpBean.getName() + " with store " + storeName);
         
         Bean basicAuthnBean = newBean(idpBeans, normalizeBeanName(basicAuthn.getName()), UsernamePasswordAuthScheme.class);
 
@@ -67,7 +76,7 @@ public class BasicAuthenticationTransformer extends AbstractTransformer {
         setPropertyValue(basicAuthnBean, "ignoreUserCase", basicAuthn.isIgnoreUsernameCase());
 
 
-        setPropertyRef(basicAuthnBean, "credentialStore", idpBean.getName() + "-identity-store");
+        setPropertyRef(basicAuthnBean, "credentialStore", storeName);
         setPropertyBean(basicAuthnBean, "credentialStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));
 
         ImpersonateUserPolicy impUsrPolicy = basicAuthn.getImpersonateUserPolicy();

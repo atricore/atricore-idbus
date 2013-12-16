@@ -344,9 +344,9 @@ public class ApplianceAssert {
 
             // TODO : Queries
 
-        } else if (original instanceof EmbeddedIdentitySource) {
-            EmbeddedIdentitySource ebOriginal = (EmbeddedIdentitySource) original;
-            EmbeddedIdentitySource ebTest = (EmbeddedIdentitySource) test;
+        } else if (original instanceof EmbeddedIdentityVault) {
+            EmbeddedIdentityVault ebOriginal = (EmbeddedIdentityVault) original;
+            EmbeddedIdentityVault ebTest = (EmbeddedIdentityVault) test;
 
             assertEquals(ebOriginal.getIdau(), ebTest.getIdau());
             assertEquals(ebOriginal.getPsp(), ebTest.getPsp());

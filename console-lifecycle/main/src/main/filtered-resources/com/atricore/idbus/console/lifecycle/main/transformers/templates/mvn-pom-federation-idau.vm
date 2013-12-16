@@ -16,7 +16,7 @@
     <groupId>$module.getGroup()</groupId>
     <artifactId>$module.getName()</artifactId>
     <version>$module.getVersion()</version>
-    <name>Id Appliance : $applianceDef.getDisplayName() :: Id Appliance Unit : $module.getId()</name>
+    <name>$applianceDef.getDisplayName() :: $module.getId() : IDAU</name>
     <description>$applianceDef.getDescription()</description>
     <packaging>bundle</packaging>
 
@@ -470,9 +470,10 @@
                             net.sf.cglib.proxy;version="[2,3)",
                             net.sf.cglib.core;version="[2,3)",
                             net.sf.cglib.reflect;version="[2,3)",
-                            <!-- and servlet api -->
+                            <!-- and some java apis -->
                             javax.servlet,
                             javax.servlet.http,
+                            javax.sql,
                             org.atricore.idbus.capabilities.spnego.jaas,
                             *
                         </Import-Package>

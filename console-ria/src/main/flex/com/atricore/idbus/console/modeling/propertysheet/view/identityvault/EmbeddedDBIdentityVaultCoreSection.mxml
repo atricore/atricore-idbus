@@ -27,34 +27,22 @@
          paddingRight="5" paddingTop="5" paddingBottom="5">
 
     <fx:Declarations>
-        <utils:NameValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
-        <mx:StringValidator id="idauValidator" source="{idau}" required="true" property="text"/>
-        <mx:StringValidator id="pspValidator" source="{psp}" required="true" property="text"/>
-        <mx:StringValidator id="pspTargetValidator" source="{pspTarget}" required="true" property="text"/>
+        <utils:NameValidator id="nameValidator" source="{identityVaultName}" required="true" property="text"/>
     </fx:Declarations>
 
     <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
              verticalGap="8">
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityVault.name')}:"
-                     required="true">
-            <s:TextInput id="userRepositoryName" width="200"/>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityVault.name')}:" required="true">
+            <s:TextInput id="identityVaultName" width="300"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityVault.description')}:">
-            <s:TextInput id="description" width="200"/>
+            <s:TextInput id="identityVaultDescription" width="300"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityVault.idau')}:" required="true">
-            <s:TextInput id="idau" width="200"/>
-        </mx:FormItem>
-        
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityVault.psp')}:" required="true">
-            <s:TextInput id="psp" width="200" />
-        </mx:FormItem>
-
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityVault.pspTarget')}:" required="true">
-            <s:TextInput id="pspTarget" width="200" />
+        <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'embeddedIdentityVault.connectorName')}:" required="false">
+            <s:DropDownList id="embeddedVault" width="200" labelField="description" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'embeddedIdentityVault.connectorName.prompt')}"/>
         </mx:FormItem>
 
     </mx:Form>

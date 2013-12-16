@@ -97,13 +97,13 @@
                     <mx:TextInput id="dbPasswordRetype" width="200" displayAsPassword="true"/>
                 </mx:FormItem>
 
-                <mx:FormItem>
+                <!--mx:FormItem>
                     <s:CheckBox id="skipConnTest" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.skipConnTest')}"/>
-                </mx:FormItem>
+                </mx:FormItem-->
 
-                <mx:FormItem>
+                <!--mx:FormItem>
                     <s:Button id="testConnBtn" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.testConnection')}"/>
-                </mx:FormItem>
+                </mx:FormItem-->
             </s:VGroup>
         </s:NavigatorContent>
 

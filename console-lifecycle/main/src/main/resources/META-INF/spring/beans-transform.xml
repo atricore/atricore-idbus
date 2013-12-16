@@ -51,6 +51,16 @@
         <property name="brandManager" ref="brandManager"/>
     </bean>
 
+    <bean name="dbIdentityVaultTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.idsource.DbIdentityVaultTransformer">
+    </bean>
+
+    <bean name="embeddedIdentityVaultTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.idsource.EmbeddedIdentityVaultTransformer">
+        <property name="identityVaultManager" ref="identityVaultManager"/>
+    </bean>
+
+
     <bean name="oauth2IdpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2IdPTransformer">
     </bean>
@@ -399,8 +409,11 @@
     <bean name="dominoSpTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.domino.DominoSPTransformer"/>
 
+    <bean name="identitySourceTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.idsource.IdentitySourceTransformer"/>
+
     <bean name="identityLookupTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.idsource.IdentityLookupTransformer"/>
 
     <bean name="samlr2IdPTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdPMetadataTransformer">
@@ -488,7 +501,12 @@
                                         <ref bean="idauBaseComponentsTransformer"/>
                                         <ref bean="idauUiTransformer"/>
 
+                                        <!-- PSP Transformers -->
+                                        <ref bean="dbIdentityVaultTransformer"/>
+                                        <ref bean="embeddedIdentityVaultTransformer"/>
+
                                         <!-- IDP Transformers -->
+
                                         <ref bean="idpLocalTransformer"/>
                                         <ref bean="idpUiLocalTransformer"/>
                                         <ref bean="oauth2IdpLocalTransformer"/>
@@ -556,13 +574,12 @@
 
                                         <ref bean="samlr2SPTransformer"/>
 
-                                        <!-- PSP Transformers -->
-
                                         <!-- Other Transformers -->
                                         <ref bean="josso1ExecEnvTransformer"/>
                                         <ref bean="mstrExecEnvTransformer"/>
                                         <ref bean="selfSvcsExecEnvTransformer"/>
                                         <ref bean="identityLookupTransformer"/>
+                                        <ref bean="identitySourceTransformer"/>
 
                                     </list>
                                 </property>

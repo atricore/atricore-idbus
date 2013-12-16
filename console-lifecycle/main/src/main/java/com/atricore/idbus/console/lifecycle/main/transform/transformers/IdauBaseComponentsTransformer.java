@@ -142,7 +142,6 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // -------------------------------------------------------
         // Define Circle Of Trust Manager bean
         // -------------------------------------------------------
-
         Bean cotMgr = newBean(idauBeans, idauName + "-cot-manager", CircleOfTrustManagerImpl.class.getName());
 
         // Properties

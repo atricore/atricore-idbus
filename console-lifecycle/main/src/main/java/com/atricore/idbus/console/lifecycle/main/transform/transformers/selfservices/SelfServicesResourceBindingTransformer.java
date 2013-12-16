@@ -27,20 +27,30 @@ public class SelfServicesResourceBindingTransformer extends AbstractTransformer 
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof SelfServicesResource &&
-                event.getContext().getParentNode() instanceof Activation;
+        if (logger.isTraceEnabled())
+            logger.trace("SelfServicesResourceBinding: " + event.getData() + ", " + event.getContext().getParentNode()  );
+
+        if (logger.isTraceEnabled()) {
+            if (event.getData() instanceof Activation) {
+                logger.trace("SelfServicesResourceBinding: activation resource = " + ((Activation)event.getData()).getResource());
+            }
+        }
+
+        return event.getData() instanceof Activation  &&
+                ((Activation)event.getData()).getResource() instanceof SelfServicesResource;
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
         // Define partner apps in Binding provider
-        SelfServicesResource selfServicesResource = (SelfServicesResource) event.getData();
+        /*
+        SelfServicesResource selfServicesResource = (SelfServicesResource) ((Activation)event.getData()).getResource();
         InternalSaml2ServiceProvider sp = selfServicesResource.getServiceConnection().getSp();
 
         Beans bpBeans = (Beans) event.getContext().get("bpBeans");
         Collection<Bean> bpMediators = getBeansOfType(bpBeans, JossoMediator.class.getName());
         if (bpMediators.size() != 1) {
-            throw new TransformException("Too many/few Josso Mediators found for " + selfServicesResource.getName());
+//            throw new TransformException("Too many/few Josso Mediators found for " + selfServicesResource.getName());
         }
 
         Bean bindingMediator = bpMediators.iterator().next();
@@ -53,8 +63,9 @@ public class SelfServicesResourceBindingTransformer extends AbstractTransformer 
         if (bps.size() == 1) {
             bpBean = bps.iterator().next();
         } else {
-            throw new TransformException("One and only one Binding Provider is expected, found " + bps.size());
+//            throw new TransformException("One and only one Binding Provider is expected, found " + bps.size());
         }
+        */
 
     }
 
