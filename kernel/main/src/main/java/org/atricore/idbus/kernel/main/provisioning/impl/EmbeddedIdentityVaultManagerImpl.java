@@ -54,20 +54,18 @@ public class EmbeddedIdentityVaultManagerImpl implements IdentityVaultManager, B
     }
 
     @Override
-    public Collection<IdentityConnector> getRegisteredConnectors() throws ProvisioningException {
+    public synchronized Collection<IdentityConnector> getRegisteredConnectors() throws ProvisioningException {
         try {
             ServiceReference[] refs = bundleContext.getAllServiceReferences(IdentityConnector.class.getName(), null);
+            connectors.clear();
             if (refs != null) {
 
                 for (int i = 0; i < refs.length; i++) {
                     ServiceReference ref = refs[i];
-                    if (!connectors.containsKey(ref)) {
-                        IdentityConnector c = (IdentityConnector) bundleContext.getService(ref);
-                        if (logger.isDebugEnabled())
-                            logger.debug("Discovered new Identity Connector : " + c);
-
-                        connectors.put(ref, c);
-                    }
+                    IdentityConnector c = (IdentityConnector) bundleContext.getService(ref);
+                    if (logger.isDebugEnabled())
+                        logger.debug("Discovered new Identity Connector : " + c);
+                    connectors.put(ref, c);
                 }
             }
             return connectors.values();
@@ -87,27 +85,4 @@ public class EmbeddedIdentityVaultManagerImpl implements IdentityVaultManager, B
         }
         return null;
     }
-
-    private class IdentityConnectorSvc {
-
-        private ServiceReference ref;
-
-        private IdentityConnector connector;
-
-        private IdentityConnectorSvc(ServiceReference ref, IdentityConnector connector) {
-            this.ref = ref;
-            this.connector = connector;
-        }
-
-        private ServiceReference getRef() {
-            return ref;
-        }
-
-        private IdentityConnector getConnector() {
-            return connector;
-        }
-    }
-
-
-
 }
