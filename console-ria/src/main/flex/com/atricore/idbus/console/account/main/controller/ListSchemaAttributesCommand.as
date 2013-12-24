@@ -25,6 +25,7 @@ import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
+import com.atricore.idbus.console.services.spi.request.schema.ListSchemaAttributesRequest;
 import com.atricore.idbus.console.services.spi.response.schema.ListSchemaAttributesResponse;
 
 import mx.rpc.Fault;
@@ -41,7 +42,10 @@ public class ListSchemaAttributesCommand extends IocSimpleCommand implements IRe
     public static const FAILURE:String = "ListSchemaAttributesCommand.FAILURE";
 
     private var _registry:ServiceRegistry;
+
     private var _schemasManagementProxy:SchemasManagementProxy;
+
+    private var _accountManagementProxy:AccountManagementProxy;
 
     public function ListSchemaAttributesCommand() {
     }
@@ -52,6 +56,15 @@ public class ListSchemaAttributesCommand extends IocSimpleCommand implements IRe
 
     public function set registry(value:ServiceRegistry):void {
         _registry = value;
+    }
+
+
+    public function get accountManagementProxy():AccountManagementProxy {
+        return _accountManagementProxy;
+    }
+
+    public function set accountManagementProxy(value:AccountManagementProxy):void {
+        _accountManagementProxy = value;
     }
 
     public function get schemasManagementProxy():SchemasManagementProxy {
@@ -65,7 +78,13 @@ public class ListSchemaAttributesCommand extends IocSimpleCommand implements IRe
     override public function execute(notification:INotification):void {
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.SCHEMAS_MANAGEMENT_SERVICE);
         var entity:String = notification.getBody() as String;
-        var call:Object = service.listSchemaAttributes(entity);
+
+        var req:ListSchemaAttributesRequest = new ListSchemaAttributesRequest();
+        req.entity = entity;
+        if (_accountManagementProxy.currentIdentityVault != null)
+            req.pspTargetId = _accountManagementProxy.currentIdentityVault.pstName;
+
+        var call:Object = service.listSchemaAttributes(req);
         call.addResponder(this);
     }
 

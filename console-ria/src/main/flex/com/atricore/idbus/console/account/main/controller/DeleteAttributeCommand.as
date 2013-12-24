@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.account.main.controller
 {
+import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 import com.atricore.idbus.console.services.dto.schema.Attribute;
@@ -48,6 +49,8 @@ public class DeleteAttributeCommand extends IocSimpleCommand implements IRespond
 
     private var _registry:ServiceRegistry;
 
+    private var _accountManagementProxy:AccountManagementProxy;
+
     public function DeleteAttributeCommand() {
     }
 
@@ -59,6 +62,15 @@ public class DeleteAttributeCommand extends IocSimpleCommand implements IRespond
         _registry = value;
     }
 
+
+    public function get accountManagementProxy():AccountManagementProxy {
+        return _accountManagementProxy;
+    }
+
+    public function set accountManagementProxy(value:AccountManagementProxy):void {
+        _accountManagementProxy = value;
+    }
+
     override public function execute(notification:INotification):void {
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.SCHEMAS_MANAGEMENT_SERVICE);
         var atr:Attribute = notification.getBody() as Attribute;
@@ -66,6 +78,9 @@ public class DeleteAttributeCommand extends IocSimpleCommand implements IRespond
         req.attributeId = atr.id;
         req.schemaName = atr.name;
         req.entity = atr.entity;
+        if (_accountManagementProxy.currentIdentityVault != null)
+            req.pspTargetId = _accountManagementProxy.currentIdentityVault.pstName;
+
         var call:Object = service.removeSchemaAttribute(req);
         call.addResponder(this);
     }

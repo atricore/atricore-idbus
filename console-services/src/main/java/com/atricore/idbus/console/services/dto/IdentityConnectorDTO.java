@@ -9,6 +9,12 @@ public class IdentityConnectorDTO {
 
     private String description;
 
+    private String pstName;
+
+    public IdentityConnectorDTO() {
+
+    }
+
     public String getName() {
         return name;
     }
@@ -23,5 +29,13 @@ public class IdentityConnectorDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getPstName() {
+        return pstName;
+    }
+
+    public void setPstName(String pstName) {
+        this.pstName = pstName;
     }
 }

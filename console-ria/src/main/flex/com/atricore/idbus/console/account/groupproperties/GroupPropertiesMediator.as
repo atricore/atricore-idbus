@@ -125,8 +125,10 @@ public class GroupPropertiesMediator extends IocMediator {
     }
 
     private function handleGeneralPropertyTabCreationComplete(event:Event):void {
-        _groupGeneralSection.groupName.text = formatFieldString(_currentGroup.name);
-        _groupGeneralSection.groupDescription.text = formatFieldString(_currentGroup.description);
+        if (_currentGroup != null) {
+            _groupGeneralSection.groupName.text = formatFieldString(_currentGroup.name);
+            _groupGeneralSection.groupDescription.text = formatFieldString(_currentGroup.description);
+        }
     }
 
     private function handleGeneralPropertyTabRollOut(e:Event):void {
@@ -151,6 +153,11 @@ public class GroupPropertiesMediator extends IocMediator {
 
     private function handleExtraAttributesTabCreationComplete(event:Event):void {
         var attributesValues:Object = new Object();
+        if (_currentGroup == null) {
+            return;
+        }
+
+
         for each (var aVal:AttributeValue in _currentGroup.extraAttributes) {
             var aName:String = aVal.name;
             var arr:Array = attributesValues[aName];

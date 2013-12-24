@@ -212,6 +212,7 @@
         <property name="editUserCommand" ref="editUserCommand"/>
         <property name="listGroupsCommand" ref="listGroupsCommand"/>
         <property name="listUsersCommand" ref="listUsersCommand"/>
+        <property name="listIdentityVaultsCommand" ref="listIdentityVaultsCommand" />
         <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
         <property name="searchUsersCommand" ref="searchUsersCommand"/>
         <property name="listSchemaAttributesCommand" ref="listSchemaAttributesCommand"/>
@@ -479,6 +480,13 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
+
+    <object id="listIdentityVaultsCommand"
+            class="com.atricore.idbus.console.account.main.controller.ListIdentityVaultsCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+
     <object id="searchGroupsCommand"
             class="com.atricore.idbus.console.account.main.controller.SearchGroupsCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -493,18 +501,22 @@
             class="com.atricore.idbus.console.account.main.controller.ListSchemaAttributesCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
     <object id="addAttributeCommand"
             class="com.atricore.idbus.console.account.main.controller.AddAttributeCommand">
         <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
     <object id="editAttributeCommand"
             class="com.atricore.idbus.console.account.main.controller.EditAttributeCommand">
         <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
     <object id="deleteAttributeCommand"
             class="com.atricore.idbus.console.account.main.controller.DeleteAttributeCommand">
         <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
 
     <object id="activateExecEnvironmentCommand"
@@ -1035,6 +1047,7 @@
         <property name="usersMediator" ref="usersMediator"/>
         <property name="schemasMediator" ref="schemasMediator"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
 
         <property name="viewFactory" ref="accountManagementViewFactory"/>
         <property name="viewPriority" value="30"/>

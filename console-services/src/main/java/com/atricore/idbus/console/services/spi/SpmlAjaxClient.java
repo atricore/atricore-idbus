@@ -34,9 +34,6 @@ import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client;
 
 public interface SpmlAjaxClient {
 
-    String getPspTargetId();
+    String getDefaultPspTargetId();
 
-    void setPspTargetId(String pspTargetId);
-
-    void setSpmlService(SpmlR2Client svc);
 }

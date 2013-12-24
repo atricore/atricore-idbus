@@ -21,15 +21,23 @@
 
 package com.atricore.idbus.console.account.main {
 import com.atricore.idbus.console.account.groups.GroupsView;
+import com.atricore.idbus.console.account.main.controller.ListIdentityVaultsCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
 import com.atricore.idbus.console.account.schema.SchemasView;
 import com.atricore.idbus.console.account.users.UsersView;
 import com.atricore.idbus.console.base.app.BaseAppFacade;
 import com.atricore.idbus.console.base.extensions.appsection.AppSectionMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.services.dto.IdentityConnector;
+import com.atricore.idbus.console.services.dto.IdentityVault;
 
 import flash.events.Event;
+
+import mx.binding.utils.BindingUtils;
+
+import mx.collections.ArrayCollection;
 
 import mx.core.LayoutDirection;
 
@@ -57,7 +65,12 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
 
     private var _accountManagementProxy:AccountManagementProxy;
 
+    private var _schemasManagementProxy:SchemasManagementProxy;
+
     private var _created:Boolean;
+
+    [Bindable]
+    public var _identityVaults:ArrayCollection;
 
     public function AccountManagementMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
@@ -101,6 +114,15 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
 
     public function set accountManagementProxy(value:AccountManagementProxy):void {
         _accountManagementProxy = value;
+    }
+
+
+    public function get schemasManagementProxy():SchemasManagementProxy {
+        return _schemasManagementProxy;
+    }
+
+    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
+        _schemasManagementProxy = value;
     }
 
     override public function setViewComponent(p_viewComponent:Object):void {
@@ -165,10 +187,16 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
             view.vsAccountMng.selectedIndex = 0;
             view.accountManagementTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
 
+            BindingUtils.bindProperty(view.idVault, "dataProvider", this, "_identityVaults");
+            view.idVault.addEventListener(Event.CHANGE, handleVaultChange);
+
             // dispatch index change. (select Users tab)
             view.accountManagementTabBar.dispatchEvent(
                     new IndexChangeEvent( IndexChangeEvent.CHANGE, false, false, 0, 0 ) )
+
+            sendNotification(ApplicationFacade.LIST_IDVAUTLS);
         }
+
     }
 
     public function dispose():void {
@@ -186,7 +214,18 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
         }
     }
 
+    public function handleVaultChange(event:Event):void {
+        // Reset connector information on the services
+        var idVault:IdentityConnector = view.idVault.selectedItem;
+        _accountManagementProxy.currentIdentityVault = idVault;
+        sendNotification(ApplicationFacade.LIST_USERS);
+        sendNotification(ApplicationFacade.LIST_GROUPS);
+        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,
+                schemasManagementProxy.currentEntity != null ? _schemasManagementProxy.currentEntity : "User");
+    }
+
     private function stackChanged(event:IndexChangeEvent):void {
+
         view.vsAccountMng.selectedIndex = view.accountManagementTabBar.selectedIndex;
         if (view.vsAccountMng.selectedIndex==0) {
             sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"User");
@@ -194,13 +233,16 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
             sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"Group");
         } else if (view.vsAccountMng.selectedIndex==2)
             sendNotification(ApplicationFacade.DISPLAY_SCHEMA_ATTRIBUTES);
+
+
     }
 
     override public function listNotificationInterests():Array {
         return [BaseAppFacade.APP_SECTION_CHANGE_START,
             BaseAppFacade.APP_SECTION_CHANGE_END,
             ApplicationFacade.LOGOUT,
-            ApplicationFacade.LIST_SCHEMA_ATTRIBUTES
+            ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,
+            ListIdentityVaultsCommand.SUCCESS,
         ];
     }
 
@@ -228,11 +270,27 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
                 else if (view.vsAccountMng.selectedIndex==1)
                     sendNotification(ApplicationFacade.LIST_GROUPS);
                 break;
+            case ListIdentityVaultsCommand.SUCCESS:
+                _identityVaults = accountManagementProxy.identityVaults;
+                for (var i2:int = 0; i2 < view.idVault.dataProvider.length; i2++) {
+                    if (view.idVault.dataProvider[i2].name == "connector-default") {
+                        view.idVault.selectedIndex = i2;
+                        _accountManagementProxy.currentIdentityVault = view.idVault.dataProvider[i2];
+                        break;
+                    }
+                }
+
+                sendNotification(ApplicationFacade.LIST_USERS);
+                sendNotification(ApplicationFacade.LIST_GROUPS);
+                sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,
+                        schemasManagementProxy.currentEntity != null ? schemasManagementProxy.currentEntity  : "User");
+                break;
             default:
                 super.handleNotification(notification);
                 break;
         }
     }
+
 
     protected function get view():AccountManagementView
     {

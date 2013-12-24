@@ -113,6 +113,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CHECK_FOLDERS_EXISTENCE:String = "checkFoldersExistence";
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
     public static const LIST_EMBEDDED_IDVAUTLS:String = "listEmbeddedIdentityVaults";
+    public static const LIST_IDVAUTLS:String = "listIdentityVaults";
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
     public static const ACTIVATE_LICENSE:String = "activateLicense";

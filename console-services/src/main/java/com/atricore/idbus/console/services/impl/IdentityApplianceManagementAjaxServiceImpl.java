@@ -651,6 +651,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             IdentityConnectorDTO dto = new IdentityConnectorDTO ();
             dto.setName(c.getName());
             dto.setDescription(c.getDescription());
+            dto.setPstName(c.getTarget().getName());
 
             embeddedIdentityVaults.add(dto);
         }

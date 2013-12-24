@@ -47,15 +47,7 @@
         <osgi:listener ref="spml-service-listener" bind-method="register" unbind-method="unregister"/>
     </osgi:list>
 
-    <bean name="spml-service-listener" class="com.atricore.idbus.console.services.impl.SpmlR2ServiceListener">
-        <property name="services">
-            <list>
-                <ref bean="userProvisioningAjaxServiceBean"/>
-                <ref bean="profileManagementAjaxServiceBean"/>
-                <ref bean="schemaManagementAjaxServiceBean"/>
-            </list>
-        </property>
-    </bean>
+    <bean name="spml-service-listener" class="com.atricore.idbus.console.services.impl.SpmlR2ServiceRegistry"/>
 
     <bean class="com.atricore.idbus.console.services.util.EnumPropertyProxy" factory-method="registerPropertyProxy" />
 
@@ -86,13 +78,14 @@
 
     <bean id="userProvisioningAjaxServiceBean"
           class="com.atricore.idbus.console.services.impl.UserProvisioningAjaxServiceImpl">
-        <!-- TODO : Expose through OSGi config support -->
-        <property name="pspTargetId" value="pst-default" />
+        <property name="defaultPspTargetId" value="pst-default" />
+        <property name="spmlServiceRegistry" ref="spml-service-listener"/>
     </bean>
 
     <bean id="schemaManagementAjaxServiceBean"
           class="com.atricore.idbus.console.services.impl.SchemaManagementAjaxServiceImpl">
-        <property name="pspTargetId" value="pst-default" />
+        <property name="defaultPspTargetId" value="pst-default" />
+        <property name="spmlServiceRegistry" ref="spml-service-listener"/>
     </bean>
 
     <bean id="brandManagerAjaxServiceBean" class="com.atricore.idbus.console.services.impl.BrandManagerAjaxServiceImpl">
@@ -115,11 +108,13 @@
     <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">
         <property name="usrProvService" ref="userProvisioningAjaxServiceBean" />
         <property name="realm" value="atricore" />
+        <property name="defaultPspTargetId" value="pst-default" />
     </bean>
 
     <bean id="profileManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ProfileManagementAjaxServiceImpl">
         <property name="usrProvService" ref="userProvisioningAjaxServiceBean" />
-        <property name="pspTargetId" value="pst-default" />
+        <property name="defaultPspTargetId" value="pst-default" />
+        <property name="spmlServiceRegistry" ref="spml-service-listener"/>
     </bean>
 
     <!--bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">

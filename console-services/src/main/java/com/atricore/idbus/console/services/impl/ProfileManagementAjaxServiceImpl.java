@@ -42,19 +42,12 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 /**
  * Author: Dusan Fisic
  */
-public class ProfileManagementAjaxServiceImpl implements
-        ProfileManagementAjaxService,
-        SpmlAjaxClient {
+public class ProfileManagementAjaxServiceImpl extends AbstractSpmlAjaxClient implements
+        ProfileManagementAjaxService {
 
     private static Log logger = LogFactory.getLog(ProfileManagementAjaxServiceImpl.class);
 
-    private UUIDGenerator uuidGenerator = new UUIDGenerator();
-
     private UserProvisioningAjaxService usrProvService;
-
-    private SpmlR2Client spmlService;
-
-    private String pspTargetId;
 
     public UpdateUserProfileResponse updateUserProfile(UpdateUserProfileRequest updateProfileRequest) throws IdentityServerException {
         try {
@@ -69,6 +62,7 @@ public class ProfileManagementAjaxServiceImpl implements
                 throw new UserNotFoundException("User not found with username: " + updateProfileRequest.getUsername() );
 
             UpdateUserRequest updateReq = new UpdateUserRequest();
+            updateReq.setPspTargetId(updateProfileRequest.getPspTargetId());
             updateReq.setId(userId);
             updateReq.setUserName(updateProfileRequest.getUsername());
             updateReq.setFirstName(updateProfileRequest.getFirstName());
@@ -93,7 +87,11 @@ public class ProfileManagementAjaxServiceImpl implements
             if (logger.isTraceEnabled())
                 logger.trace("Processing update request for user [" + updatePasswordRequest.getUsername() + "]");
 
+            String pspTargetId = resolvePspTargetId(updatePasswordRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             FindUserByUsernameRequest userRequest = new FindUserByUsernameRequest();
+            userRequest.setPspTargetId(updatePasswordRequest.getPspTargetId());
             userRequest.setUsername(updatePasswordRequest.getUsername());
             FindUserByUsernameResponse findResp = usrProvService.findUserByUsername(userRequest);
             UserDTO retUser = findResp.getUser();
@@ -134,7 +132,12 @@ public class ProfileManagementAjaxServiceImpl implements
 
     public FetchGroupMembershipResponse fetchGroupMembership(FetchGroupMembershipRequest fetchGroupMembership) throws IdentityServerException {
         try {
+
+            String pspTargetId = resolvePspTargetId(fetchGroupMembership);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             FindUserByUsernameRequest userRequest = new FindUserByUsernameRequest();
+            userRequest.setPspTargetId(fetchGroupMembership.getPspTargetId());
             userRequest.setUsername(fetchGroupMembership.getUsername());
             FindUserByUsernameResponse findResp = usrProvService.findUserByUsername(userRequest);
             UserDTO retUser = findResp.getUser();
@@ -159,23 +162,6 @@ public class ProfileManagementAjaxServiceImpl implements
 
     public void setUsrProvService(UserProvisioningAjaxService usrProvService) {
         this.usrProvService = usrProvService;
-    }
-
-
-    public SpmlR2Client getSpmlService() {
-        return spmlService;
-    }
-
-    public void setSpmlService(SpmlR2Client spmlService) {
-        this.spmlService = spmlService;
-    }
-
-    public String getPspTargetId() {
-        return pspTargetId;
-    }
-
-    public void setPspTargetId(String pspTargetId) {
-        this.pspTargetId = pspTargetId;
     }
 
 }

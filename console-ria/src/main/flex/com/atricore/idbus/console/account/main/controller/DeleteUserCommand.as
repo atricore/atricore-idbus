@@ -68,6 +68,8 @@ public class DeleteUserCommand extends IocSimpleCommand implements IResponder {
         var user:User = notification.getBody() as User;
         var req:RemoveUserRequest = new RemoveUserRequest();
         req.id = user.id;
+        if (_accountManagementProxy.currentIdentityVault != null)
+            req.pspTargetId = _accountManagementProxy.currentIdentityVault.pstName;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
         var call:Object = service.removeUser(req);

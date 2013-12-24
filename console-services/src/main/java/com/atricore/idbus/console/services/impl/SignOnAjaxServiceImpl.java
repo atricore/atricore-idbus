@@ -33,7 +33,9 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
     private UserProvisioningAjaxService usrProvService;
+    private String defaultPspTargetId;
 
+    // TODO : Base this on the default PST target setup
     private String hashEncoding  = "HEX";
     private String hashAlgorithm = "MD5";
     private String hashCharset = null;
@@ -63,6 +65,7 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
 
             FindUserByUsernameRequest userRequest = new FindUserByUsernameRequest();
             userRequest.setUsername(username);
+            userRequest.setPspTargetId(defaultPspTargetId); // Always signon using the default PST
             FindUserByUsernameResponse resp = usrProvService.findUserByUsername(userRequest);
             UserDTO retUser = resp.getUser();
             SignOnResponse response = new SignOnResponse();
@@ -218,5 +221,13 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
 
     public void setRealm(String realm) {
         this.realm = realm;
+    }
+
+    public String getDefaultPspTargetId() {
+        return defaultPspTargetId;
+    }
+
+    public void setDefaultPspTargetId(String defaultPspTargetId) {
+        this.defaultPspTargetId = defaultPspTargetId;
     }
 }

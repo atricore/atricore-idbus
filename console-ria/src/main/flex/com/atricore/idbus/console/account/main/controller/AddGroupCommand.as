@@ -69,6 +69,8 @@ public class AddGroupCommand extends IocSimpleCommand implements IResponder {
         req.name = group.name;
         req.description = group.description;
         req.extraAttributes = group.extraAttributes;
+        if (_accountManagementProxy.currentIdentityVault != null)
+            req.pspTargetId = _accountManagementProxy.currentIdentityVault.pstName;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
         var call:Object = service.addGroup(req);

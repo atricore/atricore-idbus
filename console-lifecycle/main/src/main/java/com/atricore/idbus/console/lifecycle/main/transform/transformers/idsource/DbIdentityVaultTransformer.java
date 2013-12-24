@@ -25,6 +25,9 @@ import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProv
 import org.atricore.idbus.kernel.main.provisioning.impl.ProvisioningTargetImpl;
 
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.*;
+import org.atricore.idbus.kernel.main.provisioning.spi.IdentityConnector;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
+import org.atricore.idbus.kernel.main.store.identity.IdentityPartitionStore;
 
 import java.util.*;
 
@@ -64,9 +67,10 @@ public class DbIdentityVaultTransformer extends AbstractTransformer {
             logger.debug("Generating PSP " + idVault.getName() + " configuration model");
 
         IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
+        String pspName = normalizeBeanName(idVault.getName());
 
         // PSP Bean
-        String pspName = normalizeBeanName(idVault.getName());
+
         Bean pspBean = newBean(pspBeans, pspName, ProvisioningServiceProviderImpl.class);
         setPropertyValue(pspBean, "name", pspBean.getName());
         setPropertyValue(pspBean, "description", idVault.getDescription() != null ? idVault.getDescription() : pspName + " DB Identity Vault");
@@ -78,10 +82,10 @@ public class DbIdentityVaultTransformer extends AbstractTransformer {
         setPropertyBean(mediatorBean, "bindingFactory", bindingFactoryBean);
 
         // SPML 2.0 Client
-        Bean pspClient = newBean(pspBeans, pspName + "-client", "org.atricore.idbus.capabilities.spmlr2.main.client.SpmlR2MediationClientImpl");
-        setPropertyRef(pspClient, "psp", pspBean.getName());
-        setPropertyValue(pspClient, "serviceType", "{urn:oasis:names:tc:SPML:2:0}PSPService");
-        setPropertyValue(pspClient, "binding", "urn:oasis:names:tc:SPML:2:0:bindings:LOCAL");
+        Bean pspClientBean = newBean(pspBeans, pspName + "-client", "org.atricore.idbus.capabilities.spmlr2.main.client.SpmlR2MediationClientImpl");
+        setPropertyRef(pspClientBean, "psp", pspBean.getName());
+        setPropertyValue(pspClientBean, "serviceType", "{urn:oasis:names:tc:SPML:2:0}PSPService");
+        setPropertyValue(pspClientBean, "binding", "urn:oasis:names:tc:SPML:2:0:bindings:LOCAL");
 
         // PSP Channel Bean
         Bean pspChannelBean = newBean(pspBeans, pspName + "-default-channel", PspChannelImpl.class);
@@ -118,18 +122,8 @@ public class DbIdentityVaultTransformer extends AbstractTransformer {
 
         // DS Service exported, with service property jdbcDS set
         Service dsExporter = new Service();
-
-        Value dsNameKeyValue = new Value();
-        dsNameKeyValue.getContent().add("jdbcDS");
-        Key dsNameKey = new Key();
-        dsNameKey.getBeenAndRevesAndIdreves().add(dsNameKeyValue);
-
-        Entry dsNameProp = new Entry();
-
-        dsNameProp.setKey(dsNameKey);
-        dsNameProp.setValue(dsName);
         MapType dsProps = new MapType();
-        dsProps.getEntries().add(dsNameProp);
+        dsProps.getEntries().add(buildMapEntry("jdbcDS", dsName));
 
         dsExporter.setId(dsBean.getName() + "-exporter");
         dsExporter.setRef(dsBean.getName());
@@ -260,6 +254,18 @@ public class DbIdentityVaultTransformer extends AbstractTransformer {
         setPropertyRef(storeBean, "partition", idPartBean.getName());
         setPropertyRef(idPartBean, "identityStore", storeBean.getName());
 
+        // Connector Bean and Service
+        Bean idConnectorBean = newBean(pspBeans, pspName + "-connector", IdentityConnector.class);
+        setPropertyValue(idConnectorBean, "name", idConnectorBean.getName());
+        setPropertyValue(idConnectorBean, "storeName", storeBean.getName());
+        setPropertyValue(idConnectorBean, "description",
+                idVault.getDescription() != null ? idVault.getDescription() + " [" + appliance.getIdApplianceDefinition().getName() + "]":
+                        appliance.getIdApplianceDefinition().getName() + "-" + pspBean.getName());
+        setPropertyRef(idConnectorBean, "vault", vaultBean.getName());
+        setPropertyRef(idConnectorBean, "target", pstBean.getName());
+        setPropertyRef(idConnectorBean, "partition", idPartBean.getName());
+        setPropertyValue(idConnectorBean, "shared", "false");
+
         //  Some Wiring
 
         setPropertyRef(pspChannelBean, "provider", pspBean.getName());
@@ -269,6 +275,52 @@ public class DbIdentityVaultTransformer extends AbstractTransformer {
         addPropertyBeansAsRefs(pspBean, "provisioningTargets", pstBean);
 
         event.getContext().put("pspChannelBean", pspChannelBean);
+
+        // OSGi Services
+
+        // SPML Client
+        Service pspClientSvcBean = new Service();
+        pspClientSvcBean.setId(pspClientBean.getName() + "-exporter");
+        pspClientSvcBean.setRef(pspClientBean.getName());
+        pspClientSvcBean.setInterface("org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client");
+
+        pspBeans.getImportsAndAliasAndBeen().add(pspClientSvcBean);
+
+        // Connector
+
+        Service idConnectorSvcBean = new Service();
+        idConnectorSvcBean.setId(idConnectorBean.getName() + "-exporter");
+        idConnectorSvcBean.setRef(idConnectorBean.getName());
+        idConnectorSvcBean.setInterface(IdentityConnector.class.getName());
+
+        pspBeans.getImportsAndAliasAndBeen().add(idConnectorSvcBean);
+
+        // Provisioning Target
+
+        MapType pstSvcProps = new MapType();
+        pstSvcProps.getEntries().add(buildMapEntry("pstName", pstBean.getName()));
+
+        Service pstSvcBean = new Service();
+        pstSvcBean.setId(pstBean.getName() + "-exporter");
+        pstSvcBean.setRef(pstBean.getName());
+        pstSvcBean.setInterface(ProvisioningTarget.class.getName());
+        pstSvcBean.setServiceProperties(pstSvcProps);
+
+        pspBeans.getImportsAndAliasAndBeen().add(pstSvcBean);
+
+        // Identity Partition
+
+        MapType idStoreSvcProps = new MapType();
+        idStoreSvcProps.getEntries().add(buildMapEntry("storeName", storeBean.getName()));
+
+        Service idStoreSvcBean = new Service();
+        idStoreSvcBean.setId(storeBean.getName() + "-exporter");
+        idStoreSvcBean.setRef(storeBean.getName());
+        idStoreSvcBean.setInterface(IdentityPartitionStore.class.getName());
+        idStoreSvcBean.setServiceProperties(idStoreSvcProps);
+
+        pspBeans.getImportsAndAliasAndBeen().add(idStoreSvcBean);
+
 
     }
 

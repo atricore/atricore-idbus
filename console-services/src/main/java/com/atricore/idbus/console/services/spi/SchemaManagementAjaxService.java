@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.services.spi;
 
 import com.atricore.idbus.console.services.spi.request.schema.AddSchemaAttributeRequest;
+import com.atricore.idbus.console.services.spi.request.schema.ListSchemaAttributesRequest;
 import com.atricore.idbus.console.services.spi.request.schema.RemoveSchemaAttributeRequest;
 import com.atricore.idbus.console.services.spi.request.schema.UpdateSchemaAttributeRequest;
 import com.atricore.idbus.console.services.spi.response.schema.AddSchemaAttributeResponse;
@@ -40,5 +41,5 @@ public interface SchemaManagementAjaxService {
     AddSchemaAttributeResponse addSchemaAttribute(AddSchemaAttributeRequest req) throws Exception;
     RemoveSchemaAttributeResponse removeSchemaAttribute(RemoveSchemaAttributeRequest req) throws Exception;
     UpdateSchemaAttributeResponse updateSchemaAttribute(UpdateSchemaAttributeRequest req) throws Exception;
-    ListSchemaAttributesResponse listSchemaAttributes(String entity) throws Exception;
+    ListSchemaAttributesResponse listSchemaAttributes(ListSchemaAttributesRequest req) throws Exception;
 }

@@ -28,6 +28,7 @@ import com.atricore.idbus.console.services.spi.SchemaManagementAjaxService;
 import com.atricore.idbus.console.services.spi.SpmlAjaxClient;
 import com.atricore.idbus.console.services.spi.exceptions.SchemaManagementAjaxException;
 import com.atricore.idbus.console.services.spi.request.schema.AddSchemaAttributeRequest;
+import com.atricore.idbus.console.services.spi.request.schema.ListSchemaAttributesRequest;
 import com.atricore.idbus.console.services.spi.request.schema.RemoveSchemaAttributeRequest;
 import com.atricore.idbus.console.services.spi.request.schema.UpdateSchemaAttributeRequest;
 import com.atricore.idbus.console.services.spi.response.schema.AddSchemaAttributeResponse;
@@ -59,16 +60,11 @@ import java.util.ArrayList;
  * Date: 1/13/11 - 2:50 PM
  */
 
-public class SchemaManagementAjaxServiceImpl implements
+public class SchemaManagementAjaxServiceImpl extends AbstractSpmlAjaxClient implements
         SchemaManagementAjaxService,
-        SpmlAjaxClient,
         InitializingBean {
 
     private static Log logger = LogFactory.getLog(SchemaManagementAjaxServiceImpl.class);
-
-    private UUIDGenerator uuidGenerator = new UUIDGenerator();
-    private String pspTargetId;
-    private SpmlR2Client spmlService;
 
     public void afterPropertiesSet() throws Exception {
 
@@ -80,6 +76,9 @@ public class SchemaManagementAjaxServiceImpl implements
                 logger.trace("Processing addSchemaAttribute [" + req.getAttribute().getName()+
                         "|" +
                         req.getAttribute().getEntity() +"]");
+
+            String pspTargetId = resolvePspTargetId(req);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
 
             AddSchemaAttributeResponse response = new AddSchemaAttributeResponse();
 
@@ -141,6 +140,9 @@ public class SchemaManagementAjaxServiceImpl implements
                         "|" +
                         req.getAttribute().getEntity() +"]");
 
+            String pspTargetId = resolvePspTargetId(req);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             AttributeDTO attribute = req.getAttribute();
             ModifyRequestType modifyGroupRequest = new ModifyRequestType();
             modifyGroupRequest.setRequestID(uuidGenerator.generateId());
@@ -199,10 +201,16 @@ public class SchemaManagementAjaxServiceImpl implements
         }
     }
 
-    public ListSchemaAttributesResponse listSchemaAttributes(String entity) throws Exception {
+    public ListSchemaAttributesResponse listSchemaAttributes(ListSchemaAttributesRequest req) throws Exception {
         try{
+
+            String entity = req.getEntity();
             if (logger.isTraceEnabled())
                 logger.trace("Processing listSchemaAttributes for entity [" + entity +"]");
+
+            String pspTargetId = resolvePspTargetId(req);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             SearchRequestType searchRequest = new SearchRequestType();
             searchRequest.setRequestID(uuidGenerator.generateId());
             SearchQueryType spmlQry  = new SearchQueryType();
@@ -273,6 +281,9 @@ public class SchemaManagementAjaxServiceImpl implements
                         "|" +
                         req.getAttributeId() +"]");
 
+            String pspTargetId = resolvePspTargetId(req);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             DeleteRequestType attrDelRequest = new DeleteRequestType();
             attrDelRequest.setRequestID(uuidGenerator.generateId());
             if (req.getEntity().equals("User"))
@@ -299,22 +310,6 @@ public class SchemaManagementAjaxServiceImpl implements
                     "|" +
                     req.getAttributeId() +"]",e);
         }
-    }
-
-    public String getPspTargetId() {
-        return pspTargetId;
-    }
-
-    public void setPspTargetId(String pspTargetId) {
-        this.pspTargetId = pspTargetId;
-    }
-
-    public SpmlR2Client getSpmlService() {
-        return spmlService;
-    }
-
-    public void setSpmlService(SpmlR2Client spmlService) {
-        this.spmlService = spmlService;
     }
 
     public AttributeDTO toAttributeDTO(UserAttributeType attr) {

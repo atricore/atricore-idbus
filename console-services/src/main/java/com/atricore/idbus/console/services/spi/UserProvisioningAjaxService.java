@@ -31,8 +31,6 @@ import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundExceptio
  */
 public interface UserProvisioningAjaxService {
 
-    String getPspTargetId();
-
     //<---------------Groups -------------------->
 
     RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest)
@@ -47,7 +45,7 @@ public interface UserProvisioningAjaxService {
     FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest)
             throws GroupNotFoundException;
 
-    ListGroupResponse getGroups()
+    ListGroupResponse getGroups(FindGroupsRequest groupRequest)
             throws UserProvisioningAjaxException;
 
     SearchGroupResponse searchGroups(SearchGroupRequest groupRequest)
@@ -70,7 +68,7 @@ public interface UserProvisioningAjaxService {
     FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest)
             throws Exception;
 
-    ListUserResponse getUsers()
+    ListUserResponse getUsers(FindUsersRequest userRequest)
             throws Exception;
 
     SearchUserResponse searchUsers(SearchUserRequest userRequest)

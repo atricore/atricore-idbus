@@ -198,6 +198,7 @@
         <symbol>com.atricore.idbus.console.account.main.controller.EditUserCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.ListGroupsCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.ListUsersCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.ListIdentityVaultsCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.SearchGroupsCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.SearchUsersCommand</symbol>
 
