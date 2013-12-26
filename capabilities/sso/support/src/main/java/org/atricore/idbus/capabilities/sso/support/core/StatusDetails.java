@@ -43,8 +43,10 @@ public enum StatusDetails {
             ("urn:org:atricore:idbus:samlr2:status:InvalidVersion", "Invalid SAML Version"),
 
     INVALID_RESPONSE_ID
-            ("urn:org:atricore:idbus:samlr2:status:InvalidID", "The response ID is not expected or invalid"),
+            ("urn:org:atricore:idbus:samlr2:status:InvalidResponseID", "The response ID is not expected or invalid"),
 
+    DUPLICATED_ID
+            ("urn:org:atricore:idbus:samlr2:status:DuplicatedID", "The ID has already been used"),
 
     UNSUPPORTED_VERSION
             ("urn:org:atricore:idbus:samlr2:status:UnsupportedVersion", "Usupported SAML Version"),

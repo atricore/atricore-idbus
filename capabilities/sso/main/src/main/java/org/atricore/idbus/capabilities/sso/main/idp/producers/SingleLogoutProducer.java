@@ -190,16 +190,22 @@ public class SingleLogoutProducer extends SSOProducer {
         MediationState mediationState = in.getMessage().getState();
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
 
         String ssoSessionId = secCtx != null ? secCtx.getSessionIndex() : "<NONE>";
         Principal ssoUser = secCtx != null ? secCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next() : null;
 
         validateRequest(sloRequest, in.getMessage().getRawContent(), in.getMessage().getState());
 
+        // Keep track of used IDs
+        if (mediator.isVerifyUniqueIDs())
+            mediator.getIdRegistry().register(sloRequest.getID());
+
+
         // This will destroy the security context
         boolean partialLogout = performSlo(exchange, secCtx, sloRequest);
 
-        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+
         AuditingServer aServer = mediator.getAuditingServer();
 
         recordInfoAuditTrail("SLO", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);
@@ -328,6 +334,18 @@ public class SingleLogoutProducer extends SSOProducer {
                     StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
         }
 
+        if (mediator.isVerifyUniqueIDs() && mediator.getIdRegistry().isUsed(spSloResponse.getID())) {
+            if (logger.isDebugEnabled())
+                logger.debug("Duplicated SAML ID " + spSloResponse.getID());
+            throw new SSOResponseException(spSloResponse,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.DUPLICATED_ID
+            );
+
+        }
+
+
     }
 
     // TODO : Reuse basic SAML request validations ....
@@ -418,6 +436,17 @@ public class SingleLogoutProducer extends SSOProducer {
 
         }
 
+        if (mediator.isVerifyUniqueIDs() && mediator.getIdRegistry().isUsed(request.getID())) {
+            if (logger.isDebugEnabled())
+                logger.debug("Duplicated SAML ID " + request.getID());
+            throw new SSORequestException(request,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.DUPLICATED_ID
+            );
+
+        }
+
     }
 
 
@@ -436,6 +465,7 @@ public class SingleLogoutProducer extends SSOProducer {
                     logger.debug("Terminating SSO Session "  + secCtx.getSessionIndex());
 
                 SSOSessionManager sessionMgr = ((SPChannel)channel).getSessionManager();
+                AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
 
                 // Notify other SPs using either back or front channels
 
@@ -501,7 +531,11 @@ public class SingleLogoutProducer extends SSOProducer {
                             // Send request and process response
                             StatusResponseType spSloResponse =
                                     (StatusResponseType) channel.getIdentityMediator().sendMessage(spSloRequest, ed, channel);
+
                             validateResponse(spSloRequest, spSloResponse, null);
+                            // Keep track of used IDs
+                            if (mediator.isVerifyUniqueIDs())
+                                mediator.getIdRegistry().register(spSloResponse.getID());
 
                             // Successfully performed SLO for this SP
                             sloPerformed = true;

@@ -49,6 +49,8 @@ import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.main.federation.SubjectNameID;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
@@ -67,6 +69,8 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -152,6 +156,18 @@ public class SingleLogoutProducer extends SSOProducer {
             // TODO : Send status
         } else {
 
+            Properties auditProps = new Properties();
+            auditProps.put("idpAlias", secCtx.getIdpAlias());
+            auditProps.put("idpSession", secCtx.getIdpSsoSession());
+
+            Set<SubjectNameID> principals = secCtx.getSubject().getPrincipals(SubjectNameID.class);
+            SubjectNameID principal = null;
+            if (principals.size() == 1) {
+                principal = principals.iterator().next();
+            }
+
+            recordInfoAuditTrail("SP-SLOR", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+
             SSOSessionManager sessionMgr = ((IdPChannel)channel).getSessionManager();
             try {
                 sessionMgr.invalidate(secCtx.getSessionIndex());
@@ -160,6 +176,8 @@ public class SingleLogoutProducer extends SSOProducer {
             }
             secCtx.clear();
             in.getMessage().getState().removeLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+
+
         }
 
         EndpointDescriptor destination = resolveIdPSloEndpoint(idp.getAlias(),

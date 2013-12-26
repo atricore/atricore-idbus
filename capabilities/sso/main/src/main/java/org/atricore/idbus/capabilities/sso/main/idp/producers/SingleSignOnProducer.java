@@ -393,6 +393,13 @@ public class SingleSignOnProducer extends SSOProducer {
         validateRequest(authnRequest, in.getMessage().getRawContent(), in.getMessage().getState());
 
         // -----------------------------------------------------------------------------
+        // Keep track of request IDs
+        // -----------------------------------------------------------------------------
+        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+        if (mediator.isVerifyUniqueIDs())
+            mediator.getIdRegistry().register(authnRequest.getID());
+
+        // -----------------------------------------------------------------------------
         // Validate SSO Session
         // -----------------------------------------------------------------------------
         boolean isSsoSessionValid = false;
@@ -1332,8 +1339,6 @@ public class SingleSignOnProducer extends SSOProducer {
         SamlR2Encrypter encrypter = mediator.getEncrypter();
 
         // Metadata from the IDP
-
-
         SPSSODescriptorType saml2SpMd = null;
         IDPSSODescriptorType saml2IdpMd = null;
         try {
@@ -1417,6 +1422,18 @@ public class SingleSignOnProducer extends SSOProducer {
 
             }
 
+        }
+
+        if (mediator.isVerifyUniqueIDs() &&
+            mediator.getIdRegistry().isUsed(request.getID())) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Duplicated SAML ID " + request.getID());
+            throw new SSORequestException(request,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.DUPLICATED_ID
+            );
         }
 
         // TODO : Validate destination, etc!!!

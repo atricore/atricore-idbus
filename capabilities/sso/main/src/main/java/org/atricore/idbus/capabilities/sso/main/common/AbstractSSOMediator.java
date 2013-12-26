@@ -35,6 +35,7 @@ import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.util.IdRegistry;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -49,6 +50,8 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
     private boolean enableEncryption;
 
     private boolean signRequests;
+
+    private boolean verifyUniqueIDs;
 
     // In milliseconds
     private long requestTimeToLive = 1000L * 60L * 60L * 24L; // Default to 24 hours  (TODO: once this is configured from console, set it back to 1h)
@@ -65,6 +68,8 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
     private String auditCategory = "";
 
     private IdentityFlowContainer identityFlowContainer;
+
+    private IdRegistry idRegistry;
 
     protected AbstractSSOMediator() {
 
@@ -297,4 +302,19 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
         this.identityFlowContainer = identityFlowContainer;
     }
 
+    public IdRegistry getIdRegistry() {
+        return idRegistry;
+    }
+
+    public void setIdRegistry(IdRegistry idRegistry) {
+        this.idRegistry = idRegistry;
+    }
+
+    public boolean isVerifyUniqueIDs() {
+        return verifyUniqueIDs;
+    }
+
+    public void setVerifyUniqueIDs(boolean verifyUniqueIDs) {
+        this.verifyUniqueIDs = verifyUniqueIDs;
+    }
 }

@@ -39,6 +39,8 @@ import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.main.federation.SubjectNameID;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -59,6 +61,8 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -149,6 +153,19 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
                     idpSsoEndpoint.getResponseLocation());
 
             LogoutRequestType sloRequest = buildSLORequest(exchange, idp, idpChannel, ed, secCtx);
+
+            Properties auditProps = new Properties();
+            auditProps.put("idpAlias", secCtx.getIdpAlias());
+            auditProps.put("idpSession", secCtx.getIdpSsoSession());
+
+            Set<SubjectNameID> principals = secCtx.getSubject().getPrincipals(SubjectNameID.class);
+            SubjectNameID principal = null;
+            if (principals.size() == 1) {
+                principal = principals.iterator().next();
+            }
+
+            recordInfoAuditTrail("SP-SLO", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+
             if (binding.isFrontChannel()) {
 
                 // Send the IDP SLO Request to the browser for delivery.
@@ -159,6 +176,7 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
                         sloRequest, "LogoutRequest", null, ed, in.getMessage().getState()));
 
                 exchange.setOut(out);
+
             } else {
 
 

@@ -32,10 +32,11 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessage;
  *          To change this template use File | Settings | File Templates.
  */
 public interface CamelMediationBinding extends MediationBinding {
+
     /**
      * Create a Mediation message based on a Camel message
      *
-     * This is called when a message is recieved
+     * This is called when a message is received
      *
      */
     MediationMessage createMessage(CamelMediationMessage message);

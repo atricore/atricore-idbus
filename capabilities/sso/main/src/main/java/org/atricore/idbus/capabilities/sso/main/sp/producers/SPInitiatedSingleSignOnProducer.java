@@ -39,6 +39,8 @@ import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.main.federation.SubjectNameID;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -57,6 +59,8 @@ import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
 import java.util.Collection;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  *
@@ -238,6 +242,10 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
                 logger.debug("Using IdP channel " + idpChannel.getName());
 
             AuthnRequestType authnRequest = buildAuthnRequest(exchange, idp, ed, idpChannel, ssoAuthnReq);
+
+            Properties auditProps = new Properties();
+            auditProps.put("idpAlias", idp.getAlias());
+            recordInfoAuditTrail("SP-SSO", ActionOutcome.SUCCESS, null, exchange, auditProps);
 
             // ------------------------------------------------------
             // Send Authn Request to IDP

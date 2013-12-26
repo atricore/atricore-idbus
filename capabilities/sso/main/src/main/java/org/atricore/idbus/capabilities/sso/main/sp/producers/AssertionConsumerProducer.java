@@ -50,6 +50,7 @@ import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signatur
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.main.federation.*;
@@ -149,6 +150,8 @@ public class AssertionConsumerProducer extends SSOProducer {
         // ------------------------------------------------------
 
         validateResponse(authnRequest, response, in.getMessage().getRawContent(), state);
+        if (mediator.isVerifyUniqueIDs())
+            mediator.getIdRegistry().register(authnRequest.getID());
 
         String issuerAlias = response.getIssuer().getValue();
         FederatedProvider issuer = getCotManager().lookupFederatedProviderByAlias(issuerAlias);
@@ -170,10 +173,15 @@ public class AssertionConsumerProducer extends SSOProducer {
             if (logger.isDebugEnabled())
                 logger.debug("IDP Reports Passive login failed");
 
-            // if This is  SP initiated SSO or  we did not requested passive authentication
+            // This is  SP initiated SSO or  we did not requested passive authentication
             if (authnRequest == null || authnRequest.getForceAuthn()) {
                 throw new SSOException("IDP Sent " + StatusCode.NO_PASSIVE + " but passive was not requested.");
             }
+
+            Properties auditProps = new Properties();
+            auditProps.put("idpAlias", issuerAlias);
+            auditProps.put("passive", "true");
+            recordInfoAuditTrail("SP-SSOR", ActionOutcome.FAILURE, null, exchange, auditProps);
 
             // Send a 'no-passive' status response
             SPAuthnResponseType ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, null, destination);
@@ -321,6 +329,17 @@ public class AssertionConsumerProducer extends SSOProducer {
                 acctLink,
                 federatedSubject,
                 idpSubject);
+
+        Properties auditProps = new Properties();
+        auditProps.put("idpAlias", spSecurityCtx.getIdpAlias());
+        auditProps.put("idpSession", spSecurityCtx.getIdpSsoSession());
+
+        Set<SubjectNameID> principals = federatedSubject.getPrincipals(SubjectNameID.class);
+        SubjectNameID principal = null;
+        if (principals.size() == 1) {
+            principal = principals.iterator().next();
+        }
+        recordInfoAuditTrail("SP-SSOR", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
         // ---------------------------------------------------
         // Send SPAuthnResponse
@@ -1173,6 +1192,19 @@ public class AssertionConsumerProducer extends SSOProducer {
 				}
 	        }	        
 		}
+
+
+        if (mediator.isVerifyUniqueIDs() &&
+                mediator.getIdRegistry().isUsed(response.getID())) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Duplicated SAML ID " + response.getID());
+            throw new SSOResponseException(response,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    StatusDetails.DUPLICATED_ID
+            );
+        }
         return response;
     }
 
