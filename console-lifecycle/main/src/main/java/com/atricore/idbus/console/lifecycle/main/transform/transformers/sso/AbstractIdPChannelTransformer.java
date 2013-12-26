@@ -217,7 +217,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
         // identityMediator
         Bean identityMediatorBean = getBean(spBeans, spBean.getName() + "-samlr2-mediator");
         if (identityMediatorBean == null)
-            throw new TransformException("No identity mediator defined for " + spBean.getName() + "-samlr2-identity-mediator");
+            throw new TransformException("No identity mediator defined for " + spBean.getName() + "-samlr2-mediator");
 
         setPropertyRef(idpChannelBean, "identityMediator", identityMediatorBean.getName());
 

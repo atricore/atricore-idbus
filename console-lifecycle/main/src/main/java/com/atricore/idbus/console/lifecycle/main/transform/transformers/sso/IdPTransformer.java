@@ -284,6 +284,12 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         }
 
         // ------------------------------------------------------------
+        // ID Registry service
+        // ------------------------------------------------------------
+        setPropertyValue(idpMediator, "verifyUniqueIDs", "true"); // TODO : provider.isVerifyUniqueIDs());
+        setPropertyRef(idpMediator, "idRegistry", normalizeBeanName(appliance.getIdApplianceDefinition().getName() + "-samlr2-idregistry"));
+
+        // ------------------------------------------------------------
         // Wire Identity Flow Container and Components to IdP Mediator
         // ------------------------------------------------------------
         setPropertyRef(idpMediator, "identityFlowContainer", "identity-flow-container");

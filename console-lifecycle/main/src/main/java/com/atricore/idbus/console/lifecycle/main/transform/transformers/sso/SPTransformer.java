@@ -259,6 +259,11 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         // warningUrl
         setPropertyValue(spMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
+        // ------------------------------------------------------------
+        // ID Registry service
+        // ------------------------------------------------------------
+        setPropertyValue(spMediator, "verifyUniqueIDs", "true"); // TODO : provider.isVerifyUniqueIDs());
+        setPropertyRef(spMediator, "idRegistry", normalizeBeanName(appliance.getIdApplianceDefinition().getName() + "-samlr2-idregistry"));
 
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) internalSaml2ServiceProvider.getConfig();
 

@@ -44,6 +44,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLo
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.EntitySelectorProviderImpl;
 import org.atricore.idbus.kernel.main.mediation.select.SelectorChannelImpl;
+import org.atricore.idbus.kernel.main.util.EHCacheIdRegistry;
 import org.atricore.idbus.kernel.planning.IdentityPlanRegistryImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.OsgiCamelIdentityMediationUnitContainerImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
@@ -249,6 +250,15 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
 
         // Wire channels to Unit Container
         addPropertyBeansAsRefs(idMediationUnit, "channels", entitySelectorChannel);
+
+        // -------------------------------------------------------
+        // Define SAML R2 ID registry bean
+        // -------------------------------------------------------
+        Bean samlr2IdRegistryBean = newBean(idauBeans,
+                normalizeBeanName(appliance.getIdApplianceDefinition().getName() + "-samlr2-idregistry"),
+                EHCacheIdRegistry.class.getName());
+        setPropertyValue(samlr2IdRegistryBean, "cacheName", samlr2IdRegistryBean.getName());
+        setPropertyRef(samlr2IdRegistryBean, "cacheManager", appliance.getName() + "-cache-manager");
 
         // -------------------------------------------------------
         // Define MBean Server Factory bean
