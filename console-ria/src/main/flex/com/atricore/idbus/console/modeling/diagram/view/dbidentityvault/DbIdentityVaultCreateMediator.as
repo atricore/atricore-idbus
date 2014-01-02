@@ -78,6 +78,10 @@ public class DbIdentityVaultCreateMediator extends IocFormMediator {
 
         identityVault.name = view.identityVaultName.text;
         identityVault.description = view.identityVaultDescription.text;
+        identityVault.hashAlgorithm = view.identityVaultHashAlgorithm.selectedItem.data;
+        identityVault.hashEncoding = view.identityVaultHashEncoding.selectedItem.data;
+        identityVault.saltLength = parseInt(view.identityVaultSaltLength.selectedItem.data);
+
         identityVault.username = view.username.text;
         identityVault.password = view.password.text;
         identityVault.externalDB = view.externalDB.selected;

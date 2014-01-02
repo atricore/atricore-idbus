@@ -1809,6 +1809,13 @@ public class PropertySheetMediator extends IocMediator {
                     }
                 }
 
+                for (var k:int = 0; k < _authenticationSection.simpleAuthnSaltLength.dataProvider.length; k++) {
+                    if (_authenticationSection.simpleAuthnSaltLength.dataProvider[k].data == basicAuthentication.saltLength.toString()) {
+                        _authenticationSection.simpleAuthnSaltLength.selectedIndex = k;
+                        break;
+                    }
+                }
+
                 _authenticationSection.simpleAuthnIgnoreUsernameCase.selected = basicAuthentication.ignoreUsernameCase;
                 _authenticationSection.simpleAuthnIgnorePasswordCase.selected = basicAuthentication.ignorePasswordCase;
 
@@ -1817,6 +1824,7 @@ public class PropertySheetMediator extends IocMediator {
                 _authenticationSection.simpleAuthnEnabled.addEventListener(Event.CHANGE, handleSimpleAuthnEnabledChange);
                 _authenticationSection.simpleAuthnHashAlgorithm.addEventListener(Event.CHANGE, handleSectionChange);
                 _authenticationSection.simpleAuthnHashEncoding.addEventListener(Event.CHANGE, handleSectionChange);
+                _authenticationSection.simpleAuthnSaltLength.addEventListener(Event.CHANGE, handleSectionChange);
                 _authenticationSection.simpleAuthnIgnoreUsernameCase.addEventListener(Event.CHANGE, handleSectionChange);
                 _authenticationSection.simpleAuthnIgnorePasswordCase.addEventListener(Event.CHANGE, handleSectionChange);
                 _authenticationSection.simpleAuthnImpersonateUserPoliciesCombo.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1876,6 +1884,7 @@ public class PropertySheetMediator extends IocMediator {
                 basicAuthentication.enabled = _authenticationSection.simpleAuthnEnabled.selected;
                 basicAuthentication.hashAlgorithm = _authenticationSection.simpleAuthnHashAlgorithm.selectedItem.data;
                 basicAuthentication.hashEncoding = _authenticationSection.simpleAuthnHashEncoding.selectedItem.data;
+                basicAuthentication.saltLength = parseInt(_authenticationSection.simpleAuthnSaltLength.selectedItem.data);
                 basicAuthentication.ignoreUsernameCase = _authenticationSection.simpleAuthnIgnoreUsernameCase.selected;
                 basicAuthentication.ignorePasswordCase = _authenticationSection.simpleAuthnIgnorePasswordCase.selected;
                 basicAuthentication.impersonateUserPolicy = _authenticationSection.simpleAuthnImpersonateUserPoliciesCombo.selectedItem;
@@ -4317,6 +4326,27 @@ public class PropertySheetMediator extends IocMediator {
             _dbIdentityVaultCoreSection.externalDB.selected = dbIdentityVault.externalDB;
             _dbIdentityVaultCoreSection.connectionUrl.text = dbIdentityVault.connectionUrl;
 
+            for (var i:int = 0; i < _dbIdentityVaultCoreSection.identityVaultHashAlgorithm.dataProvider.length; i++) {
+                if (_dbIdentityVaultCoreSection.identityVaultHashAlgorithm.dataProvider[i].data == dbIdentityVault.hashAlgorithm) {
+                    _dbIdentityVaultCoreSection.identityVaultHashAlgorithm.selectedIndex = i;
+                    break;
+                }
+            }
+
+            for (var j:int = 0; j < _dbIdentityVaultCoreSection.identityVaultHashEncoding.dataProvider.length; j++) {
+                if (_dbIdentityVaultCoreSection.identityVaultHashEncoding.dataProvider[j].data == dbIdentityVault.hashEncoding) {
+                    _dbIdentityVaultCoreSection.identityVaultHashEncoding.selectedIndex = j;
+                    break;
+                }
+            }
+
+            for (var k:int = 0; k < _dbIdentityVaultCoreSection.identityVaultSaltLength.dataProvider.length; k++) {
+                if (_dbIdentityVaultCoreSection.identityVaultSaltLength.dataProvider[k].data == dbIdentityVault.saltLength.toString()) {
+                    _dbIdentityVaultCoreSection.identityVaultSaltLength.selectedIndex = k;
+                    break;
+                }
+            }
+
             _dbIdentityVaultCoreSection.identityVaultName.addEventListener(Event.CHANGE, handleSectionChange);
             _dbIdentityVaultCoreSection.identityVaultDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _dbIdentityVaultCoreSection.username.addEventListener(Event.CHANGE, handleSectionChange);
@@ -4325,6 +4355,9 @@ public class PropertySheetMediator extends IocMediator {
             _dbIdentityVaultCoreSection.externalDB.addEventListener(Event.CHANGE, handleSectionChange);
             _dbIdentityVaultCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
             _dbIdentityVaultCoreSection.driver.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.identityVaultSaltLength.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.identityVaultHashAlgorithm.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.identityVaultHashEncoding.addEventListener(Event.CHANGE, handleSectionChange);
 
             BindingUtils.bindProperty(_dbIdentityVaultCoreSection.driver, "dataProvider", this, "_jdbcDrivers");
             _dbIdentityVaultCoreSection.driver.addEventListener(Event.CHANGE, handleDbVaultDriverChange);
@@ -4359,6 +4392,9 @@ public class PropertySheetMediator extends IocMediator {
         dbIdentityVault.connectionUrl = _dbIdentityVaultCoreSection.connectionUrl.text;
         dbIdentityVault.username = _dbIdentityVaultCoreSection.username.text;
         dbIdentityVault.password = _dbIdentityVaultCoreSection.password.text;
+        dbIdentityVault.hashAlgorithm = _dbIdentityVaultCoreSection.identityVaultHashAlgorithm.selectedItem.data;
+        dbIdentityVault.hashEncoding = _dbIdentityVaultCoreSection.identityVaultHashEncoding.selectedItem.data;
+        dbIdentityVault.saltLength = parseInt(_dbIdentityVaultCoreSection.identityVaultSaltLength.selectedItem.data);
 
         /*if (_uploadedDriver != null && _uploadedDriverName != null) {
          var driver:Resource = dbIdentityVault.driver;

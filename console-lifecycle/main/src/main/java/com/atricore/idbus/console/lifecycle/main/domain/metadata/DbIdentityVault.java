@@ -17,6 +17,12 @@ public class DbIdentityVault extends IdentityVault {
 
     private String connectionUrl;
 
+    private String hashAlgorithm;
+
+    private String hashEncoding;
+
+    private int saltLength;
+
     public boolean isExternalDB() {
         return externalDB;
     }
@@ -55,5 +61,29 @@ public class DbIdentityVault extends IdentityVault {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getHashAlgorithm() {
+        return hashAlgorithm;
+    }
+
+    public void setHashAlgorithm(String hashAlgorithm) {
+        this.hashAlgorithm = hashAlgorithm;
+    }
+
+    public String getHashEncoding() {
+        return hashEncoding;
+    }
+
+    public void setHashEncoding(String hashEncoding) {
+        this.hashEncoding = hashEncoding;
+    }
+
+    public int getSaltLength() {
+        return saltLength;
+    }
+
+    public void setSaltLength(int saltLength) {
+        this.saltLength = saltLength;
     }
 }

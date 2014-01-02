@@ -149,6 +149,9 @@
     <osgi:reference id="identityFlowContainer" cardinality="1..1" timeout="60"
                     interface="org.atricore.idbus.capabilities.sso.component.container.IdentityFlowContainer"/>
 
+    <osgi:reference id="configManager" cardinality="1..1" timeout="60"
+                    interface="com.atricore.idbus.console.settings.main.spi.ServiceConfigurationManager"/>
+
     <bean name="accountLinkagePoliciesRegistry"
           class="com.atricore.idbus.console.lifecycle.main.impl.AccountLinkagePoliciesRegistry">
 

@@ -9,6 +9,7 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Service;
+import com.atricore.idbus.console.settings.main.spi.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +41,8 @@ public class DbIdentityVaultTransformer extends AbstractTransformer {
 
     private static final Log logger = LogFactory.getLog(DbIdentityVaultTransformer.class);
 
+    private ServiceConfigurationManager configManager;
+
     @Override
     public boolean accept(TransformEvent event) {
         if (event.getData() instanceof DbIdentityVault) {
@@ -51,6 +54,15 @@ public class DbIdentityVaultTransformer extends AbstractTransformer {
 
     @Override
     public void before(TransformEvent event) throws TransformException {
+
+        int localDbPort = 1527;
+
+        try {
+            PersistenceServiceConfiguration dbConfig = (PersistenceServiceConfiguration) configManager.lookupConfiguration(ServiceType.PERSISTENCE);
+            localDbPort = dbConfig.getPort();
+        } catch (ServiceConfigurationException e) {
+            logger.error("Error loading DB configuration, using default port " + localDbPort + ":" + e.getMessage(),  e);
+        }
 
         DbIdentityVault idVault = (DbIdentityVault) event.getData();
 
@@ -110,7 +122,7 @@ public class DbIdentityVaultTransformer extends AbstractTransformer {
         // DataSource
         String localDbName = (appliance.getIdApplianceDefinition().getName() + pspName).toLowerCase();
         String dsName = (appliance.getIdApplianceDefinition().getName() + pspName).toLowerCase();
-        int localDbPort = 1527; // TODO : Take from persistence configuration!
+
         String localDbUrl = "jdbc:derby://localhost:" + localDbPort + "/" + localDbName + ";create=true";
 
         Bean dsBean = newBean(pspBeans, pspName + "-ds", DriverManagerDataSource.class);
@@ -236,10 +248,11 @@ public class DbIdentityVaultTransformer extends AbstractTransformer {
         // PST
         Bean pstBean = newBean(pspBeans, pspName + "-pst", ProvisioningTargetImpl.class);
         setPropertyValue(pstBean, "name", pstBean.getName());
-        // TODO : Add salt support
-        // TODO : Make dynamic
-        setPropertyValue(pstBean, "hashAlgorithm", "MD5");
-        setPropertyValue(pstBean, "hashEncoding", "HEX");
+
+        setPropertyValue(pstBean, "hashAlgorithm", idVault.getHashAlgorithm());
+        setPropertyValue(pstBean, "hashEncoding", idVault.getHashEncoding());
+        setPropertyValue(pstBean, "saltLength", idVault.getSaltLength() + "");
+
         setPropertyRef(pstBean, "identityPartition", idPartBean.getName());
         setPropertyRef(pstBean, "schemaManager", schemaMgrBean.getName());
 
@@ -367,5 +380,13 @@ public class DbIdentityVaultTransformer extends AbstractTransformer {
 
 
         return rBeans;
+    }
+
+    public ServiceConfigurationManager getConfigManager() {
+        return configManager;
+    }
+
+    public void setConfigManager(ServiceConfigurationManager configManager) {
+        this.configManager = configManager;
     }
 }

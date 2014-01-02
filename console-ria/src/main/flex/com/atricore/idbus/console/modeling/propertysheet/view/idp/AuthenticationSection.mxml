@@ -80,9 +80,9 @@
                 <s:DropDownList id="simpleAuthnHashAlgorithm" width="140" selectedIndex="0">
                     <s:dataProvider>
                         <mx:ArrayCollection>
-
                             <fx:Object label="MD5" data="MD5"/>
-                            <fx:Object label="SHA1" data="SHA1"/>
+                            <fx:Object label="SHA-1" data="SHA-1"/>
+                            <fx:Object label="SHA-256" data="SHA-256"/>
                             <fx:Object label="CRYPT (LDAP Only)" data="CRYPT"/>
                             <fx:Object label="PLain Text (none)" data="NONE"/>
                         </mx:ArrayCollection>
@@ -97,6 +97,24 @@
                             <fx:Object label="HEX" data="HEX"/>
                             <fx:Object label="BASE64" data="BASE64"/>
                             <fx:Object label="Plain Text (none)" data="NONE"/>
+                        </mx:ArrayCollection>
+                    </s:dataProvider>
+                </s:DropDownList>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'basicAuthentication.saltLength')}:">
+                <s:DropDownList id="simpleAuthnSaltLength" width="140" selectedIndex="0">
+                    <s:dataProvider>
+                        <mx:ArrayCollection>
+                            <fx:Object label="None" data="0"/>
+                            <fx:Object label="8-bit" data="1"/>
+                            <fx:Object label="16-bit" data="2"/>
+                            <fx:Object label="24-bit" data="3"/>
+                            <fx:Object label="32-bit" data="4"/>
+                            <fx:Object label="48-bit" data="6"/>
+                            <fx:Object label="64-bit" data="8"/>
+                            <fx:Object label="128-bit" data="16"/>
+                            <fx:Object label="256-bit" data="32"/>
                         </mx:ArrayCollection>
                     </s:dataProvider>
                 </s:DropDownList>

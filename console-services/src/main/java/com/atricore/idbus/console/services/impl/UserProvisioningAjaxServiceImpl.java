@@ -463,6 +463,10 @@ public class UserProvisioningAjaxServiceImpl extends AbstractSpmlAjaxClient impl
                 spmlUser.getGroup().clear();
 
                 for (GroupDTO grp : userRequest.getGroups()) {
+
+                    if (grp == null  || grp.getName() == null)
+                        continue;
+
                     FindGroupByNameRequest fgbr = new FindGroupByNameRequest();
                     fgbr.setName(grp.getName());
                     FindGroupByNameResponse rspGroup = findGroupByName(fgbr);
@@ -944,6 +948,10 @@ public class UserProvisioningAjaxServiceImpl extends AbstractSpmlAjaxClient impl
     }
 
     public GroupType toGroupType(GroupDTO grp) {
+
+        if (grp == null)
+            return null;
+
         GroupType g = new GroupType();
         g.setId(grp.getId());
         g.setName(grp.getName());

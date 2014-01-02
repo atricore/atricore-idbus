@@ -14,6 +14,8 @@ public class BasicAuthenticationDTO extends AuthenticationMechanismDTO {
 
     private boolean ignorePasswordCase = false;
 
+    private int saltLength = 0;
+
     // TODO : For now this is bound to basic authn.  When multiple authn mechanisms are supported, it should be a mechanism on its own.
     private ImpersonateUserPolicyDTO impersonateUserPolicy;
 
@@ -65,5 +67,13 @@ public class BasicAuthenticationDTO extends AuthenticationMechanismDTO {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public int getSaltLength() {
+        return saltLength;
+    }
+
+    public void setSaltLength(int saltLength) {
+        this.saltLength = saltLength;
     }
 }

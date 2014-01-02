@@ -115,7 +115,7 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
         if ("CRYPT".equalsIgnoreCase(getHashAlgorithm())) {
             // Get known password
             String knownPassword = getPassword(getKnownCredentials());
-            String salt = knownPassword != null && knownPassword.length() > 1 ? knownPassword.substring(0, saltLenght) : "";
+            String salt = knownPassword != null && knownPassword.length() > 1 ? knownPassword.substring(0, saltLength) : "";
 
             return Crypt.crypt(salt, password);
 

@@ -53,6 +53,7 @@
 
     <bean name="dbIdentityVaultTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.idsource.DbIdentityVaultTransformer">
+        <property name="configManager" ref="configManager"/>
     </bean>
 
     <bean name="embeddedIdentityVaultTransformer"

@@ -98,7 +98,7 @@ public class WindowsIntegratedAuthnCreateMediator extends IocFormMediator {
         view.domain.text = "MYCOMPANYDOMAIN.COM";
         view.serviceClass.selectedIndex = 0;
         view.host.text = "";
-        view.port.text = "8081";
+        view.port.text = "";
         view.serviceName.text = "";
         view.domainController.text =  "dc.mycompanydomain.com";
         view.overwriteKerberosSetup.selected = true;
@@ -120,7 +120,7 @@ public class WindowsIntegratedAuthnCreateMediator extends IocFormMediator {
         view.domain.text = "MYCOMPANYDOMAIN.COM";
         view.serviceClass.selectedIndex = 0;
         view.host.text = "";
-        view.port.text = "8081";
+        view.port.text = "";
         view.serviceName.text = "";
         view.domainController.text =  "dc.mycompanydomain.com";
         view.overwriteKerberosSetup.selected = true;
