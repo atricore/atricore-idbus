@@ -1321,6 +1321,12 @@ public class PropertySheetMediator extends IocMediator {
             _ipCoreSection.identityProvDescription.text = identityProvider.description;
             _ipCoreSection.ssoSessionTimeout.text =
                     identityProvider.ssoSessionTimeout > 0 ? identityProvider.ssoSessionTimeout.toString() : "30";
+
+            _ipCoreSection.maxSessionsPerUser.text =
+                    identityProvider.maxSessionsPerUser > 0 ? identityProvider.maxSessionsPerUser.toString() : "-1";
+
+            _ipCoreSection.destroyPreviousSession.selected = identityProvider.destroyPreviousSession;
+
             _ipCoreSection.dashboardUrl.text = identityProvider.dashboardUrl;
 
 
@@ -1367,6 +1373,8 @@ public class PropertySheetMediator extends IocMediator {
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.ssoSessionTimeout.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.maxSessionsPerUser.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.destroyPreviousSession.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.dashboardUrl.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1379,6 +1387,7 @@ public class PropertySheetMediator extends IocMediator {
             _validators = [];
             _validators.push(_ipCoreSection.nameValidator);
             _validators.push(_ipCoreSection.ssoSessionTimeoutValidator);
+            _validators.push(_ipCoreSection.maxSessionsPerUserValidator);
             _validators.push(_ipCoreSection.portValidator);
             _validators.push(_ipCoreSection.domainValidator);
             _validators.push(_ipCoreSection.contextValidator);
@@ -1398,6 +1407,8 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.name = _ipCoreSection.identityProviderName.text;
             identityProvider.description = _ipCoreSection.identityProvDescription.text;
             identityProvider.ssoSessionTimeout = parseInt(_ipCoreSection.ssoSessionTimeout.text);
+            identityProvider.maxSessionsPerUser = parseInt(_ipCoreSection.maxSessionsPerUser.text);
+            identityProvider.destroyPreviousSession = _ipCoreSection.destroyPreviousSession.selected;
             identityProvider.dashboardUrl = _ipCoreSection.dashboardUrl.text;
 
             identityProvider.location.protocol = _ipCoreSection.idpLocationProtocol.labelDisplay.text;

@@ -334,9 +334,16 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
             logger.warn("Invalid SSO Session Timeout " + ssoSessionTimeout + ", forcing a new value");
             ssoSessionTimeout = 30;
         }
+
+        int maxSessionsPerUser = provider.getMaxSessionsPerUser();
+        if (maxSessionsPerUser <= 0)
+            maxSessionsPerUser = -1;
+
+        boolean invalidateExceedingSessions = provider.isDestroyPreviousSession();
+
         setPropertyValue(sessionManager, "maxInactiveInterval", ssoSessionTimeout + "");
-        setPropertyValue(sessionManager, "maxSessionsPerUser", "-1");
-        setPropertyValue(sessionManager, "invalidateExceedingSessions", "false");
+        setPropertyValue(sessionManager, "maxSessionsPerUser", maxSessionsPerUser + "");
+        setPropertyValue(sessionManager, "invalidateExceedingSessions", invalidateExceedingSessions);
         setPropertyValue(sessionManager, "sessionMonitorInterval", "10000");
 
         // Session ID Generator
