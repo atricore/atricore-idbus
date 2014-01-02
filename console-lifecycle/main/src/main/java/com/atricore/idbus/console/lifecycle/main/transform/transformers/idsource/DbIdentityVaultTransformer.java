@@ -249,8 +249,12 @@ public class DbIdentityVaultTransformer extends AbstractTransformer {
         Bean pstBean = newBean(pspBeans, pspName + "-pst", ProvisioningTargetImpl.class);
         setPropertyValue(pstBean, "name", pstBean.getName());
 
-        setPropertyValue(pstBean, "hashAlgorithm", idVault.getHashAlgorithm());
-        setPropertyValue(pstBean, "hashEncoding", idVault.getHashEncoding());
+        if (idVault.getHashAlgorithm() != null && !idVault.getHashAlgorithm().equalsIgnoreCase("NONE"))
+            setPropertyValue(pstBean, "hashAlgorithm", idVault.getHashAlgorithm());
+
+        if (idVault.getHashEncoding() != null && !idVault.getHashEncoding().equalsIgnoreCase("NONE"))
+            setPropertyValue(pstBean, "hashEncoding", idVault.getHashEncoding());
+
         setPropertyValue(pstBean, "saltLength", idVault.getSaltLength() + "");
 
         setPropertyRef(pstBean, "identityPartition", idPartBean.getName());
