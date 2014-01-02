@@ -36,14 +36,17 @@ public class JDOIdentityStore extends AbstractStore implements IdentityPartition
 
         try {
 
-
             User user = partition.findUserByUserName(key.toString());
             // TODO : Support other type of credentials !
 
             Credential usrCred = cp.newCredential("username", user.getUserName());
             Credential pwdCred = cp.newCredential("password", user.getUserPassword());
+            Credential saltCred = null;
+            if (user.getSalt() != null)
+                saltCred = cp.newCredential("salt", user.getSalt());
 
-            return new Credential[] {usrCred, pwdCred};
+            return saltCred == null ? new Credential[] {usrCred, pwdCred} : new Credential[] {usrCred, pwdCred, saltCred};
+
         } catch (UserNotFoundException e) {
             return new Credential[0];
         } catch (ProvisioningException e) {

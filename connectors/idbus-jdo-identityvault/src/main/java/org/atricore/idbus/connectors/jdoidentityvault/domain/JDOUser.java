@@ -69,6 +69,7 @@ public class JDOUser implements Serializable {
     private byte[] userCertificate;
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
+    private String salt;
 
     //<--- Access Control ---->
     private JDOAcl[] acls;
@@ -434,6 +435,14 @@ public class JDOUser implements Serializable {
 
     public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     public byte[] getUserCertificate() {

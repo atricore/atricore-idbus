@@ -40,7 +40,6 @@ public class UsernamePasswordCredentialProvider implements CredentialProvider {
      */
     public static final String PASSWORD_CREDENTIAL_NAME = "password";
 
-
     /**
      * The name of the credential representing a username.
      * Used to get a new credential instance based on its name and value.
@@ -49,6 +48,16 @@ public class UsernamePasswordCredentialProvider implements CredentialProvider {
      * @see Credential newCredential(String name, Object value)
      */
     public static final String USERNAME_CREDENTIAL_NAME = "username";
+
+    /**
+     * The name of the credential representing a salt.
+     * Used to get a new credential instance based on its name and value.
+     * Value : username
+     *
+     * @see Credential newCredential(String name, Object value)
+     */
+    public static final String SALT_CREDENTIAL_NAME = "salt";
+
 
     private static final Log logger = LogFactory.getLog(UsernamePasswordCredentialProvider.class);
 
@@ -68,12 +77,15 @@ public class UsernamePasswordCredentialProvider implements CredentialProvider {
             return new PasswordCredential(value);
         }
 
+        if (name.equalsIgnoreCase(SALT_CREDENTIAL_NAME)) {
+            return new SaltCredential(value);
+        }
+
         // Don't know how to handle this name ...
         if (logger.isDebugEnabled())
             logger.debug("Unknown credential name : " + name);
 
         return null;
-
     }
 
     /**

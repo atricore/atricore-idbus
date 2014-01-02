@@ -173,6 +173,9 @@
             <field name="userPassword">
                 <column name="USERPASSWORD" length="255" jdbc-type="VARCHAR"/>
             </field>
+            <field name="salt">
+                <column name="SALT" length="255" jdbc-type="VARCHAR"/>
+            </field>
             <field name="userCertificate">
                 <column name="USERCERTIFICATE"/>
             </field>

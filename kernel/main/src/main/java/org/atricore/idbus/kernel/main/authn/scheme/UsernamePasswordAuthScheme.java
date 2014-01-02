@@ -112,7 +112,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
     /**
      * This attribute is only used when CRYPT hasing is configued.  The default value is 2.
      */
-    private int _saltLenght = 2;
+    private int _saltLength = 2;
 
     public UsernamePasswordAuthScheme() {
         this.setName("basic-authentication");
@@ -157,11 +157,12 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
             return false;
         }
 
-        String knownUsername = getUsername(getKnownCredentials());
-        String expectedPassword = getPassword(getKnownCredentials());
+        Credential[] knowCredentials = getKnownCredentials();
+        String knownUsername = getUsername(knowCredentials);
+        String expectedPassword = getPassword(knowCredentials);
 
         // We might have to hash the password.
-        password = createPasswordHash(password);
+        password = createPasswordHash(password, knowCredentials);
 
         // Validate user identity ...
         if (!validateUsername(username, knownUsername) || !validatePassword(password, expectedPassword)) {
@@ -207,7 +208,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         try {
             String v = (String) value;
             if (name.equals(UsernamePasswordCredentialProvider.PASSWORD_CREDENTIAL_NAME))
-            v = createPasswordHash(v);
+            v = createPasswordHash(v, getKnownCredentials());
 
             return super.newEncodedCredential(name, v);
 
@@ -274,7 +275,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
      *
      * @return the hashed password.
      */
-    protected String createPasswordHash(String password) throws SSOAuthenticationException {
+    protected String createPasswordHash(String password, Credential[] knowCredentials) throws SSOAuthenticationException {
 
         // If none of this properties are set, do nothing ...
         if (getHashAlgorithm() == null && getHashEncoding() == null) {
@@ -285,15 +286,20 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         if (logger.isDebugEnabled())
             logger.debug("Creating password hash for [" + password + "] with algorithm/encoding [" + getHashAlgorithm() + "/" + getHashEncoding() + "]");
 
-        // Check for spetial encryption mechanisms, not supported by the JDK
+        // Check for special encryption mechanisms, not supported by the JDK
         if ("CRYPT".equalsIgnoreCase(getHashAlgorithm())) {
             // Get known password
-            String knownPassword = getPassword(getKnownCredentials());
-            String salt = knownPassword != null && knownPassword.length() > 1 ? knownPassword.substring(0, _saltLenght) : "";
+            String knownPassword = getPassword(knowCredentials);
+            String salt = knownPassword != null && knownPassword.length() > 1 ? knownPassword.substring(0, _saltLength) : "";
 
             return Crypt.crypt(salt, password);
 
         }
+
+        // If SALT is available, use it
+        String salt = getSalt(knowCredentials);
+        if (salt != null)
+            password = salt + password;
 
         // TODO : Support other LDAP prefixes !!!!
 
@@ -393,6 +399,13 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         return (String) p.getValue();
     }
 
+    protected String getSalt(Credential[] credentials) {
+        SaltCredential s = getSaltCredential(credentials);
+        if (s == null)
+            return null;
+        return (String) s.getValue();
+    }
+
     /**
      * Gets the credential that represents a password.
      *
@@ -406,6 +419,21 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         }
         return null;
     }
+
+    /**
+     * Gets the credential that represents a password.
+     *
+     * @param credentials
+     */
+    protected SaltCredential getSaltCredential(Credential[] credentials) {
+        for (int i = 0; i < credentials.length; i++) {
+            if (credentials[i] instanceof SaltCredential) {
+                return (SaltCredential) credentials[i];
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Gets the credential that represents a Username.
@@ -462,19 +490,19 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         _hashCharset = hashCharset;
     }
 
-    public void setSaltLenght(String saltLenght) {
-        setSaltLength(Integer.valueOf(saltLenght).intValue());
+    public void setSaltLength(String saltLength) {
+        setSaltLength(Integer.valueOf(saltLength).intValue());
     }
 
     /**
      * Only used when CRYPT is configured, default value is 2.
      */
     public int getSaltLength() {
-        return _saltLenght;
+        return _saltLength;
     }
 
     public void setSaltLength(int sl) {
-        _saltLenght = sl;
+        _saltLength = sl;
     }
 
 

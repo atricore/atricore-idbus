@@ -179,7 +179,7 @@ public class IdentityDAO {
 
             Credential[] creds = fetchCredentials(result);
 
-                return creds;
+            return creds;
         } catch (SQLException sqlE) {
             logger.error("SQLException while listing credentials", sqlE);
             throw new SSOIdentityException("During credentials listing: " + sqlE.getMessage());

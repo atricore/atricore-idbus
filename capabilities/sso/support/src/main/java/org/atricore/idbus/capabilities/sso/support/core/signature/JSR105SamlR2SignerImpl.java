@@ -92,9 +92,14 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
      */
     public static final String DEFAULT_JSR105_PROVIDER_FQCN = "org.jcp.xml.dsig.internal.dom.XMLDSigRI";
 
+    // TODO : Support SHA-256, make dynamic !
     private static final String SHA1_WITH_DSA = "SHA1withDSA";
 
+    // TODO : Support SHA-256, make dynamic !
     private static final String SHA1_WITH_RSA = "SHA1withRSA";
+
+    // TODO : Support SHA-256, make dynamic !
+    private static final String SHA256_WITH_RSA = "SHA256withRSA";
 
     private static final Log logger = LogFactory.getLog(JSR105SamlR2SignerImpl.class);
 
@@ -456,6 +461,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             signatureBin = decoder.decode(signatureEnc.getBytes());
 
             // get Signature instance based on algorithm
+            // TODO : Support SHA-256
             Signature signature = null;
             if (sigAlgValue.equals(SignatureMethod.DSA_SHA1)) {
                 signature = Signature.getInstance(SHA1_WITH_DSA);

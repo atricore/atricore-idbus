@@ -1,5 +1,6 @@
 package org.atricore.idbus.kernel.main.provisioning.impl;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,6 +33,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     private UUIDGenerator uuid = new UUIDGenerator();
 
+    final Random saltRandomizer = new SecureRandom();
+
     private String name;
 
     private String description;
@@ -41,7 +45,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     
     private String hashCharset;
     
-    private int saltLenght;
+    private int saltLength;
     
     private IdentityPartition identityPartition;
 
@@ -151,12 +155,12 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         this.hashAlgorithm = hashAlgorithm;
     }
 
-    public int getSaltLenght() {
-        return saltLenght;
+    public int getSaltLength() {
+        return saltLength;
     }
 
-    public void setSaltLenght(int saltLenght) {
-        this.saltLenght = saltLenght;
+    public void setSaltLength(int saltLength) {
+        this.saltLength = saltLength;
     }
 
     public IdentityPartition getIdentityPartition() {
@@ -326,8 +330,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "securityQuestions", "acls", "userPassword"});
 
-            // TODO : Apply password validation rules
-            user.setUserPassword(createPasswordHash(userRequest.getUserPassword()));
+            String salt = generateSalt();
+
+            user.setSalt(salt);
+            user.setUserPassword(createPasswordHash(userRequest.getUserPassword(), salt));
                 
             Group[] groups = userRequest.getGroups();
             user.setGroups(groups);
@@ -355,9 +361,12 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         User u = new User();
         BeanUtils.copyProperties(userRequest, u, new String[] {"groups", "securityQuestions", "userPassword"});
 
+        String salt = generateSalt();
+
         // Random password
         String tmpPassword = RandomStringUtils.randomAlphanumeric(6);
-        u.setUserPassword(createPasswordHash(tmpPassword));
+        u.setSalt(salt);
+        u.setUserPassword(createPasswordHash(tmpPassword, salt));
         u.setAccountDisabled(true);
 
         u = identityPartition.addUser(u);
@@ -392,7 +401,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         // BeanUtils.copyProperties(confirmReq, tmpUser, new String[] {"id", "groups", "securityQuestions", "userPassword"});
 
         // Password
-        tmpUser.setUserPassword(createPasswordHash(confirmReq.getUserPassword()));
+        tmpUser.setUserPassword(createPasswordHash(confirmReq.getUserPassword(), tmpUser.getSalt()));
 
         // Groups
         // tmpUser.setGroups(confirmReq.getGroups());
@@ -401,7 +410,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         if (confirmReq.getSecurityQuestions() != null) {
             if (getHashAlgorithm() != null) {
                 for (UserSecurityQuestion usq : confirmReq.getSecurityQuestions()) {
-                    usq.setAnswer(createPasswordHash(usq.getAnswer()));
+                    usq.setAnswer(createPasswordHash(usq.getAnswer(), tmpUser.getSalt()));
                 }
             }
             tmpUser.setSecurityQuestions(confirmReq.getSecurityQuestions());
@@ -508,13 +517,13 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             User user = identityPartition.findUserById(setPwdRequest.getUserId());
 
-            String currentPwd = createPasswordHash(setPwdRequest.getCurrentPassword());
+            String currentPwd = createPasswordHash(setPwdRequest.getCurrentPassword(), user.getSalt());
             if (!user.getUserPassword().equals(currentPwd)) {
                 throw new InvalidPasswordException("Provided password is invalid");
             }
 
             // TODO : Apply password validation rules
-            String newPwdHash = createPasswordHash(setPwdRequest.getNewPassword());
+            String newPwdHash = createPasswordHash(setPwdRequest.getNewPassword(), user.getSalt());
             user.setUserPassword(newPwdHash);
             identityPartition.updateUser(user);
             SetPasswordResponse setPwdResponse = new SetPasswordResponse();
@@ -542,7 +551,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             if (!user.getUserName().equals(providedUser.getUserName()))
                 throw new ProvisioningException("Invalid user information");
 
-            String pwdHash = createPasswordHash(pwd);
+            String pwdHash = createPasswordHash(pwd, user.getSalt());
             user.setUserPassword(pwdHash);
 
             identityPartition.updateUser(user);
@@ -588,12 +597,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         ResetPasswordRequest req = (ResetPasswordRequest) t.getRequest();
         ResetPasswordResponse resp = (ResetPasswordResponse) t.getResponse();
 
+        User user = identityPartition.findUserById(req.getUser().getId());
+
         String newPwd = usedGeneratedPwd ? req.getNewPassword() : resetPwdRequest.getNewPassword();
-        String pwdHash = createPasswordHash(newPwd);
+        String pwdHash = createPasswordHash(newPwd, user.getSalt());
         resp.setNewPassword(newPwd);
 
         // Set user's password
-        User user = identityPartition.findUserById(req.getUser().getId());
+
         user.setUserPassword(pwdHash);
 
         user = identityPartition.updateUser(user);
@@ -949,7 +960,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    protected String createPasswordHash(String password) throws ProvisioningException {
+    protected String createPasswordHash(String password, String salt) throws ProvisioningException {
 
         // If none of this properties are set, do nothing ...
         if (getHashAlgorithm() == null && getHashEncoding() == null) {
@@ -958,18 +969,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
 
         if (logger.isDebugEnabled())
-            logger.debug("Creating password hash for [" + password + "] with algorithm/encoding [" + getHashAlgorithm() + "/" + getHashEncoding() + "]");
+            logger.debug("Creating password hash for [" + password + "] with algorithm/encoding/salt [" + getHashAlgorithm() + "/" + getHashEncoding() + "/" + salt + "]");
 
-        // Check for spetial encryption mechanisms, not supported by the JDK
-        /* TODO
-        if ("CRYPT".equalsIgnoreCase(getHashAlgorithm())) {
-            // Get known password
-            String knownPassword = getPassword(getKnownCredentials());
-            String salt = knownPassword != null && knownPassword.length() > 1 ? knownPassword.substring(0, saltLenght) : "";
-
-            return Crypt.crypt(salt, password);
-
-        } */
+        if (salt != null)
+            password = salt + password;
 
         byte[] passBytes;
         String passwordHash = null;
@@ -1176,6 +1179,17 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             usedAnswers.add(usq.getAnswer());
 
         }
+    }
+
+    protected String generateSalt() {
+        if (saltLength < 1)
+            return null;
+        byte[] saltBytes = new byte[saltLength];
+        saltRandomizer.nextBytes(saltBytes);
+
+        String salt = new String(Base64.encodeBase64(saltBytes));
+
+        return salt;
     }
 
 
