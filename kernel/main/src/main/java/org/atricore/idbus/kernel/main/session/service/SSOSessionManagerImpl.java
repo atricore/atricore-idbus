@@ -178,25 +178,38 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         if (!_invalidateExceedingSessions &&
                 _maxSessionsPerUser != -1 &&
                 _maxSessionsPerUser <= sessions.length) {
-            throw new TooManyOpenSessionsException(sessions.length);
+            throw new TooManyOpenSessionsException(sessions.length - 1);
         }
 
         // Check if sessions should be auto-invalidated.
         if (_invalidateExceedingSessions && _maxSessionsPerUser != -1) {
 
             // Number of sessions to invalidate
-            int invalidate = sessions.length - _maxSessionsPerUser + 1;
+            int invalidate = sessions.length - _maxSessionsPerUser;
             if (logger.isDebugEnabled())
                 logger.debug("Auto-invalidating " + invalidate + " sessions for user : " + username);
 
-            for (int idx = 0; invalidate > 0; invalidate--) {
-                BaseSession session = sessions[idx];
+            for (int i = 0; i < sessions.length; i++) {
+
+                if (invalidate <= 0)
+                    break;
+
+                BaseSession session = sessions[i];
+                if (session.getId().equals(securityToken.getId()))
+                    continue;
 
                 if (logger.isDebugEnabled())
                     logger.debug("Auto-invalidating " + session.getId() + " session for user : " + username);
 
-                invalidate(session.getId());
+                try {
+                    invalidate(session.getId());
+                } catch (NoSuchSessionException e) {
+                    // ignore this
+                }
+
+                invalidate --;
             }
+
         }
 
         try {
@@ -239,8 +252,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         if (s == null) {
             throw new NoSuchSessionException(sessionId);
         }
-        return s;
 
+        return s;
     }
 
     /**
@@ -292,7 +305,6 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
      * @throws NoSuchSessionException if the session id is not valid or the session is not valid.
      */
     public void accessSession(String sessionId) throws NoSuchSessionException, SSOSessionException {
-
 
         try {
 
