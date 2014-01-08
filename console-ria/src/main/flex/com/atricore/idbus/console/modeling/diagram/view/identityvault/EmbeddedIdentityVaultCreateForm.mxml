@@ -40,16 +40,9 @@
         <s:TextInput id="identityVaultDescription" width="300"/>
     </mx:FormItem>
 
-    <mx:TabNavigator id="coreNavigator" borderStyle="solid" height="120" width="100%" creationPolicy="all" tabHeight="26">
-
-        <s:NavigatorContent id="identityVaultCoreTab" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'embeddedIdentityVault.core')}">
-            <s:VGroup width="100%" height="100%">
-                <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'embeddedIdentityVault.connectorName')}:" required="false">
-                    <s:DropDownList id="embeddedVault" width="200" labelField="description" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'embeddedIdentityVault.connectorName.prompt')}"/>
-                </mx:FormItem>
-            </s:VGroup>
-        </s:NavigatorContent>
-    </mx:TabNavigator>
+    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'embeddedIdentityVault.connectorName')}:" required="false">
+        <s:DropDownList id="embeddedVault" width="200" labelField="description" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'embeddedIdentityVault.connectorName.prompt')}"/>
+    </mx:FormItem>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
         <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}"/>
