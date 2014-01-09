@@ -76,7 +76,7 @@
             maxElementsInMemory="10000"
             eternal="false"
             timeToIdleSeconds="3700"
-            timeToLiveSeconds="3700"
+            timeToLiveSeconds="37000"
             overflowToDisk="true"
             memoryStoreEvictionPolicy="LRU"
             diskPersistent="true"/>
